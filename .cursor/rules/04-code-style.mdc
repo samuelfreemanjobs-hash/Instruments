@@ -1,0 +1,42 @@
+---
+description: Embedded C coding style and safety rules
+globs: ["src/**/*.c", "src/**/*.cc", "src/**/*.h"]
+alwaysApply: false
+---
+
+# Embedded C style for logue SDK
+
+## Naming
+
+- Functions: `snake_case`
+- Types: `snake_case_t` or `PascalCase` (match SDK style: `user_osc_param_t`)
+- Macros: `UPPER_SNAKE`
+- Globals: prefix with `g_`
+- Static file-scope: prefix with `s_`
+
+## Safety rules (MISRA-C inspired)
+
+- Every function must have an explicit return type.
+- No recursion.
+- All loops must have a statically bounded upper limit.
+- Pointers must be null-checked before dereference (except SDK-guaranteed pointers).
+- `volatile` required for any variable modified in an ISR.
+- ISRs must be as short as possible — no DSP processing in ISRs.
+- No dynamic memory allocation.
+- No `goto` except for a single cleanup label at function end.
+
+## Formatting
+
+- 2-space indentation.
+- Braces on same line (`if (x) { ... }`).
+- Max line length: 100 characters.
+- One blank line between functions.
+
+## Comments
+
+- Use `//` for inline, `/* */` for block.
+- Every public function must have a doc comment describing:
+  - What it does
+  - Parameters (name and meaning)
+  - Return value
+  - Any real-time constraints

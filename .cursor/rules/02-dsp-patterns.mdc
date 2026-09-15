@@ -1,0 +1,56 @@
+---
+description: Approved DSP patterns, anti-patterns, and real-time constraints
+globs: ["src/oscillators/**", "src/effects/**"]
+alwaysApply: false
+---
+
+# DSP patterns for logue SDK
+
+## Approved patterns
+
+### 1. Oscillator phase accumulation (fixed-point)
+
+```c
+static uint32_t s_phase;
+const uint32_t w = osc_w0(params->pitch);
+
+for (uint32_t i = 0; i < frames; i++) {
+  yn[i] = (q31_t)(s_phase - 0x80000000U);
+  s_phase += w;
+}
+```
+
+### 2. Parameter smoothing (one-pole)
+
+```c
+static float s_smooth;
+float target = /* from OSC_PARAM */;
+s_smooth += (target - s_smooth) * 0.001f;   // coefficient tuned per parameter
+```
+
+### 3. Buffer-aligned effect processing
+
+```c
+void MODFX_PROCESS(const float *main_xn, float *main_yn,
+                   const float *sub_xn, float *sub_yn,
+                   uint32_t frames) {
+  for (uint32_t i = 0; i < frames; i++) {
+    // process exactly `frames` samples — never more, never less
+  }
+}
+```
+
+## Anti-patterns (never generate)
+
+- malloc / new / std::vector in audio callbacks.
+- printf / fprintf in production units.
+- while (1) inside PROCESS or CYCLE.
+- Division inside per-sample loops without precomputed reciprocals.
+- Assuming frames is always 16 or 32; it varies (support up to 64 on v1.1.0).
+- Using double on Cortex-M4 targets (no hardware double FPU).
+
+## Real-time budget guidance
+
+- Total CPU budget for a user unit: ≤ 40% of one core on Cortex-M4.
+- Leave headroom: the SDK and host synth consume the rest.
+- Profile with the SDK's built-in cycle counter if available.

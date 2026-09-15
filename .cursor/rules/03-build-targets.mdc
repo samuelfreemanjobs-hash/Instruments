@@ -1,0 +1,51 @@
+---
+description: Build system, toolchain, and platform target matrix
+alwaysApply: true
+---
+
+# Build targets & toolchain
+
+## SDK version matrix
+
+| Target        | SDK version | CPU             | Unit format        |
+|---------------|-------------|-----------------|--------------------|
+| NTS-1 mkI     | v1.1.0      | ARM Cortex-M4   | Static ELF         |
+| Minilogue XD  | v1.1.0      | ARM Cortex-M4   | Static ELF         |
+| Prologue      | v1.1.0      | ARM Cortex-M4   | Static ELF         |
+| NTS-1 mkII    | v2.0.0      | ARM Cortex-M7   | Dynamic .so        |
+| NTS-3         | v2.0.0      | ARM Cortex-M7   | Dynamic .so        |
+
+**NTS-1 mkI, Minilogue XD, and Prologue units are binary-compatible**
+when built with the same SDK version.
+
+## Build files required per unit
+
+1. `project.mk` — points to SDK, sets `PROJECT`, `SOURCES`, `TARGET`.
+2. `manifest.json` — unit metadata and parameter declarations.
+3. `Makefile` — sets `PLATFORMDIR` and includes the SDK platform makefile.
+
+## Build command
+
+From repo root (recommended):
+
+```bash
+./tools/build.sh oscillators/template nutekt-digital
+```
+
+From a unit directory (after `PLATFORMDIR` or `LOGUE_SDK` is set):
+
+```bash
+make
+```
+
+## Toolchain
+
+- GNU Arm Embedded Toolchain (provided in `tools/gcc/` of the logue SDK).
+- MSYS2 on Windows for GNU Make and shell utilities.
+- Docker (optional) — use the official logue-sdk container for reproducible builds.
+
+## Web simulator (NTS-1 mkII / NTS-3)
+
+The SDK includes a web-based simulator (`websim/`) that lets you test DSP
+code in a browser without flashing hardware. Use it for fast iteration on
+algorithm logic before building for hardware.
