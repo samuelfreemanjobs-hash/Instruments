@@ -1,1 +1,34 @@
-# Instruments
+# VMPC2000XL Modern Hybrid DAW
+
+C++20 / JUCE foundation for a cross-platform MPC2000XL-inspired hybrid DAW. This repository implements **Phase 1** (architecture) and early **Phase 2** UI shells per the project roadmap.
+
+## Build
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
+./build/VMPC2000XL_artefacts/Release/VMPC2000XL
+```
+
+On Linux you need ALSA, X11, FreeType, and OpenGL development packages (see CI or `docs/ARCHITECTURE.md`).
+
+## Layout
+
+- `Source/Model` — sequencer state, PPQN clock, `ValueTree` project scaffold
+- `Source/View` — custom components (`Mpc2000xlLcdDisplay`, `StepSequencerGrid`, `PianoRollGrid`, `MixerChannelStrip`) and `VMpcLookAndFeel`
+- `Source/Controller` — `AppController` (message thread only)
+- `Source/Audio` — `AudioEngine` real-time callback (no UI, no allocation in hot path)
+
+## Roadmap
+
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full multi-phase plan (DSP, Q-Link, export, etc.).
+
+## Status
+
+| Area | State |
+|------|--------|
+| JUCE app shell | Yes |
+| MVC separation | Yes |
+| 16-step UI + model | Yes |
+| Sample playback / FX | Not yet (Phase 4) |
+| Project save/load | ValueTree defaults only |
