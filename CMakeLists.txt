@@ -1,0 +1,58 @@
+cmake_minimum_required(VERSION 3.22)
+
+project(JDUpgraded VERSION 0.1.0)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include(FetchContent)
+
+FetchContent_Declare(
+    JUCE
+    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
+    GIT_TAG 8.0.6
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(JUCE)
+
+juce_add_plugin(JDUpgraded
+    COMPANY_NAME "Instruments"
+    BUNDLE_ID com.instruments.jdupgraded
+    IS_SYNTH TRUE
+    NEEDS_MIDI_INPUT TRUE
+    NEEDS_MIDI_OUTPUT FALSE
+    IS_MIDI_EFFECT FALSE
+    EDITOR_WANTS_KEYBOARD_FOCUS FALSE
+    COPY_PLUGIN_AFTER_BUILD FALSE
+    PLUGIN_MANUFACTURER_CODE Inst
+    PLUGIN_CODE JdUp
+    FORMATS VST3 Standalone
+    PRODUCT_NAME "JD Upgraded"
+)
+
+target_sources(JDUpgraded
+    PRIVATE
+        Source/PluginProcessor.cpp
+        Source/PluginEditor.cpp
+        Source/DSP/VoicePool.cpp
+)
+
+target_compile_definitions(JDUpgraded
+    PUBLIC
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+        JUCE_VST3_CAN_REPLACE_VST2=0
+        JDUPGRADED_CONTROL_RATE_DIVISOR=32
+)
+
+target_link_libraries(JDUpgraded
+    PRIVATE
+        juce::juce_audio_utils
+        juce::juce_dsp
+    PUBLIC
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_lto_flags
+        juce::juce_recommended_warning_flags
+)
+
+target_include_directories(JDUpgraded PRIVATE Source)
