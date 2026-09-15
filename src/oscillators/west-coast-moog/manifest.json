@@ -24,6 +24,6 @@
     "id": "west_coast_moog_funk",
     "type": "osc",
     "targets": ["nts-1", "minilogue-xd", "prologue"],
-    "description": "Parliament/Minimoog funk bass & lead with West Coast FM and wavefold"
+    "description": "Single multifunction osc: Vibe morphs Parliament bass, Minimoog funk lead, and West Coast FM/fold — keep one unit, not separate patches"
   }
 }
