@@ -1,0 +1,29 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "Juno R&B",
+    "num_param": 9,
+    "params": [
+      ["Vibe", 0, 100, "%"],
+      ["Saw", 0, 100, "%"],
+      ["PWM", 0, 100, "%"],
+      ["Chorus", 0, 100, "%"],
+      ["Glide", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"],
+      ["HPF", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "juno_106_rnb_bass",
+    "type": "osc",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "Multifunction Juno-106 style 80s R&B bass: Vibe morphs ballad depth, classic groove, brighter pop — PWM, ensemble chorus, 24dB LP"
+  }
+}
