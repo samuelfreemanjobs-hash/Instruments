@@ -15,7 +15,7 @@ ElectribeModePanel::ElectribeModePanel(controller::AppController& controller)
     addAndMakeVisible(stepDisplay);
     addAndMakeVisible(stepRow);
 
-    hintLabel.setText("Step row = primary. Right-click step = accent. Part # = select, M = mute.",
+    hintLabel.setText("Dedicated Electribe screen — focus window to drive audio. Right-click step = accent.",
                       juce::dontSendNotification);
     hintLabel.setFont(juce::FontOptions(11.0f));
     hintLabel.setColour(juce::Label::textColourId, juce::Colours::white.withAlpha(0.45f));

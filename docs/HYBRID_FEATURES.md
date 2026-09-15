@@ -1,5 +1,9 @@
 # Hybrid feature map (Maschine + Ableton + FL + Electribe)
 
+## Multi-monitor UI
+
+On launch, the app opens **five windows** (Electribe, MPC, Maschine, Session, Pattern). Each is placed on a connected display (round-robin); multiple modes on one monitor are tiled. **Click or focus a window** to set the active audio engine path (Electribe vs MPC sequencer). Closing all windows quits the app.
+
 ## Modes
 
 | Mode | Primary UX | Model |

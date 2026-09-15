@@ -10,6 +10,8 @@ cmake --build build -j
 ./build/VMPC2000XL_artefacts/Release/VMPC2000XL
 ```
 
+**Multi-monitor:** five mode windows open at startup (one per workflow). Focus a window to select its sequencer for audio.
+
 On Linux you need ALSA, X11, FreeType, and OpenGL development packages (see CI or `docs/ARCHITECTURE.md`).
 
 ## Layout

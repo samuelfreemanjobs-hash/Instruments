@@ -34,6 +34,8 @@ target_sources(VMPC2000XL
     PRIVATE
         Source/App/Main.cpp
         Source/App/MainComponent.cpp
+        Source/App/MultiScreenManager.cpp
+        Source/App/ModeScreenComponent.cpp
         Source/Controller/AppController.cpp
         Source/Model/ProjectState.cpp
         Source/Model/HybridWorkspace.cpp
