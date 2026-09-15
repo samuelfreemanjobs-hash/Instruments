@@ -245,9 +245,30 @@ int main (int argc, char** argv)
                      0, category);
     }
 
+    auto categoryForSet = [] (std::uint32_t set) -> jdupgraded::assets::RomWaveCategory
+    {
+        if (set <= 4)
+            return jdupgraded::assets::RomWaveCategory::analog;
+        if (set <= 7)
+            return jdupgraded::assets::RomWaveCategory::digital;
+        if (set <= 10)
+            return jdupgraded::assets::RomWaveCategory::bell;
+        if (set <= 13)
+            return jdupgraded::assets::RomWaveCategory::pluck;
+        if (set <= 16)
+            return jdupgraded::assets::RomWaveCategory::bass;
+        if (set <= 18)
+            return jdupgraded::assets::RomWaveCategory::noise;
+        if (set <= 20)
+            return jdupgraded::assets::RomWaveCategory::vocal;
+        if (set <= 22)
+            return jdupgraded::assets::RomWaveCategory::organ;
+        return jdupgraded::assets::RomWaveCategory::fx;
+    };
+
     for (std::uint32_t set = 1; set <= jdupgraded::assets::kMultisampleSetCount; ++set)
     {
-        const auto category = static_cast<jdupgraded::assets::RomWaveCategory> ((set - 1) % 9);
+        const auto category = categoryForSet (set);
         for (std::uint32_t zone = 0; zone < jdupgraded::assets::kZonesPerSet; ++zone)
         {
             const std::uint32_t id = jdupgraded::assets::kSingleWaveCount + (set - 1) * jdupgraded::assets::kZonesPerSet + zone;

@@ -57,6 +57,7 @@ target_sources(JDUpgraded
         Source/DSP/Tone.cpp
         Source/Assets/RomBank.cpp
         Source/Assets/FactoryPatchLibrary.cpp
+        Source/Preset/SysExParser.cpp
 )
 
 target_compile_definitions(JDUpgraded

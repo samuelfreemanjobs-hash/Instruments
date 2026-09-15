@@ -1,7 +1,5 @@
 #pragma once
 
-// Phase 3: Roland JD SysEx ingest with checksum verification (no ROM in installer).
-
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -15,20 +13,11 @@ struct SysExParseResult
     std::size_t bytesConsumed = 0;
 };
 
+/** Validates Roland SysEx framing and checksum (0x41 manufacturer). No ROM data imported. */
 class SysExParser final
 {
 public:
-    static std::optional<SysExParseResult> feed (const std::uint8_t* data, std::size_t size) noexcept
-    {
-        if (data == nullptr || size < 4)
-            return std::nullopt;
-
-        // Roland manufacturer ID 0x41 — full packet dispatch in phase 3.
-        SysExParseResult result;
-        result.checksumValid = false;
-        result.bytesConsumed = size;
-        return result;
-    }
+    static std::optional<SysExParseResult> feed (const std::uint8_t* data, std::size_t size) noexcept;
 };
 
 } // namespace jdupgraded::preset

@@ -4,6 +4,8 @@
 #include "Assets/FactoryPatchLibrary.h"
 #include "BinaryData.h"
 
+#include <cstdlib>
+
 namespace
 {
 constexpr const char* kMasterGainId = "masterGain";
@@ -49,6 +51,10 @@ JDUpgradedAudioProcessor::JDUpgradedAudioProcessor()
 {
     romLoader_.loadFactoryRom (BinaryData::jdupg_cleanroom_rom,
                                BinaryData::jdupg_cleanroom_romSize);
+
+    if (const char* externalRom = std::getenv ("JDUPGRADED_ROM_PATH"))
+        romLoader_.loadUserRomFile (externalRom);
+
     refreshCachedParameters();
     applyFactoryPatch (0);
 }
@@ -377,17 +383,26 @@ void JDUpgradedAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 
 void JDUpgradedAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    if (auto xml = apvts_.copyState().createXml())
+    auto state = apvts_.copyState();
+    state.setProperty ("currentProgram", currentProgram_, nullptr);
+    if (auto xml = state.createXml())
         copyXmlToBinary (*xml, destData);
 }
 
 void JDUpgradedAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     if (auto xml = getXmlFromBinary (data, sizeInBytes))
+    {
         if (xml->hasTagName (apvts_.state.getType()))
-            apvts_.replaceState (juce::ValueTree::fromXml (*xml));
+        {
+            auto state = juce::ValueTree::fromXml (*xml);
+            apvts_.replaceState (state);
+            currentProgram_ = static_cast<int> (state.getProperty ("currentProgram", 0));
+        }
+    }
 
     refreshCachedParameters();
+    applyPatchesFromParameters();
 }
 
 juce::AudioProcessorEditor* JDUpgradedAudioProcessor::createEditor()
