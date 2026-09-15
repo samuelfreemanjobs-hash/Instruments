@@ -4,32 +4,81 @@ namespace vmpc::app
 {
 MainComponent::MainComponent(controller::AppController& controller)
     : appController(controller)
+    , electribePanel(controller)
+    , mpcPanel(controller)
+    , maschinePanel(controller)
+    , sessionPanel(controller)
+    , patternPanel(controller)
 {
     setLookAndFeel(&lookAndFeel);
 
-    titleLabel.setText("VMPC2000XL Modern Hybrid", juce::dontSendNotification);
-    titleLabel.setJustificationType(juce::Justification::centred);
+    titleLabel.setText("VMPC2000XL Hybrid", juce::dontSendNotification);
+    titleLabel.setJustificationType(juce::Justification::centredRight);
     titleLabel.setColour(juce::Label::textColourId, lookAndFeel.iceBlue);
     addAndMakeVisible(titleLabel);
+    addAndMakeVisible(modeToolbar);
 
-    addAndMakeVisible(lcd);
-    addAndMakeVisible(stepGrid);
-    addAndMakeVisible(pianoRoll);
-    addAndMakeVisible(channelStrip);
-
-    stepGrid.onStepToggled([this](int step, bool active) {
-        auto& pattern = appController.getEngine().getSequencer().getPattern();
-        pattern.getStep(step).active = active;
-        lcd.setStatusLine("STEP " + juce::String(step + 1) + (active ? " ON" : " OFF"));
+    modeToolbar.onModeChanged([this](vmpc::model::AppMode mode) {
+        appController.setAppMode(mode);
     });
 
-    stepGrid.setPattern(appController.getEngine().getSequencer().getPattern());
+    addChildComponent(mpcPanel);
+    addChildComponent(maschinePanel);
+    addChildComponent(sessionPanel);
+    addChildComponent(patternPanel);
+    addChildComponent(electribePanel);
+
+    appController.addListener(this);
+    showMode(appController.getAppMode());
+    modeToolbar.setCurrentMode(appController.getAppMode());
+
     startTimerHz(30);
 }
 
 MainComponent::~MainComponent()
 {
+    appController.removeListener(this);
     setLookAndFeel(nullptr);
+}
+
+void MainComponent::appModeChanged(vmpc::model::AppMode mode)
+{
+    modeToolbar.setCurrentMode(mode);
+    showMode(mode);
+}
+
+void MainComponent::showMode(vmpc::model::AppMode mode)
+{
+    electribePanel.setVisible(false);
+    mpcPanel.setVisible(false);
+    maschinePanel.setVisible(false);
+    sessionPanel.setVisible(false);
+    patternPanel.setVisible(false);
+
+    switch (mode)
+    {
+        case vmpc::model::AppMode::HybridMpc:
+            activeModePanel = &mpcPanel;
+            break;
+        case vmpc::model::AppMode::Maschine:
+            activeModePanel = &maschinePanel;
+            break;
+        case vmpc::model::AppMode::SessionClip:
+            activeModePanel = &sessionPanel;
+            break;
+        case vmpc::model::AppMode::PatternSong:
+            activeModePanel = &patternPanel;
+            break;
+        case vmpc::model::AppMode::Electribe:
+        default:
+            activeModePanel = &electribePanel;
+            break;
+    }
+
+    if (activeModePanel != nullptr)
+        activeModePanel->setVisible(true);
+
+    resized();
 }
 
 void MainComponent::paint(juce::Graphics& g)
@@ -40,7 +89,7 @@ void MainComponent::paint(juce::Graphics& g)
     drawStudioEmblem(g, top.removeFromLeft(56).reduced(8));
 
     g.setColour(lookAndFeel.walnutBrown);
-    g.fillRect(getLocalBounds().removeFromBottom(8));
+    g.fillRect(getLocalBounds().removeFromBottom(6));
 }
 
 void MainComponent::drawStudioEmblem(juce::Graphics& g, juce::Rectangle<int> area) const
@@ -49,30 +98,38 @@ void MainComponent::drawStudioEmblem(juce::Graphics& g, juce::Rectangle<int> are
     g.fillEllipse(area.toFloat());
     g.setColour(lookAndFeel.neonAccent);
     g.drawEllipse(area.toFloat().reduced(2.0f), 1.5f);
-    g.setFont(juce::Font(10.0f, juce::Font::bold));
+    g.setFont(juce::FontOptions(10.0f, juce::Font::bold));
     g.drawText("VMPC", area, juce::Justification::centred);
 }
 
 void MainComponent::resized()
 {
-    auto bounds = getLocalBounds().reduced(12);
-    bounds.removeFromTop(48);
-    titleLabel.setBounds(bounds.removeFromTop(24));
+    auto bounds = getLocalBounds().reduced(8);
+    auto header = bounds.removeFromTop(40);
+    modeToolbar.setBounds(header.removeFromLeft(header.getWidth() - 200));
+    titleLabel.setBounds(header);
 
-    auto topRow = bounds.removeFromTop(bounds.getHeight() / 2);
-    lcd.setBounds(topRow.removeFromLeft(topRow.getWidth() * 2 / 3).reduced(4));
-    stepGrid.setBounds(topRow.reduced(4));
-
-    auto bottom = bounds;
-    channelStrip.setBounds(bottom.removeFromRight(72).reduced(4));
-    pianoRoll.setBounds(bottom.reduced(4));
+    bounds.removeFromTop(8);
+    if (activeModePanel != nullptr && activeModePanel->isVisible())
+        activeModePanel->setBounds(bounds);
 }
 
 void MainComponent::timerCallback()
 {
-    const int step = appController.getEngine().getSequencer().getPlayingStepForUi();
-    stepGrid.setPlayingStep(step);
-    channelStrip.meterUpdate(juce::jmax(appController.getEngine().getPeakL(),
-                                        appController.getEngine().getPeakR()));
+    const int step = appController.getEngine().getPlayingStepForUi();
+    const float peakL = appController.getEngine().getPeakL();
+    const float peakR = appController.getEngine().getPeakR();
+
+    switch (appController.getAppMode())
+    {
+        case vmpc::model::AppMode::Electribe:
+            electribePanel.updateTransportUi(step);
+            break;
+        case vmpc::model::AppMode::HybridMpc:
+            mpcPanel.updateTransportUi(step, peakL, peakR);
+            break;
+        default:
+            break;
+    }
 }
 } // namespace vmpc::app

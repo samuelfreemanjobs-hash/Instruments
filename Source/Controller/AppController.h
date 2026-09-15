@@ -2,25 +2,42 @@
 
 #include <JuceHeader.h>
 #include "Model/ProjectState.h"
+#include "Model/HybridWorkspace.h"
 #include "Audio/AudioEngine.h"
 
 namespace vmpc::controller
 {
-/** Message-thread only: connects views to model and audio device setup. */
 class AppController
 {
 public:
+    struct Listener
+    {
+        virtual ~Listener() = default;
+        virtual void appModeChanged(vmpc::model::AppMode mode) = 0;
+    };
+
     AppController(model::ProjectState& projectState, audio::AudioEngine& engine);
 
     void attachAudioDeviceManager(juce::AudioDeviceManager& manager);
     void syncProjectToSequencer();
 
+    void setAppMode(model::AppMode mode);
+    model::AppMode getAppMode() const noexcept { return workspace.getMode(); }
+
     model::ProjectState& getProject() noexcept { return project; }
+    model::HybridWorkspace& getWorkspace() noexcept { return workspace; }
     audio::AudioEngine& getEngine() noexcept { return audioEngine; }
 
+    void addListener(Listener* listener);
+    void removeListener(Listener* listener);
+
 private:
+    void notifyModeChanged(model::AppMode mode);
+
     model::ProjectState& project;
+    model::HybridWorkspace workspace;
     audio::AudioEngine& audioEngine;
     juce::AudioDeviceManager* deviceManager = nullptr;
+    juce::ListenerList<Listener> listeners;
 };
 } // namespace vmpc::controller

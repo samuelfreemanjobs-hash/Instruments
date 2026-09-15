@@ -1,18 +1,22 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Model/AppMode.h"
 #include "Model/Sequencer/SequencerCore.h"
+#include "Model/Electribe/ElectribeSequencer.h"
+#include "Model/Electribe/ElectribeSong.h"
+#include <atomic>
 
 namespace vmpc::audio
 {
-/**
- * Real-time I/O callback. Phase 4 will add sampler + FX here.
- * UI reads peak meters via atomics only.
- */
 class AudioEngine : public juce::AudioIODeviceCallback
 {
 public:
     AudioEngine();
+
+    void bindElectribeSong(model::ElectribeSong* song) noexcept;
+
+    void setAppMode(model::AppMode mode) noexcept { appMode.store(static_cast<int>(mode)); }
 
     void audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
                                           int numInputChannels,
@@ -25,13 +29,19 @@ public:
     void audioDeviceStopped() override;
 
     model::SequencerCore& getSequencer() noexcept { return sequencer; }
+    model::ElectribeSequencer& getElectribeSequencer() noexcept { return electribeSequencer; }
 
     float getPeakL() const noexcept { return peakL.load(); }
     float getPeakR() const noexcept { return peakR.load(); }
 
+    int getPlayingStepForUi() const noexcept { return playingStepForUi.load(); }
+
 private:
     model::SequencerCore sequencer;
+    model::ElectribeSequencer electribeSequencer;
     juce::MidiBuffer midiBuffer;
+    std::atomic<int> appMode { static_cast<int>(model::AppMode::Electribe) };
+    std::atomic<int> playingStepForUi { 0 };
     std::atomic<float> peakL { 0.0f };
     std::atomic<float> peakR { 0.0f };
 };

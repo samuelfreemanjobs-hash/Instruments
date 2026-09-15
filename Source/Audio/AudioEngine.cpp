@@ -4,10 +4,19 @@ namespace vmpc::audio
 {
 AudioEngine::AudioEngine() = default;
 
+void AudioEngine::bindElectribeSong(model::ElectribeSong* song) noexcept
+{
+    electribeSequencer.setSong(song);
+}
+
 void AudioEngine::audioDeviceAboutToStart(juce::AudioIODevice* device)
 {
     if (device != nullptr)
-        sequencer.prepare(device->getCurrentSampleRate());
+    {
+        const double sr = device->getCurrentSampleRate();
+        sequencer.prepare(sr);
+        electribeSequencer.prepare(sr);
+    }
 }
 
 void AudioEngine::audioDeviceStopped() {}
@@ -22,7 +31,18 @@ void AudioEngine::audioDeviceIOCallbackWithContext(const float* const* inputChan
     juce::ignoreUnused(inputChannelData, numInputChannels);
 
     midiBuffer.clear();
-    sequencer.processBlock(numSamples, midiBuffer);
+
+    const auto mode = static_cast<model::AppMode>(appMode.load());
+    if (mode == model::AppMode::HybridMpc)
+    {
+        sequencer.processBlock(numSamples, midiBuffer);
+        playingStepForUi.store(sequencer.getPlayingStepForUi());
+    }
+    else
+    {
+        electribeSequencer.processBlock(numSamples, midiBuffer);
+        playingStepForUi.store(electribeSequencer.getPlayingStepForUi());
+    }
 
     float maxL = 0.0f;
     float maxR = 0.0f;
@@ -34,7 +54,6 @@ void AudioEngine::audioDeviceIOCallbackWithContext(const float* const* inputChan
 
         juce::FloatVectorOperations::clear(outputChannelData[ch], numSamples);
 
-        // Phase 4: render sampler from midiBuffer into output buffers.
         for (int i = 0; i < numSamples; ++i)
         {
             const float v = outputChannelData[ch][i];

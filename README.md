@@ -1,6 +1,6 @@
 # VMPC2000XL Modern Hybrid DAW
 
-C++20 / JUCE foundation for a cross-platform MPC2000XL-inspired hybrid DAW. This repository implements **Phase 1** (architecture) and early **Phase 2** UI shells per the project roadmap.
+C++20 / JUCE foundation for a cross-platform MPC2000XL-inspired **hybrid DAW** combining workflows from **Electribe** (default step-sequencer mode), **MPC**, **Maschine**, **Ableton Session**, and **FL Studio patterns**. See [docs/HYBRID_FEATURES.md](docs/HYBRID_FEATURES.md).
 
 ## Build
 

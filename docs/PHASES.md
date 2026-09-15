@@ -7,6 +7,12 @@
 - [x] Audio thread isolated in `AudioEngine` with documented RT constraints
 - [x] `ProjectState` / `ValueTree` scaffold
 
+## Hybrid modes (Maschine / Ableton / FL / Electribe)
+
+- [x] Mode toolbar + `HybridWorkspace` models
+- [x] **Electribe mode default** — 16-step row + 8 parts (`ElectribeSequencer`)
+- [x] Maschine pads/scenes, Session clip grid, FL playlist (UI + model stubs)
+
 ## Phase 2 — Graphics & UI (in progress)
 
 - [x] `VMpcLookAndFeel` (matte black / walnut / ice-blue)

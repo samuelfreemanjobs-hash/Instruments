@@ -12,8 +12,9 @@ void ProjectState::resetToDefaults()
 {
     project = juce::ValueTree(projectId);
     project.setProperty("version", 1, nullptr);
-    project.setProperty("bpm", 92.0, nullptr);
-    project.setProperty("swing", 54, nullptr);
+    project.setProperty("appMode", "Electribe", nullptr);
+    project.setProperty("bpm", 120.0, nullptr);
+    project.setProperty("swing", 50, nullptr);
     project.setProperty("ppqn", vmpc::audio::kDefaultPpqn, nullptr);
 }
 

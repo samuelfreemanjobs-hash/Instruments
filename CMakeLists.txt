@@ -36,6 +36,10 @@ target_sources(VMPC2000XL
         Source/App/MainComponent.cpp
         Source/Controller/AppController.cpp
         Source/Model/ProjectState.cpp
+        Source/Model/HybridWorkspace.cpp
+        Source/Model/Electribe/ElectribeSequencer.cpp
+        Source/Model/Ableton/SessionMatrix.cpp
+        Source/Model/FlStudio/PatternPlaylist.cpp
         Source/Model/Sequencer/SixteenStepPattern.cpp
         Source/Model/Sequencer/SequencerClock.cpp
         Source/Model/Sequencer/SequencerCore.cpp
@@ -46,6 +50,12 @@ target_sources(VMPC2000XL
         Source/View/Components/StepSequencerGrid.cpp
         Source/View/Components/PianoRollGrid.cpp
         Source/View/Components/MixerChannelStrip.cpp
+        Source/View/Components/ModeToolbar.cpp
+        Source/View/Modes/ElectribeModePanel.cpp
+        Source/View/Modes/HybridMpcModePanel.cpp
+        Source/View/Modes/MaschineModePanel.cpp
+        Source/View/Modes/SessionModePanel.cpp
+        Source/View/Modes/PatternModePanel.cpp
 )
 
 target_compile_definitions(VMPC2000XL
