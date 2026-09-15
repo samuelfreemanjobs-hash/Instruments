@@ -24,7 +24,7 @@ void OSC_NOTEOFF(const user_osc_param_t *const params) {
   (void)params;
 }
 
-void OSC_PARAM(uint16_t index, uint16_t value) {  // NOLINT: SDK v1.1 osc uses u16
+void OSC_PARAM(uint16_t index, uint16_t value) {
   if (index == 0U) {
     s_shape = value;
   }

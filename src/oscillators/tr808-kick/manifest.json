@@ -1,0 +1,27 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "808 Kick",
+    "num_param": 7,
+    "params": [
+      ["Wave", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"],
+      ["Filter", 0, 100, "%"],
+      ["LP Type", 0, 2, ""],
+      ["Pitch Swp", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "tr808_kick",
+    "type": "osc",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "TR-808 style kick: sine/triangle morph, ADR envelope, LP filter types"
+  }
+}

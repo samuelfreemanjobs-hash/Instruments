@@ -13,12 +13,13 @@ Cursor agent scaffold for building **Korg logue SDK** user oscillators and effec
 export LOGUE_SDK=/path/to/logue-sdk
 chmod +x tools/build.sh
 ./tools/build.sh oscillators/template nutekt-digital
+./tools/build.sh oscillators/tr808-kick nutekt-digital
 ```
 
 ## Layout
 
 - `.cursor/rules/` — agent identity, SDK API, DSP patterns, build matrix, style
-- `src/oscillators/` — `template`, `wavetable`
+- `src/oscillators/` — `template`, `wavetable`, `tr808-kick`
 - `src/effects/` — `modfx`, `delfx`, `revfx`
 - `src/shared/` — `dsp_utils.h`, `logue_helpers.h`
 - `tools/build.sh` — build wrapper
