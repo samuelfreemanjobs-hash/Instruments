@@ -19,7 +19,7 @@ Targets: `JDUpgraded_VST3`, `JDUpgraded_Standalone`.
 |-------|--------|--------|
 | 1 | Audio pipeline, voice pool, sample engine, 32-sample envelopes | Done |
 | 2 | ZDF filter, sync/ring/PCM, Group A/B effects | Done |
-| 3 | ROM loader, SysEx presets | Planned |
+| 3 | 256-wave ROM, 128 factory 4-tone programs, per-tone mute | In progress |
 | 4 | SIMD, full UI, hardware A/B | Planned |
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

@@ -23,6 +23,10 @@ constexpr const char* kTone1MultisampleId = "tone1Multisample";
 constexpr const char* kTone2MultisampleId = "tone2Multisample";
 constexpr const char* kTone3MultisampleId = "tone3Multisample";
 constexpr const char* kTone4MultisampleId = "tone4Multisample";
+constexpr const char* kTone1MuteId = "tone1Mute";
+constexpr const char* kTone2MuteId = "tone2Mute";
+constexpr const char* kTone3MuteId = "tone3Mute";
+constexpr const char* kTone4MuteId = "tone4Mute";
 
 jdupgraded::dsp::ToneCouplingMode couplingFromIndex (int index) noexcept
 {
@@ -104,6 +108,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout JDUpgradedAudioProcessor::cr
     params.push_back (std::make_unique<juce::AudioParameterInt> (
         juce::ParameterID { kTone4MultisampleId, 1 }, "Tone 4 Multisample", 0, maxMs, 0));
 
+    for (int i = 1; i <= 4; ++i)
+    {
+        const juce::String id = "tone" + juce::String (i) + "Mute";
+        params.push_back (std::make_unique<juce::AudioParameterBool> (
+            juce::ParameterID { id, 1 }, "Tone " + juce::String (i) + " Mute", false));
+    }
+
     return { params.begin(), params.end() };
 }
 
@@ -126,6 +137,10 @@ void JDUpgradedAudioProcessor::refreshCachedParameters() noexcept
     tone2MultisamplePtr_ = apvts_.getRawParameterValue (kTone2MultisampleId);
     tone3MultisamplePtr_ = apvts_.getRawParameterValue (kTone3MultisampleId);
     tone4MultisamplePtr_ = apvts_.getRawParameterValue (kTone4MultisampleId);
+    tone1MutePtr_ = apvts_.getRawParameterValue (kTone1MuteId);
+    tone2MutePtr_ = apvts_.getRawParameterValue (kTone2MuteId);
+    tone3MutePtr_ = apvts_.getRawParameterValue (kTone3MuteId);
+    tone4MutePtr_ = apvts_.getRawParameterValue (kTone4MuteId);
 }
 
 int JDUpgradedAudioProcessor::getNumPrograms()
@@ -168,6 +183,12 @@ void JDUpgradedAudioProcessor::setApvtsChoice (const char* paramId, int index)
         param->setValueNotifyingHost (param->convertTo0to1 (static_cast<float> (index)));
 }
 
+void JDUpgradedAudioProcessor::setApvtsBool (const char* paramId, bool value)
+{
+    if (auto* param = apvts_.getParameter (paramId))
+        param->setValueNotifyingHost (value ? 1.0f : 0.0f);
+}
+
 void JDUpgradedAudioProcessor::applyFactoryPatch (int index)
 {
     const auto& patch = jdupgraded::assets::FactoryPatchLibrary::getPatch (static_cast<std::size_t> (index));
@@ -192,16 +213,19 @@ void JDUpgradedAudioProcessor::applyFactoryPatch (int index)
     const char* levelIds[4] = { kTone1LevelId, kTone2LevelId, kTone3LevelId, kTone4LevelId };
     const char* waveIds[4] = { kTone1WaveId, kTone2WaveId, kTone3WaveId, kTone4WaveId };
     const char* msIds[4] = { kTone1MultisampleId, kTone2MultisampleId, kTone3MultisampleId, kTone4MultisampleId };
+    const char* muteIds[4] = { kTone1MuteId, kTone2MuteId, kTone3MuteId, kTone4MuteId };
 
     for (int t = 0; t < 4; ++t)
     {
-        toneCoarseSemis_[static_cast<std::size_t> (t)] = patch.tones[static_cast<std::size_t> (t)].coarseSemis;
-        toneFilterCutoff_[static_cast<std::size_t> (t)] = patch.tones[static_cast<std::size_t> (t)].filterCutoffNorm;
-        toneFilterResonance_[static_cast<std::size_t> (t)] = patch.tones[static_cast<std::size_t> (t)].filterResonanceNorm;
+        const auto& tone = patch.tones[static_cast<std::size_t> (t)];
+        toneCoarseSemis_[static_cast<std::size_t> (t)] = tone.coarseSemis;
+        toneFilterCutoff_[static_cast<std::size_t> (t)] = tone.filterCutoffNorm;
+        toneFilterResonance_[static_cast<std::size_t> (t)] = tone.filterResonanceNorm;
 
-        setApvtsFloat (levelIds[t], patch.tones[static_cast<std::size_t> (t)].level);
-        setApvtsInt (waveIds[t], static_cast<int> (patch.tones[static_cast<std::size_t> (t)].waveIndex));
-        setApvtsInt (msIds[t], static_cast<int> (patch.tones[static_cast<std::size_t> (t)].multisampleSetId));
+        setApvtsFloat (levelIds[t], tone.level);
+        setApvtsInt (waveIds[t], static_cast<int> (tone.waveIndex));
+        setApvtsInt (msIds[t], static_cast<int> (tone.multisampleSetId));
+        setApvtsBool (muteIds[t], tone.level < 0.001f);
     }
 
     setApvtsFloat (kFilterResonanceId, patch.tones[0].filterResonanceNorm);
@@ -218,6 +242,13 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
         tone2LevelPtr_ != nullptr ? tone2LevelPtr_->load() : 0.0f,
         tone3LevelPtr_ != nullptr ? tone3LevelPtr_->load() : 0.0f,
         tone4LevelPtr_ != nullptr ? tone4LevelPtr_->load() : 0.0f,
+    };
+
+    const bool mutes[4] = {
+        tone1MutePtr_ != nullptr && tone1MutePtr_->load() >= 0.5f,
+        tone2MutePtr_ != nullptr && tone2MutePtr_->load() >= 0.5f,
+        tone3MutePtr_ != nullptr && tone3MutePtr_->load() >= 0.5f,
+        tone4MutePtr_ != nullptr && tone4MutePtr_->load() >= 0.5f,
     };
 
     int couplingIndex = 0;
@@ -251,7 +282,7 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
         patches[t].coarseSemis = toneCoarseSemis_[t];
         patches[t].filterCutoffNorm = toneFilterCutoff_[t];
         patches[t].filterResonanceNorm = toneFilterResonance_[t];
-        patches[t].level = levels[t];
+        patches[t].level = mutes[t] ? 0.0f : levels[t];
         patches[t].phaseModDepth = 0.0f;
         patches[t].waveform = bank == nullptr ? &fallbackWaves_.getWave (waveIndices[t]) : nullptr;
     }

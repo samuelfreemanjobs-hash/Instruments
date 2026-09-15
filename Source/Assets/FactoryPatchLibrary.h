@@ -9,6 +9,8 @@
 namespace jdupgraded::assets
 {
 
+inline constexpr std::size_t kFactoryPatchCount = 128;
+
 struct FactoryToneLayer final
 {
     std::uint16_t multisampleSetId;

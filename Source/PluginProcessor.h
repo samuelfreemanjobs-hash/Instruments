@@ -52,6 +52,7 @@ private:
     void setApvtsFloat (const char* paramId, float value);
     void setApvtsInt (const char* paramId, int value);
     void setApvtsChoice (const char* paramId, int index);
+    void setApvtsBool (const char* paramId, bool value);
 
     juce::AudioProcessorValueTreeState apvts_;
     jdupgraded::dsp::VoicePool voicePool_;
@@ -84,6 +85,10 @@ private:
     std::atomic<float>* couplingModePtr_ = nullptr;
     std::atomic<float>* groupADrivePtr_ = nullptr;
     std::atomic<float>* groupBMixPtr_ = nullptr;
+    std::atomic<float>* tone1MutePtr_ = nullptr;
+    std::atomic<float>* tone2MutePtr_ = nullptr;
+    std::atomic<float>* tone3MutePtr_ = nullptr;
+    std::atomic<float>* tone4MutePtr_ = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JDUpgradedAudioProcessor)
 };
