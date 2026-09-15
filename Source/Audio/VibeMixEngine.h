@@ -11,6 +11,7 @@ namespace resonance::audio
 class VibeMixEngine
 {
 public:
-    static VibeMixInterpretResult interpretUserBrief(const juce::String& userText);
+    static VibeMixInterpretResult interpretUserBrief(const juce::String& userText,
+                                                     VibeMixTarget target = {});
 };
 } // namespace resonance::audio

@@ -2,6 +2,7 @@
 #include "AudioEngine.h"
 #include "VibeMixEngine.h"
 #include "Internal/InternalPluginParams.h"
+#include "Model/MixingProjectPersistence.h"
 
 namespace resonance::audio
 {
@@ -190,31 +191,160 @@ void PluginHostService::restoreExternalSlotFromState(PluginSlotLocation location
         processor->setStateInformation(state.getData(), static_cast<int>(state.getSize()));
 }
 
-VibeMixInterpretResult PluginHostService::applyVibeMixFromBrief(const juce::String& userText)
+PluginSlotLocation PluginHostService::locationForVibeSlot(const VibeMixTarget& target, int slotIndex) noexcept
 {
-    auto result = VibeMixEngine::interpretUserBrief(userText);
-    if (!result.success)
-        return result;
+    if (target.usesMasterBus())
+        return { PluginSlotLocation::Bus::Master, 0, slotIndex };
 
-    for (const auto& slotPreset : result.recipe.slots)
+    return { PluginSlotLocation::Bus::Channel, target.resolvedChannelIndex(), slotIndex };
+}
+
+void PluginHostService::clearVibeTargetSlots(const VibeMixTarget& target)
+{
+    if (target.usesMasterBus())
     {
-        PluginSlotLocation loc { PluginSlotLocation::Bus::Master, 0, slotPreset.slotIndex };
-        hideEditorForSlot(loc);
+        for (int i = 0; i < PluginSlotChain::kMasterSlots; ++i)
+        {
+            const auto loc = locationForVibeSlot(target, i);
+            hideEditorForSlot(loc);
+            clearSlot(loc);
+        }
+        return;
     }
 
-    for (const auto& slotPreset : result.recipe.slots)
+    for (int i = 0; i < PluginSlotChain::kChannelInsertSlots; ++i)
     {
-        PluginSlotLocation loc { PluginSlotLocation::Bus::Master, 0, slotPreset.slotIndex };
+        const auto loc = locationForVibeSlot(target, i);
+        hideEditorForSlot(loc);
         clearSlot(loc);
+    }
+}
+
+VibeMixInterpretResult PluginHostService::interpretVibeMix(const juce::String& userText, const VibeMixTarget& target)
+{
+    return VibeMixEngine::interpretUserBrief(userText, target);
+}
+
+bool PluginHostService::applyVibeRecipe(const VibeMixRecipe& recipe, bool recordUndoSnapshot)
+{
+    if (recipe.slots.empty())
+        return false;
+
+    if (recordUndoSnapshot)
+    {
+        vibeUndoSnapshot = captureMixingSnapshot();
+        if (!vibeCompareA.isValid())
+            vibeCompareA = vibeUndoSnapshot.createCopy();
+    }
+
+    clearVibeTargetSlots(recipe.target);
+
+    for (const auto& slotPreset : recipe.slots)
+    {
+        const auto loc = locationForVibeSlot(recipe.target, slotPreset.slotIndex);
         loadInternalMixPlugin(loc, slotPreset.plugin);
 
         if (auto* processor = getProcessorAt(loc))
             internal::applyRawParameterMap(*processor, slotPreset.parameters);
     }
 
+    vibeCompareB = captureMixingSnapshot();
+    vibeAbShowingB = true;
+
     notifySlotsChanged();
     markMixingDirty();
+    return true;
+}
+
+VibeMixInterpretResult PluginHostService::applyVibeMixFromBrief(const juce::String& userText)
+{
+    auto result = interpretVibeMix(userText, {});
+    if (result.success)
+        applyVibeRecipe(result.recipe);
     return result;
+}
+
+juce::ValueTree PluginHostService::captureMixingSnapshot()
+{
+    return resonance::model::captureMixingSubtree(*this);
+}
+
+void PluginHostService::restoreMixingSnapshot(const juce::ValueTree& snapshot)
+{
+    if (!snapshot.isValid())
+        return;
+
+    resonance::model::applyMixingSubtree(snapshot, *this);
+    notifySlotsChanged();
+    markMixingDirty();
+}
+
+bool PluginHostService::undoLastVibeApply()
+{
+    if (!vibeUndoSnapshot.isValid())
+        return false;
+
+    restoreMixingSnapshot(vibeUndoSnapshot);
+    vibeUndoSnapshot = {};
+    return true;
+}
+
+bool PluginHostService::swapVibeAB()
+{
+    if (!vibeCompareA.isValid() || !vibeCompareB.isValid())
+        return false;
+
+    vibeAbShowingB = !vibeAbShowingB;
+    restoreMixingSnapshot(vibeAbShowingB ? vibeCompareB : vibeCompareA);
+    return true;
+}
+
+void PluginHostService::setVibeBriefHistory(const juce::StringArray& briefs)
+{
+    vibeBriefHistory = briefs;
+}
+
+void PluginHostService::appendVibeBrief(const juce::String& brief)
+{
+    const auto trimmed = brief.trim();
+    if (trimmed.isEmpty())
+        return;
+
+    if (vibeBriefHistory.size() > 0 && vibeBriefHistory[0] == trimmed)
+        return;
+
+    vibeBriefHistory.removeString(trimmed);
+    vibeBriefHistory.insert(0, trimmed);
+
+    while (vibeBriefHistory.size() > 24)
+        vibeBriefHistory.remove(vibeBriefHistory.size() - 1);
+
+    markMixingDirty();
+}
+
+void PluginHostService::setSavedVibeRecipes(const std::vector<SavedVibeEntry>& entries)
+{
+    savedVibeRecipes = entries;
+}
+
+void PluginHostService::saveNamedVibe(const juce::String& name, const VibeMixRecipe& recipe)
+{
+    SavedVibeEntry entry;
+    entry.name = name.trim().isEmpty() ? recipe.title : name.trim();
+    entry.recipe = recipe;
+
+    for (size_t i = 0; i < savedVibeRecipes.size(); ++i)
+    {
+        if (savedVibeRecipes[i].name == entry.name)
+        {
+            savedVibeRecipes[i] = entry;
+            markMixingDirty();
+            return;
+        }
+    }
+
+    savedVibeRecipes.push_back(std::move(entry));
+    markMixingDirty();
 }
 
 void PluginHostService::loadInternalMixPlugin(PluginSlotLocation location, internal::MixPluginId id)

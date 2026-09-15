@@ -6,6 +6,8 @@
 #include "LimiterProcessor.h"
 #include "HpfProcessor.h"
 #include "DeEsserProcessor.h"
+#include "StereoWidthProcessor.h"
+#include "TapeSatProcessor.h"
 
 namespace resonance::audio::internal
 {
@@ -27,6 +29,10 @@ std::unique_ptr<juce::AudioProcessor> createMixPlugin(MixPluginId id)
             return std::make_unique<HpfProcessor>();
         case MixPluginId::DeEsser:
             return std::make_unique<DeEsserProcessor>();
+        case MixPluginId::StereoWidth:
+            return std::make_unique<StereoWidthProcessor>();
+        case MixPluginId::TapeSat:
+            return std::make_unique<TapeSatProcessor>();
     }
 
     return nullptr;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <atomic>
 #include <memory>
 #include <vector>
 
@@ -15,7 +16,7 @@ public:
 
     explicit PluginSlotChain(int slotCount = kMasterSlots);
 
-    int getSlotCount() const noexcept { return static_cast<int>(slots.size()); }
+    int getSlotCount() const noexcept { return slotCount_; }
 
     void prepare(double sampleRate, int blockSize);
     void releaseResources();
@@ -41,14 +42,22 @@ public:
     juce::AudioProcessor* getProcessorInSlot(int slotIndex) noexcept;
 
 private:
-    void rebuildProcessingOrder();
-    bool slotAcceptsMidi(int slotIndex) const;
+    struct Runtime
+    {
+        std::vector<std::unique_ptr<juce::AudioProcessor>> slots;
+        std::vector<int> processingOrder;
+    };
 
+    void publishRuntime(std::shared_ptr<Runtime> next);
+    void rebuildProcessingOrder(Runtime& rt) const;
+    bool slotAcceptsMidi(const Runtime& rt, int slotIndex) const;
+
+    int slotCount_ = kMasterSlots;
     double sampleRateHz = 44100.0;
     int maxBlockSize = 512;
-    mutable juce::CriticalSection lock;
-    std::vector<std::unique_ptr<juce::AudioProcessor>> slots;
-    std::vector<int> processingOrder;
+    mutable juce::CriticalSection writeLock;
+    std::shared_ptr<Runtime> messageRuntime;
+    std::atomic<std::shared_ptr<Runtime>> activeRuntime;
     juce::AudioBuffer<float> scratch;
     juce::MidiBuffer emptyMidi;
 };

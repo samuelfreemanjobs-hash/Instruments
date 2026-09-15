@@ -13,7 +13,9 @@ enum class MixPluginId
     Compressor,
     Limiter,
     Hpf,
-    DeEsser
+    DeEsser,
+    StereoWidth,
+    TapeSat
 };
 
 inline juce::String mixPluginIdToString(MixPluginId id)
@@ -34,6 +36,10 @@ inline juce::String mixPluginIdToString(MixPluginId id)
             return "Hpf";
         case MixPluginId::DeEsser:
             return "DeEsser";
+        case MixPluginId::StereoWidth:
+            return "StereoWidth";
+        case MixPluginId::TapeSat:
+            return "TapeSat";
     }
     return {};
 }
@@ -54,6 +60,10 @@ inline MixPluginId mixPluginIdFromString(const juce::String& text)
         return MixPluginId::Hpf;
     if (text == "DeEsser")
         return MixPluginId::DeEsser;
+    if (text == "StereoWidth")
+        return MixPluginId::StereoWidth;
+    if (text == "TapeSat")
+        return MixPluginId::TapeSat;
     return MixPluginId::Gain;
 }
 
@@ -74,6 +84,8 @@ inline const std::vector<MixPluginInfo>& allMixPlugins()
         { MixPluginId::Limiter, "Resonance Limiter", "Brickwall safety limiter" },
         { MixPluginId::Hpf, "Resonance HPF", "High-pass filter (mud / rumble)" },
         { MixPluginId::DeEsser, "Resonance De-Esser", "Sibilance control" },
+        { MixPluginId::StereoWidth, "Resonance Width", "Stereo image (M/S)" },
+        { MixPluginId::TapeSat, "Resonance Tape", "Warm saturation" },
     };
     return list;
 }

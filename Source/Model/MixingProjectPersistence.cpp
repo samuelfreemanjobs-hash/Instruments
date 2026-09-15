@@ -1,6 +1,7 @@
 #include "MixingProjectPersistence.h"
 #include "Audio/Internal/InternalPluginTypes.h"
 #include "Audio/PluginSlotLocation.h"
+#include "Audio/VibeRecipeJson.h"
 
 namespace resonance::model
 {
@@ -57,7 +58,7 @@ void captureSlot(juce::ValueTree& parent, int slotIndex, juce::AudioProcessor* p
 }
 } // namespace
 
-void writeMixingToProject(juce::ValueTree& projectRoot, resonance::audio::PluginHostService& host)
+juce::ValueTree captureMixingSubtree(resonance::audio::PluginHostService& host)
 {
     juce::ValueTree mixing(mixingRootId);
     auto& console = host.getMixConsole();
@@ -90,14 +91,31 @@ void writeMixingToProject(juce::ValueTree& projectRoot, resonance::audio::Plugin
         mixing.addChild(channelNode, -1, nullptr);
     }
 
-    projectRoot.removeChild(projectRoot.getChildWithName(mixingRootId), nullptr);
-    projectRoot.appendChild(mixing, nullptr);
+    juce::ValueTree history(vibeHistoryId);
+    for (const auto& brief : host.getVibeBriefHistory())
+    {
+        juce::ValueTree node(vibeBriefId);
+        node.setProperty("text", brief, nullptr);
+        history.addChild(node, -1, nullptr);
+    }
+    mixing.addChild(history, -1, nullptr);
+
+    juce::ValueTree saved(savedVibesId);
+    for (const auto& entry : host.getSavedVibeRecipes())
+    {
+        juce::ValueTree node(savedVibeId);
+        node.setProperty("name", entry.name, nullptr);
+        node.setProperty("json", resonance::audio::VibeRecipeJson::toJson(entry.recipe), nullptr);
+        saved.addChild(node, -1, nullptr);
+    }
+    mixing.addChild(saved, -1, nullptr);
+
+    return mixing;
 }
 
-void readMixingFromProject(const juce::ValueTree& projectRoot, resonance::audio::PluginHostService& host)
+void applyMixingSubtree(const juce::ValueTree& mixing, resonance::audio::PluginHostService& host)
 {
-    const auto mixing = projectRoot.getChildWithName(mixingRootId);
-    if (!mixing.isValid())
+    if (!mixing.isValid() || !mixing.hasType(mixingRootId))
         return;
 
     auto& console = host.getMixConsole();
@@ -218,5 +236,46 @@ void readMixingFromProject(const juce::ValueTree& projectRoot, resonance::audio:
     }
 
     console.refreshChannelInsertFlags();
+
+    juce::StringArray briefs;
+    const auto history = mixing.getChildWithName(vibeHistoryId);
+    for (int i = 0; i < history.getNumChildren(); ++i)
+    {
+        const auto node = history.getChild(i);
+        if (node.hasType(vibeBriefId))
+            briefs.add(node.getProperty("text").toString());
+    }
+    host.setVibeBriefHistory(briefs);
+
+    std::vector<resonance::audio::PluginHostService::SavedVibeEntry> savedEntries;
+    const auto saved = mixing.getChildWithName(savedVibesId);
+    for (int i = 0; i < saved.getNumChildren(); ++i)
+    {
+        const auto node = saved.getChild(i);
+        if (!node.hasType(savedVibeId))
+            continue;
+
+        resonance::audio::VibeMixRecipe recipe;
+        juce::String err;
+        if (resonance::audio::VibeRecipeJson::fromJson(node.getProperty("json").toString(), recipe, err))
+        {
+            resonance::audio::PluginHostService::SavedVibeEntry entry;
+            entry.name = node.getProperty("name").toString();
+            entry.recipe = recipe;
+            savedEntries.push_back(std::move(entry));
+        }
+    }
+    host.setSavedVibeRecipes(savedEntries);
+}
+
+void writeMixingToProject(juce::ValueTree& projectRoot, resonance::audio::PluginHostService& host)
+{
+    projectRoot.removeChild(projectRoot.getChildWithName(mixingRootId), nullptr);
+    projectRoot.appendChild(captureMixingSubtree(host), nullptr);
+}
+
+void readMixingFromProject(const juce::ValueTree& projectRoot, resonance::audio::PluginHostService& host)
+{
+    applyMixingSubtree(projectRoot.getChildWithName(mixingRootId), host);
 }
 } // namespace resonance::model

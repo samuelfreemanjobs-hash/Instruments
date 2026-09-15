@@ -49,6 +49,12 @@ target_sources(Resonance
         Source/Audio/PluginHostService.cpp
         Source/Model/MixingProjectPersistence.cpp
         Source/Audio/VibeMixEngine.cpp
+        Source/Audio/VibeMixingTypes.cpp
+        Source/Audio/VibeTuning.cpp
+        Source/Audio/VibeArchetypeLibrary.cpp
+        Source/Audio/VibeRecipeJson.cpp
+        Source/Audio/Internal/StereoWidthProcessor.cpp
+        Source/Audio/Internal/TapeSatProcessor.cpp
         Source/Audio/Internal/InternalMixProcessor.cpp
         Source/Audio/Internal/InternalPluginFactory.cpp
         Source/Audio/Internal/GainProcessor.cpp
@@ -62,6 +68,7 @@ target_sources(Resonance
         Source/View/Components/ChannelInsertPanel.cpp
         Source/Audio/RealTimeConstraints.h
         Source/View/Components/PluginRackPanel.cpp
+        Source/View/Components/VibeMixPreviewDialog.cpp
         Source/View/LookAndFeel/StudioLookAndFeel.cpp
         Source/View/Components/StudioLcdDisplay.cpp
         Source/View/Components/StepSequencerGrid.cpp
