@@ -1,0 +1,29 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "P-Funk WC",
+    "num_param": 9,
+    "params": [
+      ["Vibe", 0, 100, "%"],
+      ["Detune", 0, 100, "%"],
+      ["FM", 0, 100, "%"],
+      ["Fold", 0, 100, "%"],
+      ["Glide", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"],
+      ["Sub", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "west_coast_moog_funk",
+    "type": "osc",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "Parliament/Minimoog funk bass & lead with West Coast FM and wavefold"
+  }
+}

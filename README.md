@@ -14,14 +14,17 @@ export LOGUE_SDK=/path/to/logue-sdk
 chmod +x tools/build.sh
 ./tools/build.sh oscillators/template nutekt-digital
 ./tools/build.sh oscillators/tr808-kick nutekt-digital
+./tools/build.sh oscillators/west-coast-moog nutekt-digital
 ```
 
 **Phonk 808** (`tr808-kick`): long sub decay, **Sub** / **Drive** knobs — play low notes (C1–F1), long **Decay** for rumble.
 
+**P-Funk WC** (`west-coast-moog`): Minimoog-style dual osc + filter (uses host **cutoff/res**), glide, sub — **Vibe** low = Parliament bass, high = West Coast lead/fold.
+
 ## Layout
 
 - `.cursor/rules/` — agent identity, SDK API, DSP patterns, build matrix, style
-- `src/oscillators/` — `template`, `wavetable`, `tr808-kick`
+- `src/oscillators/` — `template`, `wavetable`, `tr808-kick`, `west-coast-moog`
 - `src/effects/` — `modfx`, `delfx`, `revfx`
 - `src/shared/` — `dsp_utils.h`, `logue_helpers.h`
 - `tools/build.sh` — build wrapper
