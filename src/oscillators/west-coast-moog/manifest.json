@@ -23,7 +23,30 @@
   "_agent": {
     "id": "west_coast_moog_funk",
     "type": "osc",
+    "collection": "nts1-multi-bass",
     "targets": ["nts-1", "minilogue-xd", "prologue"],
-    "description": "Single multifunction osc: Vibe morphs Parliament bass, Minimoog funk lead, and West Coast FM/fold — keep one unit, not separate patches"
+    "description": "Multifunction Parliament / Minimoog / West Coast. Vibe morphs role. Use panel cutoff/res.",
+    "presets": [
+      {
+        "name": "Parliament bass (low Vibe)",
+        "midi_hint": "E1-G2, cutoff mid, res 40%",
+        "values": [22, 38, 18, 24, 32, 12, 42, 35, 48]
+      },
+      {
+        "name": "Funk lead line",
+        "midi_hint": "G2-C3, higher cutoff",
+        "values": [48, 45, 28, 35, 28, 8, 55, 48, 25]
+      },
+      {
+        "name": "West Coast solo",
+        "midi_hint": "A2-C3",
+        "values": [85, 30, 52, 62, 18, 5, 40, 38, 15]
+      },
+      {
+        "name": "Booty sub stack",
+        "midi_hint": "E1-A1, low cutoff",
+        "values": [15, 42, 12, 15, 38, 15, 48, 40, 65]
+      }
+    ]
   }
 }

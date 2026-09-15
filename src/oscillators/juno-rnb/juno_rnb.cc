@@ -111,7 +111,6 @@ static float juno_hpf(float in) {
   const float g = juno_one_pole_g(cutoff);
   s_hp_z += g * (in - s_hp_z);
   const float hp = in - s_hp_z;
-  s_hp_prev_in = in;
   return hp * (0.35f + s_hpf_amt * 0.85f) + in * (1.0f - s_hpf_amt * 0.45f);
 }
 
@@ -184,7 +183,6 @@ void juno_rnb_reset(void) {
   s_lp3 = 0.0f;
   s_lp4 = 0.0f;
   s_hp_z = 0.0f;
-  s_hp_prev_in = 0.0f;
   s_ch_wp = 0U;
   for (uint32_t i = 0; i < JR_CHORUS_LEN; i++) {
     s_ch_buf[i] = 0.0f;
@@ -263,7 +261,7 @@ void OSC_CYCLE(const user_osc_param_t *const params, int32_t *yn, const uint32_t
 
   const float host_cut = (float)params->cutoff * (1.0f / 8191.0f);
   const float host_res = (float)params->resonance * (1.0f / 8191.0f);
-  const float lfo_inc = (uint32_t)(osc_w0(0x003C00U) >> 3);
+  const uint32_t lfo_inc = 220452492U;
 
   q31_t *y = (q31_t *)yn;
 

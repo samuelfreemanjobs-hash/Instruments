@@ -1,0 +1,30 @@
+---
+description: NTS-1 multi-bass oscillator collection goals and conventions
+globs: ["src/oscillators/**", "docs/nts1-multi-bass-oscillators.md"]
+alwaysApply: false
+---
+
+# Multi-bass oscillators for NTS-1
+
+This repository maintains a **set of genre bass/kick user oscillators** for the
+NTS-1 (logue SDK v1.1.0 / `nutekt-digital`). The hardware holds one custom osc
+at a time; each folder under `src/oscillators/` is a standalone loadable unit.
+
+## When adding or editing units
+
+- Target **NTS-1 mkI** first (`nutekt-digital`, API 1.1-0).
+- Prefer **multifunction** design: one macro (usually **Vibe**) morphs related
+  styles instead of multiple single-purpose binaries.
+- Document **presets** in `manifest.json` → `_agent.presets` (values 0–100 unless
+  noted). Order matches `header.params`.
+- Use host `params->cutoff` and `params->resonance` for filter-based bass oscs;
+  kick/sub units may ignore them.
+- Register new units in `docs/nts1-multi-bass-oscillators.md` and
+  `tools/build-all-bass.sh`.
+- Do not merge unrelated genres into one osc; add a new folder instead.
+
+## Current collection
+
+- `tr808-kick` — phonk / 808 kick-sub
+- `west-coast-moog` — P-Funk / Minimoog / West Coast
+- `juno-rnb` — Juno-106 80s R&B bass

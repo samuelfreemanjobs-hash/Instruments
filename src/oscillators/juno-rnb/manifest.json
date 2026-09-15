@@ -23,7 +23,30 @@
   "_agent": {
     "id": "juno_106_rnb_bass",
     "type": "osc",
+    "collection": "nts1-multi-bass",
     "targets": ["nts-1", "minilogue-xd", "prologue"],
-    "description": "Multifunction Juno-106 style 80s R&B bass: Vibe morphs ballad depth, classic groove, brighter pop — PWM, ensemble chorus, 24dB LP"
+    "description": "Multifunction Juno-106 80s R&B bass. Vibe: ballad to bright pop. Chorus + PWM + 24dB LP.",
+    "presets": [
+      {
+        "name": "Classic 80s groove",
+        "midi_hint": "E2-A2, cutoff mid, res low",
+        "values": [34, 72, 26, 44, 30, 10, 38, 36, 14]
+      },
+      {
+        "name": "Slow jam / ballad",
+        "midi_hint": "D2-F2, soft cutoff",
+        "values": [14, 58, 18, 28, 42, 18, 52, 55, 8]
+      },
+      {
+        "name": "Bright chorus bass",
+        "midi_hint": "F2-A2, open cutoff",
+        "values": [68, 80, 35, 62, 22, 6, 32, 30, 20]
+      },
+      {
+        "name": "Mid-tempo 85",
+        "midi_hint": "E2-G2, medium glide",
+        "values": [42, 68, 30, 38, 35, 12, 45, 40, 12]
+      }
+    ]
   }
 }

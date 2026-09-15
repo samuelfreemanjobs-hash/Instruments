@@ -1,49 +1,45 @@
-# nts1-coder
+# nts1-coder — multi-bass oscillators for NTS-1
 
-Cursor agent scaffold for building **Korg logue SDK** user oscillators and effects
-(NTS-1, Minilogue XD, Prologue; with notes for mkII / NTS-3).
+A **logue SDK** project and Cursor agent scaffold for building **genre bass and
+kick user oscillators** on the Korg **NTS-1** (also builds for Minilogue XD /
+Prologue). Each oscillator is a separate unit you load when you need that sound.
+
+## Bass collection
+
+| Unit | Name | Use |
+|------|------|-----|
+| [`tr808-kick`](src/oscillators/tr808-kick/) | **Phonk 808** | 808 kick / sub (phonk) |
+| [`west-coast-moog`](src/oscillators/west-coast-moog/) | **P-Funk WC** | Funk · Moog · West Coast |
+| [`juno-rnb`](src/oscillators/juno-rnb/) | **Juno R&B** | 80s R&B / Juno-106 bass |
+
+Each unit is **multifunction** (mainly **Vibe**) and ships **presets** in
+`manifest.json` → `_agent.presets` (knob values 0–100).
+
+Full guide: [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md)
 
 ## Quick start
 
 1. Clone [logue-sdk](https://github.com/korginc/logue-sdk) and set `LOGUE_SDK`.
-2. Open this repo in Cursor — rules under `.cursor/rules/` load automatically.
-3. Build a template unit:
+2. Build one unit or the whole bass set:
 
 ```bash
 export LOGUE_SDK=/path/to/logue-sdk
-chmod +x tools/build.sh
-./tools/build.sh oscillators/template nutekt-digital
-./tools/build.sh oscillators/tr808-kick nutekt-digital
-./tools/build.sh oscillators/west-coast-moog nutekt-digital
+chmod +x tools/build.sh tools/build-all-bass.sh
+
 ./tools/build.sh oscillators/juno-rnb nutekt-digital
+./tools/build-all-bass.sh nutekt-digital
 ```
 
-**Phonk 808** (`tr808-kick`): long sub decay, **Sub** / **Drive** knobs — play low notes (C1–F1), long **Decay** for rumble.
-
-**P-Funk WC** (`west-coast-moog`): Minimoog-style dual osc + filter (uses host **cutoff/res**), glide, sub — **Vibe** low = Parliament bass, high = West Coast lead/fold.
-
-**Juno R&B** (`juno-rnb`): Juno-106 style 80s R&B bass — **Vibe** = ballad ↔ groove ↔ bright; **Chorus**, **PWM**, panel **cutoff/res**.
+3. Load the resulting user osc on the NTS-1 with the Korg logue workflow.
 
 ## Layout
 
-- `.cursor/rules/` — agent identity, SDK API, DSP patterns, build matrix, style
-- `src/oscillators/` — `template`, `wavetable`, `tr808-kick`, `west-coast-moog`, `juno-rnb`
-- `src/effects/` — `modfx`, `delfx`, `revfx`
-- `src/shared/` — `dsp_utils.h`, `logue_helpers.h`
-- `tools/build.sh` — build wrapper
-- `docs/` — SDK notes and platform table
-
-## Agent system prompt
-
-The legacy `.cursorrules` file mirrors the user-rule prompt from the project spec.
-Prefer `.cursor/rules/00-role.mdc` for version-controlled, scoped rules.
-
-## Tooling ideas
-
-- [logue-sdk websim](https://github.com/korginc/logue-sdk) — browser DSP iteration (mkII / NTS-3)
-- [hvcc_nts1mkii](https://github.com/boochow/hvcc_nts1mkii) — Pure Data → logue units
+- `.cursor/rules/` — SDK + **multi-bass** conventions (`05-multi-bass.mdc`)
+- `src/oscillators/` — bass units above + `template` / `wavetable`
+- `src/effects/` — starter mod/del/rev FX
+- `src/shared/` — DSP helpers
+- `tools/build-all-bass.sh` — build all catalog bass oscs
 
 ## License
 
-Example DSP code is provided as a starting point; align licensing with your
-distribution and Korg SDK terms.
+Example DSP is a starting point; align with Korg SDK terms for distribution.
