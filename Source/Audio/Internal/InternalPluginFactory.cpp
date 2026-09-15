@@ -4,6 +4,8 @@
 #include "Eq3Processor.h"
 #include "CompressorProcessor.h"
 #include "LimiterProcessor.h"
+#include "HpfProcessor.h"
+#include "DeEsserProcessor.h"
 
 namespace vmpc::audio::internal
 {
@@ -21,6 +23,10 @@ std::unique_ptr<juce::AudioProcessor> createMixPlugin(MixPluginId id)
             return std::make_unique<CompressorProcessor>();
         case MixPluginId::Limiter:
             return std::make_unique<LimiterProcessor>();
+        case MixPluginId::Hpf:
+            return std::make_unique<HpfProcessor>();
+        case MixPluginId::DeEsser:
+            return std::make_unique<DeEsserProcessor>();
     }
 
     return nullptr;

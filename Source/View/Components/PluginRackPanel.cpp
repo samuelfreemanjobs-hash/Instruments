@@ -3,6 +3,11 @@
 
 namespace vmpc::view
 {
+vmpc::audio::PluginSlotLocation PluginRackPanel::masterSlot(int index) noexcept
+{
+    return { vmpc::audio::PluginSlotLocation::Bus::Master, 0, index };
+}
+
 PluginRackPanel::PluginRackPanel(vmpc::audio::PluginHostService& host)
     : pluginHost(host)
 {
@@ -41,7 +46,7 @@ PluginRackPanel::PluginRackPanel(vmpc::audio::PluginHostService& host)
     scanButton.addListener(this);
     addAndMakeVisible(scanButton);
 
-    for (int i = 0; i < vmpc::audio::PluginSlotChain::kNumSlots; ++i)
+    for (int i = 0; i < vmpc::audio::PluginSlotChain::kMasterSlots; ++i)
     {
         auto& ui = slots[static_cast<size_t>(i)];
         ui.slotIndex = i;
@@ -154,12 +159,12 @@ void PluginRackPanel::buttonClicked(juce::Button* button)
         }
         if (button == &ui.editorButton)
         {
-            pluginHost.showEditorForSlot(ui.slotIndex);
+            pluginHost.showEditorForSlot(masterSlot(ui.slotIndex));
             return;
         }
         if (button == &ui.clearButton)
         {
-            pluginHost.clearSlot(ui.slotIndex);
+            pluginHost.clearSlot(masterSlot(ui.slotIndex));
             return;
         }
     }
@@ -195,7 +200,7 @@ void PluginRackPanel::showPluginPicker(int slotIndex)
                            if (result >= 1000 && result < externalBase)
                            {
                                const auto id = static_cast<vmpc::audio::internal::MixPluginId>(result - 1000);
-                               pluginHost.loadInternalMixPlugin(slotIndex, id);
+                               pluginHost.loadInternalMixPlugin(masterSlot(slotIndex), id);
                                statusLabel.setText("Internal mix plug-in loaded.", juce::dontSendNotification);
                                refreshSlotLabels();
                                return;
@@ -210,7 +215,7 @@ void PluginRackPanel::showPluginPicker(int slotIndex)
 
                            const auto& desc = types.getReference(index);
                            statusLabel.setText("Loading " + desc.name + "...", juce::dontSendNotification);
-                           pluginHost.loadPluginIntoSlot(slotIndex, desc, [this](bool ok, const juce::String& err) {
+                           pluginHost.loadPluginIntoSlot(masterSlot(slotIndex), desc, [this](bool ok, const juce::String& err) {
                                statusLabel.setText(ok ? "Plug-in loaded." : ("Load failed: " + err),
                                                    juce::dontSendNotification);
                                refreshSlotLabels();
@@ -233,8 +238,8 @@ void PluginRackPanel::pluginScanFinished()
 
 void PluginRackPanel::refreshSlotLabels()
 {
-    const auto states = pluginHost.getChain().getSlotStates();
-    for (int i = 0; i < vmpc::audio::PluginSlotChain::kNumSlots; ++i)
+    const auto states = pluginHost.getMasterChain().getSlotStates();
+    for (int i = 0; i < vmpc::audio::PluginSlotChain::kMasterSlots; ++i)
     {
         const auto& state = states[static_cast<size_t>(i)];
         auto& ui = slots[static_cast<size_t>(i)];

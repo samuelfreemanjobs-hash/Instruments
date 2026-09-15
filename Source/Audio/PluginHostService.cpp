@@ -33,21 +33,36 @@ PluginHostService::PluginHostService(AudioEngine& engine)
     if (auto cache = getPluginListCacheFile(); cache.existsAsFile())
         knownPlugins.recreateFromXml(*juce::parseXML(cache));
 
-    audioEngine.setPluginChain(&chain);
+    audioEngine.setMixConsole(&mixConsole);
+    mixConsole.refreshChannelInsertFlags();
     startBackgroundScan();
 }
 
 PluginHostService::~PluginHostService()
 {
     knownPlugins.removeChangeListener(this);
-    audioEngine.setPluginChain(nullptr);
+    audioEngine.setMixConsole(nullptr);
+    editorWindows.clear();
+    mixConsole.releaseResources();
+}
 
-    for (auto& window : editorWindows)
-        window.reset();
+PluginSlotChain& PluginHostService::chainFor(PluginSlotLocation location)
+{
+    if (location.bus == PluginSlotLocation::Bus::Master)
+        return mixConsole.getMasterChain();
+    return mixConsole.getChannelInserts(location.channelIndex);
+}
 
-    chain.releaseResources();
-    for (int i = 0; i < PluginSlotChain::kNumSlots; ++i)
-        chain.setProcessorInSlot(i, nullptr);
+bool PluginHostService::isValidLocation(const PluginSlotLocation& location) const noexcept
+{
+    return location.isValidForMaster() || location.isValidForChannel();
+}
+
+juce::AudioProcessor* PluginHostService::getProcessorAt(PluginSlotLocation location) noexcept
+{
+    if (!isValidLocation(location))
+        return nullptr;
+    return chainFor(location).getProcessorInSlot(location.slotIndex);
 }
 
 void PluginHostService::addListener(Listener* listener)
@@ -73,8 +88,7 @@ juce::FileSearchPath PluginHostService::defaultPluginSearchPath() const
     juce::FileSearchPath paths;
 
 #if JUCE_WINDOWS
-    paths.add(juce::File::getSpecialLocation(juce::File::commonApplicationDataDirectory)
-                  .getChildFile("VST3"));
+    paths.add(juce::File::getSpecialLocation(juce::File::commonApplicationDataDirectory).getChildFile("VST3"));
 #elif JUCE_MAC
     paths.add(juce::File("/Library/Audio/Plug-Ins/VST3"));
     paths.add(juce::File("~/Library/Audio/Plug-Ins/VST3"));
@@ -130,11 +144,11 @@ void PluginHostService::startBackgroundScan()
     });
 }
 
-void PluginHostService::loadPluginIntoSlot(int slotIndex,
+void PluginHostService::loadPluginIntoSlot(PluginSlotLocation location,
                                            const juce::PluginDescription& description,
                                            std::function<void(bool, const juce::String&)> callback)
 {
-    if (slotIndex < 0 || slotIndex >= PluginSlotChain::kNumSlots)
+    if (!isValidLocation(location))
     {
         if (callback)
             callback(false, "Invalid slot");
@@ -148,7 +162,7 @@ void PluginHostService::loadPluginIntoSlot(int slotIndex,
         description,
         sr > 0.0 ? sr : 44100.0,
         block > 0 ? block : 512,
-        [this, slotIndex, callback](std::unique_ptr<juce::AudioPluginInstance> instance, const juce::String& error) {
+        [this, location, callback](std::unique_ptr<juce::AudioPluginInstance> instance, const juce::String& error) {
             if (instance == nullptr)
             {
                 if (callback)
@@ -157,12 +171,23 @@ void PluginHostService::loadPluginIntoSlot(int slotIndex,
             }
 
             std::unique_ptr<juce::AudioProcessor> processor { std::move(instance) };
-            chain.setProcessorInSlot(slotIndex, std::move(processor));
+            chainFor(location).setProcessorInSlot(location.slotIndex, std::move(processor));
+            mixConsole.refreshChannelInsertFlags();
             notifySlotsChanged();
+            markMixingDirty();
 
             if (callback)
                 callback(true, {});
         });
+}
+
+void PluginHostService::restoreExternalSlotFromState(PluginSlotLocation location, const juce::MemoryBlock& state)
+{
+    if (!isValidLocation(location) || state.getSize() == 0)
+        return;
+
+    if (auto* processor = getProcessorAt(location))
+        processor->setStateInformation(state.getData(), static_cast<int>(state.getSize()));
 }
 
 VibeMixInterpretResult PluginHostService::applyVibeMixFromBrief(const juce::String& userText)
@@ -172,49 +197,61 @@ VibeMixInterpretResult PluginHostService::applyVibeMixFromBrief(const juce::Stri
         return result;
 
     for (const auto& slotPreset : result.recipe.slots)
-        hideEditorForSlot(slotPreset.slotIndex);
+    {
+        PluginSlotLocation loc { PluginSlotLocation::Bus::Master, 0, slotPreset.slotIndex };
+        hideEditorForSlot(loc);
+    }
 
     for (const auto& slotPreset : result.recipe.slots)
     {
-        clearSlot(slotPreset.slotIndex);
-        loadInternalMixPlugin(slotPreset.slotIndex, slotPreset.plugin);
+        PluginSlotLocation loc { PluginSlotLocation::Bus::Master, 0, slotPreset.slotIndex };
+        clearSlot(loc);
+        loadInternalMixPlugin(loc, slotPreset.plugin);
 
-        if (auto* processor = chain.getProcessorInSlot(slotPreset.slotIndex))
+        if (auto* processor = getProcessorAt(loc))
             internal::applyRawParameterMap(*processor, slotPreset.parameters);
     }
 
     notifySlotsChanged();
+    markMixingDirty();
     return result;
 }
 
-void PluginHostService::loadInternalMixPlugin(int slotIndex, internal::MixPluginId id)
+void PluginHostService::loadInternalMixPlugin(PluginSlotLocation location, internal::MixPluginId id)
 {
-    if (slotIndex < 0 || slotIndex >= PluginSlotChain::kNumSlots)
+    if (!isValidLocation(location))
         return;
 
-    hideEditorForSlot(slotIndex);
+    hideEditorForSlot(location);
 
     auto processor = internal::createMixPlugin(id);
     if (processor == nullptr)
         return;
 
-    chain.setProcessorInSlot(slotIndex, std::move(processor));
+    chainFor(location).setProcessorInSlot(location.slotIndex, std::move(processor));
+    mixConsole.refreshChannelInsertFlags();
     notifySlotsChanged();
+    markMixingDirty();
 }
 
-void PluginHostService::clearSlot(int slotIndex)
+void PluginHostService::clearSlot(PluginSlotLocation location)
 {
-    hideEditorForSlot(slotIndex);
-    chain.setProcessorInSlot(slotIndex, nullptr);
-    notifySlotsChanged();
-}
-
-void PluginHostService::showEditorForSlot(int slotIndex)
-{
-    if (slotIndex < 0 || slotIndex >= PluginSlotChain::kNumSlots)
+    if (!isValidLocation(location))
         return;
 
-    auto* plugin = chain.getProcessorInSlot(slotIndex);
+    hideEditorForSlot(location);
+    chainFor(location).setProcessorInSlot(location.slotIndex, nullptr);
+    mixConsole.refreshChannelInsertFlags();
+    notifySlotsChanged();
+    markMixingDirty();
+}
+
+void PluginHostService::showEditorForSlot(PluginSlotLocation location)
+{
+    if (!isValidLocation(location))
+        return;
+
+    auto* plugin = getProcessorAt(location);
     if (plugin == nullptr)
         return;
 
@@ -226,17 +263,13 @@ void PluginHostService::showEditorForSlot(int slotIndex)
 
     if (auto* created = plugin->createEditorIfNeeded())
     {
-        editorWindows[static_cast<size_t>(slotIndex)] =
-            std::make_unique<PluginEditorWindow>(plugin->getName(), created);
+        editorWindows[location.editorKey()] = std::make_unique<PluginEditorWindow>(plugin->getName(), created);
     }
 }
 
-void PluginHostService::hideEditorForSlot(int slotIndex)
+void PluginHostService::hideEditorForSlot(PluginSlotLocation location)
 {
-    if (slotIndex < 0 || slotIndex >= PluginSlotChain::kNumSlots)
-        return;
-
-    editorWindows[static_cast<size_t>(slotIndex)].reset();
+    editorWindows.erase(location.editorKey());
 }
 
 void PluginHostService::changeListenerCallback(juce::ChangeBroadcaster* source)
@@ -253,5 +286,11 @@ void PluginHostService::notifySlotsChanged()
 void PluginHostService::notifyScanFinished()
 {
     listeners.call([](Listener& l) { l.pluginScanFinished(); });
+}
+
+void PluginHostService::markMixingDirty()
+{
+    if (mixingChanged)
+        mixingChanged();
 }
 } // namespace vmpc::audio

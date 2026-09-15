@@ -9,6 +9,8 @@ Built-in **stereo insert** processors ship with the DAW (no scan required). Load
 | **VMPC EQ-3** | Low shelf (120 Hz), mid peak (1.2 kHz), high shelf (8 kHz) |
 | **VMPC Compressor** | Threshold, ratio, attack, release, makeup |
 | **VMPC Limiter** | Ceiling + release (safety on the master chain) |
+| **VMPC HPF** | High-pass filter (rumble / mud) |
+| **VMPC De-Esser** | Sibilance reduction |
 
 ## Suggested default chain
 

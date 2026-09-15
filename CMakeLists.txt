@@ -45,7 +45,9 @@ target_sources(VMPC2000XL
         Source/Model/Sequencer/SequencerCore.cpp
         Source/Audio/AudioEngine.cpp
         Source/Audio/PluginSlotChain.cpp
+        Source/Audio/MixConsole.cpp
         Source/Audio/PluginHostService.cpp
+        Source/Model/MixingProjectPersistence.cpp
         Source/Audio/VibeMixEngine.cpp
         Source/Audio/Internal/InternalMixProcessor.cpp
         Source/Audio/Internal/InternalPluginFactory.cpp
@@ -54,6 +56,10 @@ target_sources(VMPC2000XL
         Source/Audio/Internal/Eq3Processor.cpp
         Source/Audio/Internal/CompressorProcessor.cpp
         Source/Audio/Internal/LimiterProcessor.cpp
+        Source/Audio/Internal/HpfProcessor.cpp
+        Source/Audio/Internal/DeEsserProcessor.cpp
+        Source/View/Components/MixerBank.cpp
+        Source/View/Components/ChannelInsertPanel.cpp
         Source/Audio/RealTimeConstraints.h
         Source/View/Components/PluginRackPanel.cpp
         Source/View/LookAndFeel/VMpcLookAndFeel.cpp

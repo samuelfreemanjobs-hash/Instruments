@@ -10,6 +10,7 @@ MainComponent::MainComponent(controller::AppController& controller)
     , sessionPanel(controller)
     , patternPanel(controller)
     , pluginRack(controller.getPluginHost())
+    , mixerBank(controller)
 {
     setLookAndFeel(&lookAndFeel);
 
@@ -29,6 +30,7 @@ MainComponent::MainComponent(controller::AppController& controller)
     addChildComponent(patternPanel);
     addChildComponent(electribePanel);
     addAndMakeVisible(pluginRack);
+    addAndMakeVisible(mixerBank);
 
     appController.addListener(this);
     showMode(appController.getAppMode());
@@ -113,6 +115,7 @@ void MainComponent::resized()
 
     bounds.removeFromTop(8);
     pluginRack.setBounds(bounds.removeFromBottom(360));
+    mixerBank.setBounds(bounds.removeFromBottom(140));
     if (activeModePanel != nullptr && activeModePanel->isVisible())
         activeModePanel->setBounds(bounds);
 }
@@ -130,6 +133,7 @@ void MainComponent::timerCallback()
             break;
         case vmpc::model::AppMode::HybridMpc:
             mpcPanel.updateTransportUi(step, peakL, peakR);
+            mixerBank.meterUpdate(0, juce::jmax(peakL, peakR));
             break;
         default:
             break;

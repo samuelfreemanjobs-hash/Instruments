@@ -46,6 +46,8 @@ private:
 
     juce::TextButton scanButton { "Scan VST plug-ins" };
     juce::Label statusLabel;
-    std::array<SlotUi, vmpc::audio::PluginSlotChain::kNumSlots> slots {};
+    std::array<SlotUi, vmpc::audio::PluginSlotChain::kMasterSlots> slots {};
+
+    static vmpc::audio::PluginSlotLocation masterSlot(int index) noexcept;
 };
 } // namespace vmpc::view

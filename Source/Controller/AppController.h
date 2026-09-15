@@ -33,6 +33,10 @@ public:
     void addListener(Listener* listener);
     void removeListener(Listener* listener);
 
+    void persistMixingState();
+    bool saveProjectToFile(const juce::File& file);
+    bool loadProjectFromFile(const juce::File& file);
+
 private:
     void notifyModeChanged(model::AppMode mode);
 

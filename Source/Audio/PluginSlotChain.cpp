@@ -2,9 +2,10 @@
 
 namespace vmpc::audio
 {
-PluginSlotChain::PluginSlotChain()
+PluginSlotChain::PluginSlotChain(int slotCount)
 {
-    processingOrder.reserve(kNumSlots);
+    slots.resize(static_cast<size_t>(juce::jmax(1, slotCount)));
+    processingOrder.reserve(slots.size());
 }
 
 void PluginSlotChain::prepare(double sampleRate, int blockSize)
@@ -34,12 +35,13 @@ void PluginSlotChain::releaseResources()
     }
 }
 
-std::array<PluginSlotChain::SlotState, PluginSlotChain::kNumSlots> PluginSlotChain::getSlotStates() const
+std::vector<PluginSlotChain::SlotState> PluginSlotChain::getSlotStates() const
 {
-    std::array<SlotState, kNumSlots> out {};
-    const juce::ScopedLock sl(lock);
+    std::vector<SlotState> out;
+    out.resize(slots.size());
 
-    for (int i = 0; i < kNumSlots; ++i)
+    const juce::ScopedLock sl(lock);
+    for (int i = 0; i < static_cast<int>(slots.size()); ++i)
     {
         if (slots[static_cast<size_t>(i)] != nullptr)
         {
@@ -58,7 +60,7 @@ std::array<PluginSlotChain::SlotState, PluginSlotChain::kNumSlots> PluginSlotCha
 
 void PluginSlotChain::setProcessorInSlot(int slotIndex, std::unique_ptr<juce::AudioProcessor> instance)
 {
-    if (slotIndex < 0 || slotIndex >= kNumSlots)
+    if (slotIndex < 0 || slotIndex >= static_cast<int>(slots.size()))
         return;
 
     const juce::ScopedLock sl(lock);
@@ -80,7 +82,7 @@ void PluginSlotChain::setProcessorInSlot(int slotIndex, std::unique_ptr<juce::Au
 
 juce::AudioProcessor* PluginSlotChain::getProcessorInSlot(int slotIndex) noexcept
 {
-    if (slotIndex < 0 || slotIndex >= kNumSlots)
+    if (slotIndex < 0 || slotIndex >= static_cast<int>(slots.size()))
         return nullptr;
     return slots[static_cast<size_t>(slotIndex)].get();
 }
@@ -88,7 +90,7 @@ juce::AudioProcessor* PluginSlotChain::getProcessorInSlot(int slotIndex) noexcep
 void PluginSlotChain::rebuildProcessingOrder()
 {
     processingOrder.clear();
-    for (int i = 0; i < kNumSlots; ++i)
+    for (int i = 0; i < static_cast<int>(slots.size()); ++i)
     {
         if (slots[static_cast<size_t>(i)] != nullptr)
             processingOrder.push_back(i);
@@ -138,6 +140,22 @@ void PluginSlotChain::process(float* const* outputChannelData,
         {
             plugin->processBlock(output, emptyMidi);
         }
+    }
+}
+
+void PluginSlotChain::processInsertsOnBuffer(juce::AudioBuffer<float>& buffer) noexcept
+{
+    const juce::ScopedTryLock tryLock(lock);
+    if (!tryLock.isLocked())
+        return;
+
+    for (const int slotIndex : processingOrder)
+    {
+        auto& plugin = slots[static_cast<size_t>(slotIndex)];
+        if (plugin == nullptr || slotAcceptsMidi(slotIndex))
+            continue;
+
+        plugin->processBlock(buffer, emptyMidi);
     }
 }
 } // namespace vmpc::audio

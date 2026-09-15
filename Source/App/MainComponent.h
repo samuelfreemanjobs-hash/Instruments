@@ -10,6 +10,7 @@
 #include "View/Modes/SessionModePanel.h"
 #include "View/Modes/PatternModePanel.h"
 #include "View/Components/PluginRackPanel.h"
+#include "View/Components/MixerBank.h"
 
 namespace vmpc::app
 {
@@ -41,6 +42,7 @@ private:
     view::SessionModePanel sessionPanel;
     view::PatternModePanel patternPanel;
     view::PluginRackPanel pluginRack;
+    view::MixerBank mixerBank;
 
     juce::Label titleLabel;
 };

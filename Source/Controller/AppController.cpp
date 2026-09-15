@@ -1,5 +1,6 @@
 #include "AppController.h"
 #include "Audio/RealTimeConstraints.h"
+#include "Model/MixingProjectPersistence.h"
 
 namespace vmpc::controller
 {
@@ -9,6 +10,8 @@ AppController::AppController(model::ProjectState& projectState, audio::AudioEngi
 {
     audioEngine.bindElectribeSong(&workspace.getElectribeSong());
     pluginHost = std::make_unique<audio::PluginHostService>(audioEngine);
+    pluginHost->setMixingChangedCallback([this]() { persistMixingState(); });
+    model::readMixingFromProject(project.getTree(), *pluginHost);
     syncProjectToSequencer();
 
     const auto mode = model::appModeFromString(project.getTree().getProperty("appMode", "Electribe").toString());
@@ -57,5 +60,30 @@ void AppController::removeListener(Listener* listener)
 void AppController::notifyModeChanged(model::AppMode mode)
 {
     listeners.call([mode](Listener& l) { l.appModeChanged(mode); });
+}
+
+void AppController::persistMixingState()
+{
+    model::writeMixingToProject(project.getTree(), *pluginHost);
+}
+
+bool AppController::saveProjectToFile(const juce::File& file)
+{
+    persistMixingState();
+    if (auto xml = project.getTree().createXml())
+        return xml->writeTo(file);
+    return false;
+}
+
+bool AppController::loadProjectFromFile(const juce::File& file)
+{
+    if (auto xml = juce::parseXML(file))
+    {
+        project.getTree() = juce::ValueTree::fromXml(*xml);
+        syncProjectToSequencer();
+        model::readMixingFromProject(project.getTree(), *pluginHost);
+        return true;
+    }
+    return false;
 }
 } // namespace vmpc::controller

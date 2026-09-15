@@ -1,19 +1,21 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include <array>
 #include <memory>
 #include <vector>
 
 namespace vmpc::audio
 {
-/** Fixed insert rack processed on the audio thread (instruments then effects). */
+/** Insert chain processed on the audio thread (instruments then effects). */
 class PluginSlotChain
 {
 public:
-    static constexpr int kNumSlots = 8;
+    static constexpr int kMasterSlots = 8;
+    static constexpr int kChannelInsertSlots = 2;
 
-    PluginSlotChain();
+    explicit PluginSlotChain(int slotCount = kMasterSlots);
+
+    int getSlotCount() const noexcept { return static_cast<int>(slots.size()); }
 
     void prepare(double sampleRate, int blockSize);
     void releaseResources();
@@ -23,6 +25,9 @@ public:
                  int numSamples,
                  juce::MidiBuffer& midi) noexcept;
 
+    /** Process FX-only (no MIDI instruments). */
+    void processInsertsOnBuffer(juce::AudioBuffer<float>& buffer) noexcept;
+
     struct SlotState
     {
         juce::String name;
@@ -30,11 +35,9 @@ public:
         bool isInstrument = false;
     };
 
-    std::array<SlotState, kNumSlots> getSlotStates() const;
+    std::vector<SlotState> getSlotStates() const;
 
-    /** Message thread only. Replaces processor in slot (nullptr clears). */
     void setProcessorInSlot(int slotIndex, std::unique_ptr<juce::AudioProcessor> processor);
-
     juce::AudioProcessor* getProcessorInSlot(int slotIndex) noexcept;
 
 private:
@@ -44,7 +47,7 @@ private:
     double sampleRateHz = 44100.0;
     int maxBlockSize = 512;
     mutable juce::CriticalSection lock;
-    std::array<std::unique_ptr<juce::AudioProcessor>, kNumSlots> slots {};
+    std::vector<std::unique_ptr<juce::AudioProcessor>> slots;
     std::vector<int> processingOrder;
     juce::AudioBuffer<float> scratch;
     juce::MidiBuffer emptyMidi;

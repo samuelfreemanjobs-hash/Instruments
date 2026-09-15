@@ -9,7 +9,7 @@
 
 namespace vmpc::audio
 {
-class PluginSlotChain;
+class MixConsole;
 
 class AudioEngine : public juce::AudioIODeviceCallback
 {
@@ -18,7 +18,7 @@ public:
 
     void bindElectribeSong(model::ElectribeSong* song) noexcept;
 
-    void setPluginChain(PluginSlotChain* chain) noexcept { pluginChain = chain; }
+    void setMixConsole(MixConsole* console) noexcept { mixConsole = console; }
 
     double getSampleRate() const noexcept { return deviceSampleRate.load(); }
     int getBlockSize() const noexcept { return deviceBlockSize.load(); }
@@ -46,7 +46,7 @@ public:
 private:
     model::SequencerCore sequencer;
     model::ElectribeSequencer electribeSequencer;
-    PluginSlotChain* pluginChain = nullptr;
+    MixConsole* mixConsole = nullptr;
     juce::MidiBuffer midiBuffer;
     std::atomic<double> deviceSampleRate { 44100.0 };
     std::atomic<int> deviceBlockSize { 512 };

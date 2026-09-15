@@ -23,11 +23,14 @@ public:
         deviceManager->initialiseWithDefaultDevices(0, 2);
         appController->attachAudioDeviceManager(*deviceManager);
 
-        mainWindow = std::make_unique<MainWindow>(getApplicationName(), *appController);
+        mainWindow = std::make_unique<MainWindow>(getApplicationName(), *appController, projectState->getDefaultProjectFile());
     }
 
     void shutdown() override
     {
+        if (appController != nullptr)
+            appController->saveProjectToFile(projectState->getDefaultProjectFile());
+
         mainWindow = nullptr;
         if (deviceManager != nullptr)
             deviceManager->removeAudioCallback(audioEngine.get());
@@ -43,20 +46,39 @@ private:
     class MainWindow : public juce::DocumentWindow
     {
     public:
-        MainWindow(juce::String name, vmpc::controller::AppController& controller)
+        MainWindow(juce::String name, vmpc::controller::AppController& controller, const juce::File& projectFile)
             : DocumentWindow(name,
                              juce::Desktop::getInstance().getDefaultLookAndFeel()
                                  .findColour(juce::ResizableWindow::backgroundColourId),
                              DocumentWindow::allButtons)
+            , appController(controller)
+            , defaultProjectFile(projectFile)
         {
             setUsingNativeTitleBar(true);
             setContentOwned(new vmpc::app::MainComponent(controller), true);
             setResizable(true, true);
-            centreWithSize(1200, 900);
+            centreWithSize(1200, 1040);
             setVisible(true);
+
+            if (defaultProjectFile.existsAsFile())
+                appController.loadProjectFromFile(defaultProjectFile);
         }
 
         void closeButtonPressed() override { juce::JUCEApplication::getInstance()->systemRequestedQuit(); }
+
+        bool keyPressed(const juce::KeyPress& key) override
+        {
+            if (key.getModifiers().isCommandDown() && key.getKeyCode() == 'S')
+            {
+                appController.saveProjectToFile(defaultProjectFile);
+                return true;
+            }
+            return DocumentWindow::keyPressed(key);
+        }
+
+    private:
+        vmpc::controller::AppController& appController;
+        juce::File defaultProjectFile;
     };
 
     std::unique_ptr<vmpc::model::ProjectState> projectState;

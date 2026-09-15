@@ -1,5 +1,5 @@
 #include "AudioEngine.h"
-#include "PluginSlotChain.h"
+#include "MixConsole.h"
 
 namespace vmpc::audio
 {
@@ -20,15 +20,15 @@ void AudioEngine::audioDeviceAboutToStart(juce::AudioIODevice* device)
         deviceBlockSize.store(block);
         sequencer.prepare(sr);
         electribeSequencer.prepare(sr);
-        if (pluginChain != nullptr)
-            pluginChain->prepare(sr, block);
+        if (mixConsole != nullptr)
+            mixConsole->prepare(sr, block);
     }
 }
 
 void AudioEngine::audioDeviceStopped()
 {
-    if (pluginChain != nullptr)
-        pluginChain->releaseResources();
+    if (mixConsole != nullptr)
+        mixConsole->releaseResources();
 }
 
 void AudioEngine::audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
@@ -54,8 +54,8 @@ void AudioEngine::audioDeviceIOCallbackWithContext(const float* const* inputChan
         playingStepForUi.store(electribeSequencer.getPlayingStepForUi());
     }
 
-    if (pluginChain != nullptr)
-        pluginChain->process(outputChannelData, numOutputChannels, numSamples, midiBuffer);
+    if (mixConsole != nullptr)
+        mixConsole->process(outputChannelData, numOutputChannels, numSamples, midiBuffer);
     else
     {
         for (int ch = 0; ch < numOutputChannels; ++ch)
