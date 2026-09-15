@@ -112,7 +112,7 @@ void MainComponent::resized()
     titleLabel.setBounds(header);
 
     bounds.removeFromTop(8);
-    pluginRack.setBounds(bounds.removeFromBottom(280));
+    pluginRack.setBounds(bounds.removeFromBottom(360));
     if (activeModePanel != nullptr && activeModePanel->isVisible())
         activeModePanel->setBounds(bounds);
 }

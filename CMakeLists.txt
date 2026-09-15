@@ -46,6 +46,7 @@ target_sources(VMPC2000XL
         Source/Audio/AudioEngine.cpp
         Source/Audio/PluginSlotChain.cpp
         Source/Audio/PluginHostService.cpp
+        Source/Audio/VibeMixEngine.cpp
         Source/Audio/Internal/InternalMixProcessor.cpp
         Source/Audio/Internal/InternalPluginFactory.cpp
         Source/Audio/Internal/GainProcessor.cpp

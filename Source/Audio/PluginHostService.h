@@ -3,6 +3,7 @@
 #include <JuceHeader.h>
 #include "PluginSlotChain.h"
 #include "Internal/InternalPluginTypes.h"
+#include "VibeMixingTypes.h"
 #include <functional>
 
 namespace vmpc::audio
@@ -35,6 +36,9 @@ public:
                             std::function<void(bool success, const juce::String& error)> callback);
 
     void loadInternalMixPlugin(int slotIndex, internal::MixPluginId id);
+
+    /** Vibe Mixing: type a brief → load internal chain + preset on the rack. */
+    VibeMixInterpretResult applyVibeMixFromBrief(const juce::String& userText);
 
     void clearSlot(int slotIndex);
     void showEditorForSlot(int slotIndex);

@@ -1,5 +1,7 @@
 #include "PluginHostService.h"
 #include "AudioEngine.h"
+#include "VibeMixEngine.h"
+#include "Internal/InternalPluginParams.h"
 
 namespace vmpc::audio
 {
@@ -161,6 +163,28 @@ void PluginHostService::loadPluginIntoSlot(int slotIndex,
             if (callback)
                 callback(true, {});
         });
+}
+
+VibeMixInterpretResult PluginHostService::applyVibeMixFromBrief(const juce::String& userText)
+{
+    auto result = VibeMixEngine::interpretUserBrief(userText);
+    if (!result.success)
+        return result;
+
+    for (const auto& slotPreset : result.recipe.slots)
+        hideEditorForSlot(slotPreset.slotIndex);
+
+    for (const auto& slotPreset : result.recipe.slots)
+    {
+        clearSlot(slotPreset.slotIndex);
+        loadInternalMixPlugin(slotPreset.slotIndex, slotPreset.plugin);
+
+        if (auto* processor = chain.getProcessorInSlot(slotPreset.slotIndex))
+            internal::applyRawParameterMap(*processor, slotPreset.parameters);
+    }
+
+    notifySlotsChanged();
+    return result;
 }
 
 void PluginHostService::loadInternalMixPlugin(int slotIndex, internal::MixPluginId id)

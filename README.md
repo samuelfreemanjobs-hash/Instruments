@@ -32,5 +32,6 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full multi-phase plan (DSP, Q-Lin
 | 16-step UI + model | Yes |
 | VST3 / AU / LV2 hosting | 8-slot rack, scan & native UI ([docs/VST_HOSTING.md](docs/VST_HOSTING.md)) |
 | Internal mix plug-ins | Gain, Pan, EQ-3, Compressor, Limiter ([docs/INTERNAL_PLUGINS.md](docs/INTERNAL_PLUGINS.md)) |
+| **Vibe Mixing** | Type a feel → auto chain + preset ([docs/VIBE_MIXING.md](docs/VIBE_MIXING.md)) |
 | Built-in sampler / FX | Use VST instruments/effects in the rack (Phase 4 internal DSP optional) |
 | Project save/load | ValueTree defaults only |

@@ -20,6 +20,10 @@ For a basic mix bus (after instrument VSTs):
 
 Use **Gain** and **Pan** on individual paths as needed.
 
+## Vibe Mixing
+
+Type a brief in the rack (**Vibe Mixing**) and click **Create vibe preset** to auto-build a chain + settings. See [VIBE_MIXING.md](VIBE_MIXING.md).
+
 ## Editors
 
 Each internal plug-in uses the standard parameter editor (sliders). External VSTs still use their native UI.

@@ -8,7 +8,32 @@ PluginRackPanel::PluginRackPanel(vmpc::audio::PluginHostService& host)
 {
     pluginHost.addListener(this);
 
-    statusLabel.setText("Load VMPC internal mix tools or external VST3/LV2/AU plug-ins. MIDI from the active sequencer goes to instrument slots.",
+    vibeHeading.setText("Vibe Mixing", juce::dontSendNotification);
+    vibeHeading.setFont(juce::Font(16.0f, juce::Font::bold));
+    vibeHeading.setColour(juce::Label::textColourId, juce::Colour(0xff38bdf8));
+    addAndMakeVisible(vibeHeading);
+
+    vibeTagline.setText("Type the feel you want — the DAW builds an internal plug-in chain and preset.",
+                        juce::dontSendNotification);
+    vibeTagline.setColour(juce::Label::textColourId, juce::Colours::lightgrey);
+    addAndMakeVisible(vibeTagline);
+
+    vibePrompt.setMultiLine(false);
+    vibePrompt.setReturnKeyStartsNewLine(false);
+    vibePrompt.setTextToShowWhenEmpty("e.g. warm punchy club master with airy top", juce::Colours::grey);
+    vibePrompt.setColour(juce::TextEditor::backgroundColourId, juce::Colour(0xff0c0e13));
+    vibePrompt.setColour(juce::TextEditor::outlineColourId, juce::Colour(0xff38bdf8).withAlpha(0.4f));
+    vibePrompt.setColour(juce::TextEditor::textColourId, juce::Colours::white);
+    vibePrompt.addListener(this);
+    addAndMakeVisible(vibePrompt);
+
+    vibeCreateButton.addListener(this);
+    addAndMakeVisible(vibeCreateButton);
+
+    vibeResultLabel.setColour(juce::Label::textColourId, juce::Colour(0xfff59e0b));
+    addAndMakeVisible(vibeResultLabel);
+
+    statusLabel.setText("Or load VMPC internal mix tools / external VST3·LV2·AU per slot. MIDI goes to instrument slots.",
                         juce::dontSendNotification);
     statusLabel.setColour(juce::Label::textColourId, juce::Colours::grey);
     addAndMakeVisible(statusLabel);
@@ -38,6 +63,7 @@ PluginRackPanel::PluginRackPanel(vmpc::audio::PluginHostService& host)
 
 PluginRackPanel::~PluginRackPanel()
 {
+    vibePrompt.removeListener(this);
     pluginHost.removeListener(this);
 }
 
@@ -51,6 +77,18 @@ void PluginRackPanel::paint(juce::Graphics& g)
 void PluginRackPanel::resized()
 {
     auto area = getLocalBounds().reduced(8);
+
+    vibeHeading.setBounds(area.removeFromTop(22));
+    vibeTagline.setBounds(area.removeFromTop(18));
+    area.removeFromTop(4);
+
+    auto vibeRow = area.removeFromTop(30);
+    vibeCreateButton.setBounds(vibeRow.removeFromRight(150).reduced(0, 2));
+    vibePrompt.setBounds(vibeRow.reduced(0, 2));
+
+    vibeResultLabel.setBounds(area.removeFromTop(20));
+    area.removeFromTop(6);
+
     auto header = area.removeFromTop(28);
     scanButton.setBounds(header.removeFromRight(160));
     statusLabel.setBounds(header);
@@ -69,8 +107,37 @@ void PluginRackPanel::resized()
     }
 }
 
+void PluginRackPanel::textEditorReturnKeyPressed(juce::TextEditor& editor)
+{
+    if (&editor == &vibePrompt)
+        createVibePresetFromInput();
+}
+
+void PluginRackPanel::createVibePresetFromInput()
+{
+    const auto brief = vibePrompt.getText();
+    const auto result = pluginHost.applyVibeMixFromBrief(brief);
+
+    if (!result.success)
+    {
+        vibeResultLabel.setText(result.error, juce::dontSendNotification);
+        return;
+    }
+
+    vibeResultLabel.setText(result.recipe.explanation, juce::dontSendNotification);
+    statusLabel.setText("Vibe preset \"" + result.recipe.title + "\" loaded — tweak slots or open plug-in UI.",
+                        juce::dontSendNotification);
+    refreshSlotLabels();
+}
+
 void PluginRackPanel::buttonClicked(juce::Button* button)
 {
+    if (button == &vibeCreateButton)
+    {
+        createVibePresetFromInput();
+        return;
+    }
+
     if (button == &scanButton)
     {
         statusLabel.setText("Scanning plug-in folders...", juce::dontSendNotification);

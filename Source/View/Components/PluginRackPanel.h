@@ -7,6 +7,7 @@ namespace vmpc::view
 {
 class PluginRackPanel : public juce::Component,
                         public juce::Button::Listener,
+                        public juce::TextEditor::Listener,
                         private vmpc::audio::PluginHostService::Listener
 {
 public:
@@ -16,8 +17,10 @@ public:
     void paint(juce::Graphics& g) override;
     void resized() override;
     void buttonClicked(juce::Button* button) override;
+    void textEditorReturnKeyPressed(juce::TextEditor& editor) override;
 
 private:
+    void createVibePresetFromInput();
     struct SlotUi
     {
         juce::Label title;
@@ -34,6 +37,13 @@ private:
     void showPluginPicker(int slotIndex);
 
     vmpc::audio::PluginHostService& pluginHost;
+
+    juce::Label vibeHeading;
+    juce::Label vibeTagline;
+    juce::TextEditor vibePrompt;
+    juce::TextButton vibeCreateButton { "Create vibe preset" };
+    juce::Label vibeResultLabel;
+
     juce::TextButton scanButton { "Scan VST plug-ins" };
     juce::Label statusLabel;
     std::array<SlotUi, vmpc::audio::PluginSlotChain::kNumSlots> slots {};
