@@ -1,0 +1,11 @@
+/build/
+/cmake-build-*/
+/.cache/
+*.user
+*.suo
+*.xcodeproj/
+*.xcworkspace/
+DerivedData/
+.idea/
+.vscode/
+compile_commands.json
