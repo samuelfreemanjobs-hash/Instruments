@@ -24,6 +24,7 @@ toolchain.
 | `west-coast-moog` | P-Funk WC | Funk, Moog, West Coast bass & lead | E1–C3 |
 | `juno-rnb` | Juno R&B | 80s R&B / pop bass | E1–A2 |
 | `dilla-bass` | Dilla Bass | Hip-hop / neo-soul loose bass | D1–G2 |
+| `sub-phatty` | Sub Phatty | Moog Sub Phatty fat / Multidrive bass | E1–C3 |
 
 Supporting folders: `template`, `wavetable` (learning / starters).
 

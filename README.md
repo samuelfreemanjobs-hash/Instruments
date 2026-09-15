@@ -12,6 +12,7 @@ Prologue). Each oscillator is a separate unit you load when you need that sound.
 | [`west-coast-moog`](src/oscillators/west-coast-moog/) | **P-Funk WC** | Funk · Moog · West Coast |
 | [`juno-rnb`](src/oscillators/juno-rnb/) | **Juno R&B** | 80s R&B / Juno-106 bass |
 | [`dilla-bass`](src/oscillators/dilla-bass/) | **Dilla Bass** | J Dilla–style wobble / glide / warm MPC tone |
+| [`sub-phatty`](src/oscillators/sub-phatty/) | **Sub Phatty** | Moog Sub Phatty dual osc, sub, Multidrive |
 
 Each unit is **multifunction** (mainly **Vibe**) and ships **presets** in
 `manifest.json` → `_agent.presets` (knob values 0–100).
