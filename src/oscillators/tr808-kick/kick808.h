@@ -10,7 +10,9 @@ enum kick808_param_id {
   k_kick808_param_filter_cutoff = 4,
   k_kick808_param_filter_type = 5,
   k_kick808_param_pitch_sweep = 6,
-  k_kick808_num_params = 7
+  k_kick808_param_sub = 7,
+  k_kick808_param_drive = 8,
+  k_kick808_num_params = 9
 };
 
 void kick808_reset(void);

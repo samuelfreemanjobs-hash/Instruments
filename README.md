@@ -16,6 +16,8 @@ chmod +x tools/build.sh
 ./tools/build.sh oscillators/tr808-kick nutekt-digital
 ```
 
+**Phonk 808** (`tr808-kick`): long sub decay, **Sub** / **Drive** knobs — play low notes (C1–F1), long **Decay** for rumble.
+
 ## Layout
 
 - `.cursor/rules/` — agent identity, SDK API, DSP patterns, build matrix, style
