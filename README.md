@@ -11,6 +11,7 @@ Prologue). Each oscillator is a separate unit you load when you need that sound.
 | [`tr808-kick`](src/oscillators/tr808-kick/) | **Phonk 808** | 808 kick / sub (phonk) |
 | [`west-coast-moog`](src/oscillators/west-coast-moog/) | **P-Funk WC** | Funk · Moog · West Coast |
 | [`juno-rnb`](src/oscillators/juno-rnb/) | **Juno R&B** | 80s R&B / Juno-106 bass |
+| [`dilla-bass`](src/oscillators/dilla-bass/) | **Dilla Bass** | J Dilla–style wobble / glide / warm MPC tone |
 
 Each unit is **multifunction** (mainly **Vibe**) and ships **presets** in
 `manifest.json` → `_agent.presets` (knob values 0–100).
@@ -28,6 +29,7 @@ chmod +x tools/build.sh tools/build-all-bass.sh
 
 ./tools/build.sh oscillators/juno-rnb nutekt-digital
 ./tools/build-all-bass.sh nutekt-digital
+./tools/build.sh oscillators/dilla-bass nutekt-digital
 ```
 
 3. Load the resulting user osc on the NTS-1 with the Korg logue workflow.

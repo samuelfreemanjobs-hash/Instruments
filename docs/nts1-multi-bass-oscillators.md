@@ -9,8 +9,8 @@ toolchain.
 
 1. **One osc, many roles** — each unit uses a primary macro (**Vibe** or style-specific
    controls) instead of shipping separate “bass only” and “lead only” binaries.
-2. **Genre-first** — phonk 808, P-Funk / West Coast, Juno 80s R&B; more styles can
-   be added under `src/oscillators/<name>/`.
+2. **Genre-first** — phonk 808, P-Funk / West Coast, Juno 80s R&B, Dilla hip-hop
+   bass; more styles can be added under `src/oscillators/<name>/`.
 3. **Host integration** — musical units use NTS-1 **cutoff** and **resonance** where
    a synth filter is part of the sound (not on the kick drum osc).
 4. **Presets in `manifest.json`** — the `_agent.presets` array documents knob
@@ -23,6 +23,7 @@ toolchain.
 | `tr808-kick` | Phonk 808 | Kick / sub shots | C1–D#1 |
 | `west-coast-moog` | P-Funk WC | Funk, Moog, West Coast bass & lead | E1–C3 |
 | `juno-rnb` | Juno R&B | 80s R&B / pop bass | E1–A2 |
+| `dilla-bass` | Dilla Bass | Hip-hop / neo-soul loose bass | D1–G2 |
 
 Supporting folders: `template`, `wavetable` (learning / starters).
 

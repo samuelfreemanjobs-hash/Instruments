@@ -28,3 +28,4 @@ at a time; each folder under `src/oscillators/` is a standalone loadable unit.
 - `tr808-kick` — phonk / 808 kick-sub
 - `west-coast-moog` — P-Funk / Minimoog / West Coast
 - `juno-rnb` — Juno-106 80s R&B bass
+- `dilla-bass` — J Dilla style wobble/glide/warm bass
