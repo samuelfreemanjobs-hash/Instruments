@@ -6,6 +6,12 @@
 #include "SampleEngine.h"
 
 #include <cmath>
+#include <cstdint>
+
+namespace jdupgraded::assets
+{
+class RomBank;
+}
 
 namespace jdupgraded::dsp
 {
@@ -13,6 +19,9 @@ namespace jdupgraded::dsp
 struct TonePatch final
 {
     const PcmWaveform* waveform = nullptr;
+    const jdupgraded::assets::RomBank* romBank = nullptr;
+    std::uint16_t multisampleSetId = 0;
+    std::uint16_t waveIndex = 0;
     float coarseSemis = 0.0f;
     float fineCents = 0.0f;
     float level = 1.0f;
@@ -48,13 +57,9 @@ public:
     void applyPatch (const TonePatch& patch) noexcept
     {
         patch_ = patch;
-        if (patch.waveform != nullptr)
-            engine_.setWaveform (*patch.waveform);
-
+        engine_.setPhaseModDepth (patch.phaseModDepth);
         const float rootRatio = semitoneRatio (patch.coarseSemis + patch.fineCents / 100.0f);
         basePitchRatio_ = rootRatio;
-        engine_.setPitchRatio (basePitchRatio_);
-        engine_.setPhaseModDepth (patch.phaseModDepth);
     }
 
     void setHardSyncMaster (const SampleEngine* master) noexcept
@@ -65,9 +70,9 @@ public:
     void start (std::uint8_t midiNote) noexcept
     {
         midiNote_ = midiNote;
-        const float noteRatio = semitoneRatio (static_cast<float> (midiNote) - 60.0f);
+        resolveWaveAndPitch (midiNote);
         engine_.reset();
-        engine_.setPitchRatio (basePitchRatio_ * noteRatio);
+        updatePitchRatio (1.0f);
         filter_.reset();
 
         pitchEnvelope_.reset (0.0f);
@@ -112,8 +117,7 @@ public:
         --samplesUntilControlTick_;
 
         const float pitchEnv = pitchEnvelope_.getLevel();
-        const float noteRatio = semitoneRatio (static_cast<float> (midiNote_) - 60.0f);
-        engine_.setPitchRatio (basePitchRatio_ * noteRatio * pitchEnv);
+        updatePitchRatio (pitchEnv);
         lastOsc_ = engine_.renderSample();
         return lastOsc_;
     }
@@ -177,7 +181,15 @@ private:
         return std::pow (2.0f, semitones / 12.0f);
     }
 
+    void resolveWaveAndPitch (std::uint8_t midiNote) noexcept;
+    void updatePitchRatio (float pitchEnv) noexcept
+    {
+        const float semis = static_cast<float> (midiNote_) - waveRootMidi_ + patch_.coarseSemis + patch_.fineCents / 100.0f;
+        engine_.setPitchRatio (basePitchRatio_ * semitoneRatio (semis) * pitchEnv);
+    }
+
     double sampleRate_ = 44100.0;
+    float waveRootMidi_ = 60.0f;
     TonePatch patch_{};
     SampleEngine engine_{};
     ZdfTvf filter_{};

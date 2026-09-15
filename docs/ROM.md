@@ -10,7 +10,18 @@ JD Upgraded ships an **original** PCM wave ROM — not a Roland JD-800/990 dump.
 | Wave table | 128 entries: frame count, loop points, flags, PCM offset, root note, category |
 | PCM | Little-endian `int16` mono samples |
 
-Categories rotate across waves: analog, digital, bell, pluck, bass, noise, vocal, organ, fx.
+## Wave map (v2, 256 waves)
+
+| Range | Content |
+|-------|---------|
+| 0–63 | Standalone single/loop waves (`multisampleSetId = 0`) |
+| 64–255 | 24 multisample programs × 8 zones (roots MIDI 28–75) |
+
+Categories rotate: analog, digital, bell, pluck, bass, noise, vocal, organ, fx.
+
+At note-on, if a tone’s **Multisample** parameter is 1–24, `RomBank::selectForNote` picks the zone closest to the played key. Otherwise the fixed **Wave** index is used with per-wave root metadata.
+
+Factory programs in `FactoryPatchLibrary` pair curated multisample sets and single waves — select via the host program list.
 
 ## Build integration
 

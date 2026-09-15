@@ -11,6 +11,7 @@ namespace
 {
 
 constexpr double kPi = 3.14159265358979323846;
+constexpr int kZoneRoots[8] = { 28, 33, 40, 47, 54, 61, 68, 75 };
 
 float clamp (float v, float lo, float hi)
 {
@@ -114,57 +115,64 @@ std::vector<float> makeVocalFormant (std::size_t length, float f1, float f2, flo
     });
 }
 
-std::vector<float> buildWave (std::uint32_t waveId)
+std::vector<float> buildByCategory (jdupgraded::assets::RomWaveCategory category,
+                                    std::uint32_t seed,
+                                    int zoneIndex,
+                                    bool longLoop)
 {
-    const std::size_t cycleLen = 2048u + static_cast<std::size_t> ((waveId % 4) * 512u);
-    const std::size_t loopLen = cycleLen * (2u + (waveId % 3u));
+    const std::size_t cycleLen = 2048u + static_cast<std::size_t> ((seed % 4) * 512u);
+    const std::size_t loopLen = cycleLen * (2u + (seed % 3u));
+    const float zoneBright = 1.0f - static_cast<float> (zoneIndex) * 0.06f;
 
-    switch (static_cast<jdupgraded::assets::RomWaveCategory> (waveId % 9))
+    switch (category)
     {
         case jdupgraded::assets::RomWaveCategory::analog:
-            return makeAdditive (cycleLen, 24 + static_cast<int> (waveId % 12),
-                                 [] (int h) { return 1.0 / static_cast<double> (h); });
+            return makeAdditive (cycleLen, static_cast<int> (18 + zoneIndex),
+                                 [zoneBright] (int h) { return zoneBright / static_cast<double> (h); });
 
         case jdupgraded::assets::RomWaveCategory::digital:
-            return makeAdditive (cycleLen, 8,
-                                 [waveId] (int h)
+            return makeAdditive (cycleLen, 10,
+                                 [seed, zoneBright] (int h)
                                  {
-                                     return (h % (2 + waveId % 5) == 0) ? 1.0 / h : 0.0;
+                                     return (h % (2 + seed % 5) == 0) ? zoneBright / h : 0.0;
                                  });
 
         case jdupgraded::assets::RomWaveCategory::bell:
-            return makeBell (loopLen, 0.4f + static_cast<float> (waveId % 7) * 0.1f);
+            return makeBell (longLoop ? loopLen : cycleLen, 0.35f + static_cast<float> (seed % 7) * 0.08f);
 
         case jdupgraded::assets::RomWaveCategory::pluck:
-            return makeKarplusStrong (loopLen, 0.992f - static_cast<float> (waveId % 5) * 0.002f, 0.15f);
+            return makeKarplusStrong (longLoop ? loopLen : cycleLen,
+                                      0.992f - static_cast<float> (zoneIndex) * 0.0015f,
+                                      0.12f + zoneBright * 0.08f);
 
         case jdupgraded::assets::RomWaveCategory::bass:
-            return makeAdditive (cycleLen, 16,
-                                 [] (int h) { return std::exp (-static_cast<double> (h) * 0.18) / h; });
+            return makeAdditive (cycleLen, 12 + zoneIndex / 2,
+                                 [zoneBright] (int h) { return zoneBright * std::exp (-h * 0.2) / h; });
 
         case jdupgraded::assets::RomWaveCategory::noise:
-            return makeNoiseLoop (loopLen, 0.08f + static_cast<float> (waveId % 10) * 0.02f);
+            return makeNoiseLoop (longLoop ? loopLen : cycleLen, 0.08f + static_cast<float> (seed % 8) * 0.015f);
 
         case jdupgraded::assets::RomWaveCategory::vocal:
-            return makeVocalFormant (cycleLen, 5.0f + static_cast<float> (waveId % 4),
-                                     12.0f + static_cast<float> (waveId % 5),
-                                     22.0f + static_cast<float> (waveId % 6));
+            return makeVocalFormant (cycleLen,
+                                     4.5f + static_cast<float> (zoneIndex),
+                                     11.0f + static_cast<float> (seed % 5),
+                                     20.0f + static_cast<float> (seed % 6));
 
         case jdupgraded::assets::RomWaveCategory::organ:
-            return makeAdditive (cycleLen, 32,
-                                 [] (int h)
+            return makeAdditive (cycleLen, 28,
+                                 [zoneBright] (int h)
                                  {
                                      if (h % 2 == 0 || h % 3 == 0)
-                                         return 0.6 / h;
+                                         return zoneBright * 0.55 / h;
                                      return 0.0;
                                  });
 
         case jdupgraded::assets::RomWaveCategory::fx:
         default:
         {
-            auto wave = makeAdditive (loopLen, 20, [waveId] (int h)
+            auto wave = makeAdditive (longLoop ? loopLen : cycleLen, 18, [seed, zoneBright] (int h)
             {
-                return std::sin (static_cast<double> (waveId) * 0.3 + h * 0.7) / static_cast<double> (h);
+                return zoneBright * std::sin (seed * 0.3 + h * 0.7) / static_cast<double> (h);
             });
             for (std::size_t i = 0; i < wave.size(); ++i)
                 wave[i] *= std::sin (3.0 * kPi * static_cast<double> (i) / static_cast<double> (wave.size()));
@@ -178,6 +186,34 @@ std::int16_t floatToPcm16 (float sample)
 {
     sample = clamp (sample, -1.0f, 1.0f);
     return static_cast<std::int16_t> (std::lround (sample * 32767.0f));
+}
+
+void assignEntry (jdupgraded::assets::RomWaveEntry& entry,
+                  std::uint32_t id,
+                  std::vector<float>& floats,
+                  std::int16_t rootNote,
+                  std::uint16_t multisampleSetId,
+                  jdupgraded::assets::RomWaveCategory category)
+{
+    entry.waveId = id;
+    entry.numFrames = static_cast<std::uint16_t> (std::min<std::size_t> (floats.size(), 65535));
+    entry.category = static_cast<std::uint16_t> (category);
+    entry.rootMidiNote = rootNote;
+    entry.multisampleSetId = multisampleSetId;
+
+    const bool isLoop = floats.size() > 3000;
+    if (isLoop)
+    {
+        entry.flags = jdupgraded::assets::romWaveLooped;
+        entry.loopStart = static_cast<std::uint16_t> (floats.size() / 8);
+        entry.loopEnd = static_cast<std::uint16_t> (floats.size());
+    }
+    else
+    {
+        entry.flags = jdupgraded::assets::romWaveSingleCycle;
+        entry.loopStart = 0;
+        entry.loopEnd = entry.numFrames;
+    }
 }
 
 } // namespace
@@ -197,34 +233,37 @@ int main (int argc, char** argv)
     waves.resize (jdupgraded::assets::kCleanroomWaveCount);
 
     std::vector<std::int16_t> pcmPool;
-    pcmPool.reserve (4 * 1024 * 1024);
+    pcmPool.reserve (8 * 1024 * 1024);
 
-    for (std::uint32_t id = 0; id < jdupgraded::assets::kCleanroomWaveCount; ++id)
+    for (std::uint32_t id = 0; id < jdupgraded::assets::kSingleWaveCount; ++id)
     {
         auto& w = waves[id];
-        w.floats = buildWave (id);
-        w.entry.waveId = id;
-        w.entry.numFrames = static_cast<std::uint16_t> (std::min<std::size_t> (w.floats.size(), 65535));
-        w.entry.category = static_cast<std::uint16_t> (id % 9);
-        w.entry.rootMidiNote = static_cast<std::int16_t> (36 + (id % 48));
+        const auto category = static_cast<jdupgraded::assets::RomWaveCategory> (id % 9);
+        w.floats = buildByCategory (category, id, 0, id % 2 == 0);
+        assignEntry (w.entry, id, w.floats,
+                     static_cast<std::int16_t> (36 + (id % 36)),
+                     0, category);
+    }
 
-        const bool isLoop = w.floats.size() > 3000;
-        if (isLoop)
+    for (std::uint32_t set = 1; set <= jdupgraded::assets::kMultisampleSetCount; ++set)
+    {
+        const auto category = static_cast<jdupgraded::assets::RomWaveCategory> ((set - 1) % 9);
+        for (std::uint32_t zone = 0; zone < jdupgraded::assets::kZonesPerSet; ++zone)
         {
-            w.entry.flags = jdupgraded::assets::romWaveLooped;
-            w.entry.loopStart = static_cast<std::uint16_t> (w.floats.size() / 8);
-            w.entry.loopEnd = static_cast<std::uint16_t> (w.floats.size());
+            const std::uint32_t id = jdupgraded::assets::kSingleWaveCount + (set - 1) * jdupgraded::assets::kZonesPerSet + zone;
+            auto& w = waves[id];
+            w.floats = buildByCategory (category, set * 17 + zone, static_cast<int> (zone), true);
+            assignEntry (w.entry, id, w.floats,
+                         static_cast<std::int16_t> (kZoneRoots[zone]),
+                         static_cast<std::uint16_t> (set), category);
         }
-        else
-        {
-            w.entry.flags = jdupgraded::assets::romWaveSingleCycle;
-            w.entry.loopStart = 0;
-            w.entry.loopEnd = w.entry.numFrames;
-        }
+    }
 
+    for (auto& w : waves)
+    {
         w.entry.pcmOffsetBytes = static_cast<std::uint32_t> (pcmPool.size() * sizeof (std::int16_t));
-        for (std::size_t i = 0; i < w.floats.size(); ++i)
-            pcmPool.push_back (floatToPcm16 (w.floats[static_cast<std::size_t> (i)]));
+        for (float sample : w.floats)
+            pcmPool.push_back (floatToPcm16 (sample));
     }
 
     const std::uint32_t waveCount = static_cast<std::uint32_t> (waves.size());
@@ -263,6 +302,7 @@ int main (int argc, char** argv)
         return 1;
     }
     out.write (reinterpret_cast<const char*> (file.data()), static_cast<std::streamsize> (file.size()));
-    std::printf ("Wrote %s (%zu bytes, %u waves)\n", outPath, file.size(), waveCount);
+    std::printf ("Wrote %s (%zu bytes, %u waves, %u multisample sets)\n",
+                 outPath, file.size(), waveCount, jdupgraded::assets::kMultisampleSetCount);
     return 0;
 }

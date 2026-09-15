@@ -8,6 +8,8 @@
 #include "DSP/Effects/GroupBSpatial.h"
 #include "DSP/VoicePool.h"
 
+#include <array>
+
 class JDUpgradedAudioProcessor final : public juce::AudioProcessor
 {
 public:
@@ -28,10 +30,10 @@ public:
     bool isMidiEffect() const override { return false; }
     double getTailLengthSeconds() const override { return 2.0; }
 
-    int getNumPrograms() override { return 1; }
-    int getCurrentProgram() override { return 0; }
-    void setCurrentProgram (int) override {}
-    const juce::String getProgramName (int) override { return {}; }
+    int getNumPrograms() override;
+    int getCurrentProgram() override;
+    void setCurrentProgram (int index) override;
+    const juce::String getProgramName (int index) override;
     void changeProgramName (int, const juce::String&) override {}
 
     void getStateInformation (juce::MemoryBlock& destData) override;
@@ -45,8 +47,11 @@ public:
 private:
     void refreshCachedParameters() noexcept;
     void applyPatchesFromParameters() noexcept;
+    void applyFactoryPatch (int index);
     void handleMidi (const juce::MidiBuffer& midi) noexcept;
-    const jdupgraded::dsp::PcmWaveform& resolveWaveform (std::size_t waveIndex) const noexcept;
+    void setApvtsFloat (const char* paramId, float value);
+    void setApvtsInt (const char* paramId, int value);
+    void setApvtsChoice (const char* paramId, int index);
 
     juce::AudioProcessorValueTreeState apvts_;
     jdupgraded::dsp::VoicePool voicePool_;
@@ -56,6 +61,11 @@ private:
     jdupgraded::dsp::GroupBSpatial groupB_;
 
     std::array<float, 8192> outputScratch_{};
+    std::array<float, 4> toneCoarseSemis_{};
+    std::array<float, 4> toneFilterCutoff_{ 1.0f, 1.0f, 1.0f, 1.0f };
+    std::array<float, 4> toneFilterResonance_{ 0.35f, 0.35f, 0.35f, 0.35f };
+
+    int currentProgram_ = 0;
 
     std::atomic<float>* masterGainPtr_ = nullptr;
     std::atomic<float>* tone1LevelPtr_ = nullptr;
@@ -66,6 +76,10 @@ private:
     std::atomic<float>* tone2WavePtr_ = nullptr;
     std::atomic<float>* tone3WavePtr_ = nullptr;
     std::atomic<float>* tone4WavePtr_ = nullptr;
+    std::atomic<float>* tone1MultisamplePtr_ = nullptr;
+    std::atomic<float>* tone2MultisamplePtr_ = nullptr;
+    std::atomic<float>* tone3MultisamplePtr_ = nullptr;
+    std::atomic<float>* tone4MultisamplePtr_ = nullptr;
     std::atomic<float>* filterResonancePtr_ = nullptr;
     std::atomic<float>* couplingModePtr_ = nullptr;
     std::atomic<float>* groupADrivePtr_ = nullptr;

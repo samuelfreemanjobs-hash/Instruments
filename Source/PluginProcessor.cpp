@@ -1,6 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include "Assets/FactoryPatchLibrary.h"
 #include "BinaryData.h"
 
 namespace
@@ -18,6 +19,10 @@ constexpr const char* kTone1WaveId = "tone1Wave";
 constexpr const char* kTone2WaveId = "tone2Wave";
 constexpr const char* kTone3WaveId = "tone3Wave";
 constexpr const char* kTone4WaveId = "tone4Wave";
+constexpr const char* kTone1MultisampleId = "tone1Multisample";
+constexpr const char* kTone2MultisampleId = "tone2Multisample";
+constexpr const char* kTone3MultisampleId = "tone3Multisample";
+constexpr const char* kTone4MultisampleId = "tone4Multisample";
 
 jdupgraded::dsp::ToneCouplingMode couplingFromIndex (int index) noexcept
 {
@@ -41,7 +46,7 @@ JDUpgradedAudioProcessor::JDUpgradedAudioProcessor()
     romLoader_.loadFactoryRom (BinaryData::jdupg_cleanroom_rom,
                                BinaryData::jdupg_cleanroom_romSize);
     refreshCachedParameters();
-    applyPatchesFromParameters();
+    applyFactoryPatch (0);
 }
 
 JDUpgradedAudioProcessor::~JDUpgradedAudioProcessor() = default;
@@ -89,6 +94,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout JDUpgradedAudioProcessor::cr
     params.push_back (std::make_unique<juce::AudioParameterInt> (
         juce::ParameterID { kTone4WaveId, 1 }, "Tone 4 Wave", 0, maxWave, 48));
 
+    const int maxMs = static_cast<int> (jdupgraded::assets::kMultisampleSetCount);
+    params.push_back (std::make_unique<juce::AudioParameterInt> (
+        juce::ParameterID { kTone1MultisampleId, 1 }, "Tone 1 Multisample", 0, maxMs, 0));
+    params.push_back (std::make_unique<juce::AudioParameterInt> (
+        juce::ParameterID { kTone2MultisampleId, 1 }, "Tone 2 Multisample", 0, maxMs, 0));
+    params.push_back (std::make_unique<juce::AudioParameterInt> (
+        juce::ParameterID { kTone3MultisampleId, 1 }, "Tone 3 Multisample", 0, maxMs, 0));
+    params.push_back (std::make_unique<juce::AudioParameterInt> (
+        juce::ParameterID { kTone4MultisampleId, 1 }, "Tone 4 Multisample", 0, maxMs, 0));
+
     return { params.begin(), params.end() };
 }
 
@@ -107,14 +122,91 @@ void JDUpgradedAudioProcessor::refreshCachedParameters() noexcept
     tone2WavePtr_ = apvts_.getRawParameterValue (kTone2WaveId);
     tone3WavePtr_ = apvts_.getRawParameterValue (kTone3WaveId);
     tone4WavePtr_ = apvts_.getRawParameterValue (kTone4WaveId);
+    tone1MultisamplePtr_ = apvts_.getRawParameterValue (kTone1MultisampleId);
+    tone2MultisamplePtr_ = apvts_.getRawParameterValue (kTone2MultisampleId);
+    tone3MultisamplePtr_ = apvts_.getRawParameterValue (kTone3MultisampleId);
+    tone4MultisamplePtr_ = apvts_.getRawParameterValue (kTone4MultisampleId);
 }
 
-const jdupgraded::dsp::PcmWaveform& JDUpgradedAudioProcessor::resolveWaveform (std::size_t waveIndex) const noexcept
+int JDUpgradedAudioProcessor::getNumPrograms()
 {
-    if (romLoader_.getBank().isLoaded())
-        return romLoader_.getBank().getWave (waveIndex);
+    return static_cast<int> (jdupgraded::assets::FactoryPatchLibrary::getPatchCount());
+}
 
-    return fallbackWaves_.getWave (waveIndex);
+int JDUpgradedAudioProcessor::getCurrentProgram()
+{
+    return currentProgram_;
+}
+
+void JDUpgradedAudioProcessor::setCurrentProgram (int index)
+{
+    const auto count = jdupgraded::assets::FactoryPatchLibrary::getPatchCount();
+    currentProgram_ = juce::jlimit (0, static_cast<int> (count) - 1, index);
+    applyFactoryPatch (currentProgram_);
+}
+
+const juce::String JDUpgradedAudioProcessor::getProgramName (int index)
+{
+    return juce::String (jdupgraded::assets::FactoryPatchLibrary::getPatch (static_cast<std::size_t> (index)).name);
+}
+
+void JDUpgradedAudioProcessor::setApvtsFloat (const char* paramId, float value)
+{
+    if (auto* param = apvts_.getParameter (paramId))
+        param->setValueNotifyingHost (param->convertTo0to1 (value));
+}
+
+void JDUpgradedAudioProcessor::setApvtsInt (const char* paramId, int value)
+{
+    if (auto* param = apvts_.getParameter (paramId))
+        param->setValueNotifyingHost (param->convertTo0to1 (static_cast<float> (value)));
+}
+
+void JDUpgradedAudioProcessor::setApvtsChoice (const char* paramId, int index)
+{
+    if (auto* param = dynamic_cast<juce::AudioParameterChoice*> (apvts_.getParameter (paramId)))
+        param->setValueNotifyingHost (param->convertTo0to1 (static_cast<float> (index)));
+}
+
+void JDUpgradedAudioProcessor::applyFactoryPatch (int index)
+{
+    const auto& patch = jdupgraded::assets::FactoryPatchLibrary::getPatch (static_cast<std::size_t> (index));
+
+    setApvtsFloat (kMasterGainId, patch.masterGain);
+    setApvtsFloat (kGroupADriveId, patch.groupADrive);
+    setApvtsFloat (kGroupBMixId, patch.groupBMix);
+
+    int couplingIndex = 0;
+    switch (patch.coupling)
+    {
+        case jdupgraded::dsp::ToneCouplingMode::ringPair01: couplingIndex = 1; break;
+        case jdupgraded::dsp::ToneCouplingMode::ringPair23: couplingIndex = 2; break;
+        case jdupgraded::dsp::ToneCouplingMode::crossModPair01: couplingIndex = 3; break;
+        case jdupgraded::dsp::ToneCouplingMode::crossModPair23: couplingIndex = 4; break;
+        case jdupgraded::dsp::ToneCouplingMode::hardSyncPair01: couplingIndex = 5; break;
+        case jdupgraded::dsp::ToneCouplingMode::hardSyncPair23: couplingIndex = 6; break;
+        default: break;
+    }
+    setApvtsChoice (kCouplingModeId, couplingIndex);
+
+    const char* levelIds[4] = { kTone1LevelId, kTone2LevelId, kTone3LevelId, kTone4LevelId };
+    const char* waveIds[4] = { kTone1WaveId, kTone2WaveId, kTone3WaveId, kTone4WaveId };
+    const char* msIds[4] = { kTone1MultisampleId, kTone2MultisampleId, kTone3MultisampleId, kTone4MultisampleId };
+
+    for (int t = 0; t < 4; ++t)
+    {
+        toneCoarseSemis_[static_cast<std::size_t> (t)] = patch.tones[static_cast<std::size_t> (t)].coarseSemis;
+        toneFilterCutoff_[static_cast<std::size_t> (t)] = patch.tones[static_cast<std::size_t> (t)].filterCutoffNorm;
+        toneFilterResonance_[static_cast<std::size_t> (t)] = patch.tones[static_cast<std::size_t> (t)].filterResonanceNorm;
+
+        setApvtsFloat (levelIds[t], patch.tones[static_cast<std::size_t> (t)].level);
+        setApvtsInt (waveIds[t], static_cast<int> (patch.tones[static_cast<std::size_t> (t)].waveIndex));
+        setApvtsInt (msIds[t], static_cast<int> (patch.tones[static_cast<std::size_t> (t)].multisampleSetId));
+    }
+
+    setApvtsFloat (kFilterResonanceId, patch.tones[0].filterResonanceNorm);
+    refreshCachedParameters();
+    applyPatchesFromParameters();
 }
 
 void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
@@ -128,7 +220,6 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
         tone4LevelPtr_ != nullptr ? tone4LevelPtr_->load() : 0.0f,
     };
 
-    const float resonance = filterResonancePtr_ != nullptr ? filterResonancePtr_->load() : 0.35f;
     int couplingIndex = 0;
     if (auto* couplingParam = dynamic_cast<juce::AudioParameterChoice*> (apvts_.getParameter (kCouplingModeId)))
         couplingIndex = couplingParam->getIndex();
@@ -143,12 +234,26 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
         tone4WavePtr_ != nullptr ? static_cast<std::size_t> (tone4WavePtr_->load()) : 48,
     };
 
+    const std::uint16_t multisampleIds[4] = {
+        tone1MultisamplePtr_ != nullptr ? static_cast<std::uint16_t> (tone1MultisamplePtr_->load()) : 0,
+        tone2MultisamplePtr_ != nullptr ? static_cast<std::uint16_t> (tone2MultisamplePtr_->load()) : 0,
+        tone3MultisamplePtr_ != nullptr ? static_cast<std::uint16_t> (tone3MultisamplePtr_->load()) : 0,
+        tone4MultisamplePtr_ != nullptr ? static_cast<std::uint16_t> (tone4MultisamplePtr_->load()) : 0,
+    };
+
+    const jdupgraded::assets::RomBank* bank = romLoader_.getBank().isLoaded() ? &romLoader_.getBank() : nullptr;
+
     for (std::size_t t = 0; t < jdupgraded::dsp::kTonesPerVoice; ++t)
     {
-        patches[t].waveform = &resolveWaveform (waveIndices[t]);
+        patches[t].romBank = bank;
+        patches[t].multisampleSetId = multisampleIds[t];
+        patches[t].waveIndex = static_cast<std::uint16_t> (waveIndices[t]);
+        patches[t].coarseSemis = toneCoarseSemis_[t];
+        patches[t].filterCutoffNorm = toneFilterCutoff_[t];
+        patches[t].filterResonanceNorm = toneFilterResonance_[t];
         patches[t].level = levels[t];
-        patches[t].filterResonanceNorm = resonance;
         patches[t].phaseModDepth = 0.0f;
+        patches[t].waveform = bank == nullptr ? &fallbackWaves_.getWave (waveIndices[t]) : nullptr;
     }
 
     if (coupling == jdupgraded::dsp::ToneCouplingMode::crossModPair01)

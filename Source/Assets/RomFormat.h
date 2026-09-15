@@ -7,8 +7,11 @@ namespace jdupgraded::assets
 {
 
 inline constexpr char kRomMagic[8] = { 'J', 'D', 'U', 'P', 'G', 'R', 'O', 'M' };
-inline constexpr std::uint32_t kRomVersion = 1;
-inline constexpr std::uint32_t kCleanroomWaveCount = 128;
+inline constexpr std::uint32_t kRomVersion = 2;
+inline constexpr std::uint32_t kCleanroomWaveCount = 256;
+inline constexpr std::uint32_t kSingleWaveCount = 64;
+inline constexpr std::uint32_t kMultisampleSetCount = 24;
+inline constexpr std::uint32_t kZonesPerSet = 8;
 
 enum class RomWaveCategory : std::uint16_t
 {
@@ -50,7 +53,8 @@ struct RomWaveEntry final
     std::uint32_t pcmOffsetBytes;
     std::int16_t rootMidiNote;
     std::uint16_t category;
-    std::uint16_t reserved;
+    /** Multisample set ID (0 = standalone wave). */
+    std::uint16_t multisampleSetId;
 };
 
 inline std::uint32_t crc32 (const std::uint8_t* data, std::size_t size) noexcept

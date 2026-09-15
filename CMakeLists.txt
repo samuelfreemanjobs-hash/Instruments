@@ -54,7 +54,9 @@ target_sources(JDUpgraded
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
         Source/DSP/VoicePool.cpp
+        Source/DSP/Tone.cpp
         Source/Assets/RomBank.cpp
+        Source/Assets/FactoryPatchLibrary.cpp
 )
 
 target_compile_definitions(JDUpgraded
