@@ -21,6 +21,12 @@ public:
     /** Roger Linn MPC-style swing on 16th-note pairs (0–100, 50 = straight). */
     static double swingDelayRatioForStep(int stepIndex, int swingPercent) noexcept;
 
+    /** Sample length of one 16th step with MPC swing (pair of 16ths stays one 8th long). */
+    static double samplesForSixteenthStep(double sampleRate,
+                                          double bpm,
+                                          int sixteenthIndex,
+                                          int swingPercent) noexcept;
+
     /** Call once per audio block; returns number of ticks crossed. */
     int advance(int numSamples, int ppqn) noexcept;
 

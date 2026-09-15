@@ -21,6 +21,8 @@ public:
     void attachAudioDeviceManager(juce::AudioDeviceManager& manager);
     void syncProjectToSequencer();
 
+    void setQLinkValue(int linkIndex, float value01);
+
     void setAppMode(model::AppMode mode);
     model::AppMode getAppMode() const noexcept { return workspace.getMode(); }
 

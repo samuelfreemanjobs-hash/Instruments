@@ -2,6 +2,23 @@
 
 namespace vmpc::model
 {
+double SequencerClock::samplesForSixteenthStep(double sampleRate,
+                                               double bpm,
+                                               int sixteenthIndex,
+                                               int swingPercent) noexcept
+{
+    const double sixteenth = sampleRate * 60.0 / juce::jmax(20.0, bpm) / 4.0;
+    if (swingPercent <= 50)
+        return sixteenth;
+
+    const double swing = juce::jlimit(0.0, 1.0, (static_cast<double>(swingPercent) - 50.0) / 50.0);
+    const double pair = sixteenth * 2.0;
+    const bool offbeat = (sixteenthIndex & 1) == 1;
+    const double first = pair * (0.5 - swing * 0.2);
+    const double second = pair - first;
+    return offbeat ? second : first;
+}
+
 double SequencerClock::swingDelayRatioForStep(int stepIndex, int swingPercent) noexcept
 {
     const bool offbeatSixteenth = (stepIndex % 2) == 1;

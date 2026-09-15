@@ -4,10 +4,10 @@
 #include "Controller/AppController.h"
 #include "View/Components/StepSequencerGrid.h"
 #include "View/Components/Mpc2000xlLcdDisplay.h"
+#include "View/Graphics/SevenSegmentDisplay.h"
 
 namespace vmpc::view
 {
-/** Electribe mode: 16-step row is the hero; parts + motion seq along the bottom. */
 class ElectribeModePanel : public juce::Component
 {
 public:
@@ -24,10 +24,14 @@ private:
 
     controller::AppController& appController;
     Mpc2000xlLcdDisplay lcd;
+    SevenSegmentDisplay bpmDisplay;
+    SevenSegmentDisplay stepDisplay;
     StepSequencerGrid stepRow;
     juce::OwnedArray<juce::TextButton> partButtons;
+    juce::OwnedArray<juce::TextButton> partMuteButtons;
     juce::TextButton motionBtn { "MOTION" };
     juce::Slider partLevel;
+    juce::Slider swingSlider;
     juce::Label partLabel;
     juce::Label hintLabel;
 };

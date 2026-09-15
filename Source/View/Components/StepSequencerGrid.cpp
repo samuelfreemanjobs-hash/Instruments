@@ -64,7 +64,8 @@ void StepSequencerGrid::paint(juce::Graphics& g)
         else
             layoutGrid4x4(area, i, r);
 
-        drawPad(g, r, patternCopy.getStep(i).active, i == playingStep);
+        const auto& st = patternCopy.getStep(i);
+        drawPad(g, r, st.active, i == playingStep, st.accent);
 
         if (layout == Layout::Row16Electribe)
         {
@@ -75,10 +76,10 @@ void StepSequencerGrid::paint(juce::Graphics& g)
     }
 }
 
-void StepSequencerGrid::drawPad(juce::Graphics& g, juce::Rectangle<int> r, bool active, bool playing) const
+void StepSequencerGrid::drawPad(juce::Graphics& g, juce::Rectangle<int> r, bool active, bool playing, bool accent) const
 {
     const auto face = juce::Colour(0xff2a2a2e);
-    const auto ledOn = juce::Colour(0xff3fffd6);
+    const auto ledOn = accent ? juce::Colour(0xffffe066) : juce::Colour(0xff3fffd6);
     g.setColour(face);
     g.fillRoundedRectangle(r.toFloat(), layout == Layout::Row16Electribe ? 3.0f : 4.0f);
     if (active)
@@ -121,6 +122,17 @@ void StepSequencerGrid::mouseDown(const juce::MouseEvent& e)
         return;
 
     auto& s = patternCopy.getStep(step);
+    if (e.mods.isRightButtonDown())
+    {
+        s.accent = !s.accent;
+        if (!s.active)
+            s.active = true;
+        repaint();
+        if (stepAccentToggled)
+            stepAccentToggled(step, s.accent);
+        return;
+    }
+
     s.active = !s.active;
     repaint();
     if (stepToggled)

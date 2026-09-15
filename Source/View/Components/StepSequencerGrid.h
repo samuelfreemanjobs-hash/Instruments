@@ -15,6 +15,7 @@ public:
     };
 
     using StepToggled = std::function<void(int stepIndex, bool active)>;
+    using StepAccentToggled = std::function<void(int stepIndex, bool accent)>;
 
     StepSequencerGrid();
 
@@ -26,12 +27,13 @@ public:
     void setPlayingStep(int step);
 
     void onStepToggled(StepToggled callback) { stepToggled = std::move(callback); }
+    void onStepAccentToggled(StepAccentToggled callback) { stepAccentToggled = std::move(callback); }
 
     bool isStepActive(int index) const;
 
 private:
     int hitTestStep(juce::Point<int> pos) const;
-    void drawPad(juce::Graphics& g, juce::Rectangle<int> r, bool active, bool playing) const;
+    void drawPad(juce::Graphics& g, juce::Rectangle<int> r, bool active, bool playing, bool accent) const;
     void layoutGrid4x4(juce::Rectangle<int> area, int stepIndex, juce::Rectangle<int>& out) const;
     void layoutRow16(juce::Rectangle<int> area, int stepIndex, juce::Rectangle<int>& out) const;
 
@@ -39,5 +41,6 @@ private:
     vmpc::model::SixteenStepPattern patternCopy;
     int playingStep = -1;
     StepToggled stepToggled;
+    StepAccentToggled stepAccentToggled;
 };
 } // namespace vmpc::view

@@ -13,19 +13,23 @@
 - [x] **Electribe mode default** — 16-step row + 8 parts (`ElectribeSequencer`)
 - [x] Maschine pads/scenes, Session clip grid, FL playlist (UI + model stubs)
 
-## Phase 2 — Graphics & UI (in progress)
+## Phase 2 — Graphics & UI ✅ (foundation)
 
 - [x] `VMpcLookAndFeel` (matte black / walnut / ice-blue)
 - [x] `Mpc2000xlLcdDisplay`, `StepSequencerGrid`, `PianoRollGrid`, `MixerChannelStrip`
-- [ ] Pixel-match UI mockup layout (Q-Link, full mixer, hardware shell)
-- [ ] 7-segment LED font + vector studio emblem assets
+- [x] Hardware shell frame, Q-Link strip, 4-channel mixer bank (MPC mode)
+- [x] `SevenSegmentDisplay` for BPM / step readouts
+- [ ] Pixel-perfect mockup match (full 16-pad deck, emblem art)
+- [ ] Dedicated 7-segment typeface asset (vector paths)
 
-## Phase 3 — Sequencer engine (partial)
+## Phase 3 — Sequencer engine (in progress)
 
 - [x] `SequencerClock` with PPQN advancement
 - [x] `SixteenStepPattern` + `SequencerCore` → MIDI in audio callback
-- [ ] Full track list, timestamped events, quantized + unquantized ticks
-- [ ] MPC swing applied per-step in clock (helper stub in `SequencerClock`)
+- [x] `SequencerSong` / `SequencerTrack` event lists (scaffold)
+- [x] MPC swing on Electribe 16th steps (`samplesForSixteenthStep`)
+- [ ] Quantized + unquantized tick recording per event
+- [ ] Swing on MPC `SequencerCore` path
 
 ## Phase 4 — Audio & DSP
 

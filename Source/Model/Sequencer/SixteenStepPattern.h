@@ -8,6 +8,7 @@ namespace vmpc::model
 struct StepState
 {
     bool active = false;
+    bool accent = false;
     uint8_t velocity = 100;
     uint8_t flamOffsetTicks = 0; // future: flam timing in PPQN
 };

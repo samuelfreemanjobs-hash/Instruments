@@ -41,7 +41,9 @@ void SequencerCore::processBlock(int numSamples, juce::MidiBuffer& midiOut)
             const auto& step = pattern.getStep(stepIndex);
             if (step.active)
             {
-                midiOut.addEvent(juce::MidiMessage::noteOn(1, 36, static_cast<juce::uint8>(step.velocity)), 0);
+                const int vel = step.accent ? juce::jmin(127, static_cast<int>(step.velocity) + 20)
+                                            : static_cast<int>(step.velocity);
+                midiOut.addEvent(juce::MidiMessage::noteOn(1, 36, static_cast<juce::uint8>(vel)), 0);
                 midiOut.addEvent(juce::MidiMessage::noteOff(1, 36), juce::jmin(numSamples - 1, 64));
             }
 

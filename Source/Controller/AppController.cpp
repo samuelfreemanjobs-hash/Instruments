@@ -33,6 +33,22 @@ void AppController::syncProjectToSequencer()
 
     audioEngine.getElectribeSequencer().setBpm(bpm);
     audioEngine.getElectribeSequencer().setSwing(swing);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        const auto key = "qlink" + juce::String(i);
+        const float v = static_cast<float>(tree.getProperty(key, 0.5));
+        juce::ignoreUnused(v);
+    }
+}
+
+void AppController::setQLinkValue(int linkIndex, float value01)
+{
+    if (linkIndex < 0 || linkIndex >= 4)
+        return;
+
+    const auto key = "qlink" + juce::String(linkIndex);
+    project.getTree().setProperty(key, juce::jlimit(0.0f, 1.0f, value01), nullptr);
 }
 
 void AppController::setAppMode(model::AppMode mode)

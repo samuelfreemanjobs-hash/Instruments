@@ -43,6 +43,8 @@ target_sources(VMPC2000XL
         Source/Model/Sequencer/SixteenStepPattern.cpp
         Source/Model/Sequencer/SequencerClock.cpp
         Source/Model/Sequencer/SequencerCore.cpp
+        Source/Model/Sequencer/SequencerTrack.cpp
+        Source/Model/Sequencer/SequencerSong.cpp
         Source/Audio/AudioEngine.cpp
         Source/Audio/RealTimeConstraints.h
         Source/View/LookAndFeel/VMpcLookAndFeel.cpp
@@ -50,6 +52,10 @@ target_sources(VMPC2000XL
         Source/View/Components/StepSequencerGrid.cpp
         Source/View/Components/PianoRollGrid.cpp
         Source/View/Components/MixerChannelStrip.cpp
+        Source/View/Components/MixerBank.cpp
+        Source/View/Components/HardwareShellFrame.cpp
+        Source/View/Components/QLinkSliderStrip.cpp
+        Source/View/Graphics/SevenSegmentDisplay.cpp
         Source/View/Components/ModeToolbar.cpp
         Source/View/Modes/ElectribeModePanel.cpp
         Source/View/Modes/HybridMpcModePanel.cpp
