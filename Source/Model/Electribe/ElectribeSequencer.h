@@ -20,6 +20,9 @@ public:
         scheduleNextStepDuration();
     }
 
+    void setTransportRunning(bool shouldRun) noexcept { transportRunning = shouldRun; }
+    bool isTransportRunning() const noexcept { return transportRunning; }
+
     void prepare(double sampleRate);
     void reset();
 
@@ -40,6 +43,7 @@ private:
     int64 ticksPerStep = 0;
     int stepIndex = 0;
     double samplesUntilNextStep = 0.0;
+    bool transportRunning = false;
     std::atomic<int> playingStepForUi { 0 };
 };
 } // namespace vmpc::model

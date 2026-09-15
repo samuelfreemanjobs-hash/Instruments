@@ -16,8 +16,10 @@ struct ElectribeStep
 struct ElectribePart
 {
     juce::String name { "PART" };
+    juce::String sampleTag { "SAMPLE" };
     int midiNote = 36;
     bool muted = false;
+    bool solo = false;
     float level = 0.8f;
     std::array<ElectribeStep, 16> steps {};
 };
@@ -29,14 +31,27 @@ struct ElectribePart
 class ElectribeSong
 {
 public:
-    static constexpr int kNumParts = 8;
+    static constexpr int kNumParts = 14;
     static constexpr int kSteps = 16;
 
-    ElectribePart& getPart(int index) noexcept { return parts[static_cast<size_t>(index & 7)]; }
-    const ElectribePart& getPart(int index) const noexcept { return parts[static_cast<size_t>(index & 7)]; }
+    ElectribePart& getPart(int index) noexcept
+    {
+        return parts[static_cast<size_t>(juce::jlimit(0, kNumParts - 1, index))];
+    }
+
+    const ElectribePart& getPart(int index) const noexcept
+    {
+        return parts[static_cast<size_t>(juce::jlimit(0, kNumParts - 1, index))];
+    }
 
     int getSelectedPart() const noexcept { return selectedPart; }
     void setSelectedPart(int part) noexcept { selectedPart = juce::jlimit(0, kNumParts - 1, part); }
+
+    juce::String getPatternName() const { return patternName; }
+    void setPatternName(const juce::String& n) { patternName = n; }
+
+    bool isMotionRecArmed() const noexcept { return motionRecArmed; }
+    void setMotionRecArmed(bool on) noexcept { motionRecArmed = on; }
 
     bool isMotionSeqEnabled() const noexcept { return motionSeqEnabled; }
     void setMotionSeqEnabled(bool on) noexcept { motionSeqEnabled = on; }
@@ -45,5 +60,7 @@ private:
     std::array<ElectribePart, kNumParts> parts {};
     int selectedPart = 0;
     bool motionSeqEnabled = false;
+    bool motionRecArmed = true;
+    juce::String patternName { "A.01: BOOMBAP_GRV" };
 };
 } // namespace vmpc::model

@@ -60,6 +60,11 @@ target_sources(VMPC2000XL
         Source/View/Graphics/SevenSegmentDisplay.cpp
         Source/View/Components/ModeToolbar.cpp
         Source/View/Modes/ElectribeModePanel.cpp
+        Source/View/Electribe/EsxTransportHeader.cpp
+        Source/View/Electribe/EsxPartsMatrix.cpp
+        Source/View/Electribe/ValveForceStrip.cpp
+        Source/View/Electribe/MotionLaneBar.cpp
+        Source/View/Electribe/EsxTouchRibbon.cpp
         Source/View/Modes/HybridMpcModePanel.cpp
         Source/View/Modes/MaschineModePanel.cpp
         Source/View/Modes/SessionModePanel.cpp

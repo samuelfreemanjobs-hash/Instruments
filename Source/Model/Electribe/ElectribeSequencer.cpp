@@ -64,6 +64,9 @@ void ElectribeSequencer::processBlock(int numSamples, juce::MidiBuffer& midiOut)
     if (song == nullptr || numSamples <= 0)
         return;
 
+    if (!transportRunning)
+        return;
+
     int remaining = numSamples;
     while (remaining > 0)
     {

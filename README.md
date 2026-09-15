@@ -1,6 +1,6 @@
 # VMPC2000XL Modern Hybrid DAW
 
-C++20 / JUCE foundation for a cross-platform MPC2000XL-inspired **hybrid DAW** combining workflows from **Electribe** (default step-sequencer mode), **MPC**, **Maschine**, **Ableton Session**, and **FL Studio patterns**. See [docs/HYBRID_FEATURES.md](docs/HYBRID_FEATURES.md).
+C++20 / JUCE **hybrid DAW** (VMPC2000XL): multi-window workstation with a full **Electribe ESX** groovebox surface, MPC pad mode, Maschine, Session, and Pattern screens. combining workflows from **Electribe** (default step-sequencer mode), **MPC**, **Maschine**, **Ableton Session**, and **FL Studio patterns**. See [docs/HYBRID_FEATURES.md](docs/HYBRID_FEATURES.md).
 
 ## Build
 

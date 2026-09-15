@@ -73,4 +73,25 @@ void AppController::notifyModeChanged(model::AppMode mode)
 {
     listeners.call([mode](Listener& l) { l.appModeChanged(mode); });
 }
+
+void AppController::setTransportPlaying(bool playing)
+{
+    audioEngine.getElectribeSequencer().setTransportRunning(playing);
+    notifyTransport(playing);
+}
+
+bool AppController::isTransportPlaying() const noexcept
+{
+    return audioEngine.getElectribeSequencer().isTransportRunning();
+}
+
+void AppController::toggleTransport()
+{
+    setTransportPlaying(!isTransportPlaying());
+}
+
+void AppController::notifyTransport(bool playing)
+{
+    listeners.call([playing](Listener& l) { l.transportStateChanged(playing); });
+}
 } // namespace vmpc::controller

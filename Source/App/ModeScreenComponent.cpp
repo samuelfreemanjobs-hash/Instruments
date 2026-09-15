@@ -9,10 +9,13 @@ ModeScreenComponent::ModeScreenComponent(vmpc::model::AppMode mode, controller::
     setWantsKeyboardFocus(true);
     setLookAndFeel(&lookAndFeel);
 
-    header.setText("VMPC2000XL — " + vmpc::model::appModeToString(mode), juce::dontSendNotification);
-    header.setJustificationType(juce::Justification::centredLeft);
-    header.setColour(juce::Label::textColourId, lookAndFeel.iceBlue);
-    addAndMakeVisible(header);
+    if (mode != vmpc::model::AppMode::Electribe)
+    {
+        header.setText("VMPC2000XL — " + vmpc::model::appModeToString(mode), juce::dontSendNotification);
+        header.setJustificationType(juce::Justification::centredLeft);
+        header.setColour(juce::Label::textColourId, lookAndFeel.iceBlue);
+        addAndMakeVisible(header);
+    }
 
     switch (mode)
     {
@@ -72,9 +75,10 @@ void ModeScreenComponent::paint(juce::Graphics& g)
 void ModeScreenComponent::resized()
 {
     auto bounds = getLocalBounds();
-    header.setBounds(bounds.removeFromTop(28).reduced(10, 4));
+    if (header.isVisible())
+        header.setBounds(bounds.removeFromTop(28).reduced(10, 4));
     if (modePanel != nullptr)
-        modePanel->setBounds(bounds.reduced(4));
+        modePanel->setBounds(bounds.reduced(appMode == vmpc::model::AppMode::Electribe ? 0 : 4));
 }
 
 void ModeScreenComponent::timerCallback()

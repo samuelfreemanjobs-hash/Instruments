@@ -1,77 +1,43 @@
 #include "ElectribeModePanel.h"
+#include "View/Design/StudioColours.h"
 
 namespace vmpc::view
 {
 ElectribeModePanel::ElectribeModePanel(controller::AppController& controller)
     : appController(controller)
+    , transport(controller)
 {
-    stepRow.setLayout(StepSequencerGrid::Layout::Row16Electribe);
+    oledBanner.setText("ELECTRIBE ESX HYBRID", juce::dontSendNotification);
+    oledBanner.setJustificationType(juce::Justification::centred);
+    oledBanner.setFont(juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 12.0f, juce::Font::bold));
+    oledBanner.setColour(juce::Label::textColourId, studio::iceOled());
+    addAndMakeVisible(oledBanner);
+    addAndMakeVisible(transport);
+    addAndMakeVisible(valveForce);
+    addAndMakeVisible(partsMatrix);
 
-    partLabel.setJustificationType(juce::Justification::centredLeft);
-    partLabel.setColour(juce::Label::textColourId, juce::Colour(0xff6ec8e8));
-    addAndMakeVisible(partLabel);
-    addAndMakeVisible(lcd);
-    addAndMakeVisible(bpmDisplay);
-    addAndMakeVisible(stepDisplay);
-    addAndMakeVisible(stepRow);
-
-    hintLabel.setText("Dedicated Electribe screen — focus window to drive audio. Right-click step = accent.",
-                      juce::dontSendNotification);
-    hintLabel.setFont(juce::FontOptions(11.0f));
-    hintLabel.setColour(juce::Label::textColourId, juce::Colours::white.withAlpha(0.45f));
-    addAndMakeVisible(hintLabel);
-
-    for (int i = 0; i < vmpc::model::ElectribeSong::kNumParts; ++i)
+    for (auto* s : { &cutoff, &resonance, &egInt, &drive })
     {
-        auto* b = partButtons.add(new juce::TextButton(juce::String(i + 1)));
-        b->setClickingTogglesState(true);
-        b->setRadioGroupId(7000);
-        b->onClick = [this, i]() {
-            appController.getWorkspace().getElectribeSong().setSelectedPart(i);
-            refreshFromModel();
-        };
-        addAndMakeVisible(b);
-
-        auto* m = partMuteButtons.add(new juce::TextButton("M"));
-        m->onClick = [this, i]() {
-            auto& part = appController.getWorkspace().getElectribeSong().getPart(i);
-            part.muted = !part.muted;
-            refreshFromModel();
-        };
-        addAndMakeVisible(m);
+        s->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+        s->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+        s->setRange(0.0, 1.0, 0.001);
+        s->setValue(0.5);
+        addAndMakeVisible(s);
     }
 
-    motionBtn.setClickingTogglesState(true);
-    motionBtn.onClick = [this]() {
-        appController.getWorkspace().getElectribeSong().setMotionSeqEnabled(motionBtn.getToggleState());
-    };
-    addAndMakeVisible(motionBtn);
+    addAndMakeVisible(motionLanes);
+    stepRow.setLayout(StepSequencerGrid::Layout::Row16Electribe);
+    addAndMakeVisible(stepRow);
 
-    partLevel.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    partLevel.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    partLevel.setRange(0.0, 1.0, 0.01);
-    partLevel.onValueChange = [this]() {
-        auto& song = appController.getWorkspace().getElectribeSong();
-        song.getPart(song.getSelectedPart()).level = static_cast<float>(partLevel.getValue());
-    };
-    addAndMakeVisible(partLevel);
+    addAndMakeVisible(touchRibbon);
 
-    swingSlider.setSliderStyle(juce::Slider::LinearHorizontal);
-    swingSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 18);
-    swingSlider.setRange(50, 75, 1);
-    swingSlider.setValue(appController.getProject().getTree().getProperty("swing", 54));
-    swingSlider.onValueChange = [this]() {
-        const int swing = static_cast<int>(swingSlider.getValue());
-        appController.getProject().getTree().setProperty("swing", swing, nullptr);
-        appController.syncProjectToSequencer();
-    };
-    addAndMakeVisible(swingSlider);
+    partsMatrix.bindSong(&appController.getWorkspace().getElectribeSong());
+    partsMatrix.onPartChanged([this](int) { refreshFromModel(); });
 
     stepRow.onStepToggled([this](int step, bool active) {
         auto& song = appController.getWorkspace().getElectribeSong();
         auto& part = song.getPart(song.getSelectedPart());
         part.steps[static_cast<size_t>(step)].active = active;
-        lcd.setStatusLine(part.name + " step " + juce::String(step + 1) + (active ? " ON" : " OFF"));
     });
 
     stepRow.onStepAccentToggled([this](int step, bool accent) {
@@ -79,6 +45,7 @@ ElectribeModePanel::ElectribeModePanel(controller::AppController& controller)
         song.getPart(song.getSelectedPart()).steps[static_cast<size_t>(step)].accent = accent;
     });
 
+    appController.setTransportPlaying(false);
     refreshFromModel();
 }
 
@@ -94,77 +61,55 @@ void ElectribeModePanel::syncStepGridFromPart()
         pattern.getStep(i).accent = part.steps[static_cast<size_t>(i)].accent;
     }
     stepRow.setPattern(pattern);
-    partLevel.setValue(part.level, juce::dontSendNotification);
-    partLabel.setText(part.name, juce::dontSendNotification);
-
-    const int bpm = static_cast<int>(appController.getProject().getTree().getProperty("bpm", 120.0));
-    bpmDisplay.setText(juce::String(bpm));
-}
-
-void ElectribeModePanel::syncPartButtons()
-{
-    const int sel = appController.getWorkspace().getElectribeSong().getSelectedPart();
-    for (int i = 0; i < partButtons.size(); ++i)
-    {
-        const auto& part = appController.getWorkspace().getElectribeSong().getPart(i);
-        partButtons[i]->setToggleState(i == sel, juce::dontSendNotification);
-        partMuteButtons[i]->setColour(juce::TextButton::buttonColourId,
-                                      part.muted ? juce::Colour(0xff802020) : juce::Colour(0xff2a3038));
-    }
-    motionBtn.setToggleState(appController.getWorkspace().getElectribeSong().isMotionSeqEnabled(),
-                             juce::dontSendNotification);
 }
 
 void ElectribeModePanel::refreshFromModel()
 {
     syncStepGridFromPart();
-    syncPartButtons();
-    lcd.setStatusLine("ELECTRIBE / " + appController.getWorkspace().getElectribeSong().getPart(
-                          appController.getWorkspace().getElectribeSong().getSelectedPart())
-                          .name);
+    partsMatrix.repaint();
 }
 
 void ElectribeModePanel::updateTransportUi(int playingStep)
 {
     stepRow.setPlayingStep(playingStep);
-    stepDisplay.setText(juce::String(playingStep + 1).paddedLeft('0', 2));
 }
 
 void ElectribeModePanel::paint(juce::Graphics& g)
 {
-    g.fillAll(juce::Colour(0xff101014));
-    g.setColour(juce::Colour(0xff3fffd6).withAlpha(0.15f));
-    g.drawRoundedRectangle(getLocalBounds().reduced(6).toFloat(), 6.0f, 1.0f);
+    g.fillAll(studio::obsidian1());
+
+    auto filterArea = getLocalBounds().withTrimmedTop(getHeight() * 42 / 100).withHeight(getHeight() * 14 / 100);
+    filterArea = filterArea.reduced(10, 0);
+    g.setColour(studio::obsidian2());
+    g.fillRoundedRectangle(filterArea.toFloat(), 4.0f);
+
+    g.setColour(studio::iceOled().withAlpha(0.8f));
+    juce::Path curve;
+    const auto c = filterArea.reduced(120, 8).toFloat();
+    curve.startNewSubPath(c.getX(), c.getBottom() - 8);
+    curve.quadraticTo(c.getCentreX(), c.getY() + 4, c.getRight(), c.getY() + 18);
+    g.strokePath(curve, juce::PathStrokeType(2.0f));
 }
 
 void ElectribeModePanel::resized()
 {
-    auto bounds = getLocalBounds().reduced(12);
-    hintLabel.setBounds(bounds.removeFromTop(18));
+    auto bounds = getLocalBounds();
+    transport.setBounds(bounds.removeFromTop(36));
+    oledBanner.setBounds(bounds.removeFromTop(24));
+    valveForce.setBounds(bounds.removeFromTop(100).reduced(8, 4));
+    partsMatrix.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.32f).reduced(8, 4));
 
-    auto header = bounds.removeFromTop(100);
-    bpmDisplay.setBounds(header.removeFromRight(56).reduced(0, 8));
-    stepDisplay.setBounds(header.removeFromRight(40).reduced(0, 8));
-    lcd.setBounds(header.reduced(0, 4));
+    auto filterRow = bounds.removeFromTop(72).reduced(8, 4);
+    const int kw = filterRow.getWidth() / 5;
+    cutoff.setBounds(filterRow.removeFromLeft(kw));
+    resonance.setBounds(filterRow.removeFromLeft(kw));
+    egInt.setBounds(filterRow.removeFromLeft(kw));
+    drive.setBounds(filterRow.removeFromLeft(kw));
 
-    stepRow.setBounds(bounds.removeFromTop(bounds.getHeight() * 58 / 100).reduced(0, 8));
-
-    auto bottom = bounds;
-    partLabel.setBounds(bottom.removeFromTop(20));
-    swingSlider.setBounds(bottom.removeFromTop(24).reduced(0, 2));
-
-    auto partRow = bottom.removeFromTop(40);
-    const int cols = vmpc::model::ElectribeSong::kNumParts;
-    const int colW = partRow.getWidth() / cols;
-    for (int i = 0; i < cols; ++i)
-    {
-        auto col = partRow.removeFromLeft(colW).reduced(2);
-        partButtons[i]->setBounds(col.removeFromTop(col.getHeight() * 2 / 3));
-        partMuteButtons[i]->setBounds(col);
-    }
-
-    auto controls = bottom;
-    motionBtn.setBounds(controls.removeFromLeft(80).reduced(2));
-    partLevel.setBounds(controls.removeFromRight(72).reduced(4));
+    auto deck = bounds.reduced(8);
+    touchRibbon.setBounds(deck.removeFromLeft(48));
+    motionLanes.setBounds(deck.removeFromTop(deck.getHeight() * 0.45f));
+    stepRow.setBounds(deck);
 }
+
 } // namespace vmpc::view

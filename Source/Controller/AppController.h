@@ -14,6 +14,7 @@ public:
     {
         virtual ~Listener() = default;
         virtual void appModeChanged(vmpc::model::AppMode mode) = 0;
+        virtual void transportStateChanged(bool playing) {}
     };
 
     AppController(model::ProjectState& projectState, audio::AudioEngine& engine);
@@ -26,6 +27,10 @@ public:
     void setAppMode(model::AppMode mode);
     model::AppMode getAppMode() const noexcept { return workspace.getMode(); }
 
+    void setTransportPlaying(bool playing);
+    bool isTransportPlaying() const noexcept;
+    void toggleTransport();
+
     model::ProjectState& getProject() noexcept { return project; }
     model::HybridWorkspace& getWorkspace() noexcept { return workspace; }
     audio::AudioEngine& getEngine() noexcept { return audioEngine; }
@@ -35,6 +40,7 @@ public:
 
 private:
     void notifyModeChanged(model::AppMode mode);
+    void notifyTransport(bool playing);
 
     model::ProjectState& project;
     model::HybridWorkspace workspace;
