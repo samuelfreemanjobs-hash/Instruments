@@ -15,6 +15,25 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(JUCE)
 
+set(GENERATED_ROM_DIR "${CMAKE_BINARY_DIR}/generated")
+set(GENERATED_ROM_FILE "${GENERATED_ROM_DIR}/jdupg_cleanroom.rom")
+
+add_executable(GenerateCleanroomRom tools/GenerateCleanroomRom.cpp)
+target_include_directories(GenerateCleanroomRom PRIVATE "${CMAKE_SOURCE_DIR}/Source")
+
+add_custom_command(
+    OUTPUT "${GENERATED_ROM_FILE}"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${GENERATED_ROM_DIR}"
+    COMMAND GenerateCleanroomRom "${GENERATED_ROM_FILE}"
+    DEPENDS GenerateCleanroomRom
+    COMMENT "Synthesizing cleanroom JDUPG ROM (128 waves)"
+)
+
+add_custom_target(JDUpgraded_GenerateRom DEPENDS "${GENERATED_ROM_FILE}")
+
+juce_add_binary_data(JDUpgradedRomData SOURCES "${GENERATED_ROM_FILE}")
+add_dependencies(JDUpgradedRomData JDUpgraded_GenerateRom)
+
 juce_add_plugin(JDUpgraded
     COMPANY_NAME "Instruments"
     BUNDLE_ID com.instruments.jdupgraded
@@ -35,6 +54,7 @@ target_sources(JDUpgraded
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
         Source/DSP/VoicePool.cpp
+        Source/Assets/RomBank.cpp
 )
 
 target_compile_definitions(JDUpgraded
@@ -49,10 +69,15 @@ target_link_libraries(JDUpgraded
     PRIVATE
         juce::juce_audio_utils
         juce::juce_dsp
+        JDUpgradedRomData
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
 )
 
-target_include_directories(JDUpgraded PRIVATE Source)
+target_include_directories(JDUpgraded
+    PRIVATE
+        Source
+        "${CMAKE_BINARY_DIR}/juce_binarydata_JDUpgradedRomData/JuceLibraryCode"
+)

@@ -3,6 +3,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 
 #include "Assets/CleanroomWaveLibrary.h"
+#include "Assets/RomLoader.h"
 #include "DSP/Effects/GroupADistortion.h"
 #include "DSP/Effects/GroupBSpatial.h"
 #include "DSP/VoicePool.h"
@@ -39,15 +40,18 @@ public:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     juce::AudioProcessorValueTreeState& getAPVTS() noexcept { return apvts_; }
+    const jdupgraded::assets::RomBank& getRomBank() const noexcept { return romLoader_.getBank(); }
 
 private:
     void refreshCachedParameters() noexcept;
     void applyPatchesFromParameters() noexcept;
     void handleMidi (const juce::MidiBuffer& midi) noexcept;
+    const jdupgraded::dsp::PcmWaveform& resolveWaveform (std::size_t waveIndex) const noexcept;
 
     juce::AudioProcessorValueTreeState apvts_;
     jdupgraded::dsp::VoicePool voicePool_;
-    jdupgraded::assets::CleanroomWaveLibrary waveLibrary_;
+    jdupgraded::assets::RomLoader romLoader_;
+    jdupgraded::assets::CleanroomWaveLibrary fallbackWaves_;
     jdupgraded::dsp::GroupADistortion groupA_;
     jdupgraded::dsp::GroupBSpatial groupB_;
 
@@ -58,6 +62,10 @@ private:
     std::atomic<float>* tone2LevelPtr_ = nullptr;
     std::atomic<float>* tone3LevelPtr_ = nullptr;
     std::atomic<float>* tone4LevelPtr_ = nullptr;
+    std::atomic<float>* tone1WavePtr_ = nullptr;
+    std::atomic<float>* tone2WavePtr_ = nullptr;
+    std::atomic<float>* tone3WavePtr_ = nullptr;
+    std::atomic<float>* tone4WavePtr_ = nullptr;
     std::atomic<float>* filterResonancePtr_ = nullptr;
     std::atomic<float>* couplingModePtr_ = nullptr;
     std::atomic<float>* groupADrivePtr_ = nullptr;

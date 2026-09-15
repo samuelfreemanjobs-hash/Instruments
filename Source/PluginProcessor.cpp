@@ -1,6 +1,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include "BinaryData.h"
+
 namespace
 {
 constexpr const char* kMasterGainId = "masterGain";
@@ -12,6 +14,10 @@ constexpr const char* kFilterResonanceId = "filterResonance";
 constexpr const char* kCouplingModeId = "couplingMode";
 constexpr const char* kGroupADriveId = "groupADrive";
 constexpr const char* kGroupBMixId = "groupBMix";
+constexpr const char* kTone1WaveId = "tone1Wave";
+constexpr const char* kTone2WaveId = "tone2Wave";
+constexpr const char* kTone3WaveId = "tone3Wave";
+constexpr const char* kTone4WaveId = "tone4Wave";
 
 jdupgraded::dsp::ToneCouplingMode couplingFromIndex (int index) noexcept
 {
@@ -32,6 +38,8 @@ JDUpgradedAudioProcessor::JDUpgradedAudioProcessor()
     : AudioProcessor (BusesProperties().withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
       apvts_ (*this, nullptr, "Parameters", createParameterLayout())
 {
+    romLoader_.loadFactoryRom (BinaryData::jdupg_cleanroom_rom,
+                               BinaryData::jdupg_cleanroom_romSize);
     refreshCachedParameters();
     applyPatchesFromParameters();
 }
@@ -71,6 +79,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout JDUpgradedAudioProcessor::cr
         juce::ParameterID { kGroupBMixId, 1 }, "Group B Space",
         juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.0f));
 
+    const int maxWave = static_cast<int> (jdupgraded::assets::kCleanroomWaveCount) - 1;
+    params.push_back (std::make_unique<juce::AudioParameterInt> (
+        juce::ParameterID { kTone1WaveId, 1 }, "Tone 1 Wave", 0, maxWave, 0));
+    params.push_back (std::make_unique<juce::AudioParameterInt> (
+        juce::ParameterID { kTone2WaveId, 1 }, "Tone 2 Wave", 0, maxWave, 16));
+    params.push_back (std::make_unique<juce::AudioParameterInt> (
+        juce::ParameterID { kTone3WaveId, 1 }, "Tone 3 Wave", 0, maxWave, 32));
+    params.push_back (std::make_unique<juce::AudioParameterInt> (
+        juce::ParameterID { kTone4WaveId, 1 }, "Tone 4 Wave", 0, maxWave, 48));
+
     return { params.begin(), params.end() };
 }
 
@@ -85,6 +103,18 @@ void JDUpgradedAudioProcessor::refreshCachedParameters() noexcept
     couplingModePtr_ = apvts_.getRawParameterValue (kCouplingModeId);
     groupADrivePtr_ = apvts_.getRawParameterValue (kGroupADriveId);
     groupBMixPtr_ = apvts_.getRawParameterValue (kGroupBMixId);
+    tone1WavePtr_ = apvts_.getRawParameterValue (kTone1WaveId);
+    tone2WavePtr_ = apvts_.getRawParameterValue (kTone2WaveId);
+    tone3WavePtr_ = apvts_.getRawParameterValue (kTone3WaveId);
+    tone4WavePtr_ = apvts_.getRawParameterValue (kTone4WaveId);
+}
+
+const jdupgraded::dsp::PcmWaveform& JDUpgradedAudioProcessor::resolveWaveform (std::size_t waveIndex) const noexcept
+{
+    if (romLoader_.getBank().isLoaded())
+        return romLoader_.getBank().getWave (waveIndex);
+
+    return fallbackWaves_.getWave (waveIndex);
 }
 
 void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
@@ -99,14 +129,23 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
     };
 
     const float resonance = filterResonancePtr_ != nullptr ? filterResonancePtr_->load() : 0.35f;
-    const int couplingIndex = couplingModePtr_ != nullptr ? static_cast<int> (couplingModePtr_->load()) : 0;
+    int couplingIndex = 0;
+    if (auto* couplingParam = dynamic_cast<juce::AudioParameterChoice*> (apvts_.getParameter (kCouplingModeId)))
+        couplingIndex = couplingParam->getIndex();
     const auto coupling = couplingFromIndex (couplingIndex);
 
     voicePool_.setCouplingMode (coupling);
 
+    const std::size_t waveIndices[4] = {
+        tone1WavePtr_ != nullptr ? static_cast<std::size_t> (tone1WavePtr_->load()) : 0,
+        tone2WavePtr_ != nullptr ? static_cast<std::size_t> (tone2WavePtr_->load()) : 16,
+        tone3WavePtr_ != nullptr ? static_cast<std::size_t> (tone3WavePtr_->load()) : 32,
+        tone4WavePtr_ != nullptr ? static_cast<std::size_t> (tone4WavePtr_->load()) : 48,
+    };
+
     for (std::size_t t = 0; t < jdupgraded::dsp::kTonesPerVoice; ++t)
     {
-        patches[t].waveform = &waveLibrary_.getWave (t);
+        patches[t].waveform = &resolveWaveform (waveIndices[t]);
         patches[t].level = levels[t];
         patches[t].filterResonanceNorm = resonance;
         patches[t].phaseModDepth = 0.0f;

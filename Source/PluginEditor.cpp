@@ -27,7 +27,7 @@ void JDUpgradedAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colour (0xff1a1a22));
     g.setColour (juce::Colours::white.withAlpha (0.9f));
-    g.drawFittedText ("Four tones per voice · 32-sample control rate · zero heap in audio",
+    g.drawFittedText ("128-wave cleanroom ROM embedded · four tones per voice",
                       getLocalBounds().removeFromBottom (36),
                       juce::Justification::centred, 1);
 }

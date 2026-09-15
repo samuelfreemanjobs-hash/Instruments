@@ -2,7 +2,7 @@
 
 Clean-room JUCE VST3/standalone synthesizer inspired by the Roland JD-800 / JD-990 architecture: four tones per voice, PCM waveforms, rate/level envelopes, and (upcoming) TVF, modulation, and multi-effects modeling.
 
-**Legal**: This repository does not include proprietary Roland ROM or SysEx bank data. Phase 3 adds a user-supplied ROM loader and optional cleanroom waveforms only.
+**Legal**: Factory sound comes from **`jdupg_cleanroom.rom`** — 128 procedurally synthesized waves (see [docs/ROM.md](docs/ROM.md)). No Roland ROM is bundled. Optional user dump loading may follow in a later phase.
 
 ## Build
 
