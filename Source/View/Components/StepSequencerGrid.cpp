@@ -1,6 +1,6 @@
 #include "StepSequencerGrid.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 StepSequencerGrid::StepSequencerGrid()
 {
@@ -15,14 +15,14 @@ void StepSequencerGrid::setLayout(Layout newLayout)
 
 bool StepSequencerGrid::isStepActive(int index) const
 {
-    if (index < 0 || index >= vmpc::model::SixteenStepPattern::kNumSteps)
+    if (index < 0 || index >= resonance::model::SixteenStepPattern::kNumSteps)
         return false;
     return patternCopy.getStep(index).active;
 }
 
-void StepSequencerGrid::setPattern(const vmpc::model::SixteenStepPattern& pattern)
+void StepSequencerGrid::setPattern(const resonance::model::SixteenStepPattern& pattern)
 {
-    for (int i = 0; i < vmpc::model::SixteenStepPattern::kNumSteps; ++i)
+    for (int i = 0; i < resonance::model::SixteenStepPattern::kNumSteps; ++i)
         patternCopy.getStep(i) = pattern.getStep(i);
     repaint();
 }
@@ -56,7 +56,7 @@ void StepSequencerGrid::paint(juce::Graphics& g)
 {
     const auto area = getLocalBounds();
 
-    for (int i = 0; i < vmpc::model::SixteenStepPattern::kNumSteps; ++i)
+    for (int i = 0; i < resonance::model::SixteenStepPattern::kNumSteps; ++i)
     {
         juce::Rectangle<int> r;
         if (layout == Layout::Row16Electribe)
@@ -100,7 +100,7 @@ int StepSequencerGrid::hitTestStep(juce::Point<int> pos) const
 {
     const auto area = getLocalBounds();
 
-    for (int i = 0; i < vmpc::model::SixteenStepPattern::kNumSteps; ++i)
+    for (int i = 0; i < resonance::model::SixteenStepPattern::kNumSteps; ++i)
     {
         juce::Rectangle<int> r;
         if (layout == Layout::Row16Electribe)
@@ -126,4 +126,4 @@ void StepSequencerGrid::mouseDown(const juce::MouseEvent& e)
     if (stepToggled)
         stepToggled(step, s.active);
 }
-} // namespace vmpc::view
+} // namespace resonance::view

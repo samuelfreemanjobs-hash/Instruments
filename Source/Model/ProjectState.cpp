@@ -1,7 +1,7 @@
 #include "ProjectState.h"
 #include "Audio/RealTimeConstraints.h"
 
-namespace vmpc::model
+namespace resonance::model
 {
 ProjectState::ProjectState()
 {
@@ -15,13 +15,13 @@ void ProjectState::resetToDefaults()
     project.setProperty("appMode", "Electribe", nullptr);
     project.setProperty("bpm", 120.0, nullptr);
     project.setProperty("swing", 50, nullptr);
-    project.setProperty("ppqn", vmpc::audio::kDefaultPpqn, nullptr);
+    project.setProperty("ppqn", resonance::audio::kDefaultPpqn, nullptr);
 }
 
 juce::File ProjectState::getDefaultProjectFile() const
 {
     return juce::File::getSpecialLocation(juce::File::userDocumentsDirectory)
-        .getChildFile("VMPC2000XL")
-        .getChildFile("Untitled.vmpc");
+        .getChildFile("Resonance")
+        .getChildFile("Untitled.resonance");
 }
-} // namespace vmpc::model
+} // namespace resonance::model

@@ -1,14 +1,14 @@
 #include "PluginRackPanel.h"
 #include "Audio/Internal/InternalPluginTypes.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
-vmpc::audio::PluginSlotLocation PluginRackPanel::masterSlot(int index) noexcept
+resonance::audio::PluginSlotLocation PluginRackPanel::masterSlot(int index) noexcept
 {
-    return { vmpc::audio::PluginSlotLocation::Bus::Master, 0, index };
+    return { resonance::audio::PluginSlotLocation::Bus::Master, 0, index };
 }
 
-PluginRackPanel::PluginRackPanel(vmpc::audio::PluginHostService& host)
+PluginRackPanel::PluginRackPanel(resonance::audio::PluginHostService& host)
     : pluginHost(host)
 {
     pluginHost.addListener(this);
@@ -38,7 +38,7 @@ PluginRackPanel::PluginRackPanel(vmpc::audio::PluginHostService& host)
     vibeResultLabel.setColour(juce::Label::textColourId, juce::Colour(0xfff59e0b));
     addAndMakeVisible(vibeResultLabel);
 
-    statusLabel.setText("Or load VMPC internal mix tools / external VST3·LV2·AU per slot. MIDI goes to instrument slots.",
+    statusLabel.setText("Or load Resonance internal mix tools / external VST3·LV2·AU per slot. MIDI goes to instrument slots.",
                         juce::dontSendNotification);
     statusLabel.setColour(juce::Label::textColourId, juce::Colours::grey);
     addAndMakeVisible(statusLabel);
@@ -46,7 +46,7 @@ PluginRackPanel::PluginRackPanel(vmpc::audio::PluginHostService& host)
     scanButton.addListener(this);
     addAndMakeVisible(scanButton);
 
-    for (int i = 0; i < vmpc::audio::PluginSlotChain::kMasterSlots; ++i)
+    for (int i = 0; i < resonance::audio::PluginSlotChain::kMasterSlots; ++i)
     {
         auto& ui = slots[static_cast<size_t>(i)];
         ui.slotIndex = i;
@@ -177,12 +177,12 @@ void PluginRackPanel::showPluginPicker(int slotIndex)
 
     juce::PopupMenu internalMenu;
     int internalBase = 1000;
-    for (const auto& info : vmpc::audio::internal::allMixPlugins())
+    for (const auto& info : resonance::audio::internal::allMixPlugins())
     {
         internalMenu.addItem(internalBase + static_cast<int>(info.id),
                              info.displayName + " — " + info.description);
     }
-    menu.addSubMenu("VMPC internal mix", internalMenu);
+    menu.addSubMenu("Resonance internal mix", internalMenu);
 
     const int externalBase = 2000;
     int externalId = externalBase;
@@ -199,7 +199,7 @@ void PluginRackPanel::showPluginPicker(int slotIndex)
 
                            if (result >= 1000 && result < externalBase)
                            {
-                               const auto id = static_cast<vmpc::audio::internal::MixPluginId>(result - 1000);
+                               const auto id = static_cast<resonance::audio::internal::MixPluginId>(result - 1000);
                                pluginHost.loadInternalMixPlugin(masterSlot(slotIndex), id);
                                statusLabel.setText("Internal mix plug-in loaded.", juce::dontSendNotification);
                                refreshSlotLabels();
@@ -239,11 +239,11 @@ void PluginRackPanel::pluginScanFinished()
 void PluginRackPanel::refreshSlotLabels()
 {
     const auto states = pluginHost.getMasterChain().getSlotStates();
-    for (int i = 0; i < vmpc::audio::PluginSlotChain::kMasterSlots; ++i)
+    for (int i = 0; i < resonance::audio::PluginSlotChain::kMasterSlots; ++i)
     {
         const auto& state = states[static_cast<size_t>(i)];
         auto& ui = slots[static_cast<size_t>(i)];
-        const bool internal = state.name.startsWith("VMPC ");
+        const bool internal = state.name.startsWith("Resonance ");
         ui.pluginName.setText(state.loaded ? state.name + (state.isInstrument ? " [instrument]"
                                                                              : internal ? " [internal]"
                                                                                         : " [FX]")
@@ -253,4 +253,4 @@ void PluginRackPanel::refreshSlotLabels()
         ui.clearButton.setEnabled(state.loaded);
     }
 }
-} // namespace vmpc::view
+} // namespace resonance::view

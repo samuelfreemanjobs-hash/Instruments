@@ -7,7 +7,7 @@
 #include "Model/Electribe/ElectribeSong.h"
 #include <atomic>
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 class MixConsole;
 
@@ -55,4 +55,4 @@ private:
     std::atomic<float> peakL { 0.0f };
     std::atomic<float> peakR { 0.0f };
 };
-} // namespace vmpc::audio
+} // namespace resonance::audio

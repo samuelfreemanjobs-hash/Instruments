@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include "Controller/AppController.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 class MaschineModePanel : public juce::Component
 {
@@ -21,4 +21,4 @@ private:
     juce::OwnedArray<juce::TextButton> sceneButtons;
     juce::TextButton groupBtn { "GROUP A" };
 };
-} // namespace vmpc::view
+} // namespace resonance::view

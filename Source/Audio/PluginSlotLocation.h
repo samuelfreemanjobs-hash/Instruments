@@ -4,7 +4,7 @@
 #include "PluginSlotChain.h"
 #include "MixConsole.h"
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 struct PluginSlotLocation
 {
@@ -38,4 +38,4 @@ inline bool operator==(const PluginSlotLocation& a, const PluginSlotLocation& b)
 {
     return a.bus == b.bus && a.channelIndex == b.channelIndex && a.slotIndex == b.slotIndex;
 }
-} // namespace vmpc::audio
+} // namespace resonance::audio

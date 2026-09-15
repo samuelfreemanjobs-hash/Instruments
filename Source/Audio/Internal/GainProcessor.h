@@ -2,7 +2,7 @@
 
 #include "InternalMixProcessor.h"
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 class GainProcessor : public InternalMixProcessor
 {
@@ -20,4 +20,4 @@ private:
     juce::AudioParameterFloat* gainDb = nullptr;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> gainLinear;
 };
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

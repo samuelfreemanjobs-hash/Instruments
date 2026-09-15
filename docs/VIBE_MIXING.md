@@ -1,6 +1,6 @@
 # Vibe Mixing
 
-**Vibe Mixing** is how VMPC2000XL turns language into mix moves. You describe the *feel* you want; the DAW interprets that brief and **creates a preset** — an ordered chain of internal VMPC plug-ins with parameters set to match your vibe.
+**Vibe Mixing** is how Resonance turns language into mix moves. You describe the *feel* you want; the DAW interprets that brief and **creates a preset** — an ordered chain of internal Resonance plug-ins with parameters set to match your vibe.
 
 It is not a replacement for your ears or external VSTs. It is a fast starting point: type → chain → refine with **UI** on each slot or by hand.
 

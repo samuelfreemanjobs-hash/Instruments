@@ -2,13 +2,13 @@
 
 #include <JuceHeader.h>
 
-namespace vmpc::model
+namespace resonance::model
 {
 /** Phase 5: full project persistence via ValueTree. */
 class ProjectState
 {
 public:
-    static inline const juce::Identifier rootId { "VMPC2000XL" };
+    static inline const juce::Identifier rootId { "Resonance" };
     static inline const juce::Identifier projectId { "Project" };
 
     ProjectState();
@@ -23,4 +23,4 @@ public:
 private:
     juce::ValueTree project;
 };
-} // namespace vmpc::model
+} // namespace resonance::model

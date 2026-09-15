@@ -1,9 +1,9 @@
 #include "GainProcessor.h"
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 GainProcessor::GainProcessor()
-    : InternalMixProcessor("VMPC Gain")
+    : InternalMixProcessor("Resonance Gain")
 {
     addParameter(gainDb = new juce::AudioParameterFloat(
         juce::ParameterID { "gainDb", 1 },
@@ -37,4 +37,4 @@ juce::AudioProcessorEditor* GainProcessor::createEditor()
 {
     return new juce::GenericAudioProcessorEditor(*this);
 }
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

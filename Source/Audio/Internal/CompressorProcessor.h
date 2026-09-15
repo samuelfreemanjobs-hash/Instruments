@@ -3,7 +3,7 @@
 #include "InternalMixProcessor.h"
 #include <juce_dsp/juce_dsp.h>
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 class CompressorProcessor : public InternalMixProcessor
 {
@@ -27,4 +27,4 @@ private:
     juce::dsp::Compressor<float> compressor;
     juce::dsp::ProcessSpec spec {};
 };
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

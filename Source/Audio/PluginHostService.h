@@ -8,7 +8,7 @@
 #include <functional>
 #include <unordered_map>
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 class AudioEngine;
 
@@ -76,4 +76,4 @@ private:
     juce::ListenerList<Listener> listeners;
     std::function<void()> mixingChanged;
 };
-} // namespace vmpc::audio
+} // namespace resonance::audio

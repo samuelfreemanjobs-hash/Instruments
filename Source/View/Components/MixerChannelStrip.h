@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 
-namespace vmpc::view
+namespace resonance::view
 {
 /** Fader, mute/solo, EQ curve sketch, meter ladder (Phase 2/4). */
 class MixerChannelStrip : public juce::Component
@@ -24,4 +24,4 @@ private:
     juce::TextButton soloBtn { "S" };
     float meterPeak = 0.0f;
 };
-} // namespace vmpc::view
+} // namespace resonance::view

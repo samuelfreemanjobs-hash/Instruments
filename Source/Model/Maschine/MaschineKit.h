@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include <array>
 
-namespace vmpc::model
+namespace resonance::model
 {
 /** Maschine-inspired: Groups (A–H), Scenes, 16 pads per group. */
 struct MaschinePad
@@ -51,4 +51,4 @@ private:
     int activeScene = 0;
     bool keyboardMode = false;
 };
-} // namespace vmpc::model
+} // namespace resonance::model

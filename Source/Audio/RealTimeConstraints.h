@@ -3,7 +3,7 @@
 // Real-time audio thread contract (Phase 1+).
 // Anything invoked from AudioEngine::audioDeviceIOCallbackWithContext must obey these rules.
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 // No heap allocation (new, malloc, std::vector::push_back, juce::String, etc.)
 // No mutexes or blocking primitives on the audio thread
@@ -12,4 +12,4 @@ namespace vmpc::audio
 // Prefer pre-allocated buffers and fixed-size structures
 
 constexpr int kDefaultPpqn = 960;
-} // namespace vmpc::audio
+} // namespace resonance::audio

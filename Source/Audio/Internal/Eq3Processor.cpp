@@ -1,9 +1,9 @@
 #include "Eq3Processor.h"
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 Eq3Processor::Eq3Processor()
-    : InternalMixProcessor("VMPC EQ-3")
+    : InternalMixProcessor("Resonance EQ-3")
 {
     addParameter(lowGain = new juce::AudioParameterFloat(
         juce::ParameterID { "low", 1 },
@@ -75,4 +75,4 @@ juce::AudioProcessorEditor* Eq3Processor::createEditor()
 {
     return new juce::GenericAudioProcessorEditor(*this);
 }
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

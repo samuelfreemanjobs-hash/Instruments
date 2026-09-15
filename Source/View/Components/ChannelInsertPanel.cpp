@@ -1,9 +1,9 @@
 #include "ChannelInsertPanel.h"
 #include "Audio/Internal/InternalPluginTypes.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
-ChannelInsertPanel::ChannelInsertPanel(vmpc::audio::PluginHostService& host, int channelIndex)
+ChannelInsertPanel::ChannelInsertPanel(resonance::audio::PluginHostService& host, int channelIndex)
     : pluginHost(host)
     , channel(channelIndex)
 {
@@ -13,7 +13,7 @@ ChannelInsertPanel::ChannelInsertPanel(vmpc::audio::PluginHostService& host, int
     heading.setFont(juce::FontOptions(15.0f).withStyle("Bold"));
     addAndMakeVisible(heading);
 
-    for (int i = 0; i < vmpc::audio::PluginSlotChain::kChannelInsertSlots; ++i)
+    for (int i = 0; i < resonance::audio::PluginSlotChain::kChannelInsertSlots; ++i)
     {
         auto& ui = inserts[static_cast<size_t>(i)];
         ui.slot = i;
@@ -36,9 +36,9 @@ ChannelInsertPanel::~ChannelInsertPanel()
     pluginHost.removeListener(this);
 }
 
-vmpc::audio::PluginSlotLocation ChannelInsertPanel::location(int slotIndex) const noexcept
+resonance::audio::PluginSlotLocation ChannelInsertPanel::location(int slotIndex) const noexcept
 {
-    return { vmpc::audio::PluginSlotLocation::Bus::Channel, channel, slotIndex };
+    return { resonance::audio::PluginSlotLocation::Bus::Channel, channel, slotIndex };
 }
 
 void ChannelInsertPanel::paint(juce::Graphics& g)
@@ -93,9 +93,9 @@ void ChannelInsertPanel::showPicker(int slotIndex)
 
     int internalBase = 1000;
     juce::PopupMenu internalMenu;
-    for (const auto& info : vmpc::audio::internal::allMixPlugins())
+    for (const auto& info : resonance::audio::internal::allMixPlugins())
         internalMenu.addItem(internalBase + static_cast<int>(info.id), info.displayName);
-    menu.addSubMenu("VMPC internal", internalMenu);
+    menu.addSubMenu("Resonance internal", internalMenu);
 
     const int externalBase = 2000;
     int id = externalBase;
@@ -112,7 +112,7 @@ void ChannelInsertPanel::showPicker(int slotIndex)
                            if (result >= 1000 && result < externalBase)
                            {
                                pluginHost.loadInternalMixPlugin(
-                                   loc, static_cast<vmpc::audio::internal::MixPluginId>(result - 1000));
+                                   loc, static_cast<resonance::audio::internal::MixPluginId>(result - 1000));
                                refresh();
                                return;
                            }
@@ -144,4 +144,4 @@ void ChannelInsertPanel::refresh()
         ui.clear.setEnabled(state.loaded);
     }
 }
-} // namespace vmpc::view
+} // namespace resonance::view

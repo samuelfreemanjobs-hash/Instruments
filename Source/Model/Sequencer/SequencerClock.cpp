@@ -1,6 +1,6 @@
 #include "SequencerClock.h"
 
-namespace vmpc::model
+namespace resonance::model
 {
 double SequencerClock::swingDelayRatioForStep(int stepIndex, int swingPercent) noexcept
 {
@@ -41,4 +41,4 @@ int SequencerClock::advance(int numSamples, int ppqn) noexcept
 
     return ticksCrossed;
 }
-} // namespace vmpc::model
+} // namespace resonance::model

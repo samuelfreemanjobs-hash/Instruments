@@ -5,7 +5,7 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  GUI thread (View + Controller)                             │
-│  MainComponent, custom Components, VMpcLookAndFeel          │
+│  MainComponent, custom Components, StudioLookAndFeel          │
 │  AppController ──reads/writes──► ProjectState (ValueTree)   │
 └───────────────────────────┬─────────────────────────────────┘
                             │ lock-free / Atomic / AsyncUpdater
@@ -33,4 +33,4 @@ Documented constraints for anything called from `audioDeviceIOCallbackWithContex
 
 ## Persistence
 
-`ProjectState` wraps `juce::ValueTree` (`VMPC2000XL/Project`) for Phase 5 save/load.
+`ProjectState` wraps `juce::ValueTree` (`Resonance/Project`) for Phase 5 save/load.

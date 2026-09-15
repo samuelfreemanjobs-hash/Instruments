@@ -1,6 +1,6 @@
 # VST / plug-in hosting
 
-VMPC2000XL is a **hybrid DAW** with a built-in plug-in host (JUCE `AudioPluginFormatManager`).
+Resonance is a **hybrid DAW** with a built-in plug-in host (JUCE `AudioPluginFormatManager`).
 
 ## Supported formats
 
@@ -22,7 +22,7 @@ Use **Scan VST plug-ins** in the rack at the bottom of the main window after ins
 
 ## Rack behaviour
 
-- **8 slots** — load instruments and/or effects (including [built-in VMPC mix plug-ins](INTERNAL_PLUGINS.md)).
+- **8 slots** — load instruments and/or effects (including [built-in Resonance mix plug-ins](INTERNAL_PLUGINS.md)).
 - **Instrument** plug-ins (accept MIDI) receive MIDI from the active mode’s sequencer and are summed.
 - **Effect** plug-ins process the mixed output in slot order.
 - **UI** opens the plug-in’s native editor window.
@@ -35,5 +35,5 @@ Plug-in load/unload and editor UI run on the **message thread** only. The audio 
 
 Discovered plug-ins are cached at:
 
-`~/Library/Application Support/Instruments/VMPC2000XL/known_plugins.xml` (macOS)  
-or the platform-equivalent **Application Data** / `Instruments/VMPC2000XL/` folder.
+`~/Library/Application Support/Instruments/Resonance/known_plugins.xml` (macOS)  
+or the platform-equivalent **Application Data** / `Instruments/Resonance/` folder.

@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include <vector>
 
-namespace vmpc::model
+namespace resonance::model
 {
 /** FL Studio: channel patterns + playlist arrangement. */
 struct StepPattern
@@ -45,4 +45,4 @@ private:
     int selectedPattern = 0;
     bool songMode = false;
 };
-} // namespace vmpc::model
+} // namespace resonance::model

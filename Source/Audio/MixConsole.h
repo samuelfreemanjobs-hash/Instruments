@@ -4,7 +4,7 @@
 #include <array>
 #include <atomic>
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 /** Master rack + per-channel insert strips (post-mix serial FX until multitrack buses land). */
 class MixConsole
@@ -43,4 +43,4 @@ private:
     std::array<std::atomic<bool>, kNumChannels> channelInsertActive {};
     juce::AudioBuffer<float> workBuffer;
 };
-} // namespace vmpc::audio
+} // namespace resonance::audio

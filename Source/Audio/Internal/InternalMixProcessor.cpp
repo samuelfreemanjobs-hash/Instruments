@@ -1,6 +1,6 @@
 #include "InternalMixProcessor.h"
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 InternalMixProcessor::InternalMixProcessor(const juce::String& pluginName)
     : AudioProcessor(stereoLayout())
@@ -25,7 +25,7 @@ bool InternalMixProcessor::isBusesLayoutSupported(const BusesLayout& layouts) co
 
 void InternalMixProcessor::getStateInformation(juce::MemoryBlock& dest)
 {
-    juce::ValueTree state("VMPCInternalState");
+    juce::ValueTree state("ResonanceInternalState");
     for (auto* param : getParameters())
     {
         if (auto* floatParam = dynamic_cast<juce::AudioParameterFloat*>(param))
@@ -54,4 +54,4 @@ void InternalMixProcessor::setStateInformation(const void* data, int sizeInBytes
         }
     }
 }
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

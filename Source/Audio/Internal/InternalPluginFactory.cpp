@@ -7,7 +7,7 @@
 #include "HpfProcessor.h"
 #include "DeEsserProcessor.h"
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 std::unique_ptr<juce::AudioProcessor> createMixPlugin(MixPluginId id)
 {
@@ -31,4 +31,4 @@ std::unique_ptr<juce::AudioProcessor> createMixPlugin(MixPluginId id)
 
     return nullptr;
 }
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

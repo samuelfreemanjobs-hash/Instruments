@@ -1,14 +1,14 @@
 #include "MixerBank.h"
 #include "ChannelInsertPanel.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 namespace
 {
 class InsertWindow : public juce::DocumentWindow
 {
 public:
-    InsertWindow(int channel, vmpc::audio::PluginHostService& host)
+    InsertWindow(int channel, resonance::audio::PluginHostService& host)
         : DocumentWindow("Channel " + juce::String(channel + 1) + " inserts",
                          juce::Colour(0xff111318),
                          DocumentWindow::closeButton)
@@ -30,7 +30,7 @@ MixerBank::MixerBank(controller::AppController& controller)
     title.setColour(juce::Label::textColourId, juce::Colour(0xff38bdf8));
     addAndMakeVisible(title);
 
-    for (int i = 0; i < vmpc::audio::MixConsole::kNumChannels; ++i)
+    for (int i = 0; i < resonance::audio::MixConsole::kNumChannels; ++i)
     {
         strips[static_cast<size_t>(i)] = std::make_unique<MixerChannelStrip>("CH " + juce::String(i + 1));
         addAndMakeVisible(*strips[static_cast<size_t>(i)]);
@@ -57,8 +57,8 @@ void MixerBank::resized()
     title.setBounds(area.removeFromTop(20));
     area.removeFromTop(4);
 
-    const int stripW = juce::jmax(56, area.getWidth() / vmpc::audio::MixConsole::kNumChannels);
-    for (int i = 0; i < vmpc::audio::MixConsole::kNumChannels; ++i)
+    const int stripW = juce::jmax(56, area.getWidth() / resonance::audio::MixConsole::kNumChannels);
+    for (int i = 0; i < resonance::audio::MixConsole::kNumChannels; ++i)
     {
         auto col = area.removeFromLeft(stripW).reduced(2);
         insertButtons[static_cast<size_t>(i)].setBounds(col.removeFromBottom(22));
@@ -68,7 +68,7 @@ void MixerBank::resized()
 
 void MixerBank::buttonClicked(juce::Button* button)
 {
-    for (int i = 0; i < vmpc::audio::MixConsole::kNumChannels; ++i)
+    for (int i = 0; i < resonance::audio::MixConsole::kNumChannels; ++i)
     {
         if (button == &insertButtons[static_cast<size_t>(i)])
         {
@@ -85,7 +85,7 @@ void MixerBank::openInsertsForChannel(int channelIndex)
 
 void MixerBank::meterUpdate(int channel, float peak)
 {
-    if (channel >= 0 && channel < vmpc::audio::MixConsole::kNumChannels && strips[static_cast<size_t>(channel)] != nullptr)
+    if (channel >= 0 && channel < resonance::audio::MixConsole::kNumChannels && strips[static_cast<size_t>(channel)] != nullptr)
         strips[static_cast<size_t>(channel)]->meterUpdate(peak);
 }
-} // namespace vmpc::view
+} // namespace resonance::view

@@ -1,6 +1,6 @@
 #include "SessionMatrix.h"
 
-namespace vmpc::model
+namespace resonance::model
 {
 void SessionMatrix::launchScene(int sceneIndex)
 {
@@ -12,4 +12,4 @@ void SessionMatrix::launchScene(int sceneIndex)
             c.isPlaying = true;
     }
 }
-} // namespace vmpc::model
+} // namespace resonance::model

@@ -3,7 +3,7 @@
 #include "InternalMixProcessor.h"
 #include <juce_dsp/juce_dsp.h>
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 class HpfProcessor : public InternalMixProcessor
 {
@@ -24,4 +24,4 @@ private:
     juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> filter[2];
     double sampleRateHz = 44100.0;
 };
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

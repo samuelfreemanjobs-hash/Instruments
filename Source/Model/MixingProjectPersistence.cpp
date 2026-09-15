@@ -2,7 +2,7 @@
 #include "Audio/Internal/InternalPluginTypes.h"
 #include "Audio/PluginSlotLocation.h"
 
-namespace vmpc::model
+namespace resonance::model
 {
 namespace
 {
@@ -29,14 +29,14 @@ void captureSlot(juce::ValueTree& parent, int slotIndex, juce::AudioProcessor* p
     juce::String kind = "external";
     juce::String internalId;
 
-    if (processor->getName().startsWith("VMPC "))
+    if (processor->getName().startsWith("Resonance "))
     {
         kind = "internal";
-        for (const auto& info : vmpc::audio::internal::allMixPlugins())
+        for (const auto& info : resonance::audio::internal::allMixPlugins())
         {
             if (processor->getName() == info.displayName)
             {
-                internalId = vmpc::audio::internal::mixPluginIdToString(info.id);
+                internalId = resonance::audio::internal::mixPluginIdToString(info.id);
                 break;
             }
         }
@@ -57,7 +57,7 @@ void captureSlot(juce::ValueTree& parent, int slotIndex, juce::AudioProcessor* p
 }
 } // namespace
 
-void writeMixingToProject(juce::ValueTree& projectRoot, vmpc::audio::PluginHostService& host)
+void writeMixingToProject(juce::ValueTree& projectRoot, resonance::audio::PluginHostService& host)
 {
     juce::ValueTree mixing(mixingRootId);
     auto& console = host.getMixConsole();
@@ -72,7 +72,7 @@ void writeMixingToProject(juce::ValueTree& projectRoot, vmpc::audio::PluginHostS
     }
     mixing.addChild(master, -1, nullptr);
 
-    for (int ch = 0; ch < vmpc::audio::MixConsole::kNumChannels; ++ch)
+    for (int ch = 0; ch < resonance::audio::MixConsole::kNumChannels; ++ch)
     {
         juce::ValueTree channelNode(channelId);
         channelNode.setProperty("index", ch, nullptr);
@@ -94,7 +94,7 @@ void writeMixingToProject(juce::ValueTree& projectRoot, vmpc::audio::PluginHostS
     projectRoot.appendChild(mixing, nullptr);
 }
 
-void readMixingFromProject(const juce::ValueTree& projectRoot, vmpc::audio::PluginHostService& host)
+void readMixingFromProject(const juce::ValueTree& projectRoot, resonance::audio::PluginHostService& host)
 {
     const auto mixing = projectRoot.getChildWithName(mixingRootId);
     if (!mixing.isValid())
@@ -102,17 +102,17 @@ void readMixingFromProject(const juce::ValueTree& projectRoot, vmpc::audio::Plug
 
     auto& console = host.getMixConsole();
 
-    for (int i = 0; i < vmpc::audio::PluginSlotChain::kMasterSlots; ++i)
+    for (int i = 0; i < resonance::audio::PluginSlotChain::kMasterSlots; ++i)
     {
-        const vmpc::audio::PluginSlotLocation loc { vmpc::audio::PluginSlotLocation::Bus::Master, 0, i };
+        const resonance::audio::PluginSlotLocation loc { resonance::audio::PluginSlotLocation::Bus::Master, 0, i };
         host.clearSlot(loc);
     }
 
-    for (int ch = 0; ch < vmpc::audio::MixConsole::kNumChannels; ++ch)
+    for (int ch = 0; ch < resonance::audio::MixConsole::kNumChannels; ++ch)
     {
-        for (int s = 0; s < vmpc::audio::PluginSlotChain::kChannelInsertSlots; ++s)
+        for (int s = 0; s < resonance::audio::PluginSlotChain::kChannelInsertSlots; ++s)
         {
-            const vmpc::audio::PluginSlotLocation loc { vmpc::audio::PluginSlotLocation::Bus::Channel, ch, s };
+            const resonance::audio::PluginSlotLocation loc { resonance::audio::PluginSlotLocation::Bus::Channel, ch, s };
             host.clearSlot(loc);
         }
     }
@@ -125,14 +125,14 @@ void readMixingFromProject(const juce::ValueTree& projectRoot, vmpc::audio::Plug
             continue;
 
         const int index = static_cast<int>(slot.getProperty("index", 0));
-        vmpc::audio::PluginSlotLocation loc { vmpc::audio::PluginSlotLocation::Bus::Master, 0, index };
+        resonance::audio::PluginSlotLocation loc { resonance::audio::PluginSlotLocation::Bus::Master, 0, index };
 
         juce::MemoryBlock state;
         state.fromBase64Encoding(slot.getProperty("state").toString());
 
         if (slot.getProperty("kind").toString() == "internal")
         {
-            const auto id = vmpc::audio::internal::mixPluginIdFromString(slot.getProperty("internalId").toString());
+            const auto id = resonance::audio::internal::mixPluginIdFromString(slot.getProperty("internalId").toString());
             host.loadInternalMixPlugin(loc, id);
             if (auto* proc = host.getProcessorAt(loc))
                 proc->setStateInformation(state.getData(), static_cast<int>(state.getSize()));
@@ -179,14 +179,14 @@ void readMixingFromProject(const juce::ValueTree& projectRoot, vmpc::audio::Plug
                 continue;
 
             const int slotIndex = static_cast<int>(slot.getProperty("index", 0));
-            vmpc::audio::PluginSlotLocation loc { vmpc::audio::PluginSlotLocation::Bus::Channel, ch, slotIndex };
+            resonance::audio::PluginSlotLocation loc { resonance::audio::PluginSlotLocation::Bus::Channel, ch, slotIndex };
 
             juce::MemoryBlock state;
             state.fromBase64Encoding(slot.getProperty("state").toString());
 
             if (slot.getProperty("kind").toString() == "internal")
             {
-                const auto id = vmpc::audio::internal::mixPluginIdFromString(slot.getProperty("internalId").toString());
+                const auto id = resonance::audio::internal::mixPluginIdFromString(slot.getProperty("internalId").toString());
                 host.loadInternalMixPlugin(loc, id);
                 if (auto* proc = host.getProcessorAt(loc))
                     proc->setStateInformation(state.getData(), static_cast<int>(state.getSize()));
@@ -219,4 +219,4 @@ void readMixingFromProject(const juce::ValueTree& projectRoot, vmpc::audio::Plug
 
     console.refreshChannelInsertFlags();
 }
-} // namespace vmpc::model
+} // namespace resonance::model

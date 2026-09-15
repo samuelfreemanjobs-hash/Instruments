@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include <array>
 
-namespace vmpc::model
+namespace resonance::model
 {
 /** Ableton Live Session View: tracks × scenes clip slots. */
 enum class ClipLaunchMode
@@ -54,4 +54,4 @@ private:
     double quantizeBeats = 1.0; // 1 bar
     bool sessionRecord = false;
 };
-} // namespace vmpc::model
+} // namespace resonance::model

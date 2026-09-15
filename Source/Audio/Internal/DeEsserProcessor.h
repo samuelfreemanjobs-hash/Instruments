@@ -3,7 +3,7 @@
 #include "InternalMixProcessor.h"
 #include <juce_dsp/juce_dsp.h>
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 class DeEsserProcessor : public InternalMixProcessor
 {
@@ -26,4 +26,4 @@ private:
     juce::dsp::ProcessSpec spec {};
     juce::AudioBuffer<float> bandBuffer;
 };
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

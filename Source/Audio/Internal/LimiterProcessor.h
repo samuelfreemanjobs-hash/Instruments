@@ -3,7 +3,7 @@
 #include "InternalMixProcessor.h"
 #include <juce_dsp/juce_dsp.h>
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 class LimiterProcessor : public InternalMixProcessor
 {
@@ -24,4 +24,4 @@ private:
     juce::dsp::Limiter<float> limiter;
     juce::dsp::ProcessSpec spec {};
 };
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

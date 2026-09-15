@@ -4,10 +4,10 @@
 #include "Audio/AudioEngine.h"
 #include "Controller/AppController.h"
 
-class VMpc2000XLApplication : public juce::JUCEApplication
+class ResonanceApplication : public juce::JUCEApplication
 {
 public:
-    const juce::String getApplicationName() override { return "VMPC2000XL Hybrid DAW"; }
+    const juce::String getApplicationName() override { return "Resonance Hybrid DAW"; }
     const juce::String getApplicationVersion() override { return "0.1.0"; }
     bool moreThanOneInstanceAllowed() override { return false; }
 
@@ -15,9 +15,9 @@ public:
     {
         juce::ignoreUnused(commandLine);
 
-        projectState = std::make_unique<vmpc::model::ProjectState>();
-        audioEngine = std::make_unique<vmpc::audio::AudioEngine>();
-        appController = std::make_unique<vmpc::controller::AppController>(*projectState, *audioEngine);
+        projectState = std::make_unique<resonance::model::ProjectState>();
+        audioEngine = std::make_unique<resonance::audio::AudioEngine>();
+        appController = std::make_unique<resonance::controller::AppController>(*projectState, *audioEngine);
 
         deviceManager = std::make_unique<juce::AudioDeviceManager>();
         deviceManager->initialiseWithDefaultDevices(0, 2);
@@ -46,7 +46,7 @@ private:
     class MainWindow : public juce::DocumentWindow
     {
     public:
-        MainWindow(juce::String name, vmpc::controller::AppController& controller, const juce::File& projectFile)
+        MainWindow(juce::String name, resonance::controller::AppController& controller, const juce::File& projectFile)
             : DocumentWindow(name,
                              juce::Desktop::getInstance().getDefaultLookAndFeel()
                                  .findColour(juce::ResizableWindow::backgroundColourId),
@@ -55,7 +55,7 @@ private:
             , defaultProjectFile(projectFile)
         {
             setUsingNativeTitleBar(true);
-            setContentOwned(new vmpc::app::MainComponent(controller), true);
+            setContentOwned(new resonance::app::MainComponent(controller), true);
             setResizable(true, true);
             centreWithSize(1200, 1040);
             setVisible(true);
@@ -77,15 +77,15 @@ private:
         }
 
     private:
-        vmpc::controller::AppController& appController;
+        resonance::controller::AppController& appController;
         juce::File defaultProjectFile;
     };
 
-    std::unique_ptr<vmpc::model::ProjectState> projectState;
-    std::unique_ptr<vmpc::audio::AudioEngine> audioEngine;
-    std::unique_ptr<vmpc::controller::AppController> appController;
+    std::unique_ptr<resonance::model::ProjectState> projectState;
+    std::unique_ptr<resonance::audio::AudioEngine> audioEngine;
+    std::unique_ptr<resonance::controller::AppController> appController;
     std::unique_ptr<juce::AudioDeviceManager> deviceManager;
     std::unique_ptr<MainWindow> mainWindow;
 };
 
-START_JUCE_APPLICATION(VMpc2000XLApplication)
+START_JUCE_APPLICATION(ResonanceApplication)

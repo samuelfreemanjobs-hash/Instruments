@@ -2,7 +2,7 @@
 
 #include "VibeMixingTypes.h"
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 /**
  * Vibe Mixing — turn a typed brief into an internal plug-in chain + preset.
@@ -13,4 +13,4 @@ class VibeMixEngine
 public:
     static VibeMixInterpretResult interpretUserBrief(const juce::String& userText);
 };
-} // namespace vmpc::audio
+} // namespace resonance::audio

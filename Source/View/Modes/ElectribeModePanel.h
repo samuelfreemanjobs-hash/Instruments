@@ -3,9 +3,9 @@
 #include <JuceHeader.h>
 #include "Controller/AppController.h"
 #include "View/Components/StepSequencerGrid.h"
-#include "View/Components/Mpc2000xlLcdDisplay.h"
+#include "View/Components/StudioLcdDisplay.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 /** Electribe mode: 16-step row is the hero; parts + motion seq along the bottom. */
 class ElectribeModePanel : public juce::Component
@@ -23,7 +23,7 @@ private:
     void syncPartButtons();
 
     controller::AppController& appController;
-    Mpc2000xlLcdDisplay lcd;
+    StudioLcdDisplay lcd;
     StepSequencerGrid stepRow;
     juce::OwnedArray<juce::TextButton> partButtons;
     juce::TextButton motionBtn { "MOTION" };
@@ -31,4 +31,4 @@ private:
     juce::Label partLabel;
     juce::Label hintLabel;
 };
-} // namespace vmpc::view
+} // namespace resonance::view

@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include "Controller/AppController.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 class PatternModePanel : public juce::Component
 {
@@ -18,4 +18,4 @@ private:
     juce::OwnedArray<juce::TextButton> patternButtons;
     juce::ToggleButton songModeBtn { "Song" };
 };
-} // namespace vmpc::view
+} // namespace resonance::view

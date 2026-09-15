@@ -7,7 +7,7 @@
 #include <array>
 #include <memory>
 
-namespace vmpc::view
+namespace resonance::view
 {
 /** Eight channel strips with per-channel insert editors. */
 class MixerBank : public juce::Component,
@@ -26,8 +26,8 @@ private:
 
     controller::AppController& appController;
     juce::Label title { {}, "Mixer channels" };
-    std::array<std::unique_ptr<MixerChannelStrip>, vmpc::audio::MixConsole::kNumChannels> strips;
-    std::array<juce::TextButton, vmpc::audio::MixConsole::kNumChannels> insertButtons;
+    std::array<std::unique_ptr<MixerChannelStrip>, resonance::audio::MixConsole::kNumChannels> strips;
+    std::array<juce::TextButton, resonance::audio::MixConsole::kNumChannels> insertButtons;
     std::unique_ptr<juce::DocumentWindow> insertWindow;
 };
-} // namespace vmpc::view
+} // namespace resonance::view

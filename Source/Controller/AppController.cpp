@@ -2,7 +2,7 @@
 #include "Audio/RealTimeConstraints.h"
 #include "Model/MixingProjectPersistence.h"
 
-namespace vmpc::controller
+namespace resonance::controller
 {
 AppController::AppController(model::ProjectState& projectState, audio::AudioEngine& engine)
     : project(projectState)
@@ -29,7 +29,7 @@ void AppController::syncProjectToSequencer()
     const auto& tree = project.getTree();
     const double bpm = tree.getProperty("bpm", 120.0);
     const int swing = static_cast<int>(tree.getProperty("swing", 50));
-    const int ppqn = static_cast<int>(tree.getProperty("ppqn", vmpc::audio::kDefaultPpqn));
+    const int ppqn = static_cast<int>(tree.getProperty("ppqn", resonance::audio::kDefaultPpqn));
 
     audioEngine.getSequencer().setBpm(bpm);
     audioEngine.getSequencer().setSwing(swing);
@@ -86,4 +86,4 @@ bool AppController::loadProjectFromFile(const juce::File& file)
     }
     return false;
 }
-} // namespace vmpc::controller
+} // namespace resonance::controller

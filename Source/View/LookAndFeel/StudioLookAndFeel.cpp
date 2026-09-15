@@ -1,8 +1,8 @@
-#include "VMpcLookAndFeel.h"
+#include "StudioLookAndFeel.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
-VMpcLookAndFeel::VMpcLookAndFeel()
+StudioLookAndFeel::StudioLookAndFeel()
 {
     matteBlack = juce::Colour(0xff121214);
     walnutBrown = juce::Colour(0xff3d2b1f);
@@ -16,7 +16,7 @@ VMpcLookAndFeel::VMpcLookAndFeel()
     setColour(juce::TextButton::textColourOffId, iceBlue);
 }
 
-void VMpcLookAndFeel::drawRotarySlider(juce::Graphics& g,
+void StudioLookAndFeel::drawRotarySlider(juce::Graphics& g,
                                        int x,
                                        int y,
                                        int width,
@@ -41,7 +41,7 @@ void VMpcLookAndFeel::drawRotarySlider(juce::Graphics& g,
     g.strokePath(p, juce::PathStrokeType(2.5f));
 }
 
-void VMpcLookAndFeel::drawButtonBackground(juce::Graphics& g,
+void StudioLookAndFeel::drawButtonBackground(juce::Graphics& g,
                                            juce::Button& button,
                                            const juce::Colour& backgroundColour,
                                            bool shouldDrawButtonAsHighlighted,
@@ -56,4 +56,4 @@ void VMpcLookAndFeel::drawButtonBackground(juce::Graphics& g,
     g.setColour(iceBlue.withAlpha(button.getToggleState() ? 0.9f : 0.35f));
     g.drawRoundedRectangle(bounds, 3.0f, 1.0f);
 }
-} // namespace vmpc::view
+} // namespace resonance::view

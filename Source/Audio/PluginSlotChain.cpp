@@ -1,6 +1,6 @@
 #include "PluginSlotChain.h"
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 PluginSlotChain::PluginSlotChain(int slotCount)
 {
@@ -158,4 +158,4 @@ void PluginSlotChain::processInsertsOnBuffer(juce::AudioBuffer<float>& buffer) n
         plugin->processBlock(buffer, emptyMidi);
     }
 }
-} // namespace vmpc::audio
+} // namespace resonance::audio

@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 /** Shared stereo in/out layout for built-in mix processors. */
 class InternalMixProcessor : public juce::AudioProcessor
@@ -31,4 +31,4 @@ protected:
 
     juce::String name;
 };
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

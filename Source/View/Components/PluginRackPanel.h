@@ -3,15 +3,15 @@
 #include <JuceHeader.h>
 #include "Audio/PluginHostService.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 class PluginRackPanel : public juce::Component,
                         public juce::Button::Listener,
                         public juce::TextEditor::Listener,
-                        private vmpc::audio::PluginHostService::Listener
+                        private resonance::audio::PluginHostService::Listener
 {
 public:
-    explicit PluginRackPanel(vmpc::audio::PluginHostService& host);
+    explicit PluginRackPanel(resonance::audio::PluginHostService& host);
     ~PluginRackPanel() override;
 
     void paint(juce::Graphics& g) override;
@@ -36,7 +36,7 @@ private:
     void refreshSlotLabels();
     void showPluginPicker(int slotIndex);
 
-    vmpc::audio::PluginHostService& pluginHost;
+    resonance::audio::PluginHostService& pluginHost;
 
     juce::Label vibeHeading;
     juce::Label vibeTagline;
@@ -46,8 +46,8 @@ private:
 
     juce::TextButton scanButton { "Scan VST plug-ins" };
     juce::Label statusLabel;
-    std::array<SlotUi, vmpc::audio::PluginSlotChain::kMasterSlots> slots {};
+    std::array<SlotUi, resonance::audio::PluginSlotChain::kMasterSlots> slots {};
 
-    static vmpc::audio::PluginSlotLocation masterSlot(int index) noexcept;
+    static resonance::audio::PluginSlotLocation masterSlot(int index) noexcept;
 };
-} // namespace vmpc::view
+} // namespace resonance::view

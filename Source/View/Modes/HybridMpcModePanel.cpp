@@ -1,6 +1,6 @@
 #include "HybridMpcModePanel.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 HybridMpcModePanel::HybridMpcModePanel(controller::AppController& controller)
     : appController(controller)
@@ -41,4 +41,4 @@ void HybridMpcModePanel::updateTransportUi(int playingStep, float peakL, float p
     stepGrid.setPlayingStep(playingStep);
     channelStrip.meterUpdate(juce::jmax(peakL, peakR));
 }
-} // namespace vmpc::view
+} // namespace resonance::view

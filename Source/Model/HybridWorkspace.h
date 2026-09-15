@@ -7,7 +7,7 @@
 #include "FlStudio/PatternPlaylist.h"
 #include <JuceHeader.h>
 
-namespace vmpc::model
+namespace resonance::model
 {
 /**
  * Unified model for hybrid DAW features (Maschine + Ableton + FL + Electribe).
@@ -50,4 +50,4 @@ private:
     PatternPlaylist patternPlaylist;
     FeatureFlags features;
 };
-} // namespace vmpc::model
+} // namespace resonance::model

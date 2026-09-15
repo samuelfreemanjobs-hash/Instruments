@@ -1,6 +1,6 @@
 #include "MixerChannelStrip.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 MixerChannelStrip::MixerChannelStrip(const juce::String& channelName)
     : name(channelName)
@@ -57,4 +57,4 @@ void MixerChannelStrip::paint(juce::Graphics& g)
     g.setColour(juce::Colour(0xff6ec8e8).withAlpha(0.8f));
     g.strokePath(eq, juce::PathStrokeType(1.5f));
 }
-} // namespace vmpc::view
+} // namespace resonance::view

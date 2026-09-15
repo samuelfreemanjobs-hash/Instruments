@@ -1,27 +1,27 @@
-#include "Mpc2000xlLcdDisplay.h"
-#include "View/LookAndFeel/VMpcLookAndFeel.h"
+#include "StudioLcdDisplay.h"
+#include "View/LookAndFeel/StudioLookAndFeel.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
-Mpc2000xlLcdDisplay::Mpc2000xlLcdDisplay()
+StudioLcdDisplay::StudioLcdDisplay()
 {
     setOpaque(true);
 }
 
-void Mpc2000xlLcdDisplay::setStatusLine(const juce::String& line)
+void StudioLcdDisplay::setStatusLine(const juce::String& line)
 {
     statusLine = line;
     repaint();
 }
 
-void Mpc2000xlLcdDisplay::setWaveformPreview(const juce::AudioBuffer<float>& buffer)
+void StudioLcdDisplay::setWaveformPreview(const juce::AudioBuffer<float>& buffer)
 {
     const juce::ScopedLock lock(previewLock);
     preview.makeCopyOf(buffer);
     repaint();
 }
 
-void Mpc2000xlLcdDisplay::paint(juce::Graphics& g)
+void StudioLcdDisplay::paint(juce::Graphics& g)
 {
     const auto lcdBg = juce::Colour(0xff0a1620);
     const auto grid = juce::Colour(0xff1a3040);
@@ -61,5 +61,5 @@ void Mpc2000xlLcdDisplay::paint(juce::Graphics& g)
     g.drawText(statusLine, getLocalBounds().removeFromBottom(20).reduced(8, 0), juce::Justification::centredLeft);
 }
 
-void Mpc2000xlLcdDisplay::resized() {}
-} // namespace vmpc::view
+void StudioLcdDisplay::resized() {}
+} // namespace resonance::view

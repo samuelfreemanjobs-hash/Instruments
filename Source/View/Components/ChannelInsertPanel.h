@@ -3,15 +3,15 @@
 #include <JuceHeader.h>
 #include "Audio/PluginHostService.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 /** Two insert slots for one mixer channel. */
 class ChannelInsertPanel : public juce::Component,
                            public juce::Button::Listener,
-                           private vmpc::audio::PluginHostService::Listener
+                           private resonance::audio::PluginHostService::Listener
 {
 public:
-    ChannelInsertPanel(vmpc::audio::PluginHostService& host, int channelIndex);
+    ChannelInsertPanel(resonance::audio::PluginHostService& host, int channelIndex);
     ~ChannelInsertPanel() override;
 
     void paint(juce::Graphics& g) override;
@@ -33,11 +33,11 @@ private:
     void pluginScanFinished() override {}
     void refresh();
     void showPicker(int slotIndex);
-    vmpc::audio::PluginSlotLocation location(int slotIndex) const noexcept;
+    resonance::audio::PluginSlotLocation location(int slotIndex) const noexcept;
 
-    vmpc::audio::PluginHostService& pluginHost;
+    resonance::audio::PluginHostService& pluginHost;
     int channel = 0;
     juce::Label heading;
-    std::array<InsertUi, vmpc::audio::PluginSlotChain::kChannelInsertSlots> inserts {};
+    std::array<InsertUi, resonance::audio::PluginSlotChain::kChannelInsertSlots> inserts {};
 };
-} // namespace vmpc::view
+} // namespace resonance::view

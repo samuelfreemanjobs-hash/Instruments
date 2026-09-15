@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include <array>
 
-namespace vmpc::model
+namespace resonance::model
 {
 struct StepState
 {
@@ -35,4 +35,4 @@ private:
     std::array<StepState, kNumSteps> steps {};
     int currentStep = 0;
 };
-} // namespace vmpc::model
+} // namespace resonance::model

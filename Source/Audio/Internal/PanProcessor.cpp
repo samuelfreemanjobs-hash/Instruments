@@ -1,9 +1,9 @@
 #include "PanProcessor.h"
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 PanProcessor::PanProcessor()
-    : InternalMixProcessor("VMPC Pan")
+    : InternalMixProcessor("Resonance Pan")
 {
     addParameter(pan = new juce::AudioParameterFloat(
         juce::ParameterID { "pan", 1 },
@@ -31,4 +31,4 @@ juce::AudioProcessorEditor* PanProcessor::createEditor()
 {
     return new juce::GenericAudioProcessorEditor(*this);
 }
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

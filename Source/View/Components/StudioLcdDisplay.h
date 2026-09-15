@@ -2,13 +2,13 @@
 
 #include <JuceHeader.h>
 
-namespace vmpc::view
+namespace resonance::view
 {
 /** Waveform + monospace LCD region (Phase 2 custom paint). */
-class Mpc2000xlLcdDisplay : public juce::Component
+class StudioLcdDisplay : public juce::Component
 {
 public:
-    Mpc2000xlLcdDisplay();
+    StudioLcdDisplay();
 
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -17,8 +17,8 @@ public:
     void setWaveformPreview(const juce::AudioBuffer<float>& buffer);
 
 private:
-    juce::String statusLine { "VMPC2000XL — READY" };
+    juce::String statusLine { "Resonance — READY" };
     juce::AudioBuffer<float> preview;
     juce::CriticalSection previewLock;
 };
-} // namespace vmpc::view
+} // namespace resonance::view

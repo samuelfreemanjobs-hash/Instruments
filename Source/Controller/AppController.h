@@ -6,7 +6,7 @@
 #include "Audio/AudioEngine.h"
 #include "Audio/PluginHostService.h"
 
-namespace vmpc::controller
+namespace resonance::controller
 {
 class AppController
 {
@@ -14,7 +14,7 @@ public:
     struct Listener
     {
         virtual ~Listener() = default;
-        virtual void appModeChanged(vmpc::model::AppMode mode) = 0;
+        virtual void appModeChanged(resonance::model::AppMode mode) = 0;
     };
 
     AppController(model::ProjectState& projectState, audio::AudioEngine& engine);
@@ -47,4 +47,4 @@ private:
     juce::AudioDeviceManager* deviceManager = nullptr;
     juce::ListenerList<Listener> listeners;
 };
-} // namespace vmpc::controller
+} // namespace resonance::controller

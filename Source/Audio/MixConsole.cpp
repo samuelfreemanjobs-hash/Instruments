@@ -1,6 +1,6 @@
 #include "MixConsole.h"
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 MixConsole::MixConsole()
     : masterChain(PluginSlotChain::kMasterSlots)
@@ -119,4 +119,4 @@ void MixConsole::process(float* const* outputChannelData,
             juce::FloatVectorOperations::copy(outputChannelData[ch], workBuffer.getReadPointer(ch), numSamples);
     }
 }
-} // namespace vmpc::audio
+} // namespace resonance::audio

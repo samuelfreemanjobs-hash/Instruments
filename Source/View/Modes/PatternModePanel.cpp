@@ -1,6 +1,6 @@
 #include "PatternModePanel.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 PatternModePanel::PatternModePanel(controller::AppController& controller)
     : appController(controller)
@@ -54,4 +54,4 @@ void PatternModePanel::resized()
     for (auto* b : patternButtons)
         b->setBounds(top.removeFromLeft(w).reduced(2));
 }
-} // namespace vmpc::view
+} // namespace resonance::view

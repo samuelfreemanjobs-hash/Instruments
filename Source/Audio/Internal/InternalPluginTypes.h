@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include <vector>
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 enum class MixPluginId
 {
@@ -67,16 +67,16 @@ struct MixPluginInfo
 inline const std::vector<MixPluginInfo>& allMixPlugins()
 {
     static const std::vector<MixPluginInfo> list {
-        { MixPluginId::Gain, "VMPC Gain", "Trim level (dB)" },
-        { MixPluginId::Pan, "VMPC Pan", "Constant-power stereo pan" },
-        { MixPluginId::Eq3, "VMPC EQ-3", "Low / mid / high tone shaping" },
-        { MixPluginId::Compressor, "VMPC Compressor", "Dynamics control" },
-        { MixPluginId::Limiter, "VMPC Limiter", "Brickwall safety limiter" },
-        { MixPluginId::Hpf, "VMPC HPF", "High-pass filter (mud / rumble)" },
-        { MixPluginId::DeEsser, "VMPC De-Esser", "Sibilance control" },
+        { MixPluginId::Gain, "Resonance Gain", "Trim level (dB)" },
+        { MixPluginId::Pan, "Resonance Pan", "Constant-power stereo pan" },
+        { MixPluginId::Eq3, "Resonance EQ-3", "Low / mid / high tone shaping" },
+        { MixPluginId::Compressor, "Resonance Compressor", "Dynamics control" },
+        { MixPluginId::Limiter, "Resonance Limiter", "Brickwall safety limiter" },
+        { MixPluginId::Hpf, "Resonance HPF", "High-pass filter (mud / rumble)" },
+        { MixPluginId::DeEsser, "Resonance De-Esser", "Sibilance control" },
     };
     return list;
 }
 
 std::unique_ptr<juce::AudioProcessor> createMixPlugin(MixPluginId id);
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

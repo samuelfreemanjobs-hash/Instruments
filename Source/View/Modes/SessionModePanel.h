@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include "Controller/AppController.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 class SessionModePanel : public juce::Component
 {
@@ -16,4 +16,4 @@ public:
 private:
     controller::AppController& appController;
 };
-} // namespace vmpc::view
+} // namespace resonance::view

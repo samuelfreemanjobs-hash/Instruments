@@ -1,6 +1,6 @@
 #include "HybridWorkspace.h"
 
-namespace vmpc::model
+namespace resonance::model
 {
 HybridWorkspace::HybridWorkspace()
 {
@@ -49,4 +49,4 @@ void HybridWorkspace::applyModeDefaults(AppMode mode)
             break;
     }
 }
-} // namespace vmpc::model
+} // namespace resonance::model

@@ -1,24 +1,24 @@
-# VMPC internal mixing plug-ins
+# Resonance internal mixing plug-ins
 
-Built-in **stereo insert** processors ship with the DAW (no scan required). Load them from the rack via **Load VST → VMPC internal mix**.
+Built-in **stereo insert** processors ship with the DAW (no scan required). Load them from the rack via **Load VST → Resonance internal mix**.
 
 | Plug-in | Role |
 |---------|------|
-| **VMPC Gain** | Trim level (−60 … +12 dB) |
-| **VMPC Pan** | Constant-power stereo pan |
-| **VMPC EQ-3** | Low shelf (120 Hz), mid peak (1.2 kHz), high shelf (8 kHz) |
-| **VMPC Compressor** | Threshold, ratio, attack, release, makeup |
-| **VMPC Limiter** | Ceiling + release (safety on the master chain) |
-| **VMPC HPF** | High-pass filter (rumble / mud) |
-| **VMPC De-Esser** | Sibilance reduction |
+| **Resonance Gain** | Trim level (−60 … +12 dB) |
+| **Resonance Pan** | Constant-power stereo pan |
+| **Resonance EQ-3** | Low shelf (120 Hz), mid peak (1.2 kHz), high shelf (8 kHz) |
+| **Resonance Compressor** | Threshold, ratio, attack, release, makeup |
+| **Resonance Limiter** | Ceiling + release (safety on the master chain) |
+| **Resonance HPF** | High-pass filter (rumble / mud) |
+| **Resonance De-Esser** | Sibilance reduction |
 
 ## Suggested default chain
 
 For a basic mix bus (after instrument VSTs):
 
-1. **VMPC EQ-3** — tone balance  
-2. **VMPC Compressor** — glue  
-3. **VMPC Limiter** — peak control  
+1. **Resonance EQ-3** — tone balance  
+2. **Resonance Compressor** — glue  
+3. **Resonance Limiter** — peak control  
 
 Use **Gain** and **Pan** on individual paths as needed.
 

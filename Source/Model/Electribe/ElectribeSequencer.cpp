@@ -1,7 +1,7 @@
 #include "ElectribeSequencer.h"
 #include "Audio/RealTimeConstraints.h"
 
-namespace vmpc::model
+namespace resonance::model
 {
 void ElectribeSequencer::setBpm(double newBpm) noexcept
 {
@@ -59,4 +59,4 @@ void ElectribeSequencer::processBlock(int numSamples, juce::MidiBuffer& midiOut)
         }
     }
 }
-} // namespace vmpc::model
+} // namespace resonance::model

@@ -2,13 +2,13 @@
 
 #include <JuceHeader.h>
 
-namespace vmpc::view
+namespace resonance::view
 {
 /** Matte black, walnut accents, ice-blue/neon highlights (Phase 2 theming). */
-class VMpcLookAndFeel : public juce::LookAndFeel_V4
+class StudioLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
-    VMpcLookAndFeel();
+    StudioLookAndFeel();
 
     void drawRotarySlider(juce::Graphics& g,
                           int x,
@@ -31,4 +31,4 @@ public:
     juce::Colour iceBlue;
     juce::Colour neonAccent;
 };
-} // namespace vmpc::view
+} // namespace resonance::view

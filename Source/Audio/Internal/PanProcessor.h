@@ -2,7 +2,7 @@
 
 #include "InternalMixProcessor.h"
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 class PanProcessor : public InternalMixProcessor
 {
@@ -19,4 +19,4 @@ public:
 private:
     juce::AudioParameterFloat* pan = nullptr;
 };
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

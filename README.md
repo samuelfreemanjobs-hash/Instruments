@@ -1,13 +1,15 @@
-# VMPC2000XL Modern Hybrid DAW
+# Resonance
 
-C++20 / JUCE foundation for a cross-platform MPC2000XL-inspired **hybrid DAW** combining workflows from **Electribe** (default step-sequencer mode), **MPC**, **Maschine**, **Ableton Session**, and **FL Studio patterns**. See [docs/HYBRID_FEATURES.md](docs/HYBRID_FEATURES.md).
+**Resonance** is a hybrid groovebox DAW from **Instruments** — Electribe-style sequencing, MPC-style pads, multi-mode workflows, Vibe Mixing, VST hosting, and per-channel inserts.
+
+C++20 / JUCE, cross-platform (macOS, Windows, Linux).
 
 ## Build
 
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
-./build/VMPC2000XL_artefacts/Release/VMPC2000XL
+./build/Resonance_artefacts/Release/Resonance
 ```
 
 On Linux you need ALSA, X11, FreeType, and OpenGL development packages (see CI or `docs/ARCHITECTURE.md`).
@@ -15,13 +17,13 @@ On Linux you need ALSA, X11, FreeType, and OpenGL development packages (see CI o
 ## Layout
 
 - `Source/Model` — sequencer state, PPQN clock, `ValueTree` project scaffold
-- `Source/View` — custom components (`Mpc2000xlLcdDisplay`, `StepSequencerGrid`, `PianoRollGrid`, `MixerChannelStrip`) and `VMpcLookAndFeel`
+- `Source/View` — custom components (`StudioLcdDisplay`, `StepSequencerGrid`, `PianoRollGrid`, `MixerChannelStrip`) and `StudioLookAndFeel`
 - `Source/Controller` — `AppController` (message thread only)
 - `Source/Audio` — `AudioEngine` real-time callback (no UI, no allocation in hot path)
 
 ## Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full multi-phase plan (DSP, Q-Link, export, etc.).
+See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Status
 
@@ -29,9 +31,10 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full multi-phase plan (DSP, Q-Lin
 |------|--------|
 | JUCE app shell | Yes |
 | MVC separation | Yes |
-| 16-step UI + model | Yes |
-| VST3 / AU / LV2 hosting | 8-slot rack, scan & native UI ([docs/VST_HOSTING.md](docs/VST_HOSTING.md)) |
-| Internal mix plug-ins | Gain, Pan, EQ-3, Compressor, Limiter ([docs/INTERNAL_PLUGINS.md](docs/INTERNAL_PLUGINS.md)) |
-| **Vibe Mixing** | Type a feel → auto chain + preset ([docs/VIBE_MIXING.md](docs/VIBE_MIXING.md)) |
-| Built-in sampler / FX | Use VST instruments/effects in the rack (Phase 4 internal DSP optional) |
-| Project save/load | ValueTree defaults only |
+| VST3 / AU / LV2 hosting | [docs/VST_HOSTING.md](docs/VST_HOSTING.md) |
+| Resonance internal mix + Vibe Mixing | [docs/INTERNAL_PLUGINS.md](docs/INTERNAL_PLUGINS.md), [docs/VIBE_MIXING.md](docs/VIBE_MIXING.md) |
+| Per-channel inserts + project mix save | [docs/MIXING.md](docs/MIXING.md) |
+
+## Brand
+
+Product name and usage: [docs/BRANDING.md](docs/BRANDING.md).

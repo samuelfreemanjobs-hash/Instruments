@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include "Model/Sequencer/SixteenStepPattern.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 class StepSequencerGrid : public juce::Component
 {
@@ -22,7 +22,7 @@ public:
     void mouseDown(const juce::MouseEvent& e) override;
 
     void setLayout(Layout newLayout);
-    void setPattern(const vmpc::model::SixteenStepPattern& pattern);
+    void setPattern(const resonance::model::SixteenStepPattern& pattern);
     void setPlayingStep(int step);
 
     void onStepToggled(StepToggled callback) { stepToggled = std::move(callback); }
@@ -36,8 +36,8 @@ private:
     void layoutRow16(juce::Rectangle<int> area, int stepIndex, juce::Rectangle<int>& out) const;
 
     Layout layout = Layout::Grid4x4;
-    vmpc::model::SixteenStepPattern patternCopy;
+    resonance::model::SixteenStepPattern patternCopy;
     int playingStep = -1;
     StepToggled stepToggled;
 };
-} // namespace vmpc::view
+} // namespace resonance::view

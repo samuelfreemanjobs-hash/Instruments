@@ -1,7 +1,7 @@
 #include "ElectribeModePanel.h"
-#include "View/LookAndFeel/VMpcLookAndFeel.h"
+#include "View/LookAndFeel/StudioLookAndFeel.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 ElectribeModePanel::ElectribeModePanel(controller::AppController& controller)
     : appController(controller)
@@ -20,7 +20,7 @@ ElectribeModePanel::ElectribeModePanel(controller::AppController& controller)
     hintLabel.setColour(juce::Label::textColourId, juce::Colours::white.withAlpha(0.45f));
     addAndMakeVisible(hintLabel);
 
-    for (int i = 0; i < vmpc::model::ElectribeSong::kNumParts; ++i)
+    for (int i = 0; i < resonance::model::ElectribeSong::kNumParts; ++i)
     {
         auto* b = partButtons.add(new juce::TextButton(juce::String(i + 1)));
         b->setClickingTogglesState(true);
@@ -62,7 +62,7 @@ void ElectribeModePanel::syncStepGridFromPart()
 {
     const auto& song = appController.getWorkspace().getElectribeSong();
     const auto& part = song.getPart(song.getSelectedPart());
-    vmpc::model::SixteenStepPattern pattern;
+    resonance::model::SixteenStepPattern pattern;
     for (int i = 0; i < 16; ++i)
     {
         pattern.getStep(i).active = part.steps[static_cast<size_t>(i)].active;
@@ -126,4 +126,4 @@ void ElectribeModePanel::resized()
     motionBtn.setBounds(controls.removeFromLeft(80).reduced(2));
     partLevel.setBounds(controls.removeFromRight(72).reduced(4));
 }
-} // namespace vmpc::view
+} // namespace resonance::view

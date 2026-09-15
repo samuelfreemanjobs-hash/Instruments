@@ -1,6 +1,6 @@
 #include "ModeToolbar.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 ModeToolbar::ModeToolbar()
 {
@@ -9,15 +9,15 @@ ModeToolbar::ModeToolbar()
 
 void ModeToolbar::buildButtons()
 {
-    const std::array modes { vmpc::model::AppMode::Electribe,
-                             vmpc::model::AppMode::HybridMpc,
-                             vmpc::model::AppMode::Maschine,
-                             vmpc::model::AppMode::SessionClip,
-                             vmpc::model::AppMode::PatternSong };
+    const std::array modes { resonance::model::AppMode::Electribe,
+                             resonance::model::AppMode::HybridMpc,
+                             resonance::model::AppMode::Maschine,
+                             resonance::model::AppMode::SessionClip,
+                             resonance::model::AppMode::PatternSong };
 
     for (auto m : modes)
     {
-        auto* btn = modeButtons.add(new juce::TextButton(vmpc::model::appModeToString(m)));
+        auto* btn = modeButtons.add(new juce::TextButton(resonance::model::appModeToString(m)));
         btn->setClickingTogglesState(true);
         btn->setRadioGroupId(9001);
         btn->onClick = [this, m]() {
@@ -27,14 +27,14 @@ void ModeToolbar::buildButtons()
         };
         addAndMakeVisible(btn);
     }
-    setCurrentMode(vmpc::model::AppMode::Electribe);
+    setCurrentMode(resonance::model::AppMode::Electribe);
 }
 
-void ModeToolbar::setCurrentMode(vmpc::model::AppMode mode)
+void ModeToolbar::setCurrentMode(resonance::model::AppMode mode)
 {
     current = mode;
     for (auto* btn : modeButtons)
-        btn->setToggleState(btn->getButtonText() == vmpc::model::appModeToString(mode), juce::dontSendNotification);
+        btn->setToggleState(btn->getButtonText() == resonance::model::appModeToString(mode), juce::dontSendNotification);
     repaint();
 }
 
@@ -50,4 +50,4 @@ void ModeToolbar::resized()
     for (auto* btn : modeButtons)
         btn->setBounds(area.removeFromLeft(w).reduced(2));
 }
-} // namespace vmpc::view
+} // namespace resonance::view

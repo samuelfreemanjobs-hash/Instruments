@@ -1,6 +1,6 @@
 #include "VibeMixEngine.h"
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 namespace
 {
@@ -269,4 +269,4 @@ VibeMixInterpretResult VibeMixEngine::interpretUserBrief(const juce::String& use
 
     return result;
 }
-} // namespace vmpc::audio
+} // namespace resonance::audio

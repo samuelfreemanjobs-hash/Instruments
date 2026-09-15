@@ -2,13 +2,13 @@
 
 #include <JuceHeader.h>
 
-namespace vmpc::model
+namespace resonance::model
 {
 /** Primary UI / workflow mode (inspired by Electribe, MPC, Maschine, Ableton, FL). */
 enum class AppMode
 {
     Electribe = 0,   // Step sequencer is the main surface (default)
-    HybridMpc,       // VMPC hardware-style layout
+    HybridMpc,       // Resonance hardware-style layout
     Maschine,        // NI Maschine: groups, scenes, 16 pads
     SessionClip,     // Ableton Live: session view clip matrix
     PatternSong      // FL Studio: step patterns + playlist
@@ -39,4 +39,4 @@ inline AppMode appModeFromString(const juce::String& s)
         return AppMode::PatternSong;
     return AppMode::Electribe;
 }
-} // namespace vmpc::model
+} // namespace resonance::model

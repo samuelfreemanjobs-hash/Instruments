@@ -3,7 +3,7 @@
 #include "VibeMixEngine.h"
 #include "Internal/InternalPluginParams.h"
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 namespace
 {
@@ -79,7 +79,7 @@ juce::File PluginHostService::getPluginListCacheFile() const
 {
     return juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
         .getChildFile("Instruments")
-        .getChildFile("VMPC2000XL")
+        .getChildFile("Resonance")
         .getChildFile("known_plugins.xml");
 }
 
@@ -293,4 +293,4 @@ void PluginHostService::markMixingDirty()
     if (mixingChanged)
         mixingChanged();
 }
-} // namespace vmpc::audio
+} // namespace resonance::audio

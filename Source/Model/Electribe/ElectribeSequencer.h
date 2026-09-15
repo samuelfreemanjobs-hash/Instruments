@@ -6,7 +6,7 @@
 #include <JuceHeader.h>
 #include <atomic>
 
-namespace vmpc::model
+namespace resonance::model
 {
 class ElectribeSequencer
 {
@@ -28,9 +28,9 @@ private:
     SequencerClock clock;
     double bpm = 120.0;
     int swingPercent = 50;
-    int ppqn = vmpc::audio::kDefaultPpqn;
+    int ppqn = resonance::audio::kDefaultPpqn;
     int64 ticksPerStep = 0;
     int stepIndex = 0;
     std::atomic<int> playingStepForUi { 0 };
 };
-} // namespace vmpc::model
+} // namespace resonance::model

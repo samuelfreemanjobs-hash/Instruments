@@ -1,6 +1,6 @@
 #include "MaschineModePanel.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 MaschineModePanel::MaschineModePanel(controller::AppController& controller)
     : appController(controller)
@@ -9,7 +9,7 @@ MaschineModePanel::MaschineModePanel(controller::AppController& controller)
 
     groupBtn.onClick = [this]() {
         auto& kit = appController.getWorkspace().getMaschineKit();
-        const int next = (kit.getActiveGroup() + 1) % vmpc::model::MaschineKit::kGroups;
+        const int next = (kit.getActiveGroup() + 1) % resonance::model::MaschineKit::kGroups;
         kit.setActiveGroup(next);
         groupBtn.setButtonText(kit.getGroup(next).name);
         repaint();
@@ -99,4 +99,4 @@ void MaschineModePanel::resized()
     for (auto* b : sceneButtons)
         b->setBounds(sceneRow.removeFromLeft(sw).reduced(2));
 }
-} // namespace vmpc::view
+} // namespace resonance::view

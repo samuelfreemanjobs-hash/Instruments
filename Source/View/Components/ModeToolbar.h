@@ -3,16 +3,16 @@
 #include <JuceHeader.h>
 #include "Model/AppMode.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 class ModeToolbar : public juce::Component
 {
 public:
-    using ModeChanged = std::function<void(vmpc::model::AppMode)>;
+    using ModeChanged = std::function<void(resonance::model::AppMode)>;
 
     ModeToolbar();
 
-    void setCurrentMode(vmpc::model::AppMode mode);
+    void setCurrentMode(resonance::model::AppMode mode);
     void onModeChanged(ModeChanged callback) { modeChanged = std::move(callback); }
 
     void paint(juce::Graphics& g) override;
@@ -22,7 +22,7 @@ private:
     void buildButtons();
 
     juce::OwnedArray<juce::TextButton> modeButtons;
-    vmpc::model::AppMode current = vmpc::model::AppMode::Electribe;
+    resonance::model::AppMode current = resonance::model::AppMode::Electribe;
     ModeChanged modeChanged;
 };
-} // namespace vmpc::view
+} // namespace resonance::view

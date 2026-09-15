@@ -1,6 +1,6 @@
 #include "PianoRollGrid.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 PianoRollGrid::PianoRollGrid()
 {
@@ -35,4 +35,4 @@ void PianoRollGrid::paint(juce::Graphics& g)
         g.drawVerticalLine(static_cast<int>(x), 0.0f, static_cast<float>(getHeight()));
     }
 }
-} // namespace vmpc::view
+} // namespace resonance::view

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(VMPC2000XL VERSION 0.1.0 LANGUAGES C CXX)
+project(Resonance VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -18,19 +18,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(juce)
 
-juce_add_gui_app(VMPC2000XL
-    PRODUCT_NAME "VMPC2000XL"
+juce_add_gui_app(Resonance
+    PRODUCT_NAME "Resonance"
     COMPANY_NAME "Instruments"
-    BUNDLE_ID "com.instruments.vmpc2000xl"
+    BUNDLE_ID "com.instruments.resonance"
     ICON_BIG ""
     ICON_SMALL ""
     MICROPHONE_PERMISSION_ENABLED TRUE
-    MICROPHONE_PERMISSION_TEXT "VMPC2000XL needs microphone access for audio input."
+    MICROPHONE_PERMISSION_TEXT "Resonance needs microphone access for audio input."
 )
 
-juce_generate_juce_header(VMPC2000XL)
+juce_generate_juce_header(Resonance)
 
-target_sources(VMPC2000XL
+target_sources(Resonance
     PRIVATE
         Source/App/Main.cpp
         Source/App/MainComponent.cpp
@@ -62,8 +62,8 @@ target_sources(VMPC2000XL
         Source/View/Components/ChannelInsertPanel.cpp
         Source/Audio/RealTimeConstraints.h
         Source/View/Components/PluginRackPanel.cpp
-        Source/View/LookAndFeel/VMpcLookAndFeel.cpp
-        Source/View/Components/Mpc2000xlLcdDisplay.cpp
+        Source/View/LookAndFeel/StudioLookAndFeel.cpp
+        Source/View/Components/StudioLcdDisplay.cpp
         Source/View/Components/StepSequencerGrid.cpp
         Source/View/Components/PianoRollGrid.cpp
         Source/View/Components/MixerChannelStrip.cpp
@@ -75,19 +75,19 @@ target_sources(VMPC2000XL
         Source/View/Modes/PatternModePanel.cpp
 )
 
-target_compile_definitions(VMPC2000XL
+target_compile_definitions(Resonance
     PRIVATE
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
         JUCE_PLUGINHOST_VST3=1
         $<$<PLATFORM_ID:Linux>:JUCE_PLUGINHOST_LV2=1>
         $<$<PLATFORM_ID:Darwin>:JUCE_PLUGINHOST_AU=1>
-        JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:VMPC2000XL,JUCE_PRODUCT_NAME>"
+        JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:Resonance,JUCE_PRODUCT_NAME>"
         JUCE_APPLICATION_VERSION_STRING="${PROJECT_VERSION}"
         JUCE_DISPLAY_SPLASH_SCREEN=0
 )
 
-target_link_libraries(VMPC2000XL
+target_link_libraries(Resonance
     PRIVATE
         juce::juce_audio_utils
         juce::juce_audio_processors
@@ -101,4 +101,4 @@ target_link_libraries(VMPC2000XL
         juce::juce_recommended_lto_flags
 )
 
-target_include_directories(VMPC2000XL PRIVATE Source)
+target_include_directories(Resonance PRIVATE Source)

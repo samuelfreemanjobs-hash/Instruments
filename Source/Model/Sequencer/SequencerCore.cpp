@@ -1,6 +1,6 @@
 #include "SequencerCore.h"
 
-namespace vmpc::model
+namespace resonance::model
 {
 SequencerCore::SequencerCore()
 {
@@ -50,4 +50,4 @@ void SequencerCore::processBlock(int numSamples, juce::MidiBuffer& midiOut)
         }
     }
 }
-} // namespace vmpc::model
+} // namespace resonance::model

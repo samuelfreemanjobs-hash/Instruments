@@ -1,6 +1,6 @@
 #include "PatternPlaylist.h"
 
-namespace vmpc::model
+namespace resonance::model
 {
 StepPattern& PatternPlaylist::getPattern(int index)
 {
@@ -29,4 +29,4 @@ void PatternPlaylist::addPlaylistBlock(int patternIndex, double startBeat, doubl
 {
     playlist.push_back({ patternIndex, startBeat, lengthBeats });
 }
-} // namespace vmpc::model
+} // namespace resonance::model

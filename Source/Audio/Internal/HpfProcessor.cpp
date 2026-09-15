@@ -1,9 +1,9 @@
 #include "HpfProcessor.h"
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 HpfProcessor::HpfProcessor()
-    : InternalMixProcessor("VMPC HPF")
+    : InternalMixProcessor("Resonance HPF")
 {
     addParameter(cutoffHz = new juce::AudioParameterFloat(
         juce::ParameterID { "cutoff", 1 },
@@ -49,4 +49,4 @@ juce::AudioProcessorEditor* HpfProcessor::createEditor()
 {
     return new juce::GenericAudioProcessorEditor(*this);
 }
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

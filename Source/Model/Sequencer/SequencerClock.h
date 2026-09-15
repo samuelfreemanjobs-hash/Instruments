@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include "Audio/RealTimeConstraints.h"
 
-namespace vmpc::model
+namespace resonance::model
 {
 /** Internal PPQN clock; advances from audio thread using sample position. */
 class SequencerClock
@@ -32,4 +32,4 @@ private:
     int64 tickPosition = 0;
     double samplesUntilNextTick = 0.0;
 };
-} // namespace vmpc::model
+} // namespace resonance::model

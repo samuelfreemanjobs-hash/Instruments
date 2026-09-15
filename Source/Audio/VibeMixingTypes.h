@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 /** One internal plug-in + parameter snapshot in the vibe chain. */
 struct VibeSlotPreset
@@ -29,4 +29,4 @@ struct VibeMixInterpretResult
     juce::String error;
     VibeMixRecipe recipe;
 };
-} // namespace vmpc::audio
+} // namespace resonance::audio

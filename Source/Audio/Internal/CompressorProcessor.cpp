@@ -1,9 +1,9 @@
 #include "CompressorProcessor.h"
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 CompressorProcessor::CompressorProcessor()
-    : InternalMixProcessor("VMPC Compressor")
+    : InternalMixProcessor("Resonance Compressor")
 {
     addParameter(threshold = new juce::AudioParameterFloat(
         juce::ParameterID { "threshold", 1 },
@@ -67,4 +67,4 @@ juce::AudioProcessorEditor* CompressorProcessor::createEditor()
 {
     return new juce::GenericAudioProcessorEditor(*this);
 }
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

@@ -5,7 +5,7 @@
 #include <JuceHeader.h>
 #include <atomic>
 
-namespace vmpc::model
+namespace resonance::model
 {
 /** Track event placeholder for Phase 3 expansion. */
 struct SequencerEvent
@@ -50,9 +50,9 @@ private:
     SixteenStepPattern pattern;
     double bpm = 92.0;
     int swingPercent = 54;
-    int ppqn = vmpc::audio::kDefaultPpqn;
+    int ppqn = resonance::audio::kDefaultPpqn;
     int64 ticksPerStep = 0;
     int stepIndex = 0;
     std::atomic<int> playingStepForUi { 0 };
 };
-} // namespace vmpc::model
+} // namespace resonance::model

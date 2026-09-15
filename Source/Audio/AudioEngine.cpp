@@ -1,7 +1,7 @@
 #include "AudioEngine.h"
 #include "MixConsole.h"
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 AudioEngine::AudioEngine() = default;
 
@@ -84,4 +84,4 @@ void AudioEngine::audioDeviceIOCallbackWithContext(const float* const* inputChan
     peakL.store(maxL);
     peakR.store(maxR);
 }
-} // namespace vmpc::audio
+} // namespace resonance::audio

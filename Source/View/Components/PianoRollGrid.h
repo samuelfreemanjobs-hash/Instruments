@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 
-namespace vmpc::view
+namespace resonance::view
 {
 /** Piano roll placeholder — note grid + keys (Phase 2). */
 class PianoRollGrid : public juce::Component
@@ -15,4 +15,4 @@ public:
 private:
     static constexpr int kVisibleKeys = 24;
 };
-} // namespace vmpc::view
+} // namespace resonance::view

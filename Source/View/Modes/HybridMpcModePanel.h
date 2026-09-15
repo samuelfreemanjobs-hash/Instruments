@@ -2,12 +2,12 @@
 
 #include <JuceHeader.h>
 #include "Controller/AppController.h"
-#include "View/Components/Mpc2000xlLcdDisplay.h"
+#include "View/Components/StudioLcdDisplay.h"
 #include "View/Components/StepSequencerGrid.h"
 #include "View/Components/PianoRollGrid.h"
 #include "View/Components/MixerChannelStrip.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 class HybridMpcModePanel : public juce::Component
 {
@@ -20,9 +20,9 @@ public:
 
 private:
     controller::AppController& appController;
-    Mpc2000xlLcdDisplay lcd;
+    StudioLcdDisplay lcd;
     StepSequencerGrid stepGrid;
     PianoRollGrid pianoRoll;
     MixerChannelStrip channelStrip { "DRUM 1" };
 };
-} // namespace vmpc::view
+} // namespace resonance::view

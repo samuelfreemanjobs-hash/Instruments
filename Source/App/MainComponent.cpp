@@ -1,6 +1,6 @@
 #include "MainComponent.h"
 
-namespace vmpc::app
+namespace resonance::app
 {
 MainComponent::MainComponent(controller::AppController& controller)
     : appController(controller)
@@ -14,13 +14,13 @@ MainComponent::MainComponent(controller::AppController& controller)
 {
     setLookAndFeel(&lookAndFeel);
 
-    titleLabel.setText("VMPC2000XL Hybrid", juce::dontSendNotification);
+    titleLabel.setText("Resonance Hybrid", juce::dontSendNotification);
     titleLabel.setJustificationType(juce::Justification::centredRight);
     titleLabel.setColour(juce::Label::textColourId, lookAndFeel.iceBlue);
     addAndMakeVisible(titleLabel);
     addAndMakeVisible(modeToolbar);
 
-    modeToolbar.onModeChanged([this](vmpc::model::AppMode mode) {
+    modeToolbar.onModeChanged([this](resonance::model::AppMode mode) {
         appController.setAppMode(mode);
     });
 
@@ -45,13 +45,13 @@ MainComponent::~MainComponent()
     setLookAndFeel(nullptr);
 }
 
-void MainComponent::appModeChanged(vmpc::model::AppMode mode)
+void MainComponent::appModeChanged(resonance::model::AppMode mode)
 {
     modeToolbar.setCurrentMode(mode);
     showMode(mode);
 }
 
-void MainComponent::showMode(vmpc::model::AppMode mode)
+void MainComponent::showMode(resonance::model::AppMode mode)
 {
     electribePanel.setVisible(false);
     mpcPanel.setVisible(false);
@@ -61,19 +61,19 @@ void MainComponent::showMode(vmpc::model::AppMode mode)
 
     switch (mode)
     {
-        case vmpc::model::AppMode::HybridMpc:
+        case resonance::model::AppMode::HybridMpc:
             activeModePanel = &mpcPanel;
             break;
-        case vmpc::model::AppMode::Maschine:
+        case resonance::model::AppMode::Maschine:
             activeModePanel = &maschinePanel;
             break;
-        case vmpc::model::AppMode::SessionClip:
+        case resonance::model::AppMode::SessionClip:
             activeModePanel = &sessionPanel;
             break;
-        case vmpc::model::AppMode::PatternSong:
+        case resonance::model::AppMode::PatternSong:
             activeModePanel = &patternPanel;
             break;
-        case vmpc::model::AppMode::Electribe:
+        case resonance::model::AppMode::Electribe:
         default:
             activeModePanel = &electribePanel;
             break;
@@ -103,7 +103,7 @@ void MainComponent::drawStudioEmblem(juce::Graphics& g, juce::Rectangle<int> are
     g.setColour(lookAndFeel.neonAccent);
     g.drawEllipse(area.toFloat().reduced(2.0f), 1.5f);
     g.setFont(juce::FontOptions(10.0f, juce::Font::bold));
-    g.drawText("VMPC", area, juce::Justification::centred);
+    g.drawText("RSN", area, juce::Justification::centred);
 }
 
 void MainComponent::resized()
@@ -128,10 +128,10 @@ void MainComponent::timerCallback()
 
     switch (appController.getAppMode())
     {
-        case vmpc::model::AppMode::Electribe:
+        case resonance::model::AppMode::Electribe:
             electribePanel.updateTransportUi(step);
             break;
-        case vmpc::model::AppMode::HybridMpc:
+        case resonance::model::AppMode::HybridMpc:
             mpcPanel.updateTransportUi(step, peakL, peakR);
             mixerBank.meterUpdate(0, juce::jmax(peakL, peakR));
             break;
@@ -139,4 +139,4 @@ void MainComponent::timerCallback()
             break;
     }
 }
-} // namespace vmpc::app
+} // namespace resonance::app

@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 #include "Controller/AppController.h"
-#include "View/LookAndFeel/VMpcLookAndFeel.h"
+#include "View/LookAndFeel/StudioLookAndFeel.h"
 #include "View/Components/ModeToolbar.h"
 #include "View/Modes/ElectribeModePanel.h"
 #include "View/Modes/HybridMpcModePanel.h"
@@ -12,7 +12,7 @@
 #include "View/Components/PluginRackPanel.h"
 #include "View/Components/MixerBank.h"
 
-namespace vmpc::app
+namespace resonance::app
 {
 class MainComponent : public juce::Component,
                       private juce::Timer,
@@ -27,12 +27,12 @@ public:
 
 private:
     void timerCallback() override;
-    void appModeChanged(vmpc::model::AppMode mode) override;
-    void showMode(vmpc::model::AppMode mode);
+    void appModeChanged(resonance::model::AppMode mode) override;
+    void showMode(resonance::model::AppMode mode);
     void drawStudioEmblem(juce::Graphics& g, juce::Rectangle<int> area) const;
 
     controller::AppController& appController;
-    view::VMpcLookAndFeel lookAndFeel;
+    view::StudioLookAndFeel lookAndFeel;
 
     view::ModeToolbar modeToolbar;
     juce::Component* activeModePanel = nullptr;
@@ -46,4 +46,4 @@ private:
 
     juce::Label titleLabel;
 };
-} // namespace vmpc::app
+} // namespace resonance::app

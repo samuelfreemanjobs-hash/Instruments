@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include <array>
 
-namespace vmpc::model
+namespace resonance::model
 {
 struct ElectribeStep
 {
@@ -46,4 +46,4 @@ private:
     int selectedPart = 0;
     bool motionSeqEnabled = false;
 };
-} // namespace vmpc::model
+} // namespace resonance::model

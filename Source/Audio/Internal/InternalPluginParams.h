@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include <map>
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 /** Apply raw engineering values (dB, ms, etc.) by AudioParameter ID. */
 inline void applyRawParameterMap(juce::AudioProcessor& processor,
@@ -23,4 +23,4 @@ inline void applyRawParameterMap(juce::AudioProcessor& processor,
         floatParam->setValueNotifyingHost(normalised);
     }
 }
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

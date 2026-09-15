@@ -1,9 +1,9 @@
 #include "LimiterProcessor.h"
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 LimiterProcessor::LimiterProcessor()
-    : InternalMixProcessor("VMPC Limiter")
+    : InternalMixProcessor("Resonance Limiter")
 {
     addParameter(ceiling = new juce::AudioParameterFloat(
         juce::ParameterID { "ceiling", 1 },
@@ -43,4 +43,4 @@ juce::AudioProcessorEditor* LimiterProcessor::createEditor()
 {
     return new juce::GenericAudioProcessorEditor(*this);
 }
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal

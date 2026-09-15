@@ -15,8 +15,8 @@
 
 ## Phase 2 — Graphics & UI (in progress)
 
-- [x] `VMpcLookAndFeel` (matte black / walnut / ice-blue)
-- [x] `Mpc2000xlLcdDisplay`, `StepSequencerGrid`, `PianoRollGrid`, `MixerChannelStrip`
+- [x] `StudioLookAndFeel` (matte black / walnut / ice-blue)
+- [x] `StudioLcdDisplay`, `StepSequencerGrid`, `PianoRollGrid`, `MixerChannelStrip`
 - [ ] Pixel-match UI mockup layout (Q-Link, full mixer, hardware shell)
 - [ ] 7-segment LED font + vector studio emblem assets
 

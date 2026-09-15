@@ -1,6 +1,6 @@
-# VMPC2000XL Modern Hybrid DAW — Development Roadmap
+# Resonance — Development Roadmap
 
-Cross-platform (macOS/Windows/Linux for development), low-latency, real-time MPC2000XL-inspired hybrid DAW.
+Cross-platform (macOS/Windows/Linux), low-latency hybrid groovebox DAW.
 
 | Phase | Focus | Status |
 |-------|--------|--------|

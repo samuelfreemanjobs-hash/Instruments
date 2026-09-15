@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-namespace vmpc::audio
+namespace resonance::audio
 {
 /** Insert chain processed on the audio thread (instruments then effects). */
 class PluginSlotChain
@@ -52,4 +52,4 @@ private:
     juce::AudioBuffer<float> scratch;
     juce::MidiBuffer emptyMidi;
 };
-} // namespace vmpc::audio
+} // namespace resonance::audio

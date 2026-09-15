@@ -1,6 +1,6 @@
 #include "SessionModePanel.h"
 
-namespace vmpc::view
+namespace resonance::view
 {
 SessionModePanel::SessionModePanel(controller::AppController& controller)
     : appController(controller)
@@ -9,8 +9,8 @@ SessionModePanel::SessionModePanel(controller::AppController& controller)
 
 void SessionModePanel::mouseDown(const juce::MouseEvent& e)
 {
-    const int tracks = vmpc::model::SessionMatrix::kTracks;
-    const int scenes = vmpc::model::SessionMatrix::kScenes;
+    const int tracks = resonance::model::SessionMatrix::kTracks;
+    const int scenes = resonance::model::SessionMatrix::kScenes;
     const auto area = getLocalBounds().withTrimmedTop(36).reduced(16);
     const int cw = area.getWidth() / tracks;
     const int ch = area.getHeight() / scenes;
@@ -35,8 +35,8 @@ void SessionModePanel::paint(juce::Graphics& g)
                juce::Justification::centred);
 
     const auto& matrix = appController.getWorkspace().getSessionMatrix();
-    const int tracks = vmpc::model::SessionMatrix::kTracks;
-    const int scenes = vmpc::model::SessionMatrix::kScenes;
+    const int tracks = resonance::model::SessionMatrix::kTracks;
+    const int scenes = resonance::model::SessionMatrix::kScenes;
     const auto area = getLocalBounds().withTrimmedTop(36).reduced(16);
     const int cw = area.getWidth() / tracks;
     const int ch = area.getHeight() / scenes;
@@ -62,4 +62,4 @@ void SessionModePanel::paint(juce::Graphics& g)
     g.drawText("Quantize: " + juce::String(matrix.getQuantizeBeats(), 2) + " beats",
                getLocalBounds().removeFromBottom(20), juce::Justification::centred);
 }
-} // namespace vmpc::view
+} // namespace resonance::view

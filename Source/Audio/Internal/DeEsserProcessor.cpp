@@ -1,9 +1,9 @@
 #include "DeEsserProcessor.h"
 
-namespace vmpc::audio::internal
+namespace resonance::audio::internal
 {
 DeEsserProcessor::DeEsserProcessor()
-    : InternalMixProcessor("VMPC De-Esser")
+    : InternalMixProcessor("Resonance De-Esser")
 {
     addParameter(thresholdDb = new juce::AudioParameterFloat(
         juce::ParameterID { "threshold", 1 },
@@ -69,4 +69,4 @@ juce::AudioProcessorEditor* DeEsserProcessor::createEditor()
 {
     return new juce::GenericAudioProcessorEditor(*this);
 }
-} // namespace vmpc::audio::internal
+} // namespace resonance::audio::internal
