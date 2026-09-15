@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Electribe ESX Hybrid — VMPC2000XL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="plugin-shell" role="application" aria-label="Electribe ESX Hybrid workstation">
+    <header class="daw-header">
+      <span class="daw-brand">VMPC2000XL</span>
+      <div class="daw-meta">
+        <span>FUTURE BEATS — REV. 3</span>
+        <span><strong>92.40 BPM</strong></span>
+        <span>LINN SWING <strong>62%</strong></span>
+        <span>PATTERN <strong>A.01: BOOMBAP_GRV</strong></span>
+        <span id="motion-status" class="motion-rec-armed">MOTION REC ●</span>
+      </div>
+      <div class="transport">
+        <button type="button" id="btn-play" title="Play">▶</button>
+        <button type="button" id="btn-stop" title="Stop">■</button>
+        <button type="button" id="btn-rec" class="rec-armed" title="Motion Rec">●</button>
+      </div>
+    </header>
+
+    <div class="main-layout">
+      <aside class="track-inspector">
+        <h3>Arrangement</h3>
+        <div class="track-row"><div class="track-meter"><span></span></div><span>DRUM BUS</span></div>
+        <div class="track-row"><div class="track-meter"><span></span></div><span>BASS CHOP</span></div>
+        <div class="track-row"><div class="track-meter"><span></span></div><span>RHODES FM</span></div>
+        <div class="track-row"><div class="track-meter"><span></span></div><span>VOCAL STAB</span></div>
+        <div class="track-row"><div class="track-meter"><span></span></div><span>FX RETURN</span></div>
+      </aside>
+
+      <main class="center-rack">
+        <div class="oled-banner">ELECTRIBE ESX HYBRID</div>
+
+        <section class="rack-panel" aria-label="Valve Force">
+          <div class="rack-title">Valve Force — 12AX7 Tube Processor</div>
+          <div class="valve-stage">
+            <div class="vu-meter"><div class="needle"></div></div>
+            <div class="tube"><div class="tube-cage"></div><div class="tube-glass"></div></div>
+            <div class="tube"><div class="tube-cage"></div><div class="tube-glass"></div></div>
+            <div class="drive-pot"><div class="knob" title="Tube Drive L"></div><span>DRIVE L</span></div>
+            <div class="drive-pot"><div class="knob" title="Tube Drive R"></div><span>DRIVE R</span></div>
+            <div class="vu-meter"><div class="needle"></div></div>
+          </div>
+        </section>
+
+        <section class="rack-panel" aria-label="Parts matrix">
+          <div class="rack-title">Drum &amp; Synth Parts — ESX Sample Matrix</div>
+          <div class="parts-grid">
+            <div class="part-cell selected"><div class="label">Kick</div><div class="sample">MPC60_KICK_01</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">Snare</div><div class="sample">12BIT_SNARE</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">Clap</div><div class="sample">CLAP_909</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">HH Cl</div><div class="sample">CH_HAT</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">HH Op</div><div class="sample">OP_HAT</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">Tom</div><div class="sample">LOW_TOM</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">Perc 1</div><div class="sample">CONGA</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">Perc 2</div><div class="sample">SHAKER</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">Audio In</div><div class="sample">LINE_IN</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">Synth 1</div><div class="sample">CHOP_RHODES_Fm</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">Synth 2</div><div class="sample">MINOR_STAB</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">Synth 3</div><div class="sample">VOCAL_CHOP</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">Synth 4</div><div class="sample">PAD_WASH</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+            <div class="part-cell"><div class="label">Synth 5</div><div class="sample">SUB_808</div><div class="part-leds"><span class="led solo">S</span><span class="led mute">M</span></div></div>
+          </div>
+        </section>
+
+        <section class="rack-panel" aria-label="Filter and modulation">
+          <div class="rack-title">24dB Ladder Filter &amp; Modulation Matrix</div>
+          <div class="filter-row">
+            <div class="filter-knobs">
+              <div class="knob-wrap"><div class="knob"></div>CUTOFF</div>
+              <div class="knob-wrap"><div class="knob"></div>RES</div>
+              <div class="knob-wrap"><div class="knob"></div>EG INT</div>
+              <div class="knob-wrap"><div class="knob"></div>DRIVE</div>
+            </div>
+            <div class="filter-curve">
+              <svg viewBox="0 0 400 80" preserveAspectRatio="none" width="100%" height="100%">
+                <path d="M0 70 Q120 68 200 35 T400 15" fill="none" stroke="#38bdf8" stroke-width="2"/>
+                <path d="M0 70 L400 70" stroke="#333" stroke-width="1"/>
+              </svg>
+            </div>
+          </div>
+          <div class="mod-matrix">
+            <span class="badge motion-on">LFO → CUTOFF</span>
+            <span class="badge">LFO SPD</span>
+            <span class="badge motion-on">MOTION → PITCH</span>
+            <span class="badge">RING MOD</span>
+          </div>
+        </section>
+      </main>
+
+      <aside class="master-dock">
+        <h3 style="font-size:10px;color:var(--text-dim);letter-spacing:0.1em">MASTER</h3>
+        <div class="clip-block"></div>
+        <div class="clip-block" style="width:70%"></div>
+        <div class="clip-block" style="width:85%"></div>
+        <div class="fader"><div class="fader-thumb"></div></div>
+        <span style="text-align:center;font-size:9px;color:var(--ice)">LIMITER</span>
+      </aside>
+    </div>
+
+    <footer class="sequencer-deck">
+      <div class="ribbon-col">
+        <span style="font-size:8px;color:var(--text-dim)">ARP RIBBON</span>
+        <div class="touch-ribbon" id="touch-ribbon">
+          <div class="ribbon-dot" id="ribbon-dot" style="left:50%;top:40%"></div>
+        </div>
+      </div>
+      <div class="sequencer-main">
+        <div class="motion-lanes">
+          <div class="motion-lane" id="lane-pitch"><label>PITCH</label><svg></svg></div>
+          <div class="motion-lane" id="lane-cutoff"><label>CUTOFF</label><svg></svg></div>
+          <div class="motion-lane" id="lane-pan"><label>PAN</label><svg></svg></div>
+        </div>
+        <div class="step-row" id="step-row"></div>
+      </div>
+    </footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

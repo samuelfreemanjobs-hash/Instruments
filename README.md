@@ -12,6 +12,8 @@ cmake --build build -j
 
 **Multi-monitor:** five mode windows open at startup (one per workflow). Focus a window to select its sequencer for audio.
 
+**Electribe ESX UI mockup (HTML):** interactive reference at [`design/electribe-esx/index.html`](design/electribe-esx/index.html) — open in a browser or `python3 -m http.server` from that folder.
+
 On Linux you need ALSA, X11, FreeType, and OpenGL development packages (see CI or `docs/ARCHITECTURE.md`).
 
 ## Layout
