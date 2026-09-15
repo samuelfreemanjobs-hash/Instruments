@@ -1,5 +1,5 @@
 #include "PluginRackPanel.h"
-#include "View/LookAndFeel/VMpcLookAndFeel.h"
+#include "Audio/Internal/InternalPluginTypes.h"
 
 namespace vmpc::view
 {
@@ -8,7 +8,7 @@ PluginRackPanel::PluginRackPanel(vmpc::audio::PluginHostService& host)
 {
     pluginHost.addListener(this);
 
-    statusLabel.setText("Load VST3 (and LV2 on Linux) instruments/effects into slots. MIDI from the active sequencer is sent to instrument slots.",
+    statusLabel.setText("Load VMPC internal mix tools or external VST3/LV2/AU plug-ins. MIDI from the active sequencer goes to instrument slots.",
                         juce::dontSendNotification);
     statusLabel.setColour(juce::Label::textColourId, juce::Colours::grey);
     addAndMakeVisible(statusLabel);
@@ -103,26 +103,45 @@ void PluginRackPanel::showPluginPicker(int slotIndex)
     juce::PopupMenu menu;
     const auto types = pluginHost.getKnownPlugins().getTypes();
 
-    int id = 1;
-    for (const auto& type : types)
+    juce::PopupMenu internalMenu;
+    int internalBase = 1000;
+    for (const auto& info : vmpc::audio::internal::allMixPlugins())
     {
-        menu.addItem(id++, type.name + " (" + type.pluginFormatName + ")");
+        internalMenu.addItem(internalBase + static_cast<int>(info.id),
+                             info.displayName + " — " + info.description);
     }
+    menu.addSubMenu("VMPC internal mix", internalMenu);
+
+    const int externalBase = 2000;
+    int externalId = externalBase;
+    for (const auto& type : types)
+        menu.addItem(externalId++, type.name + " (" + type.pluginFormatName + ")");
 
     if (types.isEmpty())
-    {
-        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon,
-                                               "No plug-ins found",
-                                               "Click Scan VST plug-ins, then confirm your .vst3 folder is listed in docs/VST_HOSTING.md.");
-        return;
-    }
+        menu.addItem(-1, "(No external plug-ins — run Scan)", false);
 
     menu.showMenuAsync(juce::PopupMenu::Options(),
-                       [this, slotIndex, types](int result) {
+                       [this, slotIndex, types, externalBase](int result) {
                            if (result <= 0)
                                return;
 
-                           const auto& desc = types[static_cast<size_t>(result - 1)];
+                           if (result >= 1000 && result < externalBase)
+                           {
+                               const auto id = static_cast<vmpc::audio::internal::MixPluginId>(result - 1000);
+                               pluginHost.loadInternalMixPlugin(slotIndex, id);
+                               statusLabel.setText("Internal mix plug-in loaded.", juce::dontSendNotification);
+                               refreshSlotLabels();
+                               return;
+                           }
+
+                           if (result < externalBase)
+                               return;
+
+                           const int index = result - externalBase;
+                           if (index < 0 || index >= types.size())
+                               return;
+
+                           const auto& desc = types.getReference(index);
                            statusLabel.setText("Loading " + desc.name + "...", juce::dontSendNotification);
                            pluginHost.loadPluginIntoSlot(slotIndex, desc, [this](bool ok, const juce::String& err) {
                                statusLabel.setText(ok ? "Plug-in loaded." : ("Load failed: " + err),
@@ -152,7 +171,10 @@ void PluginRackPanel::refreshSlotLabels()
     {
         const auto& state = states[static_cast<size_t>(i)];
         auto& ui = slots[static_cast<size_t>(i)];
-        ui.pluginName.setText(state.loaded ? state.name + (state.isInstrument ? " [instrument]" : " [FX]")
+        const bool internal = state.name.startsWith("VMPC ");
+        ui.pluginName.setText(state.loaded ? state.name + (state.isInstrument ? " [instrument]"
+                                                                             : internal ? " [internal]"
+                                                                                        : " [FX]")
                                            : "Empty",
                               juce::dontSendNotification);
         ui.editorButton.setEnabled(state.loaded);

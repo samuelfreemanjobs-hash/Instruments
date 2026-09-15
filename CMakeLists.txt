@@ -46,6 +46,13 @@ target_sources(VMPC2000XL
         Source/Audio/AudioEngine.cpp
         Source/Audio/PluginSlotChain.cpp
         Source/Audio/PluginHostService.cpp
+        Source/Audio/Internal/InternalMixProcessor.cpp
+        Source/Audio/Internal/InternalPluginFactory.cpp
+        Source/Audio/Internal/GainProcessor.cpp
+        Source/Audio/Internal/PanProcessor.cpp
+        Source/Audio/Internal/Eq3Processor.cpp
+        Source/Audio/Internal/CompressorProcessor.cpp
+        Source/Audio/Internal/LimiterProcessor.cpp
         Source/Audio/RealTimeConstraints.h
         Source/View/Components/PluginRackPanel.cpp
         Source/View/LookAndFeel/VMpcLookAndFeel.cpp

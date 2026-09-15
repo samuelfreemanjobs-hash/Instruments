@@ -22,7 +22,7 @@ Use **Scan VST plug-ins** in the rack at the bottom of the main window after ins
 
 ## Rack behaviour
 
-- **8 slots** — load instruments and/or effects.
+- **8 slots** — load instruments and/or effects (including [built-in VMPC mix plug-ins](INTERNAL_PLUGINS.md)).
 - **Instrument** plug-ins (accept MIDI) receive MIDI from the active mode’s sequencer and are summed.
 - **Effect** plug-ins process the mixed output in slot order.
 - **UI** opens the plug-in’s native editor window.

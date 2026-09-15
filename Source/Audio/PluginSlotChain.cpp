@@ -56,7 +56,7 @@ std::array<PluginSlotChain::SlotState, PluginSlotChain::kNumSlots> PluginSlotCha
     return out;
 }
 
-void PluginSlotChain::setPluginInSlot(int slotIndex, std::unique_ptr<juce::AudioPluginInstance> instance)
+void PluginSlotChain::setProcessorInSlot(int slotIndex, std::unique_ptr<juce::AudioProcessor> instance)
 {
     if (slotIndex < 0 || slotIndex >= kNumSlots)
         return;
@@ -78,7 +78,7 @@ void PluginSlotChain::setPluginInSlot(int slotIndex, std::unique_ptr<juce::Audio
     rebuildProcessingOrder();
 }
 
-juce::AudioPluginInstance* PluginSlotChain::getPluginInSlot(int slotIndex) noexcept
+juce::AudioProcessor* PluginSlotChain::getProcessorInSlot(int slotIndex) noexcept
 {
     if (slotIndex < 0 || slotIndex >= kNumSlots)
         return nullptr;

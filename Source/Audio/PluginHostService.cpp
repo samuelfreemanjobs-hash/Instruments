@@ -45,7 +45,7 @@ PluginHostService::~PluginHostService()
 
     chain.releaseResources();
     for (int i = 0; i < PluginSlotChain::kNumSlots; ++i)
-        chain.setPluginInSlot(i, nullptr);
+        chain.setProcessorInSlot(i, nullptr);
 }
 
 void PluginHostService::addListener(Listener* listener)
@@ -154,7 +154,8 @@ void PluginHostService::loadPluginIntoSlot(int slotIndex,
                 return;
             }
 
-            chain.setPluginInSlot(slotIndex, std::move(instance));
+            std::unique_ptr<juce::AudioProcessor> processor { std::move(instance) };
+            chain.setProcessorInSlot(slotIndex, std::move(processor));
             notifySlotsChanged();
 
             if (callback)
@@ -162,10 +163,25 @@ void PluginHostService::loadPluginIntoSlot(int slotIndex,
         });
 }
 
+void PluginHostService::loadInternalMixPlugin(int slotIndex, internal::MixPluginId id)
+{
+    if (slotIndex < 0 || slotIndex >= PluginSlotChain::kNumSlots)
+        return;
+
+    hideEditorForSlot(slotIndex);
+
+    auto processor = internal::createMixPlugin(id);
+    if (processor == nullptr)
+        return;
+
+    chain.setProcessorInSlot(slotIndex, std::move(processor));
+    notifySlotsChanged();
+}
+
 void PluginHostService::clearSlot(int slotIndex)
 {
     hideEditorForSlot(slotIndex);
-    chain.setPluginInSlot(slotIndex, nullptr);
+    chain.setProcessorInSlot(slotIndex, nullptr);
     notifySlotsChanged();
 }
 
@@ -174,7 +190,7 @@ void PluginHostService::showEditorForSlot(int slotIndex)
     if (slotIndex < 0 || slotIndex >= PluginSlotChain::kNumSlots)
         return;
 
-    auto* plugin = chain.getPluginInSlot(slotIndex);
+    auto* plugin = chain.getProcessorInSlot(slotIndex);
     if (plugin == nullptr)
         return;
 

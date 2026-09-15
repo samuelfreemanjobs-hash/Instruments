@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "PluginSlotChain.h"
+#include "Internal/InternalPluginTypes.h"
 #include <functional>
 
 namespace vmpc::audio
@@ -32,6 +33,8 @@ public:
     void loadPluginIntoSlot(int slotIndex,
                             const juce::PluginDescription& description,
                             std::function<void(bool success, const juce::String& error)> callback);
+
+    void loadInternalMixPlugin(int slotIndex, internal::MixPluginId id);
 
     void clearSlot(int slotIndex);
     void showEditorForSlot(int slotIndex);

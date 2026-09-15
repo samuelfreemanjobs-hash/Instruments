@@ -32,10 +32,10 @@ public:
 
     std::array<SlotState, kNumSlots> getSlotStates() const;
 
-    /** Message thread only. Replaces plugin in slot (nullptr clears). */
-    void setPluginInSlot(int slotIndex, std::unique_ptr<juce::AudioPluginInstance> instance);
+    /** Message thread only. Replaces processor in slot (nullptr clears). */
+    void setProcessorInSlot(int slotIndex, std::unique_ptr<juce::AudioProcessor> processor);
 
-    juce::AudioPluginInstance* getPluginInSlot(int slotIndex) noexcept;
+    juce::AudioProcessor* getProcessorInSlot(int slotIndex) noexcept;
 
 private:
     void rebuildProcessingOrder();
@@ -44,7 +44,7 @@ private:
     double sampleRateHz = 44100.0;
     int maxBlockSize = 512;
     mutable juce::CriticalSection lock;
-    std::array<std::unique_ptr<juce::AudioPluginInstance>, kNumSlots> slots {};
+    std::array<std::unique_ptr<juce::AudioProcessor>, kNumSlots> slots {};
     std::vector<int> processingOrder;
     juce::AudioBuffer<float> scratch;
     juce::MidiBuffer emptyMidi;
