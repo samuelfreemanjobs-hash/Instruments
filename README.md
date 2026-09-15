@@ -17,8 +17,8 @@ Targets: `JDUpgraded_VST3`, `JDUpgraded_Standalone`.
 
 | Phase | Scope | Status |
 |-------|--------|--------|
-| 1 | Audio pipeline, voice pool, sample engine, 32-sample envelopes | In progress |
-| 2 | ZDF filter, sync/ring/PCM, Group A/B effects | Planned |
+| 1 | Audio pipeline, voice pool, sample engine, 32-sample envelopes | Done |
+| 2 | ZDF filter, sync/ring/PCM, Group A/B effects | Done |
 | 3 | ROM loader, SysEx presets | Planned |
 | 4 | SIMD, full UI, hardware A/B | Planned |
 

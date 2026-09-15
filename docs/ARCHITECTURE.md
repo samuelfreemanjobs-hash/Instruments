@@ -8,11 +8,11 @@
 - **Envelopes**: `RateLevelEnvelope` advances on `kControlRateDivisor` (32) sample boundaries for pitch, cutoff, and amplitude.
 - **Cleanroom waves**: `CleanroomWaveLibrary` supplies optional PCM for development without proprietary ROMs.
 
-## Phase 2 (planned)
+## Phase 2 (implemented)
 
-- `Source/DSP/Filter/ZdfTvf.h` — zero-delay feedback ladder with resonance limiting saturation.
-- `Source/DSP/Modulation/` — PolyBLEP hard sync, ring mod, phase cross-mod, tone coupling modes.
-- `Source/DSP/Effects/` — Group A distortion stages, Group B delay/reverb.
+- **ZDF TVF** (`Filter/ZdfTvf.h`) — trapezoidal two-pole lowpass with `tanh` resonance limiting on each `Tone`.
+- **Modulation** — `PolyBlep.h` hard sync in `SampleEngine`; `ToneCouplingMode` in `SynthVoice` (ring, phase cross-mod, sync pairs).
+- **Effects** — `GroupADistortion` (7-stage soft clip) and `GroupBSpatial` (fixed delay + diffuse feedback) on the master bus.
 
 ## Phase 3 (planned)
 

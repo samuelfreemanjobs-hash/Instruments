@@ -3,7 +3,7 @@
 JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioProcessor& p)
     : AudioProcessorEditor (&p), processor_ (p)
 {
-    titleLabel_.setText ("JD Upgraded — Phase 1 pipeline", juce::dontSendNotification);
+    titleLabel_.setText ("JD Upgraded — Phase 2 DSP", juce::dontSendNotification);
     titleLabel_.setJustificationType (juce::Justification::centred);
     addAndMakeVisible (titleLabel_);
 

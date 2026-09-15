@@ -27,6 +27,12 @@ public:
         defaultPatches_ = patches;
     }
 
+    void setCouplingMode (ToneCouplingMode mode) noexcept
+    {
+        for (auto& voice : voices_)
+            voice.setCouplingMode (mode);
+    }
+
     void noteOn (std::uint8_t midiNote, std::uint8_t velocity) noexcept
     {
         const int voiceIndex = allocateVoice (midiNote);

@@ -3,6 +3,8 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 
 #include "Assets/CleanroomWaveLibrary.h"
+#include "DSP/Effects/GroupADistortion.h"
+#include "DSP/Effects/GroupBSpatial.h"
 #include "DSP/VoicePool.h"
 
 class JDUpgradedAudioProcessor final : public juce::AudioProcessor
@@ -46,6 +48,8 @@ private:
     juce::AudioProcessorValueTreeState apvts_;
     jdupgraded::dsp::VoicePool voicePool_;
     jdupgraded::assets::CleanroomWaveLibrary waveLibrary_;
+    jdupgraded::dsp::GroupADistortion groupA_;
+    jdupgraded::dsp::GroupBSpatial groupB_;
 
     std::array<float, 8192> outputScratch_{};
 
@@ -54,6 +58,10 @@ private:
     std::atomic<float>* tone2LevelPtr_ = nullptr;
     std::atomic<float>* tone3LevelPtr_ = nullptr;
     std::atomic<float>* tone4LevelPtr_ = nullptr;
+    std::atomic<float>* filterResonancePtr_ = nullptr;
+    std::atomic<float>* couplingModePtr_ = nullptr;
+    std::atomic<float>* groupADrivePtr_ = nullptr;
+    std::atomic<float>* groupBMixPtr_ = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JDUpgradedAudioProcessor)
 };
