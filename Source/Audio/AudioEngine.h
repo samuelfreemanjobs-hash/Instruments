@@ -9,12 +9,19 @@
 
 namespace vmpc::audio
 {
+class PluginSlotChain;
+
 class AudioEngine : public juce::AudioIODeviceCallback
 {
 public:
     AudioEngine();
 
     void bindElectribeSong(model::ElectribeSong* song) noexcept;
+
+    void setPluginChain(PluginSlotChain* chain) noexcept { pluginChain = chain; }
+
+    double getSampleRate() const noexcept { return deviceSampleRate.load(); }
+    int getBlockSize() const noexcept { return deviceBlockSize.load(); }
 
     void setAppMode(model::AppMode mode) noexcept { appMode.store(static_cast<int>(mode)); }
 
@@ -39,7 +46,10 @@ public:
 private:
     model::SequencerCore sequencer;
     model::ElectribeSequencer electribeSequencer;
+    PluginSlotChain* pluginChain = nullptr;
     juce::MidiBuffer midiBuffer;
+    std::atomic<double> deviceSampleRate { 44100.0 };
+    std::atomic<int> deviceBlockSize { 512 };
     std::atomic<int> appMode { static_cast<int>(model::AppMode::Electribe) };
     std::atomic<int> playingStepForUi { 0 };
     std::atomic<float> peakL { 0.0f };

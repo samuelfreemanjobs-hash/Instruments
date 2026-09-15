@@ -9,6 +9,7 @@ MainComponent::MainComponent(controller::AppController& controller)
     , maschinePanel(controller)
     , sessionPanel(controller)
     , patternPanel(controller)
+    , pluginRack(controller.getPluginHost())
 {
     setLookAndFeel(&lookAndFeel);
 
@@ -27,6 +28,7 @@ MainComponent::MainComponent(controller::AppController& controller)
     addChildComponent(sessionPanel);
     addChildComponent(patternPanel);
     addChildComponent(electribePanel);
+    addAndMakeVisible(pluginRack);
 
     appController.addListener(this);
     showMode(appController.getAppMode());
@@ -110,6 +112,7 @@ void MainComponent::resized()
     titleLabel.setBounds(header);
 
     bounds.removeFromTop(8);
+    pluginRack.setBounds(bounds.removeFromBottom(280));
     if (activeModePanel != nullptr && activeModePanel->isVisible())
         activeModePanel->setBounds(bounds);
 }

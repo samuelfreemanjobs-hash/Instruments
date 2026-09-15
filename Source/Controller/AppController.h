@@ -4,6 +4,7 @@
 #include "Model/ProjectState.h"
 #include "Model/HybridWorkspace.h"
 #include "Audio/AudioEngine.h"
+#include "Audio/PluginHostService.h"
 
 namespace vmpc::controller
 {
@@ -27,6 +28,7 @@ public:
     model::ProjectState& getProject() noexcept { return project; }
     model::HybridWorkspace& getWorkspace() noexcept { return workspace; }
     audio::AudioEngine& getEngine() noexcept { return audioEngine; }
+    audio::PluginHostService& getPluginHost() noexcept { return *pluginHost; }
 
     void addListener(Listener* listener);
     void removeListener(Listener* listener);
@@ -37,6 +39,7 @@ private:
     model::ProjectState& project;
     model::HybridWorkspace workspace;
     audio::AudioEngine& audioEngine;
+    std::unique_ptr<audio::PluginHostService> pluginHost;
     juce::AudioDeviceManager* deviceManager = nullptr;
     juce::ListenerList<Listener> listeners;
 };

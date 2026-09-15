@@ -1,4 +1,5 @@
 #include "AudioEngine.h"
+#include "PluginSlotChain.h"
 
 namespace vmpc::audio
 {
@@ -14,12 +15,21 @@ void AudioEngine::audioDeviceAboutToStart(juce::AudioIODevice* device)
     if (device != nullptr)
     {
         const double sr = device->getCurrentSampleRate();
+        const int block = device->getCurrentBufferSizeSamples();
+        deviceSampleRate.store(sr);
+        deviceBlockSize.store(block);
         sequencer.prepare(sr);
         electribeSequencer.prepare(sr);
+        if (pluginChain != nullptr)
+            pluginChain->prepare(sr, block);
     }
 }
 
-void AudioEngine::audioDeviceStopped() {}
+void AudioEngine::audioDeviceStopped()
+{
+    if (pluginChain != nullptr)
+        pluginChain->releaseResources();
+}
 
 void AudioEngine::audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
                                                      int numInputChannels,
@@ -44,6 +54,15 @@ void AudioEngine::audioDeviceIOCallbackWithContext(const float* const* inputChan
         playingStepForUi.store(electribeSequencer.getPlayingStepForUi());
     }
 
+    if (pluginChain != nullptr)
+        pluginChain->process(outputChannelData, numOutputChannels, numSamples, midiBuffer);
+    else
+    {
+        for (int ch = 0; ch < numOutputChannels; ++ch)
+            if (outputChannelData[ch] != nullptr)
+                juce::FloatVectorOperations::clear(outputChannelData[ch], numSamples);
+    }
+
     float maxL = 0.0f;
     float maxR = 0.0f;
 
@@ -51,8 +70,6 @@ void AudioEngine::audioDeviceIOCallbackWithContext(const float* const* inputChan
     {
         if (outputChannelData[ch] == nullptr)
             continue;
-
-        juce::FloatVectorOperations::clear(outputChannelData[ch], numSamples);
 
         for (int i = 0; i < numSamples; ++i)
         {

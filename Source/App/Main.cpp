@@ -7,7 +7,7 @@
 class VMpc2000XLApplication : public juce::JUCEApplication
 {
 public:
-    const juce::String getApplicationName() override { return "VMPC2000XL"; }
+    const juce::String getApplicationName() override { return "VMPC2000XL Hybrid DAW"; }
     const juce::String getApplicationVersion() override { return "0.1.0"; }
     bool moreThanOneInstanceAllowed() override { return false; }
 
@@ -52,7 +52,7 @@ private:
             setUsingNativeTitleBar(true);
             setContentOwned(new vmpc::app::MainComponent(controller), true);
             setResizable(true, true);
-            centreWithSize(1100, 720);
+            centreWithSize(1200, 900);
             setVisible(true);
         }
 

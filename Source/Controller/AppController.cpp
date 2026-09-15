@@ -8,6 +8,7 @@ AppController::AppController(model::ProjectState& projectState, audio::AudioEngi
     , audioEngine(engine)
 {
     audioEngine.bindElectribeSong(&workspace.getElectribeSong());
+    pluginHost = std::make_unique<audio::PluginHostService>(audioEngine);
     syncProjectToSequencer();
 
     const auto mode = model::appModeFromString(project.getTree().getProperty("appMode", "Electribe").toString());

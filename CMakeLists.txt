@@ -44,7 +44,10 @@ target_sources(VMPC2000XL
         Source/Model/Sequencer/SequencerClock.cpp
         Source/Model/Sequencer/SequencerCore.cpp
         Source/Audio/AudioEngine.cpp
+        Source/Audio/PluginSlotChain.cpp
+        Source/Audio/PluginHostService.cpp
         Source/Audio/RealTimeConstraints.h
+        Source/View/Components/PluginRackPanel.cpp
         Source/View/LookAndFeel/VMpcLookAndFeel.cpp
         Source/View/Components/Mpc2000xlLcdDisplay.cpp
         Source/View/Components/StepSequencerGrid.cpp
@@ -62,6 +65,9 @@ target_compile_definitions(VMPC2000XL
     PRIVATE
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
+        JUCE_PLUGINHOST_VST3=1
+        $<$<PLATFORM_ID:Linux>:JUCE_PLUGINHOST_LV2=1>
+        $<$<PLATFORM_ID:Darwin>:JUCE_PLUGINHOST_AU=1>
         JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:VMPC2000XL,JUCE_PRODUCT_NAME>"
         JUCE_APPLICATION_VERSION_STRING="${PROJECT_VERSION}"
         JUCE_DISPLAY_SPLASH_SCREEN=0
@@ -70,6 +76,7 @@ target_compile_definitions(VMPC2000XL
 target_link_libraries(VMPC2000XL
     PRIVATE
         juce::juce_audio_utils
+        juce::juce_audio_processors
         juce::juce_audio_devices
         juce::juce_audio_formats
         juce::juce_dsp

@@ -12,7 +12,7 @@
 ┌───────────────────────────▼─────────────────────────────────┐
 │  Audio thread (Model playback side)                         │
 │  AudioEngine : AudioIODeviceCallback                        │
-│  SequencerCore tick → MIDI/events → (future) sampler/DSP    │
+│  SequencerCore tick → MIDI → PluginSlotChain (VST3/AU/LV2)  │
 │  NO: allocation, locks, UI, file I/O, logging               │
 └─────────────────────────────────────────────────────────────┘
 ```
