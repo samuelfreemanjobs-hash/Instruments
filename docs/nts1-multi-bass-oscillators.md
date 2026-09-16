@@ -28,6 +28,7 @@ toolchain.
 | `prophet-funk` | P5 Funk RB | Prophet-5 70s funk / 80s R&B bass | C2–C3 |
 | `dx7-lately` | Lately Bass | DX7 FM electric / house bass | E2–A2 |
 | `sh101-babyface` | SH-101 BF | SH-101 warm pulse / hollow FM bass | C2–A2 |
+| `moog-voyager-se` | Voyager SE | Model D / Voyager + SE-1 fat stack, squelch | E1–C3 |
 
 Supporting folders: `template`, `wavetable` (learning / starters).
 
