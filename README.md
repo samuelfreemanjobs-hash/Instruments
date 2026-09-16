@@ -1,5 +1,7 @@
 # Instruments
 
+**DiskLordz (agent-operated audio company):** see [`disklordz/README.md`](disklordz/README.md) for the master plan, Audio PM agent, and workflow automation engineer.
+
 CMake-native [JUCE](https://juce.com/) plugin starter (`MyFirstPlugin`). **You do not need Visual Studio Code** or the CMake/C++ marketplace extensions. Build from the terminal; use **Cursor**, **Claude Code**, or **Antigravity** only to edit sources and run commands.
 
 ## Where you work vs what compiles

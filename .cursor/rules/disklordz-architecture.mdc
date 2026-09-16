@@ -1,0 +1,13 @@
+---
+description: DiskLordz production engine — factories, compiler, kernel, TRON separation.
+alwaysApply: false
+---
+
+# Architecture
+
+- Engine: `disklordz/docs/ARCHITECTURE.md`
+- Compiler: `disklordz/docs/PRODUCT_COMPILER.md`
+- Kernel: `disklordz/docs/PLUGIN_KERNEL.md`
+- DNA: `disklordz/sound-dna/`
+
+Build **factory infrastructure first**, then compile products. Reuse kernel + DNA; no orphan plugins.

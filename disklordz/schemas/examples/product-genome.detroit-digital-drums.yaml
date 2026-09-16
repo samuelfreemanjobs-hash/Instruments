@@ -1,0 +1,67 @@
+# Example Product Genome — copy to products/development/<id>/genome.yaml
+
+product:
+  id: DL-KIT-DDD-001
+  name: Detroit Digital Drums
+  family_id: DL-FAMILY-DIGITAL-SAMPLER
+  sonic_problem: 2000s DIGITAL DRUMS — hard, dirty, mechanical
+  type: kit
+
+market:
+  audience: trap and phonk producers
+  use_case: hard digital drums without sterile polish
+  positioning: Sampler-era grit from the DiskLordz sound system
+
+sound:
+  bpm_range: 70-160
+  character:
+    - aggressive
+    - digital
+    - dirty
+
+contents:
+  kicks: 40
+  snares: 40
+  hats: 60
+  percussion: 80
+  808s: 30
+
+formats:
+  wav: true
+  mpc: true
+  maschine: true
+
+compile:
+  targets:
+    - drum_kit_zip
+    - mpc_expansion
+    - free_teaser
+    - content_pack
+    - demo_audio
+  asset_ids: []
+
+commercial:
+  ladder_tier: kit
+  price_usd: 29
+  license: royalty_free
+
+marketing:
+  headline: Drums that sound like a dying sampler, not a stock pack
+  angle: Digital degradation as a feature
+
+qa:
+  sonic_score_min: 75
+  gates_required:
+    - G-PROV
+    - G-SONIC
+    - G-GENOME
+    - G-PKG
+    - G-CONTENT
+    - G-HUMAN
+
+economics:
+  effort_hours_estimate: 40
+  asset_reuse_pct_estimate: 60
+  derivative_skus:
+    - DL-PLUGIN-DISKCRUSHER
+    - DL-PRESET-DDD-01
