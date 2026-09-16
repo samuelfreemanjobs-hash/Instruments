@@ -33,6 +33,7 @@ chmod +x tools/build.sh tools/build-all-bass.sh
 ./tools/build.sh oscillators/juno-rnb nutekt-digital
 ./tools/build-all-bass.sh nutekt-digital
 ./tools/build.sh oscillators/dilla-bass nutekt-digital
+./tools/build.sh oscillators/dx7-lately nutekt-digital
 ```
 
 3. Load the resulting user osc on the NTS-1 with the Korg logue workflow.

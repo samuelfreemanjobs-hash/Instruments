@@ -134,6 +134,9 @@ void OSC_NOTEON(const user_osc_param_t *const params) {
   if (s_glide < 0.02f || s_w_cur < 1.0f) {
     s_w_cur = s_w_tgt;
   }
+  s_phase_c = 0U;
+  s_phase_m1 = 0U;
+  s_phase_m2 = 0U;
   s_mod_env = 1.0f;
   s_mod_env2 = 0.85f;
   if (s_env_stage == k_lately_stage_idle || s_env_stage == k_lately_stage_release) {
