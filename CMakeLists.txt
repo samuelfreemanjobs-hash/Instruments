@@ -45,7 +45,7 @@ juce_add_plugin(JDUpgraded
     COPY_PLUGIN_AFTER_BUILD FALSE
     PLUGIN_MANUFACTURER_CODE Inst
     PLUGIN_CODE JdUp
-    FORMATS VST3 Standalone CLAP
+    FORMATS VST3 Standalone
     PRODUCT_NAME "JD Upgraded"
 )
 
