@@ -29,8 +29,11 @@ Patch layout follows documented JD-800 structure:
 | Tone pitch coarse | internal voice pitch |
 | Per-tone TVF cutoff / resonance | `toneNFilterCutoff`, `toneNFilterResonance` |
 | Each tone TVA / TVF envelope times & sustain | `toneN*` ADSR; globals mirror tone A; **Link** off after import |
+| Tone pitch fine | per-tone fine cents (internal) |
+| Tone pitch envelope L0–L2, T1–T3 | per-tone pitch multiplier envelope |
+| Tone LFO1 rate + pitch sens | per-tone vibrato (triangle/sine family waveforms) |
 
-Unmapped JD fields (LFO, coupling, multisample) keep current values or factory defaults.
+Unmapped JD fields (coupling, multisample, LFO2) keep current values or factory defaults.
 
 ## Internal blob (`JDPR`)
 

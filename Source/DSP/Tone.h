@@ -35,6 +35,14 @@ struct TonePatch final
     float filterDecayTimeSec = 0.2f;
     float filterSustainLevel = 0.7f;
     float filterReleaseTimeSec = 0.3f;
+    float pitchLevel0Mult = 1.0f;
+    float pitchLevel1Mult = 1.0f;
+    float pitchLevel2Mult = 1.0f;
+    float pitchAttackTimeSec = 0.002f;
+    float pitchDecayTimeSec = 0.15f;
+    float pitchReleaseTimeSec = 0.25f;
+    float lfo1RateHz = 0.0f;
+    float lfo1PitchDepthSemis = 0.0f;
     float ringModAmount = 0.0f;
     float phaseModDepth = 0.0f;
 };
@@ -49,6 +57,8 @@ public:
     {
         sampleRate_ = sampleRate;
         pitchEnvelope_.setSampleRate (sampleRate);
+        pitchEnvelope_.setLevelRange (0.25f, 4.0f);
+        pitchEnvelope_.setReleaseTarget (1.0f);
         cutoffEnvelope_.setSampleRate (sampleRate);
         ampEnvelope_.setSampleRate (sampleRate);
         filter_.prepare (sampleRate);
@@ -72,12 +82,14 @@ public:
         midiNote_ = midiNote;
         resolveWaveAndPitch (midiNote);
         engine_.reset();
+        lfoPhase_ = 0.0f;
         updatePitchRatio (1.0f);
         filter_.reset();
 
-        pitchEnvelope_.reset (0.0f);
-        pitchEnvelope_.noteOn (1.0f, patch_.attackTimeSec, 1.0f, patch_.decayTimeSec, 1.0f);
-        pitchEnvelope_.configureRelease (patch_.releaseTimeSec);
+        pitchEnvelope_.reset (patch_.pitchLevel0Mult);
+        pitchEnvelope_.noteOn (patch_.pitchLevel0Mult, patch_.pitchAttackTimeSec, patch_.pitchLevel1Mult,
+                              patch_.pitchDecayTimeSec, patch_.pitchLevel2Mult);
+        pitchEnvelope_.configureRelease (patch_.pitchReleaseTimeSec);
 
         cutoffEnvelope_.reset (0.0f);
         cutoffEnvelope_.noteOn (patch_.filterCutoffNorm, patch_.filterAttackTimeSec,
@@ -96,7 +108,7 @@ public:
 
     void release() noexcept
     {
-        pitchEnvelope_.noteOff (patch_.releaseTimeSec);
+        pitchEnvelope_.noteOff (patch_.pitchReleaseTimeSec);
         cutoffEnvelope_.noteOff (patch_.filterReleaseTimeSec);
         ampEnvelope_.noteOff (patch_.releaseTimeSec);
     }
@@ -184,7 +196,17 @@ private:
     void resolveWaveAndPitch (std::uint8_t midiNote) noexcept;
     void updatePitchRatio (float pitchEnv) noexcept
     {
-        const float semis = static_cast<float> (midiNote_) - waveRootMidi_ + patch_.coarseSemis + patch_.fineCents / 100.0f;
+        float lfoSemis = 0.0f;
+        if (patch_.lfo1RateHz > 1.0e-4f && std::abs (patch_.lfo1PitchDepthSemis) > 1.0e-4f)
+        {
+            lfoPhase_ += static_cast<float> (2.0 * 3.14159265358979323846 * patch_.lfo1RateHz / sampleRate_);
+            if (lfoPhase_ > 6.283185307179586f)
+                lfoPhase_ -= 6.283185307179586f;
+            lfoSemis = patch_.lfo1PitchDepthSemis * std::sin (lfoPhase_);
+        }
+
+        const float semis = static_cast<float> (midiNote_) - waveRootMidi_ + patch_.coarseSemis + patch_.fineCents / 100.0f
+                            + lfoSemis;
         engine_.setPitchRatio (basePitchRatio_ * semitoneRatio (semis) * pitchEnv);
     }
 
@@ -197,6 +219,7 @@ private:
     RateLevelEnvelope cutoffEnvelope_{};
     RateLevelEnvelope ampEnvelope_{};
     float basePitchRatio_ = 1.0f;
+    float lfoPhase_ = 0.0f;
     float lastOsc_ = 0.0f;
     std::uint8_t midiNote_ = 60;
     std::size_t samplesUntilControlTick_ = 0;

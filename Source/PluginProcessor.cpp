@@ -415,6 +415,10 @@ void JDUpgradedAudioProcessor::applyFactoryPatch (int index)
 {
     const auto& patch = jdupgraded::assets::FactoryPatchLibrary::getPatch (static_cast<std::size_t> (index));
 
+    for (auto& mod : tonePitchMod_)
+        mod = jdupgraded::preset::JdTonePitchMod{};
+    toneFineCents_.fill (0.0f);
+
     setApvtsFloat (kMasterGainId, patch.masterGain);
     setApvtsFloat (kGroupADriveId, patch.groupADrive);
     setApvtsFloat (kGroupBMixId, patch.groupBMix);
@@ -527,6 +531,7 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
         patches[t].multisampleSetId = multisampleIds[t];
         patches[t].waveIndex = static_cast<std::uint16_t> (waveIndices[t]);
         patches[t].coarseSemis = toneCoarseSemis_[t];
+        patches[t].fineCents = toneFineCents_[t];
         const float cutoff = toneFilterCutoffPtrs_[t] != nullptr ? toneFilterCutoffPtrs_[t]->load() : 1.0f;
         const float resonance = filterLinked || toneFilterResonancePtrs_[t] == nullptr
                                     ? globalResonance
@@ -543,6 +548,15 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
         patches[t].filterDecayTimeSec = toneFltD;
         patches[t].filterSustainLevel = toneFltS;
         patches[t].filterReleaseTimeSec = toneFltR;
+        const auto& pitchMod = tonePitchMod_[t];
+        patches[t].pitchLevel0Mult = pitchMod.pitchLevel0Mult;
+        patches[t].pitchLevel1Mult = pitchMod.pitchLevel1Mult;
+        patches[t].pitchLevel2Mult = pitchMod.pitchLevel2Mult;
+        patches[t].pitchAttackTimeSec = pitchMod.pitchAttackSec;
+        patches[t].pitchDecayTimeSec = pitchMod.pitchDecaySec;
+        patches[t].pitchReleaseTimeSec = pitchMod.pitchReleaseSec;
+        patches[t].lfo1RateHz = pitchMod.lfo1RateHz;
+        patches[t].lfo1PitchDepthSemis = pitchMod.lfo1PitchDepthSemis;
         patches[t].waveform = bank == nullptr ? &fallbackWaves_.getWave (waveIndices[t]) : nullptr;
     }
 
@@ -599,6 +613,11 @@ void JDUpgradedAudioProcessor::applyJdPatchCoarsePitch (const std::uint8_t* patc
         const auto base = jdupgraded::preset::kJdToneBlockOffset (t);
         const auto coarse = patch[base + jdupgraded::preset::kJdTonePitchCoarse];
         toneCoarseSemis_[t] = static_cast<float> (static_cast<int> (coarse & 0x7F) - 48);
+
+        const auto fine = patch[base + jdupgraded::preset::kJdTonePitchFine];
+        toneFineCents_[t] =
+            static_cast<float> (static_cast<int> (fine & 0x7F) - jdupgraded::preset::kJdPitchLevelCenter);
+        tonePitchMod_[t] = jdupgraded::preset::decodeTonePitchMod (patch, patchBytes, t);
 
         const int tone = static_cast<int> (t) + 1;
         const float cutoff =

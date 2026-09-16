@@ -7,6 +7,7 @@
 #include "DSP/Effects/GroupADistortion.h"
 #include "DSP/Effects/GroupBSpatial.h"
 #include "DSP/VoicePool.h"
+#include "Preset/JdTonePitchMod.h"
 
 #include <array>
 #include <string>
@@ -75,6 +76,8 @@ private:
 
     std::array<float, 8192> outputScratch_{};
     std::array<float, 4> toneCoarseSemis_{};
+    std::array<float, 4> toneFineCents_{};
+    std::array<jdupgraded::preset::JdTonePitchMod, 4> tonePitchMod_{};
 
     int currentProgram_ = 0;
 

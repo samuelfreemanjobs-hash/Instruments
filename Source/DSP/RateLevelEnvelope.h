@@ -12,6 +12,14 @@ namespace jdupgraded::dsp
 class RateLevelEnvelope final
 {
 public:
+    void setLevelRange (float minLevel, float maxLevel) noexcept
+    {
+        minLevel_ = minLevel;
+        maxLevel_ = maxLevel;
+    }
+
+    void setReleaseTarget (float level) noexcept { releaseTarget_ = level; }
+
     void reset (float initialLevel = 0.0f) noexcept
     {
         level_ = initialLevel;
@@ -44,7 +52,7 @@ public:
     {
         gate_ = false;
         stage_ = Stage::release;
-        targetLevel_ = 0.0f;
+        targetLevel_ = releaseTarget_;
         setSegmentRate (releaseTimeSec);
     }
 
@@ -75,9 +83,9 @@ private:
         release
     };
 
-    static float clampLevel (float v) noexcept
+    float clampLevel (float v) const noexcept
     {
-        return std::clamp (v, 0.0f, 1.0f);
+        return std::clamp (v, minLevel_, maxLevel_);
     }
 
     void setSegmentRate (float timeSec) noexcept
@@ -118,7 +126,7 @@ private:
                 break;
             case Stage::release:
                 stage_ = Stage::idle;
-                level_ = 0.0f;
+                level_ = releaseTarget_;
                 break;
             case Stage::idle:
             default:
@@ -142,6 +150,9 @@ private:
     float pendingDecayLevel_ = 0.8f;
     float pendingDecayTime_ = 0.2f;
     float pendingReleaseTime_ = 0.3f;
+    float minLevel_ = 0.0f;
+    float maxLevel_ = 1.0f;
+    float releaseTarget_ = 0.0f;
     bool gate_ = false;
     Stage stage_ = Stage::idle;
 };
