@@ -1,6 +1,6 @@
 # Disklordz blueprint (Cursor-native)
 
-> **Project status:** Part of **[DEFERRED phonk sample pack & factory](projects/DEFERRED_phonk_sample_pack_and_factory.md)**. Active ops use the **[Audio PM Agent](pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md)**. Unpause this build when the PM registry says so.
+> **Factory status:** **ACTIVE** — [DISKLORDZ_FACTORY_PLAN.md](DISKLORDZ_FACTORY_PLAN.md) · [projects/ACTIVE_disklordz_factory.md](projects/ACTIVE_disklordz_factory.md) · PM: [Audio PM Agent](pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md)
 
 This document distills the January Gemini archives (**Master Dossier**, **Chat Compendium**, **Autonomous Enterprise**) into something you can actually build in this repo—without Agent Zero, fake dashboards, or 15-agent theater.
 

@@ -1,0 +1,16 @@
+---
+description: Disklordz Audio PM Agent — Airtable portfolio triggers and factory context
+alwaysApply: false
+---
+
+# Disklordz Audio PM Agent
+
+When the user sends **PM BRIEFING**, **PM UPDATE**, **PM ADD**, **PM STATUS**, **PM ARCHIVE**, or **PM HELP**, follow:
+
+`docs/pm-agent/DISKLOrdZ_AUDIO_PM_AGENT.md`
+
+- Business: **Disklordz** (audio packs, factory, JUCE plugins) — not Freeman Intelligence consulting.
+- Factory master plan: `docs/DISKLOrdZ_FACTORY_PLAN.md`
+- Active factory project mirror: `docs/projects/ACTIVE_disklordz_factory.md`
+
+Session start with no other instruction: output **PM BRIEFING** (read Airtable first; no hallucination).

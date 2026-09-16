@@ -126,7 +126,11 @@ Custom **`PluginEditor`** with APVTS rotary controls is included.
 
 | Focus | Doc |
 |--------|-----|
-| **Audio PM Agent** (product ops, Airtable) | [docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md](docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md) |
-| **Deferred:** phonk pack + factory + VSTi | [docs/projects/DEFERRED_phonk_sample_pack_and_factory.md](docs/projects/DEFERRED_phonk_sample_pack_and_factory.md) |
+| **Audio PM Agent** (active — `PM BRIEFING`) | [docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md](docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md) |
+| **Factory** (active — GRAVEYARD_SHIFT v1) | [docs/DISKLOrdZ_FACTORY_PLAN.md](docs/DISKLOrdZ_FACTORY_PLAN.md) |
 
-This repo is primarily **JUCE plugin** templates (`MyFirstPlugin/`). Sample-pack tooling lives under `tools/` for when that project is unpaused.
+```bash
+cd tools && pip install -r requirements.txt && python3 render_kit.py --kit-name GRAVEYARD_SHIFT
+```
+
+Briefing: [docs/pm-agent/BRIEFING_2026-09-16.md](docs/pm-agent/BRIEFING_2026-09-16.md) · JUCE: `MyFirstPlugin/`
