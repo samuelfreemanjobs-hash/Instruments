@@ -1,4 +1,21 @@
-# nts1-coder — multi-bass oscillators for NTS-1
+# Instruments — VST boilerplate + NTS-1 multi-bass
+
+## VST / VSTi (start here for plugins)
+
+**Every new plugin starts from `vst/template/`** (JUCE, VST3 + Standalone).
+Cursor rule: `.cursor/rules/06-vst-vsti-template.mdc`.
+
+```bash
+git submodule update --init vst/JUCE   # once
+./tools/new-vst.sh MySynth
+cd vst/MySynth && cmake -B build && cmake --build build --config Release
+```
+
+Details: [vst/README.md](vst/README.md).
+
+---
+
+## NTS-1 multi-bass (logue SDK)
 
 A **logue SDK** project and Cursor agent scaffold for building **genre bass and
 kick user oscillators** on the Korg **NTS-1** (also builds for Minilogue XD /
