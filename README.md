@@ -1,25 +1,41 @@
 # JD Upgraded
 
-Clean-room JUCE VST3/standalone synthesizer inspired by the Roland JD-800 / JD-990 architecture: four tones per voice, PCM waveforms, rate/level envelopes, and (upcoming) TVF, modulation, and multi-effects modeling.
+Clean-room JUCE **VST3** and **standalone** synthesizer inspired by the Roland JD-800 / JD-990: four tones per voice, PCM ROM playback, ZDF TVF, tone coupling, Group A/B effects, and 128 factory programs.
 
-**Legal**: Factory sound comes from **`jdupg_cleanroom.rom`** — 128 procedurally synthesized waves (see [docs/ROM.md](docs/ROM.md)). No Roland ROM is bundled. Optional user dump loading may follow in a later phase.
+**Legal:** Sound comes from **`jdupg_cleanroom.rom`** — 256 procedurally synthesized waves ([docs/ROM.md](docs/ROM.md)). No Roland ROM ships with the project. Optional dev override: [docs/USER_ROM.md](docs/USER_ROM.md).
 
 ## Build
 
 ```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake -B build -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
 cmake --build build -j
 ```
 
-Targets: `JDUpgraded_VST3`, `JDUpgraded_Standalone`.
+| Target | Output |
+|--------|--------|
+| `JDUpgraded_VST3` | VST3 plugin |
+| `JDUpgraded_Standalone` | Desktop app |
+| `OfflineRender` | Headless WAV render (see [docs/AB_HARNESS.md](docs/AB_HARNESS.md)) |
+| `SpectralDiff` | Compare two WAVs for regression / A/B |
+| `GenerateCleanroomRom` | Rebuild ROM at compile time |
 
-## Status
+## Features (current)
 
-| Phase | Scope | Status |
-|-------|--------|--------|
-| 1 | Audio pipeline, voice pool, sample engine, 32-sample envelopes | Done |
-| 2 | ZDF filter, sync/ring/PCM, Group A/B effects | Done |
-| 3 | 256-wave ROM, 128 factory 4-tone programs, per-tone mute | In progress |
-| 4 | SIMD, full UI, hardware A/B | Planned |
+- 32-voice pool, 4 tones per voice, zero heap allocation on the audio thread
+- 256-wave clean-room ROM with 24 multisample sets (8 zones each)
+- 128 factory patches (EP, pad, bass, vapor, R&B, elite categories)
+- Global and per-tone Amp/Filter ADSR, wave palette by category
+- Roland JD patch SysEx import (partial APVTS mapping) — [docs/SYSEX.md](docs/SYSEX.md)
+- AVX2 SIMD tone sum (independent coupling path); NEON on ARM when AVX2 is unavailable
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+## Docs
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Presets](docs/PRESETS.md)
+- [Agent handoff](docs/HANDOFF.md)
+- [Phase 5 roadmap](docs/PHASE5.md)
+
+## Environment
+
+`JDUPGRADED_ROM_PATH` — load a validated `JDUPGROM` file instead of the embedded ROM (development).
