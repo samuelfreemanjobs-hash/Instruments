@@ -1,1 +1,5 @@
 .deps/
+apc.config.json
+release/
+plugins/*/build/
+vst/*/build/

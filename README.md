@@ -13,7 +13,9 @@ cd vst/MySynth && cmake -B build && cmake --build build --config Release
 
 Details: [vst/README.md](vst/README.md).
 
-**DSP architecture & AI agent:** [docs/dsp-architecture-specification.md](docs/dsp-architecture-specification.md) · skills in `.cursor/skills/` · orchestrator `.cursor/skills/audio-plugin-coder/SKILL.md`
+**Noizefield-style APC:** [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-setup` → `/apc-dream` → … → `/apc-ship` · `bash bin/apc setup`
+
+**DSP architecture:** [docs/dsp-architecture-specification.md](docs/dsp-architecture-specification.md) · `.agents/skills/` + `.cursor/skills/`
 
 ---
 

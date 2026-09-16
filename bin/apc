@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+# Instruments APC CLI (Noizefield-compatible phases, local paths).
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=scripts/lib/apc-paths.sh
+source "$ROOT/scripts/lib/apc-paths.sh"
+# shellcheck source=scripts/lib/apc-state.sh
+source "$ROOT/scripts/lib/apc-state.sh"
+
+usage() {
+  cat <<'EOF'
+Usage: bin/apc <command> [args]
+
+Commands:
+  setup              First-run wizard (writes apc.config.json)
+  init <Name>        Create plugins/<Name>/ + status.json (dream prep)
+  status <Name>      Print status.json
+  paths              Show resolved APC paths
+  build <Name>       Build vst/<Name> (cmake)
+  check              System prerequisites
+
+Agent phases: use /apc-dream, /apc-plan, ... in Cursor (see docs/apc-workflow.md)
+EOF
+}
+
+cmd_setup() {
+  local cfg="$ROOT/apc.config.json"
+  if [[ ! -f "$cfg" ]]; then
+    cp "$ROOT/apc.config.example.json" "$cfg"
+    echo "Created apc.config.json from example."
+  fi
+  mkdir -p "$ROOT/release" "$ROOT/plugins" "$ROOT/reference-audio"
+  bash "$ROOT/scripts/system-check.sh" --human || true
+  if command -v jq &>/dev/null; then
+    jq '.setup.completed = true | .setup.completed_at = "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'" | .setup.platform = "'"$(uname -s)"'"' \
+      "$cfg" > "${cfg}.tmp" && mv "${cfg}.tmp" "$cfg"
+  fi
+  echo "APC setup complete. Next: /apc-dream MyPlugin"
+}
+
+cmd_init() {
+  local name="$1"
+  apc_load_paths
+  local p
+  p="$(apc_plugin_path "$name")"
+  if [[ -d "$p" ]]; then
+    echo "Plugin workspace exists: $p" >&2
+    exit 1
+  fi
+  apc_init_status "$p" "$name"
+  echo "Created $p"
+  echo "Next: /apc-dream $name"
+}
+
+cmd_status() {
+  local name="$1"
+  apc_load_paths
+  cat "$(apc_plugin_path "$name")/status.json"
+}
+
+cmd_paths() {
+  apc_load_paths
+  echo "APC_REPO_ROOT=$APC_REPO_ROOT"
+  echo "APC_PLUGINS_DIR=$APC_PLUGINS_DIR"
+  echo "APC_VST_DIR=$APC_VST_DIR"
+  echo "APC_BUILD_DIR=$APC_BUILD_DIR"
+  echo "APC_RELEASE_DIR=$APC_RELEASE_DIR"
+}
+
+cmd_build() {
+  local name="$1"
+  apc_load_paths
+  local vst
+  vst="$(apc_vst_path "$name")"
+  if [[ ! -d "$vst" ]]; then
+    echo "No vst/$name — run /apc-impl $name first" >&2
+    exit 1
+  fi
+  export LOGUE_SDK="${LOGUE_SDK:-}"
+  if [[ -x "$ROOT/tools/build-vst.sh" ]]; then
+    "$ROOT/tools/build-vst.sh" "$name"
+  else
+    cd "$vst"
+    cmake -B build -DCMAKE_BUILD_TYPE=Release
+    cmake --build build --config Release
+  fi
+}
+
+cmd_check() {
+  bash "$ROOT/scripts/system-check.sh" --human
+}
+
+main() {
+  local cmd="${1:-}"
+  shift || true
+  case "$cmd" in
+    setup) cmd_setup ;;
+    init) cmd_init "${1:?Name}" ;;
+    status) cmd_status "${1:?Name}" ;;
+    paths) cmd_paths ;;
+    build) cmd_build "${1:?Name}" ;;
+    check) cmd_check ;;
+    -h|--help|help|"") usage ;;
+    *) echo "Unknown: $cmd" >&2; usage; exit 1 ;;
+  esac
+}
+
+main "$@"
