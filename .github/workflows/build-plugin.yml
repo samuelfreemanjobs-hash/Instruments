@@ -19,12 +19,25 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libasound2-dev libfreetype-dev libgl1-mesa-dev \
-            libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libgtk-3-dev
+            libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libgtk-3-dev unzip curl
 
       - name: Configure and build
         run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++
-          cmake --build build -j$(nproc)
+          cmake --build build -j$(nproc) --target MyFirstPlugin_VST3 MyFirstSynth_VST3
+
+      - name: Download pluginval
+        run: |
+          curl -sL "https://github.com/Tracktion/pluginval/releases/download/1.0.3/pluginval_1.0.3_linux.zip" -o pluginval.zip
+          unzip -q pluginval.zip
+          chmod +x pluginval
+
+      - name: Validate VST3 plugins
+        run: |
+          ./pluginval --validate-in-process --strictness-level 5 --timeout-ms 120000 \
+            --file "build/MyFirstPlugin_artefacts/Release/VST3/MyFirstPlugin.vst3"
+          ./pluginval --validate-in-process --strictness-level 5 --timeout-ms 120000 \
+            --file "build/MyFirstPlugin_artefacts/Release/VST3/MyFirstSynth.vst3"
 
   windows-vst3:
     runs-on: windows-latest

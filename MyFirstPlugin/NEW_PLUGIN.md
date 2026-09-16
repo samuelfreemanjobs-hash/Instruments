@@ -1,5 +1,14 @@
 # Start a new plugin from this template
 
+This folder builds **two** plugins from one CMake project:
+
+| Target | Type | Starting files |
+|--------|------|----------------|
+| `MyFirstPlugin` | VST3 effect | `PluginProcessor.*`, `PluginEditor.*` |
+| `MyFirstSynth` | VSTi | `SynthProcessor.*`, `SynthEditor.*` |
+
+Duplicate the pair that matches your goal, or remove the other `juce_add_plugin` block.
+
 1. **Rename in `CMakeLists.txt`**
    - `project(...)` name
    - `juce_add_plugin(...)` first argument (CMake target)

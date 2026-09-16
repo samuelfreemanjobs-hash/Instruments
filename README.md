@@ -27,7 +27,7 @@ MyFirstPlugin/
 └── build.sh           # macOS / Linux
 ```
 
-JUCE **7.0.12** is downloaded automatically on first configure.
+JUCE is pinned in [`JUCE_VERSION`](JUCE_VERSION) (currently **7.0.12**) and fetched on first configure.
 
 ## Build on Windows
 
@@ -116,4 +116,8 @@ Custom **`PluginEditor`** with APVTS rotary controls is included.
 | `.github/workflows/build-plugin.yml` | CI on Windows + Linux |
 | `NEW_PLUGIN.md` | Rename / fork checklist for your next VST or VSTi |
 
-**Possible next steps (not in repo yet):** pin JUCE with `GIT_TAG` you trust; add `Pluginval` in CI; split synth template (`IS_SYNTH TRUE`) as a second target when you need a VSTi.
+| `MyFirstSynth` | VSTi template (`SynthProcessor.*`) — sine voices, MIDI, ADSR, APVTS |
+| Pluginval in CI | Linux workflow validates both `.vst3` bundles on every push |
+| Windows preset | `windows-vs-release` turns on **auto-install** to the user VST3 folder |
+
+**Later (optional):** Melatonin / Pamplejuce-style UI tests and layout tooling.
