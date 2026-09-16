@@ -37,6 +37,22 @@ inline constexpr std::size_t kJdToneTvfCutoff = 37;
 inline constexpr std::size_t kJdToneTvfResonance = 38;
 inline constexpr std::size_t kJdToneTvaLevel = 58;
 
+inline constexpr std::size_t kJdToneTvfEnvTime1 = 47;
+inline constexpr std::size_t kJdToneTvfEnvLevel1 = 48;
+inline constexpr std::size_t kJdToneTvfEnvTime2 = 49;
+inline constexpr std::size_t kJdToneTvfEnvLevel2 = 50;
+inline constexpr std::size_t kJdToneTvfEnvTime3 = 51;
+inline constexpr std::size_t kJdToneTvfEnvSustain = 52;
+inline constexpr std::size_t kJdToneTvfEnvTime4 = 53;
+
+inline constexpr std::size_t kJdToneTvaEnvTime1 = 65;
+inline constexpr std::size_t kJdToneTvaEnvLevel1 = 66;
+inline constexpr std::size_t kJdToneTvaEnvTime2 = 67;
+inline constexpr std::size_t kJdToneTvaEnvLevel2 = 68;
+inline constexpr std::size_t kJdToneTvaEnvTime3 = 69;
+inline constexpr std::size_t kJdToneTvaEnvSustain = 70;
+inline constexpr std::size_t kJdToneTvaEnvTime4 = 71;
+
 inline constexpr std::size_t kJdToneBlockOffset (std::size_t toneIndex) noexcept
 {
     return kJdPatchCommonBytes + kJdPatchEffectBytes + toneIndex * kJdPatchToneBytes;

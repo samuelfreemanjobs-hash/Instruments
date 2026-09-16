@@ -31,6 +31,19 @@ constexpr const char* kTone1MuteId = "tone1Mute";
 constexpr const char* kTone2MuteId = "tone2Mute";
 constexpr const char* kTone3MuteId = "tone3Mute";
 constexpr const char* kTone4MuteId = "tone4Mute";
+constexpr const char* kAmpAttackId = "ampAttack";
+constexpr const char* kAmpDecayId = "ampDecay";
+constexpr const char* kAmpSustainId = "ampSustain";
+constexpr const char* kAmpReleaseId = "ampRelease";
+constexpr const char* kFilterAttackId = "filterAttack";
+constexpr const char* kFilterDecayId = "filterDecay";
+constexpr const char* kFilterSustainId = "filterSustain";
+constexpr const char* kFilterReleaseId = "filterRelease";
+
+juce::NormalisableRange<float> envelopeTimeRange() noexcept
+{
+    return { jdupgraded::dsp::kMinEnvelopeTimeSec, 15.0f, 0.001f, 0.35f };
+}
 
 jdupgraded::dsp::ToneCouplingMode couplingFromIndex (int index) noexcept
 {
@@ -123,6 +136,27 @@ juce::AudioProcessorValueTreeState::ParameterLayout JDUpgradedAudioProcessor::cr
             juce::ParameterID { id, 1 }, "Tone " + juce::String (i) + " Mute", false));
     }
 
+    const auto timeRange = envelopeTimeRange();
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { kAmpAttackId, 1 }, "Amp Attack", timeRange, 0.005f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { kAmpDecayId, 1 }, "Amp Decay", timeRange, 0.2f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { kAmpSustainId, 1 }, "Amp Sustain",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.85f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { kAmpReleaseId, 1 }, "Amp Release", timeRange, 0.35f));
+
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { kFilterAttackId, 1 }, "Filter Attack", timeRange, 0.008f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { kFilterDecayId, 1 }, "Filter Decay", timeRange, 0.25f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { kFilterSustainId, 1 }, "Filter Sustain",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.65f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { kFilterReleaseId, 1 }, "Filter Release", timeRange, 0.4f));
+
     return { params.begin(), params.end() };
 }
 
@@ -149,6 +183,51 @@ void JDUpgradedAudioProcessor::refreshCachedParameters() noexcept
     tone2MutePtr_ = apvts_.getRawParameterValue (kTone2MuteId);
     tone3MutePtr_ = apvts_.getRawParameterValue (kTone3MuteId);
     tone4MutePtr_ = apvts_.getRawParameterValue (kTone4MuteId);
+    ampAttackPtr_ = apvts_.getRawParameterValue (kAmpAttackId);
+    ampDecayPtr_ = apvts_.getRawParameterValue (kAmpDecayId);
+    ampSustainPtr_ = apvts_.getRawParameterValue (kAmpSustainId);
+    ampReleasePtr_ = apvts_.getRawParameterValue (kAmpReleaseId);
+    filterAttackPtr_ = apvts_.getRawParameterValue (kFilterAttackId);
+    filterDecayPtr_ = apvts_.getRawParameterValue (kFilterDecayId);
+    filterSustainPtr_ = apvts_.getRawParameterValue (kFilterSustainId);
+    filterReleasePtr_ = apvts_.getRawParameterValue (kFilterReleaseId);
+}
+
+void JDUpgradedAudioProcessor::applyEnvelopeDefaultsForProgram (int programIndex) noexcept
+{
+    const int bucket = programIndex / 16;
+    float ampA = 0.005f, ampD = 0.2f, ampS = 0.85f, ampR = 0.35f;
+    float fltA = 0.008f, fltD = 0.25f, fltS = 0.65f, fltR = 0.4f;
+
+    switch (bucket)
+    {
+        case 0: // EP
+            ampA = 0.002f; ampD = 0.45f; ampS = 0.25f; ampR = 0.5f;
+            fltD = 0.35f; fltS = 0.4f;
+            break;
+        case 1: // Pad
+            ampA = 0.35f; ampD = 0.6f; ampS = 0.9f; ampR = 1.2f;
+            fltA = 0.25f; fltS = 0.75f; fltR = 0.9f;
+            break;
+        case 2: // Bass
+            ampA = 0.003f; ampD = 0.12f; ampS = 0.7f; ampR = 0.18f;
+            fltA = 0.004f; fltD = 0.15f; fltS = 0.55f; fltR = 0.2f;
+            break;
+        case 3: // Vapor
+            ampA = 0.08f; ampD = 0.5f; ampS = 0.8f; ampR = 0.8f;
+            break;
+        default:
+            break;
+    }
+
+    setApvtsFloat (kAmpAttackId, ampA);
+    setApvtsFloat (kAmpDecayId, ampD);
+    setApvtsFloat (kAmpSustainId, ampS);
+    setApvtsFloat (kAmpReleaseId, ampR);
+    setApvtsFloat (kFilterAttackId, fltA);
+    setApvtsFloat (kFilterDecayId, fltD);
+    setApvtsFloat (kFilterSustainId, fltS);
+    setApvtsFloat (kFilterReleaseId, fltR);
 }
 
 int JDUpgradedAudioProcessor::getNumPrograms()
@@ -237,6 +316,7 @@ void JDUpgradedAudioProcessor::applyFactoryPatch (int index)
     }
 
     setApvtsFloat (kFilterResonanceId, patch.tones[0].filterResonanceNorm);
+    applyEnvelopeDefaultsForProgram (index);
     refreshCachedParameters();
     applyPatchesFromParameters();
 }
@@ -282,6 +362,16 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
 
     const jdupgraded::assets::RomBank* bank = romLoader_.getBank().isLoaded() ? &romLoader_.getBank() : nullptr;
 
+    const float globalResonance = filterResonancePtr_ != nullptr ? filterResonancePtr_->load() : 0.35f;
+    const float ampA = ampAttackPtr_ != nullptr ? ampAttackPtr_->load() : 0.005f;
+    const float ampD = ampDecayPtr_ != nullptr ? ampDecayPtr_->load() : 0.2f;
+    const float ampS = ampSustainPtr_ != nullptr ? ampSustainPtr_->load() : 0.85f;
+    const float ampR = ampReleasePtr_ != nullptr ? ampReleasePtr_->load() : 0.35f;
+    const float fltA = filterAttackPtr_ != nullptr ? filterAttackPtr_->load() : 0.008f;
+    const float fltD = filterDecayPtr_ != nullptr ? filterDecayPtr_->load() : 0.25f;
+    const float fltS = filterSustainPtr_ != nullptr ? filterSustainPtr_->load() : 0.65f;
+    const float fltR = filterReleasePtr_ != nullptr ? filterReleasePtr_->load() : 0.4f;
+
     for (std::size_t t = 0; t < jdupgraded::dsp::kTonesPerVoice; ++t)
     {
         patches[t].romBank = bank;
@@ -289,9 +379,17 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
         patches[t].waveIndex = static_cast<std::uint16_t> (waveIndices[t]);
         patches[t].coarseSemis = toneCoarseSemis_[t];
         patches[t].filterCutoffNorm = toneFilterCutoff_[t];
-        patches[t].filterResonanceNorm = toneFilterResonance_[t];
+        patches[t].filterResonanceNorm = globalResonance;
         patches[t].level = mutes[t] ? 0.0f : levels[t];
         patches[t].phaseModDepth = 0.0f;
+        patches[t].attackTimeSec = ampA;
+        patches[t].decayTimeSec = ampD;
+        patches[t].sustainLevel = ampS;
+        patches[t].releaseTimeSec = ampR;
+        patches[t].filterAttackTimeSec = fltA;
+        patches[t].filterDecayTimeSec = fltD;
+        patches[t].filterSustainLevel = fltS;
+        patches[t].filterReleaseTimeSec = fltR;
         patches[t].waveform = bank == nullptr ? &fallbackWaves_.getWave (waveIndices[t]) : nullptr;
     }
 

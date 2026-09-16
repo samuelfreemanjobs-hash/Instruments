@@ -27,8 +27,9 @@ Patch layout follows documented JD-800 structure:
 | Tone TVA level | `toneNLevel` |
 | Tone TVF resonance (max) | `filterResonance` |
 | Tone pitch coarse / TVF cutoff | internal voice pitch & cutoff |
+| Tone A TVA / TVF envelope times & sustain | global `amp*` / `filter*` ADSR |
 
-Unmapped JD fields (LFO, envelopes, coupling, multisample) keep current values.
+Unmapped JD fields (LFO, per-tone envelope offsets B–D, coupling, multisample) keep current values or factory defaults.
 
 ## Internal blob (`JDPR`)
 

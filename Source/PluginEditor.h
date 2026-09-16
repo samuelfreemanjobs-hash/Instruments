@@ -22,6 +22,7 @@ private:
     void timerCallback() override;
     void changeProgramByDelta (int delta);
     void styleRotary (juce::Slider& slider, const juce::String& name);
+    void styleEnvSlider (juce::Slider& slider, const juce::String& name);
 
     JDUpgradedAudioProcessor& processor_;
     juce::Slider masterGainSlider_;
@@ -37,6 +38,16 @@ private:
     std::array<juce::Slider, 4> toneWaveSliders_;
     std::array<juce::Slider, 4> toneMultisampleSliders_;
     std::array<juce::ToggleButton, 4> toneMuteButtons_;
+    juce::Label ampEnvLabel_;
+    juce::Label filterEnvLabel_;
+    juce::Slider ampAttackSlider_;
+    juce::Slider ampDecaySlider_;
+    juce::Slider ampSustainSlider_;
+    juce::Slider ampReleaseSlider_;
+    juce::Slider filterAttackSlider_;
+    juce::Slider filterDecaySlider_;
+    juce::Slider filterSustainSlider_;
+    juce::Slider filterReleaseSlider_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> groupAAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> groupBAttachment_;
@@ -45,6 +56,14 @@ private:
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> toneWaveAttachments_;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> toneMsAttachments_;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>, 4> toneMuteAttachments_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ampAttackAttachment_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ampDecayAttachment_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ampSustainAttachment_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ampReleaseAttachment_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterAttackAttachment_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterDecayAttachment_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterSustainAttachment_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterReleaseAttachment_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JDUpgradedAudioProcessorEditor)
 };

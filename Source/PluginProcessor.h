@@ -53,6 +53,7 @@ private:
     void applyFactoryPatch (int index);
     void handleMidi (const juce::MidiBuffer& midi) noexcept;
     void applyJdPatchCoarsePitch (const std::uint8_t* patch, std::size_t patchBytes) noexcept;
+    void applyEnvelopeDefaultsForProgram (int programIndex) noexcept;
     void setApvtsFloat (const char* paramId, float value);
     void setApvtsInt (const char* paramId, int value);
     void setApvtsChoice (const char* paramId, int index);
@@ -93,6 +94,14 @@ private:
     std::atomic<float>* tone2MutePtr_ = nullptr;
     std::atomic<float>* tone3MutePtr_ = nullptr;
     std::atomic<float>* tone4MutePtr_ = nullptr;
+    std::atomic<float>* ampAttackPtr_ = nullptr;
+    std::atomic<float>* ampDecayPtr_ = nullptr;
+    std::atomic<float>* ampSustainPtr_ = nullptr;
+    std::atomic<float>* ampReleasePtr_ = nullptr;
+    std::atomic<float>* filterAttackPtr_ = nullptr;
+    std::atomic<float>* filterDecayPtr_ = nullptr;
+    std::atomic<float>* filterSustainPtr_ = nullptr;
+    std::atomic<float>* filterReleasePtr_ = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JDUpgradedAudioProcessor)
 };

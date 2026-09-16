@@ -1,5 +1,6 @@
 #include "JdPatchSysexMapper.h"
 
+#include "JdEnvelopeScale.h"
 #include "JdPatchLayout.h"
 #include "SysExParser.h"
 
@@ -87,6 +88,26 @@ bool JdPatchSysexMapper::applyRawPatchBlock (juce::AudioProcessorValueTreeState&
     }
 
     setApvtsFloat (apvts, "filterResonance", maxResonance);
+
+    const auto tone0 = kJdToneBlockOffset (0);
+    setApvtsFloat (apvts, "ampAttack",
+                   jdEnvelopeTimeToSeconds (patch[tone0 + kJdToneTvaEnvTime1]));
+    setApvtsFloat (apvts, "ampDecay",
+                   jdEnvelopeTimeToSeconds (patch[tone0 + kJdToneTvaEnvTime2]));
+    setApvtsFloat (apvts, "ampSustain",
+                   jdEnvelopeLevelToNorm (patch[tone0 + kJdToneTvaEnvSustain]));
+    setApvtsFloat (apvts, "ampRelease",
+                   jdEnvelopeTimeToSeconds (patch[tone0 + kJdToneTvaEnvTime4]));
+
+    setApvtsFloat (apvts, "filterAttack",
+                   jdEnvelopeTimeToSeconds (patch[tone0 + kJdToneTvfEnvTime1]));
+    setApvtsFloat (apvts, "filterDecay",
+                   jdEnvelopeTimeToSeconds (patch[tone0 + kJdToneTvfEnvTime2]));
+    setApvtsFloat (apvts, "filterSustain",
+                   jdEnvelopeLevelToNorm (patch[tone0 + kJdToneTvfEnvSustain]));
+    setApvtsFloat (apvts, "filterRelease",
+                   jdEnvelopeTimeToSeconds (patch[tone0 + kJdToneTvfEnvTime4]));
+
     return true;
 }
 
