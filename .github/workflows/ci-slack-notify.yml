@@ -1,0 +1,89 @@
+# Posts CI results to #disklordz-ci when SLACK_WEBHOOK_URL is configured.
+# One-time setup: ./scripts/setup-disklordz-integrations.sh slack-ci --webhook-url '...'
+name: CI Slack notify
+
+on:
+  workflow_run:
+    workflows: [Build, Build MyFirstPlugin]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      conclusion:
+        description: Simulated workflow conclusion (for testing)
+        required: true
+        default: success
+        type: choice
+        options:
+          - success
+          - failure
+          - cancelled
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - name: Skip when webhook not configured
+        if: env.SLACK_WEBHOOK_URL == ''
+        run: |
+          echo "SLACK_WEBHOOK_URL is not set; skipping Slack notification."
+          echo "Run: ./scripts/setup-disklordz-integrations.sh slack-ci"
+
+      - name: Resolve workflow run context
+        id: ctx
+        if: env.SLACK_WEBHOOK_URL != ''
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "name=Manual test" >> "$GITHUB_OUTPUT"
+            echo "conclusion=${{ inputs.conclusion }}" >> "$GITHUB_OUTPUT"
+            echo "branch=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+            echo "run_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
+            echo "repo=${{ github.repository }}" >> "$GITHUB_OUTPUT"
+            echo "actor=${{ github.actor }}" >> "$GITHUB_OUTPUT"
+            echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=${{ github.event.workflow_run.name }}" >> "$GITHUB_OUTPUT"
+            echo "conclusion=${{ github.event.workflow_run.conclusion }}" >> "$GITHUB_OUTPUT"
+            echo "branch=${{ github.event.workflow_run.head_branch }}" >> "$GITHUB_OUTPUT"
+            echo "run_url=${{ github.event.workflow_run.html_url }}" >> "$GITHUB_OUTPUT"
+            echo "repo=${{ github.event.workflow_run.repository.full_name }}" >> "$GITHUB_OUTPUT"
+            echo "actor=${{ github.event.workflow_run.actor.login }}" >> "$GITHUB_OUTPUT"
+            echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Post to Slack
+        if: env.SLACK_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "Instruments CI: ${{ steps.ctx.outputs.name }} — ${{ steps.ctx.outputs.conclusion }} (${{ steps.ctx.outputs.branch }})",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Disklordz CI — ${{ steps.ctx.outputs.name }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Result:*\n`${{ steps.ctx.outputs.conclusion }}`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ steps.ctx.outputs.branch }}`" },
+                    { "type": "mrkdwn", "text": "*Repo:*\n`${{ steps.ctx.outputs.repo }}`" },
+                    { "type": "mrkdwn", "text": "*Actor:*\n`${{ steps.ctx.outputs.actor }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ steps.ctx.outputs.run_url }}|View workflow run> · `${{ steps.ctx.outputs.sha }}`"
+                  }
+                }
+              ]
+            }
