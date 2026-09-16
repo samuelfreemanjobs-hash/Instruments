@@ -1,5 +1,5 @@
 ---
-description: Disklordz Audio PM Agent — Airtable portfolio triggers and factory context
+description: Disklordz Audio PM Agent — Airtable MCP portfolio triggers and factory context
 alwaysApply: false
 ---
 
@@ -7,10 +7,15 @@ alwaysApply: false
 
 When the user sends **PM BRIEFING**, **PM UPDATE**, **PM ADD**, **PM STATUS**, **PM ARCHIVE**, or **PM HELP**, follow:
 
-`docs/pm-agent/DISKLOrdZ_AUDIO_PM_AGENT.md`
+`docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md`
+
+**Data:** Use **Airtable MCP** (`airtable` server) — base `appUuhVQHAOv31wJ1`, table **Projects**. Read before write. Never fabricate registry rows.
 
 - Business: **Disklordz** (audio packs, factory, JUCE plugins) — not Freeman Intelligence consulting.
-- Factory master plan: `docs/DISKLOrdZ_FACTORY_PLAN.md`
+- Factory master plan: `docs/DISKLORDZ_FACTORY_PLAN.md`
 - Active factory project mirror: `docs/projects/ACTIVE_disklordz_factory.md`
+- Cursor MCP setup: `docs/pm-agent/CURSOR_MCP_SETUP.md`
 
-Session start with no other instruction: output **PM BRIEFING** (read Airtable first; no hallucination).
+Session start with no other instruction: output **PM BRIEFING** (Airtable MCP read first; no hallucination).
+
+Optional: **Slack MCP** for batch-complete messages — confirm with user before posting.

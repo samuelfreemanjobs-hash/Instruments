@@ -126,8 +126,8 @@ Custom **`PluginEditor`** with APVTS rotary controls is included.
 
 | Focus | Doc |
 |--------|-----|
-| **Audio PM Agent** (active — `PM BRIEFING`) | [docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md](docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md) |
-| **Factory** (active — GRAVEYARD_SHIFT v1) | [docs/DISKLOrdZ_FACTORY_PLAN.md](docs/DISKLOrdZ_FACTORY_PLAN.md) |
+| **Audio PM Agent** (Cursor MCP — `PM BRIEFING`) | [docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md](docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md) |
+| **Factory** (active — GRAVEYARD_SHIFT v1) | [docs/DISKLORDZ_FACTORY_PLAN.md](docs/DISKLORDZ_FACTORY_PLAN.md) |
 
 ```bash
 cd tools && pip install -r requirements.txt && python3 render_kit.py --kit-name GRAVEYARD_SHIFT

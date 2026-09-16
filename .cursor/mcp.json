@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "airtable": {
+      "command": "npx",
+      "args": ["-y", "@rashidazarang/airtable-mcp"],
+      "env": {
+        "AIRTABLE_TOKEN": "SET_IN_CURSOR_MCP_SETTINGS_NOT_IN_GIT"
+        "AIRTABLE_BASE_ID": "appUuhVQHAOv31wJ1"
+      }
+    }
+  }
+}

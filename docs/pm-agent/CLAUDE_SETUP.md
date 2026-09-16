@@ -40,7 +40,7 @@ Verify: Claude → Settings → Developer → MCP → **airtable** connected.
 PM ADD: Disklordz — phonk factory & GRAVEYARD_SHIFT v1
 
 Urgency HIGH. Status ACTIVE. Phase PHASE-1. 25% complete.
-Scope: Active math factory tools/render_kit.py, GRAVEYARD_SHIFT kit v1, docs/DISKLOrdZ_FACTORY_PLAN.md in Instruments repo.
+Scope: Active math factory tools/render_kit.py, GRAVEYARD_SHIFT kit v1, docs/DISKLORDZ_FACTORY_PLAN.md in Instruments repo.
 Next Action: Listen to GRAVEYARD_SHIFT batch in DAW; sort 26 WAVs into kit folders.
 ```
 
@@ -62,6 +62,6 @@ If MCP is not ready, from repo root with `AIRTABLE_API_KEY` set:
 python3 scripts/sync_disklordz_pm_to_airtable.py
 ```
 
-## 6. Cursor (optional)
+## 6. Cursor MCP (recommended for daily PM)
 
-Same MCP block can go in Cursor **Settings → MCP** (stdio server). Use env var for token; do not commit secrets.
+**[CURSOR_MCP_SETUP.md](CURSOR_MCP_SETUP.md)** — `.cursor/mcp.json`, flows A/B/C, Slack MCP optional.
