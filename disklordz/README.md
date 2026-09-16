@@ -14,6 +14,7 @@
 | [docs/LICENSING.md](docs/LICENSING.md) | VST3 MIT, JUCE tiers, provenance gates |
 | [docs/QA_LAB.md](docs/QA_LAB.md) | Technical + audio validation |
 | [docs/CONTENT_FACTORY.md](docs/CONTENT_FACTORY.md) | Copy + demos from product truth |
+| [docs/VISION_MAP.md](docs/VISION_MAP.md) | Your 20 pillars → repo status |
 | [docs/AIRTABLE_OPERATING_MODEL.md](docs/AIRTABLE_OPERATING_MODEL.md) | PM workflows |
 | [docs/AUTOMATION_ROADMAP.md](docs/AUTOMATION_ROADMAP.md) | Automation backlog |
 | [AGENTS.md](AGENTS.md) | Orchestrator + teams (not 25 agents) |
