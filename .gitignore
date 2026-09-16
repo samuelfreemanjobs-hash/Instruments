@@ -1,3 +1,8 @@
+.deps/
+apc.config.json
+release/
+plugins/*/build/
+vst/*/build/
 MyFirstPlugin/build/
 MyFirstPlugin/build-ninja/
 *.user

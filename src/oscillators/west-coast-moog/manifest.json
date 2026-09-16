@@ -1,0 +1,52 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "P-Funk WC",
+    "num_param": 9,
+    "params": [
+      ["Vibe", 0, 100, "%"],
+      ["Detune", 0, 100, "%"],
+      ["FM", 0, 100, "%"],
+      ["Fold", 0, 100, "%"],
+      ["Glide", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"],
+      ["Sub", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "west_coast_moog_funk",
+    "type": "osc",
+    "collection": "nts1-multi-bass",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "Multifunction Parliament / Minimoog / West Coast. Vibe morphs role. Use panel cutoff/res.",
+    "presets": [
+      {
+        "name": "Parliament bass (low Vibe)",
+        "midi_hint": "E1-G2, cutoff mid, res 40%",
+        "values": [22, 38, 18, 24, 32, 12, 42, 35, 48]
+      },
+      {
+        "name": "Funk lead line",
+        "midi_hint": "G2-C3, higher cutoff",
+        "values": [48, 45, 28, 35, 28, 8, 55, 48, 25]
+      },
+      {
+        "name": "West Coast solo",
+        "midi_hint": "A2-C3",
+        "values": [85, 30, 52, 62, 18, 5, 40, 38, 15]
+      },
+      {
+        "name": "Booty sub stack",
+        "midi_hint": "E1-A1, low cutoff",
+        "values": [15, 42, 12, 15, 38, 15, 48, 40, 65]
+      }
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "Sub Phatty",
+    "num_param": 9,
+    "params": [
+      ["Vibe", 0, 100, "%"],
+      ["Osc Mix", 0, 100, "%"],
+      ["Detune", 0, 100, "%"],
+      ["Sub", 0, 100, "%"],
+      ["Drive", 0, 100, "%"],
+      ["Glide", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "moog_sub_phatty_bass",
+    "type": "osc",
+    "collection": "nts1-multi-bass",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "Moog Sub Phatty style multifunction bass: dual osc, sub, Multidrive, 24dB ladder. Vibe morphs clean sub fat to aggressive drive. Panel cutoff/res.",
+    "presets": [
+      {
+        "name": "Sub Phatty default",
+        "midi_hint": "E1-C2, cutoff mid, res 45%",
+        "values": [40, 55, 22, 58, 42, 18, 8, 36, 32]
+      },
+      {
+        "name": "Clean sub stack",
+        "midi_hint": "E1-G1, low cutoff",
+        "values": [15, 40, 12, 72, 12, 10, 10, 42, 38]
+      },
+      {
+        "name": "Multidrive growl",
+        "midi_hint": "F1-A2, open cutoff",
+        "values": [78, 62, 28, 48, 75, 14, 5, 30, 28]
+      },
+      {
+        "name": "Detuned phat lead",
+        "midi_hint": "G2-C3, higher cutoff",
+        "values": [55, 68, 48, 35, 50, 22, 6, 38, 35]
+      }
+    ]
+  }
+}

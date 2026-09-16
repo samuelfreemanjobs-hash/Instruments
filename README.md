@@ -1,123 +1,121 @@
-# Instruments
+# Instruments — VST boilerplate + NTS-1 multi-bass
 
-CMake-native [JUCE](https://juce.com/) plugin starter (`MyFirstPlugin`). **You do not need Visual Studio Code** or the CMake/C++ marketplace extensions. Build from the terminal; use **Cursor**, **Claude Code**, or **Antigravity** only to edit sources and run commands.
+This repo supports **three** related workflows: APC/VST plugins from `vst/template/`, the standalone **MyFirstPlugin** JUCE starter (from `main`), and **logue SDK** oscillators for NTS-1.
 
-## Where you work vs what compiles
+## VST / VSTi (start here for new plugins)
+
+**Every new plugin starts from `vst/template/`** (JUCE, VST3 + Standalone).
+Cursor rule: `.cursor/rules/06-vst-vsti-template.mdc`.
+
+```bash
+git submodule update --init vst/JUCE   # once
+./tools/new-vst.sh MySynth
+cd vst/MySynth && cmake -B build && cmake --build build --config Release
+```
+
+Details: [vst/README.md](vst/README.md).
+
+**VST lifecycle (required):** [docs/vst-lifecycle.md](docs/vst-lifecycle.md) — Dream → Plan → Design → Implement → Ship (`tools/package-vst.sh`)
+
+**APC commands:** [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-dream` … `/apc-ship`
+
+**DSP architecture:** [docs/dsp-architecture-specification.md](docs/dsp-architecture-specification.md) · `.agents/skills/` + `.cursor/skills/`
+
+---
+
+## MyFirstPlugin (JUCE starter + Windows CI)
+
+CMake-native [JUCE](https://juce.com/) tutorial project at repo root. Use it for a self-contained effect/VSTi reference (`PluginProcessor`, `MyFirstSynth`), Visual Studio menus, and CI — **without** replacing `vst/template/` for new repo plugins.
 
 | Tool | Role |
 |------|------|
-| **Cursor / Claude Code / Antigravity** | Edit `PluginProcessor.*`, `CMakeLists.txt`; run `build.ps1` or `build.sh` in the integrated terminal; use AI (Composer, etc.) on the repo |
-| **CMake + compiler** | Actually builds the `.vst3` (Visual Studio Build Tools or MSVC on Windows, Xcode CLT on macOS, GCC/Clang on Linux) |
-
-Cursor is a separate editor from VS Code. This repo does **not** assume you install VS Code or its extensions.
-
-## Project layout
-
-```
-MyFirstPlugin/
-├── CMakeLists.txt
-├── ParameterIds.h
-├── PluginProcessor.h
-├── PluginProcessor.cpp
-├── Build Plugin.bat   # Windows menu (double-click)
-├── build-menu.ps1
-├── CMakePresets.json  # Visual Studio preset
-├── VISUAL_STUDIO.md
-├── build.ps1
-└── build.sh           # macOS / Linux
-```
-
-JUCE is pinned in [`JUCE_VERSION`](JUCE_VERSION) (currently **7.0.12**) and fetched on first configure.
-
-## Build on Windows
-
-Prerequisites: **Visual Studio 2022** with “Desktop development with C++” (includes MSVC; add **C++ CMake tools** in the installer). [CMake](https://cmake.org/download/) on PATH if you use scripts outside VS.
-
-### Easiest: menu or Visual Studio GUI
-
-- Double-click **`MyFirstPlugin/Build Plugin.bat`** → choose **3** (first time), then **2** after edits.  
-- Or open the **`MyFirstPlugin`** folder in **Visual Studio** (File → Open → Folder) and use **Build**.  
-- Full steps: **`MyFirstPlugin/VISUAL_STUDIO.md`**
-
-### Terminal (Cursor)
-
-```powershell
-cd MyFirstPlugin
-.\build.ps1
-```
-
-### macOS / Linux
+| **Cursor / agents** | Edit sources; run `MyFirstPlugin/build.sh` or `build.ps1` |
+| **CMake + compiler** | Builds `.vst3` (MSVC on Windows, Xcode CLT on macOS, GCC/Clang on Linux) |
 
 ```bash
 cd MyFirstPlugin
-chmod +x build.sh
-./build.sh
+chmod +x build.sh && ./build.sh          # macOS / Linux
+# Windows: Build Plugin.bat or .\build.ps1 — see MyFirstPlugin/VISUAL_STUDIO.md
 ```
 
-Manual equivalent:
+JUCE version pin: [`JUCE_VERSION`](JUCE_VERSION). Workflow notes: `MyFirstPlugin/CURSOR_COMPOSER_PROMPT.md`, fork checklist: `MyFirstPlugin/NEW_PLUGIN.md`. CI: `.github/workflows/build-plugin.yml`.
+
+---
+
+## NTS-1 multi-bass (logue SDK)
+
+A **logue SDK** project and Cursor agent scaffold for building **genre bass and
+kick user oscillators** on the Korg **NTS-1** (also builds for Minilogue XD /
+Prologue). Each oscillator is a separate unit you load when you need that sound.
+
+## Bass collection
+
+| Unit | Name | Use |
+|------|------|-----|
+| [`tr808-kick`](src/oscillators/tr808-kick/) | **Phonk 808** | 808 kick / sub (phonk) |
+| [`west-coast-moog`](src/oscillators/west-coast-moog/) | **P-Funk WC** | Funk · Moog · West Coast |
+| [`juno-rnb`](src/oscillators/juno-rnb/) | **Juno R&B** | 80s R&B / Juno-106 bass |
+| [`dilla-bass`](src/oscillators/dilla-bass/) | **Dilla Bass** | J Dilla–style wobble / glide / warm MPC tone |
+| [`sub-phatty`](src/oscillators/sub-phatty/) | **Sub Phatty** | Moog Sub Phatty dual osc, sub, Multidrive |
+| [`prophet-funk`](src/oscillators/prophet-funk/) | **P5 Funk RB** | Prophet-5 70s funk / 80s R&B bass |
+| [`dx7-lately`](src/oscillators/dx7-lately/) | **Lately Bass** | DX7 FM electric bass (Lately Bass) |
+| [`sh101-babyface`](src/oscillators/sh101-babyface/) | **SH-101 BF** | Warm PWM pulse, sub, hollow FM bass |
+| [`moog-voyager-se`](src/oscillators/moog-voyager-se/) | **Voyager SE** | Model D / SE-1 fat stack + glide squelch |
+| [`cardo-gfunk`](src/oscillators/cardo-gfunk/) | **Cardo GF** | Sub + warm mid late-night G-funk bass |
+| [`larry-june`](src/oscillators/larry-june/) | **Larry June** | Laid-back rubbery PWM Bay cruise bass |
+| [`khalifa-haze`](src/oscillators/khalifa-haze/) | **Khalifa Haze** | Warm floating cloud sub for stoner-rap |
+| [`memphis-juicy`](src/oscillators/memphis-juicy/) | **Juicy 36** | Memphis trunk sub + tape (layer under kick) |
+| [`ensoniq-eps1`](src/oscillators/ensoniq-eps1/) | **EPS-1 MEM** | Ensoniq-style dark wavetable Memphis sub |
+
+Each unit is **multifunction** (mainly **Vibe**) and ships **presets** in
+`manifest.json` → `_agent.presets` (knob values 0–100).
+
+Full guide: [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md)
+
+### NTS-1 mkII (SDK v2)
+
+mkI units above use logue SDK **v1.1.0**. For **NTS-1 mkII**, scaffold and build
+`.nts1mkiiunit` files from `src/mkii/oscillators/`:
 
 ```bash
-cd MyFirstPlugin
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build
+chmod +x tools/mkii-automate.sh
+./tools/mkii-automate.sh all                    # clone SDK, gcc, scaffold, build all
+./tools/mkii-automate.sh bootstrap              # SDK + toolchain only
+./tools/mkii-automate.sh build tr808_kick_phonk # one unit
 ```
 
-On **macOS**, add `AU` to `FORMATS` in `CMakeLists.txt` if you want Audio Unit:
+Manual steps (custom `LOGUE_SDK`): `python3 tools/mkii/scaffold-mkii.py --all-bass`, `./tools/build-mkii.sh <slug>`.
 
-```cmake
-FORMATS VST3 AU Standalone
-```
+See [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
 
-### Linux dependencies (if configure fails)
+## Quick start (mkI logue)
+
+1. Clone [logue-sdk](https://github.com/korginc/logue-sdk) and set `LOGUE_SDK`.
+2. Build one unit or the whole bass set:
 
 ```bash
-sudo apt install build-essential libasound2-dev libfreetype-dev libgl1-mesa-dev \
-  libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libgtk-3-dev
+export LOGUE_SDK=/path/to/logue-sdk
+chmod +x tools/build.sh tools/build-all-bass.sh
+
+./tools/build.sh oscillators/juno-rnb nutekt-digital
+./tools/build-all-bass.sh nutekt-digital
+./tools/build.sh oscillators/dilla-bass nutekt-digital
+./tools/build.sh oscillators/dx7-lately nutekt-digital
 ```
 
-## Output
+3. Load the resulting user osc on the NTS-1 with the Korg logue workflow.
 
-**Windows:**  
-`MyFirstPlugin\build\MyFirstPlugin_artefacts\Release\VST3\MyFirstPlugin.vst3`
+## Layout
 
-**macOS / Linux:**  
-`MyFirstPlugin/build/MyFirstPlugin_artefacts/Release/VST3/MyFirstPlugin.vst3`
+- `.cursor/rules/` — SDK + **multi-bass** conventions (`05-multi-bass.mdc`)
+- `src/oscillators/` — bass units above + `template` / `wavetable`
+- `src/effects/` — starter mod/del/rev FX
+- `src/shared/` — DSP helpers (logue units)
+- `shared/dsp/` — header-only DSP shared by `vst/*` templates
+- `vst/template/`, `vst/template-effect/` — canonical new-plugin boilerplate
+- `MyFirstPlugin/` — standalone JUCE starter (effect + MyFirstSynth)
+- `tools/build-all-bass.sh` — build all catalog bass oscs
 
-Copy the bundle into your DAW’s VST3 folder and rescan.
+## License
 
-## AI workflow (processor before UI)
-
-1. Open this repo in **Cursor** (or clone it where Claude Code / Antigravity can see it).
-2. Use the prompt in `MyFirstPlugin/CURSOR_COMPOSER_PROMPT.md` — same text works in any agent chat.
-3. After code changes, run **`build.ps1`** or **`build.sh`** until the processor compiles.
-4. Add a custom `PluginEditor` only after the processor is stable.
-
-## Processor (production patterns)
-
-`MyFirstPluginAudioProcessor` is a reference **VST3 effect** (stereo I/O):
-
-- **APVTS** for parameters and preset/state XML
-- **`ParameterIds.h`** — `std::string_view` IDs (no string lookups in `processBlock`)
-- **Cached** `std::atomic<float>*` from `getRawParameterValue` in the constructor
-- **`juce::LinearSmoothedValue`** on automatable controls
-- **`juce::dsp::StateVariableTPTFilter`** + tube saturation + LFO → cutoff (real-time safe)
-
-Custom **`PluginEditor`** with APVTS rotary controls is included.
-
-## Quality-of-life in this repo
-
-| Feature | Purpose |
-|--------|---------|
-| `Build Plugin.bat` / `build-menu.ps1` | CMake without memorizing commands |
-| `CMakePresets.json` | Same configure in Visual Studio and scripts |
-| `check-env.ps1` | Verifies CMake, MSVC, Git before first build |
-| `MYFIRSTPLUGIN_COPY_AFTER_BUILD` | Optional auto-copy VST3 to the OS plugin folder |
-| `.clangd` + `compile_commands.json` | Better go-to-definition in **Cursor** (after configure) |
-| `.github/workflows/build-plugin.yml` | CI on Windows + Linux |
-| `NEW_PLUGIN.md` | Rename / fork checklist for your next VST or VSTi |
-
-| `MyFirstSynth` | VSTi template (`SynthProcessor.*`) — sine voices, MIDI, ADSR, APVTS |
-| Pluginval in CI | Linux workflow validates both `.vst3` bundles on every push |
-| Windows preset | `windows-vs-release` turns on **auto-install** to the user VST3 folder |
-
-**Later (optional):** Melatonin / Pamplejuce-style UI tests and layout tooling.
+Example DSP is a starting point; align with Korg SDK terms for distribution.
