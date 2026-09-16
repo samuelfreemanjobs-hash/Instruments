@@ -36,6 +36,18 @@ Compare two WAV files (peak-normalized mono):
 
 CI renders the same program twice and asserts near-identical output (determinism regression).
 
+## Golden reference (CI)
+
+Committed capture: `tests/golden/program0-c4-0.5s.wav` (program 0, C4, 0.5 s, 44100 Hz).
+
+Regenerate after intentional DSP changes:
+
+```bash
+./build/OfflineRender tests/golden/program0-c4-0.5s.wav 0 60 100 0.5 44100
+```
+
+CI also diffs a fresh render against this file via `SpectralDiff`.
+
 ## External reference
 
 To compare against a hardware/plugin reference clip, render with matching program/MIDI via `OfflineRender`, then:

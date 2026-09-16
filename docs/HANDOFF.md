@@ -30,6 +30,13 @@ All items below are **done** on this branch:
 
 See [PHASE5.md](PHASE5.md). Typical merge follow-up: mark PR ready, tag release, optional `main` CI on merge.
 
+## Architecture docs
+
+- [ARCHITECTURE.md](../ARCHITECTURE.md) — repo index  
+- [docs/ARCHITECTURE.md](ARCHITECTURE.md) — plugin DSP / parameters  
+- [tools/ARCHITECTURE.md](../tools/ARCHITECTURE.md) — OfflineRender, SpectralDiff, ROM gen  
+- Policy: [.cursor/rules/architecture-documentation.mdc](../.cursor/rules/architecture-documentation.mdc)
+
 ## Key paths
 
 - `Source/PluginProcessor.cpp` — APVTS, MIDI, programs

@@ -1,0 +1,37 @@
+---
+description: Require ARCHITECTURE.md for every product or project in the repo so agents can onboard quickly.
+alwaysApply: true
+---
+
+# Architecture documentation (required)
+
+## Rule
+
+Every **product** or **standalone project** in this repository must have an **`ARCHITECTURE.md`** that explains how it works end-to-end. Future agents should read the repo index first, then the product doc, before changing behavior.
+
+## Where to put it
+
+| Layout | Path |
+|--------|------|
+| Single-product repo | `ARCHITECTURE.md` at repository root **or** `docs/ARCHITECTURE.md` (link from root README) |
+| Monorepo | Root `ARCHITECTURE.md` indexes all products; each product has its own `ARCHITECTURE.md` (e.g. `docs/ARCHITECTURE.md`, `tools/ARCHITECTURE.md`) |
+
+Use the filename **`ARCHITECTURE.md`** (uppercase) for consistency with existing docs.
+
+## What each file must cover
+
+1. **Purpose** — what the product does and who uses it.
+2. **Build & run** — CMake target, binary name, minimal command.
+3. **Data flow** — main pipeline (audio, MIDI, files, network) in prose or a short diagram.
+4. **Threading / realtime** — what must not allocate or block on the audio thread (for plugins).
+5. **Key modules** — table of directories or classes and responsibilities.
+6. **Extension points** — where to add parameters, DSP, presets, or tools.
+7. **Related docs** — links to SYSEX, ROM, CI harness, etc.
+
+Keep docs updated when you add a new product, CMake target, or major subsystem. If you add a target under `tools/` or a new top-level package, add or extend an `ARCHITECTURE.md` in the same change.
+
+## Agent workflow
+
+1. Read `/ARCHITECTURE.md` (repo index).
+2. Open the product `ARCHITECTURE.md` for the area you are editing.
+3. Cross-check `docs/HANDOFF.md` and phase roadmaps when present.
