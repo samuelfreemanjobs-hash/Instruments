@@ -1,0 +1,98 @@
+# Queues a Cloud Agent task as a GitHub issue (implementation still runs in Cursor on the repo).
+name: Cloud agent task
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: What the Cloud Agent should do
+        required: true
+        type: string
+      source:
+        description: Origin of the request
+        required: false
+        default: manual
+        type: choice
+        options:
+          - manual
+          - telegram
+          - slack
+          - linear
+          - openclaw
+      linear_issue:
+        description: Optional Linear issue id (e.g. DIS-42)
+        required: false
+        type: string
+
+  repository_dispatch:
+    types: [agent-task]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  queue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure cloud-agent label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'cloud-agent',
+              });
+            } catch (e) {
+              if (e.status !== 404) throw e;
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'cloud-agent',
+                color: '1d76db',
+                description: 'Queued for Cursor Cloud Agent',
+              });
+            }
+
+      - name: Open cloud-agent issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const inputs = context.payload.inputs ?? {};
+            const client = context.payload.client_payload ?? {};
+            const task = String(inputs.task ?? client.task ?? 'No task body').trim();
+            const source = String(inputs.source ?? client.source ?? 'unknown');
+            const linear = String(inputs.linear_issue ?? client.linear_issue ?? '').trim();
+            const firstLine = task.split('\n')[0].slice(0, 72);
+            const title = `[cloud-agent] ${firstLine}`;
+
+            const body = [
+              '## Task',
+              '',
+              task,
+              '',
+              '## Meta',
+              `- **source:** ${source}`,
+              linear ? `- **linear:** ${linear}` : '',
+              `- **workflow:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              '',
+              '## Agent instructions',
+              '1. Read `AGENTS.md` and `ARCHITECTURE.md`.',
+              '2. Implement on a `cursor/*` branch; open PR when ready.',
+              '3. Run golden / CI parity from `AGENTS.md`.',
+              '',
+              '_Created by `.github/workflows/agent-task.yml` — close when done or superseded._',
+            ].filter(Boolean).join('\n');
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['cloud-agent'],
+            });
+
+            core.setOutput('issue_url', issue.data.html_url);
+            core.summary.addLink(`Issue #${issue.data.number}`, issue.data.html_url);
