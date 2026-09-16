@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+d6ef2c0fabdacc1bdcf3df044578cf86 MyFirstPlugin_artefacts/JuceLibraryCode/JuceHeader.h
