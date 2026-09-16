@@ -46,7 +46,30 @@ Notes → Rebranded from Freeman Intelligence PM Agent 2026-09-16.
 
 ---
 
-## 3. `PM BRIEFING`
+## 3. `PM ADD: Disklordz — Activepieces automation (self-host)`
+
+Or run `python3 scripts/sync_disklordz_pm_to_airtable.py` after `AIRTABLE_API_KEY` is in GitHub secrets (sync upserts this row).
+
+```
+Urgency: HIGH
+Status: ACTIVE
+Current Phase: PHASE-1
+% Complete: 10
+Scope: Self-hosted Activepieces for factory webhooks (Slack/Airtable). infra/activepieces/automate.sh
+Proposed Outcome: Docker + provisioned factory webhook; render_kit auto-notify
+For Who: Sam / Disklordz studio
+Next Action: Set DISKLORDZ_AP_ADMIN_* in infra/activepieces/.env and run ./automate.sh
+Stack:
+Docker Compose
+Activepieces
+GitHub Actions (optional)
+API Keys Needed: DISKLORDZ_AP_ADMIN (local .env); GitHub AIRTABLE_API_KEY, DISKLORDZ_ACTIVEPIECES_WEBHOOK (optional)
+Notes: Checklist in scripts/sync_disklordz_pm_to_airtable.py ACTIVEPIECES_NOTES — merge PR #12 first
+```
+
+---
+
+## 4. `PM BRIEFING`
 
 After ADD + UPDATE, send **`PM BRIEFING`** to verify.
 
