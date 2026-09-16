@@ -34,10 +34,13 @@ mkI units above use logue SDK **v1.1.0**. For **NTS-1 mkII**, scaffold and build
 `.nts1mkiiunit` files from `src/mkii/oscillators/`:
 
 ```bash
-export LOGUE_SDK=/path/to/logue-sdk
-python3 tools/mkii/scaffold-mkii.py --all-bass
-./tools/build-mkii.sh tr808_kick_phonk
+chmod +x tools/mkii-automate.sh
+./tools/mkii-automate.sh all                    # clone SDK, gcc, scaffold, build all
+./tools/mkii-automate.sh bootstrap              # SDK + toolchain only
+./tools/mkii-automate.sh build tr808_kick_phonk # one unit
 ```
+
+Manual steps (custom `LOGUE_SDK`): `python3 tools/mkii/scaffold-mkii.py --all-bass`, `./tools/build-mkii.sh <slug>`.
 
 See [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
 

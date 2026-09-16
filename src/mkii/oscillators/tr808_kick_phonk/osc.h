@@ -1,4 +1,5 @@
 #pragma once
+/* PORT_COMPLETE — do not overwrite with scaffold-mkii.py */
 /*
  * Phonk 808 kick — NTS-1 mkII port of src/oscillators/tr808-kick/kick808.cc
  */

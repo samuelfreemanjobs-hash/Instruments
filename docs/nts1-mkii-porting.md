@@ -14,22 +14,23 @@ All units under `src/oscillators/` are **logue SDK v1.1.0** (`userosc.h`, `OSC_C
 
 Generated projects live in **`src/mkii/oscillators/<slug>/`**. Each folder has **`PORTING.md`** with unit-specific v1 source paths.
 
-## One-time setup
+## One-time setup (automated)
 
-1. Clone [logue-sdk](https://github.com/korginc/logue-sdk) and initialize submodules (`git submodule update --init`).
-2. Install the **gcc-arm-none-eabi** toolchain from `logue-sdk/tools/gcc`, or use **Docker** (`logue-sdk/docker/run_interactive.sh`).
-3. Export:
+From the repo root:
 
 ```bash
-export LOGUE_SDK=/path/to/logue-sdk
+chmod +x tools/mkii-automate.sh
+./tools/mkii-automate.sh bootstrap    # clones .deps/logue-sdk, CMSIS, ARM gcc 10.3
+./tools/mkii-automate.sh scaffold     # refresh mkII trees (keeps PORT_COMPLETE osc.h)
+./tools/mkii-automate.sh build tr808_kick_phonk
+./tools/mkii-automate.sh all          # bootstrap + scaffold + build entire catalog
 ```
 
-4. Scaffold everything:
+Default SDK path: **`<repo>/.deps/logue-sdk`** (override with `export LOGUE_SDK=...`).
 
-```bash
-chmod +x tools/build-mkii.sh tools/build-all-bass-mkii.sh
-python3 tools/mkii/scaffold-mkii.py --all-bass
-```
+If gcc download fails (CI/firewall), use **Docker**: `./tools/mkii-automate.sh docker tr808_kick_phonk` then `build nts-1_mkii/inst-tr808_kick_phonk` inside the logue-sdk container.
+
+Manual setup: clone [logue-sdk](https://github.com/korginc/logue-sdk), `git submodule update --init`, install gcc from `tools/gcc/get_gcc_10_3-2021_10_linux.sh`.
 
 ## What you still must do (DSP port)
 

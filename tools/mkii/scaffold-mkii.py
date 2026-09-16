@@ -239,10 +239,18 @@ include $(NTS1_MKII)/dummy-osc/Makefile
 """
 
 
-def render_unit_cc() -> str:
-    sdk_unit = Path("/tmp/logue-sdk/platform/nts-1_mkii/dummy-osc/unit.cc")
-    if sdk_unit.is_file():
-        return sdk_unit.read_text(encoding="utf-8")
+def osc_h_is_port_complete(path: Path) -> bool:
+    if not path.is_file():
+        return False
+    text = path.read_text(encoding="utf-8")
+    return "PORT_COMPLETE" in text or "mkII port of" in text
+
+
+def render_unit_cc(logue_sdk: Path | None) -> str:
+    if logue_sdk:
+        sdk_unit = logue_sdk / "platform" / "nts-1_mkii" / "dummy-osc" / "unit.cc"
+        if sdk_unit.is_file():
+            return sdk_unit.read_text(encoding="utf-8")
     return """#include "osc.h"
 #include "unit_osc.h"
 #include "utils/int_math.h"
@@ -352,13 +360,17 @@ def scaffold_unit(v1_rel: str, force: bool, skip_wasm: bool, logue_sdk: Path | N
     (out_dir / "header.c").write_text(
         render_header_c(header["name"], params, default_values), encoding="utf-8"
     )
-    (out_dir / "osc.h").write_text(
-        render_osc_h(project, params, v1_rel, v1_source, default_values),
-        encoding="utf-8",
-    )
+    osc_path = out_dir / "osc.h"
+    if not osc_h_is_port_complete(osc_path):
+        osc_path.write_text(
+            render_osc_h(project, params, v1_rel, v1_source, default_values),
+            encoding="utf-8",
+        )
+    else:
+        print(f"preserve osc.h (PORT_COMPLETE): {osc_path}", file=sys.stderr)
     (out_dir / "config.mk").write_text(render_config_mk(project, []), encoding="utf-8")
     (out_dir / "Makefile").write_text(render_makefile(), encoding="utf-8")
-    (out_dir / "unit.cc").write_text(render_unit_cc(), encoding="utf-8")
+    (out_dir / "unit.cc").write_text(render_unit_cc(logue_sdk), encoding="utf-8")
     (out_dir / "PORTING.md").write_text(
         render_porting_readme(slug, v1_rel, v1_source), encoding="utf-8"
     )

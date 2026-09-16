@@ -15,6 +15,13 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=tools/mkii/lib.sh
+source "${ROOT}/tools/mkii/lib.sh"
+if [[ -z "${LOGUE_SDK:-}" ]]; then
+  if sdk="$(mkii_resolve_logue_sdk 2>/dev/null)"; then
+    export LOGUE_SDK="${sdk}"
+  fi
+fi
 SLUG="${1:-}"
 SCAFFOLD_FROM=""
 USE_DOCKER=0
