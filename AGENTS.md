@@ -20,6 +20,12 @@ Canonical APC files in **this** repo:
 2. Creates `apc.config.json` from `apc.config.example.json`.
 3. Then **`/apc-dream MyPlugin`**.
 
+## Mandatory VST lifecycle
+
+Every VST/VSTi: **Dream → Plan → Design → Implement → Test → Ship**.  
+See `docs/vst-lifecycle.md` and `.cursor/rules/10-vst-lifecycle-mandatory.mdc`.  
+Ship = `tools/package-vst.sh` (not build-only).
+
 ## Slash commands (Cursor / any agent)
 
 | Command | Phase |

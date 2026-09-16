@@ -8,11 +8,13 @@ For plugin architecture, DSP chains, and multi-step plugin work, follow
 
 ## VST / VSTi (DAW plugins)
 
-**Every new VST or VSTi starts from `vst/template/`.** See `.cursor/rules/06-vst-vsti-template.mdc`.
+**Mandatory process:** Dream → Plan → Design → Implement (DSP/core) → Test → **Ship package**.  
+Rules: `10-vst-lifecycle-mandatory.mdc`, `docs/vst-lifecycle.md`.
 
-1. Run `./tools/new-vst.sh <PluginName>` or copy the template per RENAME_CHECKLIST.md.
-2. Implement in `vst/<PluginName>/` with JUCE + CMake (VST3 + Standalone by default).
-3. Do not create ad-hoc plugin folders outside `vst/`.
+1. APC specs in `plugins/<Name>/` — `/apc-dream` through `/apc-design`.
+2. Code in `vst/<Name>/` only after design — `/apc-impl` + `tools/new-vst.sh`.
+3. Finish with `/apc-ship` + `tools/package-vst.sh` → `release/<Name>/`.
+4. Do not skip phases unless user explicitly says **skip to impl** (hotfix).
 
 ## logue SDK (hardware)
 

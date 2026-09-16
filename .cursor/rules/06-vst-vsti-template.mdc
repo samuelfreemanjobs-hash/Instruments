@@ -1,46 +1,47 @@
 ---
-description: VST/VSTi boilerplate — every new plugin starts from vst/template
+description: VST/VSTi boilerplate — template + mandatory Dream→Plan→Design→Implement→Ship
 alwaysApply: true
 ---
 
 # VST / VSTi boilerplate (mandatory)
 
-This repo is the **canonical starting template** for every VST3 and VSTi project.
-Do **not** greenfield a plugin in a random folder or with ad-hoc CMake.
+**Lifecycle rule:** see `10-vst-lifecycle-mandatory.mdc` and `docs/vst-lifecycle.md`.  
+Never jump to `vst/` code without **Dream → Plan → Design** under `plugins/<Name>/`.
 
 ## When the user asks for a new VST, VSTi, synth, or effect plugin
 
-1. **Create the project from the template**
-   - Synth/VSTi: `./tools/new-vst.sh <PluginName>` or `--type synth` (from `vst/template/`)
-   - Effect: `./tools/new-vst.sh <PluginName> --type effect` (from `vst/template-effect/`)
-   - Or copy template folder manually per `RENAME_CHECKLIST.md`
-   - DSP: `#include` modules from `shared/dsp/` (biquad, envelope_adsr, parameter_smoothing, phasor)
-2. **Implement only inside that copy** — `Source/PluginProcessor.*`, `Source/PluginEditor.*`, optional `Source/Dsp/`
-3. **Keep JUCE layout** — do not replace CMake/JUCE with custom plugin APIs unless the user explicitly rejects JUCE.
-4. **Default formats** — VST3 + Standalone; add AU only when the user targets macOS distribution.
-5. **Parameters** — use `juce::AudioProcessorValueTreeState` (APVTS) as in the template; expose automatable parameters there.
-6. **Realtime audio** — all DSP in `processBlock`; no allocations, locks, or I/O on the audio thread.
-7. **Shared code** — reuse portable float helpers from `src/shared/` when useful; do **not** include logue `userosc.h` or embedded-only headers in VST targets.
+### Phase order (required)
+
+1. `/apc-dream <Name>` — brief + `parameter-spec.md` in `plugins/<Name>/`
+2. `/apc-plan <Name>` — `architecture.md`, complexity, UI framework
+3. `/apc-design <Name>` — `design-spec.md`
+4. `/apc-impl <Name>` — then scaffold & code:
+   - Synth: `./tools/new-vst.sh <Name> --type synth`
+   - Effect: `./tools/new-vst.sh <Name> --type effect`
+5. `/apc-test <Name>` — `./tools/build-vst.sh <Name>`
+6. `/apc-ship <Name>` — `./tools/package-vst.sh <Name>` → `release/<Name>/`
+
+Gate check before impl: `bash tools/apc-gate.sh <Name> impl`
+
+### Implementation rules
+
+- DSP / core logic in **program chain** (`Source/Dsp/`, `shared/dsp/`, `processBlock`) before cosmetic UI polish.
+- **Surface chain:** APVTS + `PluginEditor` per design spec.
+- Do **not** include logue `userosc.h` in VST targets.
+- Unique `PLUGIN_MANUFACTURER_CODE` / `PLUGIN_CODE` in `CMakeLists.txt`.
 
 ## What not to do
 
-- Do not start a plugin under `src/oscillators/` (that tree is **logue SDK** hardware units).
-- Do not skip `CMakeLists.txt` / company codes / plugin codes (see template README).
-- Do not merge multiple unrelated plugins into one CMake target.
+- Do not create `vst/<Name>/` before Design phase (unless user says **skip to impl** for a hotfix).
+- Do not call a plugin “done” without **Ship** packaging.
+- Do not start plugins under `src/oscillators/` (logue hardware).
 
-## Build (after JUCE is present)
+## Agent deliverables (full lifecycle)
 
-```bash
-cd vst/<PluginName>
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
-```
-
-JUCE: `git submodule update --init vst/JUCE` (see `vst/README.md`).
-
-## Agent deliverables for a new plugin
-
-- Confirms project was created from `vst/template`
-- Updated `PluginProcessor` / `PluginEditor` (and DSP files if needed)
-- Unique `PLUGIN_MANUFACTURER_CODE` / `PLUGIN_CODE` in `CMakeLists.txt`
-- Short note in `vst/<PluginName>/README.md` (purpose, build, parameters)
+| Phase | Deliverable |
+|-------|-------------|
+| Dream | `creative-brief.md`, `parameter-spec.md` |
+| Plan | `architecture.md`, `status.json` framework + complexity |
+| Design | `design-spec.md` |
+| Implement | `vst/<Name>/`, `params.json`, working DSP |
+| Ship | `release/<Name>/*.zip` + `INSTALL.txt` |

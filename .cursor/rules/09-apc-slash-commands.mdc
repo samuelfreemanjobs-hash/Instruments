@@ -12,6 +12,8 @@ When the user message contains **`/apc-`** or deprecated **`/dream`**, **`/plan`
 3. Execute the matching **`.agents/skills/<phase>/SKILL.md`** (or `dream`, `plan`, `impl`, …).
 4. Read/update **`plugins/<PluginName>/status.json`** using `scripts/lib/apc-state.sh` patterns.
 5. **Stop after one phase** unless user said `/apc-new` or asked to continue.
+6. **Never skip lifecycle** — see rule `10-vst-lifecycle-mandatory.mdc`. Implement only after Dream+Plan+Design files exist.
+7. **Ship** must run `tools/package-vst.sh` — not “build succeeded” alone.
 
 | Command | Phase skill |
 |---------|-------------|

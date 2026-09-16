@@ -13,7 +13,9 @@ cd vst/MySynth && cmake -B build && cmake --build build --config Release
 
 Details: [vst/README.md](vst/README.md).
 
-**Noizefield-style APC:** [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-setup` → `/apc-dream` → … → `/apc-ship` · `bash bin/apc setup`
+**VST lifecycle (required):** [docs/vst-lifecycle.md](docs/vst-lifecycle.md) — Dream → Plan → Design → Implement → Ship (`tools/package-vst.sh`)
+
+**APC commands:** [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-dream` … `/apc-ship`
 
 **DSP architecture:** [docs/dsp-architecture-specification.md](docs/dsp-architecture-specification.md) · `.agents/skills/` + `.cursor/skills/`
 

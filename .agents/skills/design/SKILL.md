@@ -26,4 +26,4 @@ Document HTML canvas regions and JS↔C++ param bridge plan.
 
 `validation.design_complete` = true, `current_phase` = `design`
 
-Stop: `/apc-impl <Name>`
+Stop. Next command only: **`/apc-impl <Name>`** (DSP/core logic first, then UI).

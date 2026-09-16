@@ -44,4 +44,5 @@ Update `status.json`:
 
 ## Step 4 — Stop
 
-Tell user: **`/apc-plan <Name>`**
+Tell user the mandatory next step only: **`/apc-plan <Name>`**  
+Do not offer implement or ship in the same turn.
