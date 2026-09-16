@@ -33,6 +33,7 @@ toolchain.
 | `larry-june` | Larry June | Bay Area cruise / rubbery JV PWM bass | D2–A2 |
 | `khalifa-haze` | Khalifa Haze | Hazy cloud sub / stoner-rap low end | C1–F2 |
 | `memphis-juicy` | Juicy 36 | Three 6 / Juicy J phase-locked trunk sub | C0–D1 |
+| `ensoniq-eps1` | EPS-1 MEM | Ensoniq wavetable + dark Curtis Memphis sub | C1–D1 |
 
 Supporting folders: `template`, `wavetable` (learning / starters).
 
