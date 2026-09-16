@@ -3,6 +3,7 @@
 #include "Assets/FactoryPatchLibrary.h"
 #include "Assets/RomFormat.h"
 #include "Parameters/EnvelopeParameters.h"
+#include "Parameters/EffectParameters.h"
 #include "Parameters/FilterParameters.h"
 #include "Assets/WavePalette.h"
 
@@ -38,9 +39,17 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
     styleRotary (filterResonanceSlider_, "Res");
     styleRotary (groupADriveSlider_, "Grp A");
     styleRotary (groupBMixSlider_, "Grp B");
+    styleRotary (groupBChorusSlider_, "Chorus");
     addAndMakeVisible (filterResonanceSlider_);
     addAndMakeVisible (groupADriveSlider_);
     addAndMakeVisible (groupBMixSlider_);
+    addAndMakeVisible (groupBChorusSlider_);
+    groupAEnableButton_.setButtonText ("A On");
+    groupBEnableButton_.setButtonText ("B On");
+    groupAEnableButton_.setClickingTogglesState (true);
+    groupBEnableButton_.setClickingTogglesState (true);
+    addAndMakeVisible (groupAEnableButton_);
+    addAndMakeVisible (groupBEnableButton_);
 
     filterAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
         processor_.getAPVTS(), "filterResonance", filterResonanceSlider_);
@@ -60,6 +69,12 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
         processor_.getAPVTS(), "groupADrive", groupADriveSlider_);
     groupBAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
         processor_.getAPVTS(), "groupBMix", groupBMixSlider_);
+    groupBChorusAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+        processor_.getAPVTS(), jdupgraded::params::kGroupBChorusId, groupBChorusSlider_);
+    groupAEnableAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
+        processor_.getAPVTS(), jdupgraded::params::kGroupAEnableId, groupAEnableButton_);
+    groupBEnableAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
+        processor_.getAPVTS(), jdupgraded::params::kGroupBEnableId, groupBEnableButton_);
 
     couplingCombo_.addItemList ({ "Independent", "Ring 1-2", "Ring 3-4", "X-Mod 1-2", "X-Mod 3-4", "Sync 1-2", "Sync 3-4" }, 1);
     addAndMakeVisible (couplingCombo_);
@@ -396,13 +411,18 @@ void JDUpgradedAudioProcessorEditor::resized()
     programLabel_.setBounds (programRow);
 
     auto fxRow = area.removeFromTop (88);
-    const int fxW = fxRow.getWidth() / 6;
+    const int fxW = fxRow.getWidth() / 7;
     masterGainSlider_.setBounds (fxRow.removeFromLeft (fxW).reduced (4));
     auto filterCol = fxRow.removeFromLeft (fxW).reduced (4);
     filterResonanceSlider_.setBounds (filterCol.removeFromTop (filterCol.getHeight() - 22));
     filterLinkButton_.setBounds (filterCol);
-    groupADriveSlider_.setBounds (fxRow.removeFromLeft (fxW).reduced (4));
-    groupBMixSlider_.setBounds (fxRow.removeFromLeft (fxW).reduced (4));
+    auto groupACol = fxRow.removeFromLeft (fxW).reduced (4);
+    groupADriveSlider_.setBounds (groupACol.removeFromTop (groupACol.getHeight() - 22));
+    groupAEnableButton_.setBounds (groupACol);
+    auto groupBCol = fxRow.removeFromLeft (fxW).reduced (4);
+    groupBMixSlider_.setBounds (groupBCol.removeFromTop (groupBCol.getHeight() / 2));
+    groupBChorusSlider_.setBounds (groupBCol.removeFromTop (groupBCol.getHeight() - 22));
+    groupBEnableButton_.setBounds (groupBCol);
     couplingCombo_.setBounds (fxRow.reduced (4));
 
     auto envArea = area.removeFromBottom (108);

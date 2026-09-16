@@ -101,6 +101,9 @@ private:
     std::atomic<float>* couplingModePtr_ = nullptr;
     std::atomic<float>* groupADrivePtr_ = nullptr;
     std::atomic<float>* groupBMixPtr_ = nullptr;
+    std::atomic<float>* groupAEnablePtr_ = nullptr;
+    std::atomic<float>* groupBEnablePtr_ = nullptr;
+    std::atomic<float>* groupBChorusPtr_ = nullptr;
     std::atomic<float>* tone1MutePtr_ = nullptr;
     std::atomic<float>* tone2MutePtr_ = nullptr;
     std::atomic<float>* tone3MutePtr_ = nullptr;

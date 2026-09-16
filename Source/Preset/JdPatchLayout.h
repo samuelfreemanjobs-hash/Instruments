@@ -25,8 +25,11 @@ inline constexpr std::uint8_t kRolandCmdDataTransferOneWay = 0x24;
 inline constexpr std::size_t kJdCommonPatchLevel = 16;
 inline constexpr std::size_t kJdCommonLayerToneMask = 33;
 
-// Patch Effect (Group A distortion drive as coarse macro)
+// Patch Effect (offsets within 46-byte effect block)
+inline constexpr std::size_t kJdEffectGroupABlock1Sw = 2;
+inline constexpr std::size_t kJdEffectGroupBBlock3Sw = 8;
 inline constexpr std::size_t kJdEffectDistortionDrive = 11;
+inline constexpr std::size_t kJdEffectChorusLevel = 38;
 inline constexpr std::size_t kJdEffectReverbLevel = 44;
 
 // Patch Tone (per-tone block)

@@ -23,6 +23,9 @@ Patch layout follows documented JD-800 structure:
 | Common layer tone mask | `toneNMute` (inverted bit) |
 | Effect distortion drive | `groupADrive` |
 | Effect reverb level | `groupBMix` |
+| Effect chorus level | `groupBChorus` |
+| Group A distortion block switch | `groupAEnable` |
+| Group B reverb block switch | `groupBEnable` |
 | Tone waveform MSB/LSB | `toneNWave` (scaled to 0–255) |
 | Tone TVA level | `toneNLevel` |
 | Tone TVF resonance (max) | `filterResonance` |

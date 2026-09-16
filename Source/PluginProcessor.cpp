@@ -5,6 +5,7 @@
 #include "BinaryData.h"
 #include "Preset/ApvtsBridge.h"
 #include "Parameters/EnvelopeParameters.h"
+#include "Parameters/EffectParameters.h"
 #include "Parameters/FilterParameters.h"
 #include "Preset/JdPatchLayout.h"
 
@@ -129,6 +130,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout JDUpgradedAudioProcessor::cr
         juce::ParameterID { kGroupBMixId, 1 }, "Group B Space",
         juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.0f));
 
+    params.push_back (std::make_unique<juce::AudioParameterBool> (
+        juce::ParameterID { jdupgraded::params::kGroupAEnableId, 1 }, "Group A On", true));
+    params.push_back (std::make_unique<juce::AudioParameterBool> (
+        juce::ParameterID { jdupgraded::params::kGroupBEnableId, 1 }, "Group B On", true));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { jdupgraded::params::kGroupBChorusId, 1 }, "Group B Chorus",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.0f));
+
     const int maxWave = static_cast<int> (jdupgraded::assets::kCleanroomWaveCount) - 1;
     params.push_back (std::make_unique<juce::AudioParameterInt> (
         juce::ParameterID { kTone1WaveId, 1 }, "Tone 1 Wave", 0, maxWave, 0));
@@ -224,6 +233,9 @@ void JDUpgradedAudioProcessor::refreshCachedParameters() noexcept
     couplingModePtr_ = apvts_.getRawParameterValue (kCouplingModeId);
     groupADrivePtr_ = apvts_.getRawParameterValue (kGroupADriveId);
     groupBMixPtr_ = apvts_.getRawParameterValue (kGroupBMixId);
+    groupAEnablePtr_ = apvts_.getRawParameterValue (jdupgraded::params::kGroupAEnableId);
+    groupBEnablePtr_ = apvts_.getRawParameterValue (jdupgraded::params::kGroupBEnableId);
+    groupBChorusPtr_ = apvts_.getRawParameterValue (jdupgraded::params::kGroupBChorusId);
     tone1WavePtr_ = apvts_.getRawParameterValue (kTone1WaveId);
     tone2WavePtr_ = apvts_.getRawParameterValue (kTone2WaveId);
     tone3WavePtr_ = apvts_.getRawParameterValue (kTone3WaveId);
@@ -679,11 +691,15 @@ void JDUpgradedAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     voicePool_.render (outputScratch_.data(), numSamples);
 
     const float master = masterGainPtr_ != nullptr ? masterGainPtr_->load() : 0.75f;
-    const float groupADrive = groupADrivePtr_ != nullptr ? groupADrivePtr_->load() : 0.0f;
-    const float groupBMix = groupBMixPtr_ != nullptr ? groupBMixPtr_->load() : 0.0f;
+    const bool groupAOn = groupAEnablePtr_ == nullptr || groupAEnablePtr_->load() >= 0.5f;
+    const bool groupBOn = groupBEnablePtr_ == nullptr || groupBEnablePtr_->load() >= 0.5f;
+    const float groupADrive = groupAOn && groupADrivePtr_ != nullptr ? groupADrivePtr_->load() : 0.0f;
+    const float groupBMix = groupBOn && groupBMixPtr_ != nullptr ? groupBMixPtr_->load() : 0.0f;
+    const float groupBChorus = groupBOn && groupBChorusPtr_ != nullptr ? groupBChorusPtr_->load() : 0.0f;
 
     groupA_.setDrive (groupADrive);
     groupB_.setMix (groupBMix);
+    groupB_.setChorus (groupBChorus);
 
     for (int i = 0; i < buffer.getNumSamples(); ++i)
     {

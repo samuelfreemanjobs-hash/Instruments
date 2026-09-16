@@ -34,6 +34,9 @@ private:
     juce::ToggleButton filterLinkButton_;
     juce::Slider groupADriveSlider_;
     juce::Slider groupBMixSlider_;
+    juce::Slider groupBChorusSlider_;
+    juce::ToggleButton groupAEnableButton_;
+    juce::ToggleButton groupBEnableButton_;
     juce::ComboBox couplingCombo_;
     juce::Label titleLabel_;
     juce::Label romSourceLabel_;
@@ -65,6 +68,9 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> filterLinkAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> groupAAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> groupBAttachment_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> groupBChorusAttachment_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> groupAEnableAttachment_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> groupBEnableAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> couplingAttachment_;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> toneLevelAttachments_;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> toneWaveAttachments_;

@@ -3,6 +3,7 @@
 #include "JdEnvelopeScale.h"
 #include "JdPatchLayout.h"
 #include "Parameters/EnvelopeParameters.h"
+#include "Parameters/EffectParameters.h"
 #include "Parameters/FilterParameters.h"
 #include "SysExParser.h"
 
@@ -65,10 +66,17 @@ bool JdPatchSysexMapper::applyRawPatchBlock (juce::AudioProcessorValueTreeState&
     setApvtsFloat (apvts, "masterGain", master);
 
     const std::uint8_t layerMask = patch[kJdCommonLayerToneMask];
-    const float groupADrive = norm7 (patch[kJdPatchCommonBytes + kJdEffectDistortionDrive]);
-    const float groupBMix = norm7 (patch[kJdPatchCommonBytes + kJdEffectReverbLevel]);
+    const auto effectBase = kJdPatchCommonBytes;
+    const float groupADrive = norm7 (patch[effectBase + kJdEffectDistortionDrive]);
+    const float groupBMix = norm7 (patch[effectBase + kJdEffectReverbLevel]);
+    const float groupBChorus = norm7 (patch[effectBase + kJdEffectChorusLevel]);
+    const bool groupAOn = (patch[effectBase + kJdEffectGroupABlock1Sw] & 0x7F) != 0;
+    const bool groupBOn = (patch[effectBase + kJdEffectGroupBBlock3Sw] & 0x7F) != 0;
     setApvtsFloat (apvts, "groupADrive", groupADrive);
     setApvtsFloat (apvts, "groupBMix", groupBMix);
+    setApvtsFloat (apvts, jdupgraded::params::kGroupBChorusId, groupBChorus);
+    setApvtsBool (apvts, jdupgraded::params::kGroupAEnableId, groupAOn);
+    setApvtsBool (apvts, jdupgraded::params::kGroupBEnableId, groupBOn);
 
     const char* levelIds[4] = { "tone1Level", "tone2Level", "tone3Level", "tone4Level" };
     const char* waveIds[4] = { "tone1Wave", "tone2Wave", "tone3Wave", "tone4Wave" };

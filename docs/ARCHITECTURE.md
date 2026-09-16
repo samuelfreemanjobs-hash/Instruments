@@ -80,7 +80,7 @@ Control-rate envelopes advance every `kControlRateDivisor` (32) samples inside e
 | New DSP per tone | `Tone.h` / `TonePatch`, voice render in `SynthVoice.h` |
 | SysEx field | `JdPatchLayout.h`, `JdPatchSysexMapper.cpp`, optional `JdTonePitchMod` |
 | New factory program | `FactoryPatchLibrary.cpp` |
-| Master FX | `GroupADistortion`, `GroupBSpatial` |
+| Master FX | `GroupADistortion` + `groupAEnable`; `GroupBSpatial` + `groupBEnable` / `groupBChorus` |
 
 ## Related docs
 
