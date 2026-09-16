@@ -26,7 +26,14 @@ TemplateSynthAudioProcessor::createParameterLayout() {
 
 void TemplateSynthAudioProcessor::prepareToPlay(double sampleRate, int) {
   sampleRate_ = sampleRate;
-  phase_ = 0.0f;
+  phasor_.reset();
+  env_.reset();
+  env_.setSampleRate(static_cast<float>(sampleRate));
+  env_.attackSec = 0.005f;
+  env_.decaySec = 0.2f;
+  env_.sustainLevel = 0.75f;
+  env_.releaseSec = 0.15f;
+  currentFreqHz_ = 0.0f;
 }
 
 void TemplateSynthAudioProcessor::releaseResources() {}
@@ -39,39 +46,41 @@ bool TemplateSynthAudioProcessor::isBusesLayoutSupported(const BusesLayout &layo
 void TemplateSynthAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
                                                juce::MidiBuffer &midi) {
   juce::ScopedNoDenormals noDenormals;
-  buffer.clear();
 
-  float freqHz = 0.0f;
   for (const auto metadata : midi) {
     const auto msg = metadata.getMessage();
     if (msg.isNoteOn()) {
-      freqHz = static_cast<float>(msg.getMidiNoteInHertz(msg.getNoteNumber()));
+      currentFreqHz_ = static_cast<float>(msg.getMidiNoteInHertz(msg.getNoteNumber()));
+      phasor_.setFrequency(currentFreqHz_, static_cast<float>(sampleRate_));
+      env_.gateOn();
     } else if (msg.isNoteOff()) {
-      freqHz = 0.0f;
+      env_.gateOff();
     }
   }
-
-  if (freqHz <= 0.0f) {
-    return;
-  }
+  midi.clear();
 
   const float gain = apvts_.getRawParameterValue(kParamGain)->load();
   const float wave = apvts_.getRawParameterValue(kParamWave)->load();
-  const float phaseInc = freqHz / static_cast<float>(sampleRate_);
 
   const int numSamples = buffer.getNumSamples();
   const int numChannels = buffer.getNumChannels();
 
-  for (int sample = 0; sample < numSamples; ++sample) {
-    const float sine = std::sin(phase_ * juce::MathConstants<float>::twoPi);
-    const float saw = 2.0f * phase_ - 1.0f;
-    const float out = gain * (sine * (1.0f - wave) + saw * wave);
+  if (!env_.isActive() && currentFreqHz_ <= 0.0f) {
+    buffer.clear();
+    return;
+  }
+
+  for (int i = 0; i < numSamples; ++i) {
+    const float amp = env_.process();
+    const float ph = phasor_.next();
+    const float sine = DspPhasor::sine(ph);
+    const float saw = 2.0f * ph - 1.0f;
+    const float sample = gain * amp * (sine * (1.0f - wave) + saw * wave);
     for (int ch = 0; ch < numChannels; ++ch) {
-      buffer.setSample(ch, sample, out);
+      buffer.setSample(ch, i, sample);
     }
-    phase_ += phaseInc;
-    if (phase_ >= 1.0f) {
-      phase_ -= 1.0f;
+    if (!env_.isActive()) {
+      currentFreqHz_ = 0.0f;
     }
   }
 }

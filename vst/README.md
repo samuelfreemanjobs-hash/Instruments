@@ -22,18 +22,19 @@ git submodule add https://github.com/juce-framework/JUCE.git vst/JUCE
 ### 2. New plugin from template
 
 ```bash
-./tools/new-vst.sh MySynth
+./tools/new-vst.sh MySynth                  # VSTi (template)
+./tools/new-vst.sh VinylNoise --type effect # VST FX (template-effect)
 ```
-
-Creates `vst/MySynth/` with processor, editor, and CMake wired for VST3 + Standalone.
 
 ### 3. Build
 
 ```bash
-cd vst/MySynth
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
+./tools/build-vst.sh MySynth
+./tools/build-vst.sh --list
+./tools/build-vst.sh --all
 ```
+
+Shared DSP: `shared/dsp/` (biquad, ADSR, smoothing, phasor).
 
 Artifacts (paths vary by OS): `build/MySynth_artefacts/Release/VST3/`
 

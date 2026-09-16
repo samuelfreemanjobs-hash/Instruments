@@ -5,6 +5,8 @@ description: Orchestrates VST/VSTi and cross-target DSP work using the DSP archi
 
 # Audio Plugin Coder (orchestrator)
 
+**APC (Noizefield-style):** use `.agents/skills/audio-plugin-coder/SKILL.md` and `/apc-*` commands — see `docs/apc-workflow.md`.
+
 ## Authority
 
 - **Architecture:** `docs/dsp-architecture-specification.md`

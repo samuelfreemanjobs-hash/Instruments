@@ -1,13 +1,13 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "envelope_adsr.h"
-#include "phasor.h"
+#include "biquad.h"
+#include "parameter_smoothing.h"
 
-class TemplateSynthAudioProcessor : public juce::AudioProcessor {
+class TemplateEffectAudioProcessor : public juce::AudioProcessor {
 public:
-  TemplateSynthAudioProcessor();
-  ~TemplateSynthAudioProcessor() override;
+  TemplateEffectAudioProcessor();
+  ~TemplateEffectAudioProcessor() override;
 
   void prepareToPlay(double sampleRate, int samplesPerBlock) override;
   void releaseResources() override;
@@ -18,7 +18,7 @@ public:
   bool hasEditor() const override { return true; }
 
   const juce::String getName() const override { return JucePlugin_Name; }
-  bool acceptsMidi() const override { return true; }
+  bool acceptsMidi() const override { return false; }
   bool producesMidi() const override { return false; }
   bool isMidiEffect() const override { return false; }
   double getTailLengthSeconds() const override { return 0.0; }
@@ -33,15 +33,19 @@ public:
   void setStateInformation(const void *data, int sizeInBytes) override;
 
   juce::AudioProcessorValueTreeState &getAPVTS() { return apvts_; }
-
   static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 private:
+  static float normToCutoff(float norm, float sampleRate);
+  static float softClip(float x, float drive);
+
   juce::AudioProcessorValueTreeState apvts_;
   double sampleRate_ = 48000.0;
-  DspPhasor phasor_;
-  DspAdsr env_;
-  float currentFreqHz_ = 0.0f;
+  DspBiquad toneL_;
+  DspBiquad toneR_;
+  DspParamSmooth driveSmooth_;
+  DspParamSmooth toneSmooth_;
+  DspParamSmooth mixSmooth_;
 
-  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TemplateSynthAudioProcessor)
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TemplateEffectAudioProcessor)
 };

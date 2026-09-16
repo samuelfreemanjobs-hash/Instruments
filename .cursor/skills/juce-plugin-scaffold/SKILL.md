@@ -16,7 +16,8 @@ description: Creates new JUCE VST projects from vst/template via new-vst.sh, CMa
 1. Confirm plugin name PascalCase: `MySynth`, `Phonk808`.
 2. Run from repo root:
    ```bash
-   ./tools/new-vst.sh <PluginName>
+   ./tools/new-vst.sh <PluginName>                 # synth
+   ./tools/new-vst.sh <PluginName> --type effect   # FX
    ```
 3. Verify unique **4-char** codes in `CMakeLists.txt`:
    - `PLUGIN_MANUFACTURER_CODE`

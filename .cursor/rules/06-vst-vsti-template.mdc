@@ -11,8 +11,10 @@ Do **not** greenfield a plugin in a random folder or with ad-hoc CMake.
 ## When the user asks for a new VST, VSTi, synth, or effect plugin
 
 1. **Create the project from the template**
-   - Run: `./tools/new-vst.sh <PluginName>` (PascalCase, no spaces)
-   - Or manually copy `vst/template/` → `vst/<PluginName>/` and rename symbols per `vst/template/RENAME_CHECKLIST.md`
+   - Synth/VSTi: `./tools/new-vst.sh <PluginName>` or `--type synth` (from `vst/template/`)
+   - Effect: `./tools/new-vst.sh <PluginName> --type effect` (from `vst/template-effect/`)
+   - Or copy template folder manually per `RENAME_CHECKLIST.md`
+   - DSP: `#include` modules from `shared/dsp/` (biquad, envelope_adsr, parameter_smoothing, phasor)
 2. **Implement only inside that copy** — `Source/PluginProcessor.*`, `Source/PluginEditor.*`, optional `Source/Dsp/`
 3. **Keep JUCE layout** — do not replace CMake/JUCE with custom plugin APIs unless the user explicitly rejects JUCE.
 4. **Default formats** — VST3 + Standalone; add AU only when the user targets macOS distribution.

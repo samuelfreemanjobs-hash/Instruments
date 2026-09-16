@@ -79,7 +79,7 @@ cmd_build() {
   fi
   export LOGUE_SDK="${LOGUE_SDK:-}"
   if [[ -x "$ROOT/tools/build-vst.sh" ]]; then
-    "$ROOT/tools/build-vst.sh" "$name"
+    "$ROOT/tools/build-vst.sh" "$name" || exit $?
   else
     cd "$vst"
     cmake -B build -DCMAKE_BUILD_TYPE=Release
