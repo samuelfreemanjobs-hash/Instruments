@@ -68,6 +68,13 @@ target_compile_definitions(JDUpgraded
         JDUPGRADED_CONTROL_RATE_DIVISOR=32
 )
 
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag("-mavx2" JDUPGRADED_HAS_AVX2_FLAG)
+if(JDUPGRADED_HAS_AVX2_FLAG)
+    target_compile_options(JDUpgraded PRIVATE -mavx2 -mfma)
+    target_compile_definitions(JDUpgraded PRIVATE JDUPGRADED_USE_AVX2=1)
+endif()
+
 target_link_libraries(JDUpgraded
     PRIVATE
         juce::juce_audio_utils

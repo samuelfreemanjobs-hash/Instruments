@@ -2,6 +2,7 @@
 
 #include "AudioConstants.h"
 #include "Modulation/ToneCoupling.h"
+#include "Simd/VoiceSimd.h"
 #include "Tone.h"
 
 #include <array>
@@ -61,26 +62,28 @@ public:
 
     void render (float* output, std::size_t numSamples) noexcept
     {
-        std::array<float, kControlRateDivisor> toneScratch{};
+        std::array<std::array<float, kControlRateDivisor>, kTonesPerVoice> toneScratch{};
         const std::size_t chunk = kControlRateDivisor;
 
         for (std::size_t offset = 0; offset < numSamples; offset += chunk)
         {
             const std::size_t n = std::min (chunk, numSamples - offset);
-            for (std::size_t i = 0; i < n; ++i)
-                output[offset + i] = 0.0f;
 
             if (couplingMode_ == ToneCouplingMode::independent)
             {
-                for (auto& tone : tones_)
-                {
-                    tone.render (toneScratch.data(), n);
-                    for (std::size_t i = 0; i < n; ++i)
-                        output[offset + i] += toneScratch[i];
-                }
+                for (std::size_t t = 0; t < kTonesPerVoice; ++t)
+                    tones_[t].render (toneScratch[t].data(), n);
+
+                const std::array<const float*, kTonesPerVoice> ptrs = {
+                    toneScratch[0].data(), toneScratch[1].data(),
+                    toneScratch[2].data(), toneScratch[3].data()
+                };
+                sumFourToneBuffers (output + offset, ptrs[0], ptrs[1], ptrs[2], ptrs[3], n);
             }
             else
             {
+                for (std::size_t i = 0; i < n; ++i)
+                    output[offset + i] = 0.0f;
                 renderWithCoupling (output, offset, n);
             }
 

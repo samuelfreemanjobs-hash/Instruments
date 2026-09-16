@@ -23,7 +23,8 @@
 - `SysExParser` — Roland 0x41 packet checksum validation (no patch mapping yet).
 - User-supplied legacy dump translation (planned; not shipped).
 
-## Phase 4 (planned)
+## Phase 4 (in progress)
 
-- SIMD voice rendering (`Source/DSP/Simd/VoiceSimd.h`) — four tones per AVX2/NEON vector lane.
-- Full 69-slider UI with palette linking and envelope editors; hardware A/B validation harness.
+- **SIMD** — `Simd/VoiceSimd.h` sums four tone buffers (AVX2 when enabled at build).
+- **UI** — program browser, tone level/wave/mute, filter, Group A/B, coupling (expanded panel).
+- Full palette linking, envelope editors, multisample controls, hardware A/B harness (planned).

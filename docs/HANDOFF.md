@@ -20,11 +20,12 @@ cmake --build build -j
 
 ## Suggested next (Phase 4 / polish)
 
-1. **SIMD** — `VoiceSimd.h` sum four tones per sample (AVX2/NEON)
-2. **UI** — wave/MS selectors, coupling, filter, Group A/B on panel
-3. **SysEx** — map JD patch bytes to APVTS (no Roland ROM import)
-4. **User dump loader** — separate legal review; only JDUPGROM in installer
-5. **A/B harness** — offline render + spectral diff vs reference clips (user-provided)
+1. ~~**SIMD**~~ — `VoiceSimd.h` AVX2 sum of four tone buffers (independent coupling path)
+2. ~~**UI (partial)**~~ — filter, Group A/B, coupling, per-tone wave rotaries
+3. **SysEx** — map Roland JD patch bytes to APVTS (`ApvtsBridge` stub started)
+4. **UI** — multisample selectors, envelope editors, palette link
+5. **User dump loader** — separate legal review; only JDUPGROM in installer
+6. **A/B harness** — offline render + spectral diff vs reference clips (user-provided)
 
 ## Key paths
 
