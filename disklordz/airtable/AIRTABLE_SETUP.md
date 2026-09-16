@@ -42,15 +42,16 @@ Then seed bootstrap data:
 python ../airtable/scripts/seed_bootstrap.py
 ```
 
-## 3. Active base (current)
+## 3. Dedicated base (required)
 
-DiskLordz tables are hosted in base **`appwaEPUOCXBoq8jB`** (legacy UI name: *Business Idea Tracker*). Rename the base to **DiskLordz OS** in Airtable when convenient. Table IDs and URLs: [`ACTIVE_BASE.json`](ACTIVE_BASE.json).
+DiskLordz must use its **own** base — **DiskLordz OS** — not mixed with other workspaces. See [`BASES.md`](BASES.md).
 
-After PAT + egress work from the agent VM, set:
+| Secret | What to set |
+|--------|-------------|
+| `AIRTABLE_API_KEY` | Your PAT |
+| `AIRTABLE_BASE_ID` | ID of **DiskLordz OS** after `create_base_from_schema.py` (or an empty base you created in the UI) |
 
-```bash
-export AIRTABLE_BASE_ID=appwaEPUOCXBoq8jB
-```
+Legacy bootstrap data may still exist under **`appwaEPUOCXBoq8jB`** (*Business Idea Tracker*); migrate or re-seed into the dedicated base.
 
 ## 4. Option B — Manual base (greenfield)
 
@@ -92,7 +93,7 @@ When `api.airtable.com` is blocked on the VM, agents can bootstrap via Zapier **
 Add repository secrets for [`.github/workflows/airtable-pr-sync.yml`](../../.github/workflows/airtable-pr-sync.yml):
 
 - `AIRTABLE_API_KEY`
-- `AIRTABLE_BASE_ID` (`appwaEPUOCXBoq8jB` until you migrate bases)
+- `AIRTABLE_BASE_ID` (your **DiskLordz OS** base ID)
 
 Merged PR titles containing `WO-YYYY-NNN` patch the matching work order to **Done** and set `github_pr`.
 

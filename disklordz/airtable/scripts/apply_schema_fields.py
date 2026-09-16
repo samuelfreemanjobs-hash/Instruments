@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -13,7 +14,7 @@ from _meta_api import list_tables, schema_field_to_airtable, meta_request  # noq
 
 SCHEMA_PATH = SCRIPT_DIR.parent / "base-schema.json"
 ACTIVE_PATH = SCRIPT_DIR.parent / "ACTIVE_BASE.json"
-BASE_ID = "appwaEPUOCXBoq8jB"
+BASE_ID = os.environ.get("AIRTABLE_BASE_ID", "appwaEPUOCXBoq8jB")
 
 
 def load_table_ids() -> dict[str, str]:

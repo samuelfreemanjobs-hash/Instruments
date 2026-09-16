@@ -1,22 +1,31 @@
 {
-  "note": "DiskLordz OS tables live in this Airtable base. Rename the base to 'DiskLordz OS' in the Airtable UI if desired.",
-  "base_id": "appwaEPUOCXBoq8jB",
-  "base_url": "https://airtable.com/appwaEPUOCXBoq8jB",
-  "legacy_base_name": "Business Idea Tracker",
-  "tables": {
-    "Product Families": "tbla8HMwqSUpXAOyt",
-    "Products": "tblxGo7whsmCv8SYC",
-    "Projects": "tblWXybaYpaRJHObf",
-    "Sound Assets": "tbly3nXUNSad2HohF",
-    "Asset Relations": "tbleZoACtoY0X4ayP",
-    "Agent Work Orders": "tblc01IuqX2akAGJj",
-    "Releases": "tblbJTlaPATUKq8Mz",
-    "Market Signals": "tbl0sAjuhD5Sp70MD",
-    "Customer Feedback": "tblINizwShAn5JX0O",
-    "DAW Matrix": "tblQfACsuXEEFOc7o",
-    "Automations": "tblkSRNhIM6sZcRo0"
-  },
-  "deprecated_tables": {
-    "DL DiskLordz Automations": "tblzipUsIUdZczlB4"
+  "note": "Set AIRTABLE_BASE_ID to your dedicated DiskLordz OS base (not the interim Business Idea Tracker base). After create_base_from_schema.py, run export_active_base.py to refresh table IDs.",
+  "base_name": "DiskLordz OS",
+  "base_id": "SET_AIRTABLE_BASE_ID_SECRET",
+  "base_url": "https://airtable.com/SET_AIRTABLE_BASE_ID_SECRET",
+  "tables": {},
+  "legacy_bases": {
+    "interim_os_in_business_idea_tracker": {
+      "base_id": "appwaEPUOCXBoq8jB",
+      "base_name": "Business Idea Tracker",
+      "tables": {
+        "Product Families": "tbla8HMwqSUpXAOyt",
+        "Products": "tblxGo7whsmCv8SYC",
+        "Projects": "tblWXybaYpaRJHObf",
+        "Sound Assets": "tbly3nXUNSad2HohF",
+        "Asset Relations": "tbleZoACtoY0X4ayP",
+        "Agent Work Orders": "tblc01IuqX2akAGJj",
+        "Releases": "tblbJTlaPATUKq8Mz",
+        "Market Signals": "tbl0sAjuhD5Sp70MD",
+        "Customer Feedback": "tblINizwShAn5JX0O",
+        "DAW Matrix": "tblQfACsuXEEFOc7o",
+        "Automations": "tblkSRNhIM6sZcRo0"
+      }
+    },
+    "storefront_crm_disklordz_factory": {
+      "base_id": "appykxDsfaMFC2hGp",
+      "base_name": "DISKLORDZ Factory",
+      "note": "E-commerce CRM schema — separate from DiskLordz OS"
+    }
   }
 }
