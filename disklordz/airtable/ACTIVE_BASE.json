@@ -1,0 +1,22 @@
+{
+  "note": "DiskLordz OS tables live in this Airtable base. Rename the base to 'DiskLordz OS' in the Airtable UI if desired.",
+  "base_id": "appwaEPUOCXBoq8jB",
+  "base_url": "https://airtable.com/appwaEPUOCXBoq8jB",
+  "legacy_base_name": "Business Idea Tracker",
+  "tables": {
+    "Product Families": "tbla8HMwqSUpXAOyt",
+    "Products": "tblxGo7whsmCv8SYC",
+    "Projects": "tblWXybaYpaRJHObf",
+    "Sound Assets": "tbly3nXUNSad2HohF",
+    "Asset Relations": "tbleZoACtoY0X4ayP",
+    "Agent Work Orders": "tblc01IuqX2akAGJj",
+    "Releases": "tblbJTlaPATUKq8Mz",
+    "Market Signals": "tbl0sAjuhD5Sp70MD",
+    "Customer Feedback": "tblINizwShAn5JX0O",
+    "DAW Matrix": "tblQfACsuXEEFOc7o",
+    "Automations": "tblkSRNhIM6sZcRo0"
+  },
+  "deprecated_tables": {
+    "DL DiskLordz Automations": "tblzipUsIUdZczlB4"
+  }
+}

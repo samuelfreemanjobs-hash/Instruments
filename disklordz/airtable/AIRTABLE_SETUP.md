@@ -42,7 +42,17 @@ Then seed bootstrap data:
 python ../airtable/scripts/seed_bootstrap.py
 ```
 
-## 3. Option B — Manual base
+## 3. Active base (current)
+
+DiskLordz tables are hosted in base **`appwaEPUOCXBoq8jB`** (legacy UI name: *Business Idea Tracker*). Rename the base to **DiskLordz OS** in Airtable when convenient. Table IDs and URLs: [`ACTIVE_BASE.json`](ACTIVE_BASE.json).
+
+After PAT + egress work from the agent VM, set:
+
+```bash
+export AIRTABLE_BASE_ID=appwaEPUOCXBoq8jB
+```
+
+## 4. Option B — Manual base (greenfield)
 
 1. Create base **DiskLordz OS** in Airtable UI.  
 2. For each table in `base-schema.json`, create fields per [`FIELD_GUIDE.md`](FIELD_GUIDE.md).  
@@ -57,14 +67,14 @@ AIRTABLE_BASE_ID=app...
 5. Run `python ../airtable/scripts/verify_connection.py`  
 6. Run `seed_bootstrap.py`
 
-## 4. Verify
+## 5. Verify
 
 ```bash
 python ../airtable/scripts/verify_connection.py
 python scripts/airtable_client.py list "Product Families" --max 3
 ```
 
-## 5. Cursor Cloud Agent secrets
+## 6. Cursor Cloud Agent secrets
 
 In Cursor **environment secrets** (not git), set:
 
@@ -73,7 +83,20 @@ In Cursor **environment secrets** (not git), set:
 
 Redeploy or restart agents so Audio PM and Automation Engineer can read/write.
 
-## 6. Zapier MCP (optional)
+## 7. Zapier MCP (Cloud Agent fallback)
+
+When `api.airtable.com` is blocked on the VM, agents can bootstrap via Zapier **code actions** (`create_record_rest`, `meta_create_fields_batch`) using the connected Airtable account. See [`scripts/sync_schema_fields_zapier.md`](scripts/sync_schema_fields_zapier.md).
+
+## 8. GitHub Actions (Sprint A2)
+
+Add repository secrets for [`.github/workflows/airtable-pr-sync.yml`](../../.github/workflows/airtable-pr-sync.yml):
+
+- `AIRTABLE_API_KEY`
+- `AIRTABLE_BASE_ID` (`appwaEPUOCXBoq8jB` until you migrate bases)
+
+Merged PR titles containing `WO-YYYY-NNN` patch the matching work order to **Done** and set `github_pr`.
+
+## 9. Zapier MCP (reads/writes in chat)
 
 Your Zapier account already has **Airtable** connected. Agents can use:
 
@@ -82,7 +105,7 @@ Your Zapier account already has **Airtable** connected. Agents can use:
 
 Use the same base selected in Zapier when configuring actions.
 
-## 7. Recommended views (create in UI)
+## 11. Recommended views (create in UI)
 
 | Table | View |
 |-------|------|
@@ -92,11 +115,12 @@ Use the same base selected in Zapier when configuring actions.
 | Automations | `status != Live` for backlog |
 | Market Signals | `status = New` |
 
-## 8. Done when
+## 10. Done when
 
-- [ ] `verify_connection.py` prints all table names  
-- [ ] Seed row: `DL-FAMILY-DIGITAL-SAMPLER` exists  
-- [ ] Project `PRJ-2026-001` + Sprint A automation rows exist  
-- [ ] `.env` or Cursor secrets set (never committed)  
+- [x] All 11 DiskLordz tables in `ACTIVE_BASE.json` (bootstrap via Zapier Sep 2026)  
+- [x] Seed: `DL-FAMILY-DIGITAL-SAMPLER`, `DL-FOUNDATION-001`, `PRJ-2026-001`, `WO-2026-001` / `WO-2026-002`, automations `A1`–`A3`  
+- [ ] `verify_connection.py` passes from agent VM (needs PAT + `api.airtable.com` egress)  
+- [ ] GitHub repo secrets for Sprint A2 workflow  
+- [ ] Cursor secrets: `AIRTABLE_API_KEY`, `AIRTABLE_BASE_ID` (requested via environment setup)  
 
-Next: **Workflow Automation Engineer** — Sprint A (WO → GitHub issue).
+Next: run `wo_to_github_issue.py` locally when secrets exist; wire scheduled Zap for A1 if desired.

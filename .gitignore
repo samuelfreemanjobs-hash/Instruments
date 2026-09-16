@@ -4,4 +4,5 @@ MyFirstPlugin/build-ninja/
 .vs/
 .idea/
 disklordz/automation/.env
+disklordz/airtable/.payloads/
 disklordz/automation/.venv/

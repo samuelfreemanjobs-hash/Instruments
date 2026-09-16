@@ -46,6 +46,10 @@ def schema_field_to_airtable(field: dict, color_idx: int) -> dict:
         }
     elif at_type == "checkbox":
         out["options"] = {"icon": "check", "color": "greenBright"}
+    elif at_type == "date":
+        out["options"] = {"dateFormat": {"name": "iso", "format": "YYYY-MM-DD"}}
+    elif at_type == "number":
+        out["options"] = {"precision": 0}
     return out
 
 
