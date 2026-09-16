@@ -5,4 +5,9 @@ MyFirstPlugin/build-ninja/
 .idea/
 disklordz/automation/.env
 disklordz/airtable/.payloads/
+**/__pycache__/
+drummachines/_cache/
+drummachines/**/*.7z
+drummachines/samples/*
+!drummachines/samples/.gitkeep
 disklordz/automation/.venv/
