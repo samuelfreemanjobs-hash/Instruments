@@ -3,6 +3,7 @@
 #include "Assets/FactoryPatchLibrary.h"
 #include "Assets/RomFormat.h"
 #include "Parameters/EnvelopeParameters.h"
+#include "Parameters/FilterParameters.h"
 #include "Assets/WavePalette.h"
 
 JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioProcessor& p)
@@ -43,6 +44,18 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
 
     filterAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
         processor_.getAPVTS(), "filterResonance", filterResonanceSlider_);
+
+    filterLinkButton_.setButtonText ("F-Link");
+    filterLinkButton_.setClickingTogglesState (true);
+    addAndMakeVisible (filterLinkButton_);
+    filterLinkAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
+        processor_.getAPVTS(), jdupgraded::params::kFilterLinkId, filterLinkButton_);
+    filterLinkButton_.onClick = [this]
+    {
+        if (processor_.isFilterLinked())
+            processor_.copyGlobalFilterResonanceToAllTones();
+        updateFilterResonanceSliderVisibility();
+    };
     groupAAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
         processor_.getAPVTS(), "groupADrive", groupADriveSlider_);
     groupBAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
@@ -88,6 +101,24 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
         toneMsAttachments_[static_cast<std::size_t> (i)] =
             std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
                 processor_.getAPVTS(), msIds[i], ms);
+
+        auto& cutoff = toneCutoffSliders_[static_cast<std::size_t> (i)];
+        styleRotary (cutoff, "Cut");
+        addAndMakeVisible (cutoff);
+        toneCutoffAttachments_[static_cast<std::size_t> (i)] =
+            std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+                processor_.getAPVTS(),
+                jdupgraded::params::toneFilterParamId (i + 1, "Cutoff"),
+                cutoff);
+
+        auto& res = toneResonanceSliders_[static_cast<std::size_t> (i)];
+        styleRotary (res, "Res");
+        addAndMakeVisible (res);
+        toneResonanceAttachments_[static_cast<std::size_t> (i)] =
+            std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+                processor_.getAPVTS(),
+                jdupgraded::params::toneFilterParamId (i + 1, "Resonance"),
+                res);
 
         toneMuteButtons_[static_cast<std::size_t> (i)].setButtonText ("M" + juce::String (i + 1));
         toneMuteButtons_[static_cast<std::size_t> (i)].setClickingTogglesState (true);
@@ -158,9 +189,10 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
     addAndMakeVisible (envelopeToneCombo_);
 
     rebindEnvelopeAttachments();
+    updateFilterResonanceSliderVisibility();
 
     startTimerHz (4);
-    setSize (720, 600);
+    setSize (720, 620);
 }
 
 JDUpgradedAudioProcessorEditor::~JDUpgradedAudioProcessorEditor()
@@ -291,6 +323,16 @@ juce::String JDUpgradedAudioProcessorEditor::describeWaveForTone (int toneIndex0
     return text;
 }
 
+void JDUpgradedAudioProcessorEditor::updateFilterResonanceSliderVisibility()
+{
+    const bool linked = processor_.isFilterLinked();
+    for (auto& slider : toneResonanceSliders_)
+    {
+        slider.setEnabled (! linked);
+        slider.setAlpha (linked ? 0.45f : 1.0f);
+    }
+}
+
 void JDUpgradedAudioProcessorEditor::changeProgramByDelta (int delta)
 {
     const int count = static_cast<int> (jdupgraded::assets::FactoryPatchLibrary::getPatchCount());
@@ -354,9 +396,11 @@ void JDUpgradedAudioProcessorEditor::resized()
     programLabel_.setBounds (programRow);
 
     auto fxRow = area.removeFromTop (88);
-    const int fxW = fxRow.getWidth() / 5;
+    const int fxW = fxRow.getWidth() / 6;
     masterGainSlider_.setBounds (fxRow.removeFromLeft (fxW).reduced (4));
-    filterResonanceSlider_.setBounds (fxRow.removeFromLeft (fxW).reduced (4));
+    auto filterCol = fxRow.removeFromLeft (fxW).reduced (4);
+    filterResonanceSlider_.setBounds (filterCol.removeFromTop (filterCol.getHeight() - 22));
+    filterLinkButton_.setBounds (filterCol);
     groupADriveSlider_.setBounds (fxRow.removeFromLeft (fxW).reduced (4));
     groupBMixSlider_.setBounds (fxRow.removeFromLeft (fxW).reduced (4));
     couplingCombo_.setBounds (fxRow.reduced (4));
@@ -375,6 +419,9 @@ void JDUpgradedAudioProcessorEditor::resized()
         auto topHalf = col.removeFromTop (col.getHeight() / 2);
         toneWaveSliders_[static_cast<std::size_t> (i)].setBounds (topHalf.removeFromLeft (topHalf.getWidth() / 2).reduced (2));
         toneMultisampleSliders_[static_cast<std::size_t> (i)].setBounds (topHalf.reduced (2));
+        auto tvfRow = col.removeFromTop (col.getHeight() / 2);
+        toneCutoffSliders_[static_cast<std::size_t> (i)].setBounds (tvfRow.removeFromLeft (tvfRow.getWidth() / 2).reduced (2));
+        toneResonanceSliders_[static_cast<std::size_t> (i)].setBounds (tvfRow.reduced (2));
         toneLevelSliders_[static_cast<std::size_t> (i)].setBounds (col.reduced (2));
     }
 

@@ -5,6 +5,7 @@
 #include "BinaryData.h"
 #include "Preset/ApvtsBridge.h"
 #include "Parameters/EnvelopeParameters.h"
+#include "Parameters/FilterParameters.h"
 #include "Preset/JdPatchLayout.h"
 
 #include <cstdlib>
@@ -100,6 +101,20 @@ juce::AudioProcessorValueTreeState::ParameterLayout JDUpgradedAudioProcessor::cr
     params.push_back (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { kFilterResonanceId, 1 }, "Filter Resonance",
         juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.35f));
+
+    params.push_back (std::make_unique<juce::AudioParameterBool> (
+        juce::ParameterID { jdupgraded::params::kFilterLinkId, 1 }, "Link Filter Res", true));
+
+    const juce::NormalisableRange<float> tvfRange (0.0f, 1.0f, 0.001f);
+    for (int tone = 1; tone <= 4; ++tone)
+    {
+        params.push_back (std::make_unique<juce::AudioParameterFloat> (
+            juce::ParameterID { jdupgraded::params::toneFilterParamId (tone, "Cutoff"), 1 },
+            "Tone " + juce::String (tone) + " Cutoff", tvfRange, 1.0f));
+        params.push_back (std::make_unique<juce::AudioParameterFloat> (
+            juce::ParameterID { jdupgraded::params::toneFilterParamId (tone, "Resonance"), 1 },
+            "Tone " + juce::String (tone) + " Resonance", tvfRange, 0.35f));
+    }
 
     params.push_back (std::make_unique<juce::AudioParameterChoice> (
         juce::ParameterID { kCouplingModeId, 1 }, "Tone Coupling",
@@ -205,6 +220,7 @@ void JDUpgradedAudioProcessor::refreshCachedParameters() noexcept
     tone3LevelPtr_ = apvts_.getRawParameterValue (kTone3LevelId);
     tone4LevelPtr_ = apvts_.getRawParameterValue (kTone4LevelId);
     filterResonancePtr_ = apvts_.getRawParameterValue (kFilterResonanceId);
+    filterLinkPtr_ = apvts_.getRawParameterValue (jdupgraded::params::kFilterLinkId);
     couplingModePtr_ = apvts_.getRawParameterValue (kCouplingModeId);
     groupADrivePtr_ = apvts_.getRawParameterValue (kGroupADriveId);
     groupBMixPtr_ = apvts_.getRawParameterValue (kGroupBMixId);
@@ -233,6 +249,11 @@ void JDUpgradedAudioProcessor::refreshCachedParameters() noexcept
     for (int tone = 0; tone < 4; ++tone)
     {
         const int oneBased = tone + 1;
+        toneFilterCutoffPtrs_[static_cast<std::size_t> (tone)] = apvts_.getRawParameterValue (
+            jdupgraded::params::toneFilterParamId (oneBased, "Cutoff"));
+        toneFilterResonancePtrs_[static_cast<std::size_t> (tone)] = apvts_.getRawParameterValue (
+            jdupgraded::params::toneFilterParamId (oneBased, "Resonance"));
+
         auto& ptrs = toneEnvelopePtrs_[static_cast<std::size_t> (tone)];
         ptrs.ampAttack = apvts_.getRawParameterValue (
             jdupgraded::params::toneEnvelopeParamId (oneBased, "AmpAttack"));
@@ -256,6 +277,21 @@ void JDUpgradedAudioProcessor::refreshCachedParameters() noexcept
 bool JDUpgradedAudioProcessor::isEnvelopeLinked() const noexcept
 {
     return envelopeLinkPtr_ == nullptr || envelopeLinkPtr_->load() >= 0.5f;
+}
+
+bool JDUpgradedAudioProcessor::isFilterLinked() const noexcept
+{
+    return filterLinkPtr_ == nullptr || filterLinkPtr_->load() >= 0.5f;
+}
+
+void JDUpgradedAudioProcessor::copyGlobalFilterResonanceToAllTones() noexcept
+{
+    const float res = filterResonancePtr_ != nullptr ? filterResonancePtr_->load() : 0.35f;
+    for (int tone = 1; tone <= 4; ++tone)
+    {
+        const auto id = jdupgraded::params::toneFilterParamId (tone, "Resonance");
+        setApvtsFloat (id.toRawUTF8(), res);
+    }
 }
 
 void JDUpgradedAudioProcessor::copyGlobalEnvelopesToAllTones() noexcept
@@ -405,16 +441,18 @@ void JDUpgradedAudioProcessor::applyFactoryPatch (int index)
     {
         const auto& tone = patch.tones[static_cast<std::size_t> (t)];
         toneCoarseSemis_[static_cast<std::size_t> (t)] = tone.coarseSemis;
-        toneFilterCutoff_[static_cast<std::size_t> (t)] = tone.filterCutoffNorm;
-        toneFilterResonance_[static_cast<std::size_t> (t)] = tone.filterResonanceNorm;
 
         setApvtsFloat (levelIds[t], tone.level);
+        setApvtsFloat (jdupgraded::params::toneFilterParamId (t + 1, "Cutoff").toRawUTF8(), tone.filterCutoffNorm);
+        setApvtsFloat (jdupgraded::params::toneFilterParamId (t + 1, "Resonance").toRawUTF8(),
+                       tone.filterResonanceNorm);
         setApvtsInt (waveIds[t], static_cast<int> (tone.waveIndex));
         setApvtsInt (msIds[t], static_cast<int> (tone.multisampleSetId));
         setApvtsBool (muteIds[t], tone.level < 0.001f);
     }
 
     setApvtsFloat (kFilterResonanceId, patch.tones[0].filterResonanceNorm);
+    copyGlobalFilterResonanceToAllTones();
     applyEnvelopeDefaultsForProgram (index);
     refreshCachedParameters();
     applyPatchesFromParameters();
@@ -462,6 +500,7 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
     const jdupgraded::assets::RomBank* bank = romLoader_.getBank().isLoaded() ? &romLoader_.getBank() : nullptr;
 
     const float globalResonance = filterResonancePtr_ != nullptr ? filterResonancePtr_->load() : 0.35f;
+    const bool filterLinked = isFilterLinked();
     const float ampA = ampAttackPtr_ != nullptr ? ampAttackPtr_->load() : 0.005f;
     const float ampD = ampDecayPtr_ != nullptr ? ampDecayPtr_->load() : 0.2f;
     const float ampS = ampSustainPtr_ != nullptr ? ampSustainPtr_->load() : 0.85f;
@@ -488,8 +527,12 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
         patches[t].multisampleSetId = multisampleIds[t];
         patches[t].waveIndex = static_cast<std::uint16_t> (waveIndices[t]);
         patches[t].coarseSemis = toneCoarseSemis_[t];
-        patches[t].filterCutoffNorm = toneFilterCutoff_[t];
-        patches[t].filterResonanceNorm = globalResonance;
+        const float cutoff = toneFilterCutoffPtrs_[t] != nullptr ? toneFilterCutoffPtrs_[t]->load() : 1.0f;
+        const float resonance = filterLinked || toneFilterResonancePtrs_[t] == nullptr
+                                    ? globalResonance
+                                    : toneFilterResonancePtrs_[t]->load();
+        patches[t].filterCutoffNorm = cutoff;
+        patches[t].filterResonanceNorm = resonance;
         patches[t].level = mutes[t] ? 0.0f : levels[t];
         patches[t].phaseModDepth = 0.0f;
         patches[t].attackTimeSec = toneAmpA;
@@ -556,9 +599,17 @@ void JDUpgradedAudioProcessor::applyJdPatchCoarsePitch (const std::uint8_t* patc
         const auto base = jdupgraded::preset::kJdToneBlockOffset (t);
         const auto coarse = patch[base + jdupgraded::preset::kJdTonePitchCoarse];
         toneCoarseSemis_[t] = static_cast<float> (static_cast<int> (coarse & 0x7F) - 48);
-        toneFilterCutoff_[t] =
+
+        const int tone = static_cast<int> (t) + 1;
+        const float cutoff =
             static_cast<float> (patch[base + jdupgraded::preset::kJdToneTvfCutoff] & 0x7F) / 127.0f;
+        const float resonance =
+            static_cast<float> (patch[base + jdupgraded::preset::kJdToneTvfResonance] & 0x7F) / 127.0f;
+        setApvtsFloat (jdupgraded::params::toneFilterParamId (tone, "Cutoff").toRawUTF8(), cutoff);
+        setApvtsFloat (jdupgraded::params::toneFilterParamId (tone, "Resonance").toRawUTF8(), resonance);
     }
+
+    setApvtsBool (jdupgraded::params::kFilterLinkId, false);
 }
 
 void JDUpgradedAudioProcessor::handleMidi (const juce::MidiBuffer& midi) noexcept

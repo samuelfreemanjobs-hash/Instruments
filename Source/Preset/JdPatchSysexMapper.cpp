@@ -3,6 +3,7 @@
 #include "JdEnvelopeScale.h"
 #include "JdPatchLayout.h"
 #include "Parameters/EnvelopeParameters.h"
+#include "Parameters/FilterParameters.h"
 #include "SysExParser.h"
 
 #include <algorithm>
@@ -81,7 +82,16 @@ bool JdPatchSysexMapper::applyRawPatchBlock (juce::AudioProcessorValueTreeState&
         const int wave = jdWaveToCleanroom (patch[base + kJdToneWaveMsb], patch[base + kJdToneWaveLsb]);
         const float level = norm7 (patch[base + kJdToneTvaLevel]);
         const float resonance = norm7 (patch[base + kJdToneTvfResonance]);
+        const float cutoff = norm7 (patch[base + kJdToneTvfCutoff]);
         maxResonance = std::max (maxResonance, resonance);
+
+        const int tone = static_cast<int> (t) + 1;
+        setApvtsFloat (apvts,
+                       jdupgraded::params::toneFilterParamId (tone, "Cutoff").toRawUTF8(),
+                       cutoff);
+        setApvtsFloat (apvts,
+                       jdupgraded::params::toneFilterParamId (tone, "Resonance").toRawUTF8(),
+                       resonance);
 
         setApvtsInt (apvts, waveIds[t], wave);
         setApvtsFloat (apvts, levelIds[t], level);
@@ -141,6 +151,7 @@ bool JdPatchSysexMapper::applyRawPatchBlock (juce::AudioProcessorValueTreeState&
     setApvtsFloat (apvts, "filterRelease",
                    jdEnvelopeTimeToSeconds (patch[tone0 + kJdToneTvfEnvTime4]));
     setApvtsBool (apvts, jdupgraded::params::kEnvelopeLinkId, false);
+    setApvtsBool (apvts, jdupgraded::params::kFilterLinkId, false);
 
     return true;
 }

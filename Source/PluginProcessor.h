@@ -51,6 +51,8 @@ public:
 
     void copyGlobalEnvelopesToAllTones() noexcept;
     bool isEnvelopeLinked() const noexcept;
+    void copyGlobalFilterResonanceToAllTones() noexcept;
+    bool isFilterLinked() const noexcept;
 
 private:
     void refreshCachedParameters() noexcept;
@@ -73,8 +75,6 @@ private:
 
     std::array<float, 8192> outputScratch_{};
     std::array<float, 4> toneCoarseSemis_{};
-    std::array<float, 4> toneFilterCutoff_{ 1.0f, 1.0f, 1.0f, 1.0f };
-    std::array<float, 4> toneFilterResonance_{ 0.35f, 0.35f, 0.35f, 0.35f };
 
     int currentProgram_ = 0;
 
@@ -92,6 +92,9 @@ private:
     std::atomic<float>* tone3MultisamplePtr_ = nullptr;
     std::atomic<float>* tone4MultisamplePtr_ = nullptr;
     std::atomic<float>* filterResonancePtr_ = nullptr;
+    std::atomic<float>* filterLinkPtr_ = nullptr;
+    std::array<std::atomic<float>*, 4> toneFilterCutoffPtrs_{};
+    std::array<std::atomic<float>*, 4> toneFilterResonancePtrs_{};
     std::atomic<float>* couplingModePtr_ = nullptr;
     std::atomic<float>* groupADrivePtr_ = nullptr;
     std::atomic<float>* groupBMixPtr_ = nullptr;

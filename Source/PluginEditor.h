@@ -24,12 +24,14 @@ private:
     void styleRotary (juce::Slider& slider, const juce::String& name);
     void styleEnvSlider (juce::Slider& slider, const juce::String& name);
     void rebindEnvelopeAttachments();
+    void updateFilterResonanceSliderVisibility();
     void snapToneToPaletteCategory (int toneIndex0Based, int comboItemId);
     juce::String describeWaveForTone (int toneIndex0Based) const;
 
     JDUpgradedAudioProcessor& processor_;
     juce::Slider masterGainSlider_;
     juce::Slider filterResonanceSlider_;
+    juce::ToggleButton filterLinkButton_;
     juce::Slider groupADriveSlider_;
     juce::Slider groupBMixSlider_;
     juce::ComboBox couplingCombo_;
@@ -41,6 +43,8 @@ private:
     std::array<juce::Slider, 4> toneLevelSliders_;
     std::array<juce::Slider, 4> toneWaveSliders_;
     std::array<juce::Slider, 4> toneMultisampleSliders_;
+    std::array<juce::Slider, 4> toneCutoffSliders_;
+    std::array<juce::Slider, 4> toneResonanceSliders_;
     std::array<juce::ToggleButton, 4> toneMuteButtons_;
     std::array<juce::ComboBox, 4> tonePaletteCombos_;
     std::array<juce::Label, 4> tonePaletteLabels_;
@@ -58,12 +62,15 @@ private:
     juce::Slider filterSustainSlider_;
     juce::Slider filterReleaseSlider_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterAttachment_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> filterLinkAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> groupAAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> groupBAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> couplingAttachment_;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> toneLevelAttachments_;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> toneWaveAttachments_;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> toneMsAttachments_;
+    std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> toneCutoffAttachments_;
+    std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> toneResonanceAttachments_;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>, 4> toneMuteAttachments_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ampAttackAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ampDecayAttachment_;
