@@ -4,6 +4,8 @@
 
 **Cursor needs the OS around the workforce:** start with [`company/company-os.md`](company/company-os.md) and [`REPOSITORY_MAP.md`](REPOSITORY_MAP.md).
 
+**Airtable (system of record):** [`airtable/AIRTABLE_SETUP.md`](airtable/AIRTABLE_SETUP.md)
+
 ## Start here
 
 | Document | Purpose |

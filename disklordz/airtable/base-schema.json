@@ -65,6 +65,7 @@
       "fields": [
         { "name": "project_id", "type": "singleLineText" },
         { "name": "name", "type": "singleLineText" },
+        { "name": "product_id", "type": "singleLineText", "description": "Foreign key until record links configured" },
         {
           "name": "phase",
           "type": "singleSelect",
