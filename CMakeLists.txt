@@ -107,3 +107,23 @@ target_include_directories(JDUpgraded
         Source
         "${CMAKE_BINARY_DIR}/juce_binarydata_JDUpgradedRomData/JuceLibraryCode"
 )
+
+add_executable(OfflineRender tools/OfflineRender.cpp)
+target_link_libraries(OfflineRender
+    PRIVATE
+        JDUpgraded
+        juce::juce_audio_formats
+        juce::juce_audio_processors
+        juce::juce_audio_utils
+)
+target_include_directories(OfflineRender
+    PRIVATE
+        Source
+        "${CMAKE_BINARY_DIR}/juce_binarydata_JDUpgradedRomData/JuceLibraryCode"
+)
+target_compile_definitions(OfflineRender
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+)
+add_dependencies(OfflineRender JDUpgradedRomData)

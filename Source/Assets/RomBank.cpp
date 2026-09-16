@@ -118,6 +118,8 @@ bool RomBank::parseRom (std::span<const std::uint8_t> bytes) noexcept
             meta_[i].multisampleSetId = entry.multisampleSetId;
         else
             meta_[i].multisampleSetId = 0;
+
+        meta_[i].category = static_cast<RomWaveCategory> (entry.category % 9);
     }
 
     buildMultisampleIndex();
@@ -209,6 +211,33 @@ std::uint16_t RomBank::getMultisampleSetId (std::size_t index) const noexcept
         return 0;
 
     return meta_[index % meta_.size()].multisampleSetId;
+}
+
+RomWaveCategory RomBank::getWaveCategory (std::size_t index) const noexcept
+{
+    if (! loaded_ || meta_.empty())
+        return RomWaveCategory::analog;
+
+    return meta_[index % meta_.size()].category;
+}
+
+std::size_t RomBank::findFirstWaveInCategory (RomWaveCategory category) const noexcept
+{
+    if (! loaded_ || meta_.empty())
+        return 0;
+
+    std::size_t fallback = 0;
+    for (std::size_t i = 0; i < meta_.size(); ++i)
+    {
+        if (meta_[i].category != category)
+            continue;
+
+        fallback = i;
+        if (meta_[i].multisampleSetId == 0)
+            return i;
+    }
+
+    return fallback;
 }
 
 const dsp::PcmWaveform& RomBank::getDefaultWave() const noexcept

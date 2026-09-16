@@ -17,7 +17,15 @@ sox ref.wav plugin.wav -n trim 0 10 stat 2>&1 | head
 
 For repeatable notes, send a short MIDI clip (e.g. C4, 2 s hold) through both the reference JD plugin and JD Upgraded with the same program index.
 
+## Headless render (`OfflineRender`)
+
+```bash
+cmake --build build -j
+./build/OfflineRender /tmp/jdupg-smoke.wav 0 60 100 2.0 44100
+```
+
+Arguments: `output.wav [program] [midiNote] [velocity] [seconds] [sampleRate]`.
+
 ## Planned automation
 
-- Headless `tools/OfflineRender` target (fixed MIDI, fixed program index, WAV out)
-- FFT magnitude diff vs user-supplied reference clip
+- FFT magnitude diff vs user-supplied reference clip (CI hook)

@@ -3,6 +3,7 @@
 #include "Assets/FactoryPatchLibrary.h"
 #include "Assets/RomFormat.h"
 #include "Parameters/EnvelopeParameters.h"
+#include "Assets/WavePalette.h"
 
 JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioProcessor& p)
     : AudioProcessorEditor (&p), processor_ (p)
@@ -90,6 +91,27 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
         toneMuteAttachments_[static_cast<std::size_t> (i)] =
             std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
                 processor_.getAPVTS(), muteIds[i], toneMuteButtons_[static_cast<std::size_t> (i)]);
+
+        auto& palette = tonePaletteCombos_[static_cast<std::size_t> (i)];
+        palette.addItem ("Palette", 1);
+        palette.addItem ("Analog", 2);
+        palette.addItem ("Digital", 3);
+        palette.addItem ("Bell", 4);
+        palette.addItem ("Pluck", 5);
+        palette.addItem ("Bass", 6);
+        palette.addItem ("Noise", 7);
+        palette.addItem ("Vocal", 8);
+        palette.addItem ("Organ", 9);
+        palette.addItem ("FX", 10);
+        palette.setSelectedId (1, juce::dontSendNotification);
+        palette.onChange = [this, i]
+        {
+            snapToneToPaletteCategory (i, tonePaletteCombos_[static_cast<std::size_t> (i)].getSelectedId());
+        };
+        addAndMakeVisible (palette);
+
+        tonePaletteLabels_[static_cast<std::size_t> (i)].setJustificationType (juce::Justification::centred);
+        addAndMakeVisible (tonePaletteLabels_[static_cast<std::size_t> (i)]);
     }
 
     ampEnvLabel_.setText ("Amp ADSR", juce::dontSendNotification);
@@ -134,7 +156,7 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
     rebindEnvelopeAttachments();
 
     startTimerHz (4);
-    setSize (720, 580);
+    setSize (720, 600);
 }
 
 JDUpgradedAudioProcessorEditor::~JDUpgradedAudioProcessorEditor()
@@ -205,6 +227,66 @@ void JDUpgradedAudioProcessorEditor::rebindEnvelopeAttachments()
         processor_.getAPVTS(), filterReleaseId, filterReleaseSlider_);
 }
 
+void JDUpgradedAudioProcessorEditor::snapToneToPaletteCategory (int toneIndex0Based, int comboItemId)
+{
+    if (comboItemId < 2)
+        return;
+
+    const auto category = static_cast<jdupgraded::assets::RomWaveCategory> (comboItemId - 2);
+    const auto& bank = processor_.getRomBank();
+    std::size_t waveIndex = 0;
+    if (bank.isLoaded())
+    {
+        waveIndex = bank.findFirstWaveInCategory (category);
+    }
+    else
+    {
+        for (std::size_t i = 0; i < jdupgraded::assets::kCleanroomWaveCount; ++i)
+        {
+            if (jdupgraded::assets::categoryForWaveIndexFallback (i) == category)
+            {
+                waveIndex = i;
+                break;
+            }
+        }
+    }
+
+    const char* waveIds[4] = { "tone1Wave", "tone2Wave", "tone3Wave", "tone4Wave" };
+    const char* msIds[4] = { "tone1Multisample", "tone2Multisample", "tone3Multisample", "tone4Multisample" };
+
+    if (auto* waveParam = processor_.getAPVTS().getParameter (waveIds[toneIndex0Based]))
+        waveParam->setValueNotifyingHost (waveParam->convertTo0to1 (static_cast<float> (waveIndex)));
+
+    const std::uint16_t ms = bank.isLoaded() ? bank.getMultisampleSetId (waveIndex) : 0;
+    if (auto* msParam = processor_.getAPVTS().getParameter (msIds[toneIndex0Based]))
+        msParam->setValueNotifyingHost (msParam->convertTo0to1 (static_cast<float> (ms)));
+}
+
+juce::String JDUpgradedAudioProcessorEditor::describeWaveForTone (int toneIndex0Based) const
+{
+    const char* waveIds[4] = { "tone1Wave", "tone2Wave", "tone3Wave", "tone4Wave" };
+    const auto& bank = processor_.getRomBank();
+    int waveIndex = 0;
+    if (auto* raw = processor_.getAPVTS().getRawParameterValue (waveIds[toneIndex0Based]))
+        waveIndex = static_cast<int> (raw->load());
+
+    const auto category = bank.isLoaded()
+                              ? bank.getWaveCategory (static_cast<std::size_t> (waveIndex))
+                              : jdupgraded::assets::categoryForWaveIndexFallback (static_cast<std::size_t> (waveIndex));
+
+    juce::String text = jdupgraded::assets::categoryDisplayName (category);
+    text << " #" << (waveIndex + 1);
+
+    if (bank.isLoaded())
+    {
+        const auto ms = bank.getMultisampleSetId (static_cast<std::size_t> (waveIndex));
+        if (ms > 0)
+            text << " MS" << ms;
+    }
+
+    return text;
+}
+
 void JDUpgradedAudioProcessorEditor::changeProgramByDelta (int delta)
 {
     const int count = static_cast<int> (jdupgraded::assets::FactoryPatchLibrary::getPatchCount());
@@ -221,15 +303,37 @@ void JDUpgradedAudioProcessorEditor::timerCallback()
                            + juce::String (jdupgraded::assets::FactoryPatchLibrary::getPatchCount())
                            + "  " + patch.name,
                            juce::dontSendNotification);
+
+    for (int i = 0; i < 4; ++i)
+        tonePaletteLabels_[static_cast<std::size_t> (i)].setText (describeWaveForTone (i),
+                                                                  juce::dontSendNotification);
 }
 
 void JDUpgradedAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colour (0xff1a1a22));
     g.setColour (juce::Colours::white.withAlpha (0.85f));
-    g.drawFittedText ("Level · Wave · MS · Mute  |  Envelopes: Link or pick tone 1–4",
+    g.drawFittedText ("Palette snap per tone  |  Envelopes: Link or pick tone 1–4",
                       getLocalBounds().removeFromBottom (24),
                       juce::Justification::centred, 1);
+
+    const int colW = getWidth() / 4;
+    for (int i = 0; i < 4; ++i)
+    {
+        const char* waveIds[4] = { "tone1Wave", "tone2Wave", "tone3Wave", "tone4Wave" };
+        int waveIndex = 0;
+        if (auto* raw = processor_.getAPVTS().getRawParameterValue (waveIds[i]))
+            waveIndex = static_cast<int> (raw->load());
+
+        const auto& bank = processor_.getRomBank();
+        const auto category = bank.isLoaded()
+                                  ? bank.getWaveCategory (static_cast<std::size_t> (waveIndex))
+                                  : jdupgraded::assets::categoryForWaveIndexFallback (static_cast<std::size_t> (waveIndex));
+
+        auto stripe = juce::Rectangle<int> (i * colW + 12, 28, colW - 24, 4);
+        g.setColour (jdupgraded::assets::categoryAccentColour (category));
+        g.fillRect (stripe);
+    }
 }
 
 void JDUpgradedAudioProcessorEditor::resized()
@@ -258,6 +362,8 @@ void JDUpgradedAudioProcessorEditor::resized()
     for (int i = 0; i < 4; ++i)
     {
         auto col = toneRow.removeFromLeft (colW).reduced (4);
+        tonePaletteLabels_[static_cast<std::size_t> (i)].setBounds (col.removeFromBottom (16));
+        tonePaletteCombos_[static_cast<std::size_t> (i)].setBounds (col.removeFromBottom (22));
         toneMuteButtons_[static_cast<std::size_t> (i)].setBounds (col.removeFromBottom (22));
         auto topHalf = col.removeFromTop (col.getHeight() / 2);
         toneWaveSliders_[static_cast<std::size_t> (i)].setBounds (topHalf.removeFromLeft (topHalf.getWidth() / 2).reduced (2));

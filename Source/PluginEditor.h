@@ -24,6 +24,8 @@ private:
     void styleRotary (juce::Slider& slider, const juce::String& name);
     void styleEnvSlider (juce::Slider& slider, const juce::String& name);
     void rebindEnvelopeAttachments();
+    void snapToneToPaletteCategory (int toneIndex0Based, int comboItemId);
+    juce::String describeWaveForTone (int toneIndex0Based) const;
 
     JDUpgradedAudioProcessor& processor_;
     juce::Slider masterGainSlider_;
@@ -39,6 +41,8 @@ private:
     std::array<juce::Slider, 4> toneWaveSliders_;
     std::array<juce::Slider, 4> toneMultisampleSliders_;
     std::array<juce::ToggleButton, 4> toneMuteButtons_;
+    std::array<juce::ComboBox, 4> tonePaletteCombos_;
+    std::array<juce::Label, 4> tonePaletteLabels_;
     juce::Label ampEnvLabel_;
     juce::Label filterEnvLabel_;
     juce::ToggleButton envelopeLinkButton_;

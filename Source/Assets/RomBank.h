@@ -33,6 +33,10 @@ public:
     const dsp::PcmWaveform& getWave (std::size_t index) const noexcept;
     float getRootMidiNote (std::size_t index) const noexcept;
     std::uint16_t getMultisampleSetId (std::size_t index) const noexcept;
+    RomWaveCategory getWaveCategory (std::size_t index) const noexcept;
+
+    /** First standalone (non-multisample) wave in category, or first wave in category if none. */
+    std::size_t findFirstWaveInCategory (RomWaveCategory category) const noexcept;
 
     WaveSelection selectForNote (std::uint16_t multisampleSetId, std::uint8_t midiNote) const noexcept;
     WaveSelection selectFixedWave (std::size_t waveIndex) const noexcept;
@@ -49,6 +53,7 @@ private:
     {
         float rootMidiNote = 60.0f;
         std::uint16_t multisampleSetId = 0;
+        RomWaveCategory category = RomWaveCategory::analog;
     };
 
     std::vector<float> pcmPool_;

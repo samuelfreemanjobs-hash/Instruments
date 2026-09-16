@@ -25,9 +25,9 @@ cmake --build build -j
 3. ~~**SysEx (partial)**~~ — `JdPatchSysexMapper` maps 384-byte JD patch block → APVTS; MIDI SysEx in `processBlock`
 4. ~~**UI (envelopes)**~~ — global Amp/Filter ADSR in APVTS + editor (shared across 4 tones)
 5. ~~**UI (per-tone env)**~~ — `toneN*` ADSR params, **Link** toggle, tone selector in editor
-6. **UI** — palette link (wave category colors / ROM browser)
+6. ~~**UI (palette)**~~ — category colors, palette snap combo, wave labels from ROM metadata
 7. **User dump loader** — separate legal review; only JDUPGROM in installer
-8. **A/B harness** — see `docs/AB_HARNESS.md` (manual workflow; headless render TBD)
+8. ~~**A/B harness (partial)**~~ — `OfflineRender` CLI; spectral diff still TBD
 
 ## Key paths
 
