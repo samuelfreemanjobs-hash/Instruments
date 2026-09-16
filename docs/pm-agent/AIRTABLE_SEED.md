@@ -1,7 +1,10 @@
 # Airtable seed — Disklordz first run
 
-Run these in **Claude Project (Disklordz Audio PM Agent)** with **Airtable MCP** when connected.  
-*(Cloud Agent Zapier hit task limit 2026-09-16; writes must be done from your Claude session or after quota reset.)*
+**Preferred:** [CLAUDE_SETUP.md](CLAUDE_SETUP.md) — MCP config + Project paste bundle.
+
+**Or terminal:** `python3 scripts/sync_disklordz_pm_to_airtable.py` (needs `AIRTABLE_API_KEY`).
+
+**Or Claude chat** (with Airtable MCP connected):
 
 ---
 
