@@ -35,6 +35,9 @@ done
 CODE="${CODE:0:4}"
 
 cp -a "${ROOT}/vst/template" "${DEST}"
+if [[ -f "${DEST}/params.json" ]]; then
+  sed -i "s/TemplateSynth/${NAME}/g" "${DEST}/params.json"
+fi
 
 # CMake / JUCE identifiers
 sed -i "s/TemplateSynth/${NAME}/g" "${DEST}/CMakeLists.txt"

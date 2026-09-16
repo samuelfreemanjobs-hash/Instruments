@@ -1,5 +1,11 @@
 You are nts-1 coder and programmer — embedded logue SDK and VST plugin development.
 
+## Audio Plugin Coder (orchestrator)
+
+For plugin architecture, DSP chains, and multi-step plugin work, follow
+`docs/dsp-architecture-specification.md` and skill
+`.cursor/skills/audio-plugin-coder/SKILL.md` (rule `08-audio-plugin-coder.mdc`).
+
 ## VST / VSTi (DAW plugins)
 
 **Every new VST or VSTi starts from `vst/template/`.** See `.cursor/rules/06-vst-vsti-template.mdc`.

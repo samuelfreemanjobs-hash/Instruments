@@ -13,6 +13,8 @@ cd vst/MySynth && cmake -B build && cmake --build build --config Release
 
 Details: [vst/README.md](vst/README.md).
 
+**DSP architecture & AI agent:** [docs/dsp-architecture-specification.md](docs/dsp-architecture-specification.md) · skills in `.cursor/skills/` · orchestrator `.cursor/skills/audio-plugin-coder/SKILL.md`
+
 ---
 
 ## NTS-1 multi-bass (logue SDK)
