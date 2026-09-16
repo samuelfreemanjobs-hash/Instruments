@@ -15,28 +15,43 @@
 - ~2 GB RAM free (Postgres + Redis + app + worker)
 - Ports **8080** free on the host
 
-## Quick start
+## Quick start (studio machine)
+
+Run on a machine with **Docker** (not the Cursor Cloud Agent VM — it has no Docker).
+
+**One command:**
+
+```bash
+cd infra/activepieces
+chmod +x bootstrap.sh
+./bootstrap.sh
+```
+
+This copies `.env.example` → `.env` (if missing), generates `AP_ENCRYPTION_KEY`, `AP_JWT_SECRET`, `AP_API_KEY`, and `AP_POSTGRES_PASSWORD`, then `docker compose up -d`.
+
+**Manual** (same result):
 
 ```bash
 cd infra/activepieces
 cp .env.example .env
-```
-
-Generate secrets (run three times, paste into `.env`):
-
-```bash
-openssl rand -hex 16   # AP_ENCRYPTION_KEY (32 hex chars)
-openssl rand -hex 16   # AP_JWT_SECRET
-openssl rand -hex 32   # AP_API_KEY (optional in CE; set anyway)
-```
-
-Set `AP_POSTGRES_PASSWORD` to a strong password.
-
-```bash
+# openssl rand -hex 16  → AP_ENCRYPTION_KEY (32 hex chars)
+# openssl rand -hex 32  → AP_JWT_SECRET, AP_POSTGRES_PASSWORD, AP_API_KEY
 docker compose up -d
 ```
 
 Open **http://localhost:8080** → create admin account → sign in.
+
+### Remote access (optional)
+
+Keep `AP_FRONTEND_URL` in `.env` equal to the URL you actually use in the browser (e.g. `https://pieces.yourdomain.com`), then put TLS in front:
+
+| Method | Notes |
+|--------|--------|
+| **Tailscale** | Serve `8080` on the tailnet only — simplest for a solo studio |
+| **Cloudflare Tunnel** | Public HTTPS without opening ports |
+| **Caddy / nginx** | Reverse proxy to `localhost:8080` |
+
+Do not expose plain `8080` on the public internet.
 
 ## Disklordz flows to build (in UI)
 
@@ -54,7 +69,12 @@ curl -X POST "$ACTIVEPIECES_FACTORY_WEBHOOK_URL" \
   -d '{"kit_name":"GRAVEYARD_SHIFT","count":26,"repo":"Instruments"}'
 ```
 
-(Add `ACTIVEPIECES_FACTORY_WEBHOOK_URL` to your shell or `tools/.env` locally.)
+Set the webhook URL for the factory (same value Activepieces shows on the Webhook trigger):
+
+```bash
+export DISKLORDZ_ACTIVEPIECES_WEBHOOK="https://your-host/api/v1/webhooks/..."
+# or pass: python3 tools/render_kit.py ... --activepieces-webhook "$DISKLORDZ_ACTIVEPIECES_WEBHOOK"
+```
 
 ### 2. Airtable — mirror PM sync (optional)
 
