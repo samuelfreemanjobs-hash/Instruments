@@ -141,6 +141,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout JDUpgradedAudioProcessor::cr
         juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.0f));
 
     params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { jdupgraded::params::kGroupAPhaserId, 1 }, "Group A Phaser",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.0f));
+
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { jdupgraded::params::kGroupBDelayId, 1 }, "Group B Delay",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.0f));
+
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { kExpressionDepthId, 1 }, "Expression to Filter",
         juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.35f));
 
@@ -246,6 +254,8 @@ void JDUpgradedAudioProcessor::refreshCachedParameters() noexcept
     groupAEnablePtr_ = apvts_.getRawParameterValue (jdupgraded::params::kGroupAEnableId);
     groupBEnablePtr_ = apvts_.getRawParameterValue (jdupgraded::params::kGroupBEnableId);
     groupBChorusPtr_ = apvts_.getRawParameterValue (jdupgraded::params::kGroupBChorusId);
+    groupAPhaserPtr_ = apvts_.getRawParameterValue (jdupgraded::params::kGroupAPhaserId);
+    groupBDelayPtr_ = apvts_.getRawParameterValue (jdupgraded::params::kGroupBDelayId);
     tone1WavePtr_ = apvts_.getRawParameterValue (kTone1WaveId);
     tone2WavePtr_ = apvts_.getRawParameterValue (kTone2WaveId);
     tone3WavePtr_ = apvts_.getRawParameterValue (kTone3WaveId);
@@ -761,9 +771,15 @@ void JDUpgradedAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     const float groupBMix = groupBOn && groupBMixPtr_ != nullptr ? groupBMixPtr_->load() : 0.0f;
     const float groupBChorus = groupBOn && groupBChorusPtr_ != nullptr ? groupBChorusPtr_->load() : 0.0f;
 
+    const float groupAPhaser =
+        groupAOn && groupAPhaserPtr_ != nullptr ? groupAPhaserPtr_->load() : 0.0f;
+    const float groupBDelay = groupBOn && groupBDelayPtr_ != nullptr ? groupBDelayPtr_->load() : 0.0f;
+
     groupA_.setDrive (groupADrive);
+    groupA_.setPhaserMix (groupAPhaser);
     groupB_.setMix (groupBMix);
     groupB_.setChorus (groupBChorus);
+    groupB_.setDelayMix (groupBDelay);
 
     for (int i = 0; i < buffer.getNumSamples(); ++i)
     {

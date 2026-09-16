@@ -29,6 +29,8 @@ inline constexpr std::size_t kJdCommonLayerToneMask = 33;
 inline constexpr std::size_t kJdEffectGroupABlock1Sw = 2;
 inline constexpr std::size_t kJdEffectGroupBBlock3Sw = 8;
 inline constexpr std::size_t kJdEffectDistortionDrive = 11;
+inline constexpr std::size_t kJdEffectPhaserMix = 17;
+inline constexpr std::size_t kJdEffectDelayLeftLevel = 30;
 inline constexpr std::size_t kJdEffectChorusLevel = 38;
 inline constexpr std::size_t kJdEffectReverbLevel = 44;
 

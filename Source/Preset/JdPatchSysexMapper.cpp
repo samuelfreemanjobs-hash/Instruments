@@ -70,11 +70,15 @@ bool JdPatchSysexMapper::applyRawPatchBlock (juce::AudioProcessorValueTreeState&
     const float groupADrive = norm7 (patch[effectBase + kJdEffectDistortionDrive]);
     const float groupBMix = norm7 (patch[effectBase + kJdEffectReverbLevel]);
     const float groupBChorus = norm7 (patch[effectBase + kJdEffectChorusLevel]);
+    const float groupAPhaser = norm7 (patch[effectBase + kJdEffectPhaserMix]);
+    const float groupBDelay = norm7 (patch[effectBase + kJdEffectDelayLeftLevel]);
     const bool groupAOn = (patch[effectBase + kJdEffectGroupABlock1Sw] & 0x7F) != 0;
     const bool groupBOn = (patch[effectBase + kJdEffectGroupBBlock3Sw] & 0x7F) != 0;
     setApvtsFloat (apvts, "groupADrive", groupADrive);
     setApvtsFloat (apvts, "groupBMix", groupBMix);
     setApvtsFloat (apvts, jdupgraded::params::kGroupBChorusId, groupBChorus);
+    setApvtsFloat (apvts, jdupgraded::params::kGroupAPhaserId, groupAPhaser);
+    setApvtsFloat (apvts, jdupgraded::params::kGroupBDelayId, groupBDelay);
     setApvtsBool (apvts, jdupgraded::params::kGroupAEnableId, groupAOn);
     setApvtsBool (apvts, jdupgraded::params::kGroupBEnableId, groupBOn);
 

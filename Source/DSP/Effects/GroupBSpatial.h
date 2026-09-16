@@ -19,6 +19,8 @@ public:
         sampleRate_ = sampleRate > 0.0 ? sampleRate : 44100.0;
         delaySamples_ = static_cast<std::size_t> (sampleRate_ * 0.028);
         delaySamples_ = std::min (delaySamples_, kMaxDelaySamples - 1);
+        delayTapSamples_ = static_cast<std::size_t> (sampleRate_ * 0.18);
+        delayTapSamples_ = std::min (delayTapSamples_, kMaxDelaySamples - 1);
         chorusInc_ = static_cast<float> (6.283185307179586 * 0.65 / sampleRate_);
         reset();
     }
@@ -34,8 +36,18 @@ public:
 
     void setChorus (float norm) noexcept { chorus_ = std::clamp (norm, 0.0f, 1.0f); }
 
+    void setDelayMix (float norm) noexcept { delayMix_ = std::clamp (norm, 0.0f, 1.0f); }
+
     void processStereo (float& left, float& right) noexcept
     {
+        if (delayMix_ > 1.0e-5f)
+        {
+            const auto read = (writeIndex_ + kMaxDelaySamples - delayTapSamples_) % kMaxDelaySamples;
+            const float tap = buffer_[read];
+            left += tap * delayMix_ * 0.5f;
+            right += tap * delayMix_ * 0.5f;
+        }
+
         if (mix_ <= 1.0e-5f)
             return;
 
@@ -80,6 +92,8 @@ private:
     std::size_t delaySamples_ = 1200;
     std::size_t writeIndex_ = 0;
     float mix_ = 0.0f;
+    float delayMix_ = 0.0f;
+    std::size_t delayTapSamples_ = 8000;
     float chorus_ = 0.0f;
     float chorusPhase_ = 0.0f;
     float chorusInc_ = 0.0001f;

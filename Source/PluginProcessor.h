@@ -108,6 +108,8 @@ private:
     std::atomic<float>* groupAEnablePtr_ = nullptr;
     std::atomic<float>* groupBEnablePtr_ = nullptr;
     std::atomic<float>* groupBChorusPtr_ = nullptr;
+    std::atomic<float>* groupAPhaserPtr_ = nullptr;
+    std::atomic<float>* groupBDelayPtr_ = nullptr;
     std::atomic<float>* tone1MutePtr_ = nullptr;
     std::atomic<float>* tone2MutePtr_ = nullptr;
     std::atomic<float>* tone3MutePtr_ = nullptr;

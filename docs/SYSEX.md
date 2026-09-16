@@ -24,6 +24,8 @@ Patch layout follows documented JD-800 structure:
 | Effect distortion drive | `groupADrive` |
 | Effect reverb level | `groupBMix` |
 | Effect chorus level | `groupBChorus` |
+| Effect phaser mix | `groupAPhaser` |
+| Effect delay left level | `groupBDelay` |
 | Group A distortion block switch | `groupAEnable` |
 | Group B reverb block switch | `groupBEnable` |
 | Tone waveform MSB/LSB | `toneNWave` (scaled to 0–255) |
