@@ -20,6 +20,6 @@ distributing the built unit.
 
 ## mkII / NTS-3 (v2.x)
 
-This scaffold targets **v1.1.0** layouts under `src/`. For mkII and NTS-3, use the
-SDK v2 project templates and websim; port DSP from `src/shared` and unit algorithms
-as needed. See `.cursor/rules/03-build-targets.mdc`.
+v1 units live under `src/oscillators/`. mkII projects are generated under
+`src/mkii/oscillators/` via `tools/mkii/scaffold-mkii.py` and built with
+`tools/build-mkii.sh`. See [nts1-mkii-porting.md](nts1-mkii-porting.md).

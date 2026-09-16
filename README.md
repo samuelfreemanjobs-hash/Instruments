@@ -28,6 +28,19 @@ Each unit is **multifunction** (mainly **Vibe**) and ships **presets** in
 
 Full guide: [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md)
 
+### NTS-1 mkII (SDK v2)
+
+mkI units above use logue SDK **v1.1.0**. For **NTS-1 mkII**, scaffold and build
+`.nts1mkiiunit` files from `src/mkii/oscillators/`:
+
+```bash
+export LOGUE_SDK=/path/to/logue-sdk
+python3 tools/mkii/scaffold-mkii.py --all-bass
+./tools/build-mkii.sh tr808_kick_phonk
+```
+
+See [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
+
 ## Quick start
 
 1. Clone [logue-sdk](https://github.com/korginc/logue-sdk) and set `LOGUE_SDK`.
