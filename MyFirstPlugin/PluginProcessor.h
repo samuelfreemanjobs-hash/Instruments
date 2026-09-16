@@ -5,9 +5,7 @@
 #include <array>
 
 //==============================================================================
-/** Stereo effect: state-variable lowpass, tube-style saturation, LFO -> cutoff.
-    Processor-only phase: use GenericAudioProcessorEditor or a custom editor later.
-*/
+/** Stereo effect: state-variable lowpass, tube-style saturation, LFO -> cutoff. */
 class MyFirstPluginAudioProcessor : public juce::AudioProcessor
 {
 public:

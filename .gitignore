@@ -1,0 +1,5 @@
+MyFirstPlugin/build/
+MyFirstPlugin/build-ninja/
+*.user
+.vs/
+.idea/

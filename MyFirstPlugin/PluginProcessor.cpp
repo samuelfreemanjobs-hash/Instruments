@@ -1,4 +1,5 @@
 #include "PluginProcessor.h"
+#include "PluginEditor.h"
 
 namespace
 {
@@ -291,7 +292,7 @@ bool MyFirstPluginAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* MyFirstPluginAudioProcessor::createEditor()
 {
-    return new juce::GenericAudioProcessorEditor(*this);
+    return new MyFirstPluginAudioProcessorEditor(*this);
 }
 
 void MyFirstPluginAudioProcessor::getStateInformation(juce::MemoryBlock& destData)

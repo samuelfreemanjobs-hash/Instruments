@@ -102,4 +102,18 @@ Copy the bundle into your DAW’s VST3 folder and rescan.
 - **`juce::LinearSmoothedValue`** on automatable controls
 - **`juce::dsp::StateVariableTPTFilter`** + tube saturation + LFO → cutoff (real-time safe)
 
-`GenericAudioProcessorEditor` is a temporary UI until you add `PluginEditor`.
+Custom **`PluginEditor`** with APVTS rotary controls is included.
+
+## Quality-of-life in this repo
+
+| Feature | Purpose |
+|--------|---------|
+| `Build Plugin.bat` / `build-menu.ps1` | CMake without memorizing commands |
+| `CMakePresets.json` | Same configure in Visual Studio and scripts |
+| `check-env.ps1` | Verifies CMake, MSVC, Git before first build |
+| `MYFIRSTPLUGIN_COPY_AFTER_BUILD` | Optional auto-copy VST3 to the OS plugin folder |
+| `.clangd` + `compile_commands.json` | Better go-to-definition in **Cursor** (after configure) |
+| `.github/workflows/build-plugin.yml` | CI on Windows + Linux |
+| `NEW_PLUGIN.md` | Rename / fork checklist for your next VST or VSTi |
+
+**Possible next steps (not in repo yet):** pin JUCE with `GIT_TAG` you trust; add `Pluginval` in CI; split synth template (`IS_SYNTH TRUE`) as a second target when you need a VSTi.

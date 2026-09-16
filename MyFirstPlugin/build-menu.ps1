@@ -31,6 +31,7 @@ do {
     Write-Host "  3  Configure + Build (all-in-one)"
     Write-Host "  4  Open VST3 folder in File Explorer"
     Write-Host "  5  Open this folder in Visual Studio (CMake)"
+    Write-Host "  6  Check prerequisites (CMake, MSVC, Git)"
     Write-Host "  Q  Quit"
     Write-Host ""
     $choice = Read-Host "Choose"
@@ -58,6 +59,9 @@ do {
             } else {
                 explorer.exe "/select,$vst"
             }
+        }
+        "6" {
+            & (Join-Path $Root "check-env.ps1")
         }
         "5" {
             $devenv = @(
