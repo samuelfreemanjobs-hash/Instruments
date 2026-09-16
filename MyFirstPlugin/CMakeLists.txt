@@ -25,6 +25,7 @@ juce_add_plugin(MyFirstPlugin
 )
 
 target_sources(MyFirstPlugin PRIVATE
+    ParameterIds.h
     PluginProcessor.h
     PluginProcessor.cpp
 )
@@ -32,6 +33,7 @@ target_sources(MyFirstPlugin PRIVATE
 target_link_libraries(MyFirstPlugin PRIVATE
     juce::juce_audio_utils
     juce::juce_audio_processors
+    juce::juce_dsp
 )
 
 target_compile_definitions(MyFirstPlugin
