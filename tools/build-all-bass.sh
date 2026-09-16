@@ -22,6 +22,7 @@ UNITS=(
   oscillators/cardo-gfunk
   oscillators/larry-june
   oscillators/khalifa-haze
+  oscillators/memphis-juicy
 )
 
 for unit in "${UNITS[@]}"; do

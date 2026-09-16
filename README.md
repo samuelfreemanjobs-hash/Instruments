@@ -20,6 +20,7 @@ Prologue). Each oscillator is a separate unit you load when you need that sound.
 | [`cardo-gfunk`](src/oscillators/cardo-gfunk/) | **Cardo GF** | Sub + warm mid late-night G-funk bass |
 | [`larry-june`](src/oscillators/larry-june/) | **Larry June** | Laid-back rubbery PWM Bay cruise bass |
 | [`khalifa-haze`](src/oscillators/khalifa-haze/) | **Khalifa Haze** | Warm floating cloud sub for stoner-rap |
+| [`memphis-juicy`](src/oscillators/memphis-juicy/) | **Juicy 36** | Memphis trunk sub + tape (layer under kick) |
 
 Each unit is **multifunction** (mainly **Vibe**) and ships **presets** in
 `manifest.json` → `_agent.presets` (knob values 0–100).
