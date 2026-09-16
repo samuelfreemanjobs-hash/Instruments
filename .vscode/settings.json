@@ -1,6 +1,0 @@
-{
-  "cmake.sourceDirectory": "${workspaceFolder}/MyFirstPlugin",
-  "cmake.buildDirectory": "${workspaceFolder}/MyFirstPlugin/build",
-  "cmake.configureOnOpen": true,
-  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
-}
