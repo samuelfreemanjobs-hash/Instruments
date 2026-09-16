@@ -2,6 +2,8 @@
 
 This document distills the January Gemini archives (**Master Dossier**, **Chat Compendium**, **Autonomous Enterprise**) into something you can actually build in this repo—without Agent Zero, fake dashboards, or 15-agent theater.
 
+**Sample pack brand (phonk/trap chat):** [DISKLORDZ_SAMPLE_PACK_BRAND.md](DISKLORDZ_SAMPLE_PACK_BRAND.md) · **Hardware sessions:** [DISKLORDZ_CAPTURE_LIST.md](DISKLORDZ_CAPTURE_LIST.md)
+
 ## What we kept
 
 | Idea | Role |

@@ -1,82 +1,120 @@
-# Building the Disklordz sample pack brand (keep / ditch)
+# Disklordz sample pack brand (from chat transcript)
 
-This distills **“Building the Disklordz Sample Pack Brand”**-style chats and the January archives into what belongs in *this* repo and business—not another autonomous stack.
-
-> If you have a longer transcript with unique details (pricing, genre lane, visual refs), paste it into Cursor or add bullets under [Your lane](#your-lane) below.
+Source: *Building the Disklordz Sample Pack Brand* chat. Everything else from January (swarms, Ralph, A2UI) stays **out**—see [DISKLORDZ_BLUEPRINT.md](DISKLORDZ_BLUEPRINT.md).
 
 ---
 
-## What to **keep** (brand + packs)
+## Keep — this is the brand
 
-### Positioning (one sentence)
+### Identity
 
-**Procedural, hardware-flavored drums** (808 / phonk / trap) with measurable low end—not generic loop chops.
+| Field | Decision |
+|--------|----------|
+| **Name** | **Disklordz** |
+| **Lane** | **OG Memphis phonk** + **hard, gritty trap** |
+| **Hero sound** | TR-808 character through **12-bit** (SP-1200 / MPC class): knock, hiss, aliasing, tape floor |
+| **Audience** | Producers who want **hardware soul**, not polished digital-only packs |
+| **Tone** | Underground, authoritative, crate-digger—no corporate marketing speak |
 
-### Product rules
+### Sonic blueprint (what to design toward)
 
-| Rule | Why |
-|------|-----|
-| **Consistent kit structure** | e.g. `Kicks/`, `808s/`, `Snares/`, `Hats/`, `Perc/`, `FX/` + root `README.txt` |
-| **Naming** | `DISKLORDZ_<KIT>_<TYPE>_<NNN>.wav` (sortable, grep-friendly) |
-| **Technical delivery** | 44.1 or 48 kHz, 24-bit WAV for sale; document peak/LUFS in `qc.json` per batch |
-| **DNA in SQLite** | `tools/render_kit.py` → `sample_dna` (params + metrics); optional human `user_rating` later |
-| **Reference lane** | Profile 5–10 kicks you love → `profile_references.py` → match scores for QC |
-| **Scarcity** | Marketing *choice* (limited run, “legacy” kit name)—enforce in **store**, not Python loops |
-| **Licensing** | Short `LICENSE.txt`: royalty-free for beats, no redistribution of raw files |
+- **Kicks:** Short, boxy punch; saturation on tail; “Memphis thump” (DR-660 style clipping optional on capture kits).
+- **808s:** Trap = short/punchy; phonk = long sustains + glides; **parallel grit** so sub stays felt while mids scream.
+- **Snares/claps:** Layered, bit-crushed, Tommy Wright–style bark on OG kits.
+- **Cowbells:** 808 cowbell; tuned (e.g. to C); freq shift + crush for phonk leads.
+- **Hats:** Sizzle + sample-rate reduction / metallic sampler texture.
+- **Textures:** Tape hiss, vinyl floor, cassette noise beds (folder of FX, not every kit needs vocals).
 
-### Visual / copy (lightweight)
+### Technical delivery
 
-From the archives, keep **words**, not dashboards:
+| Rule | Notes |
+|------|--------|
+| **Format** | **24-bit WAV**, 44.1 kHz (48 kHz OK if consistent) |
+| **One-shots** | Peaks around **−3 to −6 dBFS** while designing; **master** for sale at **≤ −0.3 dBFS true peak** (run sheet / future QC) |
+| **Curation** | **Quality > count**; ~**100–150** pieces is a solid *pro* phonk/trap kit, not 500 fillers |
+| **Folders** | `01_Kicks`, `02_808s` (key in filename), `03_Snares_Claps`, `04_Perc`, `05_Loops` (140–160 BPM if included), `06_FX` |
+| **Legal** | **100% original**; no re-selling processed third-party kit audio; ship **LICENSE.txt** (royalty-free for beats, no redistribution) |
 
-- **Look:** obsidian / gold, minimal, “luxury utility” (cover + 3 preview waveforms beats long lore)
-- **Copy:** one wedge hook (community language), 5 bullet “what’s inside,” specs line (e.g. “48k / true peak −0.3 dB”)
-- **Launch:** 4-Square run sheet ([DISKLORDZ_RUN_SHEET.md](DISKLORDZ_RUN_SHEET.md))—you approve ZIP and listing
+### Two production paths (both valid)
 
-### Engine alignment
+1. **Hardware capture** — your gear list + Sector 01 checklist → [DISKLORDZ_CAPTURE_LIST.md](DISKLORDZ_CAPTURE_LIST.md)  
+2. **Math factory** — `tools/render_kit.py` for SP-1200-ish 808s, cowbells, hats (same DNA in SQLite)
 
-| Asset | Tool |
-|-------|------|
-| Pack factory | `tools/render_kit.py`, future `qc_master.py` |
-| “Hero” playable instrument | Disklordz Drum VSTi (fork `MyFirstSynth`) |
-| Architecture | [DISKLORDZ_BLUEPRINT.md](DISKLORDZ_BLUEPRINT.md) |
+Flagship kits can combine: **synthesized core + hardware-texture layers** you record.
 
-### Optional later (only when revenue exists)
+### OG processing recipes (keep)
 
-- Gumroad / BeatStars / Shopify listing + scarcity counter  
-- Affiliate tiers (20–40%) for **named** producers—not bot recruitment  
-- FTC-style `#ad` on paid posts (Compliance prompt once, in Cursor—not an agent)
+**45 RPM resample trick**
+
+1. Pitch hit up +7 to +12 semitones  
+2. Bitcrush **12-bit / ~26 kHz** (SP-1200)  
+3. Bounce  
+4. Pitch back down for aliasing / dust  
+
+**VST chain ideas** (when not using outboard): RX1200 / Decimort, RC-20 / tape, Decapitator / Saturn for drive.
+
+### Go-to-market (keep, manual)
+
+| Tactic | Use |
+|--------|-----|
+| **Teaser / lite kit** | 10–15 sounds for email list |
+| **Demo track** | ~1 min, **only** this kit’s sounds |
+| **Cover** | Strong visual—phonk often buys with eyes; **pick one line:** Xerox/cassette B&W *or* obsidian/gold, not both in one pack |
+| **Channels** | Start **Gumroad/Shopify** (margin) or **BeatStars**; Splice/Loopmasters/ADSR only if you want marketplace reach (they take a cut) |
+
+### First kit name ideas (from chat)
+
+- **GRAVEYARD SHIFT** — OG Memphis  
+- **BLOODLINE 808s** — 808-focused trap  
+- **CRYPTID: Raw Voltage** — modern industrial trap  
+
+Pick one for Sector / factory v1.
+
+### Brand prompt for other AI (trimmed)
+
+Save as `docs/DISKLORDZ_BRAND_PROMPT.txt` or paste into Cursor:
+
+```text
+You are a brand/creative partner for Disklordz—underground Memphis phonk and gritty trap sample packs.
+
+Identity: Raw, OG, 12-bit crunch, SP-1200/MPC-style 808s, tape hiss, aggressive knock.
+Audience: Producers who want hardware character over sterile digital kits.
+Visual: High-contrast, 90s cassette/underground OR minimal obsidian (match the kit).
+Voice: Crate-digger, studio veteran—no fluff.
+
+Task: [INSERT TASK]
+```
 
 ---
 
-## What to **ditch** (common in brand chats + archives)
+## Ditch — from this transcript (don’t operationalize)
 
-| Idea | Why ditch |
-|------|-----------|
-| Fake “live sales” UI / swarm monitor | Misleading; no operational value |
-| Auto social scraping as “discovery” | Legal/noise; you pick the lane (phonk, trap, etc.) |
-| 15-agent launch fleet / Ralph / A2UI / Appflowy | Cursor + run sheet is enough |
-| Freeman–Halbert “v8” as code | Run copy prompts ad hoc when listing |
-| Simulated testimonials / buyer names in UI | Brand risk |
-| Vital/Serum pack factory **in v1** | Different product; defer unless presets are the SKU |
-| “1 kit every 24h autonomous” KPI | Adopt after factory + QC are boringly reliable |
-| Agent Zero packaging GTM while you sleep | Same as above |
-
----
-
-## Your lane (fill in)
-
-- **Primary genre:** _e.g. Memphis phonk / dark trap_  
-- **Price band:** _e.g. $29–47 intro, $79 bundle_  
-- **First kit codename:** _e.g. OBSIDIAN_RAW_V1_  
-- **Store:** _Gumroad / BeatStars / …_  
+| Chat suggestion | Why ditch / defer |
+|-----------------|-------------------|
+| “AI as production team” that makes kits for you | **You** capture / approve; Cursor helps spec, code, copy—not autonomous packs |
+| **Memphis vocal stabs** in v1 | Different legal/source workflow; add only with clear rights |
+| **Loops as required** for kit v1 | Optional folder; phonk one-shots often sell without loops |
+| **Marketplace-first** (Splice etc.) | Optional; not the default ops model |
+| **Conflicting visual briefs** (Xerox B&W vs luxury obsidian) | Choose per **kit line**, not one swarm UI |
+| Generic “how to start a sample business” without Disklordz lane | Already decided: phonk/trap + Disklordz |
+| Listing every VST by name as **requirements** | Recommendations only; use what you own |
 
 ---
 
-## Minimum path to “real brand”
+## Repo hooks
 
-1. Merge blueprint + `tools/` (PR [#12](https://github.com/samuelfreemanjobs-hash/Instruments/pull/12)).  
-2. Render one kit → listen → fix synthesis in code.  
-3. Add QC (LUFS/peak) → ship ZIP + cover + listing.  
-4. Ship **Disklordz Drum** VSTi as the premium tier (same DNA as packs).
+| Doc / tool | Role |
+|------------|------|
+| [DISKLORDZ_RUN_SHEET.md](DISKLORDZ_RUN_SHEET.md) | Release checklist |
+| [DISKLORDZ_CAPTURE_LIST.md](DISKLORDZ_CAPTURE_LIST.md) | Hardware session checklist |
+| `tools/render_kit.py` | Synthetic Sector parallel |
+| Disklordz Drum VSTi (planned) | Playable same DNA in DAW |
 
-That is the whole brand loop: **math → metrics → ears → package → sell**—no CEO agent.
+---
+
+## Your lane (filled from transcript)
+
+- **Primary genre:** OG Memphis phonk + hard gritty trap  
+- **First kit codename:** _pick: GRAVEYARD SHIFT / BLOODLINE 808s / CRYPTID_  
+- **Price band:** _you set_  
+- **Store:** _Gumroad / BeatStars / Shopify_
