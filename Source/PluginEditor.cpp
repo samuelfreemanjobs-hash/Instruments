@@ -187,6 +187,11 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
     envelopeLinkButton_.setButtonText ("Link");
     envelopeLinkButton_.setClickingTogglesState (true);
     addAndMakeVisible (envelopeLinkButton_);
+
+    multiPaletteLinkButton_.setButtonText ("P-Link");
+    multiPaletteLinkButton_.setClickingTogglesState (true);
+    multiPaletteLinkButton_.onClick = [this] { multiPaletteLink_ = multiPaletteLinkButton_.getToggleState(); };
+    addAndMakeVisible (multiPaletteLinkButton_);
     envelopeLinkAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
         processor_.getAPVTS(), jdupgraded::params::kEnvelopeLinkId, envelopeLinkButton_);
     envelopeLinkButton_.onClick = [this]
@@ -314,7 +319,7 @@ void JDUpgradedAudioProcessorEditor::rebindEnvelopeAttachments()
         processor_.getAPVTS(), filterReleaseId, filterReleaseSlider_);
 }
 
-void JDUpgradedAudioProcessorEditor::snapToneToPaletteCategory (int toneIndex0Based, int comboItemId)
+void JDUpgradedAudioProcessorEditor::applyPaletteCategoryToTone (int toneIndex0Based, int comboItemId)
 {
     if (comboItemId < 2)
         return;
@@ -347,6 +352,19 @@ void JDUpgradedAudioProcessorEditor::snapToneToPaletteCategory (int toneIndex0Ba
     const std::uint16_t ms = bank.isLoaded() ? bank.getMultisampleSetId (waveIndex) : 0;
     if (auto* msParam = processor_.getAPVTS().getParameter (msIds[toneIndex0Based]))
         msParam->setValueNotifyingHost (msParam->convertTo0to1 (static_cast<float> (ms)));
+}
+
+void JDUpgradedAudioProcessorEditor::snapToneToPaletteCategory (int toneIndex0Based, int comboItemId)
+{
+    if (multiPaletteLink_)
+    {
+        for (int t = 0; t < 4; ++t)
+            applyPaletteCategoryToTone (t, comboItemId);
+    }
+    else
+    {
+        applyPaletteCategoryToTone (toneIndex0Based, comboItemId);
+    }
 }
 
 juce::String JDUpgradedAudioProcessorEditor::describeWaveForTone (int toneIndex0Based) const
@@ -463,7 +481,7 @@ void JDUpgradedAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colour (0xff1a1a22));
     g.setColour (juce::Colours::white.withAlpha (0.85f));
-    g.drawFittedText ("Palette snap per tone  |  Envelopes: Link or pick tone 1–4",
+    g.drawFittedText ("Palette snap (P-Link = all tones)  |  Envelopes: Link or pick tone 1–4",
                       getLocalBounds().removeFromBottom (24),
                       juce::Justification::centred, 1);
 
@@ -545,6 +563,7 @@ void JDUpgradedAudioProcessorEditor::resized()
 
     auto envHeader = envArea.removeFromTop (22);
     envelopeLinkButton_.setBounds (envHeader.removeFromLeft (52));
+    multiPaletteLinkButton_.setBounds (envHeader.removeFromLeft (52));
     envelopeToneLabel_.setBounds (envHeader.removeFromLeft (40));
     envelopeToneCombo_.setBounds (envHeader.removeFromLeft (48));
 

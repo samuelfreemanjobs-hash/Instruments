@@ -11,7 +11,7 @@ Phase 1–4 on branch `cursor/jd-synth-phase1-3015` cover a playable JD-style in
 
 ## UI
 
-- Full JD-style slider surface (palette-linked multi-edit)
+- ~~Palette multi-edit~~ (**P-Link** applies category snap to all tones); full JD slider surface still open
 - ~~ROM browser with waveform preview~~ (`WavePreviewComponent`, tone A–D + wave slider)
 - ~~Basic expression~~ (pitch wheel, channel/poly aftertouch → filter; `expressionDepth`)
 

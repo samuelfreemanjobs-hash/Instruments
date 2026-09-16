@@ -32,8 +32,10 @@ private:
     void nudgeRomBrowseWave (int delta);
     void exportPreset();
     void importPreset();
+    void applyPaletteCategoryToTone (int toneIndex0Based, int comboItemId);
 
     JDUpgradedAudioProcessor& processor_;
+    bool multiPaletteLink_ = false;
     juce::Slider masterGainSlider_;
     juce::Slider filterResonanceSlider_;
     juce::ToggleButton filterLinkButton_;
@@ -67,6 +69,7 @@ private:
     juce::Label ampEnvLabel_;
     juce::Label filterEnvLabel_;
     juce::ToggleButton envelopeLinkButton_;
+    juce::ToggleButton multiPaletteLinkButton_;
     juce::ComboBox envelopeToneCombo_;
     juce::Label envelopeToneLabel_;
     juce::Slider ampAttackSlider_;

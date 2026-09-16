@@ -7,7 +7,7 @@ See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for processor wiring.
 - **Programs** — prev/next, factory name, **Export** / **Import** (`.jdpreset` APVTS XML).
 - **ROM browser** — pick tone A–D, wave index slider, prev/next, **waveform preview** (`WavePreviewComponent`).
 - **FX row** — master, filter link/resonance, Group A/B (+ enables, chorus), coupling.
-- **Tones** — level, wave, multisample, TVF, mute, palette category snap.
+- **Tones** — level, wave, multisample, TVF, mute, palette category snap (**P-Link** = snap all tones).
 - **Envelopes** — global link or per-tone ADSR.
 
 ## Expression (MIDI)

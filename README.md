@@ -19,6 +19,7 @@ cmake --build build -j
 | `OfflineRender` | Headless WAV render (see [docs/AB_HARNESS.md](docs/AB_HARNESS.md)) |
 | `SpectralDiff` | Compare two WAVs for regression / A/B |
 | `GenerateCleanroomRom` | Rebuild ROM at compile time |
+| `ExportPreset` | Write `.jdpreset` for a factory program index |
 
 ## Features (current)
 

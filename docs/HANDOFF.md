@@ -11,7 +11,9 @@ Branch: `cursor/jd-synth-phase1-3015` · PR **#6**
 - Global + per-tone ADSR, wave palette UI, ROM category metadata
 - SysEx: checksum + JD 384-byte patch → APVTS (partial)
 - `JDUPGRADED_ROM_PATH` with safe trial load ([USER_ROM.md](USER_ROM.md))
-- `OfflineRender` + `SpectralDiff` + CI determinism ([AB_HARNESS.md](AB_HARNESS.md))
+- `OfflineRender` + `SpectralDiff` + golden manifest CI ([AB_HARNESS.md](AB_HARNESS.md))
+- ROM browser + wave preview, `.jdpreset` import/export, MIDI expression (wheel/aftertouch)
+- Curated factory programs 0 / 48 / 112; [INSTALLER_POLICY.md](INSTALLER_POLICY.md)
 
 ## Build
 
