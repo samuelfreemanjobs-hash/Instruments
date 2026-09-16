@@ -121,3 +121,17 @@ Custom **`PluginEditor`** with APVTS rotary controls is included.
 | Windows preset | `windows-vs-release` turns on **auto-install** to the user VST3 folder |
 
 **Later (optional):** Melatonin / Pamplejuce-style UI tests and layout tooling.
+
+## Disklordz
+
+| Focus | Doc |
+|--------|-----|
+| **Audio PM Agent** (Cursor MCP — `PM BRIEFING`) | [docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md](docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md) |
+| **Factory** (active — GRAVEYARD_SHIFT v1) | [docs/DISKLORDZ_FACTORY_PLAN.md](docs/DISKLORDZ_FACTORY_PLAN.md) |
+
+```bash
+cd tools && pip install -r requirements.txt && python3 render_kit.py --kit-name GRAVEYARD_SHIFT
+```
+
+Briefing: [docs/pm-agent/BRIEFING_2026-09-16.md](docs/pm-agent/BRIEFING_2026-09-16.md) · JUCE: `MyFirstPlugin/`  
+Automation (self-host): [infra/activepieces/README.md](infra/activepieces/README.md) — `./infra/activepieces/automate.sh` for Docker + factory webhook flow

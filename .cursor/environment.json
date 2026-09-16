@@ -1,0 +1,11 @@
+{
+  "name": "Instruments — Disklordz",
+  "install": "pip install -r tools/requirements.txt",
+  "egressMode": "allowlist",
+  "egressAllowlist": [
+    "api.airtable.com",
+    "airtable.com",
+    "hooks.slack.com",
+    "hooks.zapier.com"
+  ]
+}

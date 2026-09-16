@@ -1,0 +1,26 @@
+name: Sync Disklordz PM to Airtable
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cursor/disklordz-blueprint-tools-2702
+    paths:
+      - scripts/sync_disklordz_pm_to_airtable.py
+      - .github/workflows/sync-disklordz-pm.yml
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync PM registry
+        env:
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+        run: |
+          if [ -z "$AIRTABLE_API_KEY" ]; then
+            echo "::error::Add repository secret AIRTABLE_API_KEY (Airtable personal access token)."
+            exit 1
+          fi
+          python3 scripts/sync_disklordz_pm_to_airtable.py

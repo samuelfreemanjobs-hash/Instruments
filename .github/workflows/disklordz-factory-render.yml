@@ -1,0 +1,46 @@
+name: Disklordz factory render
+
+on:
+  workflow_dispatch:
+    inputs:
+      kit_name:
+        description: Kit codename
+        required: true
+        default: GRAVEYARD_SHIFT
+      mode:
+        description: Render mode (starter | grid808)
+        required: true
+        default: starter
+      count:
+        description: grid808 variant count (ignored for starter)
+        required: false
+        default: "5"
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install factory deps
+        run: pip install -r tools/requirements.txt
+
+      - name: Render kit
+        env:
+          DISKLORDZ_ACTIVEPIECES_WEBHOOK: ${{ secrets.DISKLOORDZ_ACTIVEPIECES_WEBHOOK }}
+          DISKLORDZ_SLACK_WEBHOOK: ${{ secrets.DISKLOORDZ_SLACK_WEBHOOK }}
+        run: |
+          if [ -z "$DISKLORDZ_ACTIVEPIECES_WEBHOOK" ]; then
+            echo "::warning::Optional secret DISKLORDZ_ACTIVEPIECES_WEBHOOK not set — render will skip Activepieces notify."
+          fi
+          python3 tools/render_kit.py \
+            --kit-name "${{ inputs.kit_name }}" \
+            --mode "${{ inputs.mode }}" \
+            --count "${{ inputs.count }}"
+
+      - name: Upload WAV artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: disklordz-${{ inputs.kit_name }}-${{ github.run_id }}
+          path: tools/output/samples/*.wav
+          if-no-files-found: error

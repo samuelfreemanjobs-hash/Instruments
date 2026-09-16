@@ -3,3 +3,9 @@ MyFirstPlugin/build-ninja/
 *.user
 .vs/
 .idea/
+tools/.venv/
+tools/data/
+tools/output/
+infra/activepieces/.env
+infra/activepieces/cache/
+infra/activepieces/.disklordz-webhook-url
