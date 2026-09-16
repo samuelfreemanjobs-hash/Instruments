@@ -21,7 +21,7 @@
 
 ## Phase 4 — polish & harness
 
-- **SIMD** — `Simd/VoiceSimd.h` (AVX2 / NEON).
+- **SIMD** — `Simd/VoiceSimd.h` (AVX2 / NEON): four-tone sum, buffer add/scale; coupled modes SIMD off-pair tones.
 - **UI** — programs, tones (level/wave/MS/mute), filter, Group A/B, coupling, envelopes (link + per-tone), wave palette.
 - **Tools** — `OfflineRender`, `SpectralDiff`; CI determinism check ([AB_HARNESS.md](AB_HARNESS.md)).
 

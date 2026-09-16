@@ -63,4 +63,61 @@ inline void accumulateFourToneBuffers (float* dest,
     sumFourToneBuffers (dest, tones[0], tones[1], tones[2], tones[3], numSamples);
 }
 
+/** `dest[i] += src[i]`. */
+inline void addBuffers (float* dest, const float* src, std::size_t numSamples) noexcept
+{
+#if defined(JDUPGRADED_USE_AVX2)
+    std::size_t i = 0;
+    for (; i + 8 <= numSamples; i += 8)
+    {
+        const auto d = _mm256_loadu_ps (dest + i);
+        const auto s = _mm256_loadu_ps (src + i);
+        _mm256_storeu_ps (dest + i, _mm256_add_ps (d, s));
+    }
+    for (; i < numSamples; ++i)
+        dest[i] += src[i];
+#elif defined(JDUPGRADED_USE_NEON)
+    std::size_t i = 0;
+    for (; i + 4 <= numSamples; i += 4)
+    {
+        const auto d = vld1q_f32 (dest + i);
+        const auto s = vld1q_f32 (src + i);
+        vst1q_f32 (dest + i, vaddq_f32 (d, s));
+    }
+    for (; i < numSamples; ++i)
+        dest[i] += src[i];
+#else
+    for (std::size_t i = 0; i < numSamples; ++i)
+        dest[i] += src[i];
+#endif
+}
+
+inline void scaleBuffer (float* dest, float gain, std::size_t numSamples) noexcept
+{
+#if defined(JDUPGRADED_USE_AVX2)
+    const auto g = _mm256_set1_ps (gain);
+    std::size_t i = 0;
+    for (; i + 8 <= numSamples; i += 8)
+    {
+        const auto v = _mm256_loadu_ps (dest + i);
+        _mm256_storeu_ps (dest + i, _mm256_mul_ps (v, g));
+    }
+    for (; i < numSamples; ++i)
+        dest[i] *= gain;
+#elif defined(JDUPGRADED_USE_NEON)
+    const auto g = vdupq_n_f32 (gain);
+    std::size_t i = 0;
+    for (; i + 4 <= numSamples; i += 4)
+    {
+        const auto v = vld1q_f32 (dest + i);
+        vst1q_f32 (dest + i, vmulq_f32 (v, g));
+    }
+    for (; i < numSamples; ++i)
+        dest[i] *= gain;
+#else
+    for (std::size_t i = 0; i < numSamples; ++i)
+        dest[i] *= gain;
+#endif
+}
+
 } // namespace jdupgraded::dsp

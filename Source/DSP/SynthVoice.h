@@ -74,21 +74,17 @@ public:
                 for (std::size_t t = 0; t < kTonesPerVoice; ++t)
                     tones_[t].render (toneScratch[t].data(), n);
 
-                const std::array<const float*, kTonesPerVoice> ptrs = {
-                    toneScratch[0].data(), toneScratch[1].data(),
-                    toneScratch[2].data(), toneScratch[3].data()
-                };
-                sumFourToneBuffers (output + offset, ptrs[0], ptrs[1], ptrs[2], ptrs[3], n);
+                sumFourToneBuffers (output + offset, toneScratch[0].data(), toneScratch[1].data(),
+                                    toneScratch[2].data(), toneScratch[3].data(), n);
             }
             else
             {
                 for (std::size_t i = 0; i < n; ++i)
                     output[offset + i] = 0.0f;
-                renderWithCoupling (output, offset, n);
+                renderWithCoupling (output, offset, n, toneScratch);
             }
 
-            for (std::size_t i = 0; i < n; ++i)
-                output[offset + i] *= velocityGain_;
+            scaleBuffer (output + offset, velocityGain_, n);
         }
     }
 
@@ -116,25 +112,87 @@ private:
         }
     }
 
-    void renderWithCoupling (float* output, std::size_t offset, std::size_t n) noexcept
+    void renderIndependentTones (float* output,
+                                 std::size_t offset,
+                                 std::size_t n,
+                                 std::array<std::array<float, kControlRateDivisor>, kTonesPerVoice>& scratch,
+                                 const std::array<bool, kTonesPerVoice>& include) noexcept
     {
+        for (std::size_t t = 0; t < kTonesPerVoice; ++t)
+        {
+            if (! include[t])
+                continue;
+
+            tones_[t].render (scratch[t].data(), n);
+            addBuffers (output + offset, scratch[t].data(), n);
+        }
+    }
+
+    void renderWithCoupling (float* output,
+                             std::size_t offset,
+                             std::size_t n,
+                             std::array<std::array<float, kControlRateDivisor>, kTonesPerVoice>& scratch) noexcept
+    {
+        switch (couplingMode_)
+        {
+            case ToneCouplingMode::ringPair01:
+                renderIndependentTones (output, offset, n, scratch, { false, false, true, true });
+                renderCoupledSampleLoop (output, offset, n, ToneCouplingMode::ringPair01, 0, 1);
+                return;
+            case ToneCouplingMode::ringPair23:
+                renderIndependentTones (output, offset, n, scratch, { true, true, false, false });
+                renderCoupledSampleLoop (output, offset, n, ToneCouplingMode::ringPair23, 2, 3);
+                return;
+            case ToneCouplingMode::crossModPair01:
+                renderIndependentTones (output, offset, n, scratch, { false, false, true, true });
+                renderCoupledSampleLoop (output, offset, n, ToneCouplingMode::crossModPair01, 0, 1);
+                return;
+            case ToneCouplingMode::crossModPair23:
+                renderIndependentTones (output, offset, n, scratch, { true, true, false, false });
+                renderCoupledSampleLoop (output, offset, n, ToneCouplingMode::crossModPair23, 2, 3);
+                return;
+            case ToneCouplingMode::hardSyncPair01:
+                renderIndependentTones (output, offset, n, scratch, { false, false, true, true });
+                renderCoupledSampleLoop (output, offset, n, ToneCouplingMode::hardSyncPair01, 0, 1);
+                return;
+            case ToneCouplingMode::hardSyncPair23:
+                renderIndependentTones (output, offset, n, scratch, { true, true, false, false });
+                renderCoupledSampleLoop (output, offset, n, ToneCouplingMode::hardSyncPair23, 2, 3);
+                return;
+            default:
+                break;
+        }
+
+        renderCoupledSampleLoop (output, offset, n, couplingMode_, 0, 3);
+    }
+
+    void renderCoupledSampleLoop (float* output,
+                                  std::size_t offset,
+                                  std::size_t n,
+                                  ToneCouplingMode mode,
+                                  std::size_t pairLow,
+                                  std::size_t pairHigh) noexcept
+    {
+        const bool ring = mode == ToneCouplingMode::ringPair01 || mode == ToneCouplingMode::ringPair23;
+        const bool crossLow = mode == ToneCouplingMode::crossModPair01 && pairLow == 0;
+        const bool crossHigh = mode == ToneCouplingMode::crossModPair23 && pairLow == 2;
+
         for (std::size_t i = 0; i < n; ++i)
         {
             std::array<float, kTonesPerVoice> osc{};
 
-            for (std::size_t t = 0; t < kTonesPerVoice; ++t)
+            for (std::size_t t = pairLow; t <= pairHigh; ++t)
             {
                 if (! tones_[t].isActive())
                     continue;
 
-                if (needsCrossMod (t))
+                if ((crossLow && t == 1) || (crossHigh && t == 3))
                     tones_[t].setPhaseModSource (tones_[crossModSourceIndex (t)].getLastOscillatorSample());
 
                 osc[t] = tones_[t].renderOscillatorSample();
             }
 
-            float sum = 0.0f;
-            for (std::size_t t = 0; t < kTonesPerVoice; ++t)
+            for (std::size_t t = pairLow; t <= pairHigh; ++t)
             {
                 if (! tones_[t].isActive())
                     continue;
@@ -142,31 +200,16 @@ private:
                 float ringPartner = 0.0f;
                 float ringAmt = 0.0f;
 
-                if (couplingMode_ == ToneCouplingMode::ringPair01 && (t == 0 || t == 1))
+                if (ring)
                 {
-                    ringPartner = osc[t == 0 ? 1 : 0];
-                    ringAmt = 0.5f;
-                }
-                else if (couplingMode_ == ToneCouplingMode::ringPair23 && (t == 2 || t == 3))
-                {
-                    ringPartner = osc[t == 2 ? 3 : 2];
+                    const std::size_t partner = t == pairLow ? pairHigh : pairLow;
+                    ringPartner = osc[partner];
                     ringAmt = 0.5f;
                 }
 
-                sum += tones_[t].applyFilterAndAmp (osc[t], ringPartner, ringAmt);
+                output[offset + i] += tones_[t].applyFilterAndAmp (osc[t], ringPartner, ringAmt);
             }
-
-            output[offset + i] += sum;
         }
-    }
-
-    bool needsCrossMod (std::size_t toneIndex) const noexcept
-    {
-        if (couplingMode_ == ToneCouplingMode::crossModPair01 && toneIndex == 1)
-            return true;
-        if (couplingMode_ == ToneCouplingMode::crossModPair23 && toneIndex == 3)
-            return true;
-        return false;
     }
 
     std::size_t crossModSourceIndex (std::size_t toneIndex) const noexcept

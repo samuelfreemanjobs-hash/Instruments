@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AudioConstants.h"
+#include "Simd/VoiceSimd.h"
 #include "SynthVoice.h"
 
 #include <array>
@@ -68,8 +69,7 @@ public:
                 continue;
 
             voice.render (mixScratch_.data(), numSamples);
-            for (std::size_t i = 0; i < numSamples; ++i)
-                output[i] += mixScratch_[i];
+            addBuffers (output, mixScratch_.data(), numSamples);
         }
     }
 
