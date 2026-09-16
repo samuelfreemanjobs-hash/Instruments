@@ -37,8 +37,17 @@ fi
 docker compose pull
 docker compose up -d
 
+REPO="$(cd "$ROOT/../.." && pwd)"
+if grep -qE '^DISKLORDZ_AP_ADMIN_EMAIL=.+$' .env 2>/dev/null && grep -qE '^DISKLORDZ_AP_ADMIN_PASSWORD=.+$' .env; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+  python3 "$REPO/scripts/provision_disklordz_activepieces.py" || true
+fi
+
 echo ""
 echo "Activepieces UI: http://localhost:8080"
-echo "Next: create admin account → Flows → Webhook trigger → copy URL"
-echo "Factory: export DISKLORDZ_ACTIVEPIECES_WEBHOOK=<that-url>"
-echo "Logs:    docker compose logs -f app"
+echo "Full automation: set DISKLORDZ_AP_ADMIN_* in .env, then run ./automate.sh"
+echo "Webhook file:    infra/activepieces/.disklordz-webhook-url (used by render_kit.py)"
+echo "Logs:            docker compose logs -f app"

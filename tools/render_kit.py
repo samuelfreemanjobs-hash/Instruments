@@ -20,6 +20,19 @@ if str(_TOOLS_DIR) not in sys.path:
 from disklordz import audit, synthesis  # noqa: E402
 from disklordz.db import connect, init_db, insert_batch, insert_sample, mean_reference_metrics  # noqa: E402
 
+_ACTIVEPIECES_WEBHOOK_FILE = _TOOLS_DIR.parent / "infra" / "activepieces" / ".disklordz-webhook-url"
+
+
+def _resolve_activepieces_webhook(cli_value: str) -> str:
+    if cli_value:
+        return cli_value
+    env = os.environ.get("DISKLORDZ_ACTIVEPIECES_WEBHOOK", "").strip()
+    if env:
+        return env
+    if _ACTIVEPIECES_WEBHOOK_FILE.is_file():
+        return _ACTIVEPIECES_WEBHOOK_FILE.read_text().strip()
+    return ""
+
 
 def _notify_activepieces(webhook: str, kit_name: str, files: list[str], batch_id: str) -> None:
     if not webhook:
@@ -141,6 +154,11 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--refine-grit", action="store_true", help="Apply batch-only grit loop if RMS is low")
     parser.add_argument("--slack-webhook", default=os.environ.get("DISKLORDZ_SLACK_WEBHOOK", ""))
+    parser.add_argument(
+        "--activepieces-webhook",
+        default=os.environ.get("DISKLORDZ_ACTIVEPIECES_WEBHOOK", ""),
+        help="Activepieces flow webhook URL (self-hosted)",
+    )
     args = parser.parse_args()
 
     init_db(args.db)
@@ -208,7 +226,9 @@ def main() -> int:
             )
         conn.commit()
 
+    ap_webhook = _resolve_activepieces_webhook(args.activepieces_webhook)
     _notify_slack(args.slack_webhook, args.kit_name, exported)
+    _notify_activepieces(ap_webhook, args.kit_name, exported, batch_id)
     print(f"Wrote {len(exported)} samples → {args.out}")
     print(f"Catalog → {args.db} (batch {batch_id})")
     return 0

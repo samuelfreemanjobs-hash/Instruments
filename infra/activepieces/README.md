@@ -19,15 +19,34 @@
 
 Run on a machine with **Docker** (not the Cursor Cloud Agent VM — it has no Docker).
 
-**One command:**
+### Fully automated (recommended)
+
+1. Copy env and set admin credentials (used once to create the account + factory flow):
 
 ```bash
 cd infra/activepieces
+cp .env.example .env
+# edit: DISKLORDZ_AP_ADMIN_EMAIL, DISKLORDZ_AP_ADMIN_PASSWORD
+# optional: DISKLORDZ_SLACK_WEBHOOK
+```
+
+2. One command — Docker up + provision webhook flow + test ping:
+
+```bash
+chmod +x automate.sh bootstrap.sh
+./automate.sh
+```
+
+Writes **`infra/activepieces/.disklordz-webhook-url`**; `tools/render_kit.py` reads it automatically.
+
+### Docker only
+
+```bash
 chmod +x bootstrap.sh
 ./bootstrap.sh
 ```
 
-This copies `.env.example` → `.env` (if missing), generates `AP_ENCRYPTION_KEY`, `AP_JWT_SECRET`, `AP_API_KEY`, and `AP_POSTGRES_PASSWORD`, then `docker compose up -d`.
+If `DISKLORDZ_AP_ADMIN_*` is already in `.env`, bootstrap also runs the provisioner after `docker compose up`.
 
 **Manual** (same result):
 
@@ -116,6 +135,17 @@ Change image tag in `docker-compose.yml` (e.g. `0.91.0` → latest [releases](ht
 ```bash
 docker compose pull && docker compose up -d
 ```
+
+## GitHub Actions (cloud factory)
+
+Workflow **Disklordz factory render** (`.github/workflows/disklordz-factory-render.yml`) runs `render_kit.py` on `workflow_dispatch` and uploads WAV artifacts.
+
+Repository secrets (optional):
+
+| Secret | Purpose |
+|--------|---------|
+| `DISKLORDZ_ACTIVEPIECES_WEBHOOK` | Same URL as `.disklordz-webhook-url` — notifies flow after CI render |
+| `DISKLORDZ_SLACK_WEBHOOK` | Direct Slack ping from `render_kit.py` (in addition to Activepieces) |
 
 ## Related docs
 

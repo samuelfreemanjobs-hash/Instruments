@@ -8,3 +8,4 @@ tools/data/
 tools/output/
 infra/activepieces/.env
 infra/activepieces/cache/
+infra/activepieces/.disklordz-webhook-url

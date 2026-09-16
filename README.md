@@ -133,4 +133,5 @@ Custom **`PluginEditor`** with APVTS rotary controls is included.
 cd tools && pip install -r requirements.txt && python3 render_kit.py --kit-name GRAVEYARD_SHIFT
 ```
 
-Briefing: [docs/pm-agent/BRIEFING_2026-09-16.md](docs/pm-agent/BRIEFING_2026-09-16.md) · JUCE: `MyFirstPlugin/`
+Briefing: [docs/pm-agent/BRIEFING_2026-09-16.md](docs/pm-agent/BRIEFING_2026-09-16.md) · JUCE: `MyFirstPlugin/`  
+Automation (self-host): [infra/activepieces/README.md](infra/activepieces/README.md) — `./infra/activepieces/automate.sh` for Docker + factory webhook flow
