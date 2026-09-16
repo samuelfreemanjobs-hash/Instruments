@@ -122,16 +122,11 @@ Custom **`PluginEditor`** with APVTS rotary controls is included.
 
 **Later (optional):** Melatonin / Pamplejuce-style UI tests and layout tooling.
 
-## Disklordz (procedural drums)
+## Disklordz
 
-Product vision, DSP specs, and JUCE VSTi target: **[docs/DISKLORDZ_BLUEPRINT.md](docs/DISKLORDZ_BLUEPRINT.md)**.
+| Focus | Doc |
+|--------|-----|
+| **Audio PM Agent** (product ops, Airtable) | [docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md](docs/pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md) |
+| **Deferred:** phonk pack + factory + VSTi | [docs/projects/DEFERRED_phonk_sample_pack_and_factory.md](docs/projects/DEFERRED_phonk_sample_pack_and_factory.md) |
 
-Offline WAV factory (SQLite catalog, no Agent Zero):
-
-```bash
-cd tools && python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-python render_kit.py --kit-name MEMPHIS_RAW_V1
-```
-
-See **[tools/README.md](tools/README.md)** for reference profiling and batch modes.
+This repo is primarily **JUCE plugin** templates (`MyFirstPlugin/`). Sample-pack tooling lives under `tools/` for when that project is unpaused.

@@ -1,5 +1,7 @@
 # Disklordz blueprint (Cursor-native)
 
+> **Project status:** Part of **[DEFERRED phonk sample pack & factory](projects/DEFERRED_phonk_sample_pack_and_factory.md)**. Active ops use the **[Audio PM Agent](pm-agent/DISKLORDZ_AUDIO_PM_AGENT.md)**. Unpause this build when the PM registry says so.
+
 This document distills the January Gemini archives (**Master Dossier**, **Chat Compendium**, **Autonomous Enterprise**) into something you can actually build in this repo—without Agent Zero, fake dashboards, or 15-agent theater.
 
 **Sample pack brand (phonk/trap chat):** [DISKLORDZ_SAMPLE_PACK_BRAND.md](DISKLORDZ_SAMPLE_PACK_BRAND.md) · **Hardware sessions:** [DISKLORDZ_CAPTURE_LIST.md](DISKLORDZ_CAPTURE_LIST.md)
@@ -153,7 +155,9 @@ Do not implement `drum_agents.py` sequential runners unless you want a demo scri
 
 | Path | Purpose |
 |------|---------|
-| [DISKLORDZ_SAMPLE_PACK_BRAND.md](DISKLORDZ_SAMPLE_PACK_BRAND.md) | Brand + pack keep/ditch (sample pack chats) |
+| [DISKLORDZ_SAMPLE_PACK_BRAND.md](DISKLORDZ_SAMPLE_PACK_BRAND.md) | Brand lane (phonk/trap transcript, keep/ditch) |
+| [DISKLORDZ_CAPTURE_LIST.md](DISKLORDZ_CAPTURE_LIST.md) | Sector 01 hardware capture checklist |
+| `DISKLORDZ_BRAND_PROMPT.txt` | Paste into Cursor / other AI for copy & art |
 | [DISKLORDZ_RUN_SHEET.md](DISKLORDZ_RUN_SHEET.md) | 4-Square release checklist (Cursor-only) |
 | `tools/README.md` | How to run the factory |
 | `tools/schema.sql` | SQLite DDL |
