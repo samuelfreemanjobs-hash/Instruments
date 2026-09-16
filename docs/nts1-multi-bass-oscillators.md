@@ -30,6 +30,7 @@ toolchain.
 | `sh101-babyface` | SH-101 BF | SH-101 warm pulse / hollow FM bass | C2–A2 |
 | `moog-voyager-se` | Voyager SE | Model D / Voyager + SE-1 fat stack, squelch | E1–C3 |
 | `cardo-gfunk` | Cardo GF | Cardo-style sub + warm mid G-funk bass | C1–G2 |
+| `larry-june` | Larry June | Bay Area cruise / rubbery JV PWM bass | D2–A2 |
 
 Supporting folders: `template`, `wavetable` (learning / starters).
 
