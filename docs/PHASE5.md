@@ -12,16 +12,16 @@ Phase 1–4 on branch `cursor/jd-synth-phase1-3015` cover a playable JD-style in
 ## UI
 
 - Full JD-style slider surface (palette-linked multi-edit)
-- ROM browser with waveform preview
-- MPE / per-note expression
+- ~~ROM browser with waveform preview~~ (`WavePreviewComponent`, tone A–D + wave slider)
+- ~~Basic expression~~ (pitch wheel, channel/poly aftertouch → filter; `expressionDepth`)
 
 ## Content & legal
 
-- Hand-tuned factory programs beyond procedural `buildPatch()`
-- Installer policy: **only** ship embedded `JDUPGROM`; no user dump pipeline in retail build
+- ~~Curated factory overrides~~ (programs 0, 48, 112); more hand-tuning optional
+- ~~Installer policy doc~~ ([INSTALLER_POLICY.md](INSTALLER_POLICY.md))
 - ~~Golden WAV suite + CI~~ (`tests/golden/manifest.tsv`, 6 factory programs); hardware reference clips later
 
 ## Integration
 
 - CLAP / AU if needed beyond VST3
-- Preset bank import/export (beyond SysEx and internal `JDPR` stub)
+- ~~APVTS preset `.jdpreset` import/export~~ (editor + XML); full bank / JDPR expansion optional

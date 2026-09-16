@@ -1,5 +1,6 @@
 # filename	program	midiNote	velocity	seconds	sampleRate
 program0-c4-0.5s.wav	0	60	100	0.5	44100
+program4-c4-0.5s.wav	4	60	100	0.5	44100
 program24-c4-0.5s.wav	24	60	100	0.5	44100
 program48-e2-0.5s.wav	48	40	100	0.5	44100
 program64-c4-0.5s.wav	64	60	100	0.5	44100

@@ -21,6 +21,14 @@ Programs are **four-tone stacks**. Use host program change or the plugin **&lt; 
 
 DAW projects store APVTS parameters plus **currentProgram** in the plugin state blob.
 
+## `.jdpreset` files
+
+- **Export / Import** buttons in the plugin UI, or headless: `ExportPreset out.jdpreset 42`
+- XML `ValueTree` with all APVTS parameters and `currentProgram`
+- Not a substitute for Roland SysEx ([SYSEX.md](SYSEX.md))
+
+**Curated factory programs:** indices **0**, **48**, and **112** use hand-tuned layers (names suffixed `(curated)`).
+
 ## External ROM (development)
 
 Set `JDUPGRADED_ROM_PATH` to a `jdupg_cleanroom.rom` file (JDUPGROM v2) to replace the embedded bank at startup.

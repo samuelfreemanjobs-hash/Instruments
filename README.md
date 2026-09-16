@@ -34,6 +34,7 @@ cmake --build build -j
 - [Repository architecture index](ARCHITECTURE.md) (required reading for agents)
 - [JD Upgraded architecture](docs/ARCHITECTURE.md)
 - [Offline tools architecture](tools/ARCHITECTURE.md)
+- [UI](docs/UI.md) · [Installer policy](docs/INSTALLER_POLICY.md)
 - [Presets](docs/PRESETS.md)
 - [Agent handoff](docs/HANDOFF.md)
 - [Phase 5 roadmap](docs/PHASE5.md)

@@ -4,6 +4,7 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include "PluginProcessor.h"
+#include "UI/WavePreviewComponent.h"
 
 #include <array>
 #include <memory>
@@ -27,6 +28,10 @@ private:
     void updateFilterResonanceSliderVisibility();
     void snapToneToPaletteCategory (int toneIndex0Based, int comboItemId);
     juce::String describeWaveForTone (int toneIndex0Based) const;
+    void updateRomBrowserPreview();
+    void nudgeRomBrowseWave (int delta);
+    void exportPreset();
+    void importPreset();
 
     JDUpgradedAudioProcessor& processor_;
     juce::Slider masterGainSlider_;
@@ -43,6 +48,14 @@ private:
     juce::Label programLabel_;
     juce::TextButton programPrev_ { "<" };
     juce::TextButton programNext_ { ">" };
+    juce::TextButton exportPresetButton_ { "Export" };
+    juce::TextButton importPresetButton_ { "Import" };
+    juce::Label romBrowseLabel_;
+    juce::ComboBox romBrowseToneCombo_;
+    juce::Slider romBrowseWaveSlider_;
+    juce::TextButton romWavePrev_ { "<" };
+    juce::TextButton romWaveNext_ { ">" };
+    WavePreviewComponent romWavePreview_;
     std::array<juce::Slider, 4> toneLevelSliders_;
     std::array<juce::Slider, 4> toneWaveSliders_;
     std::array<juce::Slider, 4> toneMultisampleSliders_;

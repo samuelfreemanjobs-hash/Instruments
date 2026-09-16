@@ -173,6 +173,42 @@ FactoryPatch buildPatch (std::size_t index, std::string& nameStorage)
     };
 }
 
+void applyCuratedOverrides (std::size_t index, FactoryPatch& patch, std::string& nameStorage)
+{
+    switch (index)
+    {
+        case 0:
+            nameStorage = "EP Glass 01 (curated)";
+            patch.tones[0] = layer (0, 8, 1.0f, 0.0f, 0.92f, 0.22f);
+            patch.tones[1] = layer (0, 24, 0.35f, 0.07f, 0.88f, 0.18f);
+            patch.tones[2] = layer (0, 40, 0.2f, -0.05f, 0.75f, 0.12f);
+            patch.tones[3] = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.1f);
+            patch.groupBMix = 0.18f;
+            break;
+        case 48:
+            nameStorage = "Bass Sub 01 (curated)";
+            patch.tones[0] = layer (2, 4, 1.0f, -12.0f, 0.55f, 0.45f);
+            patch.tones[1] = layer (2, 12, 0.55f, -12.0f, 0.48f, 0.4f);
+            patch.tones[2] = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.2f);
+            patch.tones[3] = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.2f);
+            patch.masterGain = 0.82f;
+            patch.groupADrive = 0.08f;
+            break;
+        case 112:
+            nameStorage = "Elite Sync Lead (curated)";
+            patch.tones[0] = layer (4, 96, 0.9f, 0.0f, 0.7f, 0.55f);
+            patch.tones[1] = layer (4, 112, 0.85f, 0.0f, 0.65f, 0.5f);
+            patch.tones[2] = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.2f);
+            patch.tones[3] = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.2f);
+            patch.coupling = jdupgraded::dsp::ToneCouplingMode::hardSyncPair01;
+            patch.groupADrive = 0.22f;
+            patch.groupBMix = 0.2f;
+            break;
+        default:
+            break;
+    }
+}
+
 struct PatchStore final
 {
     std::vector<std::string> names;
@@ -190,7 +226,11 @@ const PatchStore& patchStore()
         result.names.resize (kFactoryPatchCount);
         result.patches.resize (kFactoryPatchCount);
         for (std::size_t i = 0; i < kFactoryPatchCount; ++i)
+        {
             result.patches[i] = buildPatch (i, result.names[i]);
+            applyCuratedOverrides (i, result.patches[i], result.names[i]);
+            result.patches[i].name = result.names[i].c_str();
+        }
         return result;
     }();
     return store;

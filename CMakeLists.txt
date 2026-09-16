@@ -128,6 +128,25 @@ target_compile_definitions(OfflineRender
 )
 add_dependencies(OfflineRender JDUpgradedRomData)
 
+add_executable(ExportPreset tools/ExportPreset.cpp)
+target_link_libraries(ExportPreset
+    PRIVATE
+        JDUpgraded
+        juce::juce_audio_processors
+        juce::juce_gui_extra
+)
+target_include_directories(ExportPreset
+    PRIVATE
+        Source
+        "${CMAKE_BINARY_DIR}/juce_binarydata_JDUpgradedRomData/JuceLibraryCode"
+)
+target_compile_definitions(ExportPreset
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+)
+add_dependencies(ExportPreset JDUpgradedRomData)
+
 add_executable(SpectralDiff tools/SpectralDiff.cpp)
 target_link_libraries(SpectralDiff
     PRIVATE

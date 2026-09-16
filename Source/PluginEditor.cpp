@@ -7,6 +7,8 @@
 #include "Parameters/FilterParameters.h"
 #include "Assets/WavePalette.h"
 
+#include <memory>
+
 JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioProcessor& p)
     : AudioProcessorEditor (&p), processor_ (p)
 {
@@ -206,8 +208,42 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
     rebindEnvelopeAttachments();
     updateFilterResonanceSliderVisibility();
 
+    exportPresetButton_.onClick = [this] { exportPreset(); };
+    importPresetButton_.onClick = [this] { importPreset(); };
+    addAndMakeVisible (exportPresetButton_);
+    addAndMakeVisible (importPresetButton_);
+
+    romBrowseLabel_.setText ("ROM browser", juce::dontSendNotification);
+    romBrowseLabel_.setJustificationType (juce::Justification::centredLeft);
+    addAndMakeVisible (romBrowseLabel_);
+    romBrowseToneCombo_.addItemList ({ "Tone A", "Tone B", "Tone C", "Tone D" }, 1);
+    romBrowseToneCombo_.setSelectedId (1, juce::dontSendNotification);
+    romBrowseToneCombo_.onChange = [this] { updateRomBrowserPreview(); };
+    addAndMakeVisible (romBrowseToneCombo_);
+
+    const int maxWaveBrowse = static_cast<int> (jdupgraded::assets::kCleanroomWaveCount) - 1;
+    romBrowseWaveSlider_.setSliderStyle (juce::Slider::LinearHorizontal);
+    romBrowseWaveSlider_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 52, 18);
+    romBrowseWaveSlider_.setRange (0, maxWaveBrowse, 1.0);
+    romBrowseWaveSlider_.onValueChange = [this]
+    {
+        const int tone = romBrowseToneCombo_.getSelectedId() - 1;
+        if (tone < 0 || tone > 3)
+            return;
+        const char* waveIds[4] = { "tone1Wave", "tone2Wave", "tone3Wave", "tone4Wave" };
+        if (auto* param = processor_.getAPVTS().getParameter (waveIds[tone]))
+            param->setValueNotifyingHost (param->convertTo0to1 (static_cast<float> (romBrowseWaveSlider_.getValue())));
+        updateRomBrowserPreview();
+    };
+    addAndMakeVisible (romBrowseWaveSlider_);
+    romWavePrev_.onClick = [this] { nudgeRomBrowseWave (-1); };
+    romWaveNext_.onClick = [this] { nudgeRomBrowseWave (1); };
+    addAndMakeVisible (romWavePrev_);
+    addAndMakeVisible (romWaveNext_);
+    addAndMakeVisible (romWavePreview_);
+
     startTimerHz (4);
-    setSize (720, 620);
+    setSize (720, 700);
 }
 
 JDUpgradedAudioProcessorEditor::~JDUpgradedAudioProcessorEditor()
@@ -370,6 +406,57 @@ void JDUpgradedAudioProcessorEditor::timerCallback()
                                                                   juce::dontSendNotification);
 
     romSourceLabel_.setText (processor_.getRomSourceDescription(), juce::dontSendNotification);
+    updateRomBrowserPreview();
+}
+
+void JDUpgradedAudioProcessorEditor::updateRomBrowserPreview()
+{
+    const int tone = romBrowseToneCombo_.getSelectedId() - 1;
+    if (tone < 0 || tone > 3)
+        return;
+
+    const char* waveIds[4] = { "tone1Wave", "tone2Wave", "tone3Wave", "tone4Wave" };
+    int waveIndex = 0;
+    if (auto* raw = processor_.getAPVTS().getRawParameterValue (waveIds[tone]))
+        waveIndex = static_cast<int> (raw->load());
+
+    romBrowseWaveSlider_.setValue (waveIndex, juce::dontSendNotification);
+    romWavePreview_.setWaveSource (&processor_.getRomBank(), &processor_.getFallbackWaves(), waveIndex);
+
+    romBrowseLabel_.setText ("ROM: " + describeWaveForTone (tone), juce::dontSendNotification);
+}
+
+void JDUpgradedAudioProcessorEditor::nudgeRomBrowseWave (int delta)
+{
+    const int maxWave = static_cast<int> (jdupgraded::assets::kCleanroomWaveCount) - 1;
+    const int next = juce::jlimit (0, maxWave, static_cast<int> (romBrowseWaveSlider_.getValue()) + delta);
+    romBrowseWaveSlider_.setValue (next, juce::sendNotificationSync);
+}
+
+void JDUpgradedAudioProcessorEditor::exportPreset()
+{
+    auto chooser = std::make_shared<juce::FileChooser> ("Export preset", juce::File {}, "*.jdpreset");
+    chooser->launchAsync (juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::warnAboutOverwriting,
+                          [this, chooser] (const juce::FileChooser& fc)
+                          {
+                              const auto file = fc.getResult();
+                              if (file == juce::File {})
+                                  return;
+                              processor_.exportApvtsPresetToFile (file);
+                          });
+}
+
+void JDUpgradedAudioProcessorEditor::importPreset()
+{
+    auto chooser = std::make_shared<juce::FileChooser> ("Import preset", juce::File {}, "*.jdpreset");
+    chooser->launchAsync (juce::FileBrowserComponent::openMode,
+                          [this, chooser] (const juce::FileChooser& fc)
+                          {
+                              const auto file = fc.getResult();
+                              if (file == juce::File {})
+                                  return;
+                              processor_.importApvtsPresetFromFile (file);
+                          });
 }
 
 void JDUpgradedAudioProcessorEditor::paint (juce::Graphics& g)
@@ -408,7 +495,18 @@ void JDUpgradedAudioProcessorEditor::resized()
     auto programRow = area.removeFromTop (26);
     programPrev_.setBounds (programRow.removeFromLeft (32));
     programNext_.setBounds (programRow.removeFromRight (32));
+    exportPresetButton_.setBounds (programRow.removeFromRight (56));
+    importPresetButton_.setBounds (programRow.removeFromRight (56));
     programLabel_.setBounds (programRow);
+
+    auto romRow = area.removeFromTop (72);
+    romBrowseLabel_.setBounds (romRow.removeFromTop (16));
+    auto romControls = romRow.removeFromTop (22);
+    romBrowseToneCombo_.setBounds (romControls.removeFromLeft (88));
+    romWavePrev_.setBounds (romControls.removeFromLeft (28));
+    romWaveNext_.setBounds (romControls.removeFromLeft (28));
+    romBrowseWaveSlider_.setBounds (romControls);
+    romWavePreview_.setBounds (romRow.reduced (2));
 
     auto fxRow = area.removeFromTop (88);
     const int fxW = fxRow.getWidth() / 7;

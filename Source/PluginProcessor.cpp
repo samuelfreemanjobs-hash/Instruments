@@ -42,6 +42,7 @@ constexpr const char* kFilterAttackId = "filterAttack";
 constexpr const char* kFilterDecayId = "filterDecay";
 constexpr const char* kFilterSustainId = "filterSustain";
 constexpr const char* kFilterReleaseId = "filterRelease";
+constexpr const char* kExpressionDepthId = "expressionDepth";
 
 juce::NormalisableRange<float> envelopeTimeRange() noexcept
 {
@@ -137,6 +138,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout JDUpgradedAudioProcessor::cr
     params.push_back (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { jdupgraded::params::kGroupBChorusId, 1 }, "Group B Chorus",
         juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.0f));
+
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { kExpressionDepthId, 1 }, "Expression to Filter",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.35f));
 
     const int maxWave = static_cast<int> (jdupgraded::assets::kCleanroomWaveCount) - 1;
     params.push_back (std::make_unique<juce::AudioParameterInt> (
@@ -257,6 +262,7 @@ void JDUpgradedAudioProcessor::refreshCachedParameters() noexcept
     filterSustainPtr_ = apvts_.getRawParameterValue (kFilterSustainId);
     filterReleasePtr_ = apvts_.getRawParameterValue (kFilterReleaseId);
     envelopeLinkPtr_ = apvts_.getRawParameterValue (jdupgraded::params::kEnvelopeLinkId);
+    expressionDepthPtr_ = apvts_.getRawParameterValue (kExpressionDepthId);
 
     for (int tone = 0; tone < 4; ++tone)
     {
@@ -542,9 +548,11 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
         patches[t].romBank = bank;
         patches[t].multisampleSetId = multisampleIds[t];
         patches[t].waveIndex = static_cast<std::uint16_t> (waveIndices[t]);
-        patches[t].coarseSemis = toneCoarseSemis_[t];
+        patches[t].coarseSemis = toneCoarseSemis_[t] + pitchBendSemis_.load();
         patches[t].fineCents = toneFineCents_[t];
-        const float cutoff = toneFilterCutoffPtrs_[t] != nullptr ? toneFilterCutoffPtrs_[t]->load() : 1.0f;
+        float cutoff = toneFilterCutoffPtrs_[t] != nullptr ? toneFilterCutoffPtrs_[t]->load() : 1.0f;
+        const float exprDepth = expressionDepthPtr_ != nullptr ? expressionDepthPtr_->load() : 0.35f;
+        cutoff = std::clamp (cutoff + channelPressure_.load() * exprDepth * 0.45f, 0.0f, 1.0f);
         const float resonance = filterLinked || toneFilterResonancePtrs_[t] == nullptr
                                     ? globalResonance
                                     : toneFilterResonancePtrs_[t]->load();
@@ -668,8 +676,50 @@ void JDUpgradedAudioProcessor::handleMidi (const juce::MidiBuffer& midi) noexcep
         else if (message.isAllNotesOff() || message.isAllSoundOff())
         {
             voicePool_.allNotesOff();
+            channelPressure_ = 0.0f;
+            pitchBendSemis_ = 0.0f;
+        }
+        else if (message.isPitchWheel())
+        {
+            const float wheel = static_cast<float> (message.getPitchWheelValue() - 8192) / 8192.0f;
+            pitchBendSemis_ = wheel * 2.0f;
+        }
+        else if (message.isChannelPressure())
+        {
+            channelPressure_ = static_cast<float> (message.getChannelPressureValue()) / 127.0f;
+        }
+        else if (message.isAftertouch())
+        {
+            channelPressure_ = static_cast<float> (message.getAfterTouchValue()) / 127.0f;
         }
     }
+}
+
+bool JDUpgradedAudioProcessor::exportApvtsPresetToFile (const juce::File& file)
+{
+    auto state = apvts_.copyState();
+    state.setProperty ("currentProgram", currentProgram_, nullptr);
+    state.setProperty ("format", "JDUpgradedApvts", nullptr);
+    state.setProperty ("version", 1, nullptr);
+    if (auto xml = state.createXml())
+        return xml->writeTo (file);
+    return false;
+}
+
+bool JDUpgradedAudioProcessor::importApvtsPresetFromFile (const juce::File& file)
+{
+    if (auto xml = juce::XmlDocument::parse (file))
+    {
+        if (xml->hasTagName (apvts_.state.getType()))
+        {
+            apvts_.replaceState (juce::ValueTree::fromXml (*xml));
+            currentProgram_ = static_cast<int> (apvts_.state.getProperty ("currentProgram", 0));
+            refreshCachedParameters();
+            applyPatchesFromParameters();
+            return true;
+        }
+    }
+    return false;
 }
 
 void JDUpgradedAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)

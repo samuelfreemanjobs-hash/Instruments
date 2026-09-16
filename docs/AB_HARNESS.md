@@ -49,6 +49,7 @@ Committed captures live under `tests/golden/`. Each row in **`tests/golden/manif
 | `program48-e2-0.5s.wav` | 48 | Bass | E2 |
 | `program64-c4-0.5s.wav` | 64 | Vapor | C4 |
 | `program80-c4-0.5s.wav` | 80 | 80s R&B | C4 |
+| `program4-c4-0.5s.wav` | 4 | EP (cross-mod coupling) | C4 |
 | `program112-c4-0.5s.wav` | 112 | Elite (coupling) | C4 |
 
 Verify locally (after build):

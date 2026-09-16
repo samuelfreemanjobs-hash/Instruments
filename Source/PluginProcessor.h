@@ -45,6 +45,7 @@ public:
 
     juce::AudioProcessorValueTreeState& getAPVTS() noexcept { return apvts_; }
     const jdupgraded::assets::RomBank& getRomBank() const noexcept { return romLoader_.getBank(); }
+    const jdupgraded::assets::CleanroomWaveLibrary& getFallbackWaves() const noexcept { return fallbackWaves_; }
     std::string getRomSourceDescription() const { return romLoader_.getSourceDescription(); }
 
     /** Returns true when a JD patch block was decoded and parameters updated. */
@@ -54,6 +55,9 @@ public:
     bool isEnvelopeLinked() const noexcept;
     void copyGlobalFilterResonanceToAllTones() noexcept;
     bool isFilterLinked() const noexcept;
+
+    bool exportApvtsPresetToFile (const juce::File& file);
+    bool importApvtsPresetFromFile (const juce::File& file);
 
 private:
     void refreshCachedParameters() noexcept;
@@ -78,6 +82,9 @@ private:
     std::array<float, 4> toneCoarseSemis_{};
     std::array<float, 4> toneFineCents_{};
     std::array<jdupgraded::preset::JdTonePitchMod, 4> tonePitchMod_{};
+
+    std::atomic<float> pitchBendSemis_{ 0.0f };
+    std::atomic<float> channelPressure_{ 0.0f };
 
     int currentProgram_ = 0;
 
@@ -117,6 +124,7 @@ private:
     std::atomic<float>* filterSustainPtr_ = nullptr;
     std::atomic<float>* filterReleasePtr_ = nullptr;
     std::atomic<float>* envelopeLinkPtr_ = nullptr;
+    std::atomic<float>* expressionDepthPtr_ = nullptr;
 
     struct ToneEnvelopePtrs final
     {
