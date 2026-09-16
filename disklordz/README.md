@@ -2,6 +2,8 @@
 
 **Autonomous audio-product company** built on a **reusable production engine** (not a pile of one-off agents). **TRON Studio** = infrastructure; **DiskLordz** = first vertical.
 
+**Cursor needs the OS around the workforce:** start with [`company/company-os.md`](company/company-os.md) and [`REPOSITORY_MAP.md`](REPOSITORY_MAP.md).
+
 ## Start here
 
 | Document | Purpose |
@@ -15,6 +17,9 @@
 | [docs/QA_LAB.md](docs/QA_LAB.md) | Technical + audio validation |
 | [docs/CONTENT_FACTORY.md](docs/CONTENT_FACTORY.md) | Copy + demos from product truth |
 | [docs/VISION_MAP.md](docs/VISION_MAP.md) | Your 20 pillars → repo status |
+| [company/sonic-constitution.md](company/sonic-constitution.md) | Taste law + scoring |
+| [gates/DEFINITION_OF_DONE.md](gates/DEFINITION_OF_DONE.md) | Release gates |
+| [REPOSITORY_MAP.md](REPOSITORY_MAP.md) | Full tree vs your DISKLORDZ/ spec |
 | [docs/AIRTABLE_OPERATING_MODEL.md](docs/AIRTABLE_OPERATING_MODEL.md) | PM workflows |
 | [docs/AUTOMATION_ROADMAP.md](docs/AUTOMATION_ROADMAP.md) | Automation backlog |
 | [AGENTS.md](AGENTS.md) | Orchestrator + teams (not 25 agents) |

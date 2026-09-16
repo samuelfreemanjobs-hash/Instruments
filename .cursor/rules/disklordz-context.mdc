@@ -5,9 +5,10 @@ alwaysApply: false
 
 # DiskLordz context
 
-This repository includes **DiskLordz** — an agent-operated VST3 + sample business.
+This repository includes **DiskLordz** — an autonomous audio-product company.
 
-- Company OS: `disklordz/` (plan, Airtable schema, automation)
+- **Company brain:** `disklordz/company/` (mission, sonic constitution, decisions)
+- Company OS: `disklordz/` (gates, schemas, factories, automation)
 - Agents: `disklordz/AGENTS.md` and `.cursor/skills/disklordz-*`
 - Plugin code: `MyFirstPlugin/`
 - Orchestrator skill: `disklordz-product-orchestrator` — product family compiles

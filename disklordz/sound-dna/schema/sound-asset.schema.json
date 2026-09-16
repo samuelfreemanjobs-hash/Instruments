@@ -8,6 +8,7 @@
     "category",
     "sample_rate",
     "bit_depth",
+    "sha256",
     "provenance"
   ],
   "properties": {
@@ -16,6 +17,7 @@
       "pattern": "^DL-[A-Z]+-[0-9]+$",
       "description": "Stable asset id e.g. DL-KICK-00421"
     },
+    "name": { "type": "string" },
     "category": {
       "type": "string",
       "enum": [
@@ -32,38 +34,60 @@
         "other"
       ]
     },
+    "type": { "type": "string", "description": "Alias or sub-type e.g. one_shot" },
+    "bpm": { "type": ["number", "null"] },
+    "key": { "type": ["string", "null"] },
+    "root_note": { "type": ["string", "null"] },
     "era": {
       "type": "string",
       "enum": ["1980s", "1990s", "2000s", "2010s", "modern", "timeless"]
     },
     "character": {
       "type": "array",
-      "items": { "type": "string" },
-      "description": "e.g. digital, crushed, short, aggressive"
+      "items": { "type": "string" }
     },
     "genres": {
       "type": "array",
       "items": { "type": "string" }
     },
-    "pitch": {
-      "type": "string",
-      "description": "Note name or MIDI number as string"
-    },
+    "pitch": { "type": "string" },
     "duration_ms": { "type": "number", "minimum": 0 },
     "sample_rate": { "type": "integer", "minimum": 8000 },
     "bit_depth": { "type": "integer", "enum": [8, 16, 24, 32] },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Hash of canonical audio file for dedup"
+    },
+    "audio_metrics": {
+      "type": "object",
+      "properties": {
+        "peak_dbfs": { "type": "number" },
+        "rms_dbfs": { "type": "number" },
+        "lufs": { "type": "number" },
+        "crest_factor": { "type": "number" },
+        "transient_score": { "type": "number" },
+        "dynamic_range_db": { "type": "number" },
+        "dc_offset": { "type": "number" },
+        "clipped": { "type": "boolean" }
+      }
+    },
+    "spectral_features_ref": {
+      "type": "string",
+      "description": "Path or id to stored spectral vector file"
+    },
     "source": {
       "type": "string",
       "enum": ["original", "synthesis", "recording", "resample", "layer"]
     },
+    "creation_method": { "type": "string" },
     "processing": {
       "type": "array",
       "items": { "type": "string" }
     },
     "character_lab": {
       "type": "array",
-      "items": { "type": "string" },
-      "description": "Character Lab module ids applied"
+      "items": { "type": "string" }
     },
     "variants": {
       "type": "array",
@@ -73,31 +97,39 @@
       "type": ["string", "null"],
       "pattern": "^DL-[A-Z]+-[0-9]+$"
     },
+    "generator": { "type": "string", "description": "e.g. Kick Engine v2" },
     "file_path": { "type": "string" },
+    "version": { "type": "string", "default": "1.0.0" },
+    "approved": { "type": "boolean", "default": false },
+    "sonic_score": { "type": "number", "minimum": 0, "maximum": 100 },
+    "products_used_in": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "provenance": {
       "type": "object",
       "required": [
         "license",
         "owner",
         "date_created",
-        "commercial_ok"
+        "commercial_ok",
+        "origin"
       ],
       "properties": {
+        "origin": { "type": "string" },
         "license": { "type": "string" },
         "owner": { "type": "string" },
         "date_created": { "type": "string", "format": "date" },
         "processing_chain": { "type": "string" },
         "derivative_of": { "type": ["string", "null"] },
         "commercial_ok": { "type": "boolean" },
-        "attribution": { "type": ["string", "null"] },
-        "restrictions": { "type": ["string", "null"] }
+        "permissions": { "type": "string" },
+        "restrictions": { "type": ["string", "null"] },
+        "attribution": { "type": ["string", "null"] }
       },
       "additionalProperties": false
     },
-    "embedding_ref": {
-      "type": "string",
-      "description": "Optional vector index key for similarity search"
-    }
+    "embedding_ref": { "type": "string" }
   },
   "additionalProperties": false
 }

@@ -1,0 +1,12 @@
+---
+description: Product Genome, sonic problems, families, ladder.
+alwaysApply: false
+---
+
+# Product
+
+- Genome schema: `disklordz/schemas/product-genome.schema.json`
+- Philosophy: `disklordz/company/product-philosophy.md`
+- Example: `disklordz/schemas/examples/product-genome.detroit-digital-drums.yaml`
+
+No production SKU without committed genome + `family_id`.

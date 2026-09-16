@@ -1,0 +1,11 @@
+---
+description: Secrets, licensing, provenance — hard stops.
+alwaysApply: false
+---
+
+# Security & compliance
+
+- No secrets in git; use env / Zapier connections.
+- Provenance: `G-PROV` — unknown → STOP (`validate_provenance.py`).
+- Agents **must not** have unrestricted production payment/license server access.
+- `disklordz/docs/LICENSING.md` for VST3/JUCE/sample rights.

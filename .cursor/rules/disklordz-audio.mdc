@@ -1,0 +1,13 @@
+---
+description: Sound DNA, sonic constitution, Golden Ear Lab, audio regression.
+alwaysApply: false
+---
+
+# Audio
+
+- DNA schema: `disklordz/sound-dna/schema/sound-asset.schema.json` — include **sha256**.
+- Score assets: `disklordz/company/sonic-scoring.md`
+- Tests: `tests/audio/` golden + regression
+- Character Lab modules: `sound-factory/character-lab/MODULES.md`
+
+No ship without provenance + sonic threshold.

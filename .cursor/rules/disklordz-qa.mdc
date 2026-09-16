@@ -1,0 +1,12 @@
+---
+description: QA gates, plugin validation, DAW matrix — do not trust LLM-only QA.
+alwaysApply: false
+---
+
+# QA
+
+- Gates: `disklordz/gates/DEFINITION_OF_DONE.md`
+- Lab: `disklordz/docs/QA_LAB.md`, `disklordz/qa-lab/profiles/`
+- CI: `.github/workflows/build-plugin.yml`
+
+Mark release only when gates recorded; plugin changes need regression consideration.
