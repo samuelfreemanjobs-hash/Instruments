@@ -15,7 +15,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 Source/          Plugin processor, DSP, assets, preset import
 tools/           CLI binaries (link JUCE / plugin static lib)
 docs/            User and agent docs (SYSEX, ROM, phases, handoff)
-tests/golden/    Committed reference WAVs for CI spectral regression
+tests/golden/    manifest.tsv + golden WAVs; verify_golden.sh / refresh_golden.sh
 ```
 
 ## Build (all targets)

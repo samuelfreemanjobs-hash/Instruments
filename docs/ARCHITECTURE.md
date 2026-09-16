@@ -70,7 +70,7 @@ Control-rate envelopes advance every `kControlRateDivisor` (32) samples inside e
 ## Testing & regression
 
 - **Determinism:** two `OfflineRender` runs must match (`SpectralDiff`).
-- **Golden WAV:** `tests/golden/program0-c4-0.5s.wav` — CI compares fresh render ([AB_HARNESS.md](AB_HARNESS.md)).
+- **Golden WAVs:** `tests/golden/manifest.tsv` (6 programs) — `verify_golden.sh` in CI ([AB_HARNESS.md](AB_HARNESS.md)).
 
 ## Extension points
 

@@ -32,5 +32,4 @@ jobs:
           ./build/OfflineRender /tmp/jdupg-b.wav 0 60 100 0.5 44100
           test -s /tmp/jdupg-a.wav
           ./build/SpectralDiff /tmp/jdupg-a.wav /tmp/jdupg-b.wav --max-rms-db -80 --max-spectral-db 0.25
-          ./build/OfflineRender /tmp/jdupg-golden.wav 0 60 100 0.5 44100
-          ./build/SpectralDiff tests/golden/program0-c4-0.5s.wav /tmp/jdupg-golden.wav --max-rms-db -80 --max-spectral-db 0.25
+          ./tests/golden/verify_golden.sh

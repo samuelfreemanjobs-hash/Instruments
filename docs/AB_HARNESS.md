@@ -38,15 +38,33 @@ CI renders the same program twice and asserts near-identical output (determinism
 
 ## Golden reference (CI)
 
-Committed capture: `tests/golden/program0-c4-0.5s.wav` (program 0, C4, 0.5 s, 44100 Hz).
+Committed captures live under `tests/golden/`. Each row in **`tests/golden/manifest.tsv`** defines:
 
-Regenerate after intentional DSP changes:
+`filename · program index · MIDI note · velocity · seconds · sample rate`
+
+| File | Program | Category (factory) | Note |
+|------|---------|-------------------|------|
+| `program0-c4-0.5s.wav` | 0 | EP | C4 |
+| `program24-c4-0.5s.wav` | 24 | Pad | C4 |
+| `program48-e2-0.5s.wav` | 48 | Bass | E2 |
+| `program64-c4-0.5s.wav` | 64 | Vapor | C4 |
+| `program80-c4-0.5s.wav` | 80 | 80s R&B | C4 |
+| `program112-c4-0.5s.wav` | 112 | Elite (coupling) | C4 |
+
+Verify locally (after build):
 
 ```bash
-./build/OfflineRender tests/golden/program0-c4-0.5s.wav 0 60 100 0.5 44100
+./tests/golden/verify_golden.sh
 ```
 
-CI also diffs a fresh render against this file via `SpectralDiff`.
+Regenerate all golden files after intentional DSP changes:
+
+```bash
+./tests/golden/refresh_golden.sh
+git add tests/golden/*.wav
+```
+
+CI runs `verify_golden.sh` after the determinism check.
 
 ## External reference
 

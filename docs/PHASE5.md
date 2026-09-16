@@ -19,7 +19,7 @@ Phase 1–4 on branch `cursor/jd-synth-phase1-3015` cover a playable JD-style in
 
 - Hand-tuned factory programs beyond procedural `buildPatch()`
 - Installer policy: **only** ship embedded `JDUPGROM`; no user dump pipeline in retail build
-- ~~Committed golden WAV + CI~~ (`tests/golden/program0-c4-0.5s.wav`); expand suite / hardware reference clips later
+- ~~Golden WAV suite + CI~~ (`tests/golden/manifest.tsv`, 6 factory programs); hardware reference clips later
 
 ## Integration
 

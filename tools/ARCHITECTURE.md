@@ -38,13 +38,10 @@ argv → createPluginFilter() → prepareToPlay → setCurrentProgram
 
 ## Golden references
 
-Committed under `tests/golden/`. Regenerate after intentional DSP changes:
+Committed under `tests/golden/` with **`manifest.tsv`** (program, note, duration). Scripts:
 
-```bash
-./build/OfflineRender tests/golden/program0-c4-0.5s.wav 0 60 100 0.5 44100
-```
-
-CI renders the same arguments and compares with `SpectralDiff` against the committed file.
+- `tests/golden/refresh_golden.sh` — rewrite all golden WAVs via `OfflineRender`
+- `tests/golden/verify_golden.sh` — CI/local regression (`SpectralDiff` per manifest row)
 
 ## Extension points
 
