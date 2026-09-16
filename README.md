@@ -47,6 +47,7 @@ AU (macOS): see [docs/INTEGRATION.md](docs/INTEGRATION.md).
 - [UI](docs/UI.md) · [Installer policy](docs/INSTALLER_POLICY.md)
 - [Presets](docs/PRESETS.md)
 - [Agent handoff](docs/HANDOFF.md)
+- [24/7 Cloud Agent setup](docs/CLOUD_AGENT.md)
 - [Phase 5 roadmap](docs/PHASE5.md)
 
 ## Environment

@@ -1,3 +1,4 @@
 {
-  "install": "sudo apt-get update -qq && sudo apt-get install -y -qq build-essential g++-12 libstdc++-12-dev libasound2-dev libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev libcurl4-openssl-dev"
+  "name": "Instruments — JD Upgraded (Ubuntu, g++-12)",
+  "install": "sudo apt-get update -qq\nsudo apt-get install -y -qq build-essential g++-12 libstdc++-12-dev libasound2-dev libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev libcurl4-openssl-dev\ncmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12\ncmake --build build -j$(nproc)\n./tests/golden/verify_golden.sh"
 }

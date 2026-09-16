@@ -1,0 +1,40 @@
+---
+description: Default playbook for Cloud Agents and Cursor Automations on the Instruments repo
+alwaysApply: true
+---
+
+# Autonomous agent playbook (Instruments)
+
+You are working on **JD Upgraded** in `github.com/samuelfreemanjobs-hash/Instruments`. Base branch: **`main`**.
+
+## Workflow
+
+1. Read [ARCHITECTURE.md](../../ARCHITECTURE.md), [docs/HANDOFF.md](../../docs/HANDOFF.md), and [docs/PHASE5.md](../../docs/PHASE5.md) before large changes.
+2. Create feature branches: `cursor/<short-description>-3015` (suffix `-3015` on new branches).
+3. Keep diffs focused; match existing C++/CMake style.
+4. Before finishing: `cmake --build build -j` and `./tests/golden/verify_golden.sh` when DSP or factory programs change.
+5. Commit, push, open or update a **draft** PR with `base_branch: main`. **Do not merge** unless the user explicitly asks.
+
+## Build
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+cmake --build build -j
+```
+
+Targets: `JDUpgraded_VST3`, `JDUpgraded_CLAP`, `JDUpgraded_Standalone`, `OfflineRender`, `SpectralDiff`.
+
+## Backlog (pick one slice per run)
+
+- SysEx / JD patch mapping gaps ([docs/SYSEX.md](../../docs/SYSEX.md))
+- Group A/B FX fidelity vs hardware ([docs/HARDWARE_REFERENCE.md](../../docs/HARDWARE_REFERENCE.md))
+- More curated factory programs + golden manifest rows
+- UI surface (JD-style controls) per [docs/UI.md](../../docs/UI.md)
+- CLAP: move clap-juce-extensions pin to a release tag when JUCE-8-compatible
+- macOS **AU** build docs or CI (out of scope for Linux-only agents unless documented)
+- Keep [docs/HANDOFF.md](../../docs/HANDOFF.md) accurate after substantive merges
+
+## Product constraints
+
+- Clean-room ROM only; no shipping Roland copyrighted samples.
+- Maintain `ARCHITECTURE.md` when adding products or major subsystems (see [architecture-documentation.mdc](architecture-documentation.mdc)).
