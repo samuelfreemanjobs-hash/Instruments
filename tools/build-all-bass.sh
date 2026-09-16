@@ -15,6 +15,7 @@ UNITS=(
   oscillators/juno-rnb
   oscillators/dilla-bass
   oscillators/sub-phatty
+  oscillators/prophet-funk
 )
 
 for unit in "${UNITS[@]}"; do

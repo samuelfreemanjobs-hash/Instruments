@@ -25,6 +25,7 @@ toolchain.
 | `juno-rnb` | Juno R&B | 80s R&B / pop bass | E1–A2 |
 | `dilla-bass` | Dilla Bass | Hip-hop / neo-soul loose bass | D1–G2 |
 | `sub-phatty` | Sub Phatty | Moog Sub Phatty fat / Multidrive bass | E1–C3 |
+| `prophet-funk` | P5 Funk RB | Prophet-5 70s funk / 80s R&B bass | C2–C3 |
 
 Supporting folders: `template`, `wavetable` (learning / starters).
 

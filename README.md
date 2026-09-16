@@ -13,6 +13,7 @@ Prologue). Each oscillator is a separate unit you load when you need that sound.
 | [`juno-rnb`](src/oscillators/juno-rnb/) | **Juno R&B** | 80s R&B / Juno-106 bass |
 | [`dilla-bass`](src/oscillators/dilla-bass/) | **Dilla Bass** | J Dilla–style wobble / glide / warm MPC tone |
 | [`sub-phatty`](src/oscillators/sub-phatty/) | **Sub Phatty** | Moog Sub Phatty dual osc, sub, Multidrive |
+| [`prophet-funk`](src/oscillators/prophet-funk/) | **P5 Funk RB** | Prophet-5 70s funk / 80s R&B bass |
 
 Each unit is **multifunction** (mainly **Vibe**) and ships **presets** in
 `manifest.json` → `_agent.presets` (knob values 0–100).
