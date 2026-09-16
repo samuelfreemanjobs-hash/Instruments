@@ -1,3 +1,9 @@
+# Instruments
+
+This monorepo hosts **JD Upgraded** (Roland JD-style synth) and the **MyFirstPlugin** JUCE starter templates.
+
+---
+
 # JD Upgraded
 
 Clean-room JUCE **VST3**, **CLAP**, and **standalone** synthesizer inspired by the Roland JD-800 / JD-990: four tones per voice, PCM ROM playback, ZDF TVF, tone coupling, Group A/B effects, and 128 factory programs.
@@ -46,3 +52,14 @@ AU (macOS): see [docs/INTEGRATION.md](docs/INTEGRATION.md).
 ## Environment
 
 `JDUPGRADED_ROM_PATH` — load a validated `JDUPGROM` file instead of the embedded ROM (development).
+
+---
+
+# MyFirstPlugin (starter)
+
+CMake-native [JUCE](https://juce.com/) effect and synth templates under [`MyFirstPlugin/`](MyFirstPlugin/). JUCE version is pinned in [`JUCE_VERSION`](JUCE_VERSION) (fetched on first configure for that subproject).
+
+**Windows:** `MyFirstPlugin/Build Plugin.bat` or see [`MyFirstPlugin/VISUAL_STUDIO.md`](MyFirstPlugin/VISUAL_STUDIO.md).  
+**macOS / Linux:** `cd MyFirstPlugin && ./build.sh`
+
+CI for the starter: [`.github/workflows/build-plugin.yml`](.github/workflows/build-plugin.yml).

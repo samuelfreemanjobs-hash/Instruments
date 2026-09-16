@@ -1,3 +1,8 @@
 build/
 _deps/
 cmake-build-*/
+MyFirstPlugin/build/
+MyFirstPlugin/build-ninja/
+*.user
+.vs/
+.idea/
