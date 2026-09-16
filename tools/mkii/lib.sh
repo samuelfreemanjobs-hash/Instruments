@@ -26,17 +26,16 @@ mkii_resolve_logue_sdk() {
 }
 
 mkii_ensure_logue_sdk_clone() {
-  local sdk repo_root
+  local sdk
   sdk="$(mkii_default_logue_sdk)"
-  repo_root="$(mkii_repo_root)"
   if [[ -d "${sdk}/.git" ]]; then
-    echo "${sdk}"
+    printf '%s\n' "${sdk}"
     return 0
   fi
-  echo "Cloning logue-sdk into ${sdk} ..."
+  echo "Cloning logue-sdk into ${sdk} ..." >&2
   mkdir -p "$(dirname "${sdk}")"
   git clone --depth 1 https://github.com/korginc/logue-sdk.git "${sdk}"
-  echo "${sdk}"
+  printf '%s\n' "${sdk}"
 }
 
 mkii_init_submodules() {
@@ -86,7 +85,9 @@ mkii_ensure_arm_gcc() {
 mkii_scaffold_all() {
   local root sdk force_flag=()
   root="$(mkii_repo_root)"
-  sdk="$(mkii_resolve_logue_sdk)" || sdk="$(mkii_ensure_logue_sdk_clone)"
+  if ! sdk="$(mkii_resolve_logue_sdk 2>/dev/null)"; then
+    sdk="$(mkii_ensure_logue_sdk_clone)"
+  fi
   mkii_init_submodules "${sdk}"
   if [[ "${1:-}" == "--force" ]]; then
     force_flag=(--force)
