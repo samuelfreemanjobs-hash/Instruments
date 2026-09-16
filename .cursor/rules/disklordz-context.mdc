@@ -1,0 +1,16 @@
+---
+description: DiskLordz audio company context — use when working on disklordz/, agents, Airtable, or automation for plugins and samples.
+alwaysApply: false
+---
+
+# DiskLordz context
+
+This repository includes **DiskLordz** — an agent-operated VST3 + sample business.
+
+- Company OS: `disklordz/` (plan, Airtable schema, automation)
+- Agents: `disklordz/AGENTS.md` and `.cursor/skills/disklordz-*`
+- Plugin code: `MyFirstPlugin/`
+- PM skill: `disklordz-audio-pm` — Airtable is system of record
+- Automation skill: `disklordz-workflow-automation-engineer` — autonomous backlog until blocked
+
+Creative Director (human) approves taste and `Released` status only.
