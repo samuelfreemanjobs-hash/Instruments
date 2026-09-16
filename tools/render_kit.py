@@ -21,6 +21,27 @@ from disklordz import audit, synthesis  # noqa: E402
 from disklordz.db import connect, init_db, insert_batch, insert_sample, mean_reference_metrics  # noqa: E402
 
 
+def _notify_activepieces(webhook: str, kit_name: str, files: list[str], batch_id: str) -> None:
+    if not webhook:
+        return
+    try:
+        import requests
+    except ImportError:
+        print("[activepieces] install requests to enable webhooks", file=sys.stderr)
+        return
+    payload = {
+        "kit_name": kit_name,
+        "count": len(files),
+        "batch_id": batch_id,
+        "files": files[:20],
+        "source": "disklordz_render_kit",
+    }
+    try:
+        requests.post(webhook, json=payload, timeout=10)
+    except OSError as exc:
+        print(f"[activepieces] post failed: {exc}", file=sys.stderr)
+
+
 def _notify_slack(webhook: str, kit_name: str, files: list[str]) -> None:
     if not webhook:
         return

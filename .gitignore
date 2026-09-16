@@ -6,3 +6,5 @@ MyFirstPlugin/build-ninja/
 tools/.venv/
 tools/data/
 tools/output/
+infra/activepieces/.env
+infra/activepieces/cache/

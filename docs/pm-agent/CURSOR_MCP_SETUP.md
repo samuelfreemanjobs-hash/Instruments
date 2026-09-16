@@ -78,8 +78,13 @@ Repo secret: GitHub → Settings → Secrets → `AIRTABLE_API_KEY` → re-run w
 
 Pods may block `api.airtable.com` until **egress allowlist** includes it (see `.cursor/environment.json`). Local Cursor + MCP uses **your** network and works once the token is set.
 
-## 6. What we are not doing
+## 6. Activepieces (self-host, optional)
 
-- **Activepieces / Zapier** for PM (optional later for storefront only).
+Event webhooks (factory done → Slack / Airtable): **[infra/activepieces/README.md](../../infra/activepieces/README.md)**.  
+Keep **PM BRIEFING / PM UPDATE** in Cursor MCP.
+
+## 7. What we are not doing
+
+- **Zapier** for PM (task limits).
 - **Agent Zero** orchestrators.
 - MCP driving `render_kit.py` loops — you run the CLI; MCP updates **registry + Slack**.
