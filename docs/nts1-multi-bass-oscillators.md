@@ -29,6 +29,7 @@ toolchain.
 | `dx7-lately` | Lately Bass | DX7 FM electric / house bass | E2–A2 |
 | `sh101-babyface` | SH-101 BF | SH-101 warm pulse / hollow FM bass | C2–A2 |
 | `moog-voyager-se` | Voyager SE | Model D / Voyager + SE-1 fat stack, squelch | E1–C3 |
+| `cardo-gfunk` | Cardo GF | Cardo-style sub + warm mid G-funk bass | C1–G2 |
 
 Supporting folders: `template`, `wavetable` (learning / starters).
 

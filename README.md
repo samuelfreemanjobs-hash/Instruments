@@ -17,6 +17,7 @@ Prologue). Each oscillator is a separate unit you load when you need that sound.
 | [`dx7-lately`](src/oscillators/dx7-lately/) | **Lately Bass** | DX7 FM electric bass (Lately Bass) |
 | [`sh101-babyface`](src/oscillators/sh101-babyface/) | **SH-101 BF** | Warm PWM pulse, sub, hollow FM bass |
 | [`moog-voyager-se`](src/oscillators/moog-voyager-se/) | **Voyager SE** | Model D / SE-1 fat stack + glide squelch |
+| [`cardo-gfunk`](src/oscillators/cardo-gfunk/) | **Cardo GF** | Sub + warm mid late-night G-funk bass |
 
 Each unit is **multifunction** (mainly **Vibe**) and ships **presets** in
 `manifest.json` → `_agent.presets` (knob values 0–100).

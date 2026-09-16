@@ -19,6 +19,7 @@ UNITS=(
   oscillators/dx7-lately
   oscillators/sh101-babyface
   oscillators/moog-voyager-se
+  oscillators/cardo-gfunk
 )
 
 for unit in "${UNITS[@]}"; do
