@@ -32,6 +32,8 @@ cmake --build build -j
 
 Optional Slack notifications: [`.github/workflows/ci-slack-notify.yml`](.github/workflows/ci-slack-notify.yml) (configure with [`scripts/setup-disklordz-integrations.sh`](scripts/setup-disklordz-integrations.sh)).
 
+Cloud Agents: [`AGENTS.md`](AGENTS.md) · integrations [`docs/DISKLORDZ_INTEGRATIONS.md`](docs/DISKLORDZ_INTEGRATIONS.md) · task queue [`.github/workflows/agent-task.yml`](.github/workflows/agent-task.yml).
+
 ## Documentation policy
 
 Every product must maintain an `ARCHITECTURE.md` — see [.cursor/rules/architecture-documentation.mdc](.cursor/rules/architecture-documentation.mdc).
