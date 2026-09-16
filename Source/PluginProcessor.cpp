@@ -69,7 +69,11 @@ JDUpgradedAudioProcessor::JDUpgradedAudioProcessor()
                                BinaryData::jdupg_cleanroom_romSize);
 
     if (const char* externalRom = std::getenv ("JDUPGRADED_ROM_PATH"))
-        romLoader_.loadUserRomFile (externalRom);
+    {
+        if (! romLoader_.loadUserRomFile (externalRom))
+            juce::Logger::writeToLog ("JDUPGRADED_ROM_PATH failed: "
+                                      + juce::String (romLoader_.getLastUserLoadError()));
+    }
 
     refreshCachedParameters();
     applyFactoryPatch (0);

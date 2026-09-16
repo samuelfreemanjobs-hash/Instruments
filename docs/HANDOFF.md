@@ -26,8 +26,8 @@ cmake --build build -j
 4. ~~**UI (envelopes)**~~ — global Amp/Filter ADSR in APVTS + editor (shared across 4 tones)
 5. ~~**UI (per-tone env)**~~ — `toneN*` ADSR params, **Link** toggle, tone selector in editor
 6. ~~**UI (palette)**~~ — category colors, palette snap combo, wave labels from ROM metadata
-7. **User dump loader** — separate legal review; only JDUPGROM in installer
-8. ~~**A/B harness (partial)**~~ — `OfflineRender` CLI; spectral diff still TBD
+7. ~~**User ROM (dev)**~~ — safe `JDUPGRADED_ROM_PATH` load + `docs/USER_ROM.md`; Roland dumps rejected by format
+8. ~~**A/B harness**~~ — `OfflineRender` + `SpectralDiff` CLI; CI determinism check
 
 ## Key paths
 

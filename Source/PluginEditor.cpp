@@ -12,6 +12,10 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
     titleLabel_.setJustificationType (juce::Justification::centred);
     addAndMakeVisible (titleLabel_);
 
+    romSourceLabel_.setJustificationType (juce::Justification::centred);
+    romSourceLabel_.setFont (juce::Font (11.0f));
+    addAndMakeVisible (romSourceLabel_);
+
     programLabel_.setJustificationType (juce::Justification::centred);
     addAndMakeVisible (programLabel_);
 
@@ -307,6 +311,8 @@ void JDUpgradedAudioProcessorEditor::timerCallback()
     for (int i = 0; i < 4; ++i)
         tonePaletteLabels_[static_cast<std::size_t> (i)].setText (describeWaveForTone (i),
                                                                   juce::dontSendNotification);
+
+    romSourceLabel_.setText (processor_.getRomSourceDescription(), juce::dontSendNotification);
 }
 
 void JDUpgradedAudioProcessorEditor::paint (juce::Graphics& g)
@@ -339,7 +345,8 @@ void JDUpgradedAudioProcessorEditor::paint (juce::Graphics& g)
 void JDUpgradedAudioProcessorEditor::resized()
 {
     auto area = getLocalBounds().reduced (8);
-    titleLabel_.setBounds (area.removeFromTop (20));
+    titleLabel_.setBounds (area.removeFromTop (18));
+    romSourceLabel_.setBounds (area.removeFromTop (14));
 
     auto programRow = area.removeFromTop (26);
     programPrev_.setBounds (programRow.removeFromLeft (32));

@@ -127,3 +127,17 @@ target_compile_definitions(OfflineRender
         JUCE_USE_CURL=0
 )
 add_dependencies(OfflineRender JDUpgradedRomData)
+
+add_executable(SpectralDiff tools/SpectralDiff.cpp)
+target_link_libraries(SpectralDiff
+    PRIVATE
+        juce::juce_audio_formats
+        juce::juce_dsp
+        juce::juce_gui_basics
+        juce::juce_gui_extra
+)
+target_compile_definitions(SpectralDiff
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+)

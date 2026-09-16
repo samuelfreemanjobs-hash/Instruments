@@ -26,6 +26,20 @@ cmake --build build -j
 
 Arguments: `output.wav [program] [midiNote] [velocity] [seconds] [sampleRate]`.
 
-## Planned automation
+## Spectral diff (`SpectralDiff`)
 
-- FFT magnitude diff vs user-supplied reference clip (CI hook)
+Compare two WAV files (peak-normalized mono):
+
+```bash
+./build/SpectralDiff reference.wav test.wav --max-rms-db -40 --max-spectral-db -20
+```
+
+CI renders the same program twice and asserts near-identical output (determinism regression).
+
+## External reference
+
+To compare against a hardware/plugin reference clip, render with matching program/MIDI via `OfflineRender`, then:
+
+```bash
+./build/SpectralDiff your_reference.wav /tmp/jdupg-render.wav
+```

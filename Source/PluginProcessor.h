@@ -9,6 +9,7 @@
 #include "DSP/VoicePool.h"
 
 #include <array>
+#include <string>
 
 class JDUpgradedAudioProcessor final : public juce::AudioProcessor
 {
@@ -43,6 +44,7 @@ public:
 
     juce::AudioProcessorValueTreeState& getAPVTS() noexcept { return apvts_; }
     const jdupgraded::assets::RomBank& getRomBank() const noexcept { return romLoader_.getBank(); }
+    std::string getRomSourceDescription() const { return romLoader_.getSourceDescription(); }
 
     /** Returns true when a JD patch block was decoded and parameters updated. */
     bool applyJdSysexMessage (const std::uint8_t* data, std::size_t size) noexcept;

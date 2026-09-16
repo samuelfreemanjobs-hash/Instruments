@@ -27,4 +27,8 @@ jobs:
         run: cmake --build build -j$(nproc)
 
       - name: Offline render smoke
-        run: ./build/OfflineRender /tmp/jdupg-smoke.wav 0 60 100 0.5 44100 && test -s /tmp/jdupg-smoke.wav
+        run: |
+          ./build/OfflineRender /tmp/jdupg-a.wav 0 60 100 0.5 44100
+          ./build/OfflineRender /tmp/jdupg-b.wav 0 60 100 0.5 44100
+          test -s /tmp/jdupg-a.wav
+          ./build/SpectralDiff /tmp/jdupg-a.wav /tmp/jdupg-b.wav --max-rms-db -80 --max-spectral-db 0.25

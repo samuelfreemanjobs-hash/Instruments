@@ -34,6 +34,7 @@ private:
     juce::Slider groupBMixSlider_;
     juce::ComboBox couplingCombo_;
     juce::Label titleLabel_;
+    juce::Label romSourceLabel_;
     juce::Label programLabel_;
     juce::TextButton programPrev_ { "<" };
     juce::TextButton programNext_ { ">" };
