@@ -24,9 +24,10 @@ cmake --build build -j
 2. ~~**UI (partial)**~~ — filter, Group A/B, coupling, per-tone wave rotaries
 3. ~~**SysEx (partial)**~~ — `JdPatchSysexMapper` maps 384-byte JD patch block → APVTS; MIDI SysEx in `processBlock`
 4. ~~**UI (envelopes)**~~ — global Amp/Filter ADSR in APVTS + editor (shared across 4 tones)
-5. **UI** — per-tone envelopes, palette link
-6. **User dump loader** — separate legal review; only JDUPGROM in installer
-7. **A/B harness** — offline render + spectral diff vs reference clips (user-provided)
+5. ~~**UI (per-tone env)**~~ — `toneN*` ADSR params, **Link** toggle, tone selector in editor
+6. **UI** — palette link (wave category colors / ROM browser)
+7. **User dump loader** — separate legal review; only JDUPGROM in installer
+8. **A/B harness** — see `docs/AB_HARNESS.md` (manual workflow; headless render TBD)
 
 ## Key paths
 

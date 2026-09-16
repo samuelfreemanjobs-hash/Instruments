@@ -2,6 +2,7 @@
 
 #include "Assets/FactoryPatchLibrary.h"
 #include "Assets/RomFormat.h"
+#include "Parameters/EnvelopeParameters.h"
 
 JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioProcessor& p)
     : AudioProcessorEditor (&p), processor_ (p)
@@ -109,25 +110,31 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
                           &filterAttackSlider_, &filterDecaySlider_, &filterSustainSlider_, &filterReleaseSlider_ })
         addAndMakeVisible (*slider);
 
-    ampAttackAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
-        processor_.getAPVTS(), "ampAttack", ampAttackSlider_);
-    ampDecayAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
-        processor_.getAPVTS(), "ampDecay", ampDecaySlider_);
-    ampSustainAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
-        processor_.getAPVTS(), "ampSustain", ampSustainSlider_);
-    ampReleaseAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
-        processor_.getAPVTS(), "ampRelease", ampReleaseSlider_);
-    filterAttackAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
-        processor_.getAPVTS(), "filterAttack", filterAttackSlider_);
-    filterDecayAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
-        processor_.getAPVTS(), "filterDecay", filterDecaySlider_);
-    filterSustainAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
-        processor_.getAPVTS(), "filterSustain", filterSustainSlider_);
-    filterReleaseAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
-        processor_.getAPVTS(), "filterRelease", filterReleaseSlider_);
+    envelopeLinkButton_.setButtonText ("Link");
+    envelopeLinkButton_.setClickingTogglesState (true);
+    addAndMakeVisible (envelopeLinkButton_);
+    envelopeLinkAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
+        processor_.getAPVTS(), jdupgraded::params::kEnvelopeLinkId, envelopeLinkButton_);
+    envelopeLinkButton_.onClick = [this]
+    {
+        if (processor_.isEnvelopeLinked())
+            processor_.copyGlobalEnvelopesToAllTones();
+        envelopeToneCombo_.setEnabled (! processor_.isEnvelopeLinked());
+        rebindEnvelopeAttachments();
+    };
+
+    envelopeToneLabel_.setText ("Tone", juce::dontSendNotification);
+    addAndMakeVisible (envelopeToneLabel_);
+    envelopeToneCombo_.addItemList ({ "1", "2", "3", "4" }, 1);
+    envelopeToneCombo_.setSelectedId (1, juce::dontSendNotification);
+    envelopeToneCombo_.setEnabled (! processor_.isEnvelopeLinked());
+    envelopeToneCombo_.onChange = [this] { rebindEnvelopeAttachments(); };
+    addAndMakeVisible (envelopeToneCombo_);
+
+    rebindEnvelopeAttachments();
 
     startTimerHz (4);
-    setSize (720, 560);
+    setSize (720, 580);
 }
 
 JDUpgradedAudioProcessorEditor::~JDUpgradedAudioProcessorEditor()
@@ -147,6 +154,55 @@ void JDUpgradedAudioProcessorEditor::styleEnvSlider (juce::Slider& slider, const
     slider.setName (name);
     slider.setSliderStyle (juce::Slider::LinearHorizontal);
     slider.setTextBoxStyle (juce::Slider::TextBoxRight, false, 48, 16);
+}
+
+void JDUpgradedAudioProcessorEditor::rebindEnvelopeAttachments()
+{
+    ampAttackAttachment_.reset();
+    ampDecayAttachment_.reset();
+    ampSustainAttachment_.reset();
+    ampReleaseAttachment_.reset();
+    filterAttackAttachment_.reset();
+    filterDecayAttachment_.reset();
+    filterSustainAttachment_.reset();
+    filterReleaseAttachment_.reset();
+
+    const bool linked = processor_.isEnvelopeLinked();
+    const int tone = envelopeToneCombo_.getSelectedId() > 0 ? envelopeToneCombo_.getSelectedId() : 1;
+
+    const juce::String ampAttackId =
+        linked ? "ampAttack" : jdupgraded::params::toneEnvelopeParamId (tone, "AmpAttack");
+    const juce::String ampDecayId =
+        linked ? "ampDecay" : jdupgraded::params::toneEnvelopeParamId (tone, "AmpDecay");
+    const juce::String ampSustainId =
+        linked ? "ampSustain" : jdupgraded::params::toneEnvelopeParamId (tone, "AmpSustain");
+    const juce::String ampReleaseId =
+        linked ? "ampRelease" : jdupgraded::params::toneEnvelopeParamId (tone, "AmpRelease");
+    const juce::String filterAttackId =
+        linked ? "filterAttack" : jdupgraded::params::toneEnvelopeParamId (tone, "FilterAttack");
+    const juce::String filterDecayId =
+        linked ? "filterDecay" : jdupgraded::params::toneEnvelopeParamId (tone, "FilterDecay");
+    const juce::String filterSustainId =
+        linked ? "filterSustain" : jdupgraded::params::toneEnvelopeParamId (tone, "FilterSustain");
+    const juce::String filterReleaseId =
+        linked ? "filterRelease" : jdupgraded::params::toneEnvelopeParamId (tone, "FilterRelease");
+
+    ampAttackAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+        processor_.getAPVTS(), ampAttackId, ampAttackSlider_);
+    ampDecayAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+        processor_.getAPVTS(), ampDecayId, ampDecaySlider_);
+    ampSustainAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+        processor_.getAPVTS(), ampSustainId, ampSustainSlider_);
+    ampReleaseAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+        processor_.getAPVTS(), ampReleaseId, ampReleaseSlider_);
+    filterAttackAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+        processor_.getAPVTS(), filterAttackId, filterAttackSlider_);
+    filterDecayAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+        processor_.getAPVTS(), filterDecayId, filterDecaySlider_);
+    filterSustainAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+        processor_.getAPVTS(), filterSustainId, filterSustainSlider_);
+    filterReleaseAttachment_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+        processor_.getAPVTS(), filterReleaseId, filterReleaseSlider_);
 }
 
 void JDUpgradedAudioProcessorEditor::changeProgramByDelta (int delta)
@@ -171,7 +227,7 @@ void JDUpgradedAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colour (0xff1a1a22));
     g.setColour (juce::Colours::white.withAlpha (0.85f));
-    g.drawFittedText ("Level · Wave · MS · Mute  |  Global Amp & Filter envelopes (all tones)",
+    g.drawFittedText ("Level · Wave · MS · Mute  |  Envelopes: Link or pick tone 1–4",
                       getLocalBounds().removeFromBottom (24),
                       juce::Justification::centred, 1);
 }
@@ -194,7 +250,7 @@ void JDUpgradedAudioProcessorEditor::resized()
     groupBMixSlider_.setBounds (fxRow.removeFromLeft (fxW).reduced (4));
     couplingCombo_.setBounds (fxRow.reduced (4));
 
-    auto envArea = area.removeFromBottom (88);
+    auto envArea = area.removeFromBottom (108);
     area = area.reduced (0, 4);
 
     auto toneRow = area;
@@ -209,7 +265,12 @@ void JDUpgradedAudioProcessorEditor::resized()
         toneLevelSliders_[static_cast<std::size_t> (i)].setBounds (col.reduced (2));
     }
 
-    auto ampRow = envArea.removeFromTop (44);
+    auto envHeader = envArea.removeFromTop (22);
+    envelopeLinkButton_.setBounds (envHeader.removeFromLeft (52));
+    envelopeToneLabel_.setBounds (envHeader.removeFromLeft (40));
+    envelopeToneCombo_.setBounds (envHeader.removeFromLeft (48));
+
+    auto ampRow = envArea.removeFromTop (40);
     ampEnvLabel_.setBounds (ampRow.removeFromLeft (72));
     const int envSlot = ampRow.getWidth() / 4;
     ampAttackSlider_.setBounds (ampRow.removeFromLeft (envSlot).reduced (2));

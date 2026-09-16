@@ -2,6 +2,7 @@
 
 #include "JdEnvelopeScale.h"
 #include "JdPatchLayout.h"
+#include "Parameters/EnvelopeParameters.h"
 #include "SysExParser.h"
 
 #include <algorithm>
@@ -89,6 +90,39 @@ bool JdPatchSysexMapper::applyRawPatchBlock (juce::AudioProcessorValueTreeState&
 
     setApvtsFloat (apvts, "filterResonance", maxResonance);
 
+    for (std::size_t t = 0; t < kJdTonesPerPatch; ++t)
+    {
+        const auto base = kJdToneBlockOffset (t);
+        const int tone = static_cast<int> (t) + 1;
+
+        const juce::String ampAttackId = jdupgraded::params::toneEnvelopeParamId (tone, "AmpAttack");
+        const juce::String ampDecayId = jdupgraded::params::toneEnvelopeParamId (tone, "AmpDecay");
+        const juce::String ampSustainId = jdupgraded::params::toneEnvelopeParamId (tone, "AmpSustain");
+        const juce::String ampReleaseId = jdupgraded::params::toneEnvelopeParamId (tone, "AmpRelease");
+        const juce::String filterAttackId = jdupgraded::params::toneEnvelopeParamId (tone, "FilterAttack");
+        const juce::String filterDecayId = jdupgraded::params::toneEnvelopeParamId (tone, "FilterDecay");
+        const juce::String filterSustainId = jdupgraded::params::toneEnvelopeParamId (tone, "FilterSustain");
+        const juce::String filterReleaseId = jdupgraded::params::toneEnvelopeParamId (tone, "FilterRelease");
+
+        setApvtsFloat (apvts, ampAttackId.toRawUTF8(),
+                       jdEnvelopeTimeToSeconds (patch[base + kJdToneTvaEnvTime1]));
+        setApvtsFloat (apvts, ampDecayId.toRawUTF8(),
+                       jdEnvelopeTimeToSeconds (patch[base + kJdToneTvaEnvTime2]));
+        setApvtsFloat (apvts, ampSustainId.toRawUTF8(),
+                       jdEnvelopeLevelToNorm (patch[base + kJdToneTvaEnvSustain]));
+        setApvtsFloat (apvts, ampReleaseId.toRawUTF8(),
+                       jdEnvelopeTimeToSeconds (patch[base + kJdToneTvaEnvTime4]));
+
+        setApvtsFloat (apvts, filterAttackId.toRawUTF8(),
+                       jdEnvelopeTimeToSeconds (patch[base + kJdToneTvfEnvTime1]));
+        setApvtsFloat (apvts, filterDecayId.toRawUTF8(),
+                       jdEnvelopeTimeToSeconds (patch[base + kJdToneTvfEnvTime2]));
+        setApvtsFloat (apvts, filterSustainId.toRawUTF8(),
+                       jdEnvelopeLevelToNorm (patch[base + kJdToneTvfEnvSustain]));
+        setApvtsFloat (apvts, filterReleaseId.toRawUTF8(),
+                       jdEnvelopeTimeToSeconds (patch[base + kJdToneTvfEnvTime4]));
+    }
+
     const auto tone0 = kJdToneBlockOffset (0);
     setApvtsFloat (apvts, "ampAttack",
                    jdEnvelopeTimeToSeconds (patch[tone0 + kJdToneTvaEnvTime1]));
@@ -98,7 +132,6 @@ bool JdPatchSysexMapper::applyRawPatchBlock (juce::AudioProcessorValueTreeState&
                    jdEnvelopeLevelToNorm (patch[tone0 + kJdToneTvaEnvSustain]));
     setApvtsFloat (apvts, "ampRelease",
                    jdEnvelopeTimeToSeconds (patch[tone0 + kJdToneTvaEnvTime4]));
-
     setApvtsFloat (apvts, "filterAttack",
                    jdEnvelopeTimeToSeconds (patch[tone0 + kJdToneTvfEnvTime1]));
     setApvtsFloat (apvts, "filterDecay",
@@ -107,6 +140,7 @@ bool JdPatchSysexMapper::applyRawPatchBlock (juce::AudioProcessorValueTreeState&
                    jdEnvelopeLevelToNorm (patch[tone0 + kJdToneTvfEnvSustain]));
     setApvtsFloat (apvts, "filterRelease",
                    jdEnvelopeTimeToSeconds (patch[tone0 + kJdToneTvfEnvTime4]));
+    setApvtsBool (apvts, jdupgraded::params::kEnvelopeLinkId, false);
 
     return true;
 }

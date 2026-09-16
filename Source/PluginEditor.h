@@ -23,6 +23,7 @@ private:
     void changeProgramByDelta (int delta);
     void styleRotary (juce::Slider& slider, const juce::String& name);
     void styleEnvSlider (juce::Slider& slider, const juce::String& name);
+    void rebindEnvelopeAttachments();
 
     JDUpgradedAudioProcessor& processor_;
     juce::Slider masterGainSlider_;
@@ -40,6 +41,9 @@ private:
     std::array<juce::ToggleButton, 4> toneMuteButtons_;
     juce::Label ampEnvLabel_;
     juce::Label filterEnvLabel_;
+    juce::ToggleButton envelopeLinkButton_;
+    juce::ComboBox envelopeToneCombo_;
+    juce::Label envelopeToneLabel_;
     juce::Slider ampAttackSlider_;
     juce::Slider ampDecaySlider_;
     juce::Slider ampSustainSlider_;
@@ -64,6 +68,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterDecayAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterSustainAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterReleaseAttachment_;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> envelopeLinkAttachment_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JDUpgradedAudioProcessorEditor)
 };

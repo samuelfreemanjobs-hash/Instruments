@@ -47,6 +47,9 @@ public:
     /** Returns true when a JD patch block was decoded and parameters updated. */
     bool applyJdSysexMessage (const std::uint8_t* data, std::size_t size) noexcept;
 
+    void copyGlobalEnvelopesToAllTones() noexcept;
+    bool isEnvelopeLinked() const noexcept;
+
 private:
     void refreshCachedParameters() noexcept;
     void applyPatchesFromParameters() noexcept;
@@ -102,6 +105,21 @@ private:
     std::atomic<float>* filterDecayPtr_ = nullptr;
     std::atomic<float>* filterSustainPtr_ = nullptr;
     std::atomic<float>* filterReleasePtr_ = nullptr;
+    std::atomic<float>* envelopeLinkPtr_ = nullptr;
+
+    struct ToneEnvelopePtrs final
+    {
+        std::atomic<float>* ampAttack = nullptr;
+        std::atomic<float>* ampDecay = nullptr;
+        std::atomic<float>* ampSustain = nullptr;
+        std::atomic<float>* ampRelease = nullptr;
+        std::atomic<float>* filterAttack = nullptr;
+        std::atomic<float>* filterDecay = nullptr;
+        std::atomic<float>* filterSustain = nullptr;
+        std::atomic<float>* filterRelease = nullptr;
+    };
+
+    std::array<ToneEnvelopePtrs, 4> toneEnvelopePtrs_{};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JDUpgradedAudioProcessor)
 };
