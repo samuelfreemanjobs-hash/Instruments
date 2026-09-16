@@ -31,6 +31,7 @@ toolchain.
 | `moog-voyager-se` | Voyager SE | Model D / Voyager + SE-1 fat stack, squelch | E1–C3 |
 | `cardo-gfunk` | Cardo GF | Cardo-style sub + warm mid G-funk bass | C1–G2 |
 | `larry-june` | Larry June | Bay Area cruise / rubbery JV PWM bass | D2–A2 |
+| `khalifa-haze` | Khalifa Haze | Hazy cloud sub / stoner-rap low end | C1–F2 |
 
 Supporting folders: `template`, `wavetable` (learning / starters).
 

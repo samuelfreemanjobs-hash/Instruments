@@ -19,6 +19,7 @@ Prologue). Each oscillator is a separate unit you load when you need that sound.
 | [`moog-voyager-se`](src/oscillators/moog-voyager-se/) | **Voyager SE** | Model D / SE-1 fat stack + glide squelch |
 | [`cardo-gfunk`](src/oscillators/cardo-gfunk/) | **Cardo GF** | Sub + warm mid late-night G-funk bass |
 | [`larry-june`](src/oscillators/larry-june/) | **Larry June** | Laid-back rubbery PWM Bay cruise bass |
+| [`khalifa-haze`](src/oscillators/khalifa-haze/) | **Khalifa Haze** | Warm floating cloud sub for stoner-rap |
 
 Each unit is **multifunction** (mainly **Vibe**) and ships **presets** in
 `manifest.json` → `_agent.presets` (knob values 0–100).

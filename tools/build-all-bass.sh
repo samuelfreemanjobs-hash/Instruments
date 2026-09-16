@@ -21,6 +21,7 @@ UNITS=(
   oscillators/moog-voyager-se
   oscillators/cardo-gfunk
   oscillators/larry-june
+  oscillators/khalifa-haze
 )
 
 for unit in "${UNITS[@]}"; do
