@@ -83,9 +83,6 @@ private:
     std::array<float, 4> toneFineCents_{};
     std::array<jdupgraded::preset::JdTonePitchMod, 4> tonePitchMod_{};
 
-    std::atomic<float> pitchBendSemis_{ 0.0f };
-    std::atomic<float> channelPressure_{ 0.0f };
-
     int currentProgram_ = 0;
 
     std::atomic<float>* masterGainPtr_ = nullptr;
@@ -125,6 +122,7 @@ private:
     std::atomic<float>* filterReleasePtr_ = nullptr;
     std::atomic<float>* envelopeLinkPtr_ = nullptr;
     std::atomic<float>* expressionDepthPtr_ = nullptr;
+    std::atomic<float>* pitchBendRangePtr_ = nullptr;
 
     struct ToneEnvelopePtrs final
     {

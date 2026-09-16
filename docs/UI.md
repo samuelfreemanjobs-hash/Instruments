@@ -12,8 +12,7 @@ See [docs/ARCHITECTURE.md](ARCHITECTURE.md) for processor wiring.
 
 ## Expression (MIDI)
 
-- **Pitch wheel** — ±2 semitones on all active voices (applied in `applyPatchesFromParameters`).
-- **Channel pressure / poly aftertouch** — opens filter cutoff when **Expression to Filter** &gt; 0.
+Per-voice routing (MPE-friendly): see [MPE.md](MPE.md). Parameters: **Expression to Filter**, **Pitch Bend Range**.
 
 ## Preset files
 

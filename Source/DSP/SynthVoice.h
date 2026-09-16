@@ -5,6 +5,7 @@
 #include "Simd/VoiceSimd.h"
 #include "Tone.h"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 
@@ -25,10 +26,13 @@ public:
         couplingMode_ = mode;
     }
 
-    void start (std::uint8_t midiNote, std::uint8_t velocity,
+    void start (std::uint8_t midiNote, std::uint8_t midiChannel, std::uint8_t velocity,
                 const std::array<TonePatch, kTonesPerVoice>& patches) noexcept
     {
         midiNote_ = midiNote;
+        midiChannel_ = midiChannel;
+        pitchBendSemis_ = 0.0f;
+        pressureNorm_ = 0.0f;
         velocityGain_ = static_cast<float> (velocity) / 127.0f;
         for (std::size_t t = 0; t < kTonesPerVoice; ++t)
         {
@@ -38,6 +42,12 @@ public:
         configureCouplingLinks();
         active_ = true;
     }
+
+    void setPitchBendSemis (float semis) noexcept { pitchBendSemis_ = semis; }
+
+    void setPressureNorm (float norm) noexcept { pressureNorm_ = std::clamp (norm, 0.0f, 1.0f); }
+
+    std::uint8_t getMidiChannel() const noexcept { return midiChannel_; }
 
     void release() noexcept
     {
@@ -60,8 +70,14 @@ public:
 
     std::uint8_t getMidiNote() const noexcept { return midiNote_; }
 
+    void setExpressionDepth (float depth) noexcept { expressionDepth_ = depth; }
+
     void render (float* output, std::size_t numSamples) noexcept
     {
+        const float cutoffAdd = pressureNorm_ * expressionDepth_ * 0.45f;
+        for (auto& tone : tones_)
+            tone.setPerformanceMod (pitchBendSemis_, cutoffAdd);
+
         std::array<std::array<float, kControlRateDivisor>, kTonesPerVoice> toneScratch{};
         const std::size_t chunk = kControlRateDivisor;
 
@@ -222,6 +238,10 @@ private:
     std::array<Tone, kTonesPerVoice> tones_{};
     ToneCouplingMode couplingMode_ = ToneCouplingMode::independent;
     std::uint8_t midiNote_ = 0;
+    std::uint8_t midiChannel_ = 0;
+    float pitchBendSemis_ = 0.0f;
+    float pressureNorm_ = 0.0f;
+    float expressionDepth_ = 0.35f;
     float velocityGain_ = 1.0f;
     bool active_ = false;
 };

@@ -5,6 +5,7 @@
 #include "RateLevelEnvelope.h"
 #include "SampleEngine.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 
@@ -70,6 +71,12 @@ public:
         engine_.setPhaseModDepth (patch.phaseModDepth);
         const float rootRatio = semitoneRatio (patch.coarseSemis + patch.fineCents / 100.0f);
         basePitchRatio_ = rootRatio;
+    }
+
+    void setPerformanceMod (float pitchBendSemis, float filterCutoffAdd) noexcept
+    {
+        performancePitchBendSemis_ = pitchBendSemis;
+        performanceFilterCutoffAdd_ = filterCutoffAdd;
     }
 
     void setHardSyncMaster (const SampleEngine* master) noexcept
@@ -150,7 +157,9 @@ public:
         if (ringAmount > 1.0e-5f)
             mixed = osc * (1.0f - ringAmount) + (osc * ringPartner) * ringAmount;
 
-        const float filtered = filter_.process (mixed, cutoffEnv, patch_.filterResonanceNorm);
+        const float cutoff =
+            std::clamp (cutoffEnv + performanceFilterCutoffAdd_, 0.0f, 1.0f);
+        const float filtered = filter_.process (mixed, cutoff, patch_.filterResonanceNorm);
         return filtered * ampEnv * patch_.level;
     }
 
@@ -206,7 +215,7 @@ private:
         }
 
         const float semis = static_cast<float> (midiNote_) - waveRootMidi_ + patch_.coarseSemis + patch_.fineCents / 100.0f
-                            + lfoSemis;
+                            + lfoSemis + performancePitchBendSemis_;
         engine_.setPitchRatio (basePitchRatio_ * semitoneRatio (semis) * pitchEnv);
     }
 
@@ -220,6 +229,8 @@ private:
     RateLevelEnvelope ampEnvelope_{};
     float basePitchRatio_ = 1.0f;
     float lfoPhase_ = 0.0f;
+    float performancePitchBendSemis_ = 0.0f;
+    float performanceFilterCutoffAdd_ = 0.0f;
     float lastOsc_ = 0.0f;
     std::uint8_t midiNote_ = 60;
     std::size_t samplesUntilControlTick_ = 0;

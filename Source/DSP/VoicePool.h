@@ -34,20 +34,29 @@ public:
             voice.setCouplingMode (mode);
     }
 
-    void noteOn (std::uint8_t midiNote, std::uint8_t velocity) noexcept
+    void setExpressionDepth (float depth) noexcept
     {
-        const int voiceIndex = allocateVoice (midiNote);
+        expressionDepth_ = depth;
+        for (auto& voice : voices_)
+            voice.setExpressionDepth (depth);
+    }
+
+    void setPitchBendRangeSemis (float semis) noexcept { pitchBendRangeSemis_ = semis; }
+
+    void noteOn (std::uint8_t midiNote, std::uint8_t midiChannel, std::uint8_t velocity) noexcept
+    {
+        const int voiceIndex = allocateVoice (midiNote, midiChannel);
         if (voiceIndex < 0)
             return;
 
-        voices_[static_cast<std::size_t> (voiceIndex)].start (midiNote, velocity, defaultPatches_);
+        voices_[static_cast<std::size_t> (voiceIndex)].start (midiNote, midiChannel, velocity, defaultPatches_);
     }
 
-    void noteOff (std::uint8_t midiNote) noexcept
+    void noteOff (std::uint8_t midiNote, std::uint8_t midiChannel) noexcept
     {
         for (auto& voice : voices_)
         {
-            if (voice.isActive() && voice.getMidiNote() == midiNote)
+            if (voice.isActive() && voice.getMidiNote() == midiNote && voice.getMidiChannel() == midiChannel)
                 voice.release();
         }
     }
@@ -56,6 +65,37 @@ public:
     {
         for (auto& voice : voices_)
             voice.release();
+    }
+
+    void setPitchWheel (std::uint8_t midiChannel, int pitchWheelValue) noexcept
+    {
+        const float wheel = static_cast<float> (pitchWheelValue - 8192) / 8192.0f;
+        const float semis = wheel * pitchBendRangeSemis_;
+        for (auto& voice : voices_)
+        {
+            if (voice.isActive() && voice.getMidiChannel() == midiChannel)
+                voice.setPitchBendSemis (semis);
+        }
+    }
+
+    void setChannelPressure (std::uint8_t midiChannel, std::uint8_t pressure) noexcept
+    {
+        const float norm = static_cast<float> (pressure) / 127.0f;
+        for (auto& voice : voices_)
+        {
+            if (voice.isActive() && voice.getMidiChannel() == midiChannel)
+                voice.setPressureNorm (norm);
+        }
+    }
+
+    void setPolyAftertouch (std::uint8_t midiNote, std::uint8_t midiChannel, std::uint8_t pressure) noexcept
+    {
+        const float norm = static_cast<float> (pressure) / 127.0f;
+        for (auto& voice : voices_)
+        {
+            if (voice.isActive() && voice.getMidiNote() == midiNote && voice.getMidiChannel() == midiChannel)
+                voice.setPressureNorm (norm);
+        }
     }
 
     void render (float* output, std::size_t numSamples) noexcept
@@ -74,7 +114,7 @@ public:
     }
 
 private:
-    int allocateVoice (std::uint8_t midiNote) noexcept
+    int allocateVoice (std::uint8_t midiNote, std::uint8_t midiChannel) noexcept
     {
         int freeIndex = -1;
         int stealIndex = -1;
@@ -87,7 +127,7 @@ private:
                 break;
             }
 
-            if (voices_[i].getMidiNote() == midiNote)
+            if (voices_[i].getMidiNote() == midiNote && voices_[i].getMidiChannel() == midiChannel)
                 stealIndex = static_cast<int> (i);
         }
 
@@ -106,6 +146,8 @@ private:
     TonePatchSet defaultPatches_{};
     std::array<float, 8192> mixScratch_{};
     std::size_t nextStealIndex_ = 0;
+    float expressionDepth_ = 0.35f;
+    float pitchBendRangeSemis_ = 2.0f;
 };
 
 } // namespace jdupgraded::dsp
