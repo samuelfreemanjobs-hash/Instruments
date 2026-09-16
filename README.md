@@ -121,3 +121,17 @@ Custom **`PluginEditor`** with APVTS rotary controls is included.
 | Windows preset | `windows-vs-release` turns on **auto-install** to the user VST3 folder |
 
 **Later (optional):** Melatonin / Pamplejuce-style UI tests and layout tooling.
+
+## Disklordz (procedural drums)
+
+Product vision, DSP specs, and JUCE VSTi target: **[docs/DISKLORDZ_BLUEPRINT.md](docs/DISKLORDZ_BLUEPRINT.md)**.
+
+Offline WAV factory (SQLite catalog, no Agent Zero):
+
+```bash
+cd tools && python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python render_kit.py --kit-name MEMPHIS_RAW_V1
+```
+
+See **[tools/README.md](tools/README.md)** for reference profiling and batch modes.
