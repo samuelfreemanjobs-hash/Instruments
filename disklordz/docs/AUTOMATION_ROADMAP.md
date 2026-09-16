@@ -55,6 +55,17 @@ Leverage existing `.github/workflows/build-plugin.yml`.
 
 ---
 
+## Sprint E — Production engine
+
+| ID | Automation | Notes |
+|----|------------|-------|
+| E1 | Manifest → `validate_provenance.py` | Block compile in CI |
+| E2 | Product `Specified` → scaffold `product-compiler` manifest | Orchestrator template |
+| E3 | QA profile pass → `Releases.qa_profile_passed` | GitHub Action artifact |
+| E4 | Feedback row → themed improvement WO | Intelligence loop |
+
+---
+
 ## Sprint D — Release & store
 
 | ID | Automation | Notes |

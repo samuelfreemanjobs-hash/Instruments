@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.audio/schemas/sound-asset.json",
+  "title": "DiskLordz Sound DNA",
+  "type": "object",
+  "required": [
+    "id",
+    "category",
+    "sample_rate",
+    "bit_depth",
+    "provenance"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^DL-[A-Z]+-[0-9]+$",
+      "description": "Stable asset id e.g. DL-KICK-00421"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "kick",
+        "snare",
+        "clap",
+        "hat",
+        "ohat",
+        "perc",
+        "808",
+        "fx",
+        "vox",
+        "loop",
+        "other"
+      ]
+    },
+    "era": {
+      "type": "string",
+      "enum": ["1980s", "1990s", "2000s", "2010s", "modern", "timeless"]
+    },
+    "character": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "e.g. digital, crushed, short, aggressive"
+    },
+    "genres": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "pitch": {
+      "type": "string",
+      "description": "Note name or MIDI number as string"
+    },
+    "duration_ms": { "type": "number", "minimum": 0 },
+    "sample_rate": { "type": "integer", "minimum": 8000 },
+    "bit_depth": { "type": "integer", "enum": [8, 16, 24, 32] },
+    "source": {
+      "type": "string",
+      "enum": ["original", "synthesis", "recording", "resample", "layer"]
+    },
+    "processing": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "character_lab": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Character Lab module ids applied"
+    },
+    "variants": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "parent_id": {
+      "type": ["string", "null"],
+      "pattern": "^DL-[A-Z]+-[0-9]+$"
+    },
+    "file_path": { "type": "string" },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "license",
+        "owner",
+        "date_created",
+        "commercial_ok"
+      ],
+      "properties": {
+        "license": { "type": "string" },
+        "owner": { "type": "string" },
+        "date_created": { "type": "string", "format": "date" },
+        "processing_chain": { "type": "string" },
+        "derivative_of": { "type": ["string", "null"] },
+        "commercial_ok": { "type": "boolean" },
+        "attribution": { "type": ["string", "null"] },
+        "restrictions": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "embedding_ref": {
+      "type": "string",
+      "description": "Optional vector index key for similarity search"
+    }
+  },
+  "additionalProperties": false
+}

@@ -3,3 +3,5 @@ MyFirstPlugin/build-ninja/
 *.user
 .vs/
 .idea/
+disklordz/automation/.env
+disklordz/automation/.venv/

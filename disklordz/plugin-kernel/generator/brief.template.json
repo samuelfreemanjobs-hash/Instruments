@@ -1,0 +1,25 @@
+{
+  "name": "DiskCrusher",
+  "slug": "disk-crusher",
+  "type": "effect",
+  "purpose": "Make modern drums sound degraded like a battered late-90s digital sampler.",
+  "sonic_problem": "DIRTY DIGITAL DRUMS",
+  "character": ["dark", "aggressive", "digital"],
+  "controls": [
+    { "id": "drive", "label": "Drive", "default": 0.35 },
+    { "id": "crush", "label": "Crush", "default": 0.5 },
+    { "id": "filter", "label": "Tone", "default": 0.6 },
+    { "id": "mix", "label": "Mix", "default": 1.0 },
+    { "id": "output", "label": "Output", "default": 0.0 }
+  ],
+  "dsp_modules": ["Bitcrusher", "Saturation", "FilterBank"],
+  "character_lab": ["12-bit", "cheap-dac", "sampler"],
+  "formats": ["VST3", "Standalone"],
+  "preset_requirements": {
+    "factory": 8,
+    "demo": 3,
+    "expansion_ready": true
+  },
+  "family_id": "DL-FAMILY-DIGITAL-SAMPLER",
+  "target_ladder_tier": "plugin"
+}

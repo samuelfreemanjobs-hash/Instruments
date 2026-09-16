@@ -10,7 +10,9 @@ This repository includes **DiskLordz** — an agent-operated VST3 + sample busin
 - Company OS: `disklordz/` (plan, Airtable schema, automation)
 - Agents: `disklordz/AGENTS.md` and `.cursor/skills/disklordz-*`
 - Plugin code: `MyFirstPlugin/`
+- Orchestrator skill: `disklordz-product-orchestrator` — product family compiles
 - PM skill: `disklordz-audio-pm` — Airtable is system of record
 - Automation skill: `disklordz-workflow-automation-engineer` — autonomous backlog until blocked
+- Engine docs: `disklordz/docs/ARCHITECTURE.md`, Sound DNA, Plugin Kernel, Product Compiler, LICENSING
 
 Creative Director (human) approves taste and `Released` status only.

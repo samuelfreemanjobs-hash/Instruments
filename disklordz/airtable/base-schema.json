@@ -33,12 +33,32 @@
           "name": "price_tier",
           "type": "singleSelect",
           "options": ["free", "tier_1", "tier_2"]
-        }
+        },
+        {
+          "name": "ladder_tier",
+          "type": "singleSelect",
+          "options": ["free", "mini", "kit", "plugin", "bundle", "collection"]
+        },
+        { "name": "sonic_problem", "type": "singleLineText" },
+        { "name": "family_id", "type": "singleLineText" },
+        { "name": "compile_targets", "type": "multilineText", "description": "JSON array of compiler targets" }
       ],
       "links": [
         { "name": "projects", "linkedTable": "Projects" },
-        { "name": "releases", "linkedTable": "Releases" }
+        { "name": "releases", "linkedTable": "Releases" },
+        { "name": "product_family", "linkedTable": "Product Families" }
       ]
+    },
+    {
+      "name": "Product Families",
+      "fields": [
+        { "name": "family_id", "type": "singleLineText" },
+        { "name": "name", "type": "singleLineText" },
+        { "name": "universe_theme", "type": "singleLineText" },
+        { "name": "sonic_problem", "type": "multilineText" },
+        { "name": "status", "type": "singleSelect", "options": ["Active", "Paused", "Sunset"] }
+      ],
+      "links": [{ "name": "products", "linkedTable": "Products" }]
     },
     {
       "name": "Projects",
@@ -100,9 +120,30 @@
         { "name": "file_path", "type": "singleLineText" },
         { "name": "sample_rate", "type": "number" },
         { "name": "bit_depth", "type": "number" },
-        { "name": "provenance", "type": "multilineText" }
+        { "name": "provenance", "type": "multilineText" },
+        { "name": "commercial_ok", "type": "checkbox" },
+        { "name": "license", "type": "singleLineText" },
+        { "name": "parent_asset_id", "type": "singleLineText" },
+        { "name": "dna_json", "type": "multilineText", "description": "Full Sound DNA JSON" }
       ],
-      "links": [{ "name": "products", "linkedTable": "Products" }]
+      "links": [
+        { "name": "products", "linkedTable": "Products" },
+        { "name": "relations", "linkedTable": "Asset Relations" }
+      ]
+    },
+    {
+      "name": "Asset Relations",
+      "fields": [
+        { "name": "relation_id", "type": "singleLineText" },
+        {
+          "name": "relation_type",
+          "type": "singleSelect",
+          "options": ["similar_to", "derived_from", "used_in", "processed_with", "compatible_with"]
+        },
+        { "name": "from_asset_id", "type": "singleLineText" },
+        { "name": "to_asset_id", "type": "singleLineText" },
+        { "name": "notes", "type": "multilineText" }
+      ]
     },
     {
       "name": "Agent Work Orders",
@@ -110,24 +151,24 @@
         { "name": "work_order_id", "type": "singleLineText" },
         { "name": "title", "type": "singleLineText" },
         {
+          "name": "assigned_team",
+          "type": "singleSelect",
+          "options": ["product", "sound", "engineering", "release", "meta"]
+        },
+        {
+          "name": "assigned_role",
+          "type": "singleLineText",
+          "description": "e.g. qa-engineer, kit-designer, product-orchestrator"
+        },
+        {
           "name": "assigned_agent",
           "type": "singleSelect",
           "options": [
+            "product-orchestrator",
             "audio-pm",
-            "workflow-automation-engineer",
-            "product-factory",
-            "audio-product-director",
-            "plugin-architect",
-            "juce-engineer",
-            "dsp-engineer",
-            "plugin-ui-engineer",
-            "plugin-qa",
-            "drum-sound-designer",
-            "sample-processing",
-            "kit-architect",
-            "mpc-agent",
-            "release-agent"
-          ]
+            "workflow-automation-engineer"
+          ],
+          "description": "Legacy/meta; prefer assigned_team + assigned_role"
         },
         {
           "name": "status",
@@ -158,9 +199,51 @@
           "options": ["Draft", "Candidate", "Shipped"]
         },
         { "name": "zip_artifact", "type": "url" },
-        { "name": "changelog", "type": "multilineText" }
+        { "name": "changelog", "type": "multilineText" },
+        { "name": "plugin_version", "type": "singleLineText" },
+        { "name": "preset_version", "type": "singleLineText" },
+        { "name": "sample_version", "type": "singleLineText" },
+        { "name": "qa_profile_passed", "type": "checkbox" },
+        { "name": "provenance_passed", "type": "checkbox" }
       ],
       "links": [{ "name": "product", "linkedTable": "Products" }]
+    },
+    {
+      "name": "Market Signals",
+      "fields": [
+        { "name": "signal_id", "type": "singleLineText" },
+        { "name": "signal", "type": "multilineText" },
+        { "name": "opportunity", "type": "multilineText" },
+        { "name": "possible_product", "type": "multilineText" },
+        { "name": "reusable_assets", "type": "multilineText" },
+        { "name": "family_id", "type": "singleLineText" },
+        { "name": "status", "type": "singleSelect", "options": ["New", "Reviewed", "Accepted", "Rejected"] }
+      ]
+    },
+    {
+      "name": "Customer Feedback",
+      "fields": [
+        { "name": "feedback_id", "type": "singleLineText" },
+        { "name": "source", "type": "singleSelect", "options": ["email", "support", "social", "artist", "other"] },
+        { "name": "summary", "type": "multilineText" },
+        { "name": "product_id", "type": "singleLineText" },
+        { "name": "theme", "type": "singleLineText" },
+        { "name": "priority", "type": "singleSelect", "options": ["P0", "P1", "P2", "P3"] },
+        { "name": "improvement_wo", "type": "singleLineText" }
+      ]
+    },
+    {
+      "name": "DAW Matrix",
+      "fields": [
+        { "name": "platform", "type": "singleSelect", "options": ["Windows", "macOS"] },
+        { "name": "daw", "type": "singleLineText" },
+        { "name": "format", "type": "singleSelect", "options": ["VST3", "AU", "Standalone"] },
+        { "name": "last_tested", "type": "date" },
+        { "name": "daw_version", "type": "singleLineText" },
+        { "name": "plugin_product", "type": "singleLineText" },
+        { "name": "result", "type": "singleSelect", "options": ["pass", "fail", "untested"] },
+        { "name": "notes", "type": "multilineText" }
+      ]
     },
     {
       "name": "Automations",

@@ -1,153 +1,179 @@
-# DiskLordz Master Plan — Agent-Operated Audio Company
+# DiskLordz Master Plan — Production Engine
 
-**Goal:** One production pipeline that ships **VST3 plugins**, **drum kits**, and **expansions** with you as Creative Director only. Cloud Agents + Airtable + workflow automation are the factory floor.
+**Goal:** An **autonomous audio-product company** with a **reusable production engine** (not a pile of one-off AI agents). **TRON Studio** provides orchestration + automation; **DiskLordz Audio Lab** is the first vertical proving it.
 
-**Principle:** The **sound asset** is atomic. Every WAV carries metadata; products (kit, plugin preset pack, MPC program, zip) are **views** over that library.
+**North star:** [ARCHITECTURE.md](ARCHITECTURE.md) — **Audio Asset → Product Compiler** turns one creative idea into a **product family** (kits, plugins, presets, demos, content, bundles).
 
----
-
-## Phase 0 — Foundation (you are here)
-
-**Outcome:** Shared language, system of record, and two “meta” agents that manage everything else.
-
-| # | Deliverable | Owner agent | Done when |
-|---|-------------|-------------|-----------|
-| 0.1 | Airtable base from `airtable/base-schema.json` | Audio PM + you | Tables live; enums match doc |
-| 0.2 | Audio PM skill + operating model | This repo | PM can create/update records via API/MCP |
-| 0.3 | Workflow Automation Engineer skill + roadmap | This repo | Backlog in Airtable `Automations` |
-| 0.4 | GitHub org/repos aligned to layout in `disklordz/README.md` | Automation Engineer | Issues/PRs link to Airtable IDs |
-| 0.5 | Secrets map (1Password / env) — no keys in git | Automation Engineer | Documented in private runbook |
-
-**Human gates in Phase 0:** Approve Airtable schema, brand naming, first product brief.
+**Principle:** **Sound DNA** is atomic. Factories (Sound, Plugin, Content) + Compiler + QA/Provenance gates produce SKUs. Agents are **team roles** dispatched by the Orchestrator, not 25 separate personas.
 
 ---
 
-## Phase 1 — Single “factory product” (MVP)
+## Phase 0 — Foundation (in progress)
 
-**Outcome:** One shippable **plugin + companion kit** end-to-end without you touching CMake or file renaming.
+| # | Deliverable | Owner | Done when |
+|---|-------------|-------|-----------|
+| 0.1 | Airtable base + extended schema | Audio PM | Tables incl. Families, Feedback, Signals |
+| 0.2 | Docs: architecture, DNA, kernel, compiler, licensing, QA | Repo | `disklordz/docs/*` |
+| 0.3 | Audio PM + Automation Engineer + **Product Orchestrator** skills | Repo | `.cursor/skills/disklordz-*` |
+| 0.4 | Sound DNA JSON schema + product manifest schema | Repo | Validates in CI (planned) |
+| 0.5 | Licensing posture documented | Repo | [LICENSING.md](LICENSING.md); VST3 ≥3.8 MIT, JUCE tier tracked |
+| 0.6 | GitHub ↔ Airtable glue (Sprint A) | Automation Engineer | WO → issue live |
 
-Pick one vertical slice, e.g. *“1999 digital sampler crush on drums”*:
+**Human gates:** Schema approval, first **sonic problem** brief, JUCE revenue tracking policy.
+
+---
+
+## Phase 1 — MVP compile (one product family slice)
+
+**Outcome:** One **sonic problem** (e.g. *DIRTY DIGITAL DRUMS*) compiles to **plugin + kit + teaser + content pack** with provenance and QA gates.
 
 ```text
-Creative brief (you)
-    → Audio PM: Product + Project in Airtable
-    → Product Director spec (agent)
-    → Parallel: Plugin track | Sample track
-    → Release Agent: zip + metadata
-    → QA agents: build/load + audio checks
-    → Store-ready folder (manual or Gumroad/Lemon Squeezy later)
+Brief → Product Family + Spec
+     → Sound Factory (DNA + variants)
+     → Plugin Kernel product module (from generator brief)
+     → Preset Factory (factory + demo presets)
+     → Product Compiler (manifest targets)
+     → QA Lab profiles pass
+     → Packaging + version matrix
+     → Creative Director approval packet
 ```
 
-| Track | Agents (skills to add next) | Artifact |
-|-------|----------------------------|----------|
-| Plugin | Architect → DSP → JUCE → UI → Plugin QA | `.vst3` + presets |
-| Samples | Sound Designer → Processor → Kit Architect | `WAV/` + `PRODUCT_INFO.json` |
-| Formats | MPC Agent (optional v1) | `MPC/` folder |
-| Release | Release Agent | `DiskLordz_*_Vol_1.zip` |
+| Subsystem | MVP scope |
+|-----------|-----------|
+| Sound DNA | Ingest + schema validate + Airtable rows |
+| Sound Factory | Manual/script variant pipeline v0 |
+| Plugin Kernel | Extract patterns from `MyFirstPlugin/` → first `products/DiskCrusher` |
+| QA Lab | CI pluginval + provenance block script |
+| Content Factory | Template-based copy + demo brief from spec |
+| Commerce | Simple download + license PDF (no DRM) |
 
-**Automation targets for Phase 1:**
-
-1. New row in `Products` → GitHub issue + branch naming convention.
-2. PR merged → update `Products.status` + notify Slack (optional).
-3. Nightly: stale `Agent Work Orders` → PM summary.
-
-**Human gates:** Final sound check, cover art approval, price/publish.
+**Not in MVP:** DAW matrix automation, similarity embeddings, subscription, activation server.
 
 ---
 
-## Phase 2 — Product Factory Agent
+## Phase 2 — Compiler automation
 
-**Outcome:** One command — *“Make a dark 90s digital drum machine kit”* — runs the orchestrated pipeline with status in Airtable.
+**Outcome:** `product-compiler` CLI (or workflow) runs from Airtable trigger; one brief spawns **multi-SKU family** per [PRODUCT_COMPILER.md](PRODUCT_COMPILER.md).
 
-- **Product Factory** skill orchestrates sub-agents (Task tool / parallel Cloud Agents).
-- Each step writes **Work Order** completion + artifacts path.
-- Failure → retry policy + PM escalation record.
-
-**Metrics:** Time from `Briefed` → `Released`; % steps without human intervention.
+- Orchestrator reads manifest + dispatches **team roles** (not new agents per SKU).  
+- Demo Generator produces before/after audio.  
+- Intelligence loop v0: Feedback table → improvement WOs.
 
 ---
 
-## Phase 3 — Full division roster (12 agents)
+## Phase 3 — Kernel + Character Lab scale
 
-Deploy skills/rules per role from your architecture diagram. Priority order after Factory:
+**Outcome:** New plugin = brief + DSP module + UI skin; new sounds = Character Lab batch + variant explosion.
 
-1. Plugin QA (blocks bad releases)
-2. Sample Processing (scale library)
-3. Release Agent (consistent zips)
-4. Remaining specialists as parallel capacity allows
+- Plugin Generator scaffolds `products/<slug>/`.  
+- Knowledge graph (`Asset Relations`) powers reuse scoring in Intelligence.  
+- DAW compatibility matrix maintained in QA.
 
 ---
 
-## Phase 4 — Business autopilot
+## Phase 4 — Autopilot + catalog ladder
 
-**Outcome:** Pipeline runs on schedules and events; you only approve releases and creative pivots.
+**Outcome:** Market signals → proposed compiles; free → paid ladder filled; weekly digest only touchpoint.
 
 | System | Role |
 |--------|------|
-| **Airtable** | Products, projects, assets, work orders, automation registry |
-| **GitHub** | Code, CI (plugin build + pluginval), agent PRs |
-| **Zapier / n8n / Activepieces** | Glue: Airtable ↔ GitHub ↔ storage ↔ notifications |
-| **Cursor Cloud Agents** | Implementation, QA with computer use, long-running automation work |
-| **Object storage** | Canonical WAV + release zips (S3/R2 — when ready) |
+| Airtable | Products, families, DNA, WOs, feedback, signals, DAW matrix |
+| GitHub | Kernel, products, factories, CI + QA profiles |
+| Compiler | Manifest-driven releases |
+| Zapier/n8n | Triggers, digests, store hooks |
+| Cloud Agents | Engineering + sound implementation under Orchestrator |
 
-**Automation Engineer mandate:** Reduce manual steps each sprint until Phase 4 exit criteria are met:
-
-- [ ] New product brief → tracked project without manual ticket creation  
-- [ ] Sample ingest → normalized library row + files without manual rename  
-- [ ] Plugin CI green → release candidate row auto-updated  
-- [ ] Release zip → generated from template without manual folder copy  
-- [ ] Weekly digest → auto-generated for Creative Director  
+**Exit criteria:** Brief → family compile → approval packet with **no manual file shuffling**; provenance block enforced; JUCE/VST3 compliance documented per release.
 
 ---
 
-## Architecture (reference)
+## Team model (not agent sprawl)
+
+```text
+Creative Director (human)
+        │
+        ▼
+ Product Orchestrator ──► dispatches TEAM ROLES on Work Orders
+        │
+        ├── Audio PM (Airtable truth, cadence)
+        ├── Workflow Automation Engineer (glue until done)
+        │
+        ├── PRODUCT TEAM (spec, sonic problem, UX, copy, intelligence)
+        ├── SOUND TEAM (factory, DNA, kits)
+        ├── ENGINEERING TEAM (kernel, generator, build, QA lab)
+        └── RELEASE TEAM (compiler, packaging, store v1)
+```
+
+See [AGENTS.md](../AGENTS.md) for role → skill mapping.
+
+---
+
+## Commercial ladder (build catalog before subscription)
+
+Free teaser → $9–19 mini → $29–49 kit → $49–99 plugin → bundles → collections → (later) all-access.
+
+Products table: `ladder_tier` + `product_family` link.
+
+---
+
+## Architecture diagram
 
 ```mermaid
 flowchart TB
   CD[Creative Director]
-  PM[Audio PM Agent]
-  WAE[Workflow Automation Engineer]
-  ORCH[Orchestrator / Product Factory]
+  ORCH[Product Orchestrator]
+  PM[Audio PM]
+  WAE[Automation Engineer]
+  SF[Sound Factory]
+  PK[Plugin Kernel]
+  CF[Content Factory]
+  PC[Product Compiler]
+  QA[QA Lab]
+  PG[Provenance Gate]
   AT[(Airtable)]
-  GH[GitHub + CI]
-  GLUE[Zapier / n8n / Activepieces]
-  REL[Release Engine]
+  GH[GitHub CI]
 
-  CD -->|brief / approve| PM
+  CD --> ORCH
+  ORCH --> PM
   PM --> AT
-  WAE --> GLUE
-  GLUE --> AT
-  GLUE --> GH
-  PM --> ORCH
-  ORCH --> GH
-  ORCH --> REL
-  REL --> AT
+  WAE --> AT
+  ORCH --> SF
+  ORCH --> PK
+  ORCH --> CF
+  SF --> PC
+  PK --> PC
+  CF --> PC
+  PC --> QA
+  QA --> PG
+  PG --> AT
+  PK --> GH
+  QA --> GH
 ```
 
 ---
 
-## Immediate next steps (after this plan)
+## Immediate execution steps
 
-1. **You:** Create Airtable base from schema (or share base ID for API wiring).
-2. **Audio PM agent run:** Import schema; create first `Product` + `Project` for MVP slice.
-3. **Automation Engineer run:** Enable Zapier Airtable actions (or n8n self-host); implement Work Order → GitHub issue flow.
-4. **Cloud environment:** Extend `environment.json` with Linux audio deps + JUCE build (already partially in `MyFirstPlugin/build.sh`).
-5. **First parallel agents:** Product spec skill + Sample Processing skill (Phase 1).
+1. Create Airtable base from `airtable/base-schema.json` (v2 fields).  
+2. Run **Product Orchestrator** with first family brief + compile targets.  
+3. Automation Engineer: Sprint A + **provenance_check** script in compiler path.  
+4. Engineering: begin `plugin-kernel/` extraction from `MyFirstPlugin`.  
+5. Sound: ingest 10 assets with full DNA + `commercial_ok: true`.
 
 ---
 
-## Risks and mitigations
+## Risks
 
 | Risk | Mitigation |
 |------|------------|
-| Agent writes code that doesn’t compile | Plugin QA + CI pluginval; no release without green CI |
-| Airtable drift from reality | PM owns weekly reconcile; GitHub PR links required on work orders |
-| Automation fragility | Automation Engineer: idempotent workflows, logging table in Airtable |
-| Taste / brand | Hard human gate on `Ready to Publish` status |
-| IP / licensing on samples | Metadata field `provenance`; block release if empty |
+| JUCE license limits | Revenue tracking; upgrade path in LICENSING.md |
+| Sample provenance | Compiler hard block |
+| Agent sprawl | Orchestrator + teams only |
+| Kernel not shared | No second plugin until kernel MVP merged |
+| QA trust in LLM only | QA Lab profiles mandatory |
 
 ---
 
 ## Success definition
 
-**DiskLordz is “running on its own” when:** A new product brief triggers a tracked project, agents complete work orders through release candidate, CI and QA pass, and you receive a single approval packet (listen link + zip + copy) — with all status visible in Airtable without you chasing repos.
+**DiskLordz runs as a factory when:** A sonic-problem brief compiles to a **product family**, all assets pass DNA + provenance, QA profiles pass, content + demos generate from spec, and you only **listen and approve** `Released` — with every SKU traceable to Sound DNA and version matrix.
