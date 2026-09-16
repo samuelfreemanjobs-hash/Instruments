@@ -1,6 +1,8 @@
 # Instruments — VST boilerplate + NTS-1 multi-bass
 
-## VST / VSTi (start here for plugins)
+This repo supports **three** related workflows: APC/VST plugins from `vst/template/`, the standalone **MyFirstPlugin** JUCE starter (from `main`), and **logue SDK** oscillators for NTS-1.
+
+## VST / VSTi (start here for new plugins)
 
 **Every new plugin starts from `vst/template/`** (JUCE, VST3 + Standalone).
 Cursor rule: `.cursor/rules/06-vst-vsti-template.mdc`.
@@ -18,6 +20,25 @@ Details: [vst/README.md](vst/README.md).
 **APC commands:** [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-dream` … `/apc-ship`
 
 **DSP architecture:** [docs/dsp-architecture-specification.md](docs/dsp-architecture-specification.md) · `.agents/skills/` + `.cursor/skills/`
+
+---
+
+## MyFirstPlugin (JUCE starter + Windows CI)
+
+CMake-native [JUCE](https://juce.com/) tutorial project at repo root. Use it for a self-contained effect/VSTi reference (`PluginProcessor`, `MyFirstSynth`), Visual Studio menus, and CI — **without** replacing `vst/template/` for new repo plugins.
+
+| Tool | Role |
+|------|------|
+| **Cursor / agents** | Edit sources; run `MyFirstPlugin/build.sh` or `build.ps1` |
+| **CMake + compiler** | Builds `.vst3` (MSVC on Windows, Xcode CLT on macOS, GCC/Clang on Linux) |
+
+```bash
+cd MyFirstPlugin
+chmod +x build.sh && ./build.sh          # macOS / Linux
+# Windows: Build Plugin.bat or .\build.ps1 — see MyFirstPlugin/VISUAL_STUDIO.md
+```
+
+JUCE version pin: [`JUCE_VERSION`](JUCE_VERSION). Workflow notes: `MyFirstPlugin/CURSOR_COMPOSER_PROMPT.md`, fork checklist: `MyFirstPlugin/NEW_PLUGIN.md`. CI: `.github/workflows/build-plugin.yml`.
 
 ---
 
@@ -67,7 +88,7 @@ Manual steps (custom `LOGUE_SDK`): `python3 tools/mkii/scaffold-mkii.py --all-ba
 
 See [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
 
-## Quick start
+## Quick start (mkI logue)
 
 1. Clone [logue-sdk](https://github.com/korginc/logue-sdk) and set `LOGUE_SDK`.
 2. Build one unit or the whole bass set:
@@ -89,7 +110,10 @@ chmod +x tools/build.sh tools/build-all-bass.sh
 - `.cursor/rules/` — SDK + **multi-bass** conventions (`05-multi-bass.mdc`)
 - `src/oscillators/` — bass units above + `template` / `wavetable`
 - `src/effects/` — starter mod/del/rev FX
-- `src/shared/` — DSP helpers
+- `src/shared/` — DSP helpers (logue units)
+- `shared/dsp/` — header-only DSP shared by `vst/*` templates
+- `vst/template/`, `vst/template-effect/` — canonical new-plugin boilerplate
+- `MyFirstPlugin/` — standalone JUCE starter (effect + MyFirstSynth)
 - `tools/build-all-bass.sh` — build all catalog bass oscs
 
 ## License
