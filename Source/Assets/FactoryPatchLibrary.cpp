@@ -194,6 +194,32 @@ void applyCuratedOverrides (std::size_t index, FactoryPatch& patch, std::string&
             patch.masterGain = 0.82f;
             patch.groupADrive = 0.08f;
             break;
+        case 24:
+            nameStorage = "Pad Glass 01 (curated)";
+            patch.tones[0] = layer (1, 64, 0.85f, 0.0f, 0.95f, 0.2f);
+            patch.tones[1] = layer (1, 80, 0.6f, 0.12f, 0.9f, 0.25f);
+            patch.tones[2] = layer (1, 96, 0.45f, -0.08f, 0.85f, 0.18f);
+            patch.tones[3] = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.1f);
+            patch.groupBMix = 0.32f;
+            break;
+        case 64:
+            nameStorage = "Vapor Stack (curated)";
+            patch.tones[0] = layer (3, 128, 0.75f, 0.0f, 0.8f, 0.3f);
+            patch.tones[1] = layer (3, 144, 0.7f, 0.05f, 0.78f, 0.28f);
+            patch.tones[2] = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.2f);
+            patch.tones[3] = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.2f);
+            patch.coupling = jdupgraded::dsp::ToneCouplingMode::ringPair01;
+            patch.groupBMix = 0.4f;
+            break;
+        case 80:
+            nameStorage = "80s R&B Keys (curated)";
+            patch.tones[0] = layer (5, 32, 0.9f, 0.0f, 0.88f, 0.3f);
+            patch.tones[1] = layer (5, 48, 0.55f, 0.1f, 0.82f, 0.28f);
+            patch.tones[2] = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.2f);
+            patch.tones[3] = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.2f);
+            patch.groupADrive = 0.05f;
+            patch.groupBMix = 0.28f;
+            break;
         case 112:
             nameStorage = "Elite Sync Lead (curated)";
             patch.tones[0] = layer (4, 96, 0.9f, 0.0f, 0.7f, 0.55f);

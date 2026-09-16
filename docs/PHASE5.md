@@ -23,5 +23,5 @@ Phase 1–4 on branch `cursor/jd-synth-phase1-3015` cover a playable JD-style in
 
 ## Integration
 
-- CLAP / AU if needed beyond VST3
+- CLAP / AU — documented in [INTEGRATION.md](INTEGRATION.md); blocked on JUCE CLAP target / macOS AU build
 - ~~APVTS preset `.jdpreset` import/export~~ (editor + XML); full bank / JDPR expansion optional

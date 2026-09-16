@@ -67,6 +67,8 @@ git add tests/golden/*.wav
 
 CI runs `verify_golden.sh` after the determinism check.
 
+Optional hardware/plugin references: [HARDWARE_REFERENCE.md](HARDWARE_REFERENCE.md), `tests/golden/compare_external.sh`.
+
 ## External reference
 
 To compare against a hardware/plugin reference clip, render with matching program/MIDI via `OfflineRender`, then:

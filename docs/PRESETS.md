@@ -27,7 +27,7 @@ DAW projects store APVTS parameters plus **currentProgram** in the plugin state 
 - XML `ValueTree` with all APVTS parameters and `currentProgram`
 - Not a substitute for Roland SysEx ([SYSEX.md](SYSEX.md))
 
-**Curated factory programs:** indices **0**, **48**, and **112** use hand-tuned layers (names suffixed `(curated)`).
+**Curated factory programs:** indices **0**, **24**, **48**, **64**, **80**, and **112** use hand-tuned layers (names suffixed `(curated)`).
 
 ## External ROM (development)
 
