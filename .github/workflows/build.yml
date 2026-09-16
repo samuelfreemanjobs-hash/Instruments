@@ -26,6 +26,12 @@ jobs:
       - name: Build
         run: cmake --build build -j$(nproc)
 
+      - name: Plugin artefacts
+        run: |
+          test -d "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3"
+          test -f "build/JDUpgraded_artefacts/Release/CLAP/JD Upgraded.clap"
+          test -x "build/JDUpgraded_artefacts/Release/Standalone/JD Upgraded"
+
       - name: Offline render smoke
         run: |
           ./build/OfflineRender /tmp/jdupg-a.wav 0 60 100 0.5 44100

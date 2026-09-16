@@ -1,6 +1,6 @@
 # JD Upgraded — architecture
 
-Agent-oriented overview of the **JD Upgraded** synthesizer (VST3 + standalone). Repo index: [ARCHITECTURE.md](../ARCHITECTURE.md). Offline tools: [tools/ARCHITECTURE.md](../tools/ARCHITECTURE.md).
+Agent-oriented overview of the **JD Upgraded** synthesizer (VST3 + CLAP + standalone). Repo index: [ARCHITECTURE.md](../ARCHITECTURE.md). Offline tools: [tools/ARCHITECTURE.md](../tools/ARCHITECTURE.md).
 
 ## Purpose
 
@@ -65,6 +65,7 @@ Control-rate envelopes advance every `kControlRateDivisor` (32) samples inside e
 ## Build targets
 
 - `JDUpgraded_VST3`, `JDUpgraded_Standalone` — `juce_add_plugin` in root `CMakeLists.txt`.
+- `JDUpgraded_CLAP` — `clap_juce_extensions_plugin` ([INTEGRATION.md](INTEGRATION.md)); JUCE **8.0.15** + pinned [clap-juce-extensions](https://github.com/free-audio/clap-juce-extensions).
 - SIMD: `-mavx2` when available, else NEON define for ARM.
 
 ## Testing & regression

@@ -1,6 +1,6 @@
 # JD Upgraded
 
-Clean-room JUCE **VST3** and **standalone** synthesizer inspired by the Roland JD-800 / JD-990: four tones per voice, PCM ROM playback, ZDF TVF, tone coupling, Group A/B effects, and 128 factory programs.
+Clean-room JUCE **VST3**, **CLAP**, and **standalone** synthesizer inspired by the Roland JD-800 / JD-990: four tones per voice, PCM ROM playback, ZDF TVF, tone coupling, Group A/B effects, and 128 factory programs.
 
 **Legal:** Sound comes from **`jdupg_cleanroom.rom`** — 256 procedurally synthesized waves ([docs/ROM.md](docs/ROM.md)). No Roland ROM ships with the project. Optional dev override: [docs/USER_ROM.md](docs/USER_ROM.md).
 
@@ -15,13 +15,14 @@ cmake --build build -j
 | Target | Output |
 |--------|--------|
 | `JDUpgraded_VST3` | VST3 plugin |
+| `JDUpgraded_CLAP` | CLAP plugin |
 | `JDUpgraded_Standalone` | Desktop app |
 | `OfflineRender` | Headless WAV render (see [docs/AB_HARNESS.md](docs/AB_HARNESS.md)) |
 | `SpectralDiff` | Compare two WAVs for regression / A/B |
 | `GenerateCleanroomRom` | Rebuild ROM at compile time |
 | `ExportPreset` | Write `.jdpreset` for a factory program index |
 
-CLAP/AU: see [docs/INTEGRATION.md](docs/INTEGRATION.md).
+AU (macOS): see [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
 ## Features (current)
 
