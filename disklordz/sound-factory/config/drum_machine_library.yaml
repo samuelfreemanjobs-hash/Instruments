@@ -1,0 +1,11 @@
+# Sound Factory — canonical on-disk drum machine source (repo-relative)
+library:
+  root: drummachines/samples
+  provenance_doc: drummachines/SOURCE.md
+  verify_script: drummachines/scripts/verify_sample_library.py
+  fetch_script: drummachines/scripts/fetch_and_extract.sh
+  internet_archive_item: ultimate-vintage-drum-machines-sample-pack
+ingest:
+  commercial_ok: false  # confirm IA / pack terms before shipping products
+  default_license: "IA-community-upload-verify"
+  airtable_table: Sound Assets
