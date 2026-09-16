@@ -151,6 +151,8 @@ Do not implement `drum_agents.py` sequential runners unless you want a demo scri
 
 | Path | Purpose |
 |------|---------|
+| [DISKLORDZ_SAMPLE_PACK_BRAND.md](DISKLORDZ_SAMPLE_PACK_BRAND.md) | Brand + pack keep/ditch (sample pack chats) |
+| [DISKLORDZ_RUN_SHEET.md](DISKLORDZ_RUN_SHEET.md) | 4-Square release checklist (Cursor-only) |
 | `tools/README.md` | How to run the factory |
 | `tools/schema.sql` | SQLite DDL |
 | `tools/render_kit.py` | CLI batch render |
