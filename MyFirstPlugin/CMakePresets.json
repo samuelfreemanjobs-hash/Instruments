@@ -1,0 +1,45 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "windows-vs-release",
+      "displayName": "Windows — Release (VST3)",
+      "description": "Visual Studio 2022 generator, 64-bit",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_CONFIGURATION_TYPES": "Release;Debug"
+      }
+    },
+    {
+      "name": "windows-ninja-release",
+      "displayName": "Windows — Ninja Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-vs-release",
+      "displayName": "Build Release",
+      "configurePreset": "windows-vs-release",
+      "configuration": "Release",
+      "targets": ["MyFirstPlugin_VST3"]
+    },
+    {
+      "name": "windows-ninja-release",
+      "displayName": "Build Release (Ninja)",
+      "configurePreset": "windows-ninja-release",
+      "targets": ["MyFirstPlugin_VST3"]
+    }
+  ]
+}

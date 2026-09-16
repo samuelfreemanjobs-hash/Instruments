@@ -19,17 +19,27 @@ MyFirstPlugin/
 ├── ParameterIds.h
 ├── PluginProcessor.h
 ├── PluginProcessor.cpp
-├── build.ps1          # Windows
+├── Build Plugin.bat   # Windows menu (double-click)
+├── build-menu.ps1
+├── CMakePresets.json  # Visual Studio preset
+├── VISUAL_STUDIO.md
+├── build.ps1
 └── build.sh           # macOS / Linux
 ```
 
 JUCE **7.0.12** is downloaded automatically on first configure.
 
-## Build (terminal only)
+## Build on Windows
 
-### Windows (PowerShell)
+Prerequisites: **Visual Studio 2022** with “Desktop development with C++” (includes MSVC; add **C++ CMake tools** in the installer). [CMake](https://cmake.org/download/) on PATH if you use scripts outside VS.
 
-Prerequisites: [CMake](https://cmake.org/download/), and **Visual Studio 2022** with “Desktop development with C++” (or Build Tools). Ninja is optional but faster.
+### Easiest: menu or Visual Studio GUI
+
+- Double-click **`MyFirstPlugin/Build Plugin.bat`** → choose **3** (first time), then **2** after edits.  
+- Or open the **`MyFirstPlugin`** folder in **Visual Studio** (File → Open → Folder) and use **Build**.  
+- Full steps: **`MyFirstPlugin/VISUAL_STUDIO.md`**
+
+### Terminal (Cursor)
 
 ```powershell
 cd MyFirstPlugin
