@@ -16,6 +16,7 @@ UNITS=(
   oscillators/dilla-bass
   oscillators/sub-phatty
   oscillators/prophet-funk
+  oscillators/dx7-lately
 )
 
 for unit in "${UNITS[@]}"; do

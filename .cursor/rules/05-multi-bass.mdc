@@ -31,3 +31,4 @@ at a time; each folder under `src/oscillators/` is a standalone loadable unit.
 - `dilla-bass` — J Dilla style wobble/glide/warm bass
 - `sub-phatty` — Moog Sub Phatty dual osc, sub, Multidrive
 - `prophet-funk` — Prophet-5 funk / R&B bass, sync, CEM filter
+- `dx7-lately` — Yamaha DX7 Lately Bass FM electric bass
