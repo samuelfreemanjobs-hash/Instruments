@@ -9,6 +9,10 @@
 #include <immintrin.h>
 #endif
 
+#if defined(JDUPGRADED_USE_NEON)
+#include <arm_neon.h>
+#endif
+
 namespace jdupgraded::dsp
 {
 
@@ -30,6 +34,19 @@ inline void sumFourToneBuffers (float* dest,
         const auto d = _mm256_loadu_ps (tone3 + i);
         const auto sum = _mm256_add_ps (_mm256_add_ps (a, b), _mm256_add_ps (c, d));
         _mm256_storeu_ps (dest + i, sum);
+    }
+    for (; i < numSamples; ++i)
+        dest[i] = tone0[i] + tone1[i] + tone2[i] + tone3[i];
+#elif defined(JDUPGRADED_USE_NEON)
+    std::size_t i = 0;
+    for (; i + 4 <= numSamples; i += 4)
+    {
+        const auto a = vld1q_f32 (tone0 + i);
+        const auto b = vld1q_f32 (tone1 + i);
+        const auto c = vld1q_f32 (tone2 + i);
+        const auto d = vld1q_f32 (tone3 + i);
+        const auto sum = vaddq_f32 (vaddq_f32 (a, b), vaddq_f32 (c, d));
+        vst1q_f32 (dest + i, sum);
     }
     for (; i < numSamples; ++i)
         dest[i] = tone0[i] + tone1[i] + tone2[i] + tone3[i];

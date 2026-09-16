@@ -44,11 +44,15 @@ public:
     juce::AudioProcessorValueTreeState& getAPVTS() noexcept { return apvts_; }
     const jdupgraded::assets::RomBank& getRomBank() const noexcept { return romLoader_.getBank(); }
 
+    /** Returns true when a JD patch block was decoded and parameters updated. */
+    bool applyJdSysexMessage (const std::uint8_t* data, std::size_t size) noexcept;
+
 private:
     void refreshCachedParameters() noexcept;
     void applyPatchesFromParameters() noexcept;
     void applyFactoryPatch (int index);
     void handleMidi (const juce::MidiBuffer& midi) noexcept;
+    void applyJdPatchCoarsePitch (const std::uint8_t* patch, std::size_t patchBytes) noexcept;
     void setApvtsFloat (const char* paramId, float value);
     void setApvtsInt (const char* paramId, int value);
     void setApvtsChoice (const char* paramId, int index);

@@ -3,6 +3,8 @@
 
 #include "Assets/FactoryPatchLibrary.h"
 #include "BinaryData.h"
+#include "Preset/ApvtsBridge.h"
+#include "Preset/JdPatchLayout.h"
 
 #include <cstdlib>
 
@@ -319,11 +321,51 @@ bool JDUpgradedAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
     return true;
 }
 
+bool JDUpgradedAudioProcessor::applyJdSysexMessage (const std::uint8_t* data, std::size_t size) noexcept
+{
+    const auto result = jdupgraded::preset::ApvtsBridge::applyRolandSysEx (apvts_, data, size);
+    if (! result.patchApplied)
+        return false;
+
+    std::size_t payloadBytes = 0;
+    const auto* payload = jdupgraded::preset::JdPatchSysexMapper::findPatchPayload (data, size, payloadBytes);
+    if (payload != nullptr)
+        applyJdPatchCoarsePitch (payload, payloadBytes);
+
+    refreshCachedParameters();
+    applyPatchesFromParameters();
+    return true;
+}
+
+void JDUpgradedAudioProcessor::applyJdPatchCoarsePitch (const std::uint8_t* patch,
+                                                         std::size_t patchBytes) noexcept
+{
+    if (patch == nullptr || patchBytes < jdupgraded::preset::kJdPatchTotalBytes)
+        return;
+
+    for (std::size_t t = 0; t < jdupgraded::preset::kJdTonesPerPatch; ++t)
+    {
+        const auto base = jdupgraded::preset::kJdToneBlockOffset (t);
+        const auto coarse = patch[base + jdupgraded::preset::kJdTonePitchCoarse];
+        toneCoarseSemis_[t] = static_cast<float> (static_cast<int> (coarse & 0x7F) - 48);
+        toneFilterCutoff_[t] =
+            static_cast<float> (patch[base + jdupgraded::preset::kJdToneTvfCutoff] & 0x7F) / 127.0f;
+    }
+}
+
 void JDUpgradedAudioProcessor::handleMidi (const juce::MidiBuffer& midi) noexcept
 {
     for (const auto metadata : midi)
     {
         const auto message = metadata.getMessage();
+        if (message.isSysEx())
+        {
+            const auto* sysex = message.getSysExData();
+            const auto sysexSize = static_cast<std::size_t> (message.getSysExDataSize());
+            applyJdSysexMessage (reinterpret_cast<const std::uint8_t*> (sysex), sysexSize);
+            continue;
+        }
+
         if (message.isNoteOn())
         {
             voicePool_.noteOn (static_cast<std::uint8_t> (message.getNoteNumber()),

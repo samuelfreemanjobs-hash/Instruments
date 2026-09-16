@@ -35,6 +35,7 @@ private:
     juce::TextButton programNext_ { ">" };
     std::array<juce::Slider, 4> toneLevelSliders_;
     std::array<juce::Slider, 4> toneWaveSliders_;
+    std::array<juce::Slider, 4> toneMultisampleSliders_;
     std::array<juce::ToggleButton, 4> toneMuteButtons_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> groupAAttachment_;
@@ -42,6 +43,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> couplingAttachment_;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> toneLevelAttachments_;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> toneWaveAttachments_;
+    std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> toneMsAttachments_;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>, 4> toneMuteAttachments_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JDUpgradedAudioProcessorEditor)

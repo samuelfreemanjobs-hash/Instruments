@@ -50,7 +50,9 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
     const char* levelIds[4] = { "tone1Level", "tone2Level", "tone3Level", "tone4Level" };
     const char* waveIds[4] = { "tone1Wave", "tone2Wave", "tone3Wave", "tone4Wave" };
     const char* muteIds[4] = { "tone1Mute", "tone2Mute", "tone3Mute", "tone4Mute" };
+    const char* msIds[4] = { "tone1Multisample", "tone2Multisample", "tone3Multisample", "tone4Multisample" };
     const int maxWave = static_cast<int> (jdupgraded::assets::kCleanroomWaveCount) - 1;
+    const int maxMs = static_cast<int> (jdupgraded::assets::kMultisampleSetCount);
 
     for (int i = 0; i < 4; ++i)
     {
@@ -71,6 +73,16 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
             std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
                 processor_.getAPVTS(), waveIds[i], wave);
 
+        auto& ms = toneMultisampleSliders_[static_cast<std::size_t> (i)];
+        ms.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+        ms.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 44, 14);
+        ms.setRange (0, maxMs, 1.0);
+        ms.setName ("MS" + juce::String (i + 1));
+        addAndMakeVisible (ms);
+        toneMsAttachments_[static_cast<std::size_t> (i)] =
+            std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+                processor_.getAPVTS(), msIds[i], ms);
+
         toneMuteButtons_[static_cast<std::size_t> (i)].setButtonText ("M" + juce::String (i + 1));
         toneMuteButtons_[static_cast<std::size_t> (i)].setClickingTogglesState (true);
         addAndMakeVisible (toneMuteButtons_[static_cast<std::size_t> (i)]);
@@ -80,7 +92,7 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
     }
 
     startTimerHz (4);
-    setSize (680, 440);
+    setSize (720, 480);
 }
 
 JDUpgradedAudioProcessorEditor::~JDUpgradedAudioProcessorEditor()
@@ -117,7 +129,7 @@ void JDUpgradedAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colour (0xff1a1a22));
     g.setColour (juce::Colours::white.withAlpha (0.85f));
-    g.drawFittedText ("Level · Wave · Mute per tone  |  Filter / Group A / B / Coupling",
+    g.drawFittedText ("Level · Wave · MS · Mute per tone  |  Filter / Group A / B / Coupling",
                       getLocalBounds().removeFromBottom (24),
                       juce::Justification::centred, 1);
 }
@@ -146,7 +158,9 @@ void JDUpgradedAudioProcessorEditor::resized()
     {
         auto col = toneRow.removeFromLeft (colW).reduced (4);
         toneMuteButtons_[static_cast<std::size_t> (i)].setBounds (col.removeFromBottom (22));
-        toneWaveSliders_[static_cast<std::size_t> (i)].setBounds (col.removeFromTop (col.getHeight() / 2).reduced (2));
+        auto topHalf = col.removeFromTop (col.getHeight() / 2);
+        toneWaveSliders_[static_cast<std::size_t> (i)].setBounds (topHalf.removeFromLeft (topHalf.getWidth() / 2).reduced (2));
+        toneMultisampleSliders_[static_cast<std::size_t> (i)].setBounds (topHalf.reduced (2));
         toneLevelSliders_[static_cast<std::size_t> (i)].setBounds (col.reduced (2));
     }
 }

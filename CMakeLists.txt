@@ -58,6 +58,7 @@ target_sources(JDUpgraded
         Source/Assets/RomBank.cpp
         Source/Assets/FactoryPatchLibrary.cpp
         Source/Preset/SysExParser.cpp
+        Source/Preset/JdPatchSysexMapper.cpp
 )
 
 target_compile_definitions(JDUpgraded
@@ -73,6 +74,21 @@ check_cxx_compiler_flag("-mavx2" JDUPGRADED_HAS_AVX2_FLAG)
 if(JDUPGRADED_HAS_AVX2_FLAG)
     target_compile_options(JDUpgraded PRIVATE -mavx2 -mfma)
     target_compile_definitions(JDUpgraded PRIVATE JDUPGRADED_USE_AVX2=1)
+endif()
+
+include(CheckCXXSourceCompiles)
+check_cxx_source_compiles("
+#include <arm_neon.h>
+int main() {
+    float32x4_t a = vdupq_n_f32(0.0f);
+    float32x4_t b = vdupq_n_f32(1.0f);
+    float32x4_t c = vaddq_f32(a, b);
+    (void) c;
+    return 0;
+}
+" JDUPGRADED_HAS_NEON)
+if(JDUPGRADED_HAS_NEON AND NOT JDUPGRADED_HAS_AVX2_FLAG)
+    target_compile_definitions(JDUpgraded PRIVATE JDUPGRADED_USE_NEON=1)
 endif()
 
 target_link_libraries(JDUpgraded

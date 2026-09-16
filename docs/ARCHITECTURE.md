@@ -20,7 +20,8 @@
 - **128 factory programs** — four-tone stacks; `currentProgram` persisted in plugin state.
 - **Per-tone mute** — `tone1Mute`…`tone4Mute` + UI M1–M4.
 - `RomLoader` — embedded ROM + `JDUPGRADED_ROM_PATH` override.
-- `SysExParser` — Roland 0x41 packet checksum validation (no patch mapping yet).
+- `SysExParser` — Roland 0x41 packet checksum validation.
+- `JdPatchSysexMapper` — JD-800/990 384-byte patch → APVTS (waves, levels, mutes, FX macros).
 - User-supplied legacy dump translation (planned; not shipped).
 
 ## Phase 4 (in progress)
