@@ -1,123 +1,65 @@
 # Instruments
 
-CMake-native [JUCE](https://juce.com/) plugin starter (`MyFirstPlugin`). **You do not need Visual Studio Code** or the CMake/C++ marketplace extensions. Build from the terminal; use **Cursor**, **Claude Code**, or **Antigravity** only to edit sources and run commands.
+This monorepo hosts **JD Upgraded** (Roland JD-style synth) and the **MyFirstPlugin** JUCE starter templates.
 
-## Where you work vs what compiles
+---
 
-| Tool | Role |
-|------|------|
-| **Cursor / Claude Code / Antigravity** | Edit `PluginProcessor.*`, `CMakeLists.txt`; run `build.ps1` or `build.sh` in the integrated terminal; use AI (Composer, etc.) on the repo |
-| **CMake + compiler** | Actually builds the `.vst3` (Visual Studio Build Tools or MSVC on Windows, Xcode CLT on macOS, GCC/Clang on Linux) |
+# JD Upgraded
 
-Cursor is a separate editor from VS Code. This repo does **not** assume you install VS Code or its extensions.
+Clean-room JUCE **VST3**, **CLAP**, and **standalone** synthesizer inspired by the Roland JD-800 / JD-990: four tones per voice, PCM ROM playback, ZDF TVF, tone coupling, Group A/B effects, and 128 factory programs.
 
-## Project layout
+**Legal:** Sound comes from **`jdupg_cleanroom.rom`** — 256 procedurally synthesized waves ([docs/ROM.md](docs/ROM.md)). No Roland ROM ships with the project. Optional dev override: [docs/USER_ROM.md](docs/USER_ROM.md).
 
-```
-MyFirstPlugin/
-├── CMakeLists.txt
-├── ParameterIds.h
-├── PluginProcessor.h
-├── PluginProcessor.cpp
-├── Build Plugin.bat   # Windows menu (double-click)
-├── build-menu.ps1
-├── CMakePresets.json  # Visual Studio preset
-├── VISUAL_STUDIO.md
-├── build.ps1
-└── build.sh           # macOS / Linux
-```
-
-JUCE is pinned in [`JUCE_VERSION`](JUCE_VERSION) (currently **7.0.12**) and fetched on first configure.
-
-## Build on Windows
-
-Prerequisites: **Visual Studio 2022** with “Desktop development with C++” (includes MSVC; add **C++ CMake tools** in the installer). [CMake](https://cmake.org/download/) on PATH if you use scripts outside VS.
-
-### Easiest: menu or Visual Studio GUI
-
-- Double-click **`MyFirstPlugin/Build Plugin.bat`** → choose **3** (first time), then **2** after edits.  
-- Or open the **`MyFirstPlugin`** folder in **Visual Studio** (File → Open → Folder) and use **Build**.  
-- Full steps: **`MyFirstPlugin/VISUAL_STUDIO.md`**
-
-### Terminal (Cursor)
-
-```powershell
-cd MyFirstPlugin
-.\build.ps1
-```
-
-### macOS / Linux
+## Build
 
 ```bash
-cd MyFirstPlugin
-chmod +x build.sh
-./build.sh
+cmake -B build -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+cmake --build build -j
 ```
 
-Manual equivalent:
+| Target | Output |
+|--------|--------|
+| `JDUpgraded_VST3` | VST3 plugin |
+| `JDUpgraded_CLAP` | CLAP plugin |
+| `JDUpgraded_Standalone` | Desktop app |
+| `OfflineRender` | Headless WAV render (see [docs/AB_HARNESS.md](docs/AB_HARNESS.md)) |
+| `SpectralDiff` | Compare two WAVs for regression / A/B |
+| `GenerateCleanroomRom` | Rebuild ROM at compile time |
+| `ExportPreset` | Write `.jdpreset` for a factory program index |
 
-```bash
-cd MyFirstPlugin
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-```
+AU (macOS): see [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
-On **macOS**, add `AU` to `FORMATS` in `CMakeLists.txt` if you want Audio Unit:
+## Features (current)
 
-```cmake
-FORMATS VST3 AU Standalone
-```
+- 32-voice pool, 4 tones per voice, zero heap allocation on the audio thread
+- 256-wave clean-room ROM with 24 multisample sets (8 zones each)
+- 128 factory patches (EP, pad, bass, vapor, R&B, elite categories)
+- Global and per-tone Amp/Filter ADSR, wave palette by category
+- Roland JD patch SysEx import (partial APVTS mapping) — [docs/SYSEX.md](docs/SYSEX.md)
+- AVX2 SIMD tone sum (independent coupling path); NEON on ARM when AVX2 is unavailable
 
-### Linux dependencies (if configure fails)
+## Docs
 
-```bash
-sudo apt install build-essential libasound2-dev libfreetype-dev libgl1-mesa-dev \
-  libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libgtk-3-dev
-```
+- [Repository architecture index](ARCHITECTURE.md) (required reading for agents)
+- [JD Upgraded architecture](docs/ARCHITECTURE.md)
+- [Offline tools architecture](tools/ARCHITECTURE.md)
+- [UI](docs/UI.md) · [Installer policy](docs/INSTALLER_POLICY.md)
+- [Presets](docs/PRESETS.md)
+- [Agent handoff](docs/HANDOFF.md)
+- [Phase 5 roadmap](docs/PHASE5.md)
 
-## Output
+## Environment
 
-**Windows:**  
-`MyFirstPlugin\build\MyFirstPlugin_artefacts\Release\VST3\MyFirstPlugin.vst3`
+`JDUPGRADED_ROM_PATH` — load a validated `JDUPGROM` file instead of the embedded ROM (development).
 
-**macOS / Linux:**  
-`MyFirstPlugin/build/MyFirstPlugin_artefacts/Release/VST3/MyFirstPlugin.vst3`
+---
 
-Copy the bundle into your DAW’s VST3 folder and rescan.
+# MyFirstPlugin (starter)
 
-## AI workflow (processor before UI)
+CMake-native [JUCE](https://juce.com/) effect and synth templates under [`MyFirstPlugin/`](MyFirstPlugin/). JUCE version is pinned in [`JUCE_VERSION`](JUCE_VERSION) (fetched on first configure for that subproject).
 
-1. Open this repo in **Cursor** (or clone it where Claude Code / Antigravity can see it).
-2. Use the prompt in `MyFirstPlugin/CURSOR_COMPOSER_PROMPT.md` — same text works in any agent chat.
-3. After code changes, run **`build.ps1`** or **`build.sh`** until the processor compiles.
-4. Add a custom `PluginEditor` only after the processor is stable.
+**Windows:** `MyFirstPlugin/Build Plugin.bat` or see [`MyFirstPlugin/VISUAL_STUDIO.md`](MyFirstPlugin/VISUAL_STUDIO.md).  
+**macOS / Linux:** `cd MyFirstPlugin && ./build.sh`
 
-## Processor (production patterns)
-
-`MyFirstPluginAudioProcessor` is a reference **VST3 effect** (stereo I/O):
-
-- **APVTS** for parameters and preset/state XML
-- **`ParameterIds.h`** — `std::string_view` IDs (no string lookups in `processBlock`)
-- **Cached** `std::atomic<float>*` from `getRawParameterValue` in the constructor
-- **`juce::LinearSmoothedValue`** on automatable controls
-- **`juce::dsp::StateVariableTPTFilter`** + tube saturation + LFO → cutoff (real-time safe)
-
-Custom **`PluginEditor`** with APVTS rotary controls is included.
-
-## Quality-of-life in this repo
-
-| Feature | Purpose |
-|--------|---------|
-| `Build Plugin.bat` / `build-menu.ps1` | CMake without memorizing commands |
-| `CMakePresets.json` | Same configure in Visual Studio and scripts |
-| `check-env.ps1` | Verifies CMake, MSVC, Git before first build |
-| `MYFIRSTPLUGIN_COPY_AFTER_BUILD` | Optional auto-copy VST3 to the OS plugin folder |
-| `.clangd` + `compile_commands.json` | Better go-to-definition in **Cursor** (after configure) |
-| `.github/workflows/build-plugin.yml` | CI on Windows + Linux |
-| `NEW_PLUGIN.md` | Rename / fork checklist for your next VST or VSTi |
-
-| `MyFirstSynth` | VSTi template (`SynthProcessor.*`) — sine voices, MIDI, ADSR, APVTS |
-| Pluginval in CI | Linux workflow validates both `.vst3` bundles on every push |
-| Windows preset | `windows-vs-release` turns on **auto-install** to the user VST3 folder |
-
-**Later (optional):** Melatonin / Pamplejuce-style UI tests and layout tooling.
+CI for the starter: [`.github/workflows/build-plugin.yml`](.github/workflows/build-plugin.yml).
