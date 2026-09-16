@@ -11,31 +11,36 @@ jobs:
     steps:
       - name: Extract WO id from PR title
         id: wo
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          title="${{ github.event.pull_request.title }}"
-          if echo "$title" | grep -qE 'WO-[0-9]{4}-[0-9]+'; then
-            echo "id=$(echo "$title" | grep -oE 'WO-[0-9]{4}-[0-9]+' | head -1)" >> "$GITHUB_OUTPUT"
-          else
-            echo "id=" >> "$GITHUB_OUTPUT"
-          fi
+          id=$(printf '%s' "$PR_TITLE" | grep -oE 'WO-[0-9]{4}-[0-9]+' | head -1 || true)
+          echo "id=$id" >> "$GITHUB_OUTPUT"
       - name: Patch Airtable work order
         if: steps.wo.outputs.id != ''
         env:
           AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
           AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+          WO_ID: ${{ steps.wo.outputs.id }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
           if [ -z "$AIRTABLE_API_KEY" ] || [ -z "$AIRTABLE_BASE_ID" ]; then
             echo "Airtable secrets not configured; skip."
             exit 0
           fi
-          WO_ID="${{ steps.wo.outputs.id }}"
-          PR_URL="${{ github.event.pull_request.html_url }}"
-          FORMULA="({work_order_id}='${WO_ID}')"
-          ENC=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$FORMULA'''))")
-          REC=$(curl -s -H "Authorization: Bearer $AIRTABLE_API_KEY" \
-            "https://api.airtable.com/v0/$AIRTABLE_BASE_ID/Agent%20Work%20Orders?maxRecords=1&filterByFormula=$ENC")
-          RID=$(echo "$REC" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['records'][0]['id'] if d.get('records') else '')")
-          if [ -z "$RID" ]; then echo "WO not found"; exit 0; fi
-          curl -s -X PATCH -H "Authorization: Bearer $AIRTABLE_API_KEY" -H "Content-Type: application/json" \
-            "https://api.airtable.com/v0/$AIRTABLE_BASE_ID/Agent%20Work%20Orders/$RID" \
-            -d "{\"fields\":{\"status\":\"Done\",\"github_pr\":\"$PR_URL\"}}"
+          export FORMULA="({work_order_id}='$WO_ID')"
+          export RECORDS_URL="https://api.airtable.com/v0/$AIRTABLE_BASE_ID/Agent%20Work%20Orders?maxRecords=1&filterByFormula=$(python3 -c 'import os, urllib.parse; print(urllib.parse.quote(os.environ["FORMULA"]))')"
+          response=$(curl --fail-with-body --silent --show-error \
+            -H "Authorization: Bearer $AIRTABLE_API_KEY" \
+            "$RECORDS_URL")
+          record_id=$(printf '%s' "$response" | python3 -c 'import json, sys; data=json.load(sys.stdin); records=data.get("records", []); print(records[0]["id"] if records else "")')
+          if [ -z "$record_id" ]; then
+            echo "No Airtable work order found for $WO_ID; nothing to update."
+            exit 0
+          fi
+          payload=$(python3 -c 'import json, os; print(json.dumps({"fields": {"status": "Done", "github_pr": os.environ["PR_URL"]}}))')
+          curl --fail-with-body --silent --show-error --request PATCH \
+            -H "Authorization: Bearer $AIRTABLE_API_KEY" \
+            -H "Content-Type: application/json" \
+            --data "$payload" \
+            "https://api.airtable.com/v0/$AIRTABLE_BASE_ID/Agent%20Work%20Orders/$record_id"
