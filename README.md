@@ -21,6 +21,8 @@ cmake --build build -j
 | `GenerateCleanroomRom` | Rebuild ROM at compile time |
 | `ExportPreset` | Write `.jdpreset` for a factory program index |
 
+CLAP/AU: see [docs/INTEGRATION.md](docs/INTEGRATION.md).
+
 ## Features (current)
 
 - 32-voice pool, 4 tones per voice, zero heap allocation on the audio thread
