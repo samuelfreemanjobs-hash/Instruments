@@ -15,7 +15,7 @@ Access **Claude Code project workspaces** (including repos that only exist under
 ### 1. Python deps (claude-projects server)
 
 ```bash
-pip3 install -r disklordz-factory/integrations/claude_projects_mcp/requirements.txt
+./disklordz-factory/integrations/claude_projects_mcp/setup.sh
 ```
 
 Optional: point at a custom Claude projects root:
