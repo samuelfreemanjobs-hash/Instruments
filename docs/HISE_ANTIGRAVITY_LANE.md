@@ -11,7 +11,7 @@ Full policy: [HISE_SKETCH_LANE.md](HISE_SKETCH_LANE.md) · Airtable seed: [`hise
 
 | In lane | Out of lane |
 |---------|-------------|
-| Romplers, sample maps, HLAC, scripted sampler UI | Junova-X, NovaDrum circuit DSP, JD Upgraded |
+| Romplers, sample maps, HLAC, scripted sampler UI | Junova-X, TR-808 circuit DSP, JD Upgraded |
 | HiseScript + `XmlPresetBackups/*.xml` | Hand-editing exported C++ in `Binaries/` |
 | Local **VST3** via HISE export | **CLAP**, Linux CI, pluginval in monorepo (JUCE factory) |
 | SKUs after **Marketing brief + Planner `product_id`** | Selling under `DL-LANE-HISE-SKETCH` (process row only) |
@@ -50,7 +50,7 @@ Open a **`[Plugin][Junova-X]`-style port WO** (new `product_id`, e.g. `[Plugin][
 
 - SKU must ship **CLAP** or match **Instruments** `build.yml` / pluginval gates
 - You need **Linux** build or long-term maintenance in `Junova-X/` / `Source/` patterns
-- HISE export limits block the product (custom DSP, NovaDrum-class circuits, tight latency)
+- HISE export limits block the product (custom DSP, TR-808-class circuits, tight latency)
 - GTM promises **demo + updates** tied to GitHub releases in this monorepo
 
 **Stay on Antigravity + HISE** when:

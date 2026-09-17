@@ -32,7 +32,7 @@ Standard HISE/JUCE plugin rules apply in exported binaries; agent work is **offl
 ## Extension points
 
 - New product: Planner + Marketing brief → Antigravity sketch → promote row in Airtable → import folder here or separate repo.
-- JUCE ship: open **port WO** in main factory; do not duplicate Junova/NovaDrum IDs.
+- JUCE ship: open **port WO** in main factory; do not duplicate Junova/TR-808 IDs.
 
 ## Related docs
 

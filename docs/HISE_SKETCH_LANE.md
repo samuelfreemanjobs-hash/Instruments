@@ -2,7 +2,7 @@
 
 **Quick ref (Antigravity handoff):** [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md)
 
-**Status:** Parallel R&D lane — not the ship stack for Junova-X or NovaDrum unless promoted in Airtable.  
+**Status:** Parallel R&D lane — not the ship stack for Junova-X or the TR-808 circuit plugin unless promoted in Airtable.  
 **Implementer:** **Google Antigravity** (local Windows + HISE + MSVC), not Cursor Cloud Agent.  
 **PM:** Airtable Disklordz OS · **Strategy:** Business Planner + Marketing own SKU fit and GTM before any “real” product row.
 
@@ -16,7 +16,7 @@ This lane does **not** replace the factory default: **JUCE + VST3 + CLAP** (see 
 
 | Use HISE sketch lane | Use JUCE / Cursor factory |
 |----------------------|---------------------------|
-| Rompler, sample maps, HLAC, multi-mic kits | Junova-X, NovaDrum (circuit DSP), JD Upgraded |
+| Rompler, sample maps, HLAC, multi-mic kits | Junova-X, TR-808 circuit DSP, JD Upgraded |
 | Fast “does it sell?” VSTi on Windows | CLAP MVP, Linux CI, pluginval in monorepo |
 | Antigravity owns full loop on your PC | GitHub PRs, WO-2026-001…003 style acceptance |
 | Marketing wants a **sampler** story | Marketing wants **analog poly** or **808 circuit** story |
@@ -50,7 +50,7 @@ Sketch (Antigravity) ──► local .vst3 + 1-pager (sonic + UI)
 
 1. `product_id`, name, `division: Plugin`, `family_id`, `price_tier`, `ladder_tier`
 2. Marketing one-liner (`sonic_problem`) and launch tier ($29 demo policy if plugin)
-3. Business Planner sign-off (fits line, not duplicating Junova/NovaDrum/JD)
+3. Business Planner sign-off (fits line, not duplicating Junova/TR-808/JD)
 4. Acceptance criteria explicit about **VST3-only** vs **future JUCE port**
 
 ## Technical architecture (two layers)

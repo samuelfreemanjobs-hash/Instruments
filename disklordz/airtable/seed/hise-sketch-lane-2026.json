@@ -7,7 +7,7 @@
       "name": "HISE Sketch Lane (process)",
       "division": "Plugin",
       "status": "Active",
-      "brief": "Parallel R&D: Antigravity + HISE on Windows. Sample-based / rompler SKUs only. Not Junova/NovaDrum. VST3 export; CLAP only after JUCE port WO. See docs/HISE_SKETCH_LANE.md.",
+      "brief": "Parallel R&D: Antigravity + HISE on Windows. Sample-based / rompler SKUs only. Not Junova/TR-808 circuit plugin. VST3 export; CLAP only after JUCE port WO. See docs/HISE_SKETCH_LANE.md.",
       "github_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
       "price_tier": "n/a",
       "ladder_tier": "process",
@@ -91,7 +91,7 @@
     }
   ],
   "marketing_planner_checklist": [
-    "Product fits rompler/sample lane — not Junova analog poly or NovaDrum circuit story",
+    "Product fits rompler/sample lane — not Junova analog poly or TR-808 circuit story",
     "Unique product_id and customer-facing name approved",
     "price_tier and ladder_tier set ($29 demo / Windows-first if plugin)",
     "sonic_problem one-liner for store and Grok",
