@@ -1,0 +1,18 @@
+{
+  "name": "ecommerce-platform-web",
+  "install": "cd ecommerce-platform/web && npm ci",
+  "start": "cd ecommerce-platform/web && chmod +x scripts/*.sh 2>/dev/null || true",
+  "terminals": [
+    {
+      "name": "next-dev",
+      "command": "cd ecommerce-platform/web && npm run dev"
+    }
+  ],
+  "egressMode": "allowlist",
+  "egressAllowlist": [
+    "fastdl.mongodb.org",
+    "downloads.mongodb.com",
+    "repo.mongodb.org",
+    "*.mongodb.net"
+  ]
+}

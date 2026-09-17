@@ -20,6 +20,9 @@
 # production
 /build
 
+# local FerretDB binary + SQLite data
+/.cache/
+
 # misc
 .DS_Store
 *.pem

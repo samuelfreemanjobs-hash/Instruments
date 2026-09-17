@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "dev:db": "tsx scripts/dev-with-db.ts",
+    "db:local": "tsx scripts/bootstrap-local-db.ts",
+    "e2e:quick": "tsx scripts/e2e-quick-test.ts",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "build": "prisma generate && next build",

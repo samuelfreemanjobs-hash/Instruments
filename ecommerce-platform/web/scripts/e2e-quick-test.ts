@@ -1,34 +1,36 @@
 /**
  * End-to-end quick test (SOP-09/10 flow) without browser.
- * Requires mongodb-memory-server binary download (or set DATABASE_URL in env).
  */
-import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { MongoMemoryServer } from "mongodb-memory-server";
 import { PrismaClient } from "@prisma/client";
+import {
+  ensureMongoForPrisma,
+  runPrismaPushSeed,
+  webRoot,
+} from "./lib/ensure-mongodb";
 
-const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+const root = webRoot;
 const envPath = path.join(root, ".env.local");
 
+function loadEnvLocalDatabaseUrl(): string | undefined {
+  if (!fs.existsSync(envPath)) return undefined;
+  const raw = fs.readFileSync(envPath, "utf8");
+  for (const line of raw.split("\n")) {
+    const m = line.match(/^DATABASE_URL="(.+)"/);
+    if (m) return m[1];
+  }
+  return undefined;
+}
+
 async function main() {
-  if (fs.existsSync(envPath)) {
-    const raw = fs.readFileSync(envPath, "utf8");
-    for (const line of raw.split("\n")) {
-      const m = line.match(/^DATABASE_URL="(.+)"/);
-      if (m) process.env.DATABASE_URL = m[1];
-    }
+  if (!process.env.DATABASE_URL) {
+    const fromFile = loadEnvLocalDatabaseUrl();
+    if (fromFile) process.env.DATABASE_URL = fromFile;
   }
 
-  let databaseUrl = process.env.DATABASE_URL;
-  let mongod: MongoMemoryServer | null = null;
-
-  if (!databaseUrl) {
-    console.log("Starting in-memory MongoDB…");
-    mongod = await MongoMemoryServer.create({ instance: { dbName: "ecommerce" } });
-    databaseUrl = mongod.getUri();
-  }
+  const mongo = await ensureMongoForPrisma();
+  const databaseUrl = mongo.databaseUrl;
 
   const envLines = [
     `DATABASE_URL="${databaseUrl}"`,
@@ -39,12 +41,7 @@ async function main() {
   fs.writeFileSync(envPath, envLines.join("\n") + "\n");
   console.log("Wrote .env.local");
 
-  const env = { ...process.env, DATABASE_URL: databaseUrl };
-  const push = spawnSync("npx", ["prisma", "db", "push"], { cwd: root, env, stdio: "inherit" });
-  if (push.status !== 0) process.exit(1);
-
-  const seed = spawnSync("npx", ["tsx", "prisma/seed.ts"], { cwd: root, env, stdio: "inherit" });
-  if (seed.status !== 0) process.exit(1);
+  runPrismaPushSeed(databaseUrl);
 
   const prisma = new PrismaClient({ datasources: { db: { url: databaseUrl } } });
 
@@ -97,11 +94,14 @@ async function main() {
   console.log("Fulfill result:", result);
 
   const paid = await prisma.order.findUnique({ where: { id: order.id } });
-  console.log("Order status after pay:", paid?.status);
+  if (paid?.status !== "PAID") {
+    throw new Error(`Expected PAID, got ${paid?.status}`);
+  }
+  console.log("Order status after pay:", paid.status);
 
   await prisma.$disconnect();
-  if (mongod) await mongod.stop();
-  console.log("\nE2E script done. Restart `npm run dev` to pick up .env.local for UI verification.");
+  await mongo.stop();
+  console.log("\nE2E script OK. Restart `npm run dev` to pick up .env.local for UI verification.");
 }
 
 main().catch((e) => {

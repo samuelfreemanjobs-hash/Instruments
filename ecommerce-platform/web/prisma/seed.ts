@@ -1,43 +1,44 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { PrismaClient, Role, type User, type Category } from "@prisma/client";
 import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
+/** findUnique + create — FerretDB does not implement upsert $and yet. */
+async function ensureUser(data: {
+  email: string;
+  name: string;
+  passwordHash: string;
+  role: Role;
+}): Promise<User> {
+  const existing = await prisma.user.findFirst({ where: { email: data.email } });
+  if (existing) return existing;
+  return prisma.user.create({ data });
+}
+
+async function ensureCategory(data: { name: string; slug: string }): Promise<Category> {
+  const existing = await prisma.category.findFirst({ where: { slug: data.slug } });
+  if (existing) return existing;
+  return prisma.category.create({ data });
+}
+
 async function main() {
   const passwordHash = await bcrypt.hash("admin123", 12);
-  await prisma.user.upsert({
-    where: { email: "admin@example.com" },
-    update: {},
-    create: {
-      email: "admin@example.com",
-      name: "Shop Admin",
-      passwordHash,
-      role: Role.ADMIN,
-    },
+  await ensureUser({
+    email: "admin@example.com",
+    name: "Shop Admin",
+    passwordHash,
+    role: Role.ADMIN,
   });
 
   const customerHash = await bcrypt.hash("customer123", 12);
-  await prisma.user.upsert({
-    where: { email: "customer@example.com" },
-    update: {},
-    create: {
-      email: "customer@example.com",
-      name: "Demo Customer",
-      passwordHash: customerHash,
-      role: Role.CUSTOMER,
-    },
+  await ensureUser({
+    email: "customer@example.com",
+    name: "Demo Customer",
+    passwordHash: customerHash,
+    role: Role.CUSTOMER,
   });
 
-  const electronics = await prisma.category.upsert({
-    where: { slug: "electronics" },
-    update: {},
-    create: { name: "Electronics", slug: "electronics" },
-  });
-
-  await prisma.category.upsert({
-    where: { slug: "accessories" },
-    update: {},
-    create: { name: "Accessories", slug: "accessories" },
-  });
+  const electronics = await ensureCategory({ name: "Electronics", slug: "electronics" });
+  await ensureCategory({ name: "Accessories", slug: "accessories" });
 
   const products = [
     {
@@ -59,23 +60,30 @@ async function main() {
   ];
 
   for (const p of products) {
-    await prisma.product.upsert({
-      where: { slug: p.slug },
-      update: { ...p, categoryId: electronics.id },
-      create: { ...p, categoryId: electronics.id, images: [] },
-    });
+    const existing = await prisma.product.findFirst({ where: { slug: p.slug } });
+    if (existing) {
+      await prisma.product.update({
+        where: { id: existing.id },
+        data: { ...p, categoryId: electronics.id },
+      });
+    } else {
+      await prisma.product.create({
+        data: { ...p, categoryId: electronics.id, images: [] },
+      });
+    }
   }
 
-  await prisma.coupon.upsert({
-    where: { code: "WELCOME10" },
-    update: {},
-    create: {
-      code: "WELCOME10",
-      discountPct: 10,
-      minCart: 25,
-      active: true,
-    },
-  });
+  const coupon = await prisma.coupon.findFirst({ where: { code: "WELCOME10" } });
+  if (!coupon) {
+    await prisma.coupon.create({
+      data: {
+        code: "WELCOME10",
+        discountPct: 10,
+        minCart: 25,
+        active: true,
+      },
+    });
+  }
 
   const topBar = await prisma.topBar.findFirst({ where: { active: true } });
   if (!topBar) {

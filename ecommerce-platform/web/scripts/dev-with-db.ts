@@ -1,17 +1,18 @@
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { MongoMemoryServer } from "mongodb-memory-server";
+import {
+  ensureMongoForPrisma,
+  runPrismaPushSeed,
+  webRoot,
+} from "./lib/ensure-mongodb";
 
-const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+const root = webRoot;
 const envPath = path.join(root, ".env.local");
 
 async function main() {
-  const mongod = await MongoMemoryServer.create({
-    instance: { dbName: "ecommerce" },
-  });
-  const uri = mongod.getUri();
+  const mongo = await ensureMongoForPrisma();
+  const uri = mongo.databaseUrl;
 
   const envLines = [
     `DATABASE_URL="${uri}"`,
@@ -19,21 +20,11 @@ async function main() {
     'NEXT_PUBLIC_APP_URL="http://localhost:3000"',
   ];
   fs.writeFileSync(envPath, envLines.join("\n") + "\n");
-  console.log("[dev-with-db] Wrote .env.local with in-memory MongoDB");
+  console.log("[dev-with-db] Wrote .env.local");
+
+  runPrismaPushSeed(uri);
 
   const env = { ...process.env, DATABASE_URL: uri };
-  const push = spawnSync("npx", ["prisma", "db", "push"], { cwd: root, env, stdio: "inherit" });
-  if (push.status !== 0) {
-    await mongod.stop();
-    process.exit(push.status ?? 1);
-  }
-
-  const seed = spawnSync("npx", ["tsx", "prisma/seed.ts"], { cwd: root, env, stdio: "inherit" });
-  if (seed.status !== 0) {
-    await mongod.stop();
-    process.exit(seed.status ?? 1);
-  }
-
   const next = spawn("npx", ["next", "dev", "-p", "3000"], {
     cwd: root,
     env,
@@ -42,13 +33,13 @@ async function main() {
 
   const shutdown = async () => {
     next.kill("SIGTERM");
-    await mongod.stop();
+    await mongo.stop();
     process.exit(0);
   };
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
   next.on("exit", (code) => {
-    void mongod.stop().then(() => process.exit(code ?? 0));
+    void mongo.stop().then(() => process.exit(code ?? 0));
   });
 }
 

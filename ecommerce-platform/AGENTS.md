@@ -39,5 +39,8 @@ One logical change per commit (e.g. "Add coupon admin template", "Wire Prisma Or
 ## Cursor Cloud specific instructions
 
 - Node 20+ is available; use `npm` in `ecommerce-platform/web`.
-- MongoDB is **not** pre-provisioned in the default VM snapshot; use a hosted MongoDB Atlas URI in `.env.local` for full E2E, or limit verification to `npm run build` without `db push`.
+- **Full E2E (login, checkout, Prisma):** set `DATABASE_URL` to a MongoDB Atlas URI in **environment secrets** (recommended). Prisma requires a replica set; FerretDB is not sufficient for writes.
+- If Atlas is configured, allow egress to `*.mongodb.net`. For in-VM `mongodb-memory-server`, allow `fastdl.mongodb.org` and `downloads.mongodb.com` (see `web/.cursor/environment.json`).
+- Bootstrap: `cd ecommerce-platform/web && npm run db:local` then `npm run e2e:quick`. Headless email check: `NODE_ENV=development npx tsx scripts/test-email-dev-log.ts`.
+- Without MongoDB: `npm run lint` and `npm run build` only.
 - Do not run `npm audit fix --force` unless explicitly requested.
