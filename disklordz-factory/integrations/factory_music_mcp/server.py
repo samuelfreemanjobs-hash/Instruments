@@ -11,8 +11,11 @@ from mcp.server.fastmcp import FastMCP
 
 ROOT = Path(__file__).resolve().parents[2]
 COLLECTIVE = ROOT / "database" / "artist_collective_seed.json"
-RECORDING_CHAINS = ROOT / "openclaw" / "personas" / "recording_chains.yaml"
+RECORDING_CHAINS = ROOT / "openclaw" / "personas" / "recording_chains.json"
 DL_BRF_SCHEMA = ROOT / "schemas" / "dl_brf.json"
+SECTION_PAYLOAD_SCHEMA = ROOT / "schemas" / "dl_section_payload.json"
+COMPILED_PROMPT_SCHEMA = ROOT / "schemas" / "compiled_music_prompt.json"
+SONIC_MOVEMENTS = ROOT / "database" / "sonic_archaeology_movements.json"
 PROMPTS = ROOT / "prompts" / "artists"
 
 mcp = FastMCP(
@@ -118,16 +121,9 @@ def compile_artist_prompt(artist_id: str) -> str:
 def get_recording_chain(agent_identifier: str) -> str:
     """Return instrument domain and emulated chain for bandleader|keys_arranger|rhythm_section|vocal_topline."""
     if not RECORDING_CHAINS.is_file():
-        return json.dumps({"ok": False, "error": "recording_chains.yaml missing"})
-    text = RECORDING_CHAINS.read_text(encoding="utf-8")
-    # minimal parse: load via json after yaml-like — use line block from collective import
-    try:
-        import yaml  # type: ignore
-    except ImportError:
-        return json.dumps({"ok": False, "error": "PyYAML not installed; read recording_chains.yaml in repo"})
-    import yaml as yaml_lib
-
-    data = yaml_lib.safe_load(text)
+        return json.dumps({"ok": False, "error": "recording_chains.json missing"})
+    with RECORDING_CHAINS.open(encoding="utf-8") as f:
+        data = json.load(f)
     block = (data or {}).get("agents", {}).get(agent_identifier)
     if not block:
         return json.dumps({"ok": False, "error": f"unknown agent_identifier: {agent_identifier}"})

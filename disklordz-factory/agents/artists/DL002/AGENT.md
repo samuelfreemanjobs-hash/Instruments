@@ -8,6 +8,8 @@
 
 Guard **drift phonk · wave phonk** — gym, night drive, FPS energy. Vintage layer is **Memphis soul chops** and **80s R&B stabs**, pitched for **140–160 BPM** saturation.
 
+**Sonic archaeology:** Memphis **DR-660/SP-1200** grit and **DJ Smokey** cloud-phonk processing (sidechain, bitcrush, tape-stop) on modal Rhodes source — [SONIC_ARCHAEOLOGY.md](../../../../docs/SONIC_ARCHAEOLOGY.md).
+
 ## Vintage source → transform
 
 | Source behavior | Output |

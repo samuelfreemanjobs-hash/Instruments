@@ -1,0 +1,56 @@
+{
+  "movements": [
+    {
+      "id": "screw",
+      "label": "Chopped & screwed (DJ Screw lineage)",
+      "primary_artist_id": "DL006",
+      "youtube_brand": "Disklordz",
+      "source_genres": ["quiet storm", "electro-funk", "contemporary r_and_b 1980s"],
+      "processing": {
+        "turntable": "Technics SL-1200 (dual)",
+        "pitch_reduction_percent_min": 10,
+        "pitch_reduction_percent_max": 25,
+        "effective_rpm_feel": "16-25",
+        "spectral_effects": [
+          "high-mids collapse to thick low-mid",
+          "vocal formant baritone shift",
+          "stretched wow/flutter atmosphere"
+        ]
+      },
+      "source_selection_behavior": "polished harmonies and analog synth arrangements that stay clear under slowdown"
+    },
+    {
+      "id": "memphis_90s",
+      "label": "Memphis cassette / playa phonk",
+      "primary_artist_id": "DL002",
+      "secondary_artist_id": "DL006",
+      "processing": {
+        "drum_machines": ["Boss DR-660", "Boss DR-5"],
+        "samplers": ["Gemini DS-1224", "E-mu SP-1200"],
+        "sp1200": {
+          "bit_depth": 12,
+          "sample_rate_khz": 26.04,
+          "filter": "SSM2044 analog LP",
+          "sample_rpm": 45,
+          "artifacts": ["ring-aliasing", "mid grit", "punchy transient distortion"]
+        },
+        "aesthetic": "orchestral soul loops vs frantic 808-style hat rolls and sine sub kicks"
+      }
+    },
+    {
+      "id": "cloud_phonk",
+      "label": "DJ Smokey / trillwave / cloud phonk bridge",
+      "primary_artist_id": "DL002",
+      "source_genres": ["modal jazz-funk", "library music", "quiet storm rhodes"],
+      "processing": {
+        "sidechain_ducking": true,
+        "bitcrush": true,
+        "tape_stop_emulation": true,
+        "digital_lowpass_resonant": true,
+        "rhodes_required": true,
+        "harmony": "suspended minor",
+        "overlay": "syncopated 808 patterns"
+      }
+    }
+  ]
+}

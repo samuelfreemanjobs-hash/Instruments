@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.local/schemas/dl_section_payload.json",
+  "title": "DiskLordzSectionPayload",
+  "description": "Structured sectional output from keys_arranger, rhythm_section, or vocal_topline forks",
+  "type": "object",
+  "required": ["agent_identifier", "artist_id", "movement_target", "analog_perspective", "payload"],
+  "properties": {
+    "agent_identifier": {
+      "type": "string",
+      "enum": ["keys_arranger", "rhythm_section", "vocal_topline"]
+    },
+    "artist_id": { "type": "string", "pattern": "^DL[0-9]{3}$" },
+    "movement_target": {
+      "type": "string",
+      "enum": ["screw", "memphis_90s", "cloud_phonk", "french_touch", "cyber_funk", "source_only"]
+    },
+    "source_session_bpm": { "type": "number", "minimum": 68, "maximum": 92 },
+    "analog_perspective": {
+      "type": "object",
+      "required": ["era", "reject_modern_digital"],
+      "properties": {
+        "era": { "type": "string", "default": "1974-1989 analog" },
+        "reject_modern_digital": { "type": "boolean", "const": true }
+      }
+    },
+    "emulated_chain_ref": {
+      "type": "string",
+      "description": "recording_chains.json agent key or inline chain summary"
+    },
+    "payload": { "type": "object" },
+    "markdown_notes": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Optional human-readable notes; not merged verbatim into compiled prompt"
+    },
+    "artifact_paths": { "type": "array", "items": { "type": "string" } }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "agent_identifier": { "const": "keys_arranger" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["key", "voicing_types", "hardware_emulation"],
+            "properties": {
+              "key": { "type": "string" },
+              "voicing_types": { "type": "array", "items": { "type": "string" } },
+              "modal_shift": { "type": "string" },
+              "hardware_emulation": { "type": "array", "items": { "type": "string" } },
+              "screw_clarity_notes": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "agent_identifier": { "const": "rhythm_section" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["pocket_description", "hardware_emulation"],
+            "properties": {
+              "pocket_description": { "type": "string" },
+              "hardware_emulation": { "type": "array", "items": { "type": "string" } },
+              "negative_space_bars": { "type": "array", "items": { "type": "integer" } },
+              "memphis_hat_roll": { "type": "boolean" },
+              "dr660_pattern_id": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "agent_identifier": { "const": "vocal_topline" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["delivery", "harmony_stack"],
+            "properties": {
+              "delivery": { "type": "string" },
+              "harmony_stack": { "type": "string" },
+              "lyrical_theme": { "type": "string" },
+              "screw_formant_behavior": { "type": "string" },
+              "provenance": {
+                "type": "string",
+                "enum": ["synthetic", "licensed", "original_composition"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

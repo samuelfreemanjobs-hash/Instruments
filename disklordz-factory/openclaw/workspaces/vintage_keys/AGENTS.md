@@ -2,7 +2,7 @@
 
 You run in an **isolated workspace**. You were spawned with **`executionContext: fork`**. Do not spawn subagents.
 
-**Return to Maestro only:** JSON ≤400 tokens + `artifact_paths` for long harmonic drafts saved under this workspace.
+**Return to Maestro only:** **`dl_section_payload.json`** (validate with MCP `validate_section_payload`) + `artifact_paths` for long drafts in workspace.
 
 Consult `GET /collective/artist-agents/{artist_id}` before proposing harmony.
 

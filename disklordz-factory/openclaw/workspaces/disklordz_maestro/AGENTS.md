@@ -33,10 +33,12 @@ Each fork task must specify:
 ### Parallel section spawn (after lane OK)
 
 ```text
-fork vintage_keys     ─┐
-fork rhythm_section  ├─→ merge → DL-BRF → artist_dl00x validate → Workboard
+fork vintage_keys     ─┐  each returns dl_section_payload.json (not prose)
+fork rhythm_section  ├─→ Isaac merge → compiled_music_prompt.json → DL-BRF
 fork vocal_chops      ─┘
 ```
+
+See **COMPILE_PROTOCOL.md** and [SONIC_ARCHAEOLOGY.md](../../../../docs/SONIC_ARCHAEOLOGY.md).
 
 ## Allowed spawns
 

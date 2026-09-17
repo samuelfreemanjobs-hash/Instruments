@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.local/schemas/compiled_music_prompt.json",
+  "title": "CompiledMusicPrompt",
+  "description": "Maestro-synthesized high-density prompt from sectional JSON; resists semantic drift",
+  "type": "object",
+  "required": [
+    "batch_id",
+    "artist_id",
+    "source_session_bpm",
+    "sections",
+    "compiled_prompt_text",
+    "downstream"
+  ],
+  "properties": {
+    "batch_id": { "type": "string" },
+    "artist_id": { "type": "string", "pattern": "^DL[0-9]{3}$" },
+    "source_session_bpm": { "type": "number", "minimum": 68, "maximum": 92 },
+    "movement_primary": {
+      "type": "string",
+      "enum": ["screw", "memphis_90s", "cloud_phonk", "french_touch", "cyber_funk"]
+    },
+    "mix_architecture": {
+      "type": "object",
+      "properties": {
+        "console": { "type": "string", "default": "Neve 8068" },
+        "tape": { "type": "string", "default": "Studer A800 2-inch" }
+      }
+    },
+    "sections": {
+      "type": "object",
+      "required": ["keys", "rhythm", "vocal"],
+      "properties": {
+        "keys": { "$ref": "#/$defs/sectionRef" },
+        "rhythm": { "$ref": "#/$defs/sectionRef" },
+        "vocal": { "$ref": "#/$defs/sectionRef" }
+      }
+    },
+    "downstream": {
+      "type": "object",
+      "properties": {
+        "screw": {
+          "type": "object",
+          "properties": {
+            "pitch_reduction_percent": { "type": "array", "items": { "type": "number" } },
+            "turntable": { "type": "string", "default": "Technics SL-1200 MK2" },
+            "target_rpm_feel": { "type": "string" }
+          }
+        },
+        "memphis_90s": {
+          "type": "object",
+          "properties": {
+            "drum_machine": { "type": "string" },
+            "sampler": { "type": "string" },
+            "sp1200_sample_rate": { "type": "string", "default": "26.04 kHz 12-bit" }
+          }
+        },
+        "cloud_phonk": {
+          "type": "object",
+          "properties": {
+            "sidechain": { "type": "boolean" },
+            "bitcrush": { "type": "boolean" },
+            "tape_stop": { "type": "boolean" },
+            "digital_lp_filter": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "compiled_prompt_text": {
+      "type": "string",
+      "minLength": 100,
+      "description": "Single unified generative prompt embedding analog chain + sectional facts"
+    },
+    "forbidden_in_output": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "sectionRef": {
+      "type": "object",
+      "required": ["agent_identifier", "payload"],
+      "properties": {
+        "agent_identifier": { "type": "string" },
+        "payload": { "type": "object" }
+      }
+    }
+  }
+}

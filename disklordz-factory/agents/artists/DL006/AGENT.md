@@ -8,6 +8,10 @@
 
 Guard **DJ Screw · 90s phonk · lo-fi tape** — study and chop-and-screw listening, **60–95 BPM**. Vintage layer is **Houston slow soul**, jazz Rhodes, quiet storm loops **pitched down**, not sped up.
 
+## Sonic archaeology
+
+Screw lineage (DJ Screw behavior): dual **SL-1200**, pitch **−10–25%**, quiet storm / electro-funk that stays harmonically clear when slowed. [SONIC_ARCHAEOLOGY.md](../../../../docs/SONIC_ARCHAEOLOGY.md).
+
 ## Vintage source → transform
 
 | Source behavior | Output |

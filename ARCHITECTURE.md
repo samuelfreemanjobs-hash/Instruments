@@ -19,6 +19,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Factory music MCP** | [docs/FACTORY_MCP.md](docs/FACTORY_MCP.md) | BPM, DL-BRF, MIDI shells for sectional agents |
 | **OpenClaw migration** | [docs/OPENCLAW_MIGRATION.md](docs/OPENCLAW_MIGRATION.md) | 2.0 SQLite, doctor, parallel spawn stability |
 | **Ensemble personas** | [docs/OPENCLAW_PERSONAS.md](docs/OPENCLAW_PERSONAS.md) | Isaac / Marcus / Bernard / Evelyn domain SOUL |
+| **Sonic archaeology** | [docs/SONIC_ARCHAEOLOGY.md](docs/SONIC_ARCHAEOLOGY.md) | Screw / Memphis / Smokey → DL006/DL002 source design |
 
 ## Repository layout
 

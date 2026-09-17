@@ -157,6 +157,10 @@ curl -s -X POST 'http://127.0.0.1:8787/night-shift/run?notify_slack=false' \
 
 - `GET /collective/artists` — roster + vintage rules + YouTube brand linkage (from seed JSON).
 
+## Sonic archaeology (Southern downstream)
+
+Source sessions are tuned for **screw**, **Memphis cassette phonk**, and **cloud phonk** processing stories — [SONIC_ARCHAEOLOGY.md](SONIC_ARCHAEOLOGY.md). Section agents emit **`dl_section_payload.json`**; Maestro emits **`compiled_music_prompt.json`**.
+
 ## Related
 
 - [DISKLORDZ_YOUTUBE_NETWORK.md](DISKLORDZ_YOUTUBE_NETWORK.md)  
