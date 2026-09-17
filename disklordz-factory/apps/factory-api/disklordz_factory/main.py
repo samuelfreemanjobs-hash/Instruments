@@ -30,6 +30,7 @@ from disklordz_factory.research import (
     ResearchStatus,
     research_store,
 )
+from disklordz_factory.artist_agents import build_artist_agent_profile, list_artist_agent_profiles
 from disklordz_factory.collective import load_collective_manifest, list_collective_artists
 from disklordz_factory.research_bootstrap import bootstrap_research_if_empty, greenlights_summary
 from disklordz_factory.store import store
@@ -80,6 +81,28 @@ def collective_manifest() -> dict:
 @app.get("/collective/artists")
 def collective_artists() -> list[dict]:
     return list_collective_artists()
+
+
+@app.get("/collective/artist-agents")
+def collective_artist_agents(include_prompts: bool = False) -> list[dict]:
+    profiles = list_artist_agent_profiles()
+    if not include_prompts:
+        compact: list[dict] = []
+        for p in profiles:
+            row = dict(p)
+            row.pop("agent_contract", None)
+            row.pop("system_prompt", None)
+            compact.append(row)
+        return compact
+    return profiles
+
+
+@app.get("/collective/artist-agents/{artist_id}")
+def collective_artist_agent(artist_id: str) -> dict:
+    profile = build_artist_agent_profile(artist_id.upper())
+    if not profile:
+        raise HTTPException(status_code=404, detail="artist agent not found or not greenlit")
+    return profile
 
 
 @app.get("/factory/status", response_model=FactoryStatus)

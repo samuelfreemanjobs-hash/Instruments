@@ -75,6 +75,7 @@ flowchart TB
 | `apps/dashboard/` | Future React operator UI (factory dashboard mock in docs) |
 | `apps/catalog/` | Future catalog admin UI |
 | `agents/*/` | Agent role contracts + prompts (12 core agents) |
+| `agents/artists/*/` | Four HQ greenlit artist lane agents (`DISKLORDZ_ARTIST_DL*`) |
 | `workflows/` | Batch pipeline definitions (core loop, night shift) |
 | `schemas/` | JSON Schema for assets, batches, opportunities |
 | `database/` | SQLite/Postgres-ready catalog DDL |

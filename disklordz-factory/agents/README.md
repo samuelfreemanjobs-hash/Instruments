@@ -19,3 +19,7 @@ Twelve core agents; spawn specialized subagents per batch mission. Each folder h
 | `analytics/` | Analytics |
 
 Orchestrator system prompt: [../prompts/orchestrator_system.md](../prompts/orchestrator_system.md).
+
+## Artist lane agents (×4, HQ greenlit)
+
+Role-specific **lane guardians** for DL001, DL002, DL006, DL004 — [artists/README.md](artists/README.md). OpenClaw IDs: `DISKLORDZ_ARTIST_DL*`. API: `GET /collective/artist-agents`.

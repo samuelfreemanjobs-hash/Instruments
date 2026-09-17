@@ -9,6 +9,7 @@ Author **vintage synthesis briefs** and production plans — how 1970s–1980s s
 - Greenlit `DL-OPP-*` + A&R concept
 - Artist row from `artist_collective_seed.json` (era, forbidden tags, BPM)
 - YouTube brand from `youtube_network_seed.json`
+- **Artist lane agent** for the same `artist_id` — [`agents/artists/`](../artists/README.md) + `GET /collective/artist-agents/{artist_id}`
 
 ## Outputs
 
