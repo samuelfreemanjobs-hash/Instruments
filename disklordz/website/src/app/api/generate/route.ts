@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import {
+  GENERATION_CREDIT_COST,
+  getBillingSnapshot,
+  newBatchId,
+  refundGenerationCredit,
+  spendGenerationCredit,
+} from "@/lib/credits";
 import { parseGenerationSpec } from "@/lib/generation/generation-spec";
 import { buildVariationBatch } from "@/lib/generation/variations";
 import { activeKitStorageBackend, ensureKitStorageReady } from "@/lib/kit-storage";
 import { saveKitForUser } from "@/lib/kits/persist";
 import { getPreset, STYLE_PRESETS } from "@/lib/presets";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
@@ -14,19 +22,6 @@ export async function POST(req: NextRequest) {
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     req.headers.get("x-real-ip") ??
     "anonymous";
-
-  const limited = checkRateLimit(ip);
-  if (!limited.ok) {
-    return NextResponse.json(
-      {
-        error: "daily_limit",
-        message: `Free tier allows ${limited.limit} kits per day. Try again later.`,
-        retryAfterSec: limited.retryAfterSec,
-        limit: limited.limit,
-      },
-      { status: 429 },
-    );
-  }
 
   let body: { prompt?: string; presetId?: string; spec?: Record<string, unknown> };
   try {
@@ -57,10 +52,59 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  let userId: string | null = null;
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient();
+    if (supabase) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      userId = user?.id ?? null;
+    }
+  }
+
+  const billingActive = Boolean(userId && getSupabaseAdmin());
+  const batchId = newBatchId();
+  let rateLimit: { remaining: number; limit: number } | undefined;
+
+  if (billingActive && userId) {
+    const spent = await spendGenerationCredit(userId, batchId);
+    if (!spent) {
+      const billing = await getBillingSnapshot(userId);
+      return NextResponse.json(
+        {
+          error: "insufficient_credits",
+          message: "No generation credits left. Upgrade to Pro or sign in after we add packs.",
+          creditsBalance: billing?.creditsBalance ?? 0,
+          generationCreditCost: GENERATION_CREDIT_COST,
+          plan: billing?.plan ?? "free",
+        },
+        { status: 402 },
+      );
+    }
+  } else {
+    const limited = checkRateLimit(ip);
+    if (!limited.ok) {
+      return NextResponse.json(
+        {
+          error: "daily_limit",
+          message: `Guest tier allows ${limited.limit} batches per day per IP. Sign in for credit wallet.`,
+          retryAfterSec: limited.retryAfterSec,
+          limit: limited.limit,
+        },
+        { status: 429 },
+      );
+    }
+    rateLimit = { remaining: limited.remaining, limit: limited.limit };
+  }
+
   if (activeKitStorageBackend() === "supabase") {
     try {
       await ensureKitStorageReady();
     } catch (err) {
+      if (billingActive && userId) {
+        await refundGenerationCredit(userId, batchId);
+      }
       const message = err instanceof Error ? err.message : "storage_unavailable";
       return NextResponse.json(
         { error: "storage_setup_failed", message },
@@ -70,25 +114,31 @@ export async function POST(req: NextRequest) {
   }
 
   const baseUrl = req.nextUrl.origin;
-  const { batchId, manifests } = await buildVariationBatch(
-    prompt,
-    presetId,
-    baseUrl,
-    parsed.spec,
-  );
+  let manifests;
+  try {
+    const result = await buildVariationBatch(
+      prompt,
+      presetId,
+      baseUrl,
+      parsed.spec,
+      batchId,
+    );
+    manifests = result.manifests;
+  } catch (err) {
+    if (billingActive && userId) {
+      await refundGenerationCredit(userId, batchId);
+    }
+    const message = err instanceof Error ? err.message : "generation_failed";
+    return NextResponse.json({ error: "generation_failed", message }, { status: 500 });
+  }
 
   let savedToAccount = false;
-  if (isSupabaseConfigured()) {
+  if (userId && isSupabaseConfigured()) {
     const supabase = await createClient();
     if (supabase) {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        for (const manifest of manifests) {
-          const saved = await saveKitForUser(supabase, user.id, manifest);
-          if (saved.ok) savedToAccount = true;
-        }
+      for (const manifest of manifests) {
+        const saved = await saveKitForUser(supabase, userId, manifest);
+        if (saved.ok) savedToAccount = true;
       }
     }
   }
@@ -98,15 +148,27 @@ export async function POST(req: NextRequest) {
     manifest,
   }));
 
+  let creditsAfter: Awaited<ReturnType<typeof getBillingSnapshot>> | null = null;
+  if (billingActive && userId) {
+    creditsAfter = await getBillingSnapshot(userId);
+  }
+
   return NextResponse.json({
     batchId,
     variationCount: variations.length,
     storageBackend: activeKitStorageBackend(),
     variations,
-    /** @deprecated Use variations[0].manifest — kept for compatibility */
     manifest: manifests[0],
     savedToAccount,
-    rateLimit: { remaining: limited.remaining, limit: limited.limit },
+    rateLimit,
+    billing: creditsAfter
+      ? {
+          plan: creditsAfter.plan,
+          creditsBalance: creditsAfter.creditsBalance,
+          generationCreditCost: creditsAfter.generationCreditCost,
+          unlimited: creditsAfter.plan === "pro",
+        }
+      : undefined,
     presets: STYLE_PRESETS.map(({ id, label, description }) => ({
       id,
       label,

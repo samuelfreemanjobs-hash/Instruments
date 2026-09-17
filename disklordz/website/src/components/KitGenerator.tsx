@@ -25,6 +25,12 @@ type GenerateResponse = {
   manifest?: KitManifest;
   savedToAccount?: boolean;
   rateLimit?: { remaining: number; limit: number };
+  billing?: {
+    plan: string;
+    creditsBalance: number;
+    unlimited: boolean;
+    generationCreditCost: number;
+  };
 };
 
 export function KitGenerator() {
@@ -45,9 +51,29 @@ export function KitGenerator() {
   const [savedToAccount, setSavedToAccount] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [dailyLimit, setDailyLimit] = useState(20);
+  const [billing, setBilling] = useState<{
+    plan: string;
+    creditsBalance: number;
+    unlimited: boolean;
+  } | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    fetch("/api/credits")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.authenticated && d.plan) {
+          setBilling({
+            plan: d.plan,
+            creditsBalance: d.creditsBalance ?? 0,
+            unlimited: Boolean(d.unlimited),
+          });
+          return;
+        }
+        setBilling(null);
+      })
+      .catch(() => undefined);
+
     fetch("/api/rate-limit")
       .then((r) => r.json())
       .then((d) => {
@@ -88,6 +114,20 @@ export function KitGenerator() {
       });
       const data = await res.json();
       if (!res.ok) {
+        if (res.status === 402) {
+          setError(
+            (data.message as string) ??
+              "Out of credits — upgrade to Pro on your account page.",
+          );
+          if (typeof data.creditsBalance === "number") {
+            setBilling({
+              plan: (data.plan as string) ?? "free",
+              creditsBalance: data.creditsBalance,
+              unlimited: false,
+            });
+          }
+          return;
+        }
         setError(data.message ?? data.error ?? "Generation failed");
         return;
       }
@@ -107,6 +147,13 @@ export function KitGenerator() {
       if (payload.rateLimit) {
         setRemaining(payload.rateLimit.remaining);
         setDailyLimit(payload.rateLimit.limit);
+      }
+      if (payload.billing) {
+        setBilling({
+          plan: payload.billing.plan,
+          creditsBalance: payload.billing.creditsBalance,
+          unlimited: payload.billing.unlimited,
+        });
       }
     } catch {
       setError("Network error — try again.");
@@ -184,10 +231,20 @@ export function KitGenerator() {
           Type a prompt, pick a lane preset, audition {variationCountHint} per engine, download the
           kit you keep.
         </p>
-        {remaining !== null && (
+        {billing?.unlimited ? (
+          <p className="text-xs text-emerald-500/90">Pro — unlimited generations</p>
+        ) : billing ? (
           <p className="text-xs text-zinc-500">
-            Free tier: {remaining} of {dailyLimit} generations left today (per IP; each batch = 1).
+            Signed in: {billing.creditsBalance} credits left (1 per batch).{" "}
+            <a href="/account" className="text-emerald-400 hover:underline">Upgrade</a>
           </p>
+        ) : (
+          remaining !== null && (
+            <p className="text-xs text-zinc-500">
+              Guest: {remaining} of {dailyLimit} batches left today (per IP).{" "}
+              <a href="/login" className="text-emerald-400 hover:underline">Sign in</a> for credits.
+            </p>
+          )
         )}
       </header>
 

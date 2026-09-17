@@ -71,5 +71,6 @@ Each WO: Airtable → GitHub issue (A1) → PR with `WO-…` in title → merge 
 | Generation spec v1 (007) | Done — `spec` in API + UI |
 | Variation batches (008) | Done — 2 studio / 3 creative, Generate more |
 | Persistent kit storage (009) | Done — Supabase Storage + `SUPABASE_SERVICE_ROLE_KEY` |
+| Credits + Stripe Pro (010) | Done — ledger + Checkout + webhook |
 
 Parallel work: [DISKLORDZ_SAAS_AGENT_LANES.md](DISKLORDZ_SAAS_AGENT_LANES.md).

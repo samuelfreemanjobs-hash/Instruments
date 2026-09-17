@@ -4,14 +4,17 @@
 2. Environment variables:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY` — **required for production** (persistent kit audio on Vercel)
-   - `SAAS_DAILY_GEN_LIMIT` (optional, default 20)
+   - `SUPABASE_SERVICE_ROLE_KEY` — **required for production** (kits + credits)
+   - `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRO_PRICE_ID` (Pro upgrades)
+   - `SAAS_DAILY_GEN_LIMIT` (optional, guest IP cap, default 20)
 3. Supabase → Authentication → URL configuration → add  
    `https://YOUR_DOMAIN/auth/callback`
 4. Run SQL migrations (SQL editor or CLI):
    - `supabase/migrations/20260917190000_saved_kits.sql`
    - `supabase/migrations/20260917210000_kits_storage_bucket.sql`
-5. Deploy. Smoke test: generate → play all variations → download ZIP (can be minutes later if storage is on).
+   - `supabase/migrations/20260917220000_credits_billing.sql`
+5. Stripe: see [docs/STRIPE.md](docs/STRIPE.md).
+6. Deploy. Smoke test: guest generate → sign in → credits → checkout (test mode) → Pro unlimited.
 
 ## Kit storage (WO-SAAS-009)
 

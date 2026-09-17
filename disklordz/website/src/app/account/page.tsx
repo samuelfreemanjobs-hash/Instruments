@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { AccountBilling } from "@/components/AccountBilling";
 import { AccountKits } from "@/components/AccountKits";
+import { getBillingSnapshot } from "@/lib/credits";
+import { isStripeConfigured } from "@/lib/stripe/server";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
@@ -37,6 +40,8 @@ export default async function AccountPage() {
     .order("created_at", { ascending: false })
     .limit(50);
 
+  const billing = await getBillingSnapshot(user.id);
+
   return (
     <div className="min-h-screen bg-zinc-950 px-4 py-12 text-zinc-100">
       <div className="mx-auto max-w-3xl space-y-6">
@@ -45,6 +50,11 @@ export default async function AccountPage() {
           <Link href="/" className="text-sm text-emerald-400">New kit</Link>
         </div>
         <p className="text-sm text-zinc-500">{user.email}</p>
+        <AccountBilling
+          plan={billing?.plan ?? "free"}
+          creditsBalance={billing?.creditsBalance ?? 0}
+          stripeEnabled={isStripeConfigured()}
+        />
         <AccountKits kits={kits ?? []} />
       </div>
     </div>
