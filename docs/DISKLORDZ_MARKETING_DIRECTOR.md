@@ -41,6 +41,10 @@ VARA delegates to these roles via Cursor **Task** subagents, dedicated Cloud run
 | **Performance & Analytics** | `mkt-perf` | UTM schema, conversion map, weekly scorecard |
 | **Launch Commander** | `mkt-launch` | Day-by-day launch runbook, Slack war room, rollback |
 | **Commerce Copy** | `mkt-commerce` | Storefront, tripwire, OTO, guarantee, FAQ |
+| **Email Copywriter** | `mkt-email-copywriter` | **Subjects + bodies only** — no strategy |
+| **DR Copywriter** | `mkt-dr-copywriter` | **Sales/tripwire pages only** — no email |
+
+**GTM / launch ops peer:** **HELM** (Product Launch Manager) — [DISKLORDZ_PRODUCT_LAUNCH_MANAGER.md](DISKLORDZ_PRODUCT_LAUNCH_MANAGER.md)
 
 Prompts: [`disklordz/marketing/subagents/`](../disklordz/marketing/subagents/)
 

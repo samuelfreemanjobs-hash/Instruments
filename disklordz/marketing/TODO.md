@@ -30,6 +30,10 @@ Full template: [plm/PM_WO_TEMPLATE.md](plm/PM_WO_TEMPLATE.md)
 
 ---
 
-## Not automated (v1)
+## FORGE / PM (automation)
 
-See [HUMAN_TRIGGERS.md](HUMAN_TRIGGERS.md)
+- [ ] PM: apply Supabase migration + env per [PM_SCHEDULING.md](../automation/PM_SCHEDULING.md)
+- [ ] PM: set GitHub secrets `LAUNCH_AUTOMATION_REGISTER_URL` (prod `/api/automation/register-agent`), `AUTOMATION_SECRET`
+- [ ] FORGE: extend Stripe webhook → launch purchaser tags (P2)
+
+See [HUMAN_TRIGGERS.md](HUMAN_TRIGGERS.md) — founder not on daily send

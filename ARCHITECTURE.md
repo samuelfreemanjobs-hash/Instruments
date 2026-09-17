@@ -13,6 +13,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Disklordz VST launch funnel** (web) | [docs/DISKLORDZ_MASTER_LAUNCH_CANVAS.md](docs/DISKLORDZ_MASTER_LAUNCH_CANVAS.md) · `/launch` in website | Same Next.js app as SaaS |
 | **Disklordz RAG** (prompt knowledge) | [disklordz/rag/ARCHITECTURE.md](disklordz/rag/ARCHITECTURE.md) · [docs/RAG_AND_INTELLIGENT_AUTOMATION.md](docs/RAG_AND_INTELLIGENT_AUTOMATION.md) | `python3 disklordz/rag/scripts/chunk_corpus.py` |
 | **Disklordz Marketing Dept (VARA)** | [docs/DISKLORDZ_MARKETING_DIRECTOR.md](docs/DISKLORDZ_MARKETING_DIRECTOR.md) · [disklordz/marketing/ARCHITECTURE.md](disklordz/marketing/ARCHITECTURE.md) | Slack `#disklordz-marketing-dept` |
+| **Product Launch Manager (HELM)** | [docs/DISKLORDZ_PRODUCT_LAUNCH_MANAGER.md](docs/DISKLORDZ_PRODUCT_LAUNCH_MANAGER.md) · [disklordz/marketing/plm/](disklordz/marketing/plm/) | Pairs with PM + VARA; [HUMAN_TRIGGERS.md](disklordz/marketing/HUMAN_TRIGGERS.md) |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 
 ## Repository layout

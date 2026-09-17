@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 
+import { processDueLaunchEmails } from "@/lib/launch/process-queue";
+import { recordLeadAndSchedule } from "@/lib/launch/schedule-lead";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const OPT_IN_LIMIT = 30;
 const WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -19,25 +23,19 @@ function checkOptInLimit(ip: string): boolean {
   return true;
 }
 
-async function notifyResend(email: string): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL;
-  const downloadUrl = process.env.LAUNCH_VOCAL_STEMS_URL;
-  if (!apiKey || !from || !downloadUrl) return;
-
-  await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to: [email],
-      subject: "[DOWNLOAD] Your 1994 Memphis vocal stems",
-      html: `<p>Your stem pack is ready.</p><p><a href="${downloadUrl}">Download the ZIP</a></p><p>Tip: cut a narrow notch at 3.2 kHz so your snare snaps through the vocal.</p>`,
-    }),
-  });
+async function automationPath(email: string): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return;
+  const scheduled = await recordLeadAndSchedule(supabase, email);
+  if ("error" in scheduled) {
+    console.error("[launch/opt-in] schedule", scheduled.error);
+    return;
+  }
+  try {
+    await processDueLaunchEmails(supabase, 10);
+  } catch (e) {
+    console.error("[launch/opt-in] immediate queue", e);
+  }
 }
 
 export async function POST(req: Request) {
@@ -67,9 +65,9 @@ export async function POST(req: Request) {
   }
 
   try {
-    await notifyResend(email);
+    await automationPath(email);
   } catch (err) {
-    console.error("[launch/opt-in] resend failed", err);
+    console.error("[launch/opt-in] automation failed", err);
   }
 
   if (process.env.NODE_ENV !== "production") {

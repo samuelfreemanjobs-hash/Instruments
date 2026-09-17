@@ -1,33 +1,31 @@
-# Human triggers — what is NOT fully automated
+# Human triggers — automation-first (FORGE v2)
 
-**HELM rule:** If it spends money, sends email to a list, or opens a cart, assume **founder or PM explicit trigger** until v2 automation is built and tested.
+**Default:** PM configures **once**; **FORGE** runs schedules. Founder is **not** the cron job.
 
-## You must trigger (v1)
+## Automated (shipped or shipping on PR #33)
 
-| # | Action | When | Who |
-|---|--------|------|-----|
-| 1 | **Approve tripwire sample WAV pack** | Before Stripe product goes live | **Founder** (ears + legal) |
-| 2 | **Create Stripe Product/Price** (or confirm in Dashboard) | After pack approved | **Founder or PM** (one-time) |
-| 3 | **Set Vercel env** (`LAUNCH_*`, `STRIPE_*`, `RESEND_*`, download URL) | Pre–Day 1 | **PM / Founder** |
-| 4 | **Launch Day 1 — open free opt-in** | Campaign start | **Founder:** merge PR, confirm deploy, post “live” in Slack |
-| 5 | **Day 2 — enable tripwire** | Calendar Day 2 | **Founder:** flip env or feature flag / publish Stripe link in email |
-| 6 | **Send or schedule email batch** | Day 1–4 | **Founder or PM** until Resend automation WO done — *copy is pre-written* |
-| 7 | **Paste Claude voice prompt** | When at home | **Founder** → `VOICE_LAYER.md` |
-| 8 | **Create elite copy agents tonight** | Optional | **Founder** — see TODO |
+| Action | How |
+|--------|-----|
+| Opt-in → schedule 4-day emails | Supabase queue on `/api/launch/opt-in` |
+| Send due emails | Vercel Cron hourly → `/api/cron/launch-queue` |
+| Day 2 tripwire links in email | `LAUNCH_CAMPAIGN_START` + `getLaunchCampaignDay()` ≥ 2, or `LAUNCH_TRIPWIRE_ENABLED=true` |
+| New agent → register workflow | GitHub `forge-agent-registry.yml` → `/api/automation/register-agent` |
 
-## Runs without you (after setup)
+## Founder / PM — one-time only
 
-| Action | Condition |
-|--------|-----------|
-| Opt-in → thank-you redirect | Deployed site |
-| Soundboard / generate kit on SaaS | Deployed + limits |
-| Stripe Pro webhook (existing SaaS) | Env configured |
-| Cursor agents on **explicit WO** | You or PM opens GitHub issue / Cloud task |
+| Action | Who |
+|--------|-----|
+| Approve tripwire WAV pack (ears + legal) | **Founder** |
+| Set env + migration + `LAUNCH_CAMPAIGN_START` | **PM** |
+| Stripe Product / Payment Link for tripwire | **PM** |
+| Paste voice prompt | **Founder** (optional) |
 
-## Target automation (later)
+## PM Agent — ongoing
 
-- Opt-in → auto Day 0 email (Resend)
-- Purchase → tag + OTO branch
-- Scheduled Day 2 cart email (cron/Loops)
+- Own [PM_SCHEDULING.md](../automation/PM_SCHEDULING.md) checklist each campaign
+- Open `[Eng][Automation]` WOs when FORGE reports gaps
+- Never assign founder “click send on Day 2” — use queue
 
-**PM ADD:** Track automation gaps in Airtable WO `[Eng][Marketing] Lifecycle v2`.
+## Fallback if Supabase/Resend missing
+
+Opt-in still redirects to thank-you; emails log error until PM fixes secrets.

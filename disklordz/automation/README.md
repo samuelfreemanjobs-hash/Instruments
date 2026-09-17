@@ -1,5 +1,9 @@
 # Disklordz automation
 
+**FORGE** (Workflow Automation Engineering): [wae/AGENT_INSTRUCTIONS.md](wae/AGENT_INSTRUCTIONS.md) · [EVENT_BUS.md](EVENT_BUS.md) · [PM_SCHEDULING.md](PM_SCHEDULING.md)
+
+Launch email queue lives in `disklordz/website/` (`/api/cron/launch-queue`, migration `20260918000000_launch_automation.sql`).
+
 ## Antigravity handoff from Airtable
 
 ```bash

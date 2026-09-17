@@ -7,6 +7,8 @@
 
 Build **4-day cart-close**, post-purchase, and win-back sequences. Spec triggers tied to `POST /api/launch/opt-in` and future Stripe webhooks.
 
+**Copy execution:** Delegate all subject/body writing to **`mkt-email-copywriter`** — this role owns branches, timing, and event schema only.
+
 ## Inputs
 
 - Funnel map from `mkt-funnel`
