@@ -123,10 +123,10 @@ Per entity: list → create → edit → delete → validation → toast/error s
 
 ## Phase 8 — Payments & webhooks
 
-- [ ] Stripe Checkout / Payment Intents
-- [ ] RazorPay orders
-- [ ] Webhook signature verification
-- [ ] Idempotent order status updates
+- [x] Stripe Checkout sessions (`startStripeCheckoutAction`)
+- [x] RazorPay order + client checkout + verify API
+- [x] Webhook signature verification (`/api/webhooks/stripe`, `/api/webhooks/razorpay`)
+- [x] Idempotent fulfill (`lib/payments/fulfill.ts`) + dev simulate when no Stripe keys
 
 **SOP:** [SOP-08-payments-webhooks.md](SOP/SOP-08-payments-webhooks.md)
 
