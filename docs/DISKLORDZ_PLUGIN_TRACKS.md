@@ -2,6 +2,7 @@
 
 **PM:** Airtable · **JUCE factory implementer:** Cursor Cloud Agent · **HISE sketch lane (D):** Antigravity (local Windows) · **Advisory:** Grok Plugin team  
 
+**App / growth:** [DISKLORDZ_PWA_DRUM_SAAS_RESEARCH.md](DISKLORDZ_PWA_DRUM_SAAS_RESEARCH.md) · [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md) — separate from plugin WOs.  
 **HISE sketch lane:** [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md) (handoff) · [HISE_SKETCH_LANE.md](HISE_SKETCH_LANE.md) (full) — **Business Planner + Marketing** gate every customer-facing SKU.
 
 ## Tracks on `main` today
