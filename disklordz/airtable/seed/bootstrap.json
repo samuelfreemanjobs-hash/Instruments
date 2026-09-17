@@ -1,0 +1,88 @@
+{
+  "product_families": [
+    {
+      "family_id": "DL-FAMILY-DIGITAL-SAMPLER",
+      "name": "Digital Sampler Universe",
+      "universe_theme": "Dark 90s/2000s digital degradation",
+      "sonic_problem": "2000s DIGITAL DRUMS — hard, dirty, mechanical sampler character",
+      "status": "Active"
+    }
+  ],
+  "products": [
+    {
+      "product_id": "DL-FOUNDATION-001",
+      "name": "DiskLordz OS — Phase 1 Foundation",
+      "division": "Bundle",
+      "status": "In Development",
+      "brief": "Stand up Airtable, automations Sprint A, first genome + kernel migration path.",
+      "github_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "ladder_tier": "free",
+      "sonic_problem": "Factory infrastructure",
+      "family_id": "DL-FAMILY-DIGITAL-SAMPLER",
+      "compile_targets": "[\"content_pack\"]"
+    }
+  ],
+  "projects": [
+    {
+      "project_id": "PRJ-2026-001",
+      "name": "Airtable + Automation Sprint A",
+      "phase": "0-Foundation",
+      "status": "Active",
+      "owner_agent": "audio-pm",
+      "product_id": "DL-FOUNDATION-001"
+    }
+  ],
+  "work_orders": [
+    {
+      "work_order_id": "WO-2026-001",
+      "title": "Verify Airtable base and seed data",
+      "assigned_team": "meta",
+      "assigned_role": "audio-pm",
+      "assigned_agent": "audio-pm",
+      "status": "In Progress",
+      "priority": "P0",
+      "acceptance_criteria": "verify_connection.py passes; bootstrap rows visible; secrets in Cursor env",
+      "project_id": "PRJ-2026-001"
+    },
+    {
+      "work_order_id": "WO-2026-002",
+      "title": "Sprint A1 — Work Order Queued → GitHub Issue",
+      "assigned_team": "meta",
+      "assigned_role": "workflow-automation-engineer",
+      "assigned_agent": "workflow-automation-engineer",
+      "status": "Queued",
+      "priority": "P1",
+      "acceptance_criteria": "Automation row A1 Live; issue created from test WO",
+      "project_id": "PRJ-2026-001"
+    }
+  ],
+  "automations": [
+    {
+      "automation_id": "A1",
+      "name": "Work Order Queued → GitHub Issue",
+      "platform": "Script",
+      "trigger": "WO status = Queued, github_issue empty",
+      "action": "Create GitHub issue with AC + links",
+      "status": "Planned",
+      "owner": "workflow-automation-engineer"
+    },
+    {
+      "automation_id": "A2",
+      "name": "PR merged → WO Done",
+      "platform": "GitHub Actions",
+      "trigger": "pull_request closed merged",
+      "action": "Update Airtable WO + project status",
+      "status": "Planned",
+      "owner": "workflow-automation-engineer"
+    },
+    {
+      "automation_id": "A3",
+      "name": "Product Briefed → Project shell",
+      "platform": "Zapier",
+      "trigger": "Product status Briefed",
+      "action": "Create Project + default WOs from template",
+      "status": "Planned",
+      "owner": "workflow-automation-engineer"
+    }
+  ]
+}

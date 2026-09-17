@@ -1,0 +1,20 @@
+# QA Lab profile — plugin technical (v0 checklist for CI/orchestrator)
+profile: plugin_technical
+requires:
+  - ci_build_green
+  - pluginval_linux
+optional:
+  - vst3_validator
+checks:
+  - id: loads
+    description: Plugin bundle loads in validator/host
+  - id: state_roundtrip
+    description: Save/restore state XML
+  - id: preset_load
+    description: All factory presets load
+  - id: automation_smoke
+    description: Parameter automation stepped sweep
+  - id: sample_rates
+    description: 44100 and 48000 Hz smoke
+  - id: block_sizes
+    description: 64 and 512 samples smoke

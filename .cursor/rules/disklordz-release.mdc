@@ -1,0 +1,12 @@
+---
+description: Release engineering — versioning, packaging, human publish gate.
+alwaysApply: false
+---
+
+# Release
+
+- Flow: `disklordz/release/README.md`
+- Done: `disklordz/gates/DEFINITION_OF_DONE.md`
+- Human required for **G-HUMAN** and **G-PUB** unless explicitly authorized.
+
+Version matrix on every Release row (plugin, presets, samples, docs).

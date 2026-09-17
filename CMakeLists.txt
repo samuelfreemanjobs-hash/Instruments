@@ -176,3 +176,76 @@ target_compile_definitions(SpectralDiff
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
 )
+
+# --- Character FM (Track E) Milestone 1 ---
+juce_add_plugin(CharacterFM
+    COMPANY_NAME "Instruments"
+    BUNDLE_ID com.instruments.characterfm
+    IS_SYNTH TRUE
+    NEEDS_MIDI_INPUT TRUE
+    NEEDS_MIDI_OUTPUT FALSE
+    IS_MIDI_EFFECT FALSE
+    EDITOR_WANTS_KEYBOARD_FOCUS FALSE
+    COPY_PLUGIN_AFTER_BUILD FALSE
+    PLUGIN_MANUFACTURER_CODE Inst
+    PLUGIN_CODE ChFm
+    FORMATS VST3 Standalone
+    PRODUCT_NAME "Character FM"
+)
+
+target_sources(CharacterFM
+    PRIVATE
+        products/CharacterFM/Source/PluginProcessor.cpp
+        products/CharacterFM/Source/PluginEditor.cpp
+        products/CharacterFM/Source/Parameters/ParameterLayout.cpp
+        products/CharacterFM/Source/Presets/PresetManager.cpp
+        products/CharacterFM/Source/DSP/ModulationGraph.cpp
+        products/CharacterFM/Source/DSP/AlgorithmData.cpp
+        products/CharacterFM/Source/DSP/Operator.cpp
+        products/CharacterFM/Source/DSP/FMVoice.cpp
+        products/CharacterFM/Source/DSP/FMEngine.cpp
+)
+
+target_compile_definitions(CharacterFM
+    PUBLIC
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+        JUCE_VST3_CAN_REPLACE_VST2=0
+)
+
+target_link_libraries(CharacterFM
+    PRIVATE
+        juce::juce_audio_utils
+        juce::juce_dsp
+    PUBLIC
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_lto_flags
+        juce::juce_recommended_warning_flags
+)
+
+target_include_directories(CharacterFM
+    PRIVATE
+        products/CharacterFM/Source
+)
+
+clap_juce_extensions_plugin(TARGET CharacterFM
+    CLAP_ID "com.instruments.characterfm"
+    CLAP_FEATURES instrument synthesizer stereo
+)
+
+add_executable(CharacterFMSmoke tools/CharacterFMSmoke.cpp
+    products/CharacterFM/Source/DSP/ModulationGraph.cpp
+    products/CharacterFM/Source/DSP/AlgorithmData.cpp
+    products/CharacterFM/Source/DSP/Operator.cpp
+    products/CharacterFM/Source/DSP/FMVoice.cpp
+    products/CharacterFM/Source/DSP/FMEngine.cpp
+)
+target_link_libraries(CharacterFMSmoke
+    PRIVATE
+        juce::juce_audio_basics
+)
+target_include_directories(CharacterFMSmoke
+    PRIVATE
+        products/CharacterFM/Source
+)
+target_compile_definitions(CharacterFMSmoke PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
