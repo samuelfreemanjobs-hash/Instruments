@@ -54,6 +54,13 @@ export function AccountNav({ session }: { session: SessionPayload | null }) {
           >
             Profile
           </Link>
+          <Link
+            href="/account/orders"
+            className="block px-3 py-2 hover:bg-slate-50"
+            onClick={() => setOpen(false)}
+          >
+            Orders
+          </Link>
           {session.role === "ADMIN" ? (
             <Link
               href="/admin"

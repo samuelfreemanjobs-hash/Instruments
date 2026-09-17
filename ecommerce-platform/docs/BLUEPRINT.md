@@ -111,11 +111,11 @@ Per entity: list → create → edit → delete → validation → toast/error s
 
 ## Phase 7 — Cart, favorites, checkout
 
-- [ ] Cart drawer (persist guest + logged-in)
-- [ ] Favorites drawer
-- [ ] Checkout (shipping, coupon apply)
-- [ ] Payment method selection (Stripe / RazorPay)
-- [ ] Order confirmation page
+- [x] Cart drawer (httpOnly cookie, guest + signed-in)
+- [x] Favorites drawer (cookie-backed wishlist)
+- [x] Checkout (shipping, coupon apply, `PENDING` order)
+- [ ] Payment method selection (Stripe / RazorPay) — SOP-08
+- [x] Order pages `/account/orders`, `/account/orders/[id]`
 
 **SOP:** [SOP-07-cart-checkout.md](SOP/SOP-07-cart-checkout.md)
 

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductBySlug } from "@/lib/catalog";
 import { formatPrice } from "@/lib/utils";
+import { AddToCartButton } from "@/components/store/AddToCartButton";
+import { FavoriteButton } from "@/components/store/FavoriteButton";
 
 export const dynamic = "force-dynamic";
 
@@ -27,12 +29,10 @@ export default async function ProductPage({
           <p className="mt-4 text-2xl">{formatPrice(product.price)}</p>
           <p className="mt-4 text-slate-600">{product.description}</p>
           <p className="mt-2 text-sm text-slate-500">{product.stock} in stock</p>
-          <button
-            type="button"
-            className="mt-8 rounded-md bg-slate-900 px-6 py-3 text-sm font-medium text-white"
-          >
-            Add to cart (SOP-07)
-          </button>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <AddToCartButton productId={product.id} disabled={product.stock < 1} />
+            <FavoriteButton productId={product.id} />
+          </div>
         </div>
       </div>
     </div>
