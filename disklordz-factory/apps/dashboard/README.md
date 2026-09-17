@@ -1,10 +1,27 @@
-# Factory dashboard (planned)
+# Factory dashboard
 
-React/TypeScript UI matching the operator mock:
+React + Vite operator UI for the Autonomous Music Factory.
 
-- Active projects / today counters
-- Catalog and revenue summaries (from analytics DB)
-- Factory queue progress by `BatchStage`
-- **Approval queue** — approve/reject wired to `POST /approval-queue/{asset_id}/approve`
+## Run (with API)
 
-Until the app exists, use Factory API OpenAPI at `/docs`.
+From repo root:
+
+```bash
+chmod +x disklordz-factory/scripts/run-factory-dev.sh
+./disklordz-factory/scripts/run-factory-dev.sh
+```
+
+Open **http://127.0.0.1:5173** — Vite proxies `/api` → Factory API on port **8787**.
+
+## Features
+
+- Active projects / today counters (`GET /factory/dashboard`)
+- Catalog stats and queue progress bars
+- **Run night shift** → `POST /night-shift/run` then refresh approval queue
+- **Approve / reject** pending assets (human gate at 07:00)
+
+Manual dev:
+
+```bash
+cd disklordz-factory/apps/dashboard && npm install && npm run dev
+```

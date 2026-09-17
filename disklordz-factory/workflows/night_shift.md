@@ -17,3 +17,9 @@ All times are illustrative local schedule; orchestrator cron/n8n triggers equiva
 | 07:00 | **Human approval** — one-click approve/reject |
 
 Nothing publishes externally until approval records `approved_by` and `approved_at` in the catalog.
+
+## Automation
+
+- **In-process runner:** `POST /night-shift/run` on Factory API (simulates all schedule steps, creates batch assets, fills approval queue).
+- **n8n:** import [night_shift_n8n.json](night_shift_n8n.json) and point the HTTP node at your API base URL.
+- **Operator UI:** dashboard **Run night shift** button → morning **Approval queue**.

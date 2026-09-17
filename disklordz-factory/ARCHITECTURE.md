@@ -11,6 +11,8 @@ DiskLordz Autonomous Music Factory™ is an **AI-native record label + sample co
 | Component | Command |
 |-----------|---------|
 | **Factory API** | `cd disklordz-factory/apps/factory-api && python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && uvicorn disklordz_factory.main:app --reload --port 8787` |
+| **Dashboard + API** | `./disklordz-factory/scripts/run-factory-dev.sh` → http://127.0.0.1:5173 |
+| **Night shift (API)** | `curl -s -X POST http://127.0.0.1:8787/night-shift/run -H 'Content-Type: application/json' -d '{"target_count":25}'` |
 | **Health** | `curl -s http://127.0.0.1:8787/health` |
 | **Catalog DB (dev)** | `sqlite3 ../../database/disklordz_catalog.db < ../../database/schema.sql` |
 
