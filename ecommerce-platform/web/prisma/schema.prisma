@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentProvider {
+  STRIPE
+  RAZORPAY
+}
+
+enum BannerType {
+  WEBSITE
+  APP
+}
+
+model User {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  email        String   @unique
+  name         String?
+  passwordHash String
+  role         Role     @default(CUSTOMER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  orders       Order[]
+  reviews      Review[]
+}
+
+model Category {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  slug          String        @unique
+  image         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  subCategories SubCategory[]
+  products      Product[]
+}
+
+model SubCategory {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  slug       String   @unique
+  categoryId String   @db.ObjectId
+  category   Category @relation(fields: [categoryId], references: [id])
+  products   Product[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Product {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  slug          String       @unique
+  description   String
+  price         Float
+  comparePrice  Float?
+  images        String[]
+  stock         Int          @default(0)
+  featured      Boolean      @default(false)
+  categoryId    String       @db.ObjectId
+  category      Category     @relation(fields: [categoryId], references: [id])
+  subCategoryId String?      @db.ObjectId
+  subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  orderItems    OrderItem[]
+  reviews       Review[]
+}
+
+model Coupon {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  code        String    @unique
+  discountPct Float?
+  discountAmt Float?
+  minCart     Float?
+  maxUses     Int?
+  usedCount   Int       @default(0)
+  expiresAt   DateTime?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Order {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String          @db.ObjectId
+  user            User            @relation(fields: [userId], references: [id])
+  status          OrderStatus     @default(PENDING)
+  paymentProvider PaymentProvider?
+  paymentRef      String?
+  subtotal        Float
+  discount        Float           @default(0)
+  shipping        Float           @default(0)
+  total           Float
+  shippingName    String
+  shippingLine1   String
+  shippingCity    String
+  shippingZip     String
+  shippingCountry String
+  couponCode      String?
+  items           OrderItem[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String  @db.ObjectId
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String  @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id])
+  title     String
+  price     Float
+  quantity  Int
+}
+
+model Review {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId String   @db.ObjectId
+  product   Product  @relation(fields: [productId], references: [id])
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  rating    Int
+  comment   String?
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Banner {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  type      BannerType
+  title     String
+  image     String
+  link      String?
+  sortOrder Int        @default(0)
+  active    Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model TopBar {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  message   String
+  link      String?
+  active    Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model Offer {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  subtitle  String?
+  image     String?
+  link      String?
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

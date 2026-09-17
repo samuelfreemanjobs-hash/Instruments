@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <body style="font-family: system-ui, sans-serif; color: #0f172a;">
+    <h1>Order confirmed</h1>
+    <p>Hi {{customerName}},</p>
+    <p>Thanks for your order <strong>#{{orderId}}</strong>.</p>
+    <table cellpadding="8" cellspacing="0" border="1" style="border-collapse: collapse;">
+      <thead>
+        <tr><th>Item</th><th>Qty</th><th>Price</th></tr>
+      </thead>
+      <tbody>
+        {{#each items}}
+        <tr><td>{{title}}</td><td>{{quantity}}</td><td>{{price}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <p><strong>Total: {{total}}</strong></p>
+    <p>Ship to: {{shippingLine1}}, {{shippingCity}} {{shippingZip}}</p>
+  </body>
+</html>
