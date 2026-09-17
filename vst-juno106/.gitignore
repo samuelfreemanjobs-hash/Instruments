@@ -1,0 +1,17 @@
+# VST3 SDK (fetched by fetch-deps.sh)
+VST3_SDK/
+**/VST3_SDK/
+
+# iPlug / IGraphics prebuilts
+**/Dependencies/
+**/build-win/
+**/out/
+
+# Binaries
+*.vst3
+*.dll
+*.exp
+*.lib
+*.pdb
+
+node_modules/
