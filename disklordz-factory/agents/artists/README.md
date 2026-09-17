@@ -11,6 +11,8 @@ Four **artist agents** — not separate from the 12 factory roles. Each is a **l
 
 System prompt slice: [`../../prompts/artists/`](../../prompts/artists/).
 
+OpenClaw Gateway copies: [`../../openclaw/agents/DISKLORDZ_ARTIST_DL*/`](../../openclaw/agents/) (`SOUL.md`, `AGENTS.md`) — run [`../../scripts/install-openclaw-workspace.sh`](../../scripts/install-openclaw-workspace.sh).
+
 API: `GET /collective/artist-agents`, `GET /collective/artist-agents/{artist_id}`.
 
 HQ lock: [ARTIST_GREENLIGHTS.md](../../../docs/ARTIST_GREENLIGHTS.md).

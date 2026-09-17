@@ -29,6 +29,8 @@ Machine-readable roster: [`disklordz-factory/database/artist_collective_seed.jso
 
 DiskLordz **Factory** defines *what* to build (schemas, agents, catalog, night shift). **OpenClaw 2.0 Workboard** defines *how* autonomous runs decompose and dispatch work on your Gateway.
 
+**OpenClaw file identities (SOUL.md / AGENTS.md):** [`docs/OPENCLAW_VINTAGE_COLLECTIVE.md`](OPENCLAW_VINTAGE_COLLECTIVE.md) and [`disklordz-factory/openclaw/`](../disklordz-factory/openclaw/) — install with `./disklordz-factory/scripts/install-openclaw-workspace.sh`.
+
 ```mermaid
 flowchart TB
   HQ[DiskLordz HQ mission]

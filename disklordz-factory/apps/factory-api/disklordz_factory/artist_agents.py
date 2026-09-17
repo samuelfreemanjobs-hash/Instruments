@@ -39,12 +39,15 @@ def build_artist_agent_profile(artist_id: str) -> dict[str, Any] | None:
     base = roster.get(artist_id)
     if not base:
         return None
+    oid = openclaw_agent_id(artist_id)
     return {
         **base,
-        "openclaw_agent_id": openclaw_agent_id(artist_id),
+        "openclaw_agent_id": oid,
         "hq_greenlit": True,
         "agent_contract_path": f"agents/artists/{artist_id}/AGENT.md",
         "system_prompt_path": f"prompts/artists/{artist_id}.md",
+        "openclaw_soul_path": f"openclaw/agents/{oid}/SOUL.md",
+        "openclaw_agents_path": f"openclaw/agents/{oid}/AGENTS.md",
         "agent_contract": artist_agent_contract(artist_id),
         "system_prompt": artist_system_prompt(artist_id),
     }
