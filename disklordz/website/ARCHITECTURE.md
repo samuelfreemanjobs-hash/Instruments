@@ -1,0 +1,57 @@
+# Disklordz Drum SaaS (website)
+
+## Purpose
+
+Prompt-driven **drum sample kit** web app: vibe → preview one-shots → ZIP download with manifest. Growth SKU per [docs/DISKLORDZ_SAAS_V0.md](../../docs/DISKLORDZ_SAAS_V0.md).
+
+## Build & run
+
+```bash
+cd disklordz/website
+npm install
+npm run dev    # http://localhost:3000
+npm run build && npm start
+```
+
+Regenerate stub WAVs:
+
+```bash
+python3 ../sound-factory/scripts/generate_stub_kits.py
+```
+
+## Data flow
+
+```text
+Browser (KitGenerator)
+  → POST /api/generate { prompt, presetId }
+       → rate limit (IP, in-memory v0)
+       → buildStubKit() reads public/samples/<preset>/*.wav, SHA-256, manifest
+  → POST /api/download { manifest }
+       → ZIP(manifest.json, README.txt, WAVs) with provenance check
+```
+
+## Threading / realtime
+
+Generation is **sync stub** in v0 (no WebSocket). Future factory jobs will be async (poll) per SaaS research brief.
+
+## Key modules
+
+| Path | Role |
+|------|------|
+| `src/components/KitGenerator.tsx` | Prompt UI, presets, preview, download |
+| `src/lib/presets.ts` | Five presets (4 artist lanes + MPC neutral) |
+| `src/lib/generation/stub.ts` | Manifest builder |
+| `src/app/api/generate/route.ts` | Generate endpoint |
+| `src/app/api/download/route.ts` | ZIP export |
+| `../sound-factory/` | Offline WAV generation |
+
+## Extension points
+
+- **WO-SAAS-002:** Supabase Auth middleware; attach `userId` to manifest.
+- **WO-SAAS-004:** Call sound-factory CLI from API route (child process or queue).
+- **WO-SAAS-006:** Redis-backed rate limits; error UX polish.
+
+## Related docs
+
+- [DISKLORDZ_SAAS_V0.md](../../docs/DISKLORDZ_SAAS_V0.md)
+- Artist lane presets map to factory `DL001` / `DL002` / `DL004` / `DL006`

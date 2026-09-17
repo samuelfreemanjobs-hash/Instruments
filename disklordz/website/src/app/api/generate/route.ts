@@ -1,0 +1,57 @@
+import { NextRequest, NextResponse } from "next/server";
+
+import { buildStubKit } from "@/lib/generation/stub";
+import { getPreset, STYLE_PRESETS } from "@/lib/presets";
+import { checkRateLimit } from "@/lib/rate-limit";
+
+export async function POST(req: NextRequest) {
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    req.headers.get("x-real-ip") ??
+    "anonymous";
+
+  const limited = checkRateLimit(ip);
+  if (!limited.ok) {
+    return NextResponse.json(
+      {
+        error: "daily_limit",
+        message: `Free tier allows ${process.env.SAAS_DAILY_GEN_LIMIT ?? "20"} kits per day.`,
+        retryAfterSec: limited.retryAfterSec,
+      },
+      { status: 429 },
+    );
+  }
+
+  let body: { prompt?: string; presetId?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+  }
+
+  const prompt = (body.prompt ?? "").trim();
+  const presetId = body.presetId ?? STYLE_PRESETS[0].id;
+
+  if (!prompt || prompt.length < 3) {
+    return NextResponse.json(
+      { error: "prompt_required", message: "Describe your vibe (at least 3 characters)." },
+      { status: 400 },
+    );
+  }
+
+  if (!getPreset(presetId)) {
+    return NextResponse.json({ error: "invalid_preset" }, { status: 400 });
+  }
+
+  const baseUrl = req.nextUrl.origin;
+  const manifest = await buildStubKit(prompt, presetId, baseUrl);
+
+  return NextResponse.json({
+    manifest,
+    presets: STYLE_PRESETS.map(({ id, label, description }) => ({
+      id,
+      label,
+      description,
+    })),
+  });
+}
