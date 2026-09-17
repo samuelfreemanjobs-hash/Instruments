@@ -4,11 +4,21 @@ import { formatPrice } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const products = await getFeaturedProducts();
 
   return (
     <div>
+      {error === "admin-required" ? (
+        <div className="bg-amber-50 px-4 py-2 text-center text-sm text-amber-900">
+          Admin access requires an administrator account.
+        </div>
+      ) : null}
       <section className="bg-gradient-to-br from-slate-900 to-slate-700 px-4 py-20 text-white">
         <div className="mx-auto max-w-6xl">
           <h1 className="text-4xl font-bold tracking-tight md:text-5xl">

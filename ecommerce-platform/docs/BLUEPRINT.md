@@ -99,11 +99,11 @@ Per entity: list → create → edit → delete → validation → toast/error s
 
 ## Phase 6 — Authentication & profile
 
-- [ ] Register / login pages
-- [ ] Session cookies (custom auth template)
-- [ ] Navbar account modal
-- [ ] Profile page (addresses, details)
-- [ ] RBAC middleware for `/admin/*`
+- [x] Register / login pages (RHF + Zod server actions)
+- [x] Session cookies (JWT via `jose`, httpOnly)
+- [x] Navbar account modal (`AccountNav`)
+- [x] Profile page (name update; addresses in checkout SOP-07)
+- [x] RBAC middleware for `/admin/*` + admin layout guard
 
 **SOP:** [SOP-06-auth-rbac.md](SOP/SOP-06-auth-rbac.md)
 

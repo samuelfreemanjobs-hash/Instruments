@@ -1,27 +1,20 @@
 import Link from "next/link";
+import { LoginForm } from "@/components/store/LoginForm";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
+
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <h1 className="text-2xl font-semibold">Sign in</h1>
       <p className="mt-2 text-sm text-slate-600">
-        Custom auth — implement with templates/lib/auth-session.template.ts (SOP-06).
+        Seed users: admin@example.com / admin123 (admin), customer@example.com / customer123
       </p>
-      <form className="mt-8 space-y-4">
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full rounded-md border border-slate-300 px-3 py-2"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full rounded-md border border-slate-300 px-3 py-2"
-        />
-        <button type="button" className="w-full rounded-md bg-slate-900 py-2 text-white">
-          Login
-        </button>
-      </form>
+      <LoginForm nextPath={next} />
       <p className="mt-4 text-center text-sm">
         No account?{" "}
         <Link href="/auth/register" className="underline">

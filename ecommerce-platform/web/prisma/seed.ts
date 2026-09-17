@@ -15,6 +15,18 @@ async function main() {
     },
   });
 
+  const customerHash = await bcrypt.hash("customer123", 12);
+  await prisma.user.upsert({
+    where: { email: "customer@example.com" },
+    update: {},
+    create: {
+      email: "customer@example.com",
+      name: "Demo Customer",
+      passwordHash: customerHash,
+      role: Role.CUSTOMER,
+    },
+  });
+
   const electronics = await prisma.category.upsert({
     where: { slug: "electronics" },
     update: {},
@@ -76,7 +88,9 @@ async function main() {
     });
   }
 
-  console.log("Seed complete: admin@example.com / admin123, categories, products, coupon");
+  console.log(
+    "Seed complete: admin@example.com / admin123, customer@example.com / customer123, catalog, coupon",
+  );
 }
 
 main()
