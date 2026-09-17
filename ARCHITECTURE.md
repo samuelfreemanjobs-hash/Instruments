@@ -16,7 +16,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 Source/          Plugin processor, DSP, assets, preset import
 hise-sketch/     HISE / Antigravity projects (optional imports)
 tools/           CLI binaries (link JUCE / plugin static lib)
-docs/            User and agent docs (SYSEX, ROM, phases, handoff)
+docs/            User and agent docs (SYSEX, ROM, phases, handoff, JUCE factory)
 tests/golden/    manifest.tsv + golden WAVs; verify_golden.sh / refresh_golden.sh
 ```
 
@@ -33,6 +33,10 @@ cmake --build build -j
 [`.github/workflows/build.yml`](.github/workflows/build.yml): Release build, determinism (`OfflineRender` ×2), and golden WAV compare via `SpectralDiff`.
 
 Optional Slack notifications: [`.github/workflows/ci-slack-notify.yml`](.github/workflows/ci-slack-notify.yml) (configure with [`scripts/setup-disklordz-integrations.sh`](scripts/setup-disklordz-integrations.sh)).
+
+## JUCE factory (agents)
+
+[JUCE factory guide](docs/JUCE_FACTORY.md) — monorepo SOPs, starter templates (`MyFirstPlugin/`), ecosystem allow/deny list, optional DemoRunner. Cloud agents: [AGENTS.md](AGENTS.md).
 
 ## Documentation policy
 
