@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { GenerationSpecFields } from "@/components/GenerationSpecFields";
+import { defaultGenerationSpec, type GenerationSpec } from "@/lib/generation/generation-spec";
 import type { KitManifest } from "@/lib/manifest";
 import { STYLE_PRESETS, type StylePreset } from "@/lib/presets";
 
@@ -14,6 +16,10 @@ type GenerateResponse = {
 export function KitGenerator() {
   const [prompt, setPrompt] = useState("dirty 90s boom bap kick with tape grit");
   const [presetId, setPresetId] = useState<string>(STYLE_PRESETS[0].id);
+  const [spec, setSpec] = useState<GenerationSpec>(() =>
+    defaultGenerationSpec(STYLE_PRESETS[0].id),
+  );
+  const [specOpen, setSpecOpen] = useState(false);
   const [manifest, setManifest] = useState<KitManifest | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +44,11 @@ export function KitGenerator() {
     [presetId],
   );
 
+  const selectPreset = useCallback((id: string) => {
+    setPresetId(id);
+    setSpec(defaultGenerationSpec(id));
+  }, []);
+
   const generate = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -47,7 +58,7 @@ export function KitGenerator() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, presetId }),
+        body: JSON.stringify({ prompt, presetId, spec }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -66,7 +77,7 @@ export function KitGenerator() {
     } finally {
       setLoading(false);
     }
-  }, [prompt, presetId]);
+  }, [prompt, presetId, spec]);
 
   const playSample = useCallback((url: string, name: string) => {
     if (audioRef.current) {
@@ -147,7 +158,7 @@ export function KitGenerator() {
             <button
               key={preset.id}
               type="button"
-              onClick={() => setPresetId(preset.id)}
+              onClick={() => selectPreset(preset.id)}
               className={`rounded-xl border px-3 py-3 text-left transition ${
                 presetId === preset.id
                   ? "border-emerald-500/80 bg-emerald-500/10"
@@ -167,6 +178,17 @@ export function KitGenerator() {
           <p className="text-xs text-zinc-500">
             Tags: {selectedPreset.tags.join(" · ")}
           </p>
+        )}
+
+        <button
+          type="button"
+          className="text-sm font-medium text-emerald-400/90 hover:text-emerald-300"
+          onClick={() => setSpecOpen((o) => !o)}
+        >
+          {specOpen ? "Hide generation spec" : "Generation spec (key, BPM, engine…)"}
+        </button>
+        {specOpen && (
+          <GenerationSpecFields spec={spec} onChange={setSpec} disabled={loading} />
         )}
 
         <button
@@ -213,6 +235,13 @@ export function KitGenerator() {
               </li>
             ))}
           </ul>
+          {manifest.generationSpec && (
+            <p className="font-mono text-xs text-zinc-500">
+              Spec: {manifest.generationSpec.mode} · {manifest.generationSpec.engine} ·{" "}
+              {manifest.generationSpec.key} · {manifest.generationSpec.bpm} BPM · wildness{" "}
+              {Math.round(manifest.generationSpec.wildness * 100)}%
+            </p>
+          )}
           <p className="text-xs text-zinc-500">
             Provenance: {manifest.samples[0]?.provenance} · SHA-256 per file in manifest.json
           </p>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { buildFactoryKit } from "@/lib/generation/factory";
+import { parseGenerationSpec } from "@/lib/generation/generation-spec";
 import { saveKitForUser } from "@/lib/kits/persist";
 import { getPreset, STYLE_PRESETS } from "@/lib/presets";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { prompt?: string; presetId?: string };
+  let body: { prompt?: string; presetId?: string; spec?: Record<string, unknown> };
   try {
     body = await req.json();
   } catch {
@@ -47,8 +48,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid_preset" }, { status: 400 });
   }
 
+  const parsed = parseGenerationSpec(body.spec, presetId);
+  if (!parsed.ok) {
+    return NextResponse.json(
+      { error: parsed.error, message: "Invalid generation spec." },
+      { status: 400 },
+    );
+  }
+
   const baseUrl = req.nextUrl.origin;
-  const manifest = await buildFactoryKit(prompt, presetId, baseUrl);
+  const manifest = await buildFactoryKit(prompt, presetId, baseUrl, parsed.spec);
 
   let savedToAccount = false;
   if (isSupabaseConfigured()) {

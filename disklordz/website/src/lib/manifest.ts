@@ -1,3 +1,5 @@
+import type { GenerationSpec } from "@/lib/generation/generation-spec";
+
 export type SampleAsset = {
   name: string;
   filename: string;
@@ -20,4 +22,6 @@ export type KitManifest = {
   license: "personal_and_commercial_v0_preview";
   /** Internal generation metadata (optional in API responses). */
   factoryParams?: Record<string, number>;
+  /** Resolved musical + mode spec (WO-SAAS-007). */
+  generationSpec?: GenerationSpec;
 };

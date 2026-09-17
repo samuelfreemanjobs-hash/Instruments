@@ -23,7 +23,7 @@ python3 ../sound-factory/scripts/generate_stub_kits.py
 
 ```text
 Browser (KitGenerator)
-  → POST /api/generate { prompt, presetId }
+  → POST /api/generate { prompt, presetId, spec? }
        → rate limit (IP, in-memory v0)
        → buildFactoryKit(): prompt-params + synth → /tmp/disklordz-kits/<kitId>/*.wav
        → manifest with /api/samples/<kitId>/<file>.wav URLs
@@ -42,7 +42,9 @@ Generation is **sync stub** in v0 (no WebSocket). Future factory jobs will be as
 |------|------|
 | `src/components/KitGenerator.tsx` | Prompt UI, presets, preview, download |
 | `src/lib/presets.ts` | Five presets (4 artist lanes + MPC neutral) |
+| `src/lib/generation/generation-spec.ts` | WO-SAAS-007 spec parse + preset defaults |
 | `src/lib/generation/factory.ts` | Prompt-driven kit build + kit store |
+| `src/components/GenerationSpecFields.tsx` | Spec UI (mode, engine, key, BPM, …) |
 | `src/app/api/generate/route.ts` | Generate endpoint |
 | `src/app/api/download/route.ts` | ZIP export |
 | `../sound-factory/` | Offline WAV generation |
