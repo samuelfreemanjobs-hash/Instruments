@@ -1,0 +1,12 @@
+---
+description: When editing ecommerce-platform, follow blueprint SOPs and ecommerce-builder skill.
+globs: ecommerce-platform/**
+alwaysApply: false
+---
+
+# eCommerce platform
+
+1. Read `ecommerce-platform/AGENTS.md` and the active SOP in `ecommerce-platform/docs/SOP/`.
+2. Use `ecommerce-platform/.cursor/skills/ecommerce-builder/SKILL.md`.
+3. Prefer `ecommerce-platform/templates/` over ad-hoc patterns.
+4. Verify with `cd ecommerce-platform/web && npm run build`.
