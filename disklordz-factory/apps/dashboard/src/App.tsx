@@ -51,6 +51,21 @@ export default function App() {
     refresh().catch((e: Error) => setError(e.message));
   }, [refresh]);
 
+  async function pingSlackAgents() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await api.slackCheckin();
+      if (res && typeof res === "object" && "skipped" in res && res.skipped) {
+        setError("Slack webhook not configured (SLACK_FACTORY_WEBHOOK_URL)");
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Slack check-in failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function runNightShift() {
     setLoading(true);
     setError(null);
@@ -89,6 +104,9 @@ export default function App() {
         <div className="actions">
           <button type="button" onClick={() => refresh()} disabled={loading}>
             Refresh
+          </button>
+          <button type="button" onClick={pingSlackAgents} disabled={loading}>
+            Ping Slack agents
           </button>
           <button type="button" className="primary" onClick={runNightShift} disabled={loading}>
             {loading ? "Running night shift…" : "Run night shift"}

@@ -84,4 +84,6 @@ export const api = {
     fetchJson<ApprovalItem>(`/approval-queue/${encodeURIComponent(assetId)}/reject`, {
       method: "POST",
     }),
+  slackCheckin: () =>
+    fetchJson<Record<string, unknown>>("/factory/slack/checkin", { method: "POST" }),
 };

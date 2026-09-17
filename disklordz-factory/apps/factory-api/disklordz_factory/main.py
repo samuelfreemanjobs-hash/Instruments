@@ -21,6 +21,7 @@ from disklordz_factory.models import (
     ProductionBatchCreate,
 )
 from disklordz_factory import night_shift
+from disklordz_factory import slack_agents
 from disklordz_factory.store import store
 
 app = FastAPI(
@@ -137,6 +138,7 @@ def approve_asset(asset_id: str, approved_by: str = "operator") -> ApprovalItem:
     store.upsert_approval(updated)
     store.today["approved"] += 1
     store.queue["publishing"] = max(0, store.queue["publishing"] - 5)
+    slack_agents.notify_approval(asset_id, item.title)
     return updated
 
 
@@ -161,6 +163,32 @@ def night_shift_latest() -> NightShiftRun | None:
 
 
 @app.post("/night-shift/run", response_model=NightShiftRun)
-def night_shift_run(body: NightShiftRequest | None = None) -> NightShiftRun:
+def night_shift_run(body: NightShiftRequest | None = None, notify_slack: bool = True) -> NightShiftRun:
     req = body or NightShiftRequest()
-    return night_shift.run_night_shift(store, req)
+    run = night_shift.run_night_shift(store, req)
+    if notify_slack:
+        slack_agents.notify_night_shift_slack(run, req)
+    return run
+
+
+@app.post("/factory/slack/checkin")
+def factory_slack_checkin() -> dict:
+    """Post all factory agents to Slack (stand-up / verify webhook)."""
+    return slack_agents.notify_agent_checkin()
+
+
+@app.get("/factory/slack/preview")
+def factory_slack_preview() -> dict:
+    """Dry-run Slack payloads without sending (dev)."""
+    req = NightShiftRequest()
+    fake_run = night_shift.get_last_night_shift_run()
+    return {
+        "checkin": slack_agents.build_agent_checkin_blocks(),
+        "night_shift": slack_agents.build_night_shift_slack_blocks(
+            fake_run,
+            req,
+        )
+        if fake_run
+        else None,
+        "webhook_configured": slack_agents.slack_webhook_url() is not None,
+    }

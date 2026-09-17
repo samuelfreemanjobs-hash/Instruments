@@ -33,6 +33,8 @@ Definition of done for that repo: **`run_verify.sh`** (all sanitizer suites gree
 
 Night shift + dashboard: `./disklordz-factory/scripts/run-factory-dev.sh`. Claude project import: [docs/CLAUDE_MCP.md](docs/CLAUDE_MCP.md).
 
+**Slack:** Factory agents post to **#disklordz-factory** when `SLACK_FACTORY_WEBHOOK_URL` is set — see [docs/FACTORY_SLACK.md](docs/FACTORY_SLACK.md). Setup: `./scripts/setup-disklordz-integrations.sh slack-factory`.
+
 ## Common traps (SP-1200 DSP — carry into JUCE port)
 
 - Block splitting must happen at **audio callback event offsets**, not only in a stub (~10 ms jitter otherwise).

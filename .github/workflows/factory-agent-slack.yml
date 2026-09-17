@@ -1,0 +1,44 @@
+# DiskLordz Factory — agent check-in to Slack (#disklordz-factory or SLACK_FACTORY_WEBHOOK_URL).
+# Setup: gh secret set SLACK_FACTORY_WEBHOOK_URL  (or reuses SLACK_WEBHOOK_URL)
+name: Factory agent Slack check-in
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 12:00 UTC ≈ morning US East — adjust to your label's "07:00 approval" timezone
+    - cron: "0 12 * * 1-5"
+
+jobs:
+  agent-checkin:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_FACTORY_WEBHOOK_URL: ${{ secrets.SLACK_FACTORY_WEBHOOK_URL }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skip when no webhook
+        if: env.SLACK_FACTORY_WEBHOOK_URL == '' && env.SLACK_WEBHOOK_URL == ''
+        run: |
+          echo "Set SLACK_FACTORY_WEBHOOK_URL or SLACK_WEBHOOK_URL"
+          echo "Run: ./scripts/setup-disklordz-integrations.sh slack-factory --webhook-url '...'"
+          exit 0
+
+      - name: Set up Factory API venv
+        if: env.SLACK_FACTORY_WEBHOOK_URL != '' || env.SLACK_WEBHOOK_URL != ''
+        run: |
+          python3 -m venv disklordz-factory/apps/factory-api/.venv
+          disklordz-factory/apps/factory-api/.venv/bin/pip install -r disklordz-factory/apps/factory-api/requirements.txt
+
+      - name: Post agent check-in
+        if: env.SLACK_FACTORY_WEBHOOK_URL != '' || env.SLACK_WEBHOOK_URL != ''
+        run: |
+          disklordz-factory/apps/factory-api/.venv/bin/python3 -c "
+          import sys, json
+          sys.path.insert(0, 'disklordz-factory/apps/factory-api')
+          from disklordz_factory import slack_agents
+          r = slack_agents.notify_agent_checkin()
+          print(json.dumps(r, indent=2))
+          if not r.get('ok') and not r.get('skipped'):
+              raise SystemExit(1)
+          "

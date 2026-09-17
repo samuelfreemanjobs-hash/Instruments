@@ -5,6 +5,7 @@ set -euo pipefail
 REPO_DEFAULT="samuelfreemanjobs-hash/Instruments"
 SLACK_CHANNEL_NAME="disklordz-ci"
 SLACK_CHANNEL_ID="C0C1X6RMGTZ"
+SLACK_FACTORY_CHANNEL_NAME="disklordz-factory"
 ENV_JSON=".cursor/environment.json"
 CURSOR_DOCS="https://cursor.com/docs/cloud-agent/setup"
 
@@ -14,6 +15,7 @@ Usage: setup-disklordz-integrations.sh <command> [options]
 
 Commands:
   slack-ci          Configure GitHub secret SLACK_WEBHOOK_URL and test notifications
+  slack-factory     Configure SLACK_FACTORY_WEBHOOK_URL + post agent check-in test
   cursor-cloud      Verify repo-managed Cursor Cloud Agent config (environment.json)
   all               Run cursor-cloud, then slack-ci (if webhook provided)
 
@@ -33,8 +35,8 @@ Examples:
   SLACK_WEBHOOK_URL='https://hooks.slack.com/...' ./scripts/setup-disklordz-integrations.sh all
 
 Slack webhook (one-time, in browser):
-  1. Slack → Apps → Incoming Webhooks → Add to Slack → channel #disklordz-ci
-  2. Copy the webhook URL and pass it to slack-ci
+  1. Slack → Apps → Incoming Webhooks → Add to Slack → channel #disklordz-ci or #disklordz-factory
+  2. Copy the webhook URL and pass it to slack-ci or slack-factory
 
 Cursor GitHub access (one-time, in browser — cannot be fully scripted without your Cursor session):
   1. Cursor → Settings → Cloud Agents → connect GitHub and grant access to this repo
@@ -130,6 +132,72 @@ cmd_slack_ci() {
   echo "Manual test: gh workflow run ci-slack-notify.yml --repo $repo -f conclusion=success"
 }
 
+cmd_slack_factory() {
+  local webhook_url="${SLACK_FACTORY_WEBHOOK_URL:-${SLACK_WEBHOOK_URL:-}}"
+  local repo="$REPO_DEFAULT"
+  local skip_secret=0
+  local skip_test=0
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --webhook-url)
+        webhook_url="$2"
+        shift 2
+        ;;
+      --repo)
+        repo="$2"
+        shift 2
+        ;;
+      --skip-secret)
+        skip_secret=1
+        shift
+        ;;
+      --skip-test)
+        skip_test=1
+        shift
+        ;;
+      *)
+        die "unknown slack-factory option: $1"
+        ;;
+    esac
+  done
+
+  [[ -n "$webhook_url" ]] || die "set --webhook-url or SLACK_FACTORY_WEBHOOK_URL / SLACK_WEBHOOK_URL"
+
+  if [[ "$skip_secret" -eq 0 ]]; then
+    need_cmd gh
+    gh auth status >/dev/null 2>&1 || die "run: gh auth login"
+    echo "Setting GitHub secret SLACK_FACTORY_WEBHOOK_URL on $repo ..."
+    printf '%s' "$webhook_url" | gh secret set SLACK_FACTORY_WEBHOOK_URL --repo "$repo"
+    echo "Secret updated."
+  fi
+
+  if [[ "$skip_test" -eq 0 ]]; then
+    need_cmd python3
+    local root
+    root="$(cd "$(dirname "$0")/.." && pwd)"
+    export SLACK_FACTORY_WEBHOOK_URL="$webhook_url"
+    echo "Sending Factory agent check-in to #${SLACK_FACTORY_CHANNEL_NAME} ..."
+    if [[ ! -d "$root/disklordz-factory/apps/factory-api/.venv" ]]; then
+      python3 -m venv "$root/disklordz-factory/apps/factory-api/.venv"
+      "$root/disklordz-factory/apps/factory-api/.venv/bin/pip" install -q -r \
+        "$root/disklordz-factory/apps/factory-api/requirements.txt"
+    fi
+    "$root/disklordz-factory/apps/factory-api/.venv/bin/python3" -c "
+import sys, json
+sys.path.insert(0, '$root/disklordz-factory/apps/factory-api')
+from disklordz_factory import slack_agents
+print(json.dumps(slack_agents.notify_agent_checkin(), indent=2))
+"
+    echo "Agent check-in sent."
+  fi
+
+  echo ""
+  echo "Local: export SLACK_FACTORY_WEBHOOK_URL='...' && ./scripts/factory-slack-checkin.sh"
+  echo "Night shift posts A&R + Market Intel automatically: POST /night-shift/run"
+  echo "Scheduled: gh workflow run factory-agent-slack.yml --repo $repo"
+}
+
 cmd_cursor_cloud() {
   local repo="$REPO_DEFAULT"
   local trigger_build=0
@@ -204,6 +272,9 @@ main() {
   case "$cmd" in
     slack-ci)
       cmd_slack_ci "$@"
+      ;;
+    slack-factory)
+      cmd_slack_factory "$@"
       ;;
     cursor-cloud)
       cmd_cursor_cloud "$@"
