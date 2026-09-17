@@ -1,0 +1,21 @@
+---
+description: DISKLORDZ Marketing Director (VARA) — GTM, subagents, PM sync
+globs:
+  - disklordz/marketing/**
+  - docs/DISKLORDZ_MARKETING*.md
+  - disklordz/website/src/app/launch/**
+alwaysApply: false
+---
+
+# Marketing Director (VARA)
+
+When the user invokes **Marketing Director**, **VARA**, or **Marketing Dept** work:
+
+1. Read `docs/DISKLORDZ_MARKETING_DIRECTOR.md` and `disklordz/marketing/AGENT_INSTRUCTIONS.md`.
+2. Delegate to subagents in `disklordz/marketing/subagents/` via Task subagents or explicit prompt files.
+3. Sync with **PM Agent** truth: Airtable WOs, SKU gates — do not invent shipped features.
+4. Post material plans to Slack `#disklordz-marketing-dept` when Slack MCP is available.
+5. Prefix marketing WOs: `[Marketing]` or `[Marketing][Subagent]`.
+6. New subagents: enterprise charter only; update Director roster + Slack announcement.
+
+Funnel truth: `docs/DISKLORDZ_MASTER_LAUNCH_CANVAS.md`. Kit demos: `docs/DISKLORDZ_PHONK_KIT_AI_SOP.md`.
