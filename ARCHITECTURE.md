@@ -10,6 +10,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Offline tooling** (ROM gen, render, regression) | [tools/ARCHITECTURE.md](tools/ARCHITECTURE.md) | `GenerateCleanroomRom`, `OfflineRender`, `SpectralDiff` |
 | **DiskLordz Factory** (batch catalog / agent OS scaffold) | [disklordz-factory/ARCHITECTURE.md](disklordz-factory/ARCHITECTURE.md) | Python `factory-api` (FastAPI), not in CMake |
 | **DiskLordz SP-1200 VSTi** (planned; DSP external today) | [docs/DISKLORDZ_SP1200.md](docs/DISKLORDZ_SP1200.md) · [AGENTS.md](AGENTS.md) | JUCE when integrated here; DSP is plain C++17 |
+| **YouTube network brands** | [docs/DISKLORDZ_YOUTUBE_NETWORK.md](docs/DISKLORDZ_YOUTUBE_NETWORK.md) | Programming + funnel per channel; research-gated |
 
 ## Repository layout
 

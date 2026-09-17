@@ -1,0 +1,38 @@
+[
+  {
+    "brand_id": "YT-DL-001",
+    "primary_channel_name": "Chrome Circuit",
+    "alternate_names": ["Boulevard 84", "Vanguard Disco", "Neon Mirage"],
+    "artist_id": "DL001",
+    "opportunity_id": null,
+    "genres": ["french touch", "electro-funk", "nu-disco"],
+    "bpm_min": 118,
+    "bpm_max": 124,
+    "audience_jobs": ["deep work", "coding flow", "night cruise", "creative session"],
+    "product_skus": ["french-touch-pack", "909-mpc-kit", "analog-bass-loops", "vocoder-chops"]
+  },
+  {
+    "brand_id": "YT-DL-002",
+    "primary_channel_name": "GhostDrive 808",
+    "alternate_names": ["Phantom Grip", "Kuro Drift", "Midnight Circuit"],
+    "artist_id": "DL002",
+    "opportunity_id": null,
+    "genres": ["drift phonk", "gym phonk", "memphis"],
+    "bpm_min": 140,
+    "bpm_max": 160,
+    "audience_jobs": ["gym", "night drive", "fps gaming"],
+    "product_skus": ["808-bank", "cowbell-fonts", "stream-safe-license-tier"]
+  },
+  {
+    "brand_id": "YT-DL-003",
+    "primary_channel_name": "Dust & Tape",
+    "alternate_names": ["Analog Solitude", "Static Reverie", "Late Night Terminal"],
+    "artist_id": "DL006",
+    "opportunity_id": null,
+    "genres": ["lo-fi", "ambient hip-hop"],
+    "bpm_min": 72,
+    "bpm_max": 85,
+    "audience_jobs": ["study", "calm coding", "focus", "anxiety relief"],
+    "product_skus": ["sp404-oneshots", "rhodes-loops", "rc20-preset-chain"]
+  }
+]

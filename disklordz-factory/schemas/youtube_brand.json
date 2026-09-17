@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.local/schemas/youtube_brand.json",
+  "title": "YouTubeNetworkBrand",
+  "type": "object",
+  "required": ["brand_id", "primary_channel_name", "genres", "bpm_min", "bpm_max", "opportunity_id"],
+  "properties": {
+    "brand_id": { "type": "string", "pattern": "^YT-DL-[0-9]{3}$" },
+    "primary_channel_name": { "type": "string" },
+    "alternate_names": { "type": "array", "items": { "type": "string" } },
+    "artist_id": { "type": "string", "pattern": "^DL[0-9]{3}$" },
+    "opportunity_id": {
+      "type": "string",
+      "pattern": "^DL-OPP-[0-9]{6}$",
+      "description": "Required sourced market record before programming"
+    },
+    "genres": { "type": "array", "items": { "type": "string" } },
+    "bpm_min": { "type": "number" },
+    "bpm_max": { "type": "number" },
+    "audience_jobs": { "type": "array", "items": { "type": "string" } },
+    "visual_keywords": { "type": "array", "items": { "type": "string" } },
+    "upload_formats": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["long_mix", "single", "shorts", "livestream", "compilation"] }
+    },
+    "product_skus": { "type": "array", "items": { "type": "string" } }
+  }
+}

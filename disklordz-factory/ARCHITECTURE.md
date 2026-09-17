@@ -119,6 +119,10 @@ Fictional identities (e.g. DISKLORD 001–006) each define visual identity, BPM 
 - **Integrations:** implement adapters under `integrations/` (YouTube upload, DistroKid, store webhooks).
 - **Drum Factory:** sound-family tags on `DL-DRM-*` assets; fictional machines (DL-808, DL-SP808, …) as taxonomy, not trademark claims.
 
+## YouTube network brands
+
+Programmed channels (Chrome Circuit, GhostDrive 808, Dust & Tape, …) — [docs/DISKLORDZ_YOUTUBE_NETWORK.md](../docs/DISKLORDZ_YOUTUBE_NETWORK.md). Each brand links to a sourced `DL-OPP-*` before A&R assigns batches.
+
 ## Related docs
 
 - [README.md](README.md) — quick start
