@@ -27,7 +27,8 @@
       "assigned_role": "preset-designer",
       "status": "Queued",
       "priority": "P1",
-      "acceptance_criteria": "48 factory presets covering bass/pad/poly/lead/FX; prev/next + user save; recall after host reload; format documented; QA checklist section updated; roadmap note for additional banks beyond 48 post-MVP; PR title includes WO-2026-003."
+      "acceptance_criteria": "48 factory presets covering bass/pad/poly/lead/FX; prev/next + user save; recall after host reload; format documented; QA checklist section updated; roadmap note for additional banks beyond 48 post-MVP; PR title includes WO-2026-003.",
+      "project_id": "PRJ-2026-JUNOVA"
     }
   ]
 }

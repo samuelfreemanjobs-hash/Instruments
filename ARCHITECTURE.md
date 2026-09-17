@@ -15,7 +15,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 
 ```
 Source/          JD Upgraded (JUCE) processor, DSP, assets
-vst-juno106/     Junova-X (iPlug2) — see REPO_HANDOFF.md
+Junova-X/        Junova-X synth (JUCE) — see REPO_HANDOFF.md
 vst-tr808/       NovaDrum / 808-class spec (iPlug2, future)
 tools/           CLI binaries (link JUCE / plugin static lib)
 docs/            User and agent docs (SYSEX, ROM, phases, handoff)
