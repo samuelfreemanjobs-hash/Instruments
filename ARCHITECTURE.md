@@ -8,11 +8,15 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 |---------|-----|----------------|
 | **JD Upgraded** (VST3 + CLAP + standalone synth) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [Source/UI/ARCHITECTURE.md](Source/UI/ARCHITECTURE.md) | `JDUpgraded_VST3`, `JDUpgraded_CLAP`, `JDUpgraded_Standalone` |
 | **Offline tooling** (ROM gen, render, regression) | [tools/ARCHITECTURE.md](tools/ARCHITECTURE.md) | `GenerateCleanroomRom`, `OfflineRender`, `SpectralDiff` |
+| **Junova-X** (JUCE VST3 + CLAP) | [Junova-X/REPO_HANDOFF.md](Junova-X/REPO_HANDOFF.md) | `JunovaX_VST3`, `JunovaX_CLAP` (planned) |
+| **NovaDrum** (TR-808 class) | [vst-tr808/plugin-spec-mvp.md](vst-tr808/plugin-spec-mvp.md) | Spec only — [plugin tracks](docs/DISKLORDZ_PLUGIN_TRACKS.md) |
 
 ## Repository layout
 
 ```
-Source/          Plugin processor, DSP, assets, preset import
+Source/          JD Upgraded (JUCE) processor, DSP, assets
+Junova-X/        Junova-X synth (JUCE) — see REPO_HANDOFF.md
+vst-tr808/       NovaDrum / 808-class spec (iPlug2, future)
 tools/           CLI binaries (link JUCE / plugin static lib)
 docs/            User and agent docs (SYSEX, ROM, phases, handoff)
 tests/golden/    manifest.tsv + golden WAVs; verify_golden.sh / refresh_golden.sh
