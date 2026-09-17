@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { AuthNav } from "@/components/AuthNav";
 import { CassetteSmashSoundboard } from "@/components/CassetteSmashSoundboard";
+import { MemphisVaultKitPromo } from "@/components/MemphisVaultKitPromo";
 
 export const metadata = {
   title: "DISKLORDZ Launch — Memphis Tape",
@@ -33,6 +34,8 @@ export default function LaunchPage() {
       <div className="mt-12">
         <CassetteSmashSoundboard />
       </div>
+
+      <MemphisVaultKitPromo />
 
       <p className="mx-auto mt-10 max-w-xl text-center text-xs text-zinc-600">
         Drum kit SaaS still lives on{" "}

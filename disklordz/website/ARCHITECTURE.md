@@ -49,7 +49,7 @@ Generation is **sync stub** in v0 (no WebSocket). Future factory jobs will be as
 | Path | Role |
 |------|------|
 | `src/components/KitGenerator.tsx` | Prompt UI, presets, preview, download |
-| `src/app/launch/` | Kern funnel pages + `CassetteSmashSoundboard` |
+| `src/app/launch/` | Kern funnel pages + `CassetteSmashSoundboard` + `MemphisVaultKitPromo` |
 | `src/lib/audio/cassette-smash.ts` | Browser Drive/Wobble chain (plugin preview) |
 | `src/app/api/launch/opt-in/route.ts` | Vocal vault email capture (+ optional Resend) |
 | `src/lib/presets.ts` | Five presets (4 artist lanes + MPC neutral) |

@@ -15,6 +15,7 @@
 | Tripwire #2 | Cassette Smash Lite ($17) | **In progress** — browser DSP preview on `/launch`; JUCE SKU **Track E** (see plugin tracks) |
 | Flagship | Memphis Tape FX ($47/$79) | **Planned** — full DSP chain; JUCE **Track E** |
 | Vault | Full expansion ($97) | **Planned** — bundle + R2 delivery |
+| **Catalog (legacy)** | **Memphis Vault Vol. 1** phonk drum kit | **Shipped (prior release)** — cover + copy on `/launch`; WAVs live outside repo until `launch-assets/` or R2 |
 | Marketing web | Interactive soundboard + funnel | **Shipped (v0)** — `disklordz/website/src/app/launch/` |
 | Drum SaaS | Prompt kits (growth SKU) | **Shipped** — `/` on same Next.js app |
 | Licensing API | Cloudflare Worker + JWT | **Planned** — Lemon Squeezy/Stripe webhooks; SaaS already has Stripe |
@@ -41,7 +42,23 @@ Example prompt (commercial + technical audit for Memphis tape emulation, competi
          │                              │
          ▼ (declined)                   ▼ OTO / backend
 [ Freebie: DAW racks ]     ──> [ Tripwire: IR pack $9 ] ──> [ Vault $97 ]
+                                      │
+                                      └── includes / upsells: Memphis Vault Vol. 1 (legacy phonk kit)
 ```
+
+### Legacy phonk drum kit — Memphis Vault Vol. 1
+
+| Field | Detail |
+|-------|--------|
+| **Customer-facing name** | **Memphis Vault Vol. 1** — *Underground Phonk Samples* (cassette cover art) |
+| **Earlier codename** | **Graveyard Shift** — OG Memphis lane from sample-pack brand notes (same aesthetic: skulls, tape, 12-bit) |
+| **Credit line** | Produced by **AJ OG** |
+| **Folder spec** | `01_Kicks`, `02_808s`, `03_Snares_Claps`, `04_Perc`, `06_FX` (see historical brand chat in git `4461164`) |
+| **Launch role** | **Anchor sample SKU** — sell standalone ($27–47 typical) or **bundle inside Vault $97** with IR pack + flagship plugin discount |
+| **Web** | Promo block on `/launch`; `LAUNCH_MEMPHIS_VAULT_URL` → Gumroad / Stripe / LS product |
+| **SaaS tie-in** | Generator preset **Midnight Circuit** (`DL002`) matches drift/phonk lane for *new* kits; Vault Vol. 1 is the *hand-curated* predecessor |
+
+If you recover the original ZIP, drop it under `disklordz/launch-assets/memphis-vault-vol1/` and point entitlements + download API at that SKU.
 
 ### Freebie #1 — Vocal chops
 
