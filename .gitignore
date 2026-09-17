@@ -1,3 +1,4 @@
+.sandbox/
 build/
 _deps/
 cmake-build-*/

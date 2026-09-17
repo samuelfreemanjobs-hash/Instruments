@@ -16,7 +16,13 @@ Commands:
   slack-ci          Configure GitHub secret SLACK_WEBHOOK_URL and test notifications
   slack-antigravity Configure SLACK_WEBHOOK_ANTIGRAVITY_URL + optional SLACK_MENTION_USER_ID (#disklordz-dev)
   cursor-cloud      Verify repo-managed Cursor Cloud Agent config (environment.json)
+  sandbox           Run JUCE factory sandbox (see scripts/disklordz-sandbox.sh)
+  onboard           cursor-cloud + sandbox --ci; prints remaining one-time browser steps
   all               Run cursor-cloud, then slack-ci (if webhook provided)
+
+sandbox options:
+  --pluginval       Pass --pluginval to disklordz-sandbox.sh
+  --full            Pass --full to disklordz-sandbox.sh
 
 slack-ci options:
   --webhook-url URL     Incoming webhook URL (or set SLACK_WEBHOOK_URL)
@@ -29,7 +35,9 @@ cursor-cloud options:
   --trigger-build       Print instructions to validate the environment build (no API token required)
 
 Examples:
+  ./scripts/setup-disklordz-integrations.sh onboard
   ./scripts/setup-disklordz-integrations.sh cursor-cloud
+  ./scripts/setup-disklordz-integrations.sh sandbox --pluginval
   ./scripts/setup-disklordz-integrations.sh slack-ci --webhook-url 'https://hooks.slack.com/services/...'
   ./scripts/setup-disklordz-integrations.sh slack-antigravity --webhook-url 'https://hooks.slack.com/services/...'
   SLACK_WEBHOOK_URL='https://hooks.slack.com/...' ./scripts/setup-disklordz-integrations.sh all
@@ -273,6 +281,37 @@ EOF
   fi
 }
 
+cmd_sandbox() {
+  local extra=()
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --pluginval) extra+=(--pluginval) ;;
+      --full) extra+=(--full) ;;
+      *) die "unknown sandbox option: $1" ;;
+    esac
+    shift
+  done
+  local script="scripts/disklordz-sandbox.sh"
+  [[ -f "$script" ]] || die "missing $script"
+  chmod +x "$script"
+  "$script" --ci "${extra[@]}"
+}
+
+cmd_onboard() {
+  cmd_cursor_cloud --trigger-build
+  echo ""
+  echo "========== JUCE factory sandbox =========="
+  cmd_sandbox
+  cat <<'EOF'
+
+========== Optional: Slack CI notifications ==========
+When ready, create an Incoming Webhook for #disklordz-ci and run:
+  ./scripts/setup-disklordz-integrations.sh slack-ci --webhook-url 'https://hooks.slack.com/services/...'
+
+Full guide: docs/SANDBOX_ONBOARDING.md
+EOF
+}
+
 main() {
   local cmd="${1:-}"
   shift || true
@@ -286,6 +325,12 @@ main() {
       ;;
     cursor-cloud)
       cmd_cursor_cloud "$@"
+      ;;
+    sandbox)
+      cmd_sandbox "$@"
+      ;;
+    onboard)
+      cmd_onboard "$@"
       ;;
     all)
       cmd_cursor_cloud

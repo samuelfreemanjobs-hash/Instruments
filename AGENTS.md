@@ -27,12 +27,19 @@ python3 disklordz/rag/scripts/query_local.py "your query"
 
 Colab: [docs/COLAB_ZERO_INSTALL_TESTING.md](docs/COLAB_ZERO_INSTALL_TESTING.md).
 
-## JUCE plugin (default Cloud install)
+## JUCE plugin (sandbox)
+
+Cloud Agent `install` runs `./scripts/disklordz-sandbox.sh --ci` (see [.cursor/environment.json](.cursor/environment.json)).
+
+Local or re-verify:
 
 ```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
-cmake --build build -j
+./scripts/setup-disklordz-integrations.sh onboard   # checks + full factory smoke
+./scripts/disklordz-sandbox.sh --ci                   # same as Cloud install
+./scripts/disklordz-sandbox.sh --full                 # + pluginval + MyFirstPlugin
 ```
+
+Human onboarding (what still needs a browser once): [docs/SANDBOX_ONBOARDING.md](docs/SANDBOX_ONBOARDING.md).
 
 ## Git
 
