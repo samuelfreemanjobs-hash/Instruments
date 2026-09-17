@@ -12,6 +12,7 @@ from disklordz_factory.models import (
     NightShiftStep,
     ProductionBatchCreate,
 )
+from disklordz_factory.research import research_store
 from disklordz_factory.store import FactoryStore
 
 # Illustrative schedule from workflows/night_shift.md
@@ -54,7 +55,8 @@ def run_night_shift(
     steps_completed: list[NightShiftStep] = []
     logs: list[str] = []
 
-    artist_ids = body.artist_ids or ["DL002", "DL003"]
+    # Artists only when research + A&R greenlit, or HQ explicitly passes artist_ids
+    artist_ids = body.artist_ids or research_store.greenlit_artist_ids()
     batch = factory.create_batch(
         ProductionBatchCreate(
             mission=body.mission,
@@ -88,7 +90,9 @@ def run_night_shift(
 
         if "Sample Miner" in label:
             for i in range(kit_count):
-                artist = artist_ids[i % len(artist_ids)]
+                artist = (
+                    artist_ids[i % len(artist_ids)] if artist_ids else None
+                )
                 asset = factory.create_asset(
                     CatalogAssetCreate(
                         kind=AssetKind.kit,
@@ -103,11 +107,14 @@ def run_night_shift(
 
         if "Visual Director" in label:
             for i in range(visual_count):
-                artist = artist_ids[i % len(artist_ids)]
+                artist = (
+                    artist_ids[i % len(artist_ids)] if artist_ids else None
+                )
+                title_suffix = artist or "unassigned lane"
                 asset = factory.create_asset(
                     CatalogAssetCreate(
                         kind=AssetKind.visual,
-                        title=f"Artwork {asset_suffix(i)} — {artist}",
+                        title=f"Artwork {asset_suffix(i)} — {title_suffix}",
                         artist_id=artist,
                         batch_id=batch.batch_id,
                         rights_status=RightsStatus.review,
@@ -117,7 +124,9 @@ def run_night_shift(
 
         if "Generation" in label:
             for i in range(track_count):
-                artist = artist_ids[i % len(artist_ids)]
+                artist = (
+                    artist_ids[i % len(artist_ids)] if artist_ids else None
+                )
                 asset = factory.create_asset(
                     CatalogAssetCreate(
                         kind=AssetKind.track,

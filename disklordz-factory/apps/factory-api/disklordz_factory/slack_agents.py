@@ -7,11 +7,11 @@ import urllib.request
 from typing import Any
 
 from disklordz_factory.models import NightShiftRequest, NightShiftRun
+from disklordz_factory.research import ResearchStatus, research_store
 
 SLACK_FACTORY_WEBHOOK_ENV = "SLACK_FACTORY_WEBHOOK_URL"
 SLACK_FALLBACK_WEBHOOK_ENV = "SLACK_WEBHOOK_URL"
 
-# Display personas for #disklordz-factory (or shared CI channel until split)
 AGENT_ROSTER: dict[str, dict[str, str]] = {
     "orchestrator": {
         "name": "Factory Orchestrator",
@@ -21,62 +21,25 @@ AGENT_ROSTER: dict[str, dict[str, str]] = {
     "market_intel": {
         "name": "Market Intelligence",
         "emoji": "📡",
-        "role": "Trends, keywords, product gaps (YouTube, Spotify, marketplaces)",
+        "role": "Sourced trends only — posts `DL-OPP-*` with citations",
     },
     "aar": {
         "name": "A&R",
         "emoji": "🎯",
-        "role": "Greenlight / kill — maps opportunities to DL001–DL006",
+        "role": "Greenlight / kill — *only* after sourced research",
     },
     "producer": {
         "name": "Music Producer",
         "emoji": "🎛️",
-        "role": "Briefs: tempo, key, arrangement, energy curve",
+        "role": "Briefs after A&R greenlight",
     },
-    "sound_design": {
-        "name": "Sound Design",
-        "emoji": "🔊",
-        "role": "Drum families, 808/kick/hat machines (DiskLordz Drumworks)",
-    },
-    "sample_miner": {
-        "name": "Sample Miner",
-        "emoji": "⛏️",
-        "role": "Track → kits, one-shots, MIDI, presets",
-    },
-    "visual": {
-        "name": "Visual Director",
-        "emoji": "🎨",
-        "role": "Artist identity, artwork, thumbnail system",
-    },
-    "content": {
-        "name": "Content Producer",
-        "emoji": "📺",
-        "role": "YouTube programming, Shorts, distribution metadata",
-    },
-    "copy": {
-        "name": "Copy Engine",
-        "emoji": "✍️",
-        "role": "DR copy: feature → benefit → CTA",
-    },
-    "rights": {
-        "name": "Rights & QA",
-        "emoji": "⚖️",
-        "role": "Provenance gate — nothing publishes without pass",
-    },
-    "analytics": {
-        "name": "Analytics",
-        "emoji": "📈",
-        "role": "Performance → next batch rules",
-    },
-}
-
-ARTIST_LABELS: dict[str, str] = {
-    "DL001": "DISKLORD 001 — robot funk / French house / electro",
-    "DL002": "DISKLORD 002 — dark phonk / Memphis / 808",
-    "DL003": "DISKLORD 003 — Detroit electro",
-    "DL004": "DISKLORD 004 — cyber disco",
-    "DL005": "DISKLORD 005 — industrial trap",
-    "DL006": "DISKLORD 006 — digital soul",
+    "sound_design": {"name": "Sound Design", "emoji": "🔊", "role": "Sound families"},
+    "sample_miner": {"name": "Sample Miner", "emoji": "⛏️", "role": "Track → products"},
+    "visual": {"name": "Visual Director", "emoji": "🎨", "role": "Identity & artwork"},
+    "content": {"name": "Content Producer", "emoji": "📺", "role": "Programming & metadata"},
+    "copy": {"name": "Copy Engine", "emoji": "✍️", "role": "Sales copy"},
+    "rights": {"name": "Rights & QA", "emoji": "⚖️", "role": "Provenance gate"},
+    "analytics": {"name": "Analytics", "emoji": "📈", "role": "Measure → learn"},
 }
 
 
@@ -106,149 +69,154 @@ def post_slack_payload(payload: dict[str, Any]) -> dict[str, Any]:
         return {"ok": False, "error": str(e.reason)}
 
 
-def _mrkdwn_section(agent_key: str, text: str) -> dict[str, Any]:
+def mrkdwn_section(agent_key: str, text: str) -> dict[str, Any]:
     meta = AGENT_ROSTER[agent_key]
     return {
         "type": "section",
-        "text": {
-            "type": "mrkdwn",
-            "text": f"{meta['emoji']} *{meta['name']}*\n{text}",
-        },
+        "text": {"type": "mrkdwn", "text": f"{meta['emoji']} *{meta['name']}*\n{text}"},
     }
 
 
-def build_market_intel_copy(mission: str) -> str:
-    return (
-        f"Scan complete for mission: _{mission}_\n"
-        "• Opportunity: *dark 90s digital phonk* — BPM 140–155, CRT/night-drive aesthetic\n"
-        "• Supply angle: 808 + drum kit + MIDI pack\n"
-        "• Demand: high on YouTube beat channels; competition: medium\n"
-        "_Note: live API ingest coming — this briefing uses factory heuristics until Market Intel MCP is wired._"
-    )
+def build_market_intel_slack(status: ResearchStatus) -> str:
+    opps = research_store.list_opportunities()
+    if not opps:
+        return (
+            "*No market claims.* Waiting for sourced opportunities.\n"
+            "Submit: `POST /research/opportunities` with `sources[]` (URLs or citations).\n"
+            "Market Intel does not invent genres, demand, or competition."
+        )
+    lines = [f"*{len(opps)}* sourced opportunity record(s):"]
+    for o in opps[:5]:
+        src = ", ".join(f"<{s}|source>" if s.startswith("http") else f"`{s}`" for s in o.sources[:3])
+        lines.append(
+            f"• `{o.opportunity_id}` *{o.title}* ({o.genre}) — score `{o.score or 'unset'}` — {src}"
+        )
+    return "\n".join(lines)
 
 
-def build_aar_copy(artist_ids: list[str], mission: str) -> str:
-    lines = [f"*Greenlit* for batch under mission: _{mission}_"]
-    for aid in artist_ids or ["DL002", "DL003"]:
-        lines.append(f"• `{aid}` → {ARTIST_LABELS.get(aid, aid)}")
-    lines.append(
-        "\n*Rejected this cycle:* generic lo-fi study beats (off-brand), "
-        "uncleared sample-flip series (rights risk)."
-    )
-    lines.append(
-        "\n_Lineup is artist-IP first; full ranked `DL-OPP-*` records land when research pipeline is live._"
-    )
+def build_aar_slack(status: ResearchStatus) -> str:
+    if status.block_reason and not status.greenlit_artist_ids:
+        return (
+            f"*No artist lineup announced.*\n{status.block_reason}\n"
+            "A&R stays silent until `POST /research/aar-decisions` on a sourced `DL-OPP-*`."
+        )
+    lines = ["*Greenlit artists (research-backed only):*"]
+    for d in research_store.decisions:
+        if d.decision != "greenlight":
+            continue
+        lines.append(f"• `{d.artist_id}` on `{d.opportunity_id}` — _{d.rationale}_")
+    rejects = [d for d in research_store.decisions if d.decision == "reject"]
+    if rejects:
+        lines.append("\n*Rejected:*")
+        for d in rejects[:5]:
+            lines.append(f"• `{d.opportunity_id}` — _{d.rationale}_")
     return "\n".join(lines)
 
 
 def build_night_shift_slack_blocks(
     run: NightShiftRun,
     req: NightShiftRequest,
+    status: ResearchStatus | None = None,
 ) -> dict[str, Any]:
-    artists = req.artist_ids or ["DL002", "DL003"]
+    status = status or research_store.status()
     dashboard_hint = os.environ.get("FACTORY_DASHBOARD_URL", "http://127.0.0.1:5173")
 
     blocks: list[dict[str, Any]] = [
         {
             "type": "header",
-            "text": {"type": "plain_text", "text": "DiskLordz Factory — night shift complete"},
+            "text": {"type": "plain_text", "text": "DiskLordz Factory — night shift (ops)"},
         },
         {
             "type": "section",
             "fields": [
                 {"type": "mrkdwn", "text": f"*Run:*\n`{run.run_id}`"},
                 {"type": "mrkdwn", "text": f"*Batch:*\n`{run.batch_id}`"},
-                {"type": "mrkdwn", "text": f"*Assets:*\n{run.assets_created}"},
-                {"type": "mrkdwn", "text": f"*Approval queue:*\n{run.approval_items} pending"},
+                {"type": "mrkdwn", "text": f"*Technical assets:*\n{run.assets_created}"},
+                {"type": "mrkdwn", "text": f"*QA queue:*\n{run.approval_items} pending"},
             ],
         },
         {"type": "divider"},
-        _mrkdwn_section(
+        mrkdwn_section(
             "orchestrator",
-            f"Mission locked. Status: `{run.status}`. "
-            f"Human approval required before publish — open <{dashboard_hint}|Factory dashboard>.",
+            f"Mission: _{req.mission}_ · `{run.status}`\n"
+            f"Research gate: {'*OPEN*' if status.ready_for_production else '*CLOSED*'}\n"
+            f"Dashboard: <{dashboard_hint}|Factory>",
         ),
-        _mrkdwn_section("market_intel", build_market_intel_copy(req.mission)),
-        _mrkdwn_section("aar", build_aar_copy(artists, req.mission)),
-        _mrkdwn_section(
-            "producer",
-            f"Briefs issued for {len(artists)} artist lane(s). "
-            "Target internal SP-1200 rate story where relevant (26,041.66 Hz lane) for Labs crossover.",
-        ),
-        _mrkdwn_section(
-            "sample_miner",
-            f"Extracted product candidates from overnight tracks — kits queued for QA ({run.assets_created} total assets touched).",
-        ),
-        _mrkdwn_section(
-            "content",
-            "YouTube titles/descriptions drafted; Shorts concepts attached per track cluster.",
-        ),
-        _mrkdwn_section(
-            "rights",
-            "All queue items passed provenance checklist for *review* — operator must still approve.",
-        ),
+        mrkdwn_section("market_intel", build_market_intel_slack(status)),
+        mrkdwn_section("aar", build_aar_slack(status)),
+    ]
+
+    if status.ready_for_production:
+        blocks.extend(
+            [
+                mrkdwn_section(
+                    "producer",
+                    "Briefs may proceed for greenlit `artist_id` lanes only.",
+                ),
+                mrkdwn_section(
+                    "rights",
+                    f"{run.approval_items} item(s) in QA queue — operator approval still required.",
+                ),
+            ]
+        )
+    else:
+        blocks.append(
+            mrkdwn_section(
+                "producer",
+                "*Held* — no production briefs naming artists or market positioning until research + A&R greenlight.",
+            )
+        )
+
+    blocks.append(
         {
             "type": "context",
             "elements": [
                 {
                     "type": "mrkdwn",
-                    "text": "Factory API · POST /factory/slack/checkin · Agents roster in `disklordz-factory/agents/`",
+                    "text": "Policy: research before anyone speaks · `docs/FACTORY_RESEARCH.md`",
                 }
             ],
-        },
-    ]
+        }
+    )
     return {
-        "text": f"DiskLordz Factory night shift — {run.approval_items} items awaiting approval",
+        "text": "DiskLordz Factory night shift — research-gated update",
         "blocks": blocks,
     }
 
 
 def build_agent_checkin_blocks() -> dict[str, Any]:
-    """Morning stand-up: every core agent checks in (no batch required)."""
+    status = research_store.status()
     blocks: list[dict[str, Any]] = [
         {
             "type": "header",
-            "text": {"type": "plain_text", "text": "DiskLordz Factory — agent check-in"},
+            "text": {"type": "plain_text", "text": "DiskLordz Factory — systems online"},
         },
         {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "Core team online. Reply in thread with missions, or run *Run night shift* on the dashboard.",
+                "text": (
+                    "Agents are *on standby*. Market Intel and A&R will *not* name artists or "
+                    "market wins until sourced `DL-OPP-*` records exist.\n"
+                    f"Research gate: {'OPEN' if status.ready_for_production else 'CLOSED'}"
+                    + (f" — {status.block_reason}" if status.block_reason else "")
+                ),
             },
         },
         {"type": "divider"},
-    ]
-    for key in (
-        "orchestrator",
-        "market_intel",
-        "aar",
-        "producer",
-        "sound_design",
-        "sample_miner",
-        "visual",
-        "content",
-        "copy",
-        "rights",
-        "analytics",
-    ):
-        meta = AGENT_ROSTER[key]
-        blocks.append(
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": f"{meta['emoji']} *{meta['name']}* — {meta['role']}",
-                },
-            }
-        )
-    blocks.append(
+        mrkdwn_section("market_intel", build_market_intel_slack(status)),
+        mrkdwn_section("aar", build_aar_slack(status)),
         {
             "type": "context",
-            "elements": [{"type": "mrkdwn", "text": "Configure `SLACK_FACTORY_WEBHOOK_URL` → #disklordz-factory (or reuse CI webhook)."}],
-        }
-    )
-    return {"text": "DiskLordz Factory agents checking in", "blocks": blocks}
+            "elements": [
+                {
+                    "type": "mrkdwn",
+                    "text": "Roster: orchestrator, producer, sound, miner, visual, content, copy, rights, analytics — speak on ops/events only until research clears.",
+                }
+            ],
+        },
+    ]
+    return {"text": "DiskLordz Factory — research-gated check-in", "blocks": blocks}
 
 
 def notify_night_shift_slack(run: NightShiftRun, req: NightShiftRequest) -> dict[str, Any]:
@@ -262,21 +230,39 @@ def notify_agent_checkin() -> dict[str, Any]:
 def notify_approval(asset_id: str, title: str) -> dict[str, Any]:
     return post_slack_payload(
         {
-            "text": f"Approved {asset_id}",
+            "text": f"Operator approved {asset_id}",
             "blocks": [
                 mrkdwn_section(
-                    "content",
-                    f"Operator approved `{asset_id}` — *{title}*.\n"
-                    "Distribution prep can proceed after batch publish gate.",
+                    "orchestrator",
+                    f"Human approved `{asset_id}` — *{title}* (QA queue).",
                 ),
                 mrkdwn_section(
-                    "aar",
-                    "Catalog slot confirmed. Analytics will tag this asset on next MEASURE cycle.",
+                    "rights",
+                    "Publish externally only after rights gate + your explicit release plan.",
                 ),
             ],
         }
     )
 
 
-def mrkdwn_section(agent_key: str, text: str) -> dict[str, Any]:
-    return _mrkdwn_section(agent_key, text)
+def notify_research_needed(mission: str) -> dict[str, Any]:
+    return post_slack_payload(
+        {
+            "text": "DiskLordz Factory — research required",
+            "blocks": [
+                {
+                    "type": "header",
+                    "text": {"type": "plain_text", "text": "Research required before A&R speaks"},
+                },
+                mrkdwn_section(
+                    "market_intel",
+                    f"Mission queued: _{mission}_\n"
+                    "Waiting for sourced opportunities (`POST /research/opportunities`).",
+                ),
+                mrkdwn_section(
+                    "aar",
+                    "No lineup will be posted until decisions reference a `DL-OPP-*` id.",
+                ),
+            ],
+        }
+    )

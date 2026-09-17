@@ -22,6 +22,14 @@ from disklordz_factory.models import (
 )
 from disklordz_factory import night_shift
 from disklordz_factory import slack_agents
+from disklordz_factory.research import (
+    AARDecision,
+    AARDecisionIn,
+    MarketOpportunity,
+    MarketOpportunityIn,
+    ResearchStatus,
+    research_store,
+)
 from disklordz_factory.store import store
 
 app = FastAPI(
@@ -160,6 +168,31 @@ def night_shift_schedule() -> list[NightShiftStep]:
 @app.get("/night-shift/runs/latest", response_model=NightShiftRun | None)
 def night_shift_latest() -> NightShiftRun | None:
     return night_shift.get_last_night_shift_run()
+
+
+@app.get("/research/status", response_model=ResearchStatus)
+def research_status() -> ResearchStatus:
+    return research_store.status()
+
+
+@app.post("/research/opportunities", response_model=MarketOpportunity)
+def research_add_opportunity(body: MarketOpportunityIn) -> MarketOpportunity:
+    return research_store.add_opportunity(body)
+
+
+@app.get("/research/opportunities", response_model=list[MarketOpportunity])
+def research_list_opportunities() -> list[MarketOpportunity]:
+    return research_store.list_opportunities()
+
+
+@app.post("/research/aar-decisions", response_model=AARDecision)
+def research_aar_decision(body: AARDecisionIn) -> AARDecision:
+    try:
+        return research_store.record_aar_decision(body)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="opportunity not found") from None
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
 
 
 @app.post("/night-shift/run", response_model=NightShiftRun)

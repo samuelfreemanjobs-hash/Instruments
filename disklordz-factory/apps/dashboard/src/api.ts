@@ -69,9 +69,7 @@ export const api = {
     fetchJson<NightShiftRun>("/night-shift/run", {
       method: "POST",
       body: JSON.stringify(
-        mission
-          ? { mission, target_count: 25, artist_ids: ["DL002", "DL003"] }
-          : {},
+        mission ? { mission, target_count: 25, artist_ids: [] } : {},
       ),
     }),
   latestNightShift: () => fetchJson<NightShiftRun | null>("/night-shift/runs/latest"),

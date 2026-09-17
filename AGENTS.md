@@ -35,6 +35,8 @@ Night shift + dashboard: `./disklordz-factory/scripts/run-factory-dev.sh`. Claud
 
 **Slack:** Factory agents post to **#disklordz-factory** when `SLACK_FACTORY_WEBHOOK_URL` is set — see [docs/FACTORY_SLACK.md](docs/FACTORY_SLACK.md). Setup: `./scripts/setup-disklordz-integrations.sh slack-factory`.
 
+**Research gate:** Market Intel and A&R must not name artists or market wins without sourced `DL-OPP-*` — [docs/FACTORY_RESEARCH.md](docs/FACTORY_RESEARCH.md).
+
 ## Common traps (SP-1200 DSP — carry into JUCE port)
 
 - Block splitting must happen at **audio callback event offsets**, not only in a stub (~10 ms jitter otherwise).

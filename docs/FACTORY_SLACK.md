@@ -21,6 +21,10 @@ export SLACK_FACTORY_WEBHOOK_URL='https://hooks.slack.com/services/...'
 ./scripts/factory-slack-checkin.sh
 ```
 
+## Research first
+
+Market Intel and A&R **do not** invent lineups or market stats. See **[FACTORY_RESEARCH.md](FACTORY_RESEARCH.md)** — ingest `DL-OPP-*` with sources before anyone is named in Slack.
+
 ## When agents post
 
 | Event | Who speaks in Slack |
