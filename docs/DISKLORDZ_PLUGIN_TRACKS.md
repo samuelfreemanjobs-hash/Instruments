@@ -7,7 +7,7 @@
 
 | Track | Product | Path | Stack | Priority |
 |-------|---------|------|-------|----------|
-| **A** | **Junova-X** | [vst-juno106/](../vst-juno106/REPO_HANDOFF.md) | iPlug2 + VST3 | **P0** — land repo + Win x64 host smoke |
+| **A** | **Junova-X** | [Junova-X/](../Junova-X/REPO_HANDOFF.md) | **JUCE** VST3 + CLAP | **P0** — JUCE port + host smoke (WO 001–003) |
 | **B** | **NovaDrum** (TR-808 class) | [vst-tr808/](../vst-tr808/) | iPlug2 + VST3 | **P1** — Spec/DSP parallel; code after A |
 | **C** | **JD Upgraded** | `Source/` | JUCE | Maintenance + CI unless WO ties to SaaS assets |
 

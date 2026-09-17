@@ -8,7 +8,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 |---------|-----|----------------|
 | **JD Upgraded** (VST3 + CLAP + standalone synth) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [Source/UI/ARCHITECTURE.md](Source/UI/ARCHITECTURE.md) | `JDUpgraded_VST3`, `JDUpgraded_CLAP`, `JDUpgraded_Standalone` |
 | **Offline tooling** (ROM gen, render, regression) | [tools/ARCHITECTURE.md](tools/ARCHITECTURE.md) | `GenerateCleanroomRom`, `OfflineRender`, `SpectralDiff` |
-| **Junova-X** (iPlug2 VST3) | [vst-juno106/REPO_HANDOFF.md](vst-juno106/REPO_HANDOFF.md) | VS `Juno106-vst3` Release x64 (not CMake CI) |
+| **Junova-X** (JUCE VST3 + CLAP) | [Junova-X/REPO_HANDOFF.md](Junova-X/REPO_HANDOFF.md) | `JunovaX_VST3`, `JunovaX_CLAP` (planned) |
 | **NovaDrum** (TR-808 class) | [vst-tr808/plugin-spec-mvp.md](vst-tr808/plugin-spec-mvp.md) | Spec only — [plugin tracks](docs/DISKLORDZ_PLUGIN_TRACKS.md) |
 
 ## Repository layout

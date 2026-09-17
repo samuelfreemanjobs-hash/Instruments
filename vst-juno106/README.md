@@ -1,5 +1,4 @@
-# Junova-X (iPlug2)
+# Deprecated path
 
-Jun-106–style instrument. See **[REPO_HANDOFF.md](REPO_HANDOFF.md)** for import status, build steps, and GTM.
-
-**Not production-ready:** scaffold exists; DAW validation pending.
+Junova-X moved to **[`../Junova-X/`](../Junova-X/REPO_HANDOFF.md)** (JUCE port).  
+This folder kept only if iPlug2 reference assets are copied here temporarily during import.

@@ -8,7 +8,7 @@ You support **Disklordz Plugin Lab**. I am Creative Director; **GitHub `samuelfr
 
 ## Active products
 
-1. **Junova-X** — `vst-juno106/REPO_HANDOFF.md` · iPlug2 · `JunovaX.vst3` · ID `JnvX` / `SmFr` · folder `plugin/Juno106/`
+1. **Junova-X** — `Junova-X/REPO_HANDOFF.md` · **JUCE** (ported from iPlug2 reference) · VST3+CLAP · no AU · `JunovaX.vst3` · ID `JnvX` / `SmFr` · **48** factory presets MVP
 2. **NovaDrum** (TR-808 class) — `vst-tr808/plugin-spec-mvp.md` · circuit engines, not samples · 16 voices; MVP voices BD→CP first
 3. **JD Upgraded** — JUCE in `Source/` · **maintenance only** unless I say otherwise
 
