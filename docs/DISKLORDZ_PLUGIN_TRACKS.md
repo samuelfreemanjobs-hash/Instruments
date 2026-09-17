@@ -2,6 +2,7 @@
 
 **PM:** Airtable · **JUCE factory implementer:** Cursor Cloud Agent · **HISE sketch lane (D):** Antigravity (local Windows) · **Advisory:** Grok Plugin team  
 
+**TR-808 PWA (shipped sketch):** [disklordz/tr808-pwa/](../disklordz/tr808-pwa/) — lead magnet / SaaS shell; **MPC Sample** WAV path.  
 **HISE sketch lane:** [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md) (handoff) · [HISE_SKETCH_LANE.md](HISE_SKETCH_LANE.md) (full) — **Business Planner + Marketing** gate every customer-facing SKU.
 
 ## Tracks on `main` today

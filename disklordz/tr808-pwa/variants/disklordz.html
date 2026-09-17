@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#c41e3a" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>Roland TR-808 Rhythm Composer</title>
+  <style>
+    :root {
+      --bg: #2b2b35;
+      --panel: #3d3d4a;
+      --bezel: #1a1a22;
+      --text: #f0e6d8;
+      --accent: #c41e3a;
+      --knob: #4a4a58;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(180deg, #1a1a2e 0%, #2b2b35 40%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 12px; }
+    h1 { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.08em; margin: 0 0 8px; text-align: center; }
+    .faceplate {
+      background: var(--panel);
+      border: 4px solid var(--bezel);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: inset 0 2px 0 #5a5a6a, 0 8px 24px #0008;
+    }
+    .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center; margin-bottom: 12px; }
+    .steps { display: grid; grid-template-columns: repeat(16, 1fr); gap: 4px; width: 100%; }
+    .step {
+      aspect-ratio: 1;
+      border: 2px solid #111;
+      border-radius: 4px;
+      cursor: pointer;
+      min-width: 0;
+      transition: filter 0.05s;
+    }
+    .step.on { filter: brightness(1.35); box-shadow: 0 0 8px #fff4; }
+    .step.playing { outline: 2px solid #fff; }
+    .g-red { background: #8b1a1a; }
+    .g-orange { background: #b85c1a; }
+    .g-yellow { background: #c9a227; }
+    .g-white { background: #d8d0c4; color: #333; }
+    .pads { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; width: 100%; }
+    .pad {
+      background: #222;
+      border: 2px solid #111;
+      border-radius: 6px;
+      padding: 10px 4px;
+      font-size: 0.65rem;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .pad:active { background: var(--accent); }
+    .knob-wrap { text-align: center; font-size: 0.7rem; }
+    .knob {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #6a6a78, var(--knob));
+      border: 3px solid #111;
+      margin: 4px auto;
+      position: relative;
+      cursor: ns-resize;
+      touch-action: none;
+    }
+    .knob::after {
+      content: "";
+      position: absolute; width: 3px; height: 40%; background: #eee;
+      left: 50%; top: 12%; transform: translateX(-50%) rotate(var(--rot, -135deg));
+      transform-origin: bottom center;
+    }
+    button.ctrl {
+      background: #444; color: #fff; border: 2px solid #111;
+      padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;
+    }
+    button.ctrl.primary { background: var(--accent); }
+    .accent-row { display: grid; grid-template-columns: repeat(16, 1fr); gap: 4px; width: 100%; }
+    .acc { height: 14px; background: #333; border-radius: 2px; cursor: pointer; border: 1px solid #111; }
+    .acc.on { background: #e8c547; }
+    label { font-size: 0.65rem; opacity: 0.85; }
+    @media (orientation: landscape) and (max-height: 500px) {
+      .wrap { padding: 6px; }
+      h1 { font-size: 0.95rem; }
+      .pad { padding: 6px 2px; font-size: 0.55rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>ROLAND TR-808 RHYTHM COMPOSER</h1>
+    <div class="faceplate">
+      <div class="row">
+        <button class="ctrl primary" id="playBtn">▶ PLAY</button>
+        <button class="ctrl" id="stopBtn">■ STOP</button>
+        <button class="ctrl" id="tapBtn">TAP</button>
+        <button class="ctrl" id="exportBtn">EXPORT 2 BAR WAV</button>
+        <span id="bpmLabel">120 BPM</span>
+      </div>
+      <div class="row"><label>STEP PROGRAMMER</label></div>
+      <div class="steps" id="steps"></div>
+      <div class="row"><label>ACCENT</label></div>
+      <div class="accent-row" id="accents"></div>
+      <div class="row">
+        <div class="knob-wrap"><div class="knob" data-param="bpm" data-min="60" data-max="200"></div>TEMPO</div>
+        <div class="knob-wrap"><div class="knob" data-param="swing" data-min="0" data-max="0.35"></div>SWING</div>
+        <div class="knob-wrap"><div class="knob" data-param="tone" data-min="0" data-max="1"></div>TONE</div>
+        <div class="knob-wrap"><div class="knob" data-param="drive" data-min="0" data-max="1"></div>DRIVE</div>
+        <div class="knob-wrap"><div class="knob" data-param="master" data-min="0" data-max="1"></div>LEVEL</div>
+      </div>
+      <div class="row"><label>INSTRUMENTS</label></div>
+      <div class="pads" id="pads"></div>
+    </div>
+    <p style="font-size:0.7rem;text-align:center;opacity:0.7;margin-top:8px">
+      Disklordz virtual analog PWA · Export WAV for <strong>Akai MPC Sample</strong>
+    </p>
+  </div>
+<script>
+(() => {
+  const VOICES = [
+    { id: "BD", note: 36, label: "BD" },
+    { id: "SD", note: 38, label: "SD" },
+    { id: "LT", note: 41, label: "LT" },
+    { id: "MT", note: 43, label: "MT" },
+    { id: "HT", note: 45, label: "HT" },
+    { id: "CP", note: 39, label: "CP" },
+    { id: "OH", note: 46, label: "OH" },
+    { id: "CH", note: 42, label: "CH" },
+    { id: "CY", note: 49, label: "CY" },
+    { id: "CB", note: 56, label: "CB" },
+    { id: "MA", note: 70, label: "MA" },
+    { id: "RS", note: 37, label: "RS" },
+    { id: "LC", note: 60, label: "LC" },
+    { id: "MC", note: 62, label: "MC" },
+    { id: "HC", note: 64, label: "HC" },
+    { id: "CL", note: 75, label: "CL" },
+  ];
+  const STEP_COLORS = ["g-red","g-red","g-red","g-red","g-orange","g-orange","g-orange","g-orange",
+    "g-yellow","g-yellow","g-yellow","g-yellow","g-white","g-white","g-white","g-white"];
+
+  const state = {
+    bpm: 120, swing: 0.12, tone: 0.5, drive: 0.25, master: 0.85,
+    steps: Array(16).fill(0).map(() => new Set()),
+    accents: Array(16).fill(false),
+    playing: false, stepIndex: 0, ohEnv: null, schmittPhases: Array(6).fill(0),
+    tapTimes: [],
+  };
+
+  let ctx, masterGain, satShaper, toneFilter, nextNoteTime = 0, schedulerId;
+  let routeBus = null;
+  const getOut = () => routeBus || toneFilter;
+
+  function ensureCtx() {
+    if (ctx) return;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = ctx.createGain();
+    masterGain.gain.value = state.master;
+    satShaper = ctx.createWaveShaper();
+    satShaper.curve = makeSatCurve(state.drive);
+    satShaper.oversample = "4x";
+    toneFilter = ctx.createBiquadFilter();
+    toneFilter.type = "highshelf";
+    toneFilter.frequency.value = 800;
+    toneFilter.gain.value = 0;
+    toneFilter.connect(satShaper);
+    satShaper.connect(masterGain);
+    masterGain.connect(ctx.destination);
+    routeBus = toneFilter;
+    updateTone();
+  }
+
+  function makeSatCurve(amount) {
+    const n = 2048, curve = new Float32Array(n);
+    const k = 2 + amount * 18;
+    for (let i = 0; i < n; i++) {
+      const x = (i * 2) / n - 1;
+      curve[i] = Math.tanh(k * (x + 0.08 * amount)) * (1 - amount * 0.15);
+    }
+    return curve;
+  }
+
+  function updateTone() {
+    if (!toneFilter) return;
+    toneFilter.gain.value = (state.tone - 0.5) * 12;
+  }
+
+  function noiseBuffer(dur) {
+    const len = Math.floor(ctx.sampleRate * dur);
+    const b = ctx.createBuffer(1, len, ctx.sampleRate);
+    const d = b.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    return b;
+  }
+
+  function triggerVoice(id, time, vel = 1, accent = 1) {
+    const v = VOICES.find(x => x.id === id);
+    if (!v) return;
+    const g = Math.min(1, vel * accent * state.master);
+    const t = time ?? ctx.currentTime;
+
+    if (id === "BD") bridgedKick(t, g);
+    else if (id === "SD") snare(t, g);
+    else if (["LT","MT","HT","LC","MC","HC"].includes(id)) tom(id, t, g);
+    else if (id === "RS" || id === "CL") ringHit(id, t, g);
+    else if (id === "CB") cowbell(t, g);
+    else if (["CY","CH","OH"].includes(id)) metal(id, t, g);
+    else if (id === "CP") clap(t, g);
+    else if (id === "MA") maracas(t, g);
+  }
+
+  function bridgedKick(t, g) {
+    const osc = ctx.createOscillator();
+    const eg = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(150, t);
+    osc.frequency.exponentialRampToValueAtTime(48, t + 0.08);
+    eg.gain.setValueAtTime(0.0001, t);
+    eg.gain.exponentialRampToValueAtTime(g, t + 0.002);
+    eg.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+    osc.connect(eg); eg.connect(getOut());
+    osc.start(t); osc.stop(t + 0.5);
+    const click = ctx.createOscillator();
+    const cg = ctx.createGain();
+    click.type = "square";
+    click.frequency.value = 200;
+    cg.gain.setValueAtTime(g * 0.4, t);
+    cg.gain.exponentialRampToValueAtTime(0.0001, t + 0.008);
+    click.connect(cg); cg.connect(getOut());
+    click.start(t); click.stop(t + 0.02);
+  }
+
+  function snare(t, g) {
+    bridgedRes(t, g * 0.5, 180, 0.12);
+    bridgedRes(t, g * 0.35, 360, 0.1);
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuffer(0.2);
+    const bp = ctx.createBiquadFilter();
+    bp.type = "bandpass"; bp.frequency.value = 1800; bp.Q.value = 0.8;
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(g * 0.6, t);
+    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+    src.connect(bp); bp.connect(ng); ng.connect(getOut());
+    src.start(t); src.stop(t + 0.22);
+  }
+
+  function tom(id, t, g) {
+    const f = { LT: 98, MT: 147, HT: 220, LC: 196, MC: 294, HC: 440 }[id];
+    bridgedRes(t, g, f, 0.25, id.startsWith("L") || id.startsWith("M") || id.startsWith("H") && id.length === 2 ? 0.15 : 0);
+  }
+
+  function bridgedRes(t, g, f, decay, noiseAmt = 0) {
+    const osc = ctx.createOscillator();
+    const eg = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(f * 1.2, t);
+    osc.frequency.exponentialRampToValueAtTime(f, t + 0.02);
+    eg.gain.setValueAtTime(0.0001, t);
+    eg.gain.exponentialRampToValueAtTime(g, t + 0.003);
+    eg.gain.exponentialRampToValueAtTime(0.0001, t + decay);
+    osc.connect(eg); eg.connect(getOut());
+    osc.start(t); osc.stop(t + decay + 0.05);
+    if (noiseAmt > 0) {
+      const src = ctx.createBufferSource();
+      src.buffer = noiseBuffer(0.05);
+      const ng = ctx.createGain();
+      ng.gain.setValueAtTime(g * noiseAmt, t);
+      ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
+      src.connect(ng); ng.connect(getOut());
+      src.start(t); src.stop(t + 0.06);
+    }
+  }
+
+  function ringHit(id, t, g) {
+    const f = id === "CL" ? 2400 : 1788;
+    bridgedRes(t, g, f, id === "CL" ? 0.06 : 0.14);
+  }
+
+  function cowbell(t, g) {
+    [540, 800].forEach((f, i) => {
+      const o = ctx.createOscillator();
+      o.type = "square";
+      o.frequency.value = f;
+      const eg = ctx.createGain();
+      eg.gain.setValueAtTime(g * 0.35, t);
+      eg.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+      const bp = ctx.createBiquadFilter();
+      bp.type = "bandpass"; bp.frequency.value = 1000; bp.Q.value = 2;
+      o.connect(bp); bp.connect(eg); eg.connect(getOut());
+      o.start(t); o.stop(t + 0.25);
+    });
+  }
+
+  function metal(id, t, g) {
+    if (id === "CH" && state.ohEnv) {
+      try { state.ohEnv.gain.cancelScheduledValues(t); state.ohEnv.gain.setValueAtTime(state.ohEnv.gain.value, t);
+        state.ohEnv.gain.exponentialRampToValueAtTime(0.0001, t + 0.03); } catch (_) {}
+    }
+    const freqs = [205, 304, 370, 523, 540, 800];
+    const mix = ctx.createGain();
+    mix.gain.value = g * (id === "CY" ? 0.45 : 0.35);
+    freqs.forEach((f, i) => {
+      const o = ctx.createOscillator();
+      o.type = "square";
+      o.frequency.value = f * (1 + (state.schmittPhases[i] % 1) * 0.002);
+      state.schmittPhases[i] += 0.03;
+      o.connect(mix);
+      o.start(t); o.stop(t + (id === "OH" ? 0.55 : id === "CH" ? 0.08 : 0.7));
+    });
+    const hp = ctx.createBiquadFilter();
+    hp.type = "highpass"; hp.frequency.value = id === "CY" ? 6000 : 7000;
+    const eg = ctx.createGain();
+    const dur = id === "OH" ? 0.5 : id === "CH" ? 0.07 : 0.65;
+    eg.gain.setValueAtTime(1, t);
+    eg.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    mix.connect(hp); hp.connect(eg); eg.connect(getOut());
+    if (id === "OH") state.ohEnv = eg;
+  }
+
+  function clap(t, g) {
+    [0, 0.01, 0.02, 0.03].forEach((off, i) => {
+      const src = ctx.createBufferSource();
+      src.buffer = noiseBuffer(0.04);
+      const bp = ctx.createBiquadFilter();
+      bp.type = "bandpass"; bp.frequency.value = 874; bp.Q.value = 1.2;
+      const ng = ctx.createGain();
+      const tt = t + off;
+      ng.gain.setValueAtTime(g * (i < 3 ? 0.5 : 0.35), tt);
+      ng.gain.exponentialRampToValueAtTime(0.0001, tt + (i < 3 ? 0.05 : 0.33));
+      src.connect(bp); bp.connect(ng); ng.connect(getOut());
+      src.start(tt); src.stop(tt + 0.4);
+    });
+  }
+
+  function maracas(t, g) {
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuffer(0.05);
+    const hp = ctx.createBiquadFilter();
+    hp.type = "highpass"; hp.frequency.value = 4000;
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(g * 0.5, t);
+    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.039);
+    src.connect(hp); hp.connect(ng); ng.connect(getOut());
+    src.start(t); src.stop(t + 0.05);
+  }
+
+  function buildUI() {
+    const stepsEl = document.getElementById("steps");
+    const accEl = document.getElementById("accents");
+    const padsEl = document.getElementById("pads");
+    VOICES.forEach((v, vi) => {
+      const p = document.createElement("button");
+      p.className = "pad"; p.textContent = v.label;
+      p.onclick = () => { ensureCtx(); ctx.resume(); triggerVoice(v.id, ctx.currentTime, 1, 1); };
+      padsEl.appendChild(p);
+    });
+    for (let i = 0; i < 16; i++) {
+      const s = document.createElement("div");
+      s.className = `step ${STEP_COLORS[i]}`;
+      s.dataset.i = i;
+      s.onclick = () => openStepMenu(i);
+      stepsEl.appendChild(s);
+      const a = document.createElement("div");
+      a.className = "acc";
+      a.onclick = () => { state.accents[i] = !state.accents[i]; a.classList.toggle("on", state.accents[i]); };
+      accEl.appendChild(a);
+    }
+    document.querySelectorAll(".knob").forEach(knob => {
+      let startY = 0, startVal = 0;
+      const param = knob.dataset.param;
+      const min = +knob.dataset.min, max = +knob.dataset.max;
+      const setRot = v => { knob.style.setProperty("--rot", `${-135 + (v - min) / (max - min) * 270}deg`); };
+      const getVal = () => state[param];
+      const setVal = v => {
+        state[param] = v;
+        setRot(v);
+        if (param === "bpm") document.getElementById("bpmLabel").textContent = `${Math.round(v)} BPM`;
+        if (param === "drive" && satShaper) satShaper.curve = makeSatCurve(v);
+        if (param === "master" && masterGain) masterGain.gain.value = v;
+        if (param === "tone") updateTone();
+      };
+      setRot(getVal());
+      const down = e => { startY = (e.touches ? e.touches[0].y : e.clientY); startVal = getVal(); e.preventDefault(); };
+      const move = e => {
+        const y = (e.touches ? e.touches[0].y : e.clientY);
+        const d = (startY - y) * 0.005 * (max - min);
+        setVal(Math.min(max, Math.max(min, startVal + d)));
+      };
+      knob.addEventListener("mousedown", down);
+      knob.addEventListener("mousemove", e => { if (e.buttons) move(e); });
+      knob.addEventListener("touchstart", down, { passive: false });
+      knob.addEventListener("touchmove", move, { passive: false });
+    });
+  }
+
+  function openStepMenu(step) {
+    const names = VOICES.map(v => v.id).join(", ");
+    const raw = prompt(`Step ${step + 1}: enter voices (${names}), comma-separated`, "");
+    if (raw === null) return;
+    const set = new Set();
+    raw.split(",").map(s => s.trim().toUpperCase()).filter(Boolean).forEach(id => {
+      if (VOICES.some(v => v.id === id)) set.add(id);
+    });
+    state.steps[step] = set;
+    refreshSteps();
+  }
+
+  function refreshSteps() {
+    document.querySelectorAll(".step").forEach((el, i) => {
+      el.classList.toggle("on", state.steps[i].size > 0);
+    });
+  }
+
+  function schedule() {
+    const stepDur = 60 / state.bpm / 4;
+    while (nextNoteTime < ctx.currentTime + 0.12) {
+      const i = state.stepIndex;
+      document.querySelectorAll(".step").forEach((el, idx) => el.classList.toggle("playing", idx === i));
+      const acc = state.accents[i] ? 1.35 : 1;
+      state.steps[i].forEach(id => triggerVoice(id, nextNoteTime, 1, acc));
+      let swingDelay = 0;
+      if (i % 2 === 1) swingDelay = stepDur * state.swing;
+      nextNoteTime += stepDur + swingDelay;
+      state.stepIndex = (state.stepIndex + 1) % 16;
+    }
+    schedulerId = requestAnimationFrame(schedule);
+  }
+
+  document.getElementById("playBtn").onclick = () => {
+    ensureCtx(); ctx.resume();
+    if (state.playing) return;
+    state.playing = true;
+    state.stepIndex = 0;
+    nextNoteTime = ctx.currentTime + 0.05;
+    schedule();
+  };
+  document.getElementById("stopBtn").onclick = () => {
+    state.playing = false;
+    cancelAnimationFrame(schedulerId);
+    document.querySelectorAll(".step").forEach(el => el.classList.remove("playing"));
+  };
+  document.getElementById("tapBtn").onclick = () => {
+    const now = performance.now();
+    state.tapTimes.push(now);
+    if (state.tapTimes.length > 4) state.tapTimes.shift();
+    if (state.tapTimes.length >= 2) {
+      const avg = (state.tapTimes[state.tapTimes.length - 1] - state.tapTimes[0]) / (state.tapTimes.length - 1);
+      state.bpm = Math.min(200, Math.max(60, 60000 / avg));
+      document.getElementById("bpmLabel").textContent = `${Math.round(state.bpm)} BPM`;
+    }
+  };
+
+  document.getElementById("exportBtn").onclick = async () => {
+    ensureCtx(); await ctx.resume();
+    const sr = ctx.sampleRate;
+    const barSec = (60 / state.bpm) * 4;
+    const len = Math.floor(barSec * 2 * sr);
+    const off = new OfflineAudioContext(1, len, sr);
+    const offMaster = off.createGain();
+    offMaster.gain.value = state.master;
+    const offSat = off.createWaveShaper();
+    offSat.curve = makeSatCurve(state.drive);
+    const offTone = off.createBiquadFilter();
+    offTone.type = "highshelf";
+    offTone.frequency.value = 800;
+    offTone.gain.value = (state.tone - 0.5) * 12;
+    offTone.connect(offSat); offSat.connect(offMaster); offMaster.connect(off.destination);
+    const liveCtx = ctx;
+    ctx = off;
+    routeBus = offTone;
+    const stepDur = 60 / state.bpm / 4;
+    for (let bar = 0; bar < 2; bar++) {
+      for (let i = 0; i < 16; i++) {
+        const t = (bar * 16 + i) * stepDur + (i % 2 === 1 ? stepDur * state.swing : 0);
+        const acc = state.accents[i] ? 1.35 : 1;
+        state.steps[i].forEach(id => triggerVoice(id, t, 1, acc));
+      }
+    }
+    ctx = liveCtx;
+    routeBus = toneFilter;
+    const rendered = await off.startRendering();
+    const wav = bufferToWav(rendered.getChannelData(0), sr);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([wav], { type: "audio/wav" }));
+    a.download = "tr808-pattern-44k.wav";
+    a.click();
+  };
+
+  function bufferToWav(samples, sr) {
+    const n = samples.length;
+    const buf = new ArrayBuffer(44 + n * 2);
+    const v = new DataView(buf);
+    const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+    w(0, "RIFF"); v.setUint32(4, 36 + n * 2, true); w(8, "WAVE"); w(12, "fmt ");
+    v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+    w(36, "data"); v.setUint32(40, n * 2, true);
+    let o = 44;
+    for (let i = 0; i < n; i++) {
+      const s = Math.max(-1, Math.min(1, samples[i]));
+      v.setInt16(o, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+      o += 2;
+    }
+    return buf;
+  }
+
+  window.addEventListener("keydown", e => {
+    const map = { z:"BD", x:"SD", c:"LT", v:"MT", b:"HT", n:"CP", m:"OH", ",":"CH" };
+    const id = map[e.key.toLowerCase()];
+    if (id) { ensureCtx(); ctx.resume(); triggerVoice(id, ctx.currentTime); }
+  });
+
+  buildUI();
+  state.steps[0] = new Set(["BD"]);
+  state.steps[4] = new Set(["SD"]);
+  state.steps[8] = new Set(["CH"]);
+  refreshSteps();
+})();
+</script>
+</body>
+</html>
