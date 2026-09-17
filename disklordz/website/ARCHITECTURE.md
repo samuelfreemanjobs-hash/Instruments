@@ -4,6 +4,8 @@
 
 Prompt-driven **drum sample kit** web app: vibe → preview one-shots → ZIP download with manifest. Growth SKU per [docs/DISKLORDZ_SAAS_V0.md](../../docs/DISKLORDZ_SAAS_V0.md).
 
+**Memphis VST launch funnel** (tripwire + freebies): [docs/DISKLORDZ_MASTER_LAUNCH_CANVAS.md](../../docs/DISKLORDZ_MASTER_LAUNCH_CANVAS.md) — routes under `/launch`, Web Audio Cassette Smash preview, opt-in API.
+
 ## Build & run
 
 ```bash
@@ -47,6 +49,9 @@ Generation is **sync stub** in v0 (no WebSocket). Future factory jobs will be as
 | Path | Role |
 |------|------|
 | `src/components/KitGenerator.tsx` | Prompt UI, presets, preview, download |
+| `src/app/launch/` | Kern funnel pages + `CassetteSmashSoundboard` |
+| `src/lib/audio/cassette-smash.ts` | Browser Drive/Wobble chain (plugin preview) |
+| `src/app/api/launch/opt-in/route.ts` | Vocal vault email capture (+ optional Resend) |
 | `src/lib/presets.ts` | Five presets (4 artist lanes + MPC neutral) |
 | `src/lib/generation/generation-spec.ts` | WO-SAAS-007 spec parse + preset defaults |
 | `src/lib/generation/engine-render.ts` | WO-SAAS-013 studio vs creative render + provenance |
