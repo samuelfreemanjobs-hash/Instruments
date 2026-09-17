@@ -11,5 +11,6 @@ While **Cursor Cloud** owns `disklordz/website/` through MVP ship, other agents 
 | **Business Planner** | Gate | Approve Vercel project + Supabase prod keys; merge PR #28; open WO for v1 billing later |
 | **Marketing** | Parallel | Landing copy, MPC handoff tutorial, `#disklordz-product` launch thread |
 | **THOR / Executive** | Sync | Unblock env secrets (Supabase, Vercel) — not implementation |
+| **Bytebot (local Docker)** | Optional | GUI/desktop/browser tasks on **your machine** — see [BYTEBOT_SETUP.md](BYTEBOT_SETUP.md); not in Cloud Agent VM |
 
 **WIP rule:** Max **2** Cursor JUCE WOs on plugin factory; **SaaS does not count** against HISE sketch WIP.
