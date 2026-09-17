@@ -8,6 +8,7 @@ import {
   defaultGenerationSpec,
   type GenerationSpec,
 } from "@/lib/generation/generation-spec";
+import { exportKitToFolder, supportsDirectoryPicker } from "@/lib/daw-folder-export";
 import { creditCostForSpec, PRODUCT_PACK_CREDIT_COST } from "@/lib/generation/mode-utils";
 import type { KitManifest, ProductPackManifest } from "@/lib/manifest";
 import { STYLE_PRESETS, type StylePreset } from "@/lib/presets";
@@ -292,6 +293,23 @@ export function KitGenerator() {
     }
   }, [productPack]);
 
+  const saveToFolder = useCallback(async () => {
+    if (!activeManifest) return;
+    if (!supportsDirectoryPicker()) {
+      setError("Save to folder needs Chrome or Edge. Use ZIP download or the DAW inbox watcher.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      await exportKitToFolder(activeManifest);
+    } catch {
+      setError("Could not write to folder (permission denied or network).");
+    } finally {
+      setLoading(false);
+    }
+  }, [activeManifest]);
+
   const downloadZip = useCallback(async () => {
     if (!activeManifest) return;
     setLoading(true);
@@ -336,7 +354,9 @@ export function KitGenerator() {
         </h1>
         <p className="max-w-xl text-zinc-400">
           Type a prompt, pick a lane preset, audition {variationCountHint} per engine, download the
-          kit you keep.
+          kit you keep.{" "}
+          <a href="/daw-inbox" className="text-emerald-400 hover:underline">DAW inbox</a> for
+          folder export or a desktop watcher.
         </p>
         {billing?.unlimited ? (
           <p className="text-xs text-emerald-500/90">Pro — unlimited generations</p>
@@ -476,12 +496,12 @@ export function KitGenerator() {
             </p>
           )}
 
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <button
               type="button"
               disabled={loading || !frozen}
               onClick={generateMore}
-              className="flex-1 rounded-xl border border-zinc-600 px-4 py-3 font-semibold text-zinc-100 transition hover:border-emerald-500 hover:text-emerald-300 disabled:opacity-50"
+              className="min-w-[10rem] flex-1 rounded-xl border border-zinc-600 px-4 py-3 font-semibold text-zinc-100 transition hover:border-emerald-500 hover:text-emerald-300 disabled:opacity-50"
             >
               Generate more (same spec)
             </button>
@@ -489,9 +509,18 @@ export function KitGenerator() {
               type="button"
               disabled={loading || !activeManifest}
               onClick={downloadZip}
-              className="flex-1 rounded-xl border border-emerald-600/60 bg-emerald-500/10 px-4 py-3 font-semibold text-emerald-200 transition hover:bg-emerald-500/20 disabled:opacity-50"
+              className="min-w-[10rem] flex-1 rounded-xl border border-emerald-600/60 bg-emerald-500/10 px-4 py-3 font-semibold text-emerald-200 transition hover:bg-emerald-500/20 disabled:opacity-50"
             >
               Download ZIP (variation {activeManifest?.variationLabel ?? "A"})
+            </button>
+            <button
+              type="button"
+              disabled={loading || !activeManifest}
+              onClick={saveToFolder}
+              className="min-w-[10rem] flex-1 rounded-xl border border-zinc-600 px-4 py-3 font-semibold text-zinc-100 transition hover:border-emerald-500 disabled:opacity-50"
+              title="Chrome / Edge — pick a DAW samples folder"
+            >
+              Save WAVs to folder
             </button>
           </div>
 
