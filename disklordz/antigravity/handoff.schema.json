@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Disklordz Antigravity handoff",
+  "type": "object",
+  "required": ["handoff_id", "direction", "from_agent", "to_agent", "created_at", "work_order"],
+  "properties": {
+    "handoff_id": { "type": "string", "pattern": "^HO-[0-9]{8}-[A-Z0-9]{4}$" },
+    "direction": { "enum": ["cursor_to_antigravity", "antigravity_to_cursor"] },
+    "from_agent": { "type": "string" },
+    "to_agent": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "work_order": {
+      "type": "object",
+      "required": ["id", "title"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "acceptance_criteria": { "type": "string" },
+        "github_issue": { "type": "integer" },
+        "branch": { "type": "string" }
+      }
+    },
+    "context_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Repo-relative docs to read first"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": { "type": "string" },
+          "path": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "status": { "enum": ["open", "in_progress", "done", "blocked"] },
+    "notes": { "type": "string" }
+  }
+}

@@ -1,0 +1,15 @@
+---
+description: Disklordz SaaS and product roadmap context for web and RAG work
+globs: disklordz/**
+---
+
+# Disklordz agent context
+
+Before changing SaaS, factory, RAG, or automation:
+
+1. Read `docs/DISKLORDZ_SAAS_V0.md` and `disklordz/website/ARCHITECTURE.md`.
+2. For prompt/generation UX beyond v0, read `docs/DISKLORDZ_ILLUGEN_RESEARCH.md` (WO-SAAS-007+).
+3. For RAG / vector search, read `docs/RAG_AND_INTELLIGENT_AUTOMATION.md` and `disklordz/rag/ARCHITECTURE.md`.
+4. Deploy: `disklordz/website/DEPLOY.md` — do not deploy production without user request.
+
+Keep diffs minimal; match existing Next.js and API patterns in `disklordz/website/`.

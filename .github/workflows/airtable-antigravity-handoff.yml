@@ -1,0 +1,75 @@
+# Pull an Agent Work Order from Airtable and write disklordz/antigravity/inbox/HO-*.json
+# Triggers: repository_dispatch (Airtable/Zapier) or manual workflow_dispatch
+name: Airtable → Antigravity handoff
+
+on:
+  repository_dispatch:
+    types: [airtable-antigravity-handoff]
+  workflow_dispatch:
+    inputs:
+      work_order_id:
+        description: Airtable work_order_id (e.g. WO-2026-HISE-001)
+        required: true
+        type: string
+      branch:
+        description: Git branch to commit on (Antigravity should use this branch)
+        required: false
+        default: main
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  handoff:
+    runs-on: ubuntu-latest
+    env:
+      AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+      AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+      HANDOFF_BRANCH: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.event.client_payload.branch || 'main' }}
+    steps:
+      - name: Resolve work order id
+        id: wo
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "id=${{ inputs.work_order_id }}" >> "$GITHUB_OUTPUT"
+          else
+            id="${{ github.event.client_payload.work_order_id }}"
+            if [ -z "$id" ]; then
+              echo "client_payload.work_order_id is required" >&2
+              exit 1
+            fi
+            echo "id=$id" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip when Airtable secrets missing
+        if: env.AIRTABLE_API_KEY == '' || env.AIRTABLE_BASE_ID == ''
+        run: |
+          echo "Set GitHub secrets AIRTABLE_API_KEY and AIRTABLE_BASE_ID"
+          exit 1
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.HANDOFF_BRANCH }}
+          fetch-depth: 0
+
+      - name: Create inbox handoff from Airtable
+        working-directory: disklordz/automation/scripts
+        run: |
+          python3 wo_to_antigravity_handoff.py \
+            --work-order-id "${{ steps.wo.outputs.id }}" \
+            --branch "${HANDOFF_BRANCH}" \
+            --patch-airtable
+
+      - name: Commit and push handoff
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- disklordz/antigravity/inbox/; then
+            echo "No inbox changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add disklordz/antigravity/inbox/
+          git commit -m "chore(antigravity): handoff from Airtable ${{ steps.wo.outputs.id }}"
+          git push

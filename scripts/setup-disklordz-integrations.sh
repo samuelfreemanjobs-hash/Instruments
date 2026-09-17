@@ -14,6 +14,7 @@ Usage: setup-disklordz-integrations.sh <command> [options]
 
 Commands:
   slack-ci          Configure GitHub secret SLACK_WEBHOOK_URL and test notifications
+  slack-antigravity Configure SLACK_WEBHOOK_ANTIGRAVITY_URL + optional SLACK_MENTION_USER_ID (#disklordz-dev)
   cursor-cloud      Verify repo-managed Cursor Cloud Agent config (environment.json)
   all               Run cursor-cloud, then slack-ci (if webhook provided)
 
@@ -30,6 +31,7 @@ cursor-cloud options:
 Examples:
   ./scripts/setup-disklordz-integrations.sh cursor-cloud
   ./scripts/setup-disklordz-integrations.sh slack-ci --webhook-url 'https://hooks.slack.com/services/...'
+  ./scripts/setup-disklordz-integrations.sh slack-antigravity --webhook-url 'https://hooks.slack.com/services/...'
   SLACK_WEBHOOK_URL='https://hooks.slack.com/...' ./scripts/setup-disklordz-integrations.sh all
 
 Slack webhook (one-time, in browser):
@@ -130,6 +132,80 @@ cmd_slack_ci() {
   echo "Manual test: gh workflow run ci-slack-notify.yml --repo $repo -f conclusion=success"
 }
 
+cmd_slack_antigravity() {
+  local webhook_url="${SLACK_WEBHOOK_ANTIGRAVITY_URL:-}"
+  local mention_user_id="${SLACK_MENTION_USER_ID:-}"
+  local repo="$REPO_DEFAULT"
+  local skip_secret=0
+  local skip_test=0
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --webhook-url)
+        webhook_url="$2"
+        shift 2
+        ;;
+      --mention-user-id)
+        mention_user_id="$2"
+        shift 2
+        ;;
+      --repo)
+        repo="$2"
+        shift 2
+        ;;
+      --skip-secret)
+        skip_secret=1
+        shift
+        ;;
+      --skip-test)
+        skip_test=1
+        shift
+        ;;
+      *)
+        die "unknown slack-antigravity option: $1"
+        ;;
+    esac
+  done
+
+  [[ -n "$webhook_url" ]] || die "set --webhook-url or SLACK_WEBHOOK_ANTIGRAVITY_URL"
+
+  if [[ "$skip_secret" -eq 0 ]]; then
+    need_cmd gh
+    gh auth status >/dev/null 2>&1 || die "run: gh auth login"
+    echo "Setting GitHub secret SLACK_WEBHOOK_ANTIGRAVITY_URL on $repo ..."
+    printf '%s' "$webhook_url" | gh secret set SLACK_WEBHOOK_ANTIGRAVITY_URL --repo "$repo"
+    echo "Secret SLACK_WEBHOOK_ANTIGRAVITY_URL updated."
+    if [[ -n "$mention_user_id" ]]; then
+      printf '%s' "$mention_user_id" | gh secret set SLACK_MENTION_USER_ID --repo "$repo"
+      echo "Secret SLACK_MENTION_USER_ID updated."
+    fi
+  fi
+
+  if [[ "$skip_test" -eq 0 ]]; then
+    need_cmd curl
+    need_cmd jq
+    echo "Sending Antigravity inbox test message ..."
+    curl -fsS -X POST "$webhook_url" \
+      -H 'Content-type: application/json' \
+      --data "$(jq -n \
+        --arg repo "$repo" \
+        --arg mention "$mention_user_id" \
+        '{
+          text: (if $mention != "" then ("<@" + $mention + "> Antigravity inbox webhook test") else "Antigravity inbox webhook test" end),
+          blocks: [
+            { type: "section", text: { type: "mrkdwn", text: ("*Antigravity inbox Slack connected*\nRepo: `" + $repo + "`\nTriggers on `main` when `disklordz/antigravity/inbox/HO-*.json` is pushed.") } },
+            { type: "context", elements: [ { type: "mrkdwn", text: "setup-disklordz-integrations.sh slack-antigravity" } ] }
+          ]
+        }')" \
+      >/dev/null
+    echo "Test message sent."
+  fi
+
+  echo ""
+  echo "Workflow: antigravity-inbox-slack.yml (on push to disklordz/antigravity/inbox/HO-*.json)"
+  echo "Manual test: gh workflow run antigravity-inbox-slack.yml --repo $repo -f handoff_path=disklordz/antigravity/inbox/<file>.json"
+}
+
 cmd_cursor_cloud() {
   local repo="$REPO_DEFAULT"
   local trigger_build=0
@@ -204,6 +280,9 @@ main() {
   case "$cmd" in
     slack-ci)
       cmd_slack_ci "$@"
+      ;;
+    slack-antigravity)
+      cmd_slack_antigravity "$@"
       ;;
     cursor-cloud)
       cmd_cursor_cloud "$@"
