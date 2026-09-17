@@ -146,7 +146,12 @@ main() {
     fi
   fi
 
-  [[ $do_deps -eq 1 ]] && apt_packages
+  if [[ $do_deps -eq 1 ]]; then
+    if ! apt_packages; then
+      log "warn: apt reported errors (often fuse3 prompts on reused VMs); continuing if g++-12 is available"
+      command -v g++-12 >/dev/null 2>&1 || die "g++-12 not found; fix apt or install build-essential"
+    fi
+  fi
   [[ $do_configure -eq 1 ]] && cmake_configure
   [[ $do_build -eq 1 ]] && cmake_build
   [[ $do_smoke -eq 1 ]] && ci_smoke
