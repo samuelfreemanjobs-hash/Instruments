@@ -10,6 +10,7 @@
 |-------|---------|------|-------|----------|
 | **C** | **JD Upgraded** | `Source/` | JUCE VST3 + CLAP | Maintenance + CI |
 | **D** | **HISE sketch** (rompler / sampler SKUs) | [hise-sketch/](../hise-sketch/) | HISE → VST3 (local) | **P3** — Antigravity; does not consume Cursor WIP unless port WO |
+| **E** | **Memphis Tape** (Cassette Smash Lite + flagship FX) | TBD under `disklordz/plugins/` or `Source/` when WO opens | JUCE VST3/AU | **P2** — gated by [DISKLORDZ_MASTER_LAUNCH_CANVAS.md](DISKLORDZ_MASTER_LAUNCH_CANVAS.md); browser preview ships in website |
 
 Junova-X and NovaDrum (JUCE / iPlug2 factory tracks A–B) are documented on the Junova handoff branch / open PRs — merge those before expecting paths under `Junova-X/` and `vst-tr808/`.
 
