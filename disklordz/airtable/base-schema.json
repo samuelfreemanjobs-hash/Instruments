@@ -1,0 +1,275 @@
+{
+  "baseName": "DiskLordz OS",
+  "tables": [
+    {
+      "name": "Products",
+      "fields": [
+        { "name": "product_id", "type": "singleLineText", "description": "Stable ID e.g. DL-PLUGIN-DISKCRUSHER" },
+        { "name": "name", "type": "singleLineText" },
+        {
+          "name": "division",
+          "type": "singleSelect",
+          "options": ["Plugin", "Sample", "Bundle", "Expansion"]
+        },
+        {
+          "name": "status",
+          "type": "singleSelect",
+          "options": [
+            "Idea",
+            "Briefed",
+            "Specified",
+            "In Development",
+            "QA",
+            "Ready to Publish",
+            "Released",
+            "Archived"
+          ]
+        },
+        { "name": "brief", "type": "multilineText" },
+        { "name": "spec_link", "type": "url" },
+        { "name": "target_release", "type": "date" },
+        { "name": "github_repo", "type": "url" },
+        {
+          "name": "price_tier",
+          "type": "singleSelect",
+          "options": ["free", "tier_1", "tier_2"]
+        },
+        {
+          "name": "ladder_tier",
+          "type": "singleSelect",
+          "options": ["free", "mini", "kit", "plugin", "bundle", "collection"]
+        },
+        { "name": "sonic_problem", "type": "singleLineText" },
+        { "name": "family_id", "type": "singleLineText" },
+        { "name": "compile_targets", "type": "multilineText", "description": "JSON array of compiler targets" }
+      ],
+      "links": [
+        { "name": "projects", "linkedTable": "Projects" },
+        { "name": "releases", "linkedTable": "Releases" },
+        { "name": "product_family", "linkedTable": "Product Families" }
+      ]
+    },
+    {
+      "name": "Product Families",
+      "fields": [
+        { "name": "family_id", "type": "singleLineText" },
+        { "name": "name", "type": "singleLineText" },
+        { "name": "universe_theme", "type": "singleLineText" },
+        { "name": "sonic_problem", "type": "multilineText" },
+        { "name": "status", "type": "singleSelect", "options": ["Active", "Paused", "Sunset"] }
+      ],
+      "links": [{ "name": "products", "linkedTable": "Products" }]
+    },
+    {
+      "name": "Projects",
+      "fields": [
+        { "name": "project_id", "type": "singleLineText" },
+        { "name": "name", "type": "singleLineText" },
+        { "name": "product_id", "type": "singleLineText", "description": "Foreign key until record links configured" },
+        {
+          "name": "phase",
+          "type": "singleSelect",
+          "options": ["0-Foundation", "1-MVP-Factory-Product", "2-Product-Factory", "3-Full-Roster", "4-Autopilot"]
+        },
+        {
+          "name": "status",
+          "type": "singleSelect",
+          "options": ["Planned", "Active", "Blocked", "Done"]
+        },
+        {
+          "name": "owner_agent",
+          "type": "singleSelect",
+          "options": [
+            "audio-pm",
+            "workflow-automation-engineer",
+            "product-factory",
+            "audio-product-director",
+            "plugin-architect",
+            "juce-engineer",
+            "dsp-engineer",
+            "plugin-ui-engineer",
+            "plugin-qa",
+            "drum-sound-designer",
+            "sample-processing",
+            "kit-architect",
+            "mpc-agent",
+            "release-agent"
+          ]
+        }
+      ],
+      "links": [
+        { "name": "product", "linkedTable": "Products" },
+        { "name": "work_orders", "linkedTable": "Agent Work Orders" }
+      ]
+    },
+    {
+      "name": "Sound Assets",
+      "fields": [
+        { "name": "asset_id", "type": "singleLineText" },
+        {
+          "name": "type",
+          "type": "singleSelect",
+          "options": ["kick", "snare", "clap", "hat", "ohat", "perc", "808", "fx", "vox", "other"]
+        },
+        { "name": "character", "type": "multipleSelects", "options": ["digital", "dirty", "short", "long", "crunchy", "dark"] },
+        {
+          "name": "era",
+          "type": "singleSelect",
+          "options": ["1980s", "1990s", "2000s", "2010s", "modern"]
+        },
+        { "name": "style", "type": "multipleSelects", "options": ["trap", "phonk", "memphis", "detroit", "boom_bap"] },
+        { "name": "file_path", "type": "singleLineText" },
+        { "name": "sample_rate", "type": "number" },
+        { "name": "bit_depth", "type": "number" },
+        { "name": "provenance", "type": "multilineText" },
+        { "name": "commercial_ok", "type": "checkbox" },
+        { "name": "license", "type": "singleLineText" },
+        { "name": "parent_asset_id", "type": "singleLineText" },
+        { "name": "dna_json", "type": "multilineText", "description": "Full Sound DNA JSON" }
+      ],
+      "links": [
+        { "name": "products", "linkedTable": "Products" },
+        { "name": "relations", "linkedTable": "Asset Relations" }
+      ]
+    },
+    {
+      "name": "Asset Relations",
+      "fields": [
+        { "name": "relation_id", "type": "singleLineText" },
+        {
+          "name": "relation_type",
+          "type": "singleSelect",
+          "options": ["similar_to", "derived_from", "used_in", "processed_with", "compatible_with"]
+        },
+        { "name": "from_asset_id", "type": "singleLineText" },
+        { "name": "to_asset_id", "type": "singleLineText" },
+        { "name": "notes", "type": "multilineText" }
+      ]
+    },
+    {
+      "name": "Agent Work Orders",
+      "fields": [
+        { "name": "work_order_id", "type": "singleLineText" },
+        { "name": "title", "type": "singleLineText" },
+        {
+          "name": "assigned_team",
+          "type": "singleSelect",
+          "options": ["product", "sound", "engineering", "release", "meta"]
+        },
+        {
+          "name": "assigned_role",
+          "type": "singleLineText",
+          "description": "e.g. qa-engineer, kit-designer, product-orchestrator"
+        },
+        {
+          "name": "assigned_agent",
+          "type": "singleSelect",
+          "options": [
+            "product-orchestrator",
+            "audio-pm",
+            "workflow-automation-engineer"
+          ],
+          "description": "Legacy/meta; prefer assigned_team + assigned_role"
+        },
+        {
+          "name": "status",
+          "type": "singleSelect",
+          "options": ["Queued", "In Progress", "Review", "Done", "Failed"]
+        },
+        {
+          "name": "priority",
+          "type": "singleSelect",
+          "options": ["P0", "P1", "P2", "P3"]
+        },
+        { "name": "github_issue", "type": "url" },
+        { "name": "github_pr", "type": "url" },
+        { "name": "acceptance_criteria", "type": "multilineText" },
+        { "name": "output_location", "type": "singleLineText" },
+        { "name": "blocked_reason", "type": "multilineText" }
+      ],
+      "links": [{ "name": "project", "linkedTable": "Projects" }]
+    },
+    {
+      "name": "Releases",
+      "fields": [
+        { "name": "release_id", "type": "singleLineText" },
+        { "name": "version", "type": "singleLineText" },
+        {
+          "name": "status",
+          "type": "singleSelect",
+          "options": ["Draft", "Candidate", "Shipped"]
+        },
+        { "name": "zip_artifact", "type": "url" },
+        { "name": "changelog", "type": "multilineText" },
+        { "name": "plugin_version", "type": "singleLineText" },
+        { "name": "preset_version", "type": "singleLineText" },
+        { "name": "sample_version", "type": "singleLineText" },
+        { "name": "qa_profile_passed", "type": "checkbox" },
+        { "name": "provenance_passed", "type": "checkbox" }
+      ],
+      "links": [{ "name": "product", "linkedTable": "Products" }]
+    },
+    {
+      "name": "Market Signals",
+      "fields": [
+        { "name": "signal_id", "type": "singleLineText" },
+        { "name": "signal", "type": "multilineText" },
+        { "name": "opportunity", "type": "multilineText" },
+        { "name": "possible_product", "type": "multilineText" },
+        { "name": "reusable_assets", "type": "multilineText" },
+        { "name": "family_id", "type": "singleLineText" },
+        { "name": "status", "type": "singleSelect", "options": ["New", "Reviewed", "Accepted", "Rejected"] }
+      ]
+    },
+    {
+      "name": "Customer Feedback",
+      "fields": [
+        { "name": "feedback_id", "type": "singleLineText" },
+        { "name": "source", "type": "singleSelect", "options": ["email", "support", "social", "artist", "other"] },
+        { "name": "summary", "type": "multilineText" },
+        { "name": "product_id", "type": "singleLineText" },
+        { "name": "theme", "type": "singleLineText" },
+        { "name": "priority", "type": "singleSelect", "options": ["P0", "P1", "P2", "P3"] },
+        { "name": "improvement_wo", "type": "singleLineText" }
+      ]
+    },
+    {
+      "name": "DAW Matrix",
+      "fields": [
+        { "name": "platform", "type": "singleSelect", "options": ["Windows", "macOS"] },
+        { "name": "daw", "type": "singleLineText" },
+        { "name": "format", "type": "singleSelect", "options": ["VST3", "AU", "Standalone"] },
+        { "name": "last_tested", "type": "date" },
+        { "name": "daw_version", "type": "singleLineText" },
+        { "name": "plugin_product", "type": "singleLineText" },
+        { "name": "result", "type": "singleSelect", "options": ["pass", "fail", "untested"] },
+        { "name": "notes", "type": "multilineText" }
+      ]
+    },
+    {
+      "name": "Automations",
+      "fields": [
+        { "name": "automation_id", "type": "singleLineText" },
+        { "name": "name", "type": "singleLineText" },
+        {
+          "name": "platform",
+          "type": "singleSelect",
+          "options": ["Zapier", "n8n", "Activepieces", "Script", "GitHub Actions"]
+        },
+        { "name": "trigger", "type": "multilineText" },
+        { "name": "action", "type": "multilineText" },
+        {
+          "name": "status",
+          "type": "singleSelect",
+          "options": ["Planned", "Live", "Broken"]
+        },
+        {
+          "name": "owner",
+          "type": "singleSelect",
+          "options": ["workflow-automation-engineer"]
+        },
+        { "name": "last_verified", "type": "date" }
+      ]
+    }
+  ]
+}

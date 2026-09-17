@@ -9,6 +9,8 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **JD Upgraded** (VST3 + CLAP + standalone synth) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [Source/UI/ARCHITECTURE.md](Source/UI/ARCHITECTURE.md) | `JDUpgraded_VST3`, `JDUpgraded_CLAP`, `JDUpgraded_Standalone` |
 | **Offline tooling** (ROM gen, render, regression) | [tools/ARCHITECTURE.md](tools/ARCHITECTURE.md) | `GenerateCleanroomRom`, `OfflineRender`, `SpectralDiff` |
 | **HISE sketch lane** (rompler / sampler R&D) | [docs/HISE_ANTIGRAVITY_LANE.md](docs/HISE_ANTIGRAVITY_LANE.md) · [hise-sketch/ARCHITECTURE.md](hise-sketch/ARCHITECTURE.md) | HISE local export (Antigravity); not in root CMake |
+| **Character FM** (planned Track E) | [docs/CHARACTER_FM_PRODUCT_PLAN.md](docs/CHARACTER_FM_PRODUCT_PLAN.md) · [docs/CHARACTER_FM_ENGINEERING_SPEC.md](docs/CHARACTER_FM_ENGINEERING_SPEC.md) | Not in CMake yet — Milestone 1 spec |
+| **DiskLordz factory OS** | [disklordz/AGENTS.md](disklordz/AGENTS.md) · [disklordz/docs/MASTER_PLAN.md](disklordz/docs/MASTER_PLAN.md) | Agents, Airtable, compiler (partial on branch) |
 
 ## Repository layout
 

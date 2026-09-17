@@ -1,0 +1,19 @@
+---
+description: DiskLordz audio company context — use when working on disklordz/, agents, Airtable, or automation for plugins and samples.
+alwaysApply: false
+---
+
+# DiskLordz context
+
+This repository includes **DiskLordz** — an autonomous audio-product company.
+
+- **Company brain:** `disklordz/company/` (mission, sonic constitution, decisions)
+- Company OS: `disklordz/` (gates, schemas, factories, automation)
+- Agents: `disklordz/AGENTS.md` and `.cursor/skills/disklordz-*`
+- Plugin code: `MyFirstPlugin/`
+- Orchestrator skill: `disklordz-product-orchestrator` — product family compiles
+- PM skill: `disklordz-audio-pm` — Airtable is system of record
+- Automation skill: `disklordz-workflow-automation-engineer` — autonomous backlog until blocked
+- Engine docs: `disklordz/docs/ARCHITECTURE.md`, Sound DNA, Plugin Kernel, Product Compiler, LICENSING
+
+Creative Director (human) approves taste and `Released` status only.

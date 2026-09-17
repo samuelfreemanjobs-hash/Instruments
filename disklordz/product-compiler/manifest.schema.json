@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.audio/schemas/product-manifest.json",
+  "title": "DiskLordz Product Compile Manifest",
+  "type": "object",
+  "required": ["product_id", "version", "family_id", "asset_ids", "targets"],
+  "properties": {
+    "product_id": { "type": "string" },
+    "version": { "type": "string", "description": "Semver for this SKU build" },
+    "family_id": { "type": "string" },
+    "sonic_problem": { "type": "string" },
+    "ladder_tier": {
+      "type": "string",
+      "enum": ["free", "mini", "kit", "plugin", "bundle", "collection"]
+    },
+    "asset_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "drum_kit_zip",
+          "mpc_expansion",
+          "maschine_expansion",
+          "vst3_effect",
+          "vst3_instrument",
+          "preset_pack",
+          "free_teaser",
+          "bundle",
+          "content_pack",
+          "demo_audio"
+        ]
+      }
+    },
+    "versions": {
+      "type": "object",
+      "properties": {
+        "plugin": { "type": "string" },
+        "presets": { "type": "string" },
+        "samples": { "type": "string" },
+        "installer": { "type": "string" },
+        "documentation": { "type": "string" },
+        "license_format": { "type": "string" }
+      }
+    },
+    "plugin_product_slug": { "type": "string" },
+    "provenance_check": {
+      "type": "string",
+      "enum": ["pending", "passed", "blocked"]
+    }
+  }
+}
