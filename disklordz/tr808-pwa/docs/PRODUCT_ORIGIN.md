@@ -24,4 +24,10 @@ I have created the Roland TR-808 Rhythm Composer virtual analog emulation with t
 
 ---
 
-Implementation in this repo: [`index.html`](../index.html). Hardware handoff: [MPC_SAMPLE_WORKFLOW.md](MPC_SAMPLE_WORKFLOW.md).
+Implementations in this repo:
+
+- **Your file:** [`variants/original.html`](../variants/original.html) (replace placeholder with your saved HTML)
+- **Disklordz maintained:** [`variants/disklordz.html`](../variants/disklordz.html)
+- **Launcher:** [`index.html`](../index.html)
+
+Hardware handoff: [MPC_SAMPLE_WORKFLOW.md](MPC_SAMPLE_WORKFLOW.md).

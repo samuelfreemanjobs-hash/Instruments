@@ -35,7 +35,9 @@ All audio on **AudioContext** main thread; no `malloc` in hot path after init. P
 
 | File | Role |
 |------|------|
-| `index.html` | Single-file app (HTML + CSS + JS) |
+| `index.html` | Launcher — pick Disklordz vs original build |
+| `variants/disklordz.html` | Repo-maintained single-file app |
+| `variants/original.html` | Your Sep 16 build (replace placeholder when ready) |
 | `manifest.webmanifest` | Installable PWA metadata |
 | `README.md` | Circuit + UI feature list (product origin) |
 | `docs/MPC_SAMPLE_WORKFLOW.md` | Phone → MPC Sample paths |

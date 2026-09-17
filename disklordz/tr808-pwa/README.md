@@ -1,6 +1,12 @@
 # Roland TR-808 Rhythm Composer (PWA)
 
-**Virtual analog emulation** — single-file Progressive Web Application (`index.html`).
+**Virtual analog emulation** — Progressive Web Application (two builds):
+
+| Build | Path |
+|-------|------|
+| **Launcher** | [`index.html`](index.html) |
+| **Disklordz (repo)** | [`variants/disklordz.html`](variants/disklordz.html) — maintained, WAV export, MPC Sample |
+| **Original (your session)** | [`variants/original.html`](variants/original.html) — paste your Sep 16 single-file here |
 
 **Product origin (Sep 16, 2026):** Initial complete emulation brief (personal session) documented below and implemented in this package for Disklordz.
 
