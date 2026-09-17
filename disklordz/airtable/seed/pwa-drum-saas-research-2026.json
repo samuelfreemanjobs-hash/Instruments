@@ -1,0 +1,66 @@
+{
+  "base_id_hint": "Disklordz OS — research phase only; no implementation WOs until R-004 Done",
+  "products": [
+    {
+      "product_id": "DL-SAAS-DRUM-PROMPT",
+      "name": "Disklordz Drum (SaaS + PWA)",
+      "division": "Sample",
+      "status": "Research",
+      "brief": "PWA: TR-808 play + prompt-generated one-shots/niche loops; mobile export for MPC-ready WAV. Lead magnet or SaaS v0. Research: docs/DISKLORDZ_PWA_DRUM_SAAS_RESEARCH.md",
+      "github_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "price_tier": "free",
+      "ladder_tier": "kit",
+      "sonic_problem": "Prompt → MPC-ready drums on phone without a DAW",
+      "family_id": "DL-FAMILY-DIGITAL-SAMPLER",
+      "compile_targets": "[\"web_app\",\"pwa\"]"
+    }
+  ],
+  "projects": [
+    {
+      "project_id": "PRJ-2026-SAAS-PWA",
+      "name": "Drum SaaS + 808 PWA — research & v0",
+      "product_id": "DL-SAAS-DRUM-PROMPT",
+      "phase": "0-Research",
+      "status": "Active",
+      "owner_agent": "business-planner"
+    }
+  ],
+  "work_orders": [
+    {
+      "work_order_id": "WO-2026-SAAS-R-001",
+      "project_id": "PRJ-2026-SAAS-PWA",
+      "title": "[Research][PWA] 5 interviews — mobile producer → sampler/MPC workflow",
+      "status": "Ready",
+      "priority": "P2",
+      "owner_agent": "marketing",
+      "acceptance_criteria": "Five completed interviews (notes in Airtable attachment or doc): how they get WAVs onto pads today; willingness to use browser gen; price sensitivity. Summary: recommended primary journey (1/2/3) from DISKLORDZ_PWA_DRUM_SAAS_RESEARCH.md."
+    },
+    {
+      "work_order_id": "WO-2026-SAAS-R-002",
+      "project_id": "PRJ-2026-SAAS-PWA",
+      "title": "[Research][PWA] Competitive matrix + positioning one-pager",
+      "status": "Ready",
+      "priority": "P2",
+      "owner_agent": "marketing",
+      "acceptance_criteria": "One-pager: BAP Studio, mloop, Splice, Roland Cloud 808, generic AI drum tools. Position Disklordz wedge (808 PWA + prompt + MPC-ready export). No build commitment."
+    },
+    {
+      "work_order_id": "WO-2026-SAAS-R-003",
+      "project_id": "PRJ-2026-SAAS-PWA",
+      "title": "[Research][PWA] Tech spike — PWA audio + async gen + iOS Safari WAV download",
+      "status": "Backlog",
+      "priority": "P2",
+      "owner_agent": "web-engineer",
+      "acceptance_criteria": "Spike doc or PR: Web Audio start; mock prompt returns WAV; download/share on iOS Safari + Android Chrome; note latency and file size limits. Link existing TR-808 PWA repo if provided by PM."
+    },
+    {
+      "work_order_id": "WO-2026-SAAS-R-004",
+      "project_id": "PRJ-2026-SAAS-PWA",
+      "title": "[PM][PWA] Product shape decision — lead magnet vs SaaS v0 vs hybrid",
+      "status": "Backlog",
+      "priority": "P2",
+      "owner_agent": "business-planner",
+      "acceptance_criteria": "Planner signs A/B/C from research brief; updates DISKLORDZ_SAAS_V0.md; unblocks implementation WO sequence; Marketing approves lead-magnet copy if A or C."
+    }
+  ]
+}
