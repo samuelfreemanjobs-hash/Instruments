@@ -53,4 +53,25 @@ Then run night shift — Slack will show **sourced** intel and **named** greenli
 
 Use **Slack** or your research stack to drop source links in `#disklordz-factory`; ingest them via the API above (or a future Airtable sync). Agents stay quiet until that ingest happens.
 
+### One-shot: four YouTube brands (DL001, DL002, DL006, DL004)
+
+With Factory API running on `:8787`:
+
+```bash
+chmod +x disklordz-factory/scripts/ingest-youtube-network-research.sh
+./disklordz-factory/scripts/ingest-youtube-network-research.sh
+```
+
+Optional: copy [`youtube_research_sources.example.json`](../disklordz-factory/database/youtube_research_sources.example.json) to `disklordz-factory/database/youtube_research_sources.local.json` (gitignored), paste your Slack/Airtable URLs per `YT-DL-001`…`004`, then re-run the script (auto-picked up by the shell wrapper).
+
+```bash
+# Preview payloads only
+python3 disklordz-factory/scripts/ingest_youtube_network_research.py --dry-run
+
+# Opportunities only, no A&R greenlight
+python3 disklordz-factory/scripts/ingest_youtube_network_research.py --no-greenlight
+```
+
+Seed payloads: [`disklordz-factory/database/youtube_research_seed.json`](../disklordz-factory/database/youtube_research_seed.json). Replace `internal: REPLACE` lines in sources before treating greenlights as production-ready.
+
 See also [FACTORY_SLACK.md](FACTORY_SLACK.md).

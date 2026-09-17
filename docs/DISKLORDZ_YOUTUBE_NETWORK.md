@@ -117,7 +117,15 @@ DISCOVER → one sourced DL-OPP per YT-DL-001…004
 
 ## Ingest (after research links)
 
-One `POST /research/opportunities` per row in [`youtube_network_seed.json`](../disklordz-factory/database/youtube_network_seed.json), then `POST /research/aar-decisions` binding `DL001`, `DL002`, `DL006`, `DL004`.
+**Automated (recommended):**
+
+```bash
+./disklordz-factory/scripts/ingest-youtube-network-research.sh
+```
+
+Uses [`youtube_research_seed.json`](../disklordz-factory/database/youtube_research_seed.json) — four `DL-OPP-*` records + greenlights for `DL001`, `DL002`, `DL006`, `DL004`. Overlay real citations via `youtube_research_sources.local.json` (see [FACTORY_RESEARCH.md](FACTORY_RESEARCH.md)).
+
+**Manual:** one `POST /research/opportunities` per row in [`youtube_network_seed.json`](../disklordz-factory/database/youtube_network_seed.json), then `POST /research/aar-decisions` binding those artist IDs.
 
 ## Related
 

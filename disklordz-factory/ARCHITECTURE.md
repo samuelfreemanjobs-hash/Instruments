@@ -125,6 +125,8 @@ Programmed channels (Boulevard 86, Midnight Circuit, Disklordz, Terminal Mirage)
 
 **Vintage collective + OpenClaw:** Four-artist 1970s–1980s soul/jazz/R&B synthesis orchestration — [docs/FACTORY_VINTAGE_COLLECTIVE.md](../docs/FACTORY_VINTAGE_COLLECTIVE.md). Roster seed: `database/artist_collective_seed.json`. API: `GET /collective/artists`.
 
+**Research ingest:** `./scripts/ingest-youtube-network-research.sh` — four `DL-OPP-*` + greenlights ([docs/FACTORY_RESEARCH.md](../docs/FACTORY_RESEARCH.md)).
+
 ## Related docs
 
 - [README.md](README.md) — quick start

@@ -1,0 +1,16 @@
+{
+  "$comment": "Copy to youtube_research_sources.local.json (gitignored) and pass --sources-overlay to ingest script.",
+  "YT-DL-001": [
+    "https://your-backup.example/slack-thread-boulevard-86",
+    "internal: Airtable view — French touch demand scan 2026-09-17"
+  ],
+  "YT-DL-002": [
+    "https://your-backup.example/slack-thread-midnight-circuit"
+  ],
+  "YT-DL-003": [
+    "https://your-backup.example/airtable-screw-lofi-retention"
+  ],
+  "YT-DL-004": [
+    "https://your-backup.example/notion-coding-music-competitors"
+  ]
+}

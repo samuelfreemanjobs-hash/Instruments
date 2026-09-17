@@ -142,6 +142,15 @@ curl -s -X POST http://127.0.0.1:8787/night-shift/run \
 
 `artist_ids` only apply when HQ overrides; otherwise night shift uses **A&R greenlit** artists from research store.
 
+After ingesting four brand opportunities:
+
+```bash
+./disklordz-factory/scripts/ingest-youtube-network-research.sh
+curl -s -X POST 'http://127.0.0.1:8787/night-shift/run?notify_slack=false' \
+  -H 'Content-Type: application/json' \
+  -d '{"target_count":25}'
+```
+
 ## API
 
 - `GET /collective/artists` — roster + vintage rules + YouTube brand linkage (from seed JSON).

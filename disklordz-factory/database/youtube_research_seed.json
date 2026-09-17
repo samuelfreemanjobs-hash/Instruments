@@ -1,0 +1,107 @@
+{
+  "$comment": "POST via scripts/ingest_youtube_network_research.py — replace sources with your Slack/Airtable backup before production greenlight.",
+  "repo_doc_source": "https://github.com/samuelfreemanjobs-hash/Instruments/blob/main/docs/DISKLORDZ_YOUTUBE_NETWORK.md",
+  "collective_doc_source": "https://github.com/samuelfreemanjobs-hash/Instruments/blob/main/docs/FACTORY_VINTAGE_COLLECTIVE.md",
+  "opportunities": [
+    {
+      "youtube_brand_id": "YT-DL-001",
+      "artist_id": "DL001",
+      "title": "Boulevard 86 — French touch deep-work mixes + filter-house kits",
+      "genre": "french touch",
+      "subgenre": "electro-funk",
+      "bpm_min": 118,
+      "bpm_max": 124,
+      "aesthetic": "Paris retro-futurism, robot funk, vintage disco-funk source behavior",
+      "audience": "deep work, night cruise",
+      "use_case": "long YouTube mixes + Supply sample/MIDI packs",
+      "search_demand": "medium",
+      "competition": "medium",
+      "product_ideas": ["boulevard-french-touch-pack", "boulevard-909-mpc-kit", "vocoder chop kit"],
+      "score": 68,
+      "sources": [
+        "https://github.com/samuelfreemanjobs-hash/Instruments/blob/main/docs/DISKLORDZ_YOUTUBE_NETWORK.md",
+        "internal: REPLACE — paste Slack/Airtable research link for YT-DL-001 / Boulevard 86"
+      ],
+      "notes": "Vintage collective lane DL001; 1977-1983 disco-funk → French touch.",
+      "aar": {
+        "decision": "greenlight",
+        "rationale": "Sourced brand brief for Boulevard 86; DL001 french touch lane matches vintage disco-funk transform; kit + long-mix funnel approved pending backup link review."
+      }
+    },
+    {
+      "youtube_brand_id": "YT-DL-002",
+      "artist_id": "DL002",
+      "title": "Midnight Circuit — drift phonk + wave phonk gym/drive programming",
+      "genre": "phonk",
+      "subgenre": "drift phonk",
+      "bpm_min": 140,
+      "bpm_max": 160,
+      "aesthetic": "Memphis soul chops, rain drift, high-contrast night drive",
+      "audience": "gym, fps, night drive",
+      "use_case": "Shorts + 808/wave kit commerce",
+      "search_demand": "high",
+      "competition": "high",
+      "product_ideas": ["midnight-808-bank", "midnight-wave-phonk-stabs", "cowbell fonts"],
+      "score": 74,
+      "sources": [
+        "https://github.com/samuelfreemanjobs-hash/Instruments/blob/main/docs/DISKLORDZ_YOUTUBE_NETWORK.md",
+        "internal: REPLACE — paste Slack/Airtable research link for YT-DL-002 / Midnight Circuit"
+      ],
+      "notes": "Vintage soul/R&B chop lane; not interchangeable with DL006 screw.",
+      "aar": {
+        "decision": "greenlight",
+        "rationale": "Sourced opportunity for Midnight Circuit; DL002 fast phonk palette distinct from screw lane; wave+drift kit flywheel validated in sources."
+      }
+    },
+    {
+      "youtube_brand_id": "YT-DL-003",
+      "artist_id": "DL006",
+      "title": "Disklordz — DJ Screw / 90s phonk slow study + chop kits",
+      "genre": "phonk",
+      "subgenre": "dj screw",
+      "bpm_min": 60,
+      "bpm_max": 95,
+      "aesthetic": "tape slowdown, Houston slow soul source, rain-window study",
+      "audience": "slow study, chop and screw listening",
+      "use_case": "long screw sessions + SP-404/MPC kits",
+      "search_demand": "medium",
+      "competition": "medium",
+      "product_ideas": ["disklordz-screw-chop-kit", "disklordz-90s-phonk-stems", "rc20 chain presets"],
+      "score": 71,
+      "sources": [
+        "https://github.com/samuelfreemanjobs-hash/Instruments/blob/main/docs/FACTORY_VINTAGE_COLLECTIVE.md",
+        "internal: REPLACE — paste Slack/Airtable research link for YT-DL-003 / Disklordz screw lane"
+      ],
+      "notes": "Artist DL006 on YT-DL-003 brand; vintage slow soul → screw only.",
+      "aar": {
+        "decision": "greenlight",
+        "rationale": "Greenlight DL006 for Disklordz channel; screw/90s phonk slow lane separated from Midnight Circuit; SP-1200 Labs demo angle in sources."
+      }
+    },
+    {
+      "youtube_brand_id": "YT-DL-004",
+      "artist_id": "DL004",
+      "title": "Terminal Mirage — cyber funk for coding + vapor aesthetic layer",
+      "genre": "cyber funk",
+      "subgenre": "future funk",
+      "bpm_min": 112,
+      "bpm_max": 128,
+      "aesthetic": "terminal UI, 80s digital funk source, vapor mirage visuals",
+      "audience": "coding flow, build sessions",
+      "use_case": "build-session long mixes + MIDI/stab presets",
+      "search_demand": "medium",
+      "competition": "medium",
+      "product_ideas": ["terminal-mirage-cyber-funk-midi", "terminal-mirage-synth-stab-presets", "vapor texture pack"],
+      "score": 69,
+      "sources": [
+        "https://github.com/samuelfreemanjobs-hash/Instruments/blob/main/docs/DISKLORDZ_YOUTUBE_NETWORK.md",
+        "internal: REPLACE — paste Slack/Airtable research link for YT-DL-004 / Terminal Mirage"
+      ],
+      "notes": "DL004; cyber funk primary, vapor aesthetic secondary; Slow Grid sub-playlist optional.",
+      "aar": {
+        "decision": "greenlight",
+        "rationale": "Terminal Mirage coding-session niche sourced; DL004 digital funk transform fits vintage collective rules; vapor art without mallsoft-only feed."
+      }
+    }
+  ]
+}
