@@ -52,6 +52,10 @@ JD Upgraded remains **credibility SKU**; SaaS is **growth SKU**.
 5. `WO-SAAS-005` — ZIP export + provenance manifest  
 6. `WO-SAAS-006` — Rate limits + error UX  
 
+**007+** (ILLUGEN-shaped roadmap): [DISKLORDZ_ILLUGEN_RESEARCH.md](DISKLORDZ_ILLUGEN_RESEARCH.md) — generation spec, variations, async jobs, credits, RAG, product factory.
+
+**Agent / deploy / RAG docs:** [CURSOR_AGENT_PLAYBOOK.md](CURSOR_AGENT_PLAYBOOK.md) · [RAG_AND_INTELLIGENT_AUTOMATION.md](RAG_AND_INTELLIGENT_AUTOMATION.md) · [COLAB_ZERO_INSTALL_TESTING.md](COLAB_ZERO_INSTALL_TESTING.md) · [AGENTIC_PROJECT_STANDARDS.md](AGENTIC_PROJECT_STANDARDS.md)
+
 Each WO: Airtable → GitHub issue (A1) → PR with `WO-…` in title → merge → Airtable Done (A2).
 
 ## MVP completion checklist
