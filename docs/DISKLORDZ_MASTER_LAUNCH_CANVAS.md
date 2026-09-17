@@ -1,7 +1,7 @@
 # DISKLORDZ Master Launch Canvas & Engineering Blueprint
 
 **Purpose:** Single source of truth for the phonk **VST + funnel** product line (freebies, tripwires, flagship plugins) and how it connects to this monorepo.  
-**Related:** [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md) (drum kit SaaS) · [DISKLORDZ_PLUGIN_TRACKS.md](DISKLORDZ_PLUGIN_TRACKS.md) · [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md)
+**Related:** [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md) (drum kit SaaS) · [DISKLORDZ_PHONK_KIT_AI_SOP.md](DISKLORDZ_PHONK_KIT_AI_SOP.md) (kit creation SOP) · [DISKLORDZ_MARKETING_HANDOFF.md](DISKLORDZ_MARKETING_HANDOFF.md) · [DISKLORDZ_PLUGIN_TRACKS.md](DISKLORDZ_PLUGIN_TRACKS.md) · [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md)
 
 ---
 
@@ -146,7 +146,7 @@ Env: see `disklordz/website/.env.example` (`LAUNCH_*`, optional `RESEND_*`).
 
 ## Agent workflow
 
-1. Read `/ARCHITECTURE.md`, then this file, then [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md).
+1. Read `/ARCHITECTURE.md`, then this file, then [DISKLORDZ_PHONK_KIT_AI_SOP.md](DISKLORDZ_PHONK_KIT_AI_SOP.md) for kit/factory work, then [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md).
 2. Plugin DSP changes: propose **`[Plugin][JUCE] Track E — Memphis Tape`** work order before large `Source/` edits.
 3. Funnel/copy changes: `disklordz/website/src/app/launch/` only unless shared components needed.
 4. Do not deploy production or send live email without explicit user request.
