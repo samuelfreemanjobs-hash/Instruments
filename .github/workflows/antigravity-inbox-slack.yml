@@ -1,0 +1,141 @@
+# Posts to Slack when new Antigravity handoffs land in inbox/ (git push).
+# Secret: SLACK_WEBHOOK_ANTIGRAVITY_URL (preferred) or SLACK_WEBHOOK_URL
+# Setup: ./scripts/setup-disklordz-integrations.sh slack-antigravity --webhook-url '...'
+name: Antigravity inbox Slack
+
+on:
+  push:
+    paths:
+      - "disklordz/antigravity/inbox/HO-*.json"
+  workflow_dispatch:
+    inputs:
+      handoff_path:
+        description: Repo-relative path under inbox/ (for manual test)
+        required: true
+        default: disklordz/antigravity/inbox/HO-00000000-0000.json
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_ANTIGRAVITY_URL || secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - name: Skip when webhook not configured
+        if: env.SLACK_WEBHOOK == ''
+        run: |
+          echo "No Slack webhook secret; skipping."
+          echo "Run: ./scripts/setup-disklordz-integrations.sh slack-antigravity"
+
+      - uses: actions/checkout@v4
+        if: env.SLACK_WEBHOOK != ''
+
+      - name: Build Slack payload
+        id: handoffs
+        if: env.SLACK_WEBHOOK != ''
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+          MANUAL_PATH: ${{ inputs.handoff_path }}
+          REF_NAME: ${{ github.ref_name }}
+          ACTOR: ${{ github.actor }}
+          REPO: ${{ github.repository }}
+          SERVER_URL: ${{ github.server_url }}
+        run: |
+          python3 <<'PY'
+          import json, os, subprocess, sys
+
+          event = os.environ["EVENT_NAME"]
+          paths: list[str] = []
+          if event == "workflow_dispatch":
+              p = os.environ["MANUAL_PATH"]
+              if not os.path.isfile(p):
+                  print(f"File not found: {p}", file=sys.stderr)
+                  sys.exit(1)
+              paths = [p]
+          else:
+              before, after = os.environ["BEFORE_SHA"], os.environ["AFTER_SHA"]
+              cmd = ["git", "diff", "--name-only", "--diff-filter=A", before, after]
+              out = subprocess.run(cmd, capture_output=True, text=True)
+              paths = [
+                  line.strip()
+                  for line in out.stdout.splitlines()
+                  if line.strip().startswith("disklordz/antigravity/inbox/HO-")
+                  and line.strip().endswith(".json")
+              ]
+              if not paths:
+                  cmd = ["git", "diff", "--name-only", before, after]
+                  out = subprocess.run(cmd, capture_output=True, text=True)
+                  paths = [
+                      line.strip()
+                      for line in out.stdout.splitlines()
+                      if "/inbox/HO-" in line and line.strip().endswith(".json")
+                  ]
+
+          if not paths:
+              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+                  f.write("empty=1\n")
+              print("No inbox handoff files in this push.")
+              sys.exit(0)
+
+          blocks = [
+              {
+                  "type": "header",
+                  "text": {"type": "plain_text", "text": "Antigravity — new inbox handoff"},
+              }
+          ]
+          sha = os.environ["AFTER_SHA"]
+          base = f"{os.environ['SERVER_URL']}/{os.environ['REPO']}/blob/{sha}"
+          for path in paths:
+              with open(path, encoding="utf-8") as fh:
+                  doc = json.load(fh)
+              wo = doc.get("work_order") or {}
+              hid = doc.get("handoff_id", path)
+              title = wo.get("title", "")
+              wo_id = wo.get("id", "")
+              branch = wo.get("branch", "main")
+              url = f"{base}/{path}"
+              blocks.append(
+                  {
+                      "type": "section",
+                      "text": {
+                          "type": "mrkdwn",
+                          "text": (
+                              f"*Handoff:* `{hid}`\n"
+                              f"*WO:* `{wo_id}` — {title}\n"
+                              f"*Branch:* `{branch}`\n"
+                              f"<{url}|View JSON>"
+                          ),
+                      },
+                  }
+              )
+          blocks.append(
+              {
+                  "type": "context",
+                  "elements": [
+                      {
+                          "type": "mrkdwn",
+                          "text": (
+                              f"Push to `{os.environ['REF_NAME']}` by `{os.environ['ACTOR']}` "
+                              "· Windows: `sync-handoff.ps1` after `git pull`"
+                          ),
+                      }
+                  ],
+              }
+          )
+          payload = {"text": "Antigravity inbox handoff", "blocks": blocks}
+          with open("/tmp/slack_payload.json", "w", encoding="utf-8") as f:
+              json.dump(payload, f)
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+              f.write("empty=0\n")
+          PY
+
+      - name: Post to Slack
+        if: env.SLACK_WEBHOOK != '' && steps.handoffs.outputs.empty == '0'
+        run: |
+          curl -fsS -X POST "$SLACK_WEBHOOK" \
+            -H 'Content-type: application/json' \
+            --data @/tmp/slack_payload.json

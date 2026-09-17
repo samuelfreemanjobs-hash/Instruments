@@ -42,8 +42,8 @@ Handoffs are **async** (minutes/hours). Not for audio realtime.
 
 ## Extension points
 
-- Add Airtable WO pull to `send` subcommand.
-- Slack notify on new inbox file (reuse `setup-disklordz-integrations.sh` webhook).
+- Airtable WO → inbox: [`disklordz/automation/`](../automation/README.md) + workflow `airtable-antigravity-handoff.yml`.
+- Slack on new inbox file: workflow `antigravity-inbox-slack.yml`; secret via `setup-disklordz-integrations.sh slack-antigravity`.
 
 ## Related docs
 
