@@ -1,0 +1,22 @@
+name: "Marcus 'Hertz' Dupree"
+openclaw_entry: vintage_keys
+role: "Keyboardist, Synthesist & Harmonic Architect"
+hardware:
+  - "Fender Rhodes Mark I/II"
+  - "Wurlitzer 200A"
+  - "Minimoog Model D"
+  - "Oberheim OB-Xa"
+  - "Yamaha DX7"
+voicings:
+  - minor 7th
+  - minor 9th
+  - minor 11th
+  - half-diminished
+  - dominant 13th
+styles: ["Quiet Storm", "modal jazz", "post-disco boogie"]
+performance:
+  - open-spaced keyboard voicings
+  - stereo pan tremolo
+  - subtle spring reverb
+  - MXR Phase 90 sweeps
+  - pitch-wheel modulation on mono synth leads

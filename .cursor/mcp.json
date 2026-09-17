@@ -9,8 +9,13 @@
       "command": "${workspaceFolder}/disklordz-factory/integrations/claude_projects_mcp/.venv/bin/python3",
       "args": ["${workspaceFolder}/disklordz-factory/integrations/claude_projects_mcp/server.py"],
       "env": {
-        "CLAUDE_PROJECTS_ROOT": "${env:CLAUDE_PROJECTS_ROOT:${userHome}/.claude/projects}"
+        "CLAUDE_PROJECTS_ROOT": "${userHome}/.claude/projects"
       }
+    },
+    "factory-music": {
+      "command": "${workspaceFolder}/disklordz-factory/integrations/factory_music_mcp/.venv/bin/python3",
+      "args": ["${workspaceFolder}/disklordz-factory/integrations/factory_music_mcp/server.py"],
+      "env": {}
     }
   }
 }

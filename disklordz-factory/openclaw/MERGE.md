@@ -49,6 +49,17 @@ curl -s http://127.0.0.1:8787/collective/artist-agents
 
 Restart Gateway after config merge.
 
+## 4. Migration & doctor (OpenClaw 2.0)
+
+Before heavy parallel composition:
+
+```bash
+openclaw doctor --session-sqlite inspect
+openclaw doctor --fix   # if doctor recommends
+```
+
+See [docs/OPENCLAW_MIGRATION.md](../../docs/OPENCLAW_MIGRATION.md). Confirm **`disklordz_maestro`** is the only `"default": true` agent.
+
 ## 5. Gateway routing (spawn / isolation)
 
 Read **`routing.config.disklordz.json`** (installed next to your state dir) and [docs/OPENCLAW_GATEWAY_ROUTING.md](../../docs/OPENCLAW_GATEWAY_ROUTING.md).

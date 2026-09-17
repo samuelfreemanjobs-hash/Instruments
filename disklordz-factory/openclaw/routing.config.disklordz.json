@@ -32,6 +32,30 @@
     ],
     "maestro_merge_target": "DL-BRF-* json on Workboard parent card"
   },
+  "mcp_skills": {
+    "server": "factory-music",
+    "repo_path": "disklordz-factory/integrations/factory_music_mcp/server.py",
+    "recommended_for": ["disklordz_maestro", "vintage_keys", "rhythm_section", "vocal_chops"],
+    "tools": [
+      "check_artist_bpm",
+      "validate_dl_brf",
+      "format_midi_map_shell",
+      "compile_artist_prompt",
+      "get_lane_constraints",
+      "dl_brf_schema"
+    ]
+  },
+  "persistence": {
+    "openclaw_sqlite": "openclaw-agent.sqlite",
+    "state_dir_default": "~/.openclaw",
+    "workspace_artifacts": {
+      "harmonic_charts": "vintage_keys/harmonic_charts/",
+      "step_seq": "rhythm_section/step_seq/",
+      "stem_maps": "vocal_chops/stem_maps/",
+      "merged_briefs": "disklordz_maestro/briefs/"
+    },
+    "doc": "openclaw/persistence.disklordz.md"
+  },
   "context_isolation_rules": [
     "Section agents write verbose drafts only under their workspace path",
     "Return summaries to Maestro via spawn result, not sessions_send to main",

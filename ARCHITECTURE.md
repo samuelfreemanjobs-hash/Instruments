@@ -15,6 +15,10 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Artist greenlights (HQ)** | [docs/ARTIST_GREENLIGHTS.md](docs/ARTIST_GREENLIGHTS.md) | DL001, DL002, DL006, DL004 — bootstrapped research + A&R |
 | **OpenClaw 2.0 workspace** | [docs/OPENCLAW_VINTAGE_COLLECTIVE.md](docs/OPENCLAW_VINTAGE_COLLECTIVE.md) | SOUL/AGENTS hierarchy + Workboard dispatch |
 | **OpenClaw gateway routing** | [docs/OPENCLAW_GATEWAY_ROUTING.md](docs/OPENCLAW_GATEWAY_ROUTING.md) | Model tiering, fork spawn, context isolation |
+| **OpenClaw ensemble stack** | [docs/OPENCLAW_ENSEMBLE_STACK.md](docs/OPENCLAW_ENSEMBLE_STACK.md) | Gateway / SQLite / SOUL / MCP / fork layers |
+| **Factory music MCP** | [docs/FACTORY_MCP.md](docs/FACTORY_MCP.md) | BPM, DL-BRF, MIDI shells for sectional agents |
+| **OpenClaw migration** | [docs/OPENCLAW_MIGRATION.md](docs/OPENCLAW_MIGRATION.md) | 2.0 SQLite, doctor, parallel spawn stability |
+| **Ensemble personas** | [docs/OPENCLAW_PERSONAS.md](docs/OPENCLAW_PERSONAS.md) | Isaac / Marcus / Bernard / Evelyn domain SOUL |
 
 ## Repository layout
 

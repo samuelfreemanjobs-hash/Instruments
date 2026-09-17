@@ -54,6 +54,11 @@ if [[ -f "$SRC/routing.config.disklordz.json" ]]; then
   cp "$SRC/routing.config.disklordz.json" "$DEST/routing.config.disklordz.json"
   echo "wrote $DEST/routing.config.disklordz.json (spawn protocol reference)"
 fi
+if [[ -d "$SRC/personas" ]]; then
+  mkdir -p "$DEST/personas"
+  cp -r "$SRC/personas/"* "$DEST/personas/"
+  echo "installed personas -> $DEST/personas/"
+fi
 
 echo "Done. $count agent dirs, $ws workspaces."
 echo "Restart OpenClaw Gateway; set default agent disklordz_maestro; run: openclaw workboard dispatch"

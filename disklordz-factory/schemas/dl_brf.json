@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.local/schemas/dl_brf.json",
+  "title": "DiskLordzProductionBrief",
+  "type": "object",
+  "required": ["artist_id", "bpm", "key", "vintage_source_tags", "transform_summary"],
+  "properties": {
+    "artist_id": { "type": "string", "pattern": "^DL[0-9]{3}$" },
+    "batch_id": { "type": "string" },
+    "bpm": { "type": "number", "minimum": 40, "maximum": 200 },
+    "key": { "type": "string", "minLength": 1 },
+    "vintage_source_tags": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "transform_summary": { "type": "string", "minLength": 10 },
+    "forbidden_tags": { "type": "array", "items": { "type": "string" } },
+    "harmony": { "type": "object" },
+    "rhythm": { "type": "object" },
+    "vocal": { "type": "object" },
+    "artifact_paths": { "type": "array", "items": { "type": "string" } }
+  }
+}

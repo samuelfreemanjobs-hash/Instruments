@@ -7,9 +7,12 @@ Routing reference: repo `openclaw/routing.config.disklordz.json` and `docs/OPENC
 ## Compositional structure (you keep)
 
 - Batch mission, `artist_id`, Workboard parent id, Factory batch id
-- Merged **DL-BRF-*** summary (≤1 page equivalent)
+- **Source session BPM target 68–92** for vinyl-authentic generation (see SOUL); lane BPM overrides documented in merged brief
+- Merged **DL-BRF-*** summary (≤1 page equivalent) + **compiled generative prompt** (console/mic/tape)
 - Greenlight status from `GET /research/status`
 - Final sync decisions and spawn schedule
+
+**Pre-flight:** `openclaw doctor --session-sqlite inspect` before parallel forks (avoid lease deadlocks on 2.0 SQLite).
 
 ## Spawn protocol (`sessions_spawn`)
 
