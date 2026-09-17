@@ -2,6 +2,17 @@
 
 Domain knowledge for **late-1970s / early-1980s vinyl-authentic** source material before lane transforms (phonk, screw, French touch, cyber funk).
 
+## Instrument domain & recording chain
+
+| Agent identifier | OpenClaw entry | Instrument domain | Emulated hardware & chain | Harmonic & acoustic specialty |
+|------------------|----------------|-------------------|---------------------------|-------------------------------|
+| **bandleader** | `disklordz_maestro` | Arrangement, direction, mix architecture | **Neve 8068** console, **Studer A800** 2-inch tape | Dynamic pacing, structural cohesion, analog coloration |
+| **keys_arranger** | `vintage_keys` | Electric pianos, poly & lead synths | Rhodes, Wurlitzer, Minimoog, **DX7** | Minor 9th/11th voicings, modal shifts, portamento leads |
+| **rhythm_section** | `rhythm_section` | Electric bass, acoustic drums, drum machines | **P-Bass**, Ludwig Vistalite, **Boss DR-660** | Muted flatwounds, syncopated swing, transient negative space |
+| **vocal_topline** | `vocal_chops` | Lead vocal, BG harmonization, lyrics | **Shure SM7**, **Neumann U47**, **EMT 140** plate | Close-mic intimacy, three-part stacks, era lyrical tropes |
+
+Machine-readable: [`recording_chains.yaml`](../disklordz-factory/openclaw/personas/recording_chains.yaml).
+
 ## Files
 
 | Member | OpenClaw entry | SOUL (workspace) | YAML |

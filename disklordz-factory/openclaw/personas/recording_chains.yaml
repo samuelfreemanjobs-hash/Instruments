@@ -1,0 +1,39 @@
+# Agent identifier → instrument domain → emulated chain → acoustic specialty
+# OpenClaw entry keys align with agents.config.disklordz.json
+
+agents:
+  bandleader:
+    openclaw_entry: disklordz_maestro
+    display_name: "Isaac 'The Maestro' Vance"
+    instrument_domain: "Arrangement, Direction, Mix Architecture"
+    emulated_chain:
+      console: "Neve 8068"
+      tape: "Studer A800 2-inch"
+    acoustic_specialty: "Dynamic pacing, structural cohesion, analog coloration"
+  keys_arranger:
+    openclaw_entry: vintage_keys
+    display_name: "Marcus 'Hertz' Dupree"
+    instrument_domain: "Electric Pianos, Polyphonic & Lead Synths"
+    emulated_hardware:
+      - "Fender Rhodes"
+      - "Wurlitzer"
+      - "Minimoog"
+      - "Yamaha DX7"
+    acoustic_specialty: "Minor 9th/11th voicings, modal shifts, portamento leads"
+  rhythm_section:
+    openclaw_entry: rhythm_section
+    display_name: "Bernard 'Pocket' Washington"
+    instrument_domain: "Electric Bass, Acoustic Drums, Drum Machines"
+    emulated_hardware:
+      - "Fender P-Bass"
+      - "Ludwig Vistalite"
+      - "Boss DR-660"
+    acoustic_specialty: "Muted flatwounds, syncopated swing, transient negative space"
+  vocal_topline:
+    openclaw_entry: vocal_chops
+    display_name: "Evelyn 'Velvet' Hayes"
+    instrument_domain: "Lead Vocals, Background Harmonization, Lyrics"
+    emulated_chain:
+      microphones: ["Shure SM7", "Neumann U47"]
+      reverb: "EMT 140 plate"
+    acoustic_specialty: "Close-mic intimacy, three-part stacks, era lyrical tropes"

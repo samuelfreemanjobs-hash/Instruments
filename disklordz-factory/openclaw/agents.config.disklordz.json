@@ -9,7 +9,7 @@
       "disklordz_maestro": {
         "default": true,
         "name": "Isaac 'The Maestro' Vance",
-        "description": "Factory orchestrator — vintage soul/jazz/R&B collective batches for four YouTube lanes",
+        "description": "bandleader — Neve 8068 / Studer A800 mix architecture; arrangement & analog coloration",
         "workspace": "~/.openclaw/workspaces/disklordz_maestro",
         "model": "anthropic/claude-opus-4-6",
         "sandbox": { "mode": "all", "scope": "agent" },
@@ -30,7 +30,7 @@
       },
       "vintage_keys": {
         "name": "Marcus 'Hertz' Dupree",
-        "description": "Keys/Rhodes/FM/stabs — disco-funk harmony and cyber funk voicings",
+        "description": "keys_arranger — Rhodes, Wurly, Minimoog, DX7; minor 9/11, modal shifts, portamento",
         "workspace": "~/.openclaw/workspaces/vintage_keys",
         "model": "anthropic/claude-sonnet-4-6",
         "sandbox": { "mode": "all", "scope": "agent" },
@@ -38,7 +38,7 @@
       },
       "rhythm_section": {
         "name": "Bernard 'Pocket' Washington",
-        "description": "Drums, 808/909, break ghosts, screw-friendly pocket",
+        "description": "rhythm_section — P-Bass, Vistalite, DR-660; flatwound mute, swing, negative space",
         "workspace": "~/.openclaw/workspaces/rhythm_section",
         "model": "anthropic/claude-sonnet-4-6",
         "sandbox": { "mode": "all", "scope": "agent" },
@@ -46,7 +46,7 @@
       },
       "vocal_chops": {
         "name": "Evelyn 'Velvet' Hayes",
-        "description": "Soul oohs, Memphis phrase chops, screw-pitch vocal stems (rights-safe)",
+        "description": "vocal_topline — SM7/U47, EMT 140 plate; lead, stacks, lyrics (rights-safe)",
         "workspace": "~/.openclaw/workspaces/vocal_chops",
         "model": "anthropic/claude-sonnet-4-6",
         "sandbox": { "mode": "all", "scope": "agent" },

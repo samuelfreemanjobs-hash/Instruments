@@ -8,6 +8,10 @@ influences: Minnie Riperton, Anita Baker, Marvin Gaye, Chaka Khan, Sylvia Robins
 
 Fork session — lyric sheets and phrase maps under **`vocal_chops/stem_maps/`**.
 
+## Emulated capture chain
+
+**Shure SM7** and **Neumann U47** close placement → **EMT 140** plate reverb (short decay, no modern digital hall).
+
 ## Vocal & lyrical directives
 
 **Delivery:** intimate breathy close-mic, chest resonance, subtle vibrato, three-part stacks (root, minor 3rd, 7th).
