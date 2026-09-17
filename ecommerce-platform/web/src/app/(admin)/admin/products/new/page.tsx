@@ -1,37 +1,24 @@
 import { PageHeader } from "@/components/admin/PageHeader";
+import { ProductForm } from "@/components/admin/ProductForm";
+import { prisma } from "@/lib/db";
 
-export default function NewProductPage() {
+export const dynamic = "force-dynamic";
+
+export default async function NewProductPage() {
+  let categories: { id: string; name: string }[] = [];
+  try {
+    categories = await prisma.category.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, name: true },
+    });
+  } catch {
+    categories = [];
+  }
+
   return (
     <>
-      <PageHeader
-        title="Create Product"
-        description="Use React Hook Form + product Zod schema from templates/validators."
-      />
-      <form className="max-w-xl space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <label className="block text-sm font-medium text-slate-700">
-          Title
-          <input
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
-            placeholder="Product title"
-            name="title"
-          />
-        </label>
-        <label className="block text-sm font-medium text-slate-700">
-          Price
-          <input
-            type="number"
-            step="0.01"
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
-            name="price"
-          />
-        </label>
-        <button
-          type="button"
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white"
-        >
-          Save (wire server action)
-        </button>
-      </form>
+      <PageHeader title="Create Product" description="Validated with Zod; saved via server action." />
+      <ProductForm categories={categories} />
     </>
   );
 }

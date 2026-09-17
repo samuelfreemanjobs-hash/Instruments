@@ -14,11 +14,12 @@ Step-by-step system to build a production-style shop with **Next.js 15**, **Pris
 ```bash
 cd web
 cp .env.example .env.local
-# Set DATABASE_URL (MongoDB), auth secrets, optional Stripe/RazorPay/Cloudinary
+# Set DATABASE_URL (MongoDB Atlas) — see web/docs/DATABASE.md
 npm install
-npx prisma generate
-npx prisma db push   # when DATABASE_URL is ready
+npm run db:push
+npm run db:seed
 npm run dev
+# Or local in-memory DB: npm run dev:db
 ```
 
 - Storefront: http://localhost:3000  

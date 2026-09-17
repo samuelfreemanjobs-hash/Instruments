@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:db": "tsx scripts/dev-with-db.ts",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
@@ -25,6 +28,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.88.0",
+    "slugify": "^1.6.9",
     "stripe": "^22.6.2",
     "tailwind-merge": "^3.7.0",
     "zod": "^4.6.5"
@@ -38,8 +42,10 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.25",
+    "mongodb-memory-server": "^11.2.0",
     "prisma": "^6.19.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.13",
     "typescript": "^5"
   }
 }

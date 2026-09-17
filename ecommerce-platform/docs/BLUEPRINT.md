@@ -58,9 +58,9 @@ Match course UI modules before wiring DB:
 
 ## Phase 3 — Prisma ORM & models
 
-- [ ] `prisma/schema.prisma` — User, Product, Category, SubCategory, Order, OrderItem, Coupon, Review, Banner, TopBar, Offer
-- [ ] `npx prisma generate` + `db push`
-- [ ] Seed script (optional admin user)
+- [x] `prisma/schema.prisma` — User, Product, Category, SubCategory, Order, OrderItem, Coupon, Review, Banner, TopBar, Offer
+- [x] `npx prisma generate` + `db push` (use `npm run dev:db` for in-memory Mongo + push + seed)
+- [x] Seed script (`prisma/seed.ts` — admin user, categories, products, coupon, top bar)
 
 **SOP:** [SOP-03-prisma-models.md](SOP/SOP-03-prisma-models.md)
 

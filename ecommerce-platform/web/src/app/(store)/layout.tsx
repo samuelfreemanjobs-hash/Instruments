@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { ShoppingBag, User } from "lucide-react";
+import { TopBarBanner } from "@/components/store/TopBarBanner";
+
+export const dynamic = "force-dynamic";
 
 export default function StoreLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-white text-slate-900">
-      <div className="bg-slate-900 px-4 py-2 text-center text-sm text-white">
-        Free shipping on orders over $50 —{" "}
-        <span className="underline">TopBar from CMS (SOP-05)</span>
-      </div>
+      <TopBarBanner />
       <header className="border-b border-slate-200">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
           <Link href="/" className="text-lg font-semibold tracking-tight">

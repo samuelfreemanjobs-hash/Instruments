@@ -1,18 +1,40 @@
-import { AdminListStub } from "@/components/admin/AdminListStub";
+import { PageHeader } from "@/components/admin/PageHeader";
+import { DataTable } from "@/components/admin/DataTable";
+import { prisma } from "@/lib/db";
 
-export default function CouponsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function CouponsPage() {
+  let coupons: Awaited<ReturnType<typeof prisma.coupon.findMany>> = [];
+  try {
+    coupons = await prisma.coupon.findMany({ orderBy: { code: "asc" } });
+  } catch {
+    coupons = [];
+  }
+
   return (
-    <AdminListStub
-      title="Coupons"
-      description="Discount codes — complete in SOP-04 with Zod + Prisma."
-      createHref="/admin/coupons/new"
-      createLabel="New coupon"
-      columns={[
-        { key: "code", header: "Code" },
-        { key: "discount", header: "Discount" },
-        { key: "active", header: "Active" },
-      ]}
-      rows={[{ code: "WELCOME10", discount: "10%", active: "Yes" }]}
-    />
+    <>
+      <PageHeader
+        title="Coupons"
+        description="Discount codes stored in MongoDB (seed includes WELCOME10)."
+      />
+      <DataTable
+        columns={[
+          { key: "code", header: "Code" },
+          {
+            key: "discount",
+            header: "Discount",
+            render: (row) =>
+              row.discountPct != null
+                ? `${row.discountPct}%`
+                : row.discountAmt != null
+                  ? `$${row.discountAmt}`
+                  : "—",
+          },
+          { key: "active", header: "Active", render: (row) => (row.active ? "Yes" : "No") },
+        ]}
+        rows={coupons}
+      />
+    </>
   );
 }
