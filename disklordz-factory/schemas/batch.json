@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.local/schemas/batch.json",
+  "title": "ProductionBatch",
+  "type": "object",
+  "required": ["batch_id", "mission", "target_count", "stage"],
+  "properties": {
+    "batch_id": { "type": "string", "pattern": "^DL-BATCH-[0-9]{6}$" },
+    "mission": {
+      "type": "string",
+      "description": "e.g. Develop dark Detroit electro/phonk product line"
+    },
+    "target_count": { "type": "integer", "minimum": 1, "maximum": 500 },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "discover",
+        "ideate",
+        "generate",
+        "select",
+        "produce",
+        "humanize",
+        "qa",
+        "package",
+        "publish",
+        "distribute",
+        "measure",
+        "learn"
+      ]
+    },
+    "artist_ids": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^DL[0-9]{3}$" }
+    },
+    "opportunity_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "asset_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  }
+}

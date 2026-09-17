@@ -1,0 +1,166 @@
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from typing import Annotated
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import Field
+
+from disklordz_factory.enums import BatchStage
+from disklordz_factory.models import (
+    ApprovalItem,
+    CatalogAsset,
+    CatalogAssetCreate,
+    FactoryDashboard,
+    FactoryStatus,
+    NightShiftRequest,
+    NightShiftRun,
+    NightShiftStep,
+    ProductionBatch,
+    ProductionBatchCreate,
+)
+from disklordz_factory import night_shift
+from disklordz_factory.store import store
+
+app = FastAPI(
+    title="DiskLordz Factory API",
+    description="Batch orchestration, night shift, catalog, and human approval queue.",
+    version="0.2.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+        "http://127.0.0.1:4173",
+        "http://localhost:4173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/health")
+def health() -> dict[str, str]:
+    return {"status": "ok", "service": "disklordz-factory-api"}
+
+
+@app.get("/factory/status", response_model=FactoryStatus)
+def factory_status() -> FactoryStatus:
+    pending = sum(1 for a in store.approval.values() if a.status == "pending")
+    return FactoryStatus(
+        active_batches=len(store.batches),
+        catalog_assets=len(store.assets),
+        approval_pending=pending,
+    )
+
+
+@app.get("/factory/dashboard", response_model=FactoryDashboard)
+def factory_dashboard() -> FactoryDashboard:
+    return store.dashboard()
+
+
+@app.post("/batches", response_model=ProductionBatch)
+def create_batch(body: ProductionBatchCreate) -> ProductionBatch:
+    return store.create_batch(body)
+
+
+@app.get("/batches", response_model=list[ProductionBatch])
+def list_batches() -> list[ProductionBatch]:
+    return list(store.batches.values())
+
+
+@app.get("/batches/{batch_id}", response_model=ProductionBatch)
+def get_batch(batch_id: str) -> ProductionBatch:
+    batch = store.batches.get(batch_id)
+    if not batch:
+        raise HTTPException(status_code=404, detail="batch not found")
+    return batch
+
+
+@app.patch("/batches/{batch_id}/stage", response_model=ProductionBatch)
+def advance_batch_stage(
+    batch_id: str,
+    stage: Annotated[BatchStage, Field(description="Next factory OS stage")],
+) -> ProductionBatch:
+    if batch_id not in store.batches:
+        raise HTTPException(status_code=404, detail="batch not found")
+    return store.set_batch_stage(batch_id, stage)
+
+
+@app.post("/catalog/assets", response_model=CatalogAsset)
+def create_asset(body: CatalogAssetCreate) -> CatalogAsset:
+    return store.create_asset(body)
+
+
+@app.get("/catalog/assets", response_model=list[CatalogAsset])
+def list_assets() -> list[CatalogAsset]:
+    return list(store.assets.values())
+
+
+@app.get("/approval-queue", response_model=list[ApprovalItem])
+def approval_queue() -> list[ApprovalItem]:
+    return [a for a in store.approval.values() if a.status == "pending"]
+
+
+@app.post("/approval-queue/seed-demo", response_model=list[ApprovalItem])
+def seed_approval_demo() -> list[ApprovalItem]:
+    demos = [
+        ("DL-TRK-000034", "Track 034 — Dark 90s Digital Phonk"),
+        ("DL-VIS-000034", "Artwork 034"),
+        ("DL-KIT-000018", "Product 018 — DL-PHONK Starter"),
+    ]
+    out: list[ApprovalItem] = []
+    for asset_id, title in demos:
+        item = ApprovalItem(
+            asset_id=asset_id,
+            title=title,
+            audio_qa="pass",
+            visual_qa="pass",
+            product_qa="pass",
+            rights_qa="pass",
+        )
+        store.upsert_approval(item)
+        out.append(item)
+    return out
+
+
+@app.post("/approval-queue/{asset_id}/approve", response_model=ApprovalItem)
+def approve_asset(asset_id: str, approved_by: str = "operator") -> ApprovalItem:
+    item = store.approval.get(asset_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="not in approval queue")
+    updated = item.model_copy(update={"status": "approved"})
+    store.upsert_approval(updated)
+    store.today["approved"] += 1
+    store.queue["publishing"] = max(0, store.queue["publishing"] - 5)
+    return updated
+
+
+@app.post("/approval-queue/{asset_id}/reject", response_model=ApprovalItem)
+def reject_asset(asset_id: str) -> ApprovalItem:
+    item = store.approval.get(asset_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="not in approval queue")
+    updated = item.model_copy(update={"status": "rejected"})
+    store.upsert_approval(updated)
+    return updated
+
+
+@app.get("/night-shift/schedule", response_model=list[NightShiftStep])
+def night_shift_schedule() -> list[NightShiftStep]:
+    return night_shift.list_schedule()
+
+
+@app.get("/night-shift/runs/latest", response_model=NightShiftRun | None)
+def night_shift_latest() -> NightShiftRun | None:
+    return night_shift.get_last_night_shift_run()
+
+
+@app.post("/night-shift/run", response_model=NightShiftRun)
+def night_shift_run(body: NightShiftRequest | None = None) -> NightShiftRun:
+    req = body or NightShiftRequest()
+    return night_shift.run_night_shift(store, req)

@@ -1,0 +1,41 @@
+{
+  "name": "DiskLordz Night Shift → Approval Queue",
+  "nodes": [
+    {
+      "name": "Cron 00:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "hours", "hoursInterval": 24 }]
+        }
+      }
+    },
+    {
+      "name": "POST night-shift/run",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "method": "POST",
+        "url": "http://factory-api:8787/night-shift/run",
+        "sendBody": true,
+        "jsonBody": "={\"mission\":\"Scheduled night shift\",\"target_count\":25,\"artist_ids\":[\"DL002\",\"DL003\"]}"
+      }
+    },
+    {
+      "name": "Slack morning summary",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SLACK_WEBHOOK_URL}}",
+        "sendBody": true,
+        "jsonBody": "={\"text\":\"DiskLordz night shift complete. Open dashboard approval queue.\"}"
+      }
+    }
+  ],
+  "connections": {
+    "Cron 00:00": { "main": [[{ "node": "POST night-shift/run", "type": "main", "index": 0 }]] },
+    "POST night-shift/run": { "main": [[{ "node": "Slack morning summary", "type": "main", "index": 0 }]] }
+  },
+  "meta": {
+    "description": "Import into n8n; point HTTP node at your Factory API URL. Publishing still requires human approve via dashboard."
+  }
+}
