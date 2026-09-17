@@ -1,5 +1,6 @@
 import { OrderStatus, PaymentProvider } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { sendOrderConfirmationEmail } from "@/lib/email/order-confirmation";
 
 /** Idempotent: only transitions PENDING → PAID once; decrements stock on first pay. */
 export async function fulfillOrderPayment(params: {
@@ -40,5 +41,14 @@ export async function fulfillOrderPayment(params: {
     });
 
     return { updated: true as const };
+  }).then(async (result) => {
+    if (result.updated) {
+      try {
+        await sendOrderConfirmationEmail(params.orderId);
+      } catch (e) {
+        console.error("Order confirmation email failed", e);
+      }
+    }
+    return result;
   });
 }

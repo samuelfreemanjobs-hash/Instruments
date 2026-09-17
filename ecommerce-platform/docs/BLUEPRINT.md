@@ -134,8 +134,8 @@ Per entity: list → create → edit → delete → validation → toast/error s
 
 ## Phase 9 — Media (Cloudinary)
 
-- [ ] Signed upload from admin product/banner forms
-- [ ] Image transformations for thumbnails
+- [x] Signed upload from admin product/banner/category forms
+- [x] Storefront `next/image` + website banner carousel on home
 
 **SOP:** [SOP-09-cloudinary-uploads.md](SOP/SOP-09-cloudinary-uploads.md)
 
@@ -143,7 +143,7 @@ Per entity: list → create → edit → delete → validation → toast/error s
 
 ## Phase 10 — Email & operations
 
-- [ ] Order confirmation email (customer)
+- [x] Order confirmation email on PAID (SMTP + dev console fallback)
 - [ ] Admin notifications (optional)
 
 **SOP:** [SOP-10-order-email.md](SOP/SOP-10-order-email.md)

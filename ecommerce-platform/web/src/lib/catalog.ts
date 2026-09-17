@@ -43,6 +43,18 @@ export async function getCategories() {
   }
 }
 
+export async function getWebsiteBanners() {
+  try {
+    return await prisma.banner.findMany({
+      where: { type: "WEBSITE", active: true },
+      orderBy: { sortOrder: "asc" },
+      take: 5,
+    });
+  } catch {
+    return [];
+  }
+}
+
 export async function getActiveTopBar() {
   try {
     return await prisma.topBar.findFirst({ where: { active: true }, orderBy: { updatedAt: "desc" } });

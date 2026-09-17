@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { productSchema, type ProductInput } from "@/lib/validators/product";
 import { createProduct, updateProduct } from "@/lib/actions/products";
+import { CloudinaryUploadField } from "@/components/admin/CloudinaryUploadField";
 import { useState } from "react";
 
 type CategoryOption = { id: string; name: string };
@@ -23,6 +24,8 @@ export function ProductForm({
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ProductInput>({
     resolver: zodResolver(productSchema),
@@ -37,6 +40,8 @@ export function ProductForm({
       images: defaultValues?.images ?? [],
     },
   });
+
+  const images = watch("images") ?? [];
 
   async function onSubmit(data: ProductInput) {
     setServerError(null);
@@ -116,6 +121,15 @@ export function ProductForm({
         <input type="checkbox" {...register("featured")} />
         Featured on home
       </label>
+      <CloudinaryUploadField
+        label="Product images (Cloudinary)"
+        folder="ecommerce/products"
+        urls={images}
+        onChange={(urls) => setValue("images", urls, { shouldValidate: true })}
+      />
+      <p className="text-xs text-slate-500">
+        Requires Cloudinary env vars — see web/docs/CLOUDINARY.md. Or paste URLs in DB later.
+      </p>
       <button
         type="submit"
         disabled={isSubmitting || categories.length === 0}

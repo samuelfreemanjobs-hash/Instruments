@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getProductBySlug } from "@/lib/catalog";
 import { formatPrice } from "@/lib/utils";
@@ -22,7 +23,18 @@ export default async function ProductPage({
         ← Back to shop
       </Link>
       <div className="mt-8 grid gap-10 md:grid-cols-2">
-        <div className="aspect-square rounded-lg bg-slate-100" />
+        <div className="relative aspect-square overflow-hidden rounded-lg bg-slate-100">
+          {product.images[0] ? (
+            <Image
+              src={product.images[0]}
+              alt={product.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
+            />
+          ) : null}
+        </div>
         <div>
           <p className="text-sm text-slate-500">{product.category.name}</p>
           <h1 className="text-3xl font-semibold">{product.title}</h1>

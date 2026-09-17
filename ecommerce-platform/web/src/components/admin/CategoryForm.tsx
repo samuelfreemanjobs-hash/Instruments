@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { categorySchema, type CategoryInput } from "@/lib/validators/category";
 import { createCategory, updateCategory } from "@/lib/actions/categories";
+import { CloudinaryUploadField } from "@/components/admin/CloudinaryUploadField";
 import { useState } from "react";
 
 export function CategoryForm({
@@ -19,6 +20,8 @@ export function CategoryForm({
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CategoryInput>({
     resolver: zodResolver(categorySchema),
@@ -28,6 +31,9 @@ export function CategoryForm({
       image: defaultValues?.image ?? "",
     },
   });
+
+  const imageUrl = watch("image") ?? "";
+  const imageUrls = imageUrl ? [imageUrl] : [];
 
   async function onSubmit(data: CategoryInput) {
     setServerError(null);
@@ -67,13 +73,14 @@ export function CategoryForm({
         />
         {errors.slug ? <span className="text-xs text-red-600">{errors.slug.message}</span> : null}
       </label>
-      <label className="block text-sm font-medium text-slate-700">
-        Image URL (optional)
-        <input
-          {...register("image")}
-          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
-        />
-      </label>
+      <CloudinaryUploadField
+        label="Category image (optional)"
+        folder="ecommerce/categories"
+        urls={imageUrls}
+        multiple={false}
+        onChange={(urls) => setValue("image", urls[0] ?? "", { shouldValidate: true })}
+      />
+      <input type="hidden" {...register("image")} />
       <button
         type="submit"
         disabled={isSubmitting}
