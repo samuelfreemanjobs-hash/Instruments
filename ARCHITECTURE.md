@@ -8,6 +8,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 |---------|-----|----------------|
 | **JD Upgraded** (VST3 + CLAP + standalone synth) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [Source/UI/ARCHITECTURE.md](Source/UI/ARCHITECTURE.md) | `JDUpgraded_VST3`, `JDUpgraded_CLAP`, `JDUpgraded_Standalone` |
 | **Offline tooling** (ROM gen, render, regression) | [tools/ARCHITECTURE.md](tools/ARCHITECTURE.md) | `GenerateCleanroomRom`, `OfflineRender`, `SpectralDiff` |
+| **Disklordz Drum SaaS** (v0 web; factory TBD) | [docs/DISKLORDZ_SAAS_V0.md](docs/DISKLORDZ_SAAS_V0.md) · [disklordz/company/OPERATING_RHYTHM.md](disklordz/company/OPERATING_RHYTHM.md) | — (web under `disklordz/website/` planned) |
 
 ## Repository layout
 
@@ -31,6 +32,8 @@ cmake --build build -j
 [`.github/workflows/build.yml`](.github/workflows/build.yml): Release build, determinism (`OfflineRender` ×2), and golden WAV compare via `SpectralDiff`.
 
 Optional Slack notifications: [`.github/workflows/ci-slack-notify.yml`](.github/workflows/ci-slack-notify.yml) (configure with [`scripts/setup-disklordz-integrations.sh`](scripts/setup-disklordz-integrations.sh)).
+
+Airtable PM: [`airtable-work-order-to-github.yml`](.github/workflows/airtable-work-order-to-github.yml) (A1) · [`airtable-pr-sync.yml`](.github/workflows/airtable-pr-sync.yml) (A2). Agent guide: [`AGENTS.md`](AGENTS.md).
 
 ## Documentation policy
 

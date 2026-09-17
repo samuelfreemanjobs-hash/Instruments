@@ -1,0 +1,45 @@
+name: Airtable PR sync (Sprint A2)
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+
+jobs:
+  sync-work-order:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract WO id from PR title
+        id: wo
+        run: |
+          title="${{ github.event.pull_request.title }}"
+          if echo "$title" | grep -qE 'WO-[0-9]{4}-[0-9]+'; then
+            echo "id=$(echo "$title" | grep -oE 'WO-[0-9]{4}-[0-9]+' | head -1)" >> "$GITHUB_OUTPUT"
+          else
+            echo "id=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Patch Airtable work order
+        if: steps.wo.outputs.id != ''
+        env:
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+        run: |
+          if [ -z "$AIRTABLE_API_KEY" ] || [ -z "$AIRTABLE_BASE_ID" ]; then
+            echo "Airtable secrets not configured; skip."
+            exit 0
+          fi
+          WO_ID="${{ steps.wo.outputs.id }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          FORMULA="({work_order_id}='${WO_ID}')"
+          ENC=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$FORMULA'''))")
+          REC=$(curl -fsS -H "Authorization: Bearer $AIRTABLE_API_KEY" \
+            "https://api.airtable.com/v0/$AIRTABLE_BASE_ID/Agent%20Work%20Orders?maxRecords=1&filterByFormula=$ENC")
+          RID=$(echo "$REC" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['records'][0]['id'] if d.get('records') else '')")
+          if [ -z "$RID" ]; then echo "WO not found"; exit 0; fi
+          curl -fsS -X PATCH -H "Authorization: Bearer $AIRTABLE_API_KEY" -H "Content-Type: application/json" \
+            "https://api.airtable.com/v0/$AIRTABLE_BASE_ID/Agent%20Work%20Orders/$RID" \
+            -d "{\"fields\":{\"status\":\"Done\",\"github_pr\":\"$PR_URL\"}}"
