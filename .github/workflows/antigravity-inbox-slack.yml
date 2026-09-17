@@ -1,10 +1,12 @@
-# Posts to Slack when new Antigravity handoffs land in inbox/ (git push).
-# Secret: SLACK_WEBHOOK_ANTIGRAVITY_URL (preferred) or SLACK_WEBHOOK_URL
-# Setup: ./scripts/setup-disklordz-integrations.sh slack-antigravity --webhook-url '...'
+# Posts to #disklordz-dev (or dedicated channel) when HO-*.json lands on main.
+# Secrets: SLACK_WEBHOOK_ANTIGRAVITY_URL (preferred) or SLACK_WEBHOOK_URL;
+#          optional SLACK_MENTION_USER_ID (Slack member id, e.g. U0ABC…) for @you in the message.
+# Setup: ./scripts/setup-disklordz-integrations.sh slack-antigravity --webhook-url '...' --mention-user-id U0...
 name: Antigravity inbox Slack
 
 on:
   push:
+    branches: [main]
     paths:
       - "disklordz/antigravity/inbox/HO-*.json"
   workflow_dispatch:
@@ -22,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_ANTIGRAVITY_URL || secrets.SLACK_WEBHOOK_URL }}
+      SLACK_MENTION_USER_ID: ${{ secrets.SLACK_MENTION_USER_ID }}
     steps:
       - name: Skip when webhook not configured
         if: env.SLACK_WEBHOOK == ''
@@ -44,6 +47,7 @@ jobs:
           ACTOR: ${{ github.actor }}
           REPO: ${{ github.repository }}
           SERVER_URL: ${{ github.server_url }}
+          MENTION_USER_ID: ${{ secrets.SLACK_MENTION_USER_ID }}
         run: |
           python3 <<'PY'
           import json, os, subprocess, sys
@@ -81,12 +85,21 @@ jobs:
               print("No inbox handoff files in this push.")
               sys.exit(0)
 
+          mention = (os.environ.get("MENTION_USER_ID") or "").strip()
+          mention_line = f"<@{mention}> " if mention else ""
           blocks = [
               {
                   "type": "header",
                   "text": {"type": "plain_text", "text": "Antigravity — new inbox handoff"},
               }
           ]
+          if mention_line:
+              blocks.append(
+                  {
+                      "type": "section",
+                      "text": {"type": "mrkdwn", "text": f"{mention_line}New handoff on `main` — pull + `sync-handoff.ps1` when ready."},
+                  }
+              )
           sha = os.environ["AFTER_SHA"]
           base = f"{os.environ['SERVER_URL']}/{os.environ['REPO']}/blob/{sha}"
           for path in paths:
@@ -126,7 +139,8 @@ jobs:
                   ],
               }
           )
-          payload = {"text": "Antigravity inbox handoff", "blocks": blocks}
+          fallback = f"{mention_line}Antigravity inbox handoff on main".strip()
+          payload = {"text": fallback or "Antigravity inbox handoff", "blocks": blocks}
           with open("/tmp/slack_payload.json", "w", encoding="utf-8") as f:
               json.dump(payload, f)
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:

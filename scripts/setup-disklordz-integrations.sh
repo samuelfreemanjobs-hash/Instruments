@@ -14,7 +14,7 @@ Usage: setup-disklordz-integrations.sh <command> [options]
 
 Commands:
   slack-ci          Configure GitHub secret SLACK_WEBHOOK_URL and test notifications
-  slack-antigravity Configure SLACK_WEBHOOK_ANTIGRAVITY_URL (#disklordz-dev or dedicated channel)
+  slack-antigravity Configure SLACK_WEBHOOK_ANTIGRAVITY_URL + optional SLACK_MENTION_USER_ID (#disklordz-dev)
   cursor-cloud      Verify repo-managed Cursor Cloud Agent config (environment.json)
   all               Run cursor-cloud, then slack-ci (if webhook provided)
 
@@ -134,6 +134,7 @@ cmd_slack_ci() {
 
 cmd_slack_antigravity() {
   local webhook_url="${SLACK_WEBHOOK_ANTIGRAVITY_URL:-}"
+  local mention_user_id="${SLACK_MENTION_USER_ID:-}"
   local repo="$REPO_DEFAULT"
   local skip_secret=0
   local skip_test=0
@@ -142,6 +143,10 @@ cmd_slack_antigravity() {
     case "$1" in
       --webhook-url)
         webhook_url="$2"
+        shift 2
+        ;;
+      --mention-user-id)
+        mention_user_id="$2"
         shift 2
         ;;
       --repo)
@@ -169,7 +174,11 @@ cmd_slack_antigravity() {
     gh auth status >/dev/null 2>&1 || die "run: gh auth login"
     echo "Setting GitHub secret SLACK_WEBHOOK_ANTIGRAVITY_URL on $repo ..."
     printf '%s' "$webhook_url" | gh secret set SLACK_WEBHOOK_ANTIGRAVITY_URL --repo "$repo"
-    echo "Secret updated."
+    echo "Secret SLACK_WEBHOOK_ANTIGRAVITY_URL updated."
+    if [[ -n "$mention_user_id" ]]; then
+      printf '%s' "$mention_user_id" | gh secret set SLACK_MENTION_USER_ID --repo "$repo"
+      echo "Secret SLACK_MENTION_USER_ID updated."
+    fi
   fi
 
   if [[ "$skip_test" -eq 0 ]]; then
@@ -180,10 +189,11 @@ cmd_slack_antigravity() {
       -H 'Content-type: application/json' \
       --data "$(jq -n \
         --arg repo "$repo" \
+        --arg mention "$mention_user_id" \
         '{
-          text: "Antigravity inbox webhook test — new HO-*.json pushes will post here.",
+          text: (if $mention != "" then ("<@" + $mention + "> Antigravity inbox webhook test") else "Antigravity inbox webhook test" end),
           blocks: [
-            { type: "section", text: { type: "mrkdwn", text: ("*Antigravity inbox Slack connected*\nRepo: `" + $repo + "`") } },
+            { type: "section", text: { type: "mrkdwn", text: ("*Antigravity inbox Slack connected*\nRepo: `" + $repo + "`\nTriggers on `main` when `disklordz/antigravity/inbox/HO-*.json` is pushed.") } },
             { type: "context", elements: [ { type: "mrkdwn", text: "setup-disklordz-integrations.sh slack-antigravity" } ] }
           ]
         }')" \

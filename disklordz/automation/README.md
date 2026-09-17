@@ -36,6 +36,17 @@ See [AIRTABLE_ANTIGRAVITY.md](AIRTABLE_ANTIGRAVITY.md).
 
 ## Slack on new inbox files
 
-When `disklordz/antigravity/inbox/HO-*.json` is pushed to `main`, workflow posts to Slack.
+When `disklordz/antigravity/inbox/HO-*.json` is pushed to **`main`**, workflow posts to **#disklordz-dev** (via your webhook).
 
-Secret: `SLACK_WEBHOOK_URL` (or `SLACK_WEBHOOK_ANTIGRAVITY_URL` for a dedicated channel webhook).
+Secrets:
+
+- `SLACK_WEBHOOK_ANTIGRAVITY_URL` (preferred) or `SLACK_WEBHOOK_URL`
+- Optional `SLACK_MENTION_USER_ID` — Slack member id (`U…`) so the message opens with `<@you>`
+
+```bash
+./scripts/setup-disklordz-integrations.sh slack-antigravity \
+  --webhook-url 'https://hooks.slack.com/services/...' \
+  --mention-user-id 'U0123456789'
+```
+
+Find your member id: Slack profile → ⋮ → **Copy member ID** (requires Slack admin setting “Show member IDs” in workspace settings).
