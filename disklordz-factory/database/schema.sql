@@ -65,11 +65,12 @@ CREATE TABLE IF NOT EXISTS asset_economics (
   notes TEXT
 );
 
--- Seed fictional artist universe (expand in ops)
-INSERT OR IGNORE INTO artists (artist_id, display_name, genres, bpm_min, bpm_max) VALUES
-  ('DL001', 'DISKLORD 001', 'Robot Funk / French House / Electro', 115, 128),
-  ('DL002', 'DISKLORD 002', 'Dark Phonk / Memphis / 808', 140, 155),
-  ('DL003', 'DISKLORD 003', 'Detroit Electro', 128, 140),
-  ('DL004', 'DISKLORD 004', 'Cyber Disco', 118, 126),
-  ('DL005', 'DISKLORD 005', 'Industrial Trap', 130, 150),
-  ('DL006', 'DISKLORD 006', 'Digital Soul', 85, 102);
+-- Seed fictional artist universe (four YouTube lanes + legacy IDs)
+-- Full vintage rules: database/artist_collective_seed.json
+INSERT OR IGNORE INTO artists (artist_id, display_name, genres, bpm_min, bpm_max, lore) VALUES
+  ('DL001', 'DISKLORD 001', 'French touch / vintage disco-funk source', 118, 124, 'Boulevard 86 — Paris robot funk'),
+  ('DL002', 'DISKLORD 002', 'Drift phonk / wave phonk / Memphis soul chops', 140, 160, 'Midnight Circuit'),
+  ('DL003', 'DISKLORD 003', 'Detroit Electro', 128, 140, 'Legacy lane — not in four-brand network'),
+  ('DL004', 'DISKLORD 004', 'Cyber funk / 80s digital funk source', 112, 128, 'Terminal Mirage'),
+  ('DL005', 'DISKLORD 005', 'Industrial Trap', 130, 150, 'Legacy lane'),
+  ('DL006', 'DISKLORD 006', 'DJ Screw / 90s phonk / slow soul source', 60, 95, 'Disklordz channel — screw');

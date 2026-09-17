@@ -3,6 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from disklordz_factory.collective import default_vintage_mission
 from disklordz_factory.enums import AssetKind, BatchStage, RightsStatus
 
 
@@ -41,7 +42,11 @@ class FactoryDashboard(BaseModel):
 
 
 class ProductionBatchCreate(BaseModel):
-    mission: str = Field(..., min_length=3, examples=["Develop dark Detroit electro/phonk product line"])
+    mission: str = Field(
+        ...,
+        min_length=3,
+        examples=[default_vintage_mission()],
+    )
     target_count: int = Field(25, ge=1, le=500)
     artist_ids: list[str] = Field(default_factory=list)
 
@@ -78,7 +83,7 @@ class CatalogAsset(CatalogAssetCreate):
 
 class NightShiftRequest(BaseModel):
     mission: str = Field(
-        default="Autonomous night shift batch — market-selected phonk/electro line",
+        default_factory=default_vintage_mission,
         min_length=3,
     )
     target_count: int = Field(25, ge=1, le=500)

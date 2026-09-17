@@ -1,0 +1,82 @@
+{
+  "$comment": "Import into OpenClaw Workboard as parent + linked children. Replace {batch_id}, {artist_id}, {brand_name} per lane.",
+  "parent_card": {
+    "title": "Vintage collective batch — {batch_id}",
+    "status": "todo",
+    "skills": ["disklordz-factory", "vintage-sample-synthesis"],
+    "metadata": {
+      "batch_mission": "1970s–1980s soul/jazz/R&B synthesis → four YouTube lanes",
+      "target_count": 25,
+      "artist_ids": ["DL001", "DL002", "DL006", "DL004"],
+      "autoDecompose": true,
+      "orchestratorProfile": "DISKLORDZ_FACTORY_ORCHESTRATOR"
+    }
+  },
+  "child_cards_per_artist": [
+    {
+      "title": "DISCOVER — {artist_id} — vintage source gap",
+      "assignee": "DISKLORDZ_MARKET_INTEL",
+      "depends_on_parent": true,
+      "factory_stage": "discover"
+    },
+    {
+      "title": "IDEATE — {artist_id} — {brand_name} concept",
+      "assignee": "DISKLORDZ_AAR",
+      "depends_on": "DISCOVER",
+      "factory_stage": "ideate"
+    },
+    {
+      "title": "GENERATE — {artist_id} — vintage synthesis brief",
+      "assignee": "DISKLORDZ_MUSIC_PRODUCER",
+      "depends_on": "IDEATE",
+      "factory_stage": "generate",
+      "outputs": ["DL-BRF-*"]
+    },
+    {
+      "title": "GENERATE — {artist_id} — drum and chop families",
+      "assignee": "DISKLORDZ_SOUND_DESIGNER",
+      "depends_on": "GENERATE brief",
+      "factory_stage": "generate",
+      "outputs": ["DL-DRM-*", "DL-OSC-*"]
+    },
+    {
+      "title": "PRODUCE — {artist_id} — humanize MPC/808 lane",
+      "assignee": "DISKLORDZ_MUSIC_PRODUCER",
+      "depends_on": "GENERATE families",
+      "factory_stage": "produce",
+      "outputs": ["DL-TRK-*"]
+    },
+    {
+      "title": "PACKAGE — {artist_id} — crate split kits",
+      "assignee": "DISKLORDZ_SAMPLE_MINER",
+      "depends_on": "PRODUCE",
+      "factory_stage": "package",
+      "outputs": ["DL-KIT-*"]
+    },
+    {
+      "title": "PACKAGE — {artist_id} — {brand_name} visual",
+      "assignee": "DISKLORDZ_VISUAL_DIRECTOR",
+      "depends_on": "IDEATE",
+      "factory_stage": "package",
+      "outputs": ["DL-VIS-*"]
+    },
+    {
+      "title": "PUBLISH — {artist_id} — {brand_name} metadata cluster",
+      "assignee": "DISKLORDZ_CONTENT_PRODUCER",
+      "depends_on": ["PACKAGE kits", "PACKAGE visual"],
+      "factory_stage": "publish"
+    },
+    {
+      "title": "QA — {artist_id} — rights and provenance gate",
+      "assignee": "DISKLORDZ_RIGHTS_QA",
+      "depends_on": "PUBLISH",
+      "factory_stage": "qa",
+      "blocking": true
+    }
+  ],
+  "dispatch": {
+    "cli": "openclaw workboard dispatch",
+    "max_workers_default": 3,
+    "factory_api_fallback": "POST /night-shift/run"
+  }
+}

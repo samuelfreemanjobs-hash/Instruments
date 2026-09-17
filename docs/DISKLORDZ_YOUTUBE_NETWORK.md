@@ -121,6 +121,7 @@ One `POST /research/opportunities` per row in [`youtube_network_seed.json`](../d
 
 ## Related
 
+- [FACTORY_VINTAGE_COLLECTIVE.md](FACTORY_VINTAGE_COLLECTIVE.md) — four-artist vintage source orchestration (OpenClaw + Factory)  
 - [FACTORY_RESEARCH.md](FACTORY_RESEARCH.md)  
 - [disklordz-factory/docs/BUSINESS_ENGINES.md](../disklordz-factory/docs/BUSINESS_ENGINES.md)  
 - [AGENTS.md](../AGENTS.md)

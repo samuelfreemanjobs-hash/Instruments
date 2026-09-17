@@ -30,6 +30,7 @@ from disklordz_factory.research import (
     ResearchStatus,
     research_store,
 )
+from disklordz_factory.collective import load_collective_manifest, list_collective_artists
 from disklordz_factory.store import store
 
 app = FastAPI(
@@ -55,6 +56,16 @@ app.add_middleware(
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "disklordz-factory-api"}
+
+
+@app.get("/collective/manifest")
+def collective_manifest() -> dict:
+    return load_collective_manifest()
+
+
+@app.get("/collective/artists")
+def collective_artists() -> list[dict]:
+    return list_collective_artists()
 
 
 @app.get("/factory/status", response_model=FactoryStatus)

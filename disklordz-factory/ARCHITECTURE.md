@@ -123,6 +123,8 @@ Fictional identities (e.g. DISKLORD 001–006) each define visual identity, BPM 
 
 Programmed channels (Boulevard 86, Midnight Circuit, Disklordz, Terminal Mirage) — [docs/DISKLORDZ_YOUTUBE_NETWORK.md](../docs/DISKLORDZ_YOUTUBE_NETWORK.md). Each brand links to a sourced `DL-OPP-*` before A&R assigns batches.
 
+**Vintage collective + OpenClaw:** Four-artist 1970s–1980s soul/jazz/R&B synthesis orchestration — [docs/FACTORY_VINTAGE_COLLECTIVE.md](../docs/FACTORY_VINTAGE_COLLECTIVE.md). Roster seed: `database/artist_collective_seed.json`. API: `GET /collective/artists`.
+
 ## Related docs
 
 - [README.md](README.md) — quick start
@@ -130,6 +132,7 @@ Programmed channels (Boulevard 86, Midnight Circuit, Disklordz, Terminal Mirage)
 - [docs/BUSINESS_ENGINES.md](docs/BUSINESS_ENGINES.md) — Records / Supply / Labs flywheel
 - [workflows/core_loop.md](workflows/core_loop.md) — operating system stages
 - [workflows/night_shift.md](workflows/night_shift.md) — autonomous schedule + approval
+- [docs/FACTORY_VINTAGE_COLLECTIVE.md](../docs/FACTORY_VINTAGE_COLLECTIVE.md) — OpenClaw Workboard + four artist lanes
 - Repo index: [ARCHITECTURE.md](../ARCHITECTURE.md)
 - Plugin (Labs): [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)
 - CI / Slack: [scripts/setup-disklordz-integrations.sh](../scripts/setup-disklordz-integrations.sh)
