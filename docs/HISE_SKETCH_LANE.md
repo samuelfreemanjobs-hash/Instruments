@@ -1,5 +1,7 @@
 # HISE sketch lane (Antigravity)
 
+**Quick ref (Antigravity handoff):** [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md)
+
 **Status:** Parallel R&D lane — not the ship stack for Junova-X or NovaDrum unless promoted in Airtable.  
 **Implementer:** **Google Antigravity** (local Windows + HISE + MSVC), not Cursor Cloud Agent.  
 **PM:** Airtable Disklordz OS · **Strategy:** Business Planner + Marketing own SKU fit and GTM before any “real” product row.
