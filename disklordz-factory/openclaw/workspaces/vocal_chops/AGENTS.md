@@ -1,5 +1,7 @@
 # Vocal topline / chops
 
-Coordinate with `aar` and `DISKLORDZ_RIGHTS_QA` provenance tags before kits ship.
+Forked session only. Vocal arrangement drafts → workspace files; Maestro gets **stem plan JSON** only.
 
-Sample Miner splits: hook loops + vocal stem packs.
+Provenance tags required in summary (`synthetic` | `licensed` | `original_composition`).
+
+No spawn, no exec.

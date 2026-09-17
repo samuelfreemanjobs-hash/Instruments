@@ -12,6 +12,7 @@
         "description": "Factory orchestrator — vintage soul/jazz/R&B collective batches for four YouTube lanes",
         "workspace": "~/.openclaw/workspaces/disklordz_maestro",
         "model": "anthropic/claude-opus-4-6",
+        "sandbox": { "mode": "all", "scope": "agent" },
         "subagents": {
           "allowAgents": [
             "vintage_keys",
@@ -32,57 +33,66 @@
         "description": "Keys/Rhodes/FM/stabs — disco-funk harmony and cyber funk voicings",
         "workspace": "~/.openclaw/workspaces/vintage_keys",
         "model": "anthropic/claude-sonnet-4-6",
-        "tools": { "allow": ["read", "write"] }
+        "sandbox": { "mode": "all", "scope": "agent" },
+        "tools": { "allow": ["read", "write"], "deny": ["sessions_spawn", "exec"] }
       },
       "rhythm_section": {
         "name": "Bernard 'Pocket' Washington",
         "description": "Drums, 808/909, break ghosts, screw-friendly pocket",
         "workspace": "~/.openclaw/workspaces/rhythm_section",
         "model": "anthropic/claude-sonnet-4-6",
-        "tools": { "allow": ["read", "write"] }
+        "sandbox": { "mode": "all", "scope": "agent" },
+        "tools": { "allow": ["read", "write"], "deny": ["sessions_spawn", "exec"] }
       },
       "vocal_chops": {
         "name": "Evelyn 'Velvet' Hayes",
         "description": "Soul oohs, Memphis phrase chops, screw-pitch vocal stems (rights-safe)",
         "workspace": "~/.openclaw/workspaces/vocal_chops",
         "model": "anthropic/claude-sonnet-4-6",
-        "tools": { "allow": ["read", "write"] }
+        "sandbox": { "mode": "all", "scope": "agent" },
+        "tools": { "allow": ["read", "write"], "deny": ["sessions_spawn", "exec"] }
       },
       "market_intel": {
         "name": "DiskLordz Market Intel",
         "workspace": "~/.openclaw/workspaces/market_intel",
         "model": "anthropic/claude-sonnet-4-6",
-        "tools": { "allow": ["read", "write", "exec"] }
+        "sandbox": { "mode": "all", "scope": "agent" },
+        "tools": { "allow": ["read", "write", "exec"], "deny": ["sessions_spawn"] }
       },
       "aar": {
         "name": "DiskLordz A&R",
         "workspace": "~/.openclaw/workspaces/aar",
         "model": "anthropic/claude-sonnet-4-6",
-        "tools": { "allow": ["read", "write"] }
+        "sandbox": { "mode": "all", "scope": "agent" },
+        "tools": { "allow": ["read", "write"], "deny": ["sessions_spawn", "exec"] }
       },
       "artist_dl001": {
         "name": "DISKLORD 001 — Boulevard 86",
         "workspace": "~/.openclaw/workspaces/artist_dl001",
         "model": "anthropic/claude-sonnet-4-6",
-        "tools": { "allow": ["read", "write"] }
+        "sandbox": { "mode": "all", "scope": "agent" },
+        "tools": { "allow": ["read", "write"], "deny": ["sessions_spawn", "exec"] }
       },
       "artist_dl002": {
         "name": "DISKLORD 002 — Midnight Circuit",
         "workspace": "~/.openclaw/workspaces/artist_dl002",
         "model": "anthropic/claude-sonnet-4-6",
-        "tools": { "allow": ["read", "write"] }
+        "sandbox": { "mode": "all", "scope": "agent" },
+        "tools": { "allow": ["read", "write"], "deny": ["sessions_spawn", "exec"] }
       },
       "artist_dl006": {
         "name": "DISKLORD 006 — Disklordz (screw)",
         "workspace": "~/.openclaw/workspaces/artist_dl006",
         "model": "anthropic/claude-sonnet-4-6",
-        "tools": { "allow": ["read", "write"] }
+        "sandbox": { "mode": "all", "scope": "agent" },
+        "tools": { "allow": ["read", "write"], "deny": ["sessions_spawn", "exec"] }
       },
       "artist_dl004": {
         "name": "DISKLORD 004 — Terminal Mirage",
         "workspace": "~/.openclaw/workspaces/artist_dl004",
         "model": "anthropic/claude-sonnet-4-6",
-        "tools": { "allow": ["read", "write"] }
+        "sandbox": { "mode": "all", "scope": "agent" },
+        "tools": { "allow": ["read", "write"], "deny": ["sessions_spawn", "exec"] }
       }
     }
   },

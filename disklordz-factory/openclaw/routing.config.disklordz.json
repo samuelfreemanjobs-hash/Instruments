@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "description": "Gateway routing and sessions_spawn protocol for DiskLordz vintage collective",
+  "model_tiers": {
+    "orchestrator": { "entry": "disklordz_maestro", "model": "anthropic/claude-opus-4-6" },
+    "section_and_lane": { "model": "anthropic/claude-sonnet-4-6" }
+  },
+  "sandbox": {
+    "defaults": { "mode": "all", "scope": "agent" },
+    "note": "Each agent entry uses an isolated workspace directory under ~/.openclaw/workspaces/"
+  },
+  "tool_policy": {
+    "disklordz_maestro": {
+      "allow": ["read", "write", "sessions_spawn", "exec"],
+      "only_agent_allowed_to_spawn": true
+    },
+    "section_agents": ["vintage_keys", "rhythm_section", "vocal_chops"],
+    "section_tools": { "allow": ["read", "write"], "deny": ["sessions_spawn", "exec"] },
+    "market_intel_tools": { "allow": ["read", "write", "exec"], "deny": ["sessions_spawn"] }
+  },
+  "sessions_spawn": {
+    "caller": "disklordz_maestro",
+    "default_execution_context": "fork",
+    "use_inherit_only_for": ["artist_dl001", "artist_dl002", "artist_dl004", "artist_dl006", "aar"],
+    "inherit_max_turns": 3,
+    "fork_deliverable_max_tokens": 400,
+    "parallel_section_spawn": ["vintage_keys", "rhythm_section", "vocal_chops"],
+    "forbidden_in_main_session": [
+      "full harmonic exploration transcripts",
+      "step-sequencer bar-by-bar dumps",
+      "vocal draft lyric sheets longer than 8 bars"
+    ],
+    "maestro_merge_target": "DL-BRF-* json on Workboard parent card"
+  },
+  "context_isolation_rules": [
+    "Section agents write verbose drafts only under their workspace path",
+    "Return summaries to Maestro via spawn result, not sessions_send to main",
+    "DL002 and DL006 never share one fork task"
+  ]
+}

@@ -14,6 +14,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Vintage collective (4 artists)** | [docs/FACTORY_VINTAGE_COLLECTIVE.md](docs/FACTORY_VINTAGE_COLLECTIVE.md) | Soul/jazz/R&B synthesis → phonk/screw/french/cyber; OpenClaw Workboard |
 | **Artist greenlights (HQ)** | [docs/ARTIST_GREENLIGHTS.md](docs/ARTIST_GREENLIGHTS.md) | DL001, DL002, DL006, DL004 — bootstrapped research + A&R |
 | **OpenClaw 2.0 workspace** | [docs/OPENCLAW_VINTAGE_COLLECTIVE.md](docs/OPENCLAW_VINTAGE_COLLECTIVE.md) | SOUL/AGENTS hierarchy + Workboard dispatch |
+| **OpenClaw gateway routing** | [docs/OPENCLAW_GATEWAY_ROUTING.md](docs/OPENCLAW_GATEWAY_ROUTING.md) | Model tiering, fork spawn, context isolation |
 
 ## Repository layout
 

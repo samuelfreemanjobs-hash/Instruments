@@ -50,6 +50,10 @@ if [[ -f "$SRC/agents.config.disklordz.json" ]]; then
   echo "wrote $DEST/agents.config.disklordz.json"
   echo "  -> merge agents.entries into your openclaw.json (see openclaw/MERGE.md)"
 fi
+if [[ -f "$SRC/routing.config.disklordz.json" ]]; then
+  cp "$SRC/routing.config.disklordz.json" "$DEST/routing.config.disklordz.json"
+  echo "wrote $DEST/routing.config.disklordz.json (spawn protocol reference)"
+fi
 
 echo "Done. $count agent dirs, $ws workspaces."
 echo "Restart OpenClaw Gateway; set default agent disklordz_maestro; run: openclaw workboard dispatch"

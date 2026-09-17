@@ -35,3 +35,8 @@ Primary router. Owns Workboard parent card per batch. Decomposes work; dispatche
 
 - One active production run per `artist_id` unless orchestrator overrides
 - DL002 and DL006 must never share one produce card (tempo culture clash)
+
+## Gateway routing
+
+- Only this orchestrator uses `sessions_spawn`; default **`executionContext: fork`** for section agents
+- Maestro retains compositional structure; sectional verbosity stays in fork workspaces — see `docs/OPENCLAW_GATEWAY_ROUTING.md`

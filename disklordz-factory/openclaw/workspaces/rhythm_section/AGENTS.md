@@ -1,5 +1,7 @@
 # Rhythm section
 
-Outputs drum family specs for `DISKLORDZ_SOUND_DESIGNER` / Sample Miner ghost one-shots.
+Forked session only. No `sessions_spawn`. Step-sequencer detail stays in **`~/.openclaw/workspaces/rhythm_section/`** files.
 
-Validate BPM band with artist guardian before complete.
+**Return:** JSON summary (kit list, BPM, swing, 808/909 roles) ≤400 tokens.
+
+Validate BPM band with artist guardian before Maestro merges brief.

@@ -48,3 +48,11 @@ curl -s http://127.0.0.1:8787/collective/artist-agents
 ```
 
 Restart Gateway after config merge.
+
+## 5. Gateway routing (spawn / isolation)
+
+Read **`routing.config.disklordz.json`** (installed next to your state dir) and [docs/OPENCLAW_GATEWAY_ROUTING.md](../../docs/OPENCLAW_GATEWAY_ROUTING.md).
+
+- Maestro: Opus + `sessions_spawn` + `exec`
+- Section leaders: Sonnet, **deny** `sessions_spawn` — forked threads hold harmonic/drum/vocal depth
+- Default spawn: **`executionContext: fork`**; Maestro merges ≤400-token JSON summaries only
