@@ -37,3 +37,4 @@ Before new synthesis: query asset graph for unused or underused DNA that fits th
 - Duplicate SKU without differentiation  
 - Assets without hash + DNA  
 - Plugin outside Plugin Kernel  
+- **AI slop** — see [.cursor/rules/no-ai-slop.mdc](../../.cursor/rules/no-ai-slop.mdc) (generic copy, unvalidated AI output, volume without gates)  
