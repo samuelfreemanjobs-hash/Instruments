@@ -37,16 +37,15 @@
   },
   {
     "brand_id": "YT-DL-004",
-    "primary_channel_name": "Neon Terminal",
-    "naming_status": "pending",
-    "naming_notes": "Public vaporwave-forward channel name not chosen; Neon Terminal is ops working title only",
-    "alternate_names": ["Stack Trace", "Cipher Drive", "Grid Runner"],
+    "primary_channel_name": "Terminal Mirage",
+    "naming_status": "locked",
+    "alternate_names": ["Neon Terminal", "Stack Trace", "Cipher Drive", "Grid Runner"],
     "artist_id": "DL004",
     "opportunity_id": null,
     "genres": ["cyber funk", "vaporwave-aesthetic"],
     "bpm_min": 112,
     "bpm_max": 128,
     "audience_jobs": ["coding flow", "build sessions", "technical deep work"],
-    "product_skus": ["brand4-cyber-funk-midi", "brand4-synth-stab-presets", "brand4-coding-session-mix-bundle"]
+    "product_skus": ["terminal-mirage-cyber-funk-midi", "terminal-mirage-synth-stab-presets", "terminal-mirage-coding-session-mix-bundle"]
   }
 ]

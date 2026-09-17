@@ -11,9 +11,7 @@ Four **separate YouTube brands** under DiskLordz (not one generic upload channel
 | 1 | **Boulevard 86** | French touch / electro-funk / nu-disco | DL001 | 118–124 | Deep work, night cruise, creative session |
 | 2 | **Midnight Circuit** | **Drift phonk · wave phonk** | DL002 | 140–160 | Gym, night drive, FPS |
 | 3 | **Disklordz** | **Lo-fi · DJ Screw · 90s phonk** | DL006 | 60–95 | Slow study, chop & screw sessions, late-night focus |
-| 4 | **TBD** *(vaporwave naming)* | **Cyber funk** (coding) · *vaporwave aesthetic layer* | DL004 | 112–128 | Coding flow, build sessions, terminal deep work |
-
-**Brand 4 naming:** Public channel name is **not locked**. Working title in factory seed: **Neon Terminal** — pick a vaporwave-forward name when ready without changing the sonic/aesthetic rules below.
+| 4 | **Terminal Mirage** | **Cyber funk** (coding) · *vaporwave aesthetic layer* | DL004 | 112–128 | Coding flow, build sessions, terminal deep work |
 
 ---
 
@@ -69,11 +67,9 @@ Four **separate YouTube brands** under DiskLordz (not one generic upload channel
 
 ---
 
-## 4. Cyber funk for coding — **name TBD (vaporwave)**
+## 4. Cyber funk for coding — **Terminal Mirage**
 
-**Working title (factory / ops):** Neon Terminal — **replace when a vaporwave-forward public name is chosen.**
-
-**Alt names (candidates):** Stack Trace, Cipher Drive, Grid Runner, Neon Terminal
+**Alt names:** Neon Terminal, Stack Trace, Cipher Drive, Grid Runner
 
 **World:** Clean-room cyberpunk — developer at 2:00 AM, neon grid city outside floor-to-ceiling windows, retro-future UI, synth funk for **focus not hype**.
 
@@ -93,16 +89,16 @@ Four **separate YouTube brands** under DiskLordz (not one generic upload channel
 
 **Cyber funk** stays the **sonic primary** at 112–128 BPM (productive coding energy). **Vaporwave** is a strong **visual + optional sub-series** layer, not a replacement genre:
 
-| Layer | Role on brand 4 |
+| Layer | Role on Terminal Mirage |
 |--------|------------------|
 | **Cyber funk** | Default uploads: tight drums, funk bass, FM/stabs, long “build session” mixes |
 | **Vaporwave aesthetic** | Thumbs/loops: retro OS windows, marble busts, pink–cyan grids, faux-Japanese cityscapes, VHS softening — *without* slowing the whole channel to mallsoft tempo |
 | **Vapor-adjacent tracks** | Occasional **“Slow Grid”** sub-playlist uploads (85–100 BPM) or Shorts — clearly labeled, not mixed into main coding feed |
 | **Commerce** | “Cyber funk for coding” kits as hero SKU; **vaporwave texture packs** (loops, FX, cover art templates) as secondary — same DL004 lane |
 
-**Keep separate from Disklordz (brand 3):** screw / 90s phonk / lo-fi = **tape slowdown and chop culture**. Vaporwave on brand 4 = **digital nostalgia + clean funk pulse**, not Houston screw or gym phonk.
+**Keep separate from Disklordz (brand 3):** screw / 90s phonk / lo-fi = **tape slowdown and chop culture**. Vaporwave on Terminal Mirage = **digital nostalgia + clean funk pulse**, not Houston screw or gym phonk.
 
-**Risk to avoid:** Leading with a pure “vaporwave” channel title before research — YouTube may bucket you with irony/meme traffic and **hurt coding-session retention**. Better: *“cyber funk / future funk for developers”* positioning with vapor **art direction**, then lock a public name that fits both.
+**Naming note:** *Terminal Mirage* signals dev/terminal focus + vapor **mirage** (grids, busts, faux-city haze) without leading the title with “vaporwave.” Position uploads as *cyber funk / future funk for developers* with vapor art direction.
 
 ---
 
@@ -112,7 +108,7 @@ Four **separate YouTube brands** under DiskLordz (not one generic upload channel
 DISCOVER → one sourced DL-OPP per YT-DL-001…004
     → IDEATE → A&R greenlight per channel (no cross-brand batch mush)
     → GENERATE / PRODUCE / HUMANIZE
-    → PACKAGE → SKU prefix per brand (boulevard-*, midnight-*, disklordz-*, brand4-* until name locked)
+    → PACKAGE → SKU prefix per brand (boulevard-*, midnight-*, disklordz-*, terminal-mirage-*)
     → PUBLISH → programming matrix per channel
     → MEASURE → watch time + product attach by brand
 ```
