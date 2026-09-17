@@ -26,9 +26,13 @@ Browser (KitGenerator)
   → POST /api/generate { prompt, presetId, spec? }
        → rate limit (IP, in-memory v0)
        → buildVariationBatch(): 2 (studio) or 3 (creative) kits per request
-       → buildFactoryKit(): prompt-params + synth → /tmp/disklordz-kits/<kitId>/*.wav
+       → buildFactoryKit(): one_shot (6 hits), loop (`loop_main.wav`), or sfx (`sfx.wav`)
+       → engine: studio vs creative render paths (WO-SAAS-013)
+       → credit wallet: `creditCostForSpec` per batch (WO-SAAS-014)
        → WAVs → local temp + Supabase Storage `disklordz-kits` when service role set
-       → manifest with /api/samples/<kitId>/<file>.wav URLs
+       → manifest with /api/samples/<kitId>/<path>.wav URLs
+  → POST /api/factory/batch → `DISKLORDZ_PRODUCT_PACK_MANIFEST` (01_KICKS … 04_PERC)
+  → POST /api/factory/download { productPack } → storefront ZIP
   → GET /api/samples/...  (preview audio)
   → POST /api/download { manifest }
        → ZIP(manifest.json, README.txt, WAVs) with SHA-256 provenance check
@@ -45,6 +49,9 @@ Generation is **sync stub** in v0 (no WebSocket). Future factory jobs will be as
 | `src/components/KitGenerator.tsx` | Prompt UI, presets, preview, download |
 | `src/lib/presets.ts` | Five presets (4 artist lanes + MPC neutral) |
 | `src/lib/generation/generation-spec.ts` | WO-SAAS-007 spec parse + preset defaults |
+| `src/lib/generation/engine-render.ts` | WO-SAAS-013 studio vs creative render + provenance |
+| `src/lib/generation/loop-render.ts`, `sfx-render.ts`, `mode-utils.ts` | WO-SAAS-014 loop/SFX + credit tiers |
+| `src/lib/generation/product-factory.ts` | WO-SAAS-015 storefront folder pack |
 | `src/lib/generation/factory.ts` | Prompt-driven kit build + kit store |
 | `src/components/GenerationSpecFields.tsx` | Spec UI (mode, engine, key, BPM, …) |
 | `src/lib/rag/` | WO-SAAS-012 keyword RAG + `POST /api/rag/suggest` |

@@ -8,7 +8,8 @@ import {
   defaultGenerationSpec,
   type GenerationSpec,
 } from "@/lib/generation/generation-spec";
-import type { KitManifest } from "@/lib/manifest";
+import { creditCostForSpec, PRODUCT_PACK_CREDIT_COST } from "@/lib/generation/mode-utils";
+import type { KitManifest, ProductPackManifest } from "@/lib/manifest";
 import { STYLE_PRESETS, type StylePreset } from "@/lib/presets";
 
 type FrozenRequest = {
@@ -58,6 +59,8 @@ export function KitGenerator() {
   } | null>(null);
   const [ideaLoading, setIdeaLoading] = useState(false);
   const [ragNote, setRagNote] = useState<string | null>(null);
+  const [productPack, setProductPack] = useState<ProductPackManifest | null>(null);
+  const [packLoading, setPackLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -230,6 +233,65 @@ export function KitGenerator() {
     audio.onended = () => setPlayingKey(null);
   }, []);
 
+  const runProductPack = useCallback(async () => {
+    setPackLoading(true);
+    setError(null);
+    setProductPack(null);
+    try {
+      const res = await fetch("/api/factory/batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, presetId, spec }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message ?? data.error ?? "Product factory failed");
+        return;
+      }
+      setProductPack(data.productPack as ProductPackManifest);
+      if (data.billing) {
+        setBilling({
+          plan: data.billing.plan,
+          creditsBalance: data.billing.creditsBalance,
+          unlimited: data.billing.unlimited,
+        });
+      }
+    } catch {
+      setError("Product factory network error.");
+    } finally {
+      setPackLoading(false);
+    }
+  }, [prompt, presetId, spec]);
+
+  const downloadProductPack = useCallback(async () => {
+    if (!productPack) return;
+    setPackLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/factory/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productPack }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error ?? "Pack download failed");
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `disklordz-pack-${productPack.presetId}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setError("Pack download failed.");
+    } finally {
+      setPackLoading(false);
+    }
+  }, [productPack]);
+
   const downloadZip = useCallback(async () => {
     if (!activeManifest) return;
     setLoading(true);
@@ -280,7 +342,8 @@ export function KitGenerator() {
           <p className="text-xs text-emerald-500/90">Pro — unlimited generations</p>
         ) : billing ? (
           <p className="text-xs text-zinc-500">
-            Signed in: {billing.creditsBalance} credits left (1 per batch).{" "}
+            Signed in: {billing.creditsBalance} credits left (
+            {creditCostForSpec(spec)} per kit batch, {PRODUCT_PACK_CREDIT_COST} for product pack).{" "}
             <a href="/account" className="text-emerald-400 hover:underline">Upgrade</a>
           </p>
         ) : (
@@ -433,10 +496,42 @@ export function KitGenerator() {
           </div>
 
           <p className="text-xs text-zinc-500">
-            Storage: {storageBackend ?? "local"} · factory_parametric_v1 · SHA-256 in manifest.json
+            Storage: {storageBackend ?? "local"} · studio/creative engines · SHA-256 in manifest.json
           </p>
         </section>
       )}
+
+      <section className="space-y-3 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
+        <h2 className="text-lg font-semibold text-zinc-100">Product factory</h2>
+        <p className="text-sm text-zinc-400">
+          Turn the same brief into a storefront SKU layout ({PRODUCT_PACK_CREDIT_COST} credits):{" "}
+          <span className="font-mono text-zinc-500">01_KICKS … 04_PERC</span> with{" "}
+          {productPack?.samples.length ?? 17} WAVs.
+        </p>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            disabled={packLoading || loading}
+            onClick={runProductPack}
+            className="flex-1 rounded-xl border border-zinc-600 px-4 py-3 font-semibold text-zinc-100 transition hover:border-emerald-500 disabled:opacity-50"
+          >
+            {packLoading ? "Building pack…" : `Build product pack (${PRODUCT_PACK_CREDIT_COST} cr)`}
+          </button>
+          <button
+            type="button"
+            disabled={packLoading || !productPack}
+            onClick={downloadProductPack}
+            className="flex-1 rounded-xl border border-emerald-600/60 bg-emerald-500/10 px-4 py-3 font-semibold text-emerald-200 transition hover:bg-emerald-500/20 disabled:opacity-50"
+          >
+            Download pack ZIP
+          </button>
+        </div>
+        {productPack && (
+          <p className="font-mono text-xs text-zinc-500">
+            pack {productPack.packId.slice(0, 8)} · {productPack.folders.map((f) => f.id).join(" · ")}
+          </p>
+        )}
+      </section>
     </div>
   );
 }

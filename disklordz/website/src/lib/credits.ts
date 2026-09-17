@@ -42,7 +42,11 @@ export async function getBillingSnapshot(userId: string): Promise<BillingSnapsho
   };
 }
 
-export async function spendGenerationCredit(userId: string, batchId: string): Promise<boolean> {
+export async function spendGenerationCredit(
+  userId: string,
+  batchId: string,
+  amount: number = GENERATION_CREDIT_COST,
+): Promise<boolean> {
   const admin = getSupabaseAdmin();
   if (!admin) {
     return true;
@@ -50,6 +54,7 @@ export async function spendGenerationCredit(userId: string, batchId: string): Pr
   const { data, error } = await admin.rpc("spend_generation_credit", {
     p_user_id: userId,
     p_batch_id: batchId,
+    p_amount: Math.max(1, Math.floor(amount)),
   });
   if (error) {
     console.error("spend_generation_credit", error.message);
@@ -58,7 +63,11 @@ export async function spendGenerationCredit(userId: string, batchId: string): Pr
   return Boolean(data);
 }
 
-export async function refundGenerationCredit(userId: string, batchId: string): Promise<void> {
+export async function refundGenerationCredit(
+  userId: string,
+  batchId: string,
+  amount: number = GENERATION_CREDIT_COST,
+): Promise<void> {
   const admin = getSupabaseAdmin();
   if (!admin) {
     return;
@@ -66,6 +75,7 @@ export async function refundGenerationCredit(userId: string, batchId: string): P
   await admin.rpc("refund_generation_credit", {
     p_user_id: userId,
     p_batch_id: batchId,
+    p_amount: Math.max(1, Math.floor(amount)),
   });
 }
 

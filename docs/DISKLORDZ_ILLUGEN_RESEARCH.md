@@ -120,9 +120,9 @@ Example structured conditioning (fed to factory + RAG prompt assistant):
 | **010** | Credits + Stripe | ✅ Free credits + Pro unlimited; guest IP cap |
 | **011** | History v2 | ✅ `/account` filters + batch variations |
 | **012** | RAG prompt assistant | ✅ keyword v1 + exemplars; pgvector later (012b) |
-| **013** | Creative vs Studio routes | Two generation backends; routing by `engine` |
-| **014** | Loop + SFX modes | Bar-length loops, SFX length tiers; credit table |
-| **015** | Product factory batch | Brief → N WAVs per folder → ZIP SKU + manifest for storefront |
+| **013** | Creative vs Studio routes | ✅ `renderSampleForEngine` + `factory_studio_v1` / `factory_creative_v1` provenance |
+| **014** | Loop + SFX modes | ✅ `loop_main.wav` / `sfx.wav`; `creditCostForSpec` + variable RPC migration |
+| **015** | Product factory batch | ✅ `buildProductPack`, `POST /api/factory/batch`, pack ZIP download |
 | **016** | Desktop / watch folder | Optional Electron or folder sync for DAW drag/drop |
 
 Each WO: Airtable → GitHub issue → PR title `WO-SAAS-00N` → merge → Done.

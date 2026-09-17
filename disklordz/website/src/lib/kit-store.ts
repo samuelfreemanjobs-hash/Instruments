@@ -15,8 +15,8 @@ export async function writeKitFile(
   data: Buffer,
 ): Promise<string> {
   const dir = kitDirectory(kitId);
-  await mkdir(dir, { recursive: true });
   const filePath = path.join(dir, filename);
+  await mkdir(path.dirname(filePath), { recursive: true });
   await writeFile(filePath, data);
   return filePath;
 }

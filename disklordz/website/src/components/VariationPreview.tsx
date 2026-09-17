@@ -58,14 +58,27 @@ function VariationDetail({
   playingKey: string | null;
   onPlay: (url: string, playKey: string) => void;
 }) {
-  const audition = manifest.samples.filter((s) =>
-    AUDITION_SAMPLES.includes(s.name as (typeof AUDITION_SAMPLES)[number]),
-  );
+  const mode = manifest.generationSpec?.mode ?? "one_shot";
+  const audition =
+    mode === "loop"
+      ? manifest.samples.filter((s) => s.name === "loop_main")
+      : mode === "sfx"
+        ? manifest.samples.filter((s) => s.name === "sfx")
+        : manifest.samples.filter((s) =>
+            AUDITION_SAMPLES.includes(s.name as (typeof AUDITION_SAMPLES)[number]),
+          );
+
+  const auditionLabel =
+    mode === "loop"
+      ? "Quick audition (loop)"
+      : mode === "sfx"
+        ? "Quick audition (SFX)"
+        : "Quick audition (kick / snare / hat)";
 
   return (
     <div className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-950/80 p-4">
       <p className="font-mono text-xs text-zinc-500">{manifest.kitId}</p>
-      <p className="text-sm text-zinc-400">Quick audition (kick / snare / hat)</p>
+      <p className="text-sm text-zinc-400">{auditionLabel}</p>
       <ul className="flex flex-wrap gap-2">
         {audition.map((s) => {
           const key = `${manifest.kitId}-${s.name}`;

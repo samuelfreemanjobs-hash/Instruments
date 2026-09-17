@@ -7,10 +7,9 @@ import {
   spendGenerationCredit,
 } from "@/lib/credits";
 import { parseGenerationSpec } from "@/lib/generation/generation-spec";
-import { creditCostForSpec } from "@/lib/generation/mode-utils";
-import { buildVariationBatch } from "@/lib/generation/variations";
+import { PRODUCT_PACK_CREDIT_COST } from "@/lib/generation/mode-utils";
+import { buildProductPack } from "@/lib/generation/product-factory";
 import { activeKitStorageBackend, ensureKitStorageReady } from "@/lib/kit-storage";
-import { saveKitForUser } from "@/lib/kits/persist";
 import { getPreset, STYLE_PRESETS } from "@/lib/presets";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
@@ -35,7 +34,7 @@ export async function POST(req: NextRequest) {
 
   if (!prompt || prompt.length < 3) {
     return NextResponse.json(
-      { error: "prompt_required", message: "Describe your vibe (at least 3 characters)." },
+      { error: "prompt_required", message: "Describe the pack brief (at least 3 characters)." },
       { status: 400 },
     );
   }
@@ -65,8 +64,7 @@ export async function POST(req: NextRequest) {
 
   const billingActive = Boolean(userId && getSupabaseAdmin());
   const batchId = newBatchId();
-  const creditCost = creditCostForSpec(parsed.spec);
-  let rateLimit: { remaining: number; limit: number } | undefined;
+  const creditCost = PRODUCT_PACK_CREDIT_COST;
 
   if (billingActive && userId) {
     const spent = await spendGenerationCredit(userId, batchId, creditCost);
@@ -75,7 +73,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: "insufficient_credits",
-          message: "Not enough credits for this batch. Upgrade to Pro or try a lighter mode.",
+          message: `Product packs cost ${creditCost} credits.`,
           creditsBalance: billing?.creditsBalance ?? 0,
           generationCreditCost: creditCost,
           plan: billing?.plan ?? "free",
@@ -89,14 +87,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: "daily_limit",
-          message: `Guest tier allows ${limited.limit} batches per day per IP. Sign in for credit wallet.`,
+          message: `Guest tier allows ${limited.limit} batches per day per IP. Sign in for product factory.`,
           retryAfterSec: limited.retryAfterSec,
           limit: limited.limit,
         },
         { status: 429 },
       );
     }
-    rateLimit = { remaining: limited.remaining, limit: limited.limit };
   }
 
   if (activeKitStorageBackend() === "supabase") {
@@ -115,39 +112,16 @@ export async function POST(req: NextRequest) {
   }
 
   const baseUrl = req.nextUrl.origin;
-  let manifests;
+  let pack;
   try {
-    const result = await buildVariationBatch(
-      prompt,
-      presetId,
-      baseUrl,
-      parsed.spec,
-      batchId,
-    );
-    manifests = result.manifests;
+    pack = await buildProductPack(prompt, presetId, baseUrl, parsed.spec, batchId);
   } catch (err) {
     if (billingActive && userId) {
       await refundGenerationCredit(userId, batchId, creditCost);
     }
-    const message = err instanceof Error ? err.message : "generation_failed";
-    return NextResponse.json({ error: "generation_failed", message }, { status: 500 });
+    const message = err instanceof Error ? err.message : "factory_failed";
+    return NextResponse.json({ error: "factory_failed", message }, { status: 500 });
   }
-
-  let savedToAccount = false;
-  if (userId && isSupabaseConfigured()) {
-    const supabase = await createClient();
-    if (supabase) {
-      for (const manifest of manifests) {
-        const saved = await saveKitForUser(supabase, userId, manifest);
-        if (saved.ok) savedToAccount = true;
-      }
-    }
-  }
-
-  const variations = manifests.map((manifest) => ({
-    label: manifest.variationLabel ?? "A",
-    manifest,
-  }));
 
   let creditsAfter: Awaited<ReturnType<typeof getBillingSnapshot>> | null = null;
   if (billingActive && userId) {
@@ -157,24 +131,14 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     batchId,
     creditCost,
-    variationCount: variations.length,
     storageBackend: activeKitStorageBackend(),
-    variations,
-    manifest: manifests[0],
-    savedToAccount,
-    rateLimit,
+    productPack: pack,
     billing: creditsAfter
       ? {
           plan: creditsAfter.plan,
           creditsBalance: creditsAfter.creditsBalance,
-          generationCreditCost: creditCost,
           unlimited: creditsAfter.plan === "pro",
         }
       : undefined,
-    presets: STYLE_PRESETS.map(({ id, label, description }) => ({
-      id,
-      label,
-      description,
-    })),
   });
 }

@@ -1,12 +1,20 @@
 import type { GenerationSpec } from "@/lib/generation/generation-spec";
 
+export type SampleProvenance =
+  | "stub_factory_v0"
+  | "factory_parametric_v1"
+  | "factory_studio_v1"
+  | "factory_creative_v1"
+  | "factory_product_pack_v1";
+
 export type SampleAsset = {
   name: string;
   filename: string;
   url: string;
   sha256: string;
-  provenance: "stub_factory_v0" | "factory_parametric_v1";
+  provenance: SampleProvenance;
   sourceId: string;
+  folder?: string;
 };
 
 export type KitManifest = {
@@ -31,4 +39,27 @@ export type KitManifest = {
   variationBatchId?: string;
   variationTotal?: number;
   variationLabel?: string;
+};
+
+export type ProductPackFolder = {
+  id: string;
+  label: string;
+  sampleCount: number;
+};
+
+export type ProductPackManifest = {
+  format: "DISKLORDZ_PRODUCT_PACK_MANIFEST";
+  version: 1;
+  packId: string;
+  createdAt: string;
+  prompt: string;
+  presetId: string;
+  artistLane: string;
+  sampleRate: 44100;
+  folders: ProductPackFolder[];
+  samples: SampleAsset[];
+  license: "personal_and_commercial_v0_preview";
+  storageBackend?: "local" | "supabase";
+  generationSpec?: GenerationSpec;
+  creditCost: number;
 };

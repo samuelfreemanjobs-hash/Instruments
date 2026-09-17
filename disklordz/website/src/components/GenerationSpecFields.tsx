@@ -6,6 +6,7 @@ import type {
   GenerationSpec,
   LoopLength,
 } from "@/lib/generation/generation-spec";
+import { creditCostForSpec } from "@/lib/generation/mode-utils";
 
 type Props = {
   spec: GenerationSpec;
@@ -14,9 +15,9 @@ type Props = {
 };
 
 const MODE_OPTIONS: { value: GenerationMode; label: string }[] = [
-  { value: "one_shot", label: "One shot" },
-  { value: "loop", label: "Loop (metadata)" },
-  { value: "sfx", label: "SFX (metadata)" },
+  { value: "one_shot", label: "One shot kit" },
+  { value: "loop", label: "Drum loop" },
+  { value: "sfx", label: "SFX impact" },
 ];
 
 const ENGINE_OPTIONS: { value: GenerationEngine; label: string }[] = [
@@ -146,8 +147,8 @@ export function GenerationSpecFields({ spec, onChange, disabled }: Props) {
       </label>
 
       <p className="text-xs text-zinc-500 sm:col-span-2">
-        Loop/SFX modes store musical intent in the manifest; v0 still renders one-shot kit WAVs.
-        Preset changes reset spec defaults from the lane BPM hint.
+        Batch cost: <span className="text-emerald-400/90">{creditCostForSpec(spec)} credits</span>{" "}
+        (loop/SFX tiers + studio surcharge). Preset changes reset defaults from the lane BPM hint.
       </p>
     </div>
   );
