@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.local/schemas/opportunity.json",
+  "title": "MarketOpportunity",
+  "type": "object",
+  "required": ["opportunity_id", "title", "genre"],
+  "properties": {
+    "opportunity_id": { "type": "string", "pattern": "^DL-OPP-[0-9]{6}$" },
+    "title": { "type": "string" },
+    "genre": { "type": "string" },
+    "subgenre": { "type": "string" },
+    "bpm_min": { "type": "number" },
+    "bpm_max": { "type": "number" },
+    "aesthetic": { "type": "string" },
+    "audience": { "type": "string" },
+    "use_case": { "type": "string" },
+    "search_demand": { "type": "string", "enum": ["low", "medium", "high"] },
+    "competition": { "type": "string", "enum": ["low", "medium", "high"] },
+    "product_ideas": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "sources": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "YouTube, Spotify, Reddit, etc."
+    },
+    "score": { "type": "number", "minimum": 0, "maximum": 100 },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

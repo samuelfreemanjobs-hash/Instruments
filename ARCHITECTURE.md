@@ -8,6 +8,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 |---------|-----|----------------|
 | **JD Upgraded** (VST3 + CLAP + standalone synth) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [Source/UI/ARCHITECTURE.md](Source/UI/ARCHITECTURE.md) | `JDUpgraded_VST3`, `JDUpgraded_CLAP`, `JDUpgraded_Standalone` |
 | **Offline tooling** (ROM gen, render, regression) | [tools/ARCHITECTURE.md](tools/ARCHITECTURE.md) | `GenerateCleanroomRom`, `OfflineRender`, `SpectralDiff` |
+| **DiskLordz Factory** (batch catalog / agent OS scaffold) | [disklordz-factory/ARCHITECTURE.md](disklordz-factory/ARCHITECTURE.md) | Python `factory-api` (FastAPI), not in CMake |
 
 ## Repository layout
 
