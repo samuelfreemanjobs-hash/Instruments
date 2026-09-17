@@ -42,7 +42,7 @@ Generation is **sync stub** in v0 (no WebSocket). Future factory jobs will be as
 |------|------|
 | `src/components/KitGenerator.tsx` | Prompt UI, presets, preview, download |
 | `src/lib/presets.ts` | Five presets (4 artist lanes + MPC neutral) |
-| `src/lib/generation/stub.ts` | Manifest builder |
+| `src/lib/generation/factory.ts` | Prompt-driven kit build + kit store |
 | `src/app/api/generate/route.ts` | Generate endpoint |
 | `src/app/api/download/route.ts` | ZIP export |
 | `../sound-factory/` | Offline WAV generation |

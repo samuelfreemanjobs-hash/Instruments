@@ -7,7 +7,7 @@ export default function Home() {
       <AuthNav />
       <KitGenerator />
       <footer className="mx-auto mt-16 max-w-3xl border-t border-zinc-800 pt-6 text-center text-xs text-zinc-600">
-        v0 · WO-SAAS-002 auth when Supabase env is set · WO-SAAS-004 factory generation next
+        v0 MVP · parametric factory · deploy via DEPLOY.md
       </footer>
     </div>
   );

@@ -1,6 +1,6 @@
 # Disklordz Drum SaaS (website)
 
-Next.js app for **WO-SAAS-001–005** (scaffold, stub generate, preview, ZIP + manifest).
+Next.js app for Drum SaaS **v0 MVP** (parametric factory, preview, ZIP, auth, rate limits). See [DEPLOY.md](./DEPLOY.md).
 
 ```bash
 npm install
