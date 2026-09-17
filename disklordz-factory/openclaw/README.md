@@ -6,6 +6,14 @@ File-based agent identities for import into an OpenClaw Gateway state directory.
 
 ```text
 openclaw/
+  agents.config.disklordz.json   # merge into ~/.openclaw/openclaw.json
+  MERGE.md
+  workspaces/                    # per-entry workspace (SOUL/AGENTS)
+    disklordz_maestro/           # Isaac "The Maestro" Vance
+    vintage_keys/                # Marcus "Hertz" Dupree
+    rhythm_section/              # Bernard "Pocket" Washington
+    vocal_chops/                 # Evelyn "Velvet" Hayes
+    artist_dl001/ …
   AGENTS.md                 # Workspace-level routing index
   agents/
     DISKLORDZ_FACTORY_ORCHESTRATOR/

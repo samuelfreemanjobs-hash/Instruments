@@ -86,7 +86,28 @@ From repo root:
 OPENCLAW_STATE_DIR=~/.openclaw ./disklordz-factory/scripts/install-openclaw-workspace.sh
 ```
 
-Copies `disklordz-factory/openclaw/agents/*` into `$OPENCLAW_STATE_DIR/agents/` (merge, no delete). Restart Gateway; register agents in Control UI if needed.
+Copies:
+
+- `openclaw/workspaces/*` → `~/.openclaw/workspaces/` (Isaac/Maestro + section leaders + artist lanes)
+- `openclaw/agents/DISKLORDZ_*` → `~/.openclaw/agents/`
+- `agents.config.disklordz.json` → merge into `openclaw.json` — see [`openclaw/MERGE.md`](../disklordz-factory/openclaw/MERGE.md)
+
+### Gateway `agents.entries` (ensemble pattern)
+
+Same shape as a vintage **bandleader + section** config:
+
+| Entry key | Display name | Role |
+|-----------|--------------|------|
+| `disklordz_maestro` | Isaac "The Maestro" Vance | Default orchestrator, `sessions_spawn`, Opus |
+| `vintage_keys` | Marcus "Hertz" Dupree | Keys/Rhodes/FM |
+| `rhythm_section` | Bernard "Pocket" Washington | Drums / phonk / screw pocket |
+| `vocal_chops` | Evelyn "Velvet" Hayes | Soul chops & stems |
+| `artist_dl001` … | DISKLORD 001–004/006 | Lane guardians |
+| `market_intel`, `aar` | Research gate | `DL-OPP-*` only |
+
+Full JSON: [`disklordz-factory/openclaw/agents.config.disklordz.json`](../disklordz-factory/openclaw/agents.config.disklordz.json).
+
+Restart Gateway after merge; default agent: **`disklordz_maestro`**.
 
 ## Research gate (unchanged)
 
