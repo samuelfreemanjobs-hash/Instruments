@@ -1,0 +1,73 @@
+{
+  "artists": {
+    "DL001": {
+      "youtube_brand": "Boulevard 86",
+      "movement_targets": ["french_touch"],
+      "distribution_bpm": { "min": 118, "max": 124 },
+      "source_session_bpm": { "min": 68, "max": 92 },
+      "lane_doc": "docs/lanes/DL001_BOULEVARD_86.md",
+      "downstream": {
+        "french_touch": {
+          "drum_machines": ["Roland TR-909", "Roland TR-707"],
+          "production": ["sidechain pump", "filter-house sweeps", "talkbox/vocoder"],
+          "reject": ["memphis cowbell phonk", "screw tempo", "trap grids"]
+        }
+      }
+    },
+    "DL002": {
+      "youtube_brand": "Midnight Circuit",
+      "movement_targets": ["memphis_90s", "cloud_phonk"],
+      "distribution_bpm": { "min": 140, "max": 160 },
+      "source_session_bpm": { "min": 68, "max": 92 },
+      "lane_doc": "docs/lanes/DL002_MIDNIGHT_CIRCUIT.md",
+      "downstream": {
+        "memphis_90s": {
+          "drum_machines": ["Boss DR-660", "Boss DR-5"],
+          "samplers": ["Gemini DS-1224", "E-mu SP-1200"],
+          "sp1200": { "bit_depth": 12, "sample_rate_khz": 26.04, "filter": "SSM2044" }
+        },
+        "cloud_phonk": {
+          "sidechain_ducking": true,
+          "bitcrush": true,
+          "tape_stop_emulation": true,
+          "digital_lowpass_resonant": true,
+          "drift_phonk": ["808 glide", "cowbell arps", "wave leads"]
+        }
+      }
+    },
+    "DL006": {
+      "youtube_brand": "Disklordz",
+      "movement_targets": ["screw"],
+      "distribution_bpm": { "min": 60, "max": 95 },
+      "source_session_bpm": { "min": 68, "max": 92 },
+      "lane_doc": "docs/lanes/DL006_DISKLORDZ.md",
+      "downstream": {
+        "screw": {
+          "turntable": "Technics SL-1200 (dual)",
+          "pitch_reduction_percent": { "min": 10, "max": 25 },
+          "effective_rpm_feel": "16-25",
+          "tape_layer": ["wow/flutter", "pitch-down samples", "RC-20/SP-404"]
+        }
+      }
+    },
+    "DL004": {
+      "youtube_brand": "Terminal Mirage",
+      "movement_targets": ["cyber_funk"],
+      "sub_series": {
+        "name": "Slow Grid",
+        "movement_target": "source_only",
+        "bpm": { "min": 85, "max": 100 }
+      },
+      "distribution_bpm": { "min": 112, "max": 128 },
+      "source_session_bpm": { "min": 68, "max": 92 },
+      "lane_doc": "docs/lanes/DL004_TERMINAL_MIRAGE.md",
+      "downstream": {
+        "cyber_funk": {
+          "synthesis": ["Yamaha DX7 FM", "fusion bass", "digital stabs"],
+          "drums": "909/707 hybrid tight",
+          "vapor_aesthetic": "visual and Shorts only unless Slow Grid sub-playlist"
+        }
+      }
+    }
+  }
+}

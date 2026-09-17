@@ -20,6 +20,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **OpenClaw migration** | [docs/OPENCLAW_MIGRATION.md](docs/OPENCLAW_MIGRATION.md) | 2.0 SQLite, doctor, parallel spawn stability |
 | **Ensemble personas** | [docs/OPENCLAW_PERSONAS.md](docs/OPENCLAW_PERSONAS.md) | Isaac / Marcus / Bernard / Evelyn domain SOUL |
 | **Sonic archaeology** | [docs/SONIC_ARCHAEOLOGY.md](docs/SONIC_ARCHAEOLOGY.md) | Screw / Memphis / Smokey → DL006/DL002 source design |
+| **Artist lane bible (×4)** | [docs/ARTIST_LANE_BIBLE.md](docs/ARTIST_LANE_BIBLE.md) | Equal-depth DL001–DL004 archaeology & processing |
 
 ## Repository layout
 

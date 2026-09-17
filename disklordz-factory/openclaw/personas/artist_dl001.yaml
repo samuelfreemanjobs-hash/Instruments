@@ -1,0 +1,12 @@
+artist_id: DL001
+openclaw_entry: artist_dl001
+display_name: "DISKLORD 001 — Boulevard 86"
+instrument_domain_guardian: "French touch / filter disco lane"
+era_specialization: "1977-1983 disco-funk & boogie source → 118-124 robot funk"
+emulated_distribution_chain:
+  drums: ["TR-909", "TR-707"]
+  voice: ["vocoder", "talkbox"]
+  mix: ["sidechain pump", "filter-house sweeps"]
+movement_target: french_touch
+forbidden_cross_lane: [DL002, DL006, "screw", "memphis cowbell phonk"]
+lane_doc: docs/lanes/DL001_BOULEVARD_86.md

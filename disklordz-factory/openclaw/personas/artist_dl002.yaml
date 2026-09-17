@@ -1,0 +1,11 @@
+artist_id: DL002
+openclaw_entry: artist_dl002
+display_name: "DISKLORD 002 — Midnight Circuit"
+instrument_domain_guardian: "Drift phonk / wave phonk / Memphis-cloud archaeology"
+era_specialization: "Soul & jazz-funk chops → 140-160 fast phonk"
+movement_targets: [memphis_90s, cloud_phonk]
+emulated_downstream:
+  memphis: ["Boss DR-660", "SP-1200 12-bit", "45 RPM sample pitch-down"]
+  cloud_phonk: ["sidechain", "bitcrush", "tape-stop", "808 syncopation"]
+forbidden_cross_lane: [DL006, "screw tempo", "sub-100 bpm batches"]
+lane_doc: docs/lanes/DL002_MIDNIGHT_CIRCUIT.md

@@ -8,14 +8,16 @@ Three files or spawn results, each validating against `schemas/dl_section_payloa
 - `rhythm_section.json` — `agent_identifier: rhythm_section`
 - `vocal_section.json` — `agent_identifier: vocal_topline`
 
-Set `movement_target` per lane:
+Set `movement_target` per lane (each artist has full lane doc under `docs/lanes/`):
 
-| artist_id | movement_target |
-|-----------|-----------------|
-| DL006 | `screw` |
-| DL002 | `memphis_90s` and/or `cloud_phonk` |
-| DL001 | `french_touch` |
-| DL004 | `cyber_funk` |
+| artist_id | Brand | movement_target | Required `compiled_music_prompt.downstream` |
+|-----------|-------|-----------------|---------------------------------------------|
+| DL001 | Boulevard 86 | `french_touch` | `downstream.french_touch` |
+| DL002 | Midnight Circuit | `memphis_90s`, `cloud_phonk` | both blocks when dual brief |
+| DL006 | Disklordz | `screw` | `downstream.screw` |
+| DL004 | Terminal Mirage | `cyber_funk` | `downstream.cyber_funk` (+ `vapor_aesthetic` meta) |
+
+Registry: `database/artist_lane_processing.json` · Index: `docs/ARTIST_LANE_BIBLE.md`
 
 ## Merge output
 

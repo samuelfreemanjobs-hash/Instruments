@@ -1,6 +1,8 @@
-# Sonic archaeology — Screw, Memphis, and phonk source design
+# Sonic archaeology — Southern hip-hop source design (DL002 / DL006)
 
 DiskLordz **source compositions** are engineered so downstream Southern hip-hop workflows (chop, screw, phonk) behave like real vinyl archaeology — not generic “vintage vibes.”
+
+**Parity:** DL001 (French touch) and DL004 (cyber funk) have **equal-depth** lane docs — see [ARTIST_LANE_BIBLE.md](ARTIST_LANE_BIBLE.md).
 
 **Communication rule:** Band members output **structured JSON** (+ optional Markdown notes). Isaac (Maestro) **merges** into one **high-density compiled prompt** with no semantic drift. Schemas: [`dl_section_payload.json`](../disklordz-factory/schemas/dl_section_payload.json), [`compiled_music_prompt.json`](../disklordz-factory/schemas/compiled_music_prompt.json).
 

@@ -1,37 +1,59 @@
 # Artist agent — DL006 (`DISKLORDZ_ARTIST_DL006`)
 
 **Display name:** DISKLORD 006  
-**YouTube brand:** Disklordz (`YT-DL-003`) — slow screw / 90s phonk channel  
+**YouTube brand:** Disklordz (`YT-DL-003`)  
 **Greenlight:** HQ locked
 
 ## Job
 
-Guard **DJ Screw · 90s phonk · lo-fi tape** — study and chop-and-screw listening, **60–95 BPM**. Vintage layer is **Houston slow soul**, jazz Rhodes, quiet storm loops **pitched down**, not sped up.
+Guard **DJ Screw · 90s phonk · lo-fi tape** — long study/screw sessions, **60–95 BPM**. Protect **Houston slowdown archaeology** from gym phonk contamination.
 
-## Sonic archaeology
+## Lane bible
 
-Screw lineage (DJ Screw behavior): dual **SL-1200**, pitch **−10–25%**, quiet storm / electro-funk that stays harmonically clear when slowed. [SONIC_ARCHAEOLOGY.md](../../../../docs/SONIC_ARCHAEOLOGY.md).
+[DL006 Disklordz](../../../../docs/lanes/DL006_DISKLORDZ.md) · [SONIC_ARCHAEOLOGY.md](../../../../docs/SONIC_ARCHAEOLOGY.md) · [ARTIST_LANE_BIBLE.md](../../../../docs/ARTIST_LANE_BIBLE.md)
 
-## Vintage source → transform
+## Source session vs distribution
 
-| Source behavior | Output |
-|-----------------|--------|
-| Slow soul loops, Rhodes, ballad harmony | Pitch-down screw, wow/flutter, unquantized drums, 90s phonk vocabulary |
+| Phase | BPM | Goal |
+|-------|-----|------|
+| Source session | **68–92** | Quiet storm / electro-funk **clarity under pitch-down** |
+| DL006 distribution | **60–95** | Screw pacing, tape wow, 90s phonk vocabulary |
 
-**Forbidden:** Gym drift tempo, wave phonk lead stacks, Midnight Circuit cowbell hero mixes.
+## Lane archaeology
+
+Dual **SL-1200**, **−10–25%** pitch, spectral collapse to thick low-mid, **baritone formants**, stretched wow/flutter. Source behavior: polished analog arrangements that remain intelligible slowed.
+
+## Emulated hardware & specialty
+
+| Domain | Hardware / trait |
+|--------|------------------|
+| Turntable | Technics SL-1200 (dual) |
+| Tape | RC-20, SP-404 chains |
+| Optional Labs | SP-1200 demo for Supply authenticity |
+| Specialty | Screw ratio, unquantized pocket, pitch-down stems |
+
+## Section JSON
+
+**`movement_target: screw`** required. Marcus must populate **`screw_clarity_notes`** in payload when present.
+
+## Forbidden
+
+Gym drift tempo (DL002), wave phonk lead stacks, Midnight Circuit cowbell hero mixes, French touch 909 pump.
 
 ## Factory delegation
 
-| Factory agent | Artist agent instructs |
-|---------------|------------------------|
-| Music Producer | Screw ratio, swing, loop length for long sessions |
-| Sound Designer | Tape beds, SP-404-friendly one-shots |
+| Factory agent | Instruct |
+|---------------|----------|
+| Music Producer | Screw ratio, loop length for sessions |
+| Sound Designer | Tape beds, SP-404 one-shots |
 | Sample Miner | `disklordz-*` chop kits |
 | Visual Director | Cassette desk, rain window, amber screens |
-| Content Producer | Slow study / screw session titles (no gym hooks) |
-
-**Labs:** SP-1200 authenticity demos when SKU ties to Supply.
+| Content Producer | Slow study / screw titles — no gym hooks |
 
 ## OpenClaw
 
-Prompt: [`prompts/artists/DL006.md`](../../../prompts/artists/DL006.md).
+`artist_dl006` · [`personas/artist_dl006.yaml`](../../openclaw/personas/artist_dl006.yaml) · [`prompts/artists/DL006.md`](../../../prompts/artists/DL006.md)
+
+## Outputs
+
+- **`downstream.screw`** block mandatory in compiled prompt

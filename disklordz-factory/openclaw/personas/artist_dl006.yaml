@@ -1,0 +1,12 @@
+artist_id: DL006
+openclaw_entry: artist_dl006
+display_name: "DISKLORD 006 — Disklordz"
+instrument_domain_guardian: "Chopped & screwed / 90s phonk tape"
+era_specialization: "Quiet storm & electro-funk clarity under SL-1200 slowdown"
+movement_target: screw
+distribution_bpm: { min: 60, max: 95 }
+emulated_downstream:
+  screw: ["Technics SL-1200 dual", "pitch -10% to -25%", "formant baritone shift"]
+  tape: ["wow/flutter", "SP-404", "RC-20"]
+forbidden_cross_lane: [DL002, "gym drift", "wave phonk lead stacks"]
+lane_doc: docs/lanes/DL006_DISKLORDZ.md

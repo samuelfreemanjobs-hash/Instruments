@@ -1,0 +1,15 @@
+artist_id: DL004
+openclaw_entry: artist_dl004
+display_name: "DISKLORD 004 — Terminal Mirage"
+instrument_domain_guardian: "Cyber funk for coding + vapor aesthetic layer"
+era_specialization: "1980s digital funk & fusion → 112-128 focus mixes"
+movement_target: cyber_funk
+sub_series:
+  name: Slow Grid
+  bpm: { min: 85, max: 100 }
+  note: "Sub-playlist only"
+emulated_downstream:
+  synthesis: ["DX7 FM", "fusion bass", "digital stabs"]
+  vapor: "visual/Shorts; not mallsoft main feed"
+forbidden_cross_lane: [DL001, "screw culture", "gym phonk"]
+lane_doc: docs/lanes/DL004_TERMINAL_MIRAGE.md

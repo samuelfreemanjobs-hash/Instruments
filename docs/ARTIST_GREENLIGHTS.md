@@ -29,6 +29,18 @@ Replace `internal: REPLACE` source placeholders with your Slack/Airtable backup 
 - A&R may name **only** the four artists above when `ready_for_production` is true.
 - Producer / Sample Miner assign assets to `artist_id` in this set unless HQ passes an override on a single batch.
 
+## Lane documentation (equal depth ×4)
+
+Full archaeology, hardware, BPM layers, section JSON targets:
+
+- [ARTIST_LANE_BIBLE.md](ARTIST_LANE_BIBLE.md) — index  
+- [lanes/DL001_BOULEVARD_86.md](lanes/DL001_BOULEVARD_86.md)  
+- [lanes/DL002_MIDNIGHT_CIRCUIT.md](lanes/DL002_MIDNIGHT_CIRCUIT.md)  
+- [lanes/DL006_DISKLORDZ.md](lanes/DL006_DISKLORDZ.md)  
+- [lanes/DL004_TERMINAL_MIRAGE.md](lanes/DL004_TERMINAL_MIRAGE.md)  
+
+Machine registry: [`artist_lane_processing.json`](../disklordz-factory/database/artist_lane_processing.json).
+
 ## Artist lane agents (built)
 
 Each greenlit artist has a dedicated **lane guardian** contract + system prompt (OpenClaw assignee `DISKLORDZ_ARTIST_DL*`):

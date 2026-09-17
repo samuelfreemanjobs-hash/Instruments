@@ -16,6 +16,7 @@ DL_BRF_SCHEMA = ROOT / "schemas" / "dl_brf.json"
 SECTION_PAYLOAD_SCHEMA = ROOT / "schemas" / "dl_section_payload.json"
 COMPILED_PROMPT_SCHEMA = ROOT / "schemas" / "compiled_music_prompt.json"
 SONIC_MOVEMENTS = ROOT / "database" / "sonic_archaeology_movements.json"
+ARTIST_LANES = ROOT / "database" / "artist_lane_processing.json"
 PROMPTS = ROOT / "prompts" / "artists"
 
 mcp = FastMCP(
@@ -134,6 +135,71 @@ def get_recording_chain(agent_identifier: str) -> str:
 def dl_brf_schema() -> str:
     """Return DL-BRF JSON Schema for Maestro/section agents."""
     return DL_BRF_SCHEMA.read_text(encoding="utf-8")
+
+
+@mcp.tool()
+def section_payload_schema() -> str:
+    """Return dl_section_payload.json schema for sectional fork outputs."""
+    return SECTION_PAYLOAD_SCHEMA.read_text(encoding="utf-8")
+
+
+@mcp.tool()
+def compiled_prompt_schema() -> str:
+    """Return compiled_music_prompt.json schema for Maestro merge output."""
+    return COMPILED_PROMPT_SCHEMA.read_text(encoding="utf-8")
+
+
+@mcp.tool()
+def get_sonic_movement(movement_id: str) -> str:
+    """Return screw|memphis_90s|cloud_phonk processing profile for downstream prompt compile."""
+    if not SONIC_MOVEMENTS.is_file():
+        return json.dumps({"ok": False, "error": "sonic_archaeology_movements.json missing"})
+    with SONIC_MOVEMENTS.open(encoding="utf-8") as f:
+        data = json.load(f)
+    for m in data.get("movements", []):
+        if m.get("id") == movement_id:
+            return json.dumps({"ok": True, "movement": m}, indent=2)
+    return json.dumps({"ok": False, "error": f"unknown movement_id: {movement_id}"})
+
+
+@mcp.tool()
+def get_artist_lane(artist_id: str) -> str:
+    """Return full lane processing profile for DL001|DL002|DL004|DL006 (parity registry)."""
+    if not ARTIST_LANES.is_file():
+        return json.dumps({"ok": False, "error": "artist_lane_processing.json missing"})
+    with ARTIST_LANES.open(encoding="utf-8") as f:
+        data = json.load(f)
+    block = (data or {}).get("artists", {}).get(artist_id.upper())
+    if not block:
+        return json.dumps({"ok": False, "error": f"unknown artist_id: {artist_id}"})
+    return json.dumps({"ok": True, "artist_id": artist_id.upper(), **block}, indent=2)
+
+
+@mcp.tool()
+def validate_section_payload(payload_json: str) -> str:
+    """Validate sectional JSON (required fields) before Maestro merge."""
+    try:
+        body = json.loads(payload_json)
+    except json.JSONDecodeError as e:
+        return json.dumps({"ok": False, "valid": False, "error": str(e)})
+    required = ["agent_identifier", "artist_id", "movement_target", "analog_perspective", "payload"]
+    missing = [k for k in required if k not in body]
+    if missing:
+        return json.dumps({"ok": False, "valid": False, "missing_fields": missing})
+    ap = body.get("analog_perspective") or {}
+    if ap.get("reject_modern_digital") is not True:
+        return json.dumps({"ok": False, "valid": False, "error": "analog_perspective.reject_modern_digital must be true"})
+    aid = body.get("agent_identifier")
+    pl = body.get("payload") or {}
+    section_required = {
+        "keys_arranger": ["key", "voicing_types", "hardware_emulation"],
+        "rhythm_section": ["pocket_description", "hardware_emulation"],
+        "vocal_topline": ["delivery", "harmony_stack"],
+    }.get(aid, [])
+    sec_missing = [k for k in section_required if k not in pl]
+    if sec_missing:
+        return json.dumps({"ok": False, "valid": False, "missing_payload_fields": sec_missing})
+    return json.dumps({"ok": True, "valid": True, "agent_identifier": aid})
 
 
 if __name__ == "__main__":

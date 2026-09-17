@@ -16,3 +16,5 @@ OpenClaw Gateway copies: [`../../openclaw/agents/DISKLORDZ_ARTIST_DL*/`](../../o
 API: `GET /collective/artist-agents`, `GET /collective/artist-agents/{artist_id}`.
 
 HQ lock: [ARTIST_GREENLIGHTS.md](../../../docs/ARTIST_GREENLIGHTS.md).
+
+**Equal-depth lane bibles:** [ARTIST_LANE_BIBLE.md](../../../docs/ARTIST_LANE_BIBLE.md) — each artist has `docs/lanes/DL*.md`, `personas/artist_dl*.yaml`, expanded `AGENT.md`, and OpenClaw `SOUL.md`.
