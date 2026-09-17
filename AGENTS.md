@@ -6,6 +6,8 @@
 Rhythm: [disklordz/company/OPERATING_RHYTHM.md](disklordz/company/OPERATING_RHYTHM.md).  
 Automation: [disklordz/automation/README.md](disklordz/automation/README.md).
 
+**Weekly ops:** skill `disklordz-factory-manager` (Monday plan / Friday ship-kill — not an implementer).
+
 ## Star product (SaaS)
 
 [v0 spec](docs/DISKLORDZ_SAAS_V0.md) — prompt → preview → download; path to subscription after v0.

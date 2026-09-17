@@ -2,6 +2,7 @@
 
 **Creative Director:** you (taste, ship, price).  
 **PM of record:** Airtable **Disklordz OS**.  
+**Factory Manager:** Cursor skill `disklordz-factory-manager` (planning + gates + WIP — no code).  
 **Implementer:** Cursor Cloud Agent (+ you for merges and audio judgment).
 
 ## Weekly cadence
