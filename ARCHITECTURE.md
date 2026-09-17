@@ -8,12 +8,14 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 |---------|-----|----------------|
 | **JD Upgraded** (VST3 + CLAP + standalone synth) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [Source/UI/ARCHITECTURE.md](Source/UI/ARCHITECTURE.md) | `JDUpgraded_VST3`, `JDUpgraded_CLAP`, `JDUpgraded_Standalone` |
 | **Offline tooling** (ROM gen, render, regression) | [tools/ARCHITECTURE.md](tools/ARCHITECTURE.md) | `GenerateCleanroomRom`, `OfflineRender`, `SpectralDiff` |
+| **TR-808 recreation** (name TBD; circuit emulation) | [vst-tr808/REPO_HANDOFF.md](vst-tr808/REPO_HANDOFF.md) | Spec only — JUCE targets future |
 | **HISE sketch lane** (rompler / sampler R&D) | [docs/HISE_ANTIGRAVITY_LANE.md](docs/HISE_ANTIGRAVITY_LANE.md) · [hise-sketch/ARCHITECTURE.md](hise-sketch/ARCHITECTURE.md) | HISE local export (Antigravity); not in root CMake |
 
 ## Repository layout
 
 ```
 Source/          Plugin processor, DSP, assets, preset import
+vst-tr808/       TR-808 circuit recreation (spec; name TBD)
 hise-sketch/     HISE / Antigravity projects (optional imports)
 tools/           CLI binaries (link JUCE / plugin static lib)
 docs/            User and agent docs (SYSEX, ROM, phases, handoff)

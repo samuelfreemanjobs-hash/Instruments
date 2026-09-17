@@ -11,7 +11,7 @@ Full policy: [HISE_SKETCH_LANE.md](HISE_SKETCH_LANE.md) · Airtable seed: [`hise
 
 | In lane | Out of lane |
 |---------|-------------|
-| Romplers, sample maps, HLAC, scripted sampler UI | Junova-X, NovaDrum circuit DSP, JD Upgraded |
+| Romplers, sample maps, HLAC, scripted sampler UI | Junova-X, TR-808 circuit DSP, JD Upgraded |
 | HiseScript + `XmlPresetBackups/*.xml` | Hand-editing exported C++ in `Binaries/` |
 | Local **VST3** via HISE export | **CLAP**, Linux CI, pluginval in monorepo (JUCE factory) |
 | SKUs after **Marketing brief + Planner `product_id`** | Selling under `DL-LANE-HISE-SKETCH` (process row only) |
@@ -50,7 +50,7 @@ Open a **`[Plugin][Junova-X]`-style port WO** (new `product_id`, e.g. `[Plugin][
 
 - SKU must ship **CLAP** or match **Instruments** `build.yml` / pluginval gates
 - You need **Linux** build or long-term maintenance in `Junova-X/` / `Source/` patterns
-- HISE export limits block the product (custom DSP, NovaDrum-class circuits, tight latency)
+- HISE export limits block the product (custom DSP, TR-808-class circuits, tight latency)
 - GTM promises **demo + updates** tied to GitHub releases in this monorepo
 
 **Stay on Antigravity + HISE** when:
@@ -65,7 +65,9 @@ Port WO acceptance should name: behavior parity checklist, preset/sample migrati
 
 ## How to give this to Antigravity
 
-1. **Clone or pull** `Instruments` (branch `main` after PR #21).
+**PM track this in Airtable:** work order **`WO-2026-HISE-PM-001`** and tasks **`TASK-PM-HISE-01` … `06`** in [`hise-sketch-lane-2026.json`](../disklordz/airtable/seed/hise-sketch-lane-2026.json). Complete PM-001 before **`WO-2026-HISE-001`**.
+
+1. **Clone or pull** `Instruments` (`main`).
 2. **Pin this file** in the Antigravity project:
    - Paste path or contents into **project instructions** / **rules**, or
    - Add to the workspace Antigravity opens (same folder as your HISE projects).

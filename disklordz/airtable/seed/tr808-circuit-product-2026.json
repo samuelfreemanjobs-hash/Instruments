@@ -1,0 +1,64 @@
+{
+  "base_id_hint": "Disklordz OS — TR-808 circuit plugin (shipping name TBD; not NovaDrum)",
+  "products": [
+    {
+      "product_id": "DL-PLUGIN-TR808",
+      "name": "TR-808 recreation (name TBD)",
+      "division": "Plugin",
+      "status": "Specified",
+      "brief": "Roland TR-808 physical circuit emulation: 16 voices, WDF/ODE DSP, JUCE 8 VST3+CLAP. Not samples. Full spec: vst-tr808/docs/circuit-emulation-spec.md. Marketing locks final name before binary ID WO.",
+      "github_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "price_tier": "tier_1",
+      "ladder_tier": "plugin",
+      "sonic_problem": "808-class drums with analog retrigger phase, metallic Schmitt cluster, chromatic BD (post-MVP)",
+      "family_id": "DL-FAMILY-DIGITAL-SAMPLER",
+      "compile_targets": "[\"vst3\",\"clap\"]"
+    }
+  ],
+  "projects": [
+    {
+      "project_id": "PRJ-2026-TR808",
+      "name": "TR-808 circuit recreation — spec to MVP",
+      "product_id": "DL-PLUGIN-TR808",
+      "phase": "0-Spec",
+      "status": "Active",
+      "owner_agent": "dsp-engineer"
+    }
+  ],
+  "pm_tasks": [
+    {
+      "task_id": "TASK-PM-TR808-NAME-01",
+      "work_order_id": "WO-2026-TR808-PM-001",
+      "title": "Marketing: shortlist 3–5 shipping names; retire NovaDrum placeholder in all briefs",
+      "status": "Todo",
+      "owner": "business-planner"
+    },
+    {
+      "task_id": "TASK-PM-TR808-NAME-02",
+      "work_order_id": "WO-2026-TR808-PM-001",
+      "title": "Planner: approve product_id + final name; update Airtable + REPO_HANDOFF before first public build",
+      "status": "Todo",
+      "owner": "business-planner"
+    }
+  ],
+  "work_orders": [
+    {
+      "work_order_id": "WO-2026-TR808-PM-001",
+      "project_id": "PRJ-2026-TR808",
+      "title": "[PM][TR808] Product naming — final name + store positioning (not NovaDrum)",
+      "status": "Ready",
+      "priority": "P2",
+      "owner_agent": "business-planner",
+      "acceptance_criteria": "Marketing brief attached in Airtable: 3–5 name candidates, sonic_problem, price ladder, legal/trademark note. Planner sets final name on product row DL-PLUGIN-TR808 and documents in vst-tr808/docs/PRODUCT_NAMING.md. No VST3 binary marketing until complete. Grok/Cursor WO titles use [Plugin][TR808] only."
+    },
+    {
+      "work_order_id": "WO-2026-TR808-001",
+      "project_id": "PRJ-2026-TR808",
+      "title": "[Plugin][TR808] BD voice — bridged-T + pulse shaper prototype (FAUST or JUCE module)",
+      "status": "Backlog",
+      "priority": "P2",
+      "owner_agent": "dsp-engineer",
+      "acceptance_criteria": "BD engine per circuit-emulation-spec: trigger+accent, diode shaper, bridged-T decay via loop gain, attack Q43 behavior, state retained on retrigger. Offline render or unit test WAV vs documented f0 range 49–58 Hz vintage mode. Blocked until Junova WO-2026-001 host green OR Planner override."
+    }
+  ]
+}
