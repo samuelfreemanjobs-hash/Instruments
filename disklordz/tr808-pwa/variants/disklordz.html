@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#c41e3a" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>TR-808 PWA — Choose build</title>
+  <style>
+    :root { --bg: #1a1a2e; --panel: #3d3d4a; --text: #f0e6d8; --accent: #c41e3a; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(180deg, var(--bg), #2b2b35);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    main {
+      max-width: 28rem;
+      width: 100%;
+      background: var(--panel);
+      border: 4px solid #111;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    h1 { font-size: 1rem; letter-spacing: 0.06em; margin: 0 0 8px; }
+    p { font-size: 0.85rem; opacity: 0.9; margin: 0 0 20px; }
+    .choices { display: flex; flex-direction: column; gap: 12px; }
+    a.card {
+      display: block;
+      padding: 16px;
+      border-radius: 8px;
+      border: 2px solid #111;
+      background: #2b2b35;
+      color: var(--text);
+      text-decoration: none;
+      text-align: left;
+    }
+    a.card strong { display: block; font-size: 1rem; margin-bottom: 4px; }
+    a.card span { font-size: 0.75rem; opacity: 0.85; }
+    a.card.primary { border-color: var(--accent); }
+    a.card:hover { filter: brightness(1.08); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>ROLAND TR-808 RHYTHM COMPOSER</h1>
+    <p>Two builds live in this package. Pick one.</p>
+    <div class="choices">
+      <a class="card primary" href="variants/disklordz.html">
+        <strong>Disklordz (repo)</strong>
+        <span>Monorepo PWA — sequencer, export WAV, MPC Sample path. Maintained here.</span>
+      </a>
+      <a class="card" href="variants/original.html">
+        <strong>Original (your session)</strong>
+        <span>Sep 16 single-file slot — paste your HTML when ready; placeholder until then.</span>
+      </a>
+    </div>
+    <p style="margin-top:20px;font-size:0.7rem">
+      <a href="README.md" style="color:#e8a87c">README</a> ·
+      <a href="docs/MPC_SAMPLE_WORKFLOW.md" style="color:#e8a87c">MPC Sample</a>
+    </p>
+  </main>
+</body>
+</html>
