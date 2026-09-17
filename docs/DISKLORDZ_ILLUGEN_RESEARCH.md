@@ -119,7 +119,7 @@ Example structured conditioning (fed to factory + RAG prompt assistant):
 | **009** | Async jobs + storage | ✅ Supabase Storage for WAVs; async job queue still future |
 | **010** | Credits + Stripe | ✅ Free credits + Pro unlimited; guest IP cap |
 | **011** | History v2 | ✅ `/account` filters + batch variations |
-| **012** | RAG prompt assistant | Vector index over lanes + prompt tips; suggest spec + “Random” discovery loop |
+| **012** | RAG prompt assistant | ✅ keyword v1 + exemplars; pgvector later (012b) |
 | **013** | Creative vs Studio routes | Two generation backends; routing by `engine` |
 | **014** | Loop + SFX modes | Bar-length loops, SFX length tiers; credit table |
 | **015** | Product factory batch | Brief → N WAVs per folder → ZIP SKU + manifest for storefront |

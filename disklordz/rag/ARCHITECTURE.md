@@ -12,7 +12,7 @@ python3 scripts/chunk_corpus.py
 python3 scripts/query_local.py "cyber funk 96 bpm"
 ```
 
-Production embed + pgvector: WO-SAAS-012 (see [docs/RAG_AND_INTELLIGENT_AUTOMATION.md](../../docs/RAG_AND_INTELLIGENT_AUTOMATION.md)).
+Shipped in website: keyword RAG v1 in `disklordz/website/src/lib/rag/` + `POST /api/rag/suggest`. Offline corpus scripts remain for future pgvector (012b). See [docs/RAG_AND_INTELLIGENT_AUTOMATION.md](../../docs/RAG_AND_INTELLIGENT_AUTOMATION.md).
 
 ## Data flow
 

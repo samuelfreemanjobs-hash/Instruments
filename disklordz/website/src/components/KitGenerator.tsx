@@ -56,6 +56,8 @@ export function KitGenerator() {
     creditsBalance: number;
     unlimited: boolean;
   } | null>(null);
+  const [ideaLoading, setIdeaLoading] = useState(false);
+  const [ragNote, setRagNote] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -94,6 +96,49 @@ export function KitGenerator() {
     setPresetId(id);
     setSpec(defaultGenerationSpec(id));
   }, []);
+
+  const applyRagSuggestion = useCallback(
+    async (mode: "random" | "suggest") => {
+      if (mode === "suggest" && prompt.trim().length < 3) {
+        setError("Type at least a few words, then Enhance.");
+        return;
+      }
+      setIdeaLoading(true);
+      setError(null);
+      setRagNote(null);
+      try {
+        const res = await fetch("/api/rag/suggest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode, presetId, query: prompt }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error ?? "Could not fetch idea");
+          return;
+        }
+        if (data.prompt) {
+          setPrompt(data.prompt);
+        }
+        if (data.presetId && data.presetId !== presetId) {
+          setPresetId(data.presetId);
+        }
+        if (data.spec) {
+          setSpec(data.spec as GenerationSpec);
+        } else if (data.presetId) {
+          setSpec(defaultGenerationSpec(data.presetId));
+        }
+        if (data.snippets?.[0]?.text) {
+          setRagNote(data.snippets[0].text);
+        }
+      } catch {
+        setError("Prompt assistant unavailable.");
+      } finally {
+        setIdeaLoading(false);
+      }
+    },
+    [prompt, presetId],
+  );
 
   const runGenerate = useCallback(async (request: FrozenRequest) => {
     setLoading(true);
@@ -260,6 +305,31 @@ export function KitGenerator() {
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="e.g. smoky Memphis rim with dusty 808"
         />
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={ideaLoading || loading}
+            onClick={() => applyRagSuggestion("random")}
+            className="rounded-lg border border-zinc-600 px-3 py-2 text-sm text-zinc-200 hover:border-emerald-500 disabled:opacity-50"
+            title="Random lane-aligned prompt"
+          >
+            {ideaLoading ? "…" : "🎲 Random idea"}
+          </button>
+          <button
+            type="button"
+            disabled={ideaLoading || loading}
+            onClick={() => applyRagSuggestion("suggest")}
+            className="rounded-lg border border-zinc-600 px-3 py-2 text-sm text-zinc-200 hover:border-emerald-500 disabled:opacity-50"
+          >
+            Enhance prompt
+          </button>
+        </div>
+        {ragNote && (
+          <p className="text-xs text-zinc-500">
+            Lane context: {ragNote}
+          </p>
+        )}
 
         <p className="text-sm font-medium text-zinc-300">Style preset</p>
         <div className="grid gap-2 sm:grid-cols-2">

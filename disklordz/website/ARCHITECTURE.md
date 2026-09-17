@@ -47,6 +47,7 @@ Generation is **sync stub** in v0 (no WebSocket). Future factory jobs will be as
 | `src/lib/generation/generation-spec.ts` | WO-SAAS-007 spec parse + preset defaults |
 | `src/lib/generation/factory.ts` | Prompt-driven kit build + kit store |
 | `src/components/GenerationSpecFields.tsx` | Spec UI (mode, engine, key, BPM, …) |
+| `src/lib/rag/` | WO-SAAS-012 keyword RAG + `POST /api/rag/suggest` |
 | `src/app/api/generate/route.ts` | Generate endpoint |
 | `src/app/api/download/route.ts` | ZIP export |
 | `../sound-factory/` | Offline WAV generation |

@@ -73,5 +73,6 @@ Each WO: Airtable → GitHub issue (A1) → PR with `WO-…` in title → merge 
 | Persistent kit storage (009) | Done — Supabase Storage + `SUPABASE_SERVICE_ROLE_KEY` |
 | Credits + Stripe Pro (010) | Done — ledger + Checkout + webhook |
 | History search (011) | Done — filter BPM/key/mode/engine/date; batch expand |
+| RAG prompt assistant (012) | Done — Random / Enhance + spec hints (keyword v1) |
 
 Parallel work: [DISKLORDZ_SAAS_AGENT_LANES.md](DISKLORDZ_SAAS_AGENT_LANES.md).
