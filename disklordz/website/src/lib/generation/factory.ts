@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 
-import { sha256Buffer, writeKitFile } from "@/lib/kit-store";
+import { activeKitStorageBackend, writeKitFile } from "@/lib/kit-storage";
+import { sha256Buffer } from "@/lib/kit-store";
 import type { KitManifest, SampleAsset } from "@/lib/manifest";
 import type { GenerationSpec } from "@/lib/generation/generation-spec";
 import type { VariationContext } from "@/lib/generation/prompt-params";
@@ -52,6 +53,7 @@ export async function buildFactoryKit(
     sampleRate: 44100,
     samples,
     license: "personal_and_commercial_v0_preview",
+    storageBackend: activeKitStorageBackend(),
     factoryParams: {
       seed: params.seed,
       kickPitch: params.kickPitch,

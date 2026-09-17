@@ -20,6 +20,8 @@ export type KitManifest = {
   sampleRate: 44100;
   samples: SampleAsset[];
   license: "personal_and_commercial_v0_preview";
+  /** WO-SAAS-009: where WAV bytes are persisted */
+  storageBackend?: "local" | "supabase";
   /** Internal generation metadata (optional in API responses). */
   factoryParams?: Record<string, number>;
   /** Resolved musical + mode spec (WO-SAAS-007). */

@@ -27,6 +27,7 @@ Browser (KitGenerator)
        → rate limit (IP, in-memory v0)
        → buildVariationBatch(): 2 (studio) or 3 (creative) kits per request
        → buildFactoryKit(): prompt-params + synth → /tmp/disklordz-kits/<kitId>/*.wav
+       → WAVs → local temp + Supabase Storage `disklordz-kits` when service role set
        → manifest with /api/samples/<kitId>/<file>.wav URLs
   → GET /api/samples/...  (preview audio)
   → POST /api/download { manifest }

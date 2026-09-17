@@ -20,6 +20,7 @@ type FrozenRequest = {
 type GenerateResponse = {
   batchId: string;
   variationCount: number;
+  storageBackend?: "local" | "supabase";
   variations: { label: string; manifest: KitManifest }[];
   manifest?: KitManifest;
   savedToAccount?: boolean;
@@ -35,6 +36,7 @@ export function KitGenerator() {
   const [specOpen, setSpecOpen] = useState(false);
   const [variations, setVariations] = useState<KitManifest[]>([]);
   const [batchId, setBatchId] = useState<string | null>(null);
+  const [storageBackend, setStorageBackend] = useState<string | null>(null);
   const [selectedVariation, setSelectedVariation] = useState(0);
   const [frozen, setFrozen] = useState<FrozenRequest | null>(null);
   const [loading, setLoading] = useState(false);
@@ -99,6 +101,7 @@ export function KitGenerator() {
       }
       setVariations(manifests);
       setBatchId(payload.batchId ?? null);
+      setStorageBackend(payload.storageBackend ?? manifests[0]?.storageBackend ?? "local");
       setFrozen(request);
       setSavedToAccount(Boolean(payload.savedToAccount));
       if (payload.rateLimit) {
@@ -303,7 +306,7 @@ export function KitGenerator() {
           </div>
 
           <p className="text-xs text-zinc-500">
-            Provenance: factory_parametric_v1 · SHA-256 per file in manifest.json
+            Storage: {storageBackend ?? "local"} · factory_parametric_v1 · SHA-256 in manifest.json
           </p>
         </section>
       )}

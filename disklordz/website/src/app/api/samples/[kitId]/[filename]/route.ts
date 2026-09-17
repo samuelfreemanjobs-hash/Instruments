@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { readKitFile } from "@/lib/kit-store";
+import { readKitFile } from "@/lib/kit-storage";
 
 const ALLOWED = new Set([
   "kick.wav",

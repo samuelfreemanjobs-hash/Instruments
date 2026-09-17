@@ -116,7 +116,7 @@ Example structured conditioning (fed to factory + RAG prompt assistant):
 |----|--------|---------|
 | **007** | Generation spec v1 | `mode`, `engine`, `key`, `bpm`, `bars`, `stereo`, `wildness` in API + UI; presets fill defaults |
 | **008** | Variation engine | ✅ 2/3 candidates, audition UI, Generate more (frozen spec) |
-| **009** | Async jobs + storage | Job queue, object storage (S3/R2/Supabase Storage); drop `/tmp`-only kits on Vercel |
+| **009** | Async jobs + storage | ✅ Supabase Storage for WAVs; async job queue still future |
 | **010** | Credits + Stripe | Reserve/commit ledger; map operation → cost; Pro tier |
 | **011** | History v2 | Search/filter: BPM, key, mode, engine, date; expand prior prompts |
 | **012** | RAG prompt assistant | Vector index over lanes + prompt tips; suggest spec + “Random” discovery loop |

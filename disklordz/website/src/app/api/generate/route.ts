@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { parseGenerationSpec } from "@/lib/generation/generation-spec";
 import { buildVariationBatch } from "@/lib/generation/variations";
+import { activeKitStorageBackend, ensureKitStorageReady } from "@/lib/kit-storage";
 import { saveKitForUser } from "@/lib/kits/persist";
 import { getPreset, STYLE_PRESETS } from "@/lib/presets";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -56,6 +57,18 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  if (activeKitStorageBackend() === "supabase") {
+    try {
+      await ensureKitStorageReady();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "storage_unavailable";
+      return NextResponse.json(
+        { error: "storage_setup_failed", message },
+        { status: 503 },
+      );
+    }
+  }
+
   const baseUrl = req.nextUrl.origin;
   const { batchId, manifests } = await buildVariationBatch(
     prompt,
@@ -88,6 +101,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     batchId,
     variationCount: variations.length,
+    storageBackend: activeKitStorageBackend(),
     variations,
     /** @deprecated Use variations[0].manifest — kept for compatibility */
     manifest: manifests[0],

@@ -2,7 +2,8 @@ import JSZip from "jszip";
 import { NextRequest, NextResponse } from "next/server";
 
 import type { KitManifest } from "@/lib/manifest";
-import { readKitFile, sha256Buffer } from "@/lib/kit-store";
+import { readKitFile } from "@/lib/kit-storage";
+import { sha256Buffer } from "@/lib/kit-store";
 import { getPreset } from "@/lib/presets";
 
 export async function POST(req: NextRequest) {
