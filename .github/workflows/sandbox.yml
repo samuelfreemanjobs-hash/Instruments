@@ -1,0 +1,24 @@
+name: Disklordz sandbox
+
+on:
+  workflow_dispatch:
+    inputs:
+      full:
+        description: "Run pluginval + MyFirstPlugin (in addition to factory CI smoke)"
+        type: boolean
+        default: false
+
+jobs:
+  sandbox:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run factory sandbox
+        run: |
+          chmod +x scripts/disklordz-sandbox.sh
+          if [[ "${{ inputs.full }}" == "true" ]]; then
+            ./scripts/disklordz-sandbox.sh --full
+          else
+            ./scripts/disklordz-sandbox.sh --ci --pluginval
+          fi

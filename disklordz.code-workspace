@@ -1,0 +1,26 @@
+{
+  "folders": [{ "path": "." }],
+  "settings": {
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.configureArgs": [
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_CXX_COMPILER=g++-12",
+      "-DCMAKE_C_COMPILER=gcc-12"
+    ],
+    "cmake.preferredGenerators": ["Ninja", "Unix Makefiles"],
+    "clangd.arguments": [
+      "-clang-tidy",
+      "-background-index",
+      "-compile-commands-dir=${workspaceFolder}/build",
+      "-header-insertion=never"
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-vscode.cmake-tools",
+      "llvm-vs-code-extensions.vscode-clangd",
+      "vadimcn.vscode-lldb"
+    ]
+  }
+}
