@@ -13,6 +13,7 @@
    - `supabase/migrations/20260917190000_saved_kits.sql`
    - `supabase/migrations/20260917210000_kits_storage_bucket.sql`
    - `supabase/migrations/20260917220000_credits_billing.sql`
+   - `supabase/migrations/20260917230000_saved_kits_history.sql`
 5. Stripe: see [docs/STRIPE.md](docs/STRIPE.md).
 6. Deploy. Smoke test: guest generate → sign in → credits → checkout (test mode) → Pro unlimited.
 

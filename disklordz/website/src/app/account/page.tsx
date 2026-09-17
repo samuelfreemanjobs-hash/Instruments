@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AccountBilling } from "@/components/AccountBilling";
-import { AccountKits } from "@/components/AccountKits";
+import { KitHistory } from "@/components/KitHistory";
 import { getBillingSnapshot } from "@/lib/credits";
 import { isStripeConfigured } from "@/lib/stripe/server";
 import { createClient } from "@/lib/supabase/server";
@@ -33,13 +33,6 @@ export default async function AccountPage() {
     redirect("/login");
   }
 
-  const { data: kits } = await supabase
-    .from("saved_kits")
-    .select("kit_id, prompt, preset_id, artist_lane, created_at")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(50);
-
   const billing = await getBillingSnapshot(user.id);
 
   return (
@@ -55,7 +48,7 @@ export default async function AccountPage() {
           creditsBalance={billing?.creditsBalance ?? 0}
           stripeEnabled={isStripeConfigured()}
         />
-        <AccountKits kits={kits ?? []} />
+        <KitHistory />
       </div>
     </div>
   );

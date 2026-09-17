@@ -60,7 +60,7 @@ Magic-link email via Supabase Auth (`@supabase/ssr`). Apply migration:
 cat supabase/migrations/20260917190000_saved_kits.sql
 ```
 
-Signed-in users auto-save each generated kit to `public.saved_kits` (RLS). `/account` lists history.
+Signed-in users auto-save each generated kit to `public.saved_kits` (RLS). `/account` lists searchable history (WO-SAAS-011) via `GET /api/kits?...`.
 
 ## Extension points
 
