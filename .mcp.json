@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "claude-projects": {
+      "type": "stdio",
+      "command": "${CLAUDE_PROJECT_DIR:-.}/disklordz-factory/integrations/claude_projects_mcp/.venv/bin/python3",
+      "args": ["${CLAUDE_PROJECT_DIR:-.}/disklordz-factory/integrations/claude_projects_mcp/server.py"],
+      "env": {
+        "CLAUDE_PROJECTS_ROOT": "${CLAUDE_PROJECTS_ROOT:-${HOME}/.claude/projects}"
+      }
+    }
+  }
+}
