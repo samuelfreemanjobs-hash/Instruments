@@ -127,8 +127,22 @@ export function ProductForm({
         urls={images}
         onChange={(urls) => setValue("images", urls, { shouldValidate: true })}
       />
+      <label className="block text-sm font-medium text-slate-700">
+        Or paste image URL
+        <input
+          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+          placeholder="https://res.cloudinary.com/demo/..."
+          onBlur={(e) => {
+            const url = e.target.value.trim();
+            if (url && !images.includes(url)) {
+              setValue("images", [...images, url], { shouldValidate: true });
+              e.target.value = "";
+            }
+          }}
+        />
+      </label>
       <p className="text-xs text-slate-500">
-        Requires Cloudinary env vars — see web/docs/CLOUDINARY.md. Or paste URLs in DB later.
+        Cloudinary upload needs env vars — see web/docs/CLOUDINARY.md
       </p>
       <button
         type="submit"
