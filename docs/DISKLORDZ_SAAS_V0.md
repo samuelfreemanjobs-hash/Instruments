@@ -74,5 +74,9 @@ Each WO: Airtable → GitHub issue (A1) → PR with `WO-…` in title → merge 
 | Credits + Stripe Pro (010) | Done — ledger + Checkout + webhook |
 | History search (011) | Done — filter BPM/key/mode/engine/date; batch expand |
 | RAG prompt assistant (012) | Done — Random / Enhance + spec hints (keyword v1) |
+| Studio / creative + loop / SFX (013–014) | Done — see [ILLUGEN research](DISKLORDZ_ILLUGEN_RESEARCH.md) |
+| Product factory (015) | Done — pack batch + ZIP |
+| Deploy HTTPS + billing | **You:** [DISKLORDZ_GO_LIVE.md](DISKLORDZ_GO_LIVE.md) |
+| DAW inbox (016) | Done — [disklordz/daw-inbox](../disklordz/daw-inbox/README.md) + `/daw-inbox` |
 
 Parallel work: [DISKLORDZ_SAAS_AGENT_LANES.md](DISKLORDZ_SAAS_AGENT_LANES.md).

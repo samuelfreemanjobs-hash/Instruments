@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - "disklordz/website/**"
+      - "disklordz/daw-inbox/**"
       - ".github/workflows/disklordz-website.yml"
   pull_request:
     paths:
       - "disklordz/website/**"
+      - "disklordz/daw-inbox/**"
 
 jobs:
   build:
@@ -24,3 +26,7 @@ jobs:
           cache-dependency-path: disklordz/website/package-lock.json
       - run: npm ci
       - run: npm run build
+      - run: npm ci
+        working-directory: disklordz/daw-inbox
+      - run: node --check bin/watch.mjs
+        working-directory: disklordz/daw-inbox
