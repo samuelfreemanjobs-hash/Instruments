@@ -8,8 +8,8 @@
     "genres": ["french touch", "electro-funk", "nu-disco"],
     "bpm_min": 118,
     "bpm_max": 124,
-    "audience_jobs": ["deep work", "coding flow", "night cruise", "creative session"],
-    "product_skus": ["french-touch-pack", "909-mpc-kit", "analog-bass-loops", "vocoder-chops"]
+    "audience_jobs": ["deep work", "night cruise", "creative session"],
+    "product_skus": ["french-touch-pack", "909-mpc-kit", "707-perc-kit", "vocoder-chops"]
   },
   {
     "brand_id": "YT-DL-002",
@@ -17,11 +17,11 @@
     "alternate_names": ["Phantom Grip", "Kuro Drift", "Midnight Circuit"],
     "artist_id": "DL002",
     "opportunity_id": null,
-    "genres": ["drift phonk", "gym phonk", "memphis"],
+    "genres": ["drift phonk", "wave phonk"],
     "bpm_min": 140,
     "bpm_max": 160,
     "audience_jobs": ["gym", "night drive", "fps gaming"],
-    "product_skus": ["808-bank", "cowbell-fonts", "stream-safe-license-tier"]
+    "product_skus": ["808-bank", "wave-phonk-stabs", "cowbell-fonts", "stream-safe-license-tier"]
   },
   {
     "brand_id": "YT-DL-003",
@@ -29,10 +29,22 @@
     "alternate_names": ["Analog Solitude", "Static Reverie", "Late Night Terminal"],
     "artist_id": "DL006",
     "opportunity_id": null,
-    "genres": ["lo-fi", "ambient hip-hop"],
-    "bpm_min": 72,
-    "bpm_max": 85,
-    "audience_jobs": ["study", "calm coding", "focus", "anxiety relief"],
-    "product_skus": ["sp404-oneshots", "rhodes-loops", "rc20-preset-chain"]
+    "genres": ["lo-fi", "dj screw", "90s phonk"],
+    "bpm_min": 60,
+    "bpm_max": 95,
+    "audience_jobs": ["slow study", "chop and screw listening", "late-night focus"],
+    "product_skus": ["screw-chop-kit", "90s-phonk-stems", "sp404-oneshots", "rc20-preset-chain"]
+  },
+  {
+    "brand_id": "YT-DL-004",
+    "primary_channel_name": "Neon Terminal",
+    "alternate_names": ["Stack Trace", "Cipher Drive", "Grid Runner"],
+    "artist_id": "DL004",
+    "opportunity_id": null,
+    "genres": ["cyber funk"],
+    "bpm_min": 112,
+    "bpm_max": 128,
+    "audience_jobs": ["coding flow", "build sessions", "technical deep work"],
+    "product_skus": ["cyber-funk-midi", "synth-stab-presets", "coding-session-mix-bundle"]
   }
 ]
