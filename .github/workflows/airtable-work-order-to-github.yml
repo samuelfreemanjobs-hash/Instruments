@@ -1,0 +1,43 @@
+name: Airtable work order to GitHub
+
+on:
+  workflow_dispatch:
+    inputs:
+      work_order_id:
+        description: Agent Work Order id (e.g. WO-2026-001)
+        required: true
+        type: string
+  repository_dispatch:
+    types: [airtable-work-order]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve work order id
+        id: wo
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "id=${{ inputs.work_order_id }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "id=${{ github.event.client_payload.work_order_id }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub issue from Airtable
+        env:
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$AIRTABLE_API_KEY" ] || [ -z "$AIRTABLE_BASE_ID" ]; then
+            echo "Airtable secrets not configured; skip."
+            exit 1
+          fi
+          python3 disklordz/automation/scripts/wo_to_github_issue.py --work-order-id "${{ steps.wo.outputs.id }}"

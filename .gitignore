@@ -1,3 +1,5 @@
+disklordz/automation/.env
+
 build/
 _deps/
 cmake-build-*/
