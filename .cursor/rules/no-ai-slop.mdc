@@ -1,0 +1,30 @@
+---
+description: Reject AI slop in code, copy, presets, and agent output. Quality and intention over volume.
+alwaysApply: true
+---
+
+# No AI slop
+
+**No AI slop** is a core DiskLordz / Instruments rule for humans and agents.
+
+## What it means
+
+- Do **not** ship generic, interchangeable, or “LLM-shaped” work: vague marketing, filler features, duplicate presets, bloated abstractions, or code that looks complete but is untested or unintegrated.
+- Do **not** pad roadmaps, PRs, or Slack updates with noise to appear productive. **Daily results** must be verifiable (build, test, audio, merged artifact, or customer-facing copy with a clear owner).
+- Do **not** confuse **planning** with **product**. Specs and agent playbooks support shipping; they are not substitutes for a loadable binary or a paid deliverable.
+
+## Do instead
+
+- **One sharp wedge** per sprint (e.g. Milestone 1 FM engine before Character Engine before AI UI).
+- **Prove it** — CI, smoke tests, golden audio, or a demo path documented in the PR.
+- **Name real problems** (sonic problems, CHARACTER ENGINE positioning) — not “another AI-powered solution.”
+- **Reuse the factory** — genome, gates, kernel — instead of greenfield slop repos.
+
+## Applies to
+
+- Plugin DSP, UI, and presets  
+- Marketing and store copy (Marketing Growth role)  
+- AI-generated patches: always **schema → validator → product**, never raw unvalidated blobs  
+- Agent rollups: state what merged, what passed, what blocked — not essay-length fluff  
+
+When in doubt: if it could be swapped for any other AI product with find-replace, it is slop. Redo or cut it.
