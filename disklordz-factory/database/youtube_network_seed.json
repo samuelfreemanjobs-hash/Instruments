@@ -1,43 +1,45 @@
 [
   {
     "brand_id": "YT-DL-001",
-    "primary_channel_name": "Chrome Circuit",
-    "alternate_names": ["Boulevard 84", "Vanguard Disco", "Neon Mirage"],
+    "primary_channel_name": "Boulevard 86",
+    "alternate_names": ["Chrome Circuit", "Boulevard 84", "Vanguard Disco", "Neon Mirage"],
     "artist_id": "DL001",
     "opportunity_id": null,
     "genres": ["french touch", "electro-funk", "nu-disco"],
     "bpm_min": 118,
     "bpm_max": 124,
     "audience_jobs": ["deep work", "night cruise", "creative session"],
-    "product_skus": ["french-touch-pack", "909-mpc-kit", "707-perc-kit", "vocoder-chops"]
+    "product_skus": ["boulevard-french-touch-pack", "boulevard-909-mpc-kit", "boulevard-707-perc-kit", "boulevard-vocoder-chops"]
   },
   {
     "brand_id": "YT-DL-002",
-    "primary_channel_name": "GhostDrive 808",
-    "alternate_names": ["Phantom Grip", "Kuro Drift", "Midnight Circuit"],
+    "primary_channel_name": "Midnight Circuit",
+    "alternate_names": ["GhostDrive 808", "Phantom Grip", "Kuro Drift"],
     "artist_id": "DL002",
     "opportunity_id": null,
     "genres": ["drift phonk", "wave phonk"],
     "bpm_min": 140,
     "bpm_max": 160,
     "audience_jobs": ["gym", "night drive", "fps gaming"],
-    "product_skus": ["808-bank", "wave-phonk-stabs", "cowbell-fonts", "stream-safe-license-tier"]
+    "product_skus": ["midnight-808-bank", "midnight-wave-phonk-stabs", "midnight-cowbell-fonts", "midnight-stream-safe-license-tier"]
   },
   {
     "brand_id": "YT-DL-003",
-    "primary_channel_name": "Dust & Tape",
-    "alternate_names": ["Analog Solitude", "Static Reverie", "Late Night Terminal"],
+    "primary_channel_name": "Disklordz",
+    "alternate_names": ["Dust & Tape", "Analog Solitude", "Static Reverie", "Late Night Terminal"],
     "artist_id": "DL006",
     "opportunity_id": null,
     "genres": ["lo-fi", "dj screw", "90s phonk"],
     "bpm_min": 60,
     "bpm_max": 95,
     "audience_jobs": ["slow study", "chop and screw listening", "late-night focus"],
-    "product_skus": ["screw-chop-kit", "90s-phonk-stems", "sp404-oneshots", "rc20-preset-chain"]
+    "product_skus": ["disklordz-screw-chop-kit", "disklordz-90s-phonk-stems", "disklordz-sp404-oneshots", "disklordz-rc20-preset-chain"]
   },
   {
     "brand_id": "YT-DL-004",
     "primary_channel_name": "Neon Terminal",
+    "naming_status": "pending",
+    "naming_notes": "Public vaporwave-forward channel name not chosen; Neon Terminal is ops working title only",
     "alternate_names": ["Stack Trace", "Cipher Drive", "Grid Runner"],
     "artist_id": "DL004",
     "opportunity_id": null,
@@ -45,6 +47,6 @@
     "bpm_min": 112,
     "bpm_max": 128,
     "audience_jobs": ["coding flow", "build sessions", "technical deep work"],
-    "product_skus": ["cyber-funk-midi", "synth-stab-presets", "coding-session-mix-bundle"]
+    "product_skus": ["brand4-cyber-funk-midi", "brand4-synth-stab-presets", "brand4-coding-session-mix-bundle"]
   }
 ]

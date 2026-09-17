@@ -8,16 +8,18 @@ Four **separate YouTube brands** under DiskLordz (not one generic upload channel
 
 | # | Primary channel | Genres (HQ) | Artist lane | BPM | Audience job |
 |---|-----------------|-------------|-------------|-----|----------------|
-| 1 | **Chrome Circuit** | French touch / electro-funk / nu-disco | DL001 | 118–124 | Deep work, night cruise, creative session |
-| 2 | **GhostDrive 808** | **Drift phonk · wave phonk** | DL002 | 140–160 | Gym, night drive, FPS |
-| 3 | **Dust & Tape** | **Lo-fi · DJ Screw · 90s phonk** | DL006 | 60–95 | Slow study, chop & screw sessions, late-night focus |
-| 4 | **Neon Terminal** | **Cyber funk** (coding) · *vaporwave aesthetic layer* | DL004 | 112–128 | Coding flow, build sessions, terminal deep work |
+| 1 | **Boulevard 86** | French touch / electro-funk / nu-disco | DL001 | 118–124 | Deep work, night cruise, creative session |
+| 2 | **Midnight Circuit** | **Drift phonk · wave phonk** | DL002 | 140–160 | Gym, night drive, FPS |
+| 3 | **Disklordz** | **Lo-fi · DJ Screw · 90s phonk** | DL006 | 60–95 | Slow study, chop & screw sessions, late-night focus |
+| 4 | **TBD** *(vaporwave naming)* | **Cyber funk** (coding) · *vaporwave aesthetic layer* | DL004 | 112–128 | Coding flow, build sessions, terminal deep work |
+
+**Brand 4 naming:** Public channel name is **not locked**. Working title in factory seed: **Neon Terminal** — pick a vaporwave-forward name when ready without changing the sonic/aesthetic rules below.
 
 ---
 
-## 1. French touch — **Chrome Circuit** ✓
+## 1. French touch — **Boulevard 86**
 
-**Alt names:** Boulevard 84, Vanguard Disco, Neon Mirage
+**Alt names:** Chrome Circuit, Boulevard 84, Vanguard Disco, Neon Mirage
 
 **World:** Late-1990s Parisian retro-futurism + sci-fi anime (Discovery / Interstella 5555). Vintage sports car through a lit city at 1:00 AM; high-tech robotic sound lab.
 
@@ -29,9 +31,9 @@ Four **separate YouTube brands** under DiskLordz (not one generic upload channel
 
 ---
 
-## 2. Drift phonk · wave phonk — **GhostDrive 808**
+## 2. Drift phonk · wave phonk — **Midnight Circuit**
 
-**Alt names:** Phantom Grip, Kuro Drift, Midnight Circuit
+**Alt names:** GhostDrive 808, Phantom Grip, Kuro Drift
 
 **World:** Late-night Tokyo / Memphis — drift culture, rain asphalt, CRT, cyberpunk alleys.
 
@@ -47,9 +49,9 @@ Four **separate YouTube brands** under DiskLordz (not one generic upload channel
 
 ---
 
-## 3. Lo-fi · DJ Screw · 90s phonk — **Dust & Tape**
+## 3. Lo-fi · DJ Screw · 90s phonk — **Disklordz**
 
-**Alt names:** Analog Solitude, Static Reverie, Late Night Terminal
+**Alt names:** Dust & Tape, Analog Solitude, Static Reverie, Late Night Terminal
 
 **World:** Chopped, slowed tape culture — 3:00 AM screw sessions, amber sampler screens, Houston/South slow vibe meets **90s phonk** tape hiss, rain on glass.
 
@@ -61,17 +63,17 @@ Four **separate YouTube brands** under DiskLordz (not one generic upload channel
 
 **Funnel:** Screw/phonk chop kits, SP-404/MPC one-shots, pitched vocal stem packs, RC-20 / cassette chains. **Labs:** SP-1200 bit-crunch authenticity for product demos.
 
-**Note:** Same phonk *family* as GhostDrive but **different channel job** (slow chop vs fast drift/wave). A&R treats these as **non-interchangeable** programming.
+**Note:** Same phonk *family* as Midnight Circuit but **different channel job** (slow chop vs fast drift/wave). A&R treats these as **non-interchangeable** programming.
 
 **Research (`DL-OPP`):** screw/lo-fi study retention, 90s phonk sample demand — *sources required*.
 
 ---
 
-## 4. Cyber funk for coding — **Neon Terminal**
+## 4. Cyber funk for coding — **name TBD (vaporwave)**
 
-**Working primary name:** Neon Terminal *(rename OK — genre lock is cyber funk + coding)*
+**Working title (factory / ops):** Neon Terminal — **replace when a vaporwave-forward public name is chosen.**
 
-**Alt names:** Stack Trace, Cipher Drive, Grid Runner
+**Alt names (candidates):** Stack Trace, Cipher Drive, Grid Runner, Neon Terminal
 
 **World:** Clean-room cyberpunk — developer at 2:00 AM, neon grid city outside floor-to-ceiling windows, retro-future UI, synth funk for **focus not hype**.
 
@@ -79,13 +81,28 @@ Four **separate YouTube brands** under DiskLordz (not one generic upload channel
 
 **Sonic:** 112–128 BPM. **Cyber funk** — rubbery digital bass, FM/stab chords, tight electronic drums (909/707 hybrid feel), minimal vocals, sidechain pump optional but **cleaner** than French Touch filter drama.
 
-**Audience job:** **Coding flow**, build streams, technical deep work (pairs with but does not duplicate Chrome Circuit’s Paris robot story).
+**Audience job:** **Coding flow**, build streams, technical deep work (pairs with but does not duplicate Boulevard 86’s Paris robot story).
 
 **Funnel:** Cyber funk MIDI packs, stab/synth preset banks, “coding session” long mixes → **Labs** plugin presets (JD Upgraded / future DiskLordz synths).
 
 **Artist lane:** DL004 — cyber disco / cyber funk IP.
 
 **Research (`DL-OPP`):** “music for coding” cyber/synth competitor set, BPM band validation — *sources required*.
+
+### Vaporwave tie-in (yes — with boundaries)
+
+**Cyber funk** stays the **sonic primary** at 112–128 BPM (productive coding energy). **Vaporwave** is a strong **visual + optional sub-series** layer, not a replacement genre:
+
+| Layer | Role on brand 4 |
+|--------|------------------|
+| **Cyber funk** | Default uploads: tight drums, funk bass, FM/stabs, long “build session” mixes |
+| **Vaporwave aesthetic** | Thumbs/loops: retro OS windows, marble busts, pink–cyan grids, faux-Japanese cityscapes, VHS softening — *without* slowing the whole channel to mallsoft tempo |
+| **Vapor-adjacent tracks** | Occasional **“Slow Grid”** sub-playlist uploads (85–100 BPM) or Shorts — clearly labeled, not mixed into main coding feed |
+| **Commerce** | “Cyber funk for coding” kits as hero SKU; **vaporwave texture packs** (loops, FX, cover art templates) as secondary — same DL004 lane |
+
+**Keep separate from Disklordz (brand 3):** screw / 90s phonk / lo-fi = **tape slowdown and chop culture**. Vaporwave on brand 4 = **digital nostalgia + clean funk pulse**, not Houston screw or gym phonk.
+
+**Risk to avoid:** Leading with a pure “vaporwave” channel title before research — YouTube may bucket you with irony/meme traffic and **hurt coding-session retention**. Better: *“cyber funk / future funk for developers”* positioning with vapor **art direction**, then lock a public name that fits both.
 
 ---
 
@@ -95,7 +112,7 @@ Four **separate YouTube brands** under DiskLordz (not one generic upload channel
 DISCOVER → one sourced DL-OPP per YT-DL-001…004
     → IDEATE → A&R greenlight per channel (no cross-brand batch mush)
     → GENERATE / PRODUCE / HUMANIZE
-    → PACKAGE → SKU prefix per brand (chrome-*, ghost-*, dust-*, neon-*)
+    → PACKAGE → SKU prefix per brand (boulevard-*, midnight-*, disklordz-*, brand4-* until name locked)
     → PUBLISH → programming matrix per channel
     → MEASURE → watch time + product attach by brand
 ```

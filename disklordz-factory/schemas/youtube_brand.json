@@ -8,6 +8,12 @@
     "brand_id": { "type": "string", "pattern": "^YT-DL-[0-9]{3}$" },
     "primary_channel_name": { "type": "string" },
     "alternate_names": { "type": "array", "items": { "type": "string" } },
+    "naming_status": {
+      "type": "string",
+      "enum": ["locked", "pending"],
+      "description": "pending = primary_channel_name is a working title only"
+    },
+    "naming_notes": { "type": "string" },
     "artist_id": { "type": "string", "pattern": "^DL[0-9]{3}$" },
     "opportunity_id": {
       "type": "string",

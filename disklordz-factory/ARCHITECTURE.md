@@ -121,7 +121,7 @@ Fictional identities (e.g. DISKLORD 001–006) each define visual identity, BPM 
 
 ## YouTube network brands
 
-Programmed channels (Chrome Circuit, GhostDrive 808, Dust & Tape, …) — [docs/DISKLORDZ_YOUTUBE_NETWORK.md](../docs/DISKLORDZ_YOUTUBE_NETWORK.md). Each brand links to a sourced `DL-OPP-*` before A&R assigns batches.
+Programmed channels (Boulevard 86, Midnight Circuit, Disklordz, brand 4 TBD) — [docs/DISKLORDZ_YOUTUBE_NETWORK.md](../docs/DISKLORDZ_YOUTUBE_NETWORK.md). Each brand links to a sourced `DL-OPP-*` before A&R assigns batches.
 
 ## Related docs
 
