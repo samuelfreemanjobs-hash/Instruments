@@ -25,6 +25,7 @@ python3 ../sound-factory/scripts/generate_stub_kits.py
 Browser (KitGenerator)
   → POST /api/generate { prompt, presetId, spec? }
        → rate limit (IP, in-memory v0)
+       → buildVariationBatch(): 2 (studio) or 3 (creative) kits per request
        → buildFactoryKit(): prompt-params + synth → /tmp/disklordz-kits/<kitId>/*.wav
        → manifest with /api/samples/<kitId>/<file>.wav URLs
   → GET /api/samples/...  (preview audio)

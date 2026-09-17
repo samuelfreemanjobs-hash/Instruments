@@ -68,6 +68,7 @@ Each WO: Airtable → GitHub issue (A1) → PR with `WO-…` in title → merge 
 | Auth + saved kits | Done (requires Supabase env + SQL) |
 | Rate limit UX | Done (IP / in-memory) |
 | Deploy HTTPS | **You:** Vercel root `disklordz/website` + env vars |
-| Generation spec v1 (007) | Done on branch — `spec` in API + UI |
+| Generation spec v1 (007) | Done — `spec` in API + UI |
+| Variation batches (008) | Done — 2 studio / 3 creative, Generate more |
 
 Parallel work: [DISKLORDZ_SAAS_AGENT_LANES.md](DISKLORDZ_SAAS_AGENT_LANES.md).

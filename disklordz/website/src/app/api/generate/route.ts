@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { buildFactoryKit } from "@/lib/generation/factory";
 import { parseGenerationSpec } from "@/lib/generation/generation-spec";
+import { buildVariationBatch } from "@/lib/generation/variations";
 import { saveKitForUser } from "@/lib/kits/persist";
 import { getPreset, STYLE_PRESETS } from "@/lib/presets";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -57,7 +57,12 @@ export async function POST(req: NextRequest) {
   }
 
   const baseUrl = req.nextUrl.origin;
-  const manifest = await buildFactoryKit(prompt, presetId, baseUrl, parsed.spec);
+  const { batchId, manifests } = await buildVariationBatch(
+    prompt,
+    presetId,
+    baseUrl,
+    parsed.spec,
+  );
 
   let savedToAccount = false;
   if (isSupabaseConfigured()) {
@@ -67,14 +72,25 @@ export async function POST(req: NextRequest) {
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
-        const saved = await saveKitForUser(supabase, user.id, manifest);
-        savedToAccount = saved.ok;
+        for (const manifest of manifests) {
+          const saved = await saveKitForUser(supabase, user.id, manifest);
+          if (saved.ok) savedToAccount = true;
+        }
       }
     }
   }
 
-  return NextResponse.json({
+  const variations = manifests.map((manifest) => ({
+    label: manifest.variationLabel ?? "A",
     manifest,
+  }));
+
+  return NextResponse.json({
+    batchId,
+    variationCount: variations.length,
+    variations,
+    /** @deprecated Use variations[0].manifest — kept for compatibility */
+    manifest: manifests[0],
     savedToAccount,
     rateLimit: { remaining: limited.remaining, limit: limited.limit },
     presets: STYLE_PRESETS.map(({ id, label, description }) => ({

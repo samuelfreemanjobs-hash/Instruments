@@ -78,19 +78,26 @@ function clamp(n: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, n));
 }
 
+export type VariationContext = {
+  variationIndex: number;
+  batchId: string;
+};
+
 /** Map natural-language prompt tokens to parameter nudges (deterministic + seeded jitter). */
 export function resolveDrumParams(
   prompt: string,
   presetId: string,
   spec?: GenerationSpec,
+  variation?: VariationContext,
 ): DrumParams {
   const base = PRESET_BASE[presetId] ?? PRESET_BASE["mpc-ready-808"];
-  const seed = hashSeed(
-    spec
-      ? `${presetId}::${prompt}::${spec.bpm}::${spec.key}::${spec.wildness}`
-      : prompt,
-    presetId,
-  );
+  let seedInput = spec
+    ? `${presetId}::${prompt}::${spec.bpm}::${spec.key}::${spec.wildness}::${spec.engine}`
+    : prompt;
+  if (variation) {
+    seedInput += `::batch=${variation.batchId}::v=${variation.variationIndex}`;
+  }
+  const seed = hashSeed(seedInput, presetId);
   const jitterScale = spec ? wildnessJitterScale(spec) : 1;
   const jitter = (i: number) =>
     (((seed >> (i * 4)) & 0xf) / 0xf - 0.5) * jitterScale;

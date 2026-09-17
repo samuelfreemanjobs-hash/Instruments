@@ -131,3 +131,12 @@ export function wildnessJitterScale(spec: GenerationSpec): number {
   const engineScale = spec.engine === "creative" ? 1.25 : 0.85;
   return (0.5 + spec.wildness) * engineScale;
 }
+
+/** ILLUGEN-shaped: creative → 3 candidates, studio → 2. */
+export function variationCountForEngine(engine: GenerationEngine): number {
+  return engine === "creative" ? 3 : 2;
+}
+
+export function variationLabel(index: number): string {
+  return String.fromCharCode(65 + index);
+}

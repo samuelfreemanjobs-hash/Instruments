@@ -3,12 +3,25 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { GenerationSpecFields } from "@/components/GenerationSpecFields";
-import { defaultGenerationSpec, type GenerationSpec } from "@/lib/generation/generation-spec";
+import { VariationPreview } from "@/components/VariationPreview";
+import {
+  defaultGenerationSpec,
+  type GenerationSpec,
+} from "@/lib/generation/generation-spec";
 import type { KitManifest } from "@/lib/manifest";
 import { STYLE_PRESETS, type StylePreset } from "@/lib/presets";
 
+type FrozenRequest = {
+  prompt: string;
+  presetId: string;
+  spec: GenerationSpec;
+};
+
 type GenerateResponse = {
-  manifest: KitManifest;
+  batchId: string;
+  variationCount: number;
+  variations: { label: string; manifest: KitManifest }[];
+  manifest?: KitManifest;
   savedToAccount?: boolean;
   rateLimit?: { remaining: number; limit: number };
 };
@@ -20,10 +33,13 @@ export function KitGenerator() {
     defaultGenerationSpec(STYLE_PRESETS[0].id),
   );
   const [specOpen, setSpecOpen] = useState(false);
-  const [manifest, setManifest] = useState<KitManifest | null>(null);
+  const [variations, setVariations] = useState<KitManifest[]>([]);
+  const [batchId, setBatchId] = useState<string | null>(null);
+  const [selectedVariation, setSelectedVariation] = useState(0);
+  const [frozen, setFrozen] = useState<FrozenRequest | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [playing, setPlaying] = useState<string | null>(null);
+  const [playingKey, setPlayingKey] = useState<string | null>(null);
   const [savedToAccount, setSavedToAccount] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [dailyLimit, setDailyLimit] = useState(20);
@@ -44,21 +60,29 @@ export function KitGenerator() {
     [presetId],
   );
 
+  const activeManifest = variations[selectedVariation] ?? null;
+
   const selectPreset = useCallback((id: string) => {
     setPresetId(id);
     setSpec(defaultGenerationSpec(id));
   }, []);
 
-  const generate = useCallback(async () => {
+  const runGenerate = useCallback(async (request: FrozenRequest) => {
     setLoading(true);
     setError(null);
-    setManifest(null);
+    setVariations([]);
+    setBatchId(null);
+    setSelectedVariation(0);
     setSavedToAccount(false);
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, presetId, spec }),
+        body: JSON.stringify({
+          prompt: request.prompt,
+          presetId: request.presetId,
+          spec: request.spec,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -66,7 +90,16 @@ export function KitGenerator() {
         return;
       }
       const payload = data as GenerateResponse;
-      setManifest(payload.manifest);
+      const manifests =
+        payload.variations?.map((v) => v.manifest) ??
+        (payload.manifest ? [payload.manifest] : []);
+      if (!manifests.length) {
+        setError("No variations returned.");
+        return;
+      }
+      setVariations(manifests);
+      setBatchId(payload.batchId ?? null);
+      setFrozen(request);
       setSavedToAccount(Boolean(payload.savedToAccount));
       if (payload.rateLimit) {
         setRemaining(payload.rateLimit.remaining);
@@ -77,28 +110,40 @@ export function KitGenerator() {
     } finally {
       setLoading(false);
     }
-  }, [prompt, presetId, spec]);
+  }, []);
 
-  const playSample = useCallback((url: string, name: string) => {
+  const generate = useCallback(() => {
+    runGenerate({ prompt, presetId, spec });
+  }, [prompt, presetId, spec, runGenerate]);
+
+  const generateMore = useCallback(() => {
+    if (!frozen) {
+      setError("Generate a batch first to lock the spec for “Generate more”.");
+      return;
+    }
+    runGenerate(frozen);
+  }, [frozen, runGenerate]);
+
+  const playSample = useCallback((url: string, playKey: string) => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
     const audio = new Audio(url);
     audioRef.current = audio;
-    setPlaying(name);
-    audio.play().catch(() => setPlaying(null));
-    audio.onended = () => setPlaying(null);
+    setPlayingKey(playKey);
+    audio.play().catch(() => setPlayingKey(null));
+    audio.onended = () => setPlayingKey(null);
   }, []);
 
   const downloadZip = useCallback(async () => {
-    if (!manifest) return;
+    if (!activeManifest) return;
     setLoading(true);
     setError(null);
     try {
       const res = await fetch("/api/download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ manifest }),
+        body: JSON.stringify({ manifest: activeManifest }),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -109,7 +154,8 @@ export function KitGenerator() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `disklordz-${manifest.presetId}.zip`;
+      const label = activeManifest.variationLabel ?? "A";
+      a.download = `disklordz-${activeManifest.presetId}-var-${label}.zip`;
       a.click();
       URL.revokeObjectURL(url);
     } catch {
@@ -117,7 +163,10 @@ export function KitGenerator() {
     } finally {
       setLoading(false);
     }
-  }, [manifest]);
+  }, [activeManifest]);
+
+  const variationCountHint =
+    spec.engine === "creative" ? "3 variations" : "2 variations";
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
@@ -129,12 +178,12 @@ export function KitGenerator() {
           Drum kit from a vibe
         </h1>
         <p className="max-w-xl text-zinc-400">
-          Type a prompt, pick an artist lane preset, preview one-shots, download an MPC-ready ZIP
-          with provenance manifest.
+          Type a prompt, pick a lane preset, audition {variationCountHint} per engine, download the
+          kit you keep.
         </p>
         {remaining !== null && (
           <p className="text-xs text-zinc-500">
-            Free tier: {remaining} of {dailyLimit} kits left today (per IP).
+            Free tier: {remaining} of {dailyLimit} generations left today (per IP; each batch = 1).
           </p>
         )}
       </header>
@@ -197,7 +246,7 @@ export function KitGenerator() {
           onClick={generate}
           className="mt-2 w-full rounded-xl bg-emerald-500 px-4 py-3 font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:opacity-50"
         >
-          {loading ? "Generating…" : "Generate preview kit"}
+          {loading ? "Generating…" : `Generate ${variationCountHint}`}
         </button>
 
         {error && (
@@ -207,52 +256,55 @@ export function KitGenerator() {
         )}
       </section>
 
-      {manifest && (
+      {variations.length > 0 && (
         <section className="space-y-4 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-lg font-semibold text-zinc-100">Preview</h2>
-            <div className="flex flex-col items-end gap-1">
-              <span className="font-mono text-xs text-zinc-500">{manifest.kitId}</span>
+            <h2 className="text-lg font-semibold text-zinc-100">Candidates</h2>
+            <div className="flex flex-col items-end gap-1 text-xs text-zinc-500">
+              {batchId && <span className="font-mono">batch {batchId.slice(0, 8)}</span>}
               {savedToAccount && (
-                <span className="text-xs text-emerald-400">Saved to your account</span>
+                <span className="text-emerald-400">Saved to your account</span>
               )}
             </div>
           </div>
-          <ul className="grid gap-2 sm:grid-cols-2">
-            {manifest.samples.map((s) => (
-              <li
-                key={s.name}
-                className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2"
-              >
-                <span className="font-mono text-sm text-zinc-200">{s.name}</span>
-                <button
-                  type="button"
-                  onClick={() => playSample(s.url, s.name)}
-                  className="text-sm font-medium text-emerald-400 hover:text-emerald-300"
-                >
-                  {playing === s.name ? "Playing…" : "Play"}
-                </button>
-              </li>
-            ))}
-          </ul>
-          {manifest.generationSpec && (
+
+          <VariationPreview
+            variations={variations}
+            selectedIndex={selectedVariation}
+            onSelect={setSelectedVariation}
+            playingKey={playingKey}
+            onPlay={playSample}
+          />
+
+          {activeManifest?.generationSpec && (
             <p className="font-mono text-xs text-zinc-500">
-              Spec: {manifest.generationSpec.mode} · {manifest.generationSpec.engine} ·{" "}
-              {manifest.generationSpec.key} · {manifest.generationSpec.bpm} BPM · wildness{" "}
-              {Math.round(manifest.generationSpec.wildness * 100)}%
+              Frozen spec: {activeManifest.generationSpec.engine} ·{" "}
+              {activeManifest.generationSpec.key} · {activeManifest.generationSpec.bpm} BPM
             </p>
           )}
+
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              disabled={loading || !frozen}
+              onClick={generateMore}
+              className="flex-1 rounded-xl border border-zinc-600 px-4 py-3 font-semibold text-zinc-100 transition hover:border-emerald-500 hover:text-emerald-300 disabled:opacity-50"
+            >
+              Generate more (same spec)
+            </button>
+            <button
+              type="button"
+              disabled={loading || !activeManifest}
+              onClick={downloadZip}
+              className="flex-1 rounded-xl border border-emerald-600/60 bg-emerald-500/10 px-4 py-3 font-semibold text-emerald-200 transition hover:bg-emerald-500/20 disabled:opacity-50"
+            >
+              Download ZIP (variation {activeManifest?.variationLabel ?? "A"})
+            </button>
+          </div>
+
           <p className="text-xs text-zinc-500">
-            Provenance: {manifest.samples[0]?.provenance} · SHA-256 per file in manifest.json
+            Provenance: factory_parametric_v1 · SHA-256 per file in manifest.json
           </p>
-          <button
-            type="button"
-            disabled={loading}
-            onClick={downloadZip}
-            className="w-full rounded-xl border border-zinc-600 px-4 py-3 font-semibold text-zinc-100 transition hover:border-emerald-500 hover:text-emerald-300 disabled:opacity-50"
-          >
-            Download ZIP (WAV + manifest)
-          </button>
         </section>
       )}
     </div>

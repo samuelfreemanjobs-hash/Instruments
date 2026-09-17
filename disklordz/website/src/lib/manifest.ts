@@ -24,4 +24,9 @@ export type KitManifest = {
   factoryParams?: Record<string, number>;
   /** Resolved musical + mode spec (WO-SAAS-007). */
   generationSpec?: GenerationSpec;
+  /** WO-SAAS-008 variation batch metadata. */
+  variationIndex?: number;
+  variationBatchId?: string;
+  variationTotal?: number;
+  variationLabel?: string;
 };

@@ -3,6 +3,7 @@ import { randomUUID } from "crypto";
 import { sha256Buffer, writeKitFile } from "@/lib/kit-store";
 import type { KitManifest, SampleAsset } from "@/lib/manifest";
 import type { GenerationSpec } from "@/lib/generation/generation-spec";
+import type { VariationContext } from "@/lib/generation/prompt-params";
 import { resolveDrumParams } from "@/lib/generation/prompt-params";
 import { SAMPLE_NAMES, renderSample } from "@/lib/generation/synth";
 import { encodeWav } from "@/lib/generation/wav";
@@ -13,13 +14,14 @@ export async function buildFactoryKit(
   presetId: string,
   baseUrl: string,
   generationSpec: GenerationSpec,
+  variation?: VariationContext,
 ): Promise<KitManifest> {
   const preset = getPreset(presetId);
   if (!preset) {
     throw new Error(`Unknown preset: ${presetId}`);
   }
 
-  const params = resolveDrumParams(prompt, presetId, generationSpec);
+  const params = resolveDrumParams(prompt, presetId, generationSpec, variation);
   const kitId = randomUUID();
   const samples: SampleAsset[] = [];
 
