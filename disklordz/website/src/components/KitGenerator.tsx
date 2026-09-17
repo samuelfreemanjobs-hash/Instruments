@@ -5,7 +5,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import type { KitManifest } from "@/lib/manifest";
 import { STYLE_PRESETS, type StylePreset } from "@/lib/presets";
 
-type GenerateResponse = { manifest: KitManifest };
+type GenerateResponse = { manifest: KitManifest; savedToAccount?: boolean };
 
 export function KitGenerator() {
   const [prompt, setPrompt] = useState("dirty 90s boom bap kick with tape grit");
@@ -14,6 +14,7 @@ export function KitGenerator() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [playing, setPlaying] = useState<string | null>(null);
+  const [savedToAccount, setSavedToAccount] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const selectedPreset = useMemo(
@@ -25,6 +26,7 @@ export function KitGenerator() {
     setLoading(true);
     setError(null);
     setManifest(null);
+    setSavedToAccount(false);
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -36,7 +38,9 @@ export function KitGenerator() {
         setError(data.message ?? data.error ?? "Generation failed");
         return;
       }
-      setManifest((data as GenerateResponse).manifest);
+      const payload = data as GenerateResponse;
+      setManifest(payload.manifest);
+      setSavedToAccount(Boolean(payload.savedToAccount));
     } catch {
       setError("Network error — try again.");
     } finally {
@@ -160,7 +164,12 @@ export function KitGenerator() {
         <section className="space-y-4 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-lg font-semibold text-zinc-100">Preview</h2>
-            <span className="font-mono text-xs text-zinc-500">{manifest.kitId}</span>
+            <div className="flex flex-col items-end gap-1">
+              <span className="font-mono text-xs text-zinc-500">{manifest.kitId}</span>
+              {savedToAccount && (
+                <span className="text-xs text-emerald-400">Saved to your account</span>
+              )}
+            </div>
           </div>
           <ul className="grid gap-2 sm:grid-cols-2">
             {manifest.samples.map((s) => (

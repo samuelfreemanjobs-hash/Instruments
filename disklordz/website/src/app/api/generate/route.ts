@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { buildStubKit } from "@/lib/generation/stub";
+import { saveKitForUser } from "@/lib/kits/persist";
 import { getPreset, STYLE_PRESETS } from "@/lib/presets";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { createClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 export async function POST(req: NextRequest) {
   const ip =
@@ -46,8 +49,23 @@ export async function POST(req: NextRequest) {
   const baseUrl = req.nextUrl.origin;
   const manifest = await buildStubKit(prompt, presetId, baseUrl);
 
+  let savedToAccount = false;
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient();
+    if (supabase) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const saved = await saveKitForUser(supabase, user.id, manifest);
+        savedToAccount = saved.ok;
+      }
+    }
+  }
+
   return NextResponse.json({
     manifest,
+    savedToAccount,
     presets: STYLE_PRESETS.map(({ id, label, description }) => ({
       id,
       label,

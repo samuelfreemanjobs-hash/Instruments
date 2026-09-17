@@ -45,9 +45,20 @@ Generation is **sync stub** in v0 (no WebSocket). Future factory jobs will be as
 | `src/app/api/download/route.ts` | ZIP export |
 | `../sound-factory/` | Offline WAV generation |
 
+## Auth (WO-SAAS-002)
+
+Magic-link email via Supabase Auth (`@supabase/ssr`). Apply migration:
+
+```bash
+# Supabase SQL editor or CLI
+cat supabase/migrations/20260917190000_saved_kits.sql
+```
+
+Signed-in users auto-save each generated kit to `public.saved_kits` (RLS). `/account` lists history.
+
 ## Extension points
 
-- **WO-SAAS-002:** Supabase Auth middleware; attach `userId` to manifest.
+- **WO-SAAS-002:** Done when env + migration applied on your Supabase project.
 - **WO-SAAS-004:** Call sound-factory CLI from API route (child process or queue).
 - **WO-SAAS-006:** Redis-backed rate limits; error UX polish.
 
