@@ -1,0 +1,42 @@
+{
+  "cadence": "weekly",
+  "kits_per_run": 1,
+  "iso_week_timezone": "UTC",
+  "machine_rotation": [
+    {
+      "machine_id": "DL-808",
+      "title_suffix": "808 Core",
+      "tags": ["808", "kick", "snare", "phonk-ready"]
+    },
+    {
+      "machine_id": "DL-SP808",
+      "title_suffix": "SP-808 Grit",
+      "tags": ["12-bit", "26k", "memphis-adjacent"]
+    },
+    {
+      "machine_id": "DL-TR909",
+      "title_suffix": "909 House",
+      "tags": ["909", "french-touch-adjacent"]
+    },
+    {
+      "machine_id": "DL-DR660",
+      "title_suffix": "DR-660 Pocket",
+      "tags": ["dr660", "swing", "boom-bap"]
+    },
+    {
+      "machine_id": "DL-707",
+      "title_suffix": "707 Disco",
+      "tags": ["707", "open-hats"]
+    },
+    {
+      "machine_id": "DL-505",
+      "title_suffix": "505 Latin",
+      "tags": ["505", "perc", "fills"]
+    },
+    {
+      "machine_id": "DL-CR78",
+      "title_suffix": "CR-78 Vintage",
+      "tags": ["cr78", "analog", "texture"]
+    }
+  ]
+}

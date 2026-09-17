@@ -21,6 +21,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Ensemble personas** | [docs/OPENCLAW_PERSONAS.md](docs/OPENCLAW_PERSONAS.md) | Isaac / Marcus / Bernard / Evelyn domain SOUL |
 | **Sonic archaeology** | [docs/SONIC_ARCHAEOLOGY.md](docs/SONIC_ARCHAEOLOGY.md) | Screw / Memphis / Smokey → DL006/DL002 source design |
 | **Artist lane bible (×4)** | [docs/ARTIST_LANE_BIBLE.md](docs/ARTIST_LANE_BIBLE.md) | Equal-depth DL001–DL004 archaeology & processing |
+| **Supply weekly drum factory** | [docs/SUPPLY_DRUM_FACTORY.md](docs/SUPPLY_DRUM_FACTORY.md) | 1 kit/week; independent of OpenClaw collective |
 
 ## Repository layout
 

@@ -34,6 +34,13 @@ from disklordz_factory.artist_agents import build_artist_agent_profile, list_art
 from disklordz_factory.collective import load_collective_manifest, list_collective_artists
 from disklordz_factory.research_bootstrap import bootstrap_research_if_empty, greenlights_summary
 from disklordz_factory.store import store
+from disklordz_factory.prompt_validation import validate_compiled_prompt
+from disklordz_factory.weekly_drum_kit import (
+    WeeklyDrumKitRun,
+    WeeklyDrumKitStatus,
+    run_weekly_drum_kit,
+    weekly_drum_status,
+)
 
 app = FastAPI(
     title="DiskLordz Factory API",
@@ -262,6 +269,25 @@ def night_shift_run(body: NightShiftRequest | None = None, notify_slack: bool = 
 def factory_slack_checkin() -> dict:
     """Post all factory agents to Slack (stand-up / verify webhook)."""
     return slack_agents.notify_agent_checkin()
+
+
+@app.get("/supply/weekly-drum-kit/status", response_model=WeeklyDrumKitStatus)
+def supply_weekly_drum_kit_status() -> WeeklyDrumKitStatus:
+    """Supply cadence: 1 kit/week; does not depend on collective or compiled prompts."""
+    return weekly_drum_status(store)
+
+
+@app.post("/supply/weekly-drum-kit/run", response_model=WeeklyDrumKitRun)
+def supply_weekly_drum_kit_run(force: bool = False) -> WeeklyDrumKitRun:
+    return run_weekly_drum_kit(store, force=force)
+
+
+@app.post("/validate/compiled-prompt")
+def validate_compiled_prompt_endpoint(body: dict) -> dict:
+    errors = validate_compiled_prompt(body)
+    if errors:
+        raise HTTPException(status_code=422, detail={"errors": errors})
+    return {"valid": True, "artist_id": body.get("artist_id")}
 
 
 @app.get("/factory/slack/preview")

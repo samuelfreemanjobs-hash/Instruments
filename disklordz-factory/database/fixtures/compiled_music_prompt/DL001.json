@@ -1,0 +1,45 @@
+{
+  "batch_id": "DL-BATCH-FIXTURE-001",
+  "artist_id": "DL001",
+  "source_session_bpm": 84,
+  "movement_primary": "french_touch",
+  "mix_architecture": {
+    "console": "Neve 8068",
+    "tape": "Studer A800 2-inch"
+  },
+  "sections": {
+    "keys": {
+      "agent_identifier": "keys_arranger",
+      "payload": {
+        "key": "F minor",
+        "voicing_types": ["Rhodes stack", "Jun-106 pad"],
+        "hardware_emulation": ["Rhodes Mark I", "Roland Jun-106"]
+      }
+    },
+    "rhythm": {
+      "agent_identifier": "rhythm_section",
+      "payload": {
+        "groove_feel": "filtered house pocket",
+        "kick_snare_relationship": "909 tight, sidechain pump",
+        "tempo_lock_bpm": 84
+      }
+    },
+    "vocal": {
+      "agent_identifier": "vocal_topline",
+      "payload": {
+        "hook_style": "talkbox phrase",
+        "register": "mid",
+        "lyric_theme": "night drive boulevard"
+      }
+    }
+  },
+  "downstream": {
+    "french_touch": {
+      "drum_machines": ["Roland TR-909", "Roland TR-707"],
+      "filter_house": true,
+      "vocoder_talkbox": true
+    }
+  },
+  "compiled_prompt_text": "Neve 8068 console into Studer A800 2-inch tape. Source session 84 BPM analog soul-jazz bed for Boulevard 86 (DL001). Keys: F minor Rhodes stack and Jun-106 pad voicings. Rhythm: filtered house pocket with 909 kick/snare sidechain pump. Vocal: mid-register talkbox hook on night-drive boulevard theme. Downstream french_touch: TR-909/TR-707, filter-house sweeps, vocoder/talkbox; reject memphis phonk and screw tempo.",
+  "forbidden_in_output": ["trap hi-hat grids", "screw pitch-down", "memphis cowbell phonk"]
+}

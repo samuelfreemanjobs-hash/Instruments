@@ -1,0 +1,46 @@
+{
+  "batch_id": "DL-BATCH-FIXTURE-006",
+  "artist_id": "DL006",
+  "source_session_bpm": 88,
+  "movement_primary": "screw",
+  "mix_architecture": {
+    "console": "Neve 8068",
+    "tape": "Studer A800 2-inch"
+  },
+  "sections": {
+    "keys": {
+      "agent_identifier": "keys_arranger",
+      "payload": {
+        "key": "G minor",
+        "voicing_types": ["Rhodes chord bleed", "Wurlitzer comp"],
+        "hardware_emulation": ["Rhodes Mark I", "Wurlitzer 200A"],
+        "screw_clarity_notes": "keep midrange piano attack for pitch-down legibility"
+      }
+    },
+    "rhythm": {
+      "agent_identifier": "rhythm_section",
+      "payload": {
+        "groove_feel": "slow trunk bounce",
+        "kick_snare_relationship": "808 long decay",
+        "tempo_lock_bpm": 88
+      }
+    },
+    "vocal": {
+      "agent_identifier": "vocal_topline",
+      "payload": {
+        "hook_style": "chopped soul phrase",
+        "register": "mid",
+        "lyric_theme": "houston night drive"
+      }
+    }
+  },
+  "downstream": {
+    "screw": {
+      "pitch_reduction_percent": [15, 22],
+      "turntable": "Technics SL-1200 MK2",
+      "target_rpm_feel": "18-22"
+    }
+  },
+  "compiled_prompt_text": "Analog chain Neve 8068 into Studer A800. Disklordz DL006 screw lane source 88 BPM G minor. Rhodes/Wurlitzer voicings with screw clarity on piano attack. Rhythm: 808 long-decay trunk bounce at source tempo. Vocal: chopped soul mid-register hook. Downstream screw via dual Technics SL-1200 MK2 pitch reduction 15-22 percent targeting 18-22 RPM feel; layer wow/flutter and RC-20/SP-404 tape color; distribution 60-95 BPM.",
+  "forbidden_in_output": ["140 BPM phonk grid", "sidechain EDM pump"]
+}

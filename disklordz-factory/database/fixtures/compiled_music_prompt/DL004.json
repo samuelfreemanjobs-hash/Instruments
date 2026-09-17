@@ -1,0 +1,45 @@
+{
+  "batch_id": "DL-BATCH-FIXTURE-004",
+  "artist_id": "DL004",
+  "source_session_bpm": 82,
+  "movement_primary": "cyber_funk",
+  "mix_architecture": {
+    "console": "Neve 8068",
+    "tape": "Studer A800 2-inch"
+  },
+  "sections": {
+    "keys": {
+      "agent_identifier": "keys_arranger",
+      "payload": {
+        "key": "D minor",
+        "voicing_types": ["DX7 FM stab", "digital brass stack"],
+        "hardware_emulation": ["Yamaha DX7", "Roland Jun-106"]
+      }
+    },
+    "rhythm": {
+      "agent_identifier": "rhythm_section",
+      "payload": {
+        "groove_feel": "909/707 hybrid tight",
+        "kick_snare_relationship": "cyber funk snap",
+        "tempo_lock_bpm": 82
+      }
+    },
+    "vocal": {
+      "agent_identifier": "vocal_topline",
+      "payload": {
+        "hook_style": "vaporwave-narration fragment",
+        "register": "high",
+        "lyric_theme": "terminal mirage skyline"
+      }
+    }
+  },
+  "downstream": {
+    "cyber_funk": {
+      "fm_synthesis": true,
+      "distribution_bpm": { "min": 112, "max": 128 },
+      "vapor_aesthetic": "Shorts and visual meta; Slow Grid sub-playlist optional at 85-100 BPM source"
+    }
+  },
+  "compiled_prompt_text": "Neve 8068 / Studer A800 session for Terminal Mirage DL004 at 82 BPM D minor. Keys: DX7 FM stabs with Jun-106 digital brass stacks. Rhythm: 909/707 hybrid tight cyber-funk snap. Vocal: high-register vapor narration on skyline theme. Downstream cyber_funk FM synthesis true; distribution 112-128 BPM; vapor_aesthetic guides Shorts/visual meta with optional Slow Grid 85-100 BPM source-only sub-playlist.",
+  "forbidden_in_output": ["memphis phonk cowbell", "screw turntable pitch-down"]
+}

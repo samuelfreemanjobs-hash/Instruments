@@ -6,6 +6,8 @@ This document adapts the original **1970s–1980s Soul, Jazz, and R&B collective
 
 **Policy:** Same as [FACTORY_RESEARCH.md](FACTORY_RESEARCH.md) — Market Intel and A&R do not assign lanes or post Slack greenlights without sourced `DL-OPP-*` records.
 
+**Supply cadence (non-blocking):** The core factory’s **1 drum kit / week** Supply track ([SUPPLY_DRUM_FACTORY.md](SUPPLY_DRUM_FACTORY.md)) runs on its own schedule and **does not wait** for collective merges, Maestro compiles, or OpenClaw fork completion. Vintage collective enriches Records lanes in parallel.
+
 ## Four artists ↔ four channels
 
 | Artist | YouTube brand | Vintage source era (HQ) | Modern destination | BPM |

@@ -1,0 +1,51 @@
+{
+  "batch_id": "DL-BATCH-FIXTURE-002",
+  "artist_id": "DL002",
+  "source_session_bpm": 78,
+  "movement_primary": "memphis_90s",
+  "mix_architecture": {
+    "console": "Neve 8068",
+    "tape": "Studer A800 2-inch"
+  },
+  "sections": {
+    "keys": {
+      "agent_identifier": "keys_arranger",
+      "payload": {
+        "key": "C minor",
+        "voicing_types": ["dark organ stab", "DX bell ghost"],
+        "hardware_emulation": ["Yamaha DX7", "Hammond B3"]
+      }
+    },
+    "rhythm": {
+      "agent_identifier": "rhythm_section",
+      "payload": {
+        "groove_feel": "DR-660 swing with SP-1200 crunch",
+        "kick_snare_relationship": "boom bap forward",
+        "tempo_lock_bpm": 78
+      }
+    },
+    "vocal": {
+      "agent_identifier": "vocal_topline",
+      "payload": {
+        "hook_style": "mumbled phonk adlib",
+        "register": "low-mid",
+        "lyric_theme": "midnight circuit alley"
+      }
+    }
+  },
+  "downstream": {
+    "memphis_90s": {
+      "drum_machine": "Boss DR-660",
+      "sampler": "E-mu SP-1200",
+      "sp1200_sample_rate": "26.04 kHz 12-bit"
+    },
+    "cloud_phonk": {
+      "sidechain": true,
+      "bitcrush": true,
+      "tape_stop": true,
+      "digital_lp_filter": true
+    }
+  },
+  "compiled_prompt_text": "Neve 8068 / Studer A800 tape color. Midnight Circuit DL002 source session 78 BPM. Keys in C minor with DX7 bell ghosts and Hammond stabs. Rhythm: DR-660 swing layered through SP-1200 26.04 kHz 12-bit crunch. Vocal: low-mid mumbled phonk adlibs. Downstream memphis_90s DR-660 + SP-1200; cloud_phonk sidechain duck, bitcrush, tape-stop, resonant digital lowpass for distribution 140-160 BPM Smokey-style processing notes.",
+  "forbidden_in_output": ["french filter house", "clean EDM supersaws"]
+}

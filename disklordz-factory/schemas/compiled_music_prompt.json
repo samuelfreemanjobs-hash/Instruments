@@ -63,6 +63,22 @@
             "tape_stop": { "type": "boolean" },
             "digital_lp_filter": { "type": "boolean" }
           }
+        },
+        "french_touch": {
+          "type": "object",
+          "properties": {
+            "drum_machines": { "type": "array", "items": { "type": "string" } },
+            "filter_house": { "type": "boolean" },
+            "vocoder_talkbox": { "type": "boolean" }
+          }
+        },
+        "cyber_funk": {
+          "type": "object",
+          "properties": {
+            "fm_synthesis": { "type": "boolean" },
+            "distribution_bpm": { "type": "object" },
+            "vapor_aesthetic": { "type": "string" }
+          }
         }
       }
     },

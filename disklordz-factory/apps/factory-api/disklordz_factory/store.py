@@ -23,6 +23,13 @@ class FactoryStore:
         self.counters = {"batch": 0, "asset": 0}
         self.today = {"generated": 0, "approved": 0, "extracted": 0}
         self.queue = {"production": 0, "qa": 0, "publishing": 0}
+        # Supply track state (independent of research / OpenClaw collective)
+        self.supply_weekly_drum: dict = {
+            "last_iso_week": None,
+            "last_run_id": None,
+            "last_kit_asset_id": None,
+            "rotation_index": 0,
+        }
 
     def _next_id(self, prefix: str, counter_key: str) -> str:
         self.counters[counter_key] += 1

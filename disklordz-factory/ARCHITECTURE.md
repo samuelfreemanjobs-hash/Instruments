@@ -13,6 +13,7 @@ DiskLordz Autonomous Music Factory™ is an **AI-native record label + sample co
 | **Factory API** | `cd disklordz-factory/apps/factory-api && python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && uvicorn disklordz_factory.main:app --reload --port 8787` |
 | **Dashboard + API** | `./disklordz-factory/scripts/run-factory-dev.sh` → http://127.0.0.1:5173 |
 | **Night shift (API)** | `curl -s -X POST http://127.0.0.1:8787/night-shift/run -H 'Content-Type: application/json' -d '{"target_count":25}'` |
+| **Supply weekly drum** | `curl -s -X POST http://127.0.0.1:8787/supply/weekly-drum-kit/run` — **1 kit/week**, no collective gate |
 | **Health** | `curl -s http://127.0.0.1:8787/health` |
 | **Catalog DB (dev)** | `sqlite3 ../../database/disklordz_catalog.db < ../../database/schema.sql` |
 
@@ -124,7 +125,9 @@ Fictional identities (e.g. DISKLORD 001–006) each define visual identity, BPM 
 
 Programmed channels (Boulevard 86, Midnight Circuit, Disklordz, Terminal Mirage) — [docs/DISKLORDZ_YOUTUBE_NETWORK.md](../docs/DISKLORDZ_YOUTUBE_NETWORK.md). Each brand links to a sourced `DL-OPP-*` before A&R assigns batches.
 
-**Vintage collective + OpenClaw:** Four-artist 1970s–1980s soul/jazz/R&B synthesis orchestration — [docs/FACTORY_VINTAGE_COLLECTIVE.md](../docs/FACTORY_VINTAGE_COLLECTIVE.md). Roster seed: `database/artist_collective_seed.json`. API: `GET /collective/artists`.
+**Supply weekly drum (core cadence):** [docs/SUPPLY_DRUM_FACTORY.md](../docs/SUPPLY_DRUM_FACTORY.md) — `POST /supply/weekly-drum-kit/run` manufactures one `DL-KIT-*` per ISO week; **does not block on** research bootstrap, greenlights, or OpenClaw `compiled_music_prompt` merges. Rotation: `database/supply_weekly_drum_rotation.json`.
+
+**Vintage collective + OpenClaw:** Four-artist 1970s–1980s soul/jazz/R&B synthesis orchestration — [docs/FACTORY_VINTAGE_COLLECTIVE.md](../docs/FACTORY_VINTAGE_COLLECTIVE.md). Roster seed: `database/artist_collective_seed.json`. API: `GET /collective/artists`. Runs **in parallel** with Supply; not a prerequisite for weekly drum kits.
 
 **Research ingest:** `./scripts/ingest-youtube-network-research.sh` — four `DL-OPP-*` + greenlights ([docs/FACTORY_RESEARCH.md](../docs/FACTORY_RESEARCH.md)).
 

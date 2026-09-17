@@ -1,0 +1,54 @@
+name: Supply weekly drum kit
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+jobs:
+  weekly-drum:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install factory-api deps
+        run: |
+          pip install -r disklordz-factory/apps/factory-api/requirements.txt
+
+      - name: Validate compiled_music_prompt gold fixtures
+        run: |
+          cd disklordz-factory/apps/factory-api
+          python -c "
+          from disklordz_factory.prompt_validation import validate_all_fixtures
+          bad = {k: v for k, v in validate_all_fixtures().items() if v}
+          assert not bad, bad
+          print('All gold fixtures valid')
+          "
+
+      - name: Run weekly drum kit (in-process)
+        env:
+          FACTORY_SKIP_RESEARCH_BOOTSTRAP: "1"
+        run: |
+          cd disklordz-factory/apps/factory-api
+          python -c "
+          from disklordz_factory.store import store
+          from disklordz_factory.weekly_drum_kit import run_weekly_drum_kit, weekly_drum_status
+          store.supply_weekly_drum = {'last_iso_week': None, 'last_run_id': None, 'last_kit_asset_id': None, 'rotation_index': 0}
+          run = run_weekly_drum_kit(store, force=True)
+          assert run.kit_asset_id.startswith('DL-KIT'), run
+          st = weekly_drum_status(store)
+          assert st.independent_of_collective
+          print('Weekly drum kit:', run.kit_asset_id)
+          "
+
+      - name: Pytest (fixtures + supply API)
+        env:
+          FACTORY_SKIP_RESEARCH_BOOTSTRAP: "1"
+        run: |
+          cd disklordz-factory/apps/factory-api
+          pytest -q tests/test_fixtures_and_supply.py
