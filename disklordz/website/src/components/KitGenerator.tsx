@@ -1,11 +1,15 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { KitManifest } from "@/lib/manifest";
 import { STYLE_PRESETS, type StylePreset } from "@/lib/presets";
 
-type GenerateResponse = { manifest: KitManifest; savedToAccount?: boolean };
+type GenerateResponse = {
+  manifest: KitManifest;
+  savedToAccount?: boolean;
+  rateLimit?: { remaining: number; limit: number };
+};
 
 export function KitGenerator() {
   const [prompt, setPrompt] = useState("dirty 90s boom bap kick with tape grit");
@@ -15,7 +19,19 @@ export function KitGenerator() {
   const [error, setError] = useState<string | null>(null);
   const [playing, setPlaying] = useState<string | null>(null);
   const [savedToAccount, setSavedToAccount] = useState(false);
+  const [remaining, setRemaining] = useState<number | null>(null);
+  const [dailyLimit, setDailyLimit] = useState(20);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    fetch("/api/rate-limit")
+      .then((r) => r.json())
+      .then((d) => {
+        if (typeof d.remaining === "number") setRemaining(d.remaining);
+        if (typeof d.limit === "number") setDailyLimit(d.limit);
+      })
+      .catch(() => undefined);
+  }, []);
 
   const selectedPreset = useMemo(
     () => STYLE_PRESETS.find((p) => p.id === presetId),
@@ -41,6 +57,10 @@ export function KitGenerator() {
       const payload = data as GenerateResponse;
       setManifest(payload.manifest);
       setSavedToAccount(Boolean(payload.savedToAccount));
+      if (payload.rateLimit) {
+        setRemaining(payload.rateLimit.remaining);
+        setDailyLimit(payload.rateLimit.limit);
+      }
     } catch {
       setError("Network error — try again.");
     } finally {
@@ -101,6 +121,11 @@ export function KitGenerator() {
           Type a prompt, pick an artist lane preset, preview one-shots, download an MPC-ready ZIP
           with provenance manifest.
         </p>
+        {remaining !== null && (
+          <p className="text-xs text-zinc-500">
+            Free tier: {remaining} of {dailyLimit} kits left today (per IP).
+          </p>
+        )}
       </header>
 
       <section className="space-y-3 rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5">

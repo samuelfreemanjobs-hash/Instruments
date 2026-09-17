@@ -53,3 +53,16 @@ JD Upgraded remains **credibility SKU**; SaaS is **growth SKU**.
 6. `WO-SAAS-006` — Rate limits + error UX  
 
 Each WO: Airtable → GitHub issue (A1) → PR with `WO-…` in title → merge → Airtable Done (A2).
+
+## MVP completion checklist
+
+| Item | Status |
+|------|--------|
+| Prompt + presets | Done |
+| Parametric factory (prompt affects audio) | Done (`factory_parametric_v1`) |
+| Preview + ZIP + manifest | Done |
+| Auth + saved kits | Done (requires Supabase env + SQL) |
+| Rate limit UX | Done (IP / in-memory) |
+| Deploy HTTPS | **You:** Vercel root `disklordz/website` + env vars |
+
+Parallel work: [DISKLORDZ_SAAS_AGENT_LANES.md](DISKLORDZ_SAAS_AGENT_LANES.md).

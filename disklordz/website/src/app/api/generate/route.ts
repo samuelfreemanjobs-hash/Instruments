@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { buildStubKit } from "@/lib/generation/stub";
+import { buildFactoryKit } from "@/lib/generation/factory";
 import { saveKitForUser } from "@/lib/kits/persist";
 import { getPreset, STYLE_PRESETS } from "@/lib/presets";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -18,8 +18,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "daily_limit",
-        message: `Free tier allows ${process.env.SAAS_DAILY_GEN_LIMIT ?? "20"} kits per day.`,
+        message: `Free tier allows ${limited.limit} kits per day. Try again later.`,
         retryAfterSec: limited.retryAfterSec,
+        limit: limited.limit,
       },
       { status: 429 },
     );
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
   }
 
   const baseUrl = req.nextUrl.origin;
-  const manifest = await buildStubKit(prompt, presetId, baseUrl);
+  const manifest = await buildFactoryKit(prompt, presetId, baseUrl);
 
   let savedToAccount = false;
   if (isSupabaseConfigured()) {
@@ -66,6 +67,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     manifest,
     savedToAccount,
+    rateLimit: { remaining: limited.remaining, limit: limited.limit },
     presets: STYLE_PRESETS.map(({ id, label, description }) => ({
       id,
       label,

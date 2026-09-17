@@ -1,11 +1,8 @@
-import { createHash } from "crypto";
-import { readFile } from "fs/promises";
-import path from "path";
-
 import JSZip from "jszip";
 import { NextRequest, NextResponse } from "next/server";
 
 import type { KitManifest } from "@/lib/manifest";
+import { readKitFile, sha256Buffer } from "@/lib/kit-store";
 import { getPreset } from "@/lib/presets";
 
 export async function POST(req: NextRequest) {
@@ -42,15 +39,13 @@ export async function POST(req: NextRequest) {
   ].join("\n"));
 
   for (const sample of manifest.samples) {
-    const filePath = path.join(
-      process.cwd(),
-      "public",
-      "samples",
-      manifest.presetId,
-      sample.filename,
-    );
-    const data = await readFile(filePath);
-    const hash = createHash("sha256").update(data).digest("hex");
+    let data: Buffer;
+    try {
+      data = await readKitFile(manifest.kitId, sample.filename);
+    } catch {
+      return NextResponse.json({ error: "kit_expired", sample: sample.name }, { status: 410 });
+    }
+    const hash = sha256Buffer(data);
     if (hash !== sample.sha256) {
       return NextResponse.json({ error: "provenance_mismatch", sample: sample.name }, { status: 409 });
     }

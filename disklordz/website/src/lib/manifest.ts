@@ -3,7 +3,7 @@ export type SampleAsset = {
   filename: string;
   url: string;
   sha256: string;
-  provenance: "stub_factory_v0";
+  provenance: "stub_factory_v0" | "factory_parametric_v1";
   sourceId: string;
 };
 
@@ -18,4 +18,6 @@ export type KitManifest = {
   sampleRate: 44100;
   samples: SampleAsset[];
   license: "personal_and_commercial_v0_preview";
+  /** Internal generation metadata (optional in API responses). */
+  factoryParams?: Record<string, number>;
 };

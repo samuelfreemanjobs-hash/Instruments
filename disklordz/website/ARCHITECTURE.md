@@ -25,9 +25,11 @@ python3 ../sound-factory/scripts/generate_stub_kits.py
 Browser (KitGenerator)
   → POST /api/generate { prompt, presetId }
        → rate limit (IP, in-memory v0)
-       → buildStubKit() reads public/samples/<preset>/*.wav, SHA-256, manifest
+       → buildFactoryKit(): prompt-params + synth → /tmp/disklordz-kits/<kitId>/*.wav
+       → manifest with /api/samples/<kitId>/<file>.wav URLs
+  → GET /api/samples/...  (preview audio)
   → POST /api/download { manifest }
-       → ZIP(manifest.json, README.txt, WAVs) with provenance check
+       → ZIP(manifest.json, README.txt, WAVs) with SHA-256 provenance check
 ```
 
 ## Threading / realtime
@@ -59,7 +61,7 @@ Signed-in users auto-save each generated kit to `public.saved_kits` (RLS). `/acc
 ## Extension points
 
 - **WO-SAAS-002:** Done when env + migration applied on your Supabase project.
-- **WO-SAAS-004:** Call sound-factory CLI from API route (child process or queue).
+- **WO-SAAS-004:** Parametric v1 shipped in-process; next: archive/batch pipeline from `sound-factory/`.
 - **WO-SAAS-006:** Redis-backed rate limits; error UX polish.
 
 ## Related docs
