@@ -11,6 +11,8 @@ Production-facing claims require:
 
 Check: **`GET /research/status`** → `ready_for_production: true` only when both exist.
 
+**HQ artist greenlights (locked):** **`DL001`**, **`DL002`**, **`DL006`**, **`DL004`** — [ARTIST_GREENLIGHTS.md](ARTIST_GREENLIGHTS.md). Factory API bootstraps these from `youtube_research_seed.json` on startup when the research store is empty. **`GET /research/greenlights`** returns the roster + store linkage.
+
 ## Slack behaviour
 
 | Agent | Without research | With research |

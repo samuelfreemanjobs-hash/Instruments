@@ -17,7 +17,7 @@
         "method": "POST",
         "url": "http://factory-api:8787/night-shift/run",
         "sendBody": true,
-        "jsonBody": "={\"mission\":\"Scheduled night shift\",\"target_count\":25,\"artist_ids\":[\"DL002\",\"DL003\"]}"
+        "jsonBody": "={\"mission\":\"Scheduled night shift\",\"target_count\":25,\"artist_ids\":[]}"
       }
     },
     {

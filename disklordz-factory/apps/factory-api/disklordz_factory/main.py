@@ -31,6 +31,7 @@ from disklordz_factory.research import (
     research_store,
 )
 from disklordz_factory.collective import load_collective_manifest, list_collective_artists
+from disklordz_factory.research_bootstrap import bootstrap_research_if_empty, greenlights_summary
 from disklordz_factory.store import store
 
 app = FastAPI(
@@ -38,6 +39,19 @@ app = FastAPI(
     description="Batch orchestration, night shift, catalog, and human approval queue.",
     version="0.2.0",
 )
+
+@app.on_event("startup")
+def _bootstrap_hq_greenlights() -> None:
+    import os
+
+    if os.environ.get("FACTORY_SKIP_RESEARCH_BOOTSTRAP", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    ):
+        return
+    bootstrap_research_if_empty()
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -184,6 +198,12 @@ def night_shift_latest() -> NightShiftRun | None:
 @app.get("/research/status", response_model=ResearchStatus)
 def research_status() -> ResearchStatus:
     return research_store.status()
+
+
+@app.get("/research/greenlights")
+def research_greenlights() -> dict:
+    """HQ locked roster: four artists + YouTube brands + live store linkage."""
+    return greenlights_summary()
 
 
 @app.post("/research/opportunities", response_model=MarketOpportunity)

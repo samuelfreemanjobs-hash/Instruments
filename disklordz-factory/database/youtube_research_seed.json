@@ -1,5 +1,8 @@
 {
-  "$comment": "POST via scripts/ingest_youtube_network_research.py — replace sources with your Slack/Airtable backup before production greenlight.",
+  "$comment": "HQ official artist greenlights — bootstrapped on Factory API start when research store is empty.",
+  "hq_official_greenlight": true,
+  "greenlit_artist_ids": ["DL001", "DL002", "DL006", "DL004"],
+  "hq_locked_date": "2026-09-17",
   "repo_doc_source": "https://github.com/samuelfreemanjobs-hash/Instruments/blob/main/docs/DISKLORDZ_YOUTUBE_NETWORK.md",
   "collective_doc_source": "https://github.com/samuelfreemanjobs-hash/Instruments/blob/main/docs/FACTORY_VINTAGE_COLLECTIVE.md",
   "opportunities": [
