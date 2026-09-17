@@ -32,7 +32,9 @@ Disklordz is an **underground phonk product line**: curated drum kits (**Memphis
 - Stripe Pro + account history (when prod env on)
 - Cover art and brand lane (cassette / skull phonk aesthetic)
 
-Do **not** claim until live: automated 4-day email, Lemon Squeezy MoR, plugin installers, new Vault WAV download URL.
+Do **not** claim until live: automated 4-day email, plugin installers, new Vault WAV download URL.
+
+**Founder GTM (2026-09-17):** Day 1 = free stems; **Day 2 = tripwire sample** on **Stripe only** — [GTM_DECISIONS.md](../disklordz/marketing/GTM_DECISIONS.md).
 
 ---
 
