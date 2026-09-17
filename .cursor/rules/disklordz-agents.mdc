@@ -1,0 +1,12 @@
+---
+description: Agent governance — teams, contracts, three meta-skills, no sprawl.
+alwaysApply: false
+---
+
+# Agents
+
+- Teams: `disklordz/AGENTS.md`
+- Contracts: `disklordz/agents/contracts/*.yaml`
+- Meta skills only: `disklordz-product-orchestrator`, `disklordz-audio-pm`, `disklordz-workflow-automation-engineer`
+
+Every task needs a **Work Order** id. Honor CAN/CANNOT/MUST in contracts.

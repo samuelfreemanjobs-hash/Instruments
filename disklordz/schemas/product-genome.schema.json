@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.audio/schemas/product-genome.json",
+  "title": "DiskLordz Product Genome",
+  "type": "object",
+  "required": ["product", "market", "sound", "commercial"],
+  "properties": {
+    "product": {
+      "type": "object",
+      "required": ["id", "name", "family_id", "sonic_problem"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "family_id": { "type": "string" },
+        "sonic_problem": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["kit", "expansion", "plugin_effect", "plugin_instrument", "preset_pack", "bundle", "free_teaser", "content_only"]
+        }
+      }
+    },
+    "market": {
+      "type": "object",
+      "properties": {
+        "audience": { "type": "string" },
+        "use_case": { "type": "string" },
+        "positioning": { "type": "string" }
+      }
+    },
+    "sound": {
+      "type": "object",
+      "properties": {
+        "bpm_range": { "type": "string" },
+        "key": { "type": "string" },
+        "character": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "contents": {
+      "type": "object",
+      "description": "Counts or asset id lists",
+      "additionalProperties": true
+    },
+    "formats": {
+      "type": "object",
+      "properties": {
+        "wav": { "type": "boolean" },
+        "mpc": { "type": "boolean" },
+        "maschine": { "type": "boolean" },
+        "vst3": { "type": "boolean" },
+        "au": { "type": "boolean" }
+      }
+    },
+    "compile": {
+      "type": "object",
+      "properties": {
+        "targets": { "type": "array", "items": { "type": "string" } },
+        "asset_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "commercial": {
+      "type": "object",
+      "required": ["ladder_tier"],
+      "properties": {
+        "ladder_tier": {
+          "type": "string",
+          "enum": ["free", "mini", "kit", "plugin", "bundle", "collection"]
+        },
+        "price_usd": { "type": "number" },
+        "license": { "type": "string" }
+      }
+    },
+    "marketing": {
+      "type": "object",
+      "properties": {
+        "headline": { "type": "string" },
+        "angle": { "type": "string" }
+      }
+    },
+    "qa": {
+      "type": "object",
+      "properties": {
+        "sonic_score_min": { "type": "number", "minimum": 0, "maximum": 100 },
+        "gates_required": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "economics": {
+      "type": "object",
+      "properties": {
+        "effort_hours_estimate": { "type": "number" },
+        "asset_reuse_pct_estimate": { "type": "number" },
+        "derivative_skus": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

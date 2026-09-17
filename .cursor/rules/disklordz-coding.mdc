@@ -1,0 +1,12 @@
+---
+description: C++/JUCE coding for DiskLordz — kernel-first, real-time safe, minimal diff.
+alwaysApply: false
+globs: MyFirstPlugin/**,disklordz/plugin-kernel/**
+---
+
+# Coding (plugins)
+
+- Extend **Plugin Kernel** patterns; products are thin modules.
+- APVTS, cached atomics, smoothed params; no allocations in `processBlock`.
+- VST3 only (SDK ≥3.8); track JUCE license tier.
+- Match existing style in `MyFirstPlugin/` until kernel split lands.
