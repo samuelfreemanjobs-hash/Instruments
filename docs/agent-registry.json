@@ -27,6 +27,28 @@
       "notes": "Plugin Factory reference; manifest pluginName locked"
     },
     {
+      "id": "sp1200-vst",
+      "name": "SP-1200 VST",
+      "repoPath": "SP1200/",
+      "lane": "juce-factory",
+      "primaryAgent": "claude",
+      "claudeAllowed": true,
+      "manifest": "SP1200/plugin.manifest.json",
+      "branchExample": "claude/sp1200-vst-<suffix>",
+      "notes": "Claude Code primary; add CMake when DSP scoped; sample-based drum instrument"
+    },
+    {
+      "id": "sp1200-vital-pack",
+      "name": "SP-1200 Vital Preset Pack",
+      "repoPath": "disklordz/packs/sp1200-vital/",
+      "lane": "content-vital",
+      "primaryAgent": "claude",
+      "claudeAllowed": true,
+      "manifest": "disklordz/packs/sp1200-vital/pack.manifest.json",
+      "branchExample": "claude/sp1200-vital-<suffix>",
+      "notes": "Vital .vital / .vitalbank only — not VST3 build"
+    },
+    {
       "id": "disklordz-website",
       "name": "Disklordz SaaS",
       "repoPath": "disklordz/website/",
@@ -63,20 +85,22 @@
   ],
   "claudeActiveProducts": [
     {
-      "id": "UPDATE_ME_1",
-      "name": "Product A (Claude primary)",
-      "repoPath": "TBD/",
-      "branch": "claude/TBD",
-      "githubIssueOrPr": "TBD",
-      "ownerHuman": "TBD"
+      "id": "sp1200-vst",
+      "name": "SP-1200 VST",
+      "repoPath": "SP1200/",
+      "branch": "claude/sp1200-vst-TBD",
+      "githubIssueOrPr": "TBD — paste PR URL when pushed",
+      "ownerHuman": "owner",
+      "companion": "sp1200-vital-pack"
     },
     {
-      "id": "UPDATE_ME_2",
-      "name": "Product B (Claude primary)",
-      "repoPath": "TBD/",
-      "branch": "claude/TBD",
-      "githubIssueOrPr": "TBD",
-      "ownerHuman": "TBD"
+      "id": "sp1200-vital-pack",
+      "name": "SP-1200 Vital Preset Pack",
+      "repoPath": "disklordz/packs/sp1200-vital/",
+      "branch": "claude/sp1200-vital-TBD",
+      "githubIssueOrPr": "TBD — paste PR URL when pushed",
+      "ownerHuman": "owner",
+      "companion": "sp1200-vst"
     }
   ]
 }

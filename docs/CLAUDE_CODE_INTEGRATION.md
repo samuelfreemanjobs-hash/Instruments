@@ -46,7 +46,14 @@ Update **`claudeActiveProducts`** in [agent-registry.json](agent-registry.json) 
 }
 ```
 
-If a Claude product lives on a **branch not yet merged** (e.g. VMPC, Character FM, Junova), set `repoPath` to the folder that branch owns once you know it, or `TBD/` until the first PR lands on `main`.
+If a Claude product lives on a **branch not yet merged** (e.g. VMPC, Character FM, Junova), set `repoPath` to the folder that branch owns once you know it, or use the scaffold on `main` until the first PR lands.
+
+**Claude primary on `main` today (see registry):**
+
+| Product | Path |
+|---------|------|
+| SP-1200 VST | `SP1200/` |
+| SP-1200 Vital preset pack | `disklordz/packs/sp1200-vital/` |
 
 **Do not** let Claude and Cursor edit the same folder on different branches without coordinating — merge or rebase one line of work first.
 

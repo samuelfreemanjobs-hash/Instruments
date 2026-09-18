@@ -1,0 +1,21 @@
+{
+  "projectId": "sp1200",
+  "pluginName": "SP-1200",
+  "codename": "Classic 12-bit drum sampler",
+  "version": "0.0.1",
+  "type": "instrument",
+  "category": "drum machine",
+  "sampleless": false,
+  "userContent": "sample_based",
+  "formats": ["VST3", "Standalone"],
+  "platforms": ["Windows", "macOS", "Linux"],
+  "sonicIdentity": "SP-1200 style 12-bit sampling, tight drums, classic swing and grit",
+  "p0Features": [],
+  "p1Features": [],
+  "presetPolicy": { "rcMin": 8, "betaMin": 16, "retailMin": 32 },
+  "cmakeTarget": "SP1200",
+  "repoPath": "SP1200",
+  "releaseStatus": "idea",
+  "releaseBlockers": ["Claude Code lane — scaffold only until DSP scoped"],
+  "primaryCodingAgent": "claude"
+}

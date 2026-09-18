@@ -1,0 +1,14 @@
+{
+  "packId": "sp1200-vital",
+  "displayName": "SP-1200 Vital Preset Pack",
+  "targetSynth": "Vital",
+  "version": "0.0.1",
+  "description": "Preset bank matching SP-1200 drum/sampler vibe for Vital (companion to SP-1200 VST lane)",
+  "primaryCodingAgent": "claude",
+  "repoPath": "disklordz/packs/sp1200-vital",
+  "releaseStatus": "idea",
+  "presetPolicy": { "rcMin": 16, "betaMin": 32, "retailMin": 64 },
+  "formats": ["vitalbank", "individual .vital"],
+  "storefrontSku": "TBD",
+  "companionPlugin": "SP1200"
+}

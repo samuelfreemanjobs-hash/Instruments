@@ -6,10 +6,12 @@
 
 ## Tracks on `main` today
 
-| Track | Product | Path | Stack | Priority |
-|-------|---------|------|-------|----------|
-| **C** | **JD Upgraded** | `Source/` | JUCE VST3 + CLAP | Maintenance + CI |
-| **D** | **HISE sketch** (rompler / sampler SKUs) | [hise-sketch/](../hise-sketch/) | HISE → VST3 (local) | **P3** — Antigravity; does not consume Cursor WIP unless port WO |
+| Track | Product | Path | Stack | Owner agent |
+|-------|---------|------|-------|-------------|
+| **C** | **JD Upgraded** | `Source/` | JUCE VST3 + CLAP | Cursor |
+| **D** | **HISE sketch** | [hise-sketch/](../hise-sketch/) | HISE → VST3 (local) | Antigravity |
+| **E** | **SP-1200 VST** | [SP1200/](../SP1200/) | JUCE (in progress) | **Claude Code** |
+| **F** | **SP-1200 Vital pack** | [disklordz/packs/sp1200-vital/](../disklordz/packs/sp1200-vital/) | Vital presets | **Claude Code** |
 
 Junova-X and NovaDrum (JUCE / iPlug2 factory tracks A–B) are documented on the Junova handoff branch / open PRs — merge those before expecting paths under `Junova-X/` and `vst-tr808/`.
 
@@ -21,4 +23,4 @@ Junova-X and NovaDrum (JUCE / iPlug2 factory tracks A–B) are documented on the
 
 ## WIP (Factory Manager)
 
-Max **2** Cursor implementation WOs on JUCE/repo work. HISE sketches are excluded unless a **JUCE port** work order is opened.
+Max **2** Cursor implementation WOs on JUCE/repo work. **Claude Code** owns **Track E + F** (SP-1200 VST + Vital pack) — see [agent-registry.json](agent-registry.json). HISE sketches are excluded unless a **JUCE port** work order is opened.

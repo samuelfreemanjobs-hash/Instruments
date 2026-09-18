@@ -13,7 +13,9 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Disklordz DAW inbox** (WO-016) | [disklordz/daw-inbox/ARCHITECTURE.md](disklordz/daw-inbox/ARCHITECTURE.md) | `npm start` in `disklordz/daw-inbox/` |
 | **Disklordz RAG** (prompt knowledge) | [disklordz/rag/ARCHITECTURE.md](disklordz/rag/ARCHITECTURE.md) · [docs/RAG_AND_INTELLIGENT_AUTOMATION.md](docs/RAG_AND_INTELLIGENT_AUTOMATION.md) | `python3 disklordz/rag/scripts/chunk_corpus.py` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
-| **WAVE-909** (sampleless trap wavetable synth) | [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md) | `Wave909_VST3`, `Wave909_CLAP`, `Wave909_Standalone`, `Wave909OfflineRender`, `Wave909Tests` |
+| **WAVE-909** (sampleless trap wavetable synth) | [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md) | `Wave909_*` |
+| **SP-1200** (VST drum sampler — Claude lane) | [SP1200/ARCHITECTURE.md](SP1200/ARCHITECTURE.md) | TBD — scaffold |
+| **SP-1200 Vital pack** (content) | [disklordz/packs/sp1200-vital/ARCHITECTURE.md](disklordz/packs/sp1200-vital/ARCHITECTURE.md) | presets only |
 
 ## Repository layout
 
