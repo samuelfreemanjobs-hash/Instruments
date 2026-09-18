@@ -22,6 +22,10 @@ Sign up: [vercel.com](https://vercel.com) → **Add New Project** → import `In
 gh pr merge <number> --squash
 ```
 
+### Supabase MCP (Cursor agents)
+
+Repo includes [`.cursor/mcp.json`](../.cursor/mcp.json). Follow [disklordz/website/docs/SUPABASE_MCP.md](../disklordz/website/docs/SUPABASE_MCP.md): set `SUPABASE_PROJECT_REF`, connect OAuth in **Cursor → MCP**.
+
 ### Automate Supabase SQL (recommended)
 
 1. GitHub repo **Settings → Secrets and variables → Actions**:
