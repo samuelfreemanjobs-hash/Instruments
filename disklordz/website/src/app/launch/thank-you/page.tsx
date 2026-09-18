@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { AuthNav } from "@/components/AuthNav";
+import { LaunchTripwireCheckout } from "@/components/LaunchTripwireCheckout";
 
 const tripwireUrl =
   process.env.LAUNCH_TRIPWIRE_CASSETTE_URL ?? "https://example.com/cassette-smash-lite";
@@ -40,6 +41,8 @@ export default function LaunchThankYouPage() {
             Memphis Tape FX (early bird)
           </a>
         </div>
+        <LaunchTripwireCheckout />
+
         <p className="mt-6 text-sm text-zinc-500">
           Not ready for the plugin?{" "}
           <a href={downsellUrl} className="text-amber-500/90 underline hover:text-amber-400">

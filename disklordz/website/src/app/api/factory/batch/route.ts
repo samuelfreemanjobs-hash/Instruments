@@ -8,6 +8,7 @@ import {
 } from "@/lib/credits";
 import { parseGenerationSpec } from "@/lib/generation/generation-spec";
 import { PRODUCT_PACK_CREDIT_COST } from "@/lib/generation/mode-utils";
+import { agentPipelineAfterFactory } from "@/lib/factory/agent-pipeline";
 import { buildProductPack } from "@/lib/generation/product-factory";
 import { activeKitStorageBackend, ensureKitStorageReady } from "@/lib/kit-storage";
 import { getPreset, STYLE_PRESETS } from "@/lib/presets";
@@ -132,6 +133,7 @@ export async function POST(req: NextRequest) {
     batchId,
     creditCost,
     storageBackend: activeKitStorageBackend(),
+    agentPipeline: agentPipelineAfterFactory(presetId),
     productPack: pack,
     billing: creditsAfter
       ? {

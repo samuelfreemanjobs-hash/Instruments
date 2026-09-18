@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 
+import { recordTripwirePurchase } from "@/lib/stripe/launch-purchase";
 import { activateProPlan, deactivateProPlan } from "@/lib/stripe/billing-sync";
 import { getStripe, isStripeConfigured } from "@/lib/stripe/server";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 
@@ -34,6 +36,12 @@ export async function POST(req: Request) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        if (session.mode === "payment" && session.metadata?.sku === "tripwire_sample") {
+          const admin = getSupabaseAdmin();
+          if (admin) {
+            await recordTripwirePurchase(admin, session);
+          }
+        }
         const userId = session.metadata?.user_id;
         if (userId && session.subscription && session.customer) {
           await activateProPlan(

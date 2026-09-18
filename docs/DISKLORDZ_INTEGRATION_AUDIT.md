@@ -37,7 +37,8 @@ Legend: ✅ wired · 🟡 partial · 🔴 not wired · 📋 docs-only
 | Launch `/launch` | ✅ | opt-in, soundboard | — |
 | Opt-in → email queue | 🟡 | Supabase + Resend + cron | **Migration + env** must be applied on prod |
 | Vercel cron | 🟡 | `vercel.json` hourly | Requires Vercel plan + `CRON_SECRET` |
-| Stripe webhook | 🟡 | **Pro subscription only** | Launch tripwire one-time checkout **not** handled |
+| Stripe webhook | 🟡 | Pro + **tripwire_sample** → `launch_purchases` | Needs `STRIPE_TRIPWIRE_PRICE_ID` + migration |
+| Launch checkout | ✅ | `POST /api/launch/checkout` | Thank-you embeds `LaunchTripwireCheckout` |
 | Tripwire Payment Link | 🔴 | env `LAUNCH_TRIPWIRE_SAMPLE_URL` | PM must create Stripe product |
 | Launch vocal ZIP | 🔴 | `LAUNCH_VOCAL_STEMS_URL` | No asset in repo |
 | Entitlements / download API | 🔴 | Planned R2 | Gumroad-style delivery not built |
@@ -99,7 +100,7 @@ Run: `./scripts/setup-disklordz-integrations.sh all` (partial manual Slack).
 |---|-----|--------|
 | P0 | Apply Supabase migration + Vercel env ([PM_SCHEDULING.md](../disklordz/automation/PM_SCHEDULING.md)) | Email automation live |
 | P0 | `[Factory]` batch + pack tripwire → `launch-assets/tripwire-sample-v1/` | Day 2 product exists |
-| P1 | Stripe one-time checkout + webhook metadata for launch SKU | Tripwire revenue |
+| P1 | ~~Stripe one-time checkout~~ (code shipped) — PM: create Price + env | Tripwire revenue live |
 | P1 | GitHub secrets for FORGE registry URL | Agent auto-register |
 | P2 | Stripe webhook → purchaser tags + email branch | OTO automation |
 | P2 | Airtable seed rows for launch WOs | PM single pane |

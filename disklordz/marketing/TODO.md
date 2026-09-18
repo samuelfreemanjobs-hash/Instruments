@@ -11,6 +11,12 @@ Full template: [plm/PM_WO_TEMPLATE.md](plm/PM_WO_TEMPLATE.md)
 
 ---
 
+## A&R / Artists (CROW)
+
+- [ ] Run `[Factory]` batch for tripwire sample (DL002 prompts)
+- [ ] `ar-kit-qc` + **artist-midnight-circuit** review → [QC_TRIPWIRE_SAMPLE.md](../ar/QC_TRIPWIRE_SAMPLE.md)
+- [ ] Optional: OpenClaw session note in `disklordz/ar/sessions/`
+
 ## Founder (tonight / when home)
 
 - [ ] Create **Email Copywriter** agent (hyper-focused) — paste prompt from [subagents/email-copywriter.md](subagents/email-copywriter.md)

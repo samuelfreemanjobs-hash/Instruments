@@ -8,6 +8,8 @@ Parent index: [/ARCHITECTURE.md](../ARCHITECTURE.md) · **Integration gaps:** [d
 |------|---------|--------------|
 | `website/` | SaaS + `/launch` funnel + APIs | [website/ARCHITECTURE.md](website/ARCHITECTURE.md) |
 | `sound-factory/` | Offline/batch WAV (parametric v1) | [sound-factory/README.md](sound-factory/README.md) |
+| `factory/` | Agent pipeline after generation | [factory/WORKFLOW.md](factory/WORKFLOW.md) |
+| `exec/` | SAGE Chief of Staff + Slack EA | [exec/SLACK_EXECUTIVE_ASSISTANT.md](exec/SLACK_EXECUTIVE_ASSISTANT.md) |
 | `marketing/` | VARA, HELM, campaigns, GTM | [marketing/ARCHITECTURE.md](marketing/ARCHITECTURE.md) |
 | `ar/` | CROW, artist lanes, QC | [ar/ARCHITECTURE.md](ar/ARCHITECTURE.md) |
 | `automation/` | FORGE, Airtable handoff, PM scheduling | [automation/README.md](automation/README.md) |

@@ -5,6 +5,9 @@ on:
     branches: [main, "cursor/**"]
     paths:
       - "disklordz/marketing/subagents/**"
+      - "disklordz/ar/**"
+      - "disklordz/exec/**"
+      - "disklordz/factory/**"
       - "disklordz/marketing/plm/**"
       - "disklordz/automation/wae/**"
       - "docs/DISKLORDZ_*AGENT*.md"

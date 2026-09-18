@@ -15,6 +15,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Disklordz Marketing Dept (VARA)** | [docs/DISKLORDZ_MARKETING_DIRECTOR.md](docs/DISKLORDZ_MARKETING_DIRECTOR.md) · [disklordz/marketing/ARCHITECTURE.md](disklordz/marketing/ARCHITECTURE.md) | Slack `#disklordz-marketing-dept` |
 | **Product Launch Manager (HELM)** | [docs/DISKLORDZ_PRODUCT_LAUNCH_MANAGER.md](docs/DISKLORDZ_PRODUCT_LAUNCH_MANAGER.md) · [disklordz/marketing/plm/](disklordz/marketing/plm/) | Pairs with PM + VARA; [HUMAN_TRIGGERS.md](disklordz/marketing/HUMAN_TRIGGERS.md) |
 | **A&R Dept (CROW + artist agents)** | [docs/DISKLORDZ_AR_DEPARTMENT.md](docs/DISKLORDZ_AR_DEPARTMENT.md) · [disklordz/ar/ARCHITECTURE.md](disklordz/ar/ARCHITECTURE.md) | Factory QC before launch SKUs |
+| **Chief of Staff (SAGE) + Slack EA** | [docs/DISKLORDZ_CHIEF_OF_STAFF.md](docs/DISKLORDZ_CHIEF_OF_STAFF.md) · `#disklordz-exec` | `/api/exec/digest` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 
 ## Repository layout
