@@ -4,8 +4,9 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 
 ## Standards
 
-- [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts  
-- [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
+- [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts 
+- [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done 
+- [docs/AGENTIC_OPERATING_MODEL.md](docs/AGENTIC_OPERATING_MODEL.md) — one-page company workflow (Instruments + Disklordz)
 - `.cursor/rules/*.mdc` — always-on architecture and security  
 
 ## Disklordz SaaS (web)
