@@ -1,12 +1,11 @@
 # Deploy Disklordz Drum SaaS (Vercel)
 
 1. Import repo in Vercel; set **Root Directory** to `disklordz/website`.
-2. Environment variables:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+2. Environment variables — **step-by-step:** [docs/VERCEL_ENV_AND_MCP.md](docs/VERCEL_ENV_AND_MCP.md) (UI table, redeploy, MCP, CLI).
+   - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY` — **required for production** (kits + credits)
    - `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRO_PRICE_ID` (Pro upgrades)
-   - `SAAS_DAILY_GEN_LIMIT` (optional, guest IP cap, default 20)
+   - `SAAS_DAILY_GEN_LIMIT` (optional, default 20)
 3. Supabase → Authentication → URL configuration → add  
    `https://YOUR_DOMAIN/auth/callback`
 4. Run SQL migrations (SQL editor or CLI) **in order**:

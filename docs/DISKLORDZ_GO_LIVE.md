@@ -43,6 +43,8 @@ bash scripts/apply-supabase-migrations.sh
 
 ## 2. Vercel environment variables
 
+**Full walkthrough (env + redeploy + MCP):** [disklordz/website/docs/VERCEL_ENV_AND_MCP.md](../disklordz/website/docs/VERCEL_ENV_AND_MCP.md)
+
 Set for **Production** (and Preview if you test billing there):
 
 | Variable | Required | Notes |
