@@ -76,6 +76,16 @@ Signed-in users auto-save each generated kit to `public.saved_kits` (RLS). `/acc
 - **WO-SAAS-004:** Parametric v1 shipped in-process; next: archive/batch pipeline from `sound-factory/`.
 - **WO-SAAS-006:** Redis-backed rate limits; error UX polish.
 
+## DAW inbox (WO-SAAS-016)
+
+- Browser: **Save WAVs to folder** on home (File System Access API).
+- Desktop: [disklordz/daw-inbox/](../daw-inbox/README.md) watches Downloads for `disklordz-*.zip`.
+- User doc route: `/daw-inbox`.
+
+## Go live
+
+- [docs/DISKLORDZ_GO_LIVE.md](../../docs/DISKLORDZ_GO_LIVE.md) — Vercel, Supabase migrations, Stripe, `npm run verify:go-live`.
+
 ## Related docs
 
 - [DISKLORDZ_SAAS_V0.md](../../docs/DISKLORDZ_SAAS_V0.md)

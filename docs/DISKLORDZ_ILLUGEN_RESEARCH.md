@@ -123,7 +123,7 @@ Example structured conditioning (fed to factory + RAG prompt assistant):
 | **013** | Creative vs Studio routes | ✅ `renderSampleForEngine` + `factory_studio_v1` / `factory_creative_v1` provenance |
 | **014** | Loop + SFX modes | ✅ `loop_main.wav` / `sfx.wav`; `creditCostForSpec` + variable RPC migration |
 | **015** | Product factory batch | ✅ `buildProductPack`, `POST /api/factory/batch`, pack ZIP download |
-| **016** | Desktop / watch folder | Optional Electron or folder sync for DAW drag/drop |
+| **016** | Desktop / watch folder | ✅ `disklordz/daw-inbox` watcher + browser “Save WAVs to folder” |
 
 Each WO: Airtable → GitHub issue → PR title `WO-SAAS-00N` → merge → Done.
 

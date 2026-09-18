@@ -9,13 +9,15 @@
    - `SAAS_DAILY_GEN_LIMIT` (optional, guest IP cap, default 20)
 3. Supabase → Authentication → URL configuration → add  
    `https://YOUR_DOMAIN/auth/callback`
-4. Run SQL migrations (SQL editor or CLI):
+4. Run SQL migrations (SQL editor or CLI) **in order**:
    - `supabase/migrations/20260917190000_saved_kits.sql`
    - `supabase/migrations/20260917210000_kits_storage_bucket.sql`
    - `supabase/migrations/20260917220000_credits_billing.sql`
    - `supabase/migrations/20260917230000_saved_kits_history.sql`
+   - `supabase/migrations/20260917240000_credits_variable_amount.sql`
 5. Stripe: see [docs/STRIPE.md](docs/STRIPE.md).
-6. Deploy. Smoke test: guest generate → sign in → credits → checkout (test mode) → Pro unlimited.
+6. Deploy. Full checklist: [docs/DISKLORDZ_GO_LIVE.md](../../docs/DISKLORDZ_GO_LIVE.md).
+7. Automated smoke: `DISKLORDZ_URL=https://YOUR_DOMAIN npm run verify:go-live`
 
 ## Kit storage (WO-SAAS-009)
 

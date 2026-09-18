@@ -1,0 +1,18 @@
+{
+  "name": "disklordz-daw-inbox",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WO-SAAS-016: watch Downloads for Disklordz ZIPs and extract to a DAW inbox folder",
+  "type": "module",
+  "bin": {
+    "disklordz-inbox-watch": "./bin/watch.mjs"
+  },
+  "scripts": {
+    "start": "node ./bin/watch.mjs",
+    "once": "node ./bin/watch.mjs --once"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.3",
+    "jszip": "^3.10.2"
+  }
+}

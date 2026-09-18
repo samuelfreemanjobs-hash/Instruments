@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "verify:go-live": "bash scripts/verify-go-live.sh"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
