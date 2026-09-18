@@ -1,0 +1,20 @@
+{
+  "projectId": "wave909",
+  "pluginName": "WAVE-909",
+  "codename": "Analog/Digital Hybrid Engine",
+  "version": "0.1.0",
+  "type": "instrument",
+  "category": "synthesizer",
+  "sampleless": true,
+  "formats": ["VST3", "Standalone"],
+  "platforms": ["Linux", "Windows", "macOS"],
+  "sonicIdentity": "Dark trap and drift phonk: morphing digital wavetables, warm ZDF lowpass, destructive saturation, tape wobble macro",
+  "p0Features": [
+    "64-slot algorithmic wavetable scan",
+    "Dual filter circuit (pristine / destructive)",
+    "Tape wobble macro",
+    "16-voice polyphony",
+    "Factory preset bank",
+    "APVTS state persistence"
+  ]
+}
