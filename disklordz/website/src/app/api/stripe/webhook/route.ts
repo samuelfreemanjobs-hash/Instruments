@@ -52,7 +52,12 @@ export async function POST(req: Request) {
         }
         if (sub.status === "active" || sub.status === "trialing") {
           await activateProPlan(userId, String(sub.customer), sub.id);
-        } else if (sub.status === "canceled" || sub.status === "unpaid") {
+        } else if (
+          sub.status === "canceled" ||
+          sub.status === "unpaid" ||
+          sub.status === "past_due" ||
+          sub.status === "incomplete_expired"
+        ) {
           await deactivateProPlan(userId);
         }
         break;

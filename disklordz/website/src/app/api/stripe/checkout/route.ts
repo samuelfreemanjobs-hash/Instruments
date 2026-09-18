@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getStripe, isStripeConfigured } from "@/lib/stripe/server";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
@@ -27,9 +28,22 @@ export async function POST(req: Request) {
   const origin = new URL(req.url).origin;
   const stripe = getStripe();
 
+  let existingCustomerId: string | null = null;
+  const admin = getSupabaseAdmin();
+  if (admin) {
+    const { data: billing } = await admin
+      .from("user_billing")
+      .select("stripe_customer_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    existingCustomerId = billing?.stripe_customer_id ?? null;
+  }
+
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
-    customer_email: user.email,
+    ...(existingCustomerId
+      ? { customer: existingCustomerId }
+      : { customer_email: user.email }),
     line_items: [{ price: process.env.STRIPE_PRO_PRICE_ID!, quantity: 1 }],
     success_url: `${origin}/account?checkout=success`,
     cancel_url: `${origin}/account?checkout=cancel`,
