@@ -1,0 +1,61 @@
+name: FORGE agent registry
+
+on:
+  push:
+    branches: [main, "cursor/**"]
+    paths:
+      - "disklordz/marketing/subagents/**"
+      - "disklordz/ar/**"
+      - "disklordz/exec/**"
+      - "disklordz/factory/**"
+      - "disklordz/marketing/plm/**"
+      - "disklordz/automation/wae/**"
+      - "docs/DISKLORDZ_*AGENT*.md"
+      - "docs/DISKLORDZ_*_MANAGER*.md"
+      - "docs/DISKLORDZ_WORKFLOW_AUTOMATION_AGENT.md"
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect changed agent files
+        id: paths
+        run: |
+          git fetch origin "${{ github.event.before }}" 2>/dev/null || true
+          FILES=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" 2>/dev/null | grep -E '\.(md|mdc)$' || true)
+          echo "files<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$FILES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Register each agent with automation API
+        if: steps.paths.outputs.files != ''
+        env:
+          AUTOMATION_REGISTER_URL: ${{ secrets.LAUNCH_AUTOMATION_REGISTER_URL }}
+          AUTOMATION_SECRET: ${{ secrets.AUTOMATION_SECRET }}
+        run: |
+          if [ -z "$AUTOMATION_REGISTER_URL" ]; then
+            echo "LAUNCH_AUTOMATION_REGISTER_URL not set — logging only"
+            echo "${{ steps.paths.outputs.files }}"
+            exit 0
+          fi
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            id=$(basename "$f" .md | tr '[:upper:]' '[:lower:]' | tr '_' '-')
+            curl -sf -X POST "$AUTOMATION_REGISTER_URL" \
+              -H "Authorization: Bearer $AUTOMATION_SECRET" \
+              -H "Content-Type: application/json" \
+              -d "{\"agent_id\":\"$id\",\"source_path\":\"$f\",\"workflow_kind\":\"agent.created\"}" \
+              || echo "register failed for $f"
+          done <<< "${{ steps.paths.outputs.files }}"
+
+      - name: Slack notify (optional)
+        if: success()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_ANTIGRAVITY_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then exit 0; fi
+          curl -sf -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-type: application/json' \
+            -d '{"text":"FORGE: agent/plan files changed — workflow registry run on '"${{ github.sha }}"'"}' || true

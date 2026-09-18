@@ -16,7 +16,7 @@ cd disklordz/website && npm ci && npm run build && npm test  # if tests exist
 
 Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_PUBLIC_SUPABASE_*`, `SUPABASE_SERVICE_ROLE_KEY` (prod kits), optional `SAAS_DAILY_GEN_LIMIT`.
 
-Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
+Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+). Kit SOP: [docs/DISKLORDZ_PHONK_KIT_AI_SOP.md](docs/DISKLORDZ_PHONK_KIT_AI_SOP.md) · Marketing: [docs/DISKLORDZ_MARKETING_HANDOFF.md](docs/DISKLORDZ_MARKETING_HANDOFF.md). **Integration audit:** [docs/DISKLORDZ_INTEGRATION_AUDIT.md](docs/DISKLORDZ_INTEGRATION_AUDIT.md). **Cursor role:** [docs/CURSOR_IMPLEMENTATION_LEAD.md](docs/CURSOR_IMPLEMENTATION_LEAD.md).
 
 ## RAG (prompt knowledge)
 
