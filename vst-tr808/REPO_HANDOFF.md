@@ -30,3 +30,7 @@
 
 - [docs/DISKLORDZ_PLUGIN_TRACKS.md](../docs/DISKLORDZ_PLUGIN_TRACKS.md)
 - Airtable: `tr808-circuit-product-2026.json`
+
+## Branch
+
+**Canonical:** `cursor/novadrum-juce-handoff-029a` — NovaDrum only; Junova-X on `cursor/junova-x-handoff-029a`.
