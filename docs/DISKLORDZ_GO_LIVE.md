@@ -2,13 +2,40 @@
 
 Use this after **WO-SAAS-007–015** land on `main`. The Cloud Agent cannot access your Vercel/Supabase dashboards; these steps are **owner actions** with repo-backed verification at the end.
 
+## What is Vercel?
+
+**Vercel** is the hosting platform this Next.js app is built for. You connect your GitHub repo; every push to `main` builds and deploys `disklordz/website` to a public **HTTPS URL** (e.g. `https://your-app.vercel.app`). You set environment variables (Supabase, Stripe) in the Vercel dashboard — they are injected at runtime, not stored in git.
+
+Sign up: [vercel.com](https://vercel.com) → **Add New Project** → import `Instruments` → set **Root Directory** to `disklordz/website`.
+
 ## 1. Merge and deploy
 
 | Step | Action |
 |------|--------|
-| 1.1 | Review and **merge** [PR #28](https://github.com/samuelfreemanjobs-hash/Instruments/pull/28) (or current SaaS PR) into `main`. |
-| 1.2 | **Vercel** — import or link repo; **Root Directory** = `disklordz/website`. |
-| 1.3 | Confirm production deploy from `main` (GitHub Action `Disklordz website` must pass on merge). |
+| 1.1 | **Merge** the open SaaS PR into `main` (or use GitHub **Actions** / `gh pr merge` if you automate). |
+| 1.2 | **Vercel** — link repo; **Root Directory** = `disklordz/website`; add env vars (section 2). |
+| 1.3 | Confirm production deploy from `main` (workflow `Disklordz website` on GitHub). |
+
+### Automate merge (optional)
+
+```bash
+gh pr merge <number> --squash
+```
+
+### Automate Supabase SQL (recommended)
+
+1. GitHub repo **Settings → Secrets and variables → Actions**:
+   - `SUPABASE_ACCESS_TOKEN` — [Supabase account token](https://supabase.com/dashboard/account/tokens)
+   - `SUPABASE_PROJECT_REF` — project id (URL subdomain before `.supabase.co`)
+2. **Actions → Disklordz Supabase migrations → Run workflow**
+
+Or locally from `disklordz/website`:
+
+```bash
+export SUPABASE_ACCESS_TOKEN=...
+export SUPABASE_PROJECT_REF=...
+bash scripts/apply-supabase-migrations.sh
+```
 
 ## 2. Vercel environment variables
 
