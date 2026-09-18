@@ -1,0 +1,82 @@
+{
+  "$schema": "note: informal registry — update when agent ownership changes",
+  "updated": "2026-09-18",
+  "rules": {
+    "oneActiveAgentPerRepoPath": true,
+    "branchPrefixes": ["cursor/", "claude/", "agent/"],
+    "handoffArtifact": "GitHub PR description + product Docs/GATES.md + plugin.manifest.json if applicable"
+  },
+  "products": [
+    {
+      "id": "jd-upgraded",
+      "name": "JD Upgraded",
+      "repoPath": "Source/",
+      "lane": "juce-factory",
+      "primaryAgent": "cursor",
+      "claudeAllowed": true,
+      "notes": "Coordinate via PR; touches root CMake and golden harness"
+    },
+    {
+      "id": "wave909",
+      "name": "WAVE-909",
+      "repoPath": "Wave909/",
+      "lane": "juce-factory",
+      "primaryAgent": "cursor",
+      "claudeAllowed": true,
+      "manifest": "Wave909/plugin.manifest.json",
+      "notes": "Plugin Factory reference; manifest pluginName locked"
+    },
+    {
+      "id": "disklordz-website",
+      "name": "Disklordz SaaS",
+      "repoPath": "disklordz/website/",
+      "lane": "disklordz",
+      "primaryAgent": "cursor",
+      "claudeAllowed": true,
+      "notes": "No production deploy without owner; read DEPLOY.md"
+    },
+    {
+      "id": "disklordz-rag",
+      "name": "Disklordz RAG",
+      "repoPath": "disklordz/rag/",
+      "lane": "disklordz",
+      "primaryAgent": "either",
+      "claudeAllowed": true
+    },
+    {
+      "id": "myfirstplugin",
+      "name": "MyFirstPlugin template",
+      "repoPath": "MyFirstPlugin/",
+      "lane": "juce-template",
+      "primaryAgent": "either",
+      "claudeAllowed": true
+    },
+    {
+      "id": "hise-sketch",
+      "name": "HISE sketch lane",
+      "repoPath": "hise-sketch/",
+      "lane": "hise",
+      "primaryAgent": "antigravity",
+      "claudeAllowed": false,
+      "notes": "Windows + HISE; use antigravity bridge, not Claude on Linux for export"
+    }
+  ],
+  "claudeActiveProducts": [
+    {
+      "id": "UPDATE_ME_1",
+      "name": "Product A (Claude primary)",
+      "repoPath": "TBD/",
+      "branch": "claude/TBD",
+      "githubIssueOrPr": "TBD",
+      "ownerHuman": "TBD"
+    },
+    {
+      "id": "UPDATE_ME_2",
+      "name": "Product B (Claude primary)",
+      "repoPath": "TBD/",
+      "branch": "claude/TBD",
+      "githubIssueOrPr": "TBD",
+      "ownerHuman": "TBD"
+    }
+  ]
+}

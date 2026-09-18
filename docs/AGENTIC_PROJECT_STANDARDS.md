@@ -21,7 +21,7 @@ Optional: copy [CURSOR_AGENT_PLAYBOOK.md](CURSOR_AGENT_PLAYBOOK.md) or link from
 
 ## Branch and PR policy
 
-- Feature branches: `cursor/<description>-<suffix>` (Cloud Agent convention) or team standard  
+- Feature branches: `cursor/<description>-<suffix>` (Cloud Agent convention), `claude/<description>-<suffix>` (Claude Code), or team `agent/*` standard  
 - One logical commit per change when possible  
 - Draft PR + artifacts before merge  
 - No force-push / no prod deploy unless explicit  
