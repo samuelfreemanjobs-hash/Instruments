@@ -105,6 +105,15 @@ def discover_vst3_plugins(search_roots: list[Path]) -> list[Path]:
     return unique
 
 
+def pluginval_extra_cli_args() -> list[str]:
+    """Headless CI runners cannot open plugin editor windows reliably."""
+    if os.environ.get("PLUGINVAL_SKIP_GUI", "").lower() in ("1", "true", "yes"):
+        return ["--skip-gui-tests"]
+    if os.environ.get("CI", "").lower() in ("1", "true", "yes"):
+        return ["--skip-gui-tests"]
+    return []
+
+
 def run_pluginval(
     binary: Path,
     plugin: Path,
@@ -125,6 +134,7 @@ def run_pluginval(
     ]
     if validate_in_process:
         cmd.insert(1, "--validate-in-process")
+    cmd.extend(pluginval_extra_cli_args())
     cmd.extend(extra_args)
 
     proc = subprocess.run(

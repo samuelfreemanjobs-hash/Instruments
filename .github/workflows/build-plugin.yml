@@ -27,7 +27,10 @@ jobs:
           cmake --build build -j$(nproc) --target MyFirstPlugin_VST3 MyFirstSynth_VST3
 
       - name: Validate VST3 plugins
+        env:
+          CI: true
         run: |
+          python3 ../scripts/vst/run_pluginval.py --install-only
           python3 ../scripts/vst/run_pluginval.py \
             --discover build/MyFirstPlugin_artefacts/Release/VST3
 

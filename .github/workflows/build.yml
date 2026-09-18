@@ -27,7 +27,11 @@ jobs:
       - name: Build
         run: cmake --build build -j$(nproc)
 
+      - name: Cache pluginval binary
+        run: python3 scripts/vst/run_pluginval.py --install-only
+
       - name: Monorepo QA verification
         env:
           PYTHONUNBUFFERED: "1"
+          CI: true
         run: python3 -u vst-testing-ops/run_business.py --profile ci-verify
