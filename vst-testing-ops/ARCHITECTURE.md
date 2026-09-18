@@ -67,18 +67,15 @@ run_business.py / app.py
 
 ## CI
 
-GitHub Actions runs the same entrypoint as local agents:
-
-[`python3 vst-testing-ops/run_business.py --profile ci`](../vst-testing-ops/run_business.py) in [`.github/workflows/build.yml`](../.github/workflows/build.yml).
+GitHub Actions **Build** job: configure + build, then `run_business.py --profile ci-verify`. Local full parity: `--profile ci`.
 
 ## Automation roadmap
 
 | Layer | Status | Next step |
 |-------|--------|-----------|
-| **Gate on every PR** | `build.yml` → `run_business.py --profile ci` | Require check before merge; optional Slack on fail (`ci-slack-notify.yml`) |
-| **Local / agent habit** | `AGENTS.md` commands | Cloud Agent: run `--profile ci` after plugin DSP changes |
-| **Post-compile watch** | `test_runner.py --watch my_plugins/` | Optional `entr`/`watchmedo` on `build/*_artefacts` in dev |
-| **Full business** | `--profile full` | Run nightly or pre-release (Disklordz + plugins) |
+| **Gate on every PR** | `build.yml` → build + `run_business.py --profile ci-verify` | Require **`cmake`** check — [docs/REPO_AUTOMATION.md](../docs/REPO_AUTOMATION.md) |
+| **Nightly full business** | [`.github/workflows/nightly-qa.yml`](../.github/workflows/nightly-qa.yml) | `run_business.py --profile full` |
+| **Slack on fail** | `ci-slack-notify.yml` + `SLACK_WEBHOOK_URL` | [docs/REPO_AUTOMATION.md](../docs/REPO_AUTOMATION.md) |
 | **VST3 DSP via bundle** | Not built | Future: headless host MIDI→WAV through `.vst3` (complement `OfflineRender`) |
 | **Dashboard** | Streamlit `app.py` | Optional long-running service on dev machine only |
 

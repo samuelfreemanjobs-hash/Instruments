@@ -21,7 +21,7 @@ def main(argv: list[str] | None = None) -> int:
         "--profile",
         choices=list(PROFILES.keys()),
         default="ci",
-        help="ci=GitHub build.yml parity; full=+ Disklordz web; plugin-quick=pluginval only",
+        help="ci=local full; ci-verify=tests only (GitHub Build job); full=+ SaaS",
     )
     parser.add_argument("--no-stop-on-fail", action="store_true")
     parser.add_argument("--with-saas", action="store_true", help="Include Disklordz npm build (full profile)")

@@ -37,7 +37,7 @@ cmake --build build -j
 
 ## CI
 
-[`.github/workflows/build.yml`](.github/workflows/build.yml): `python3 vst-testing-ops/run_business.py --profile ci` (configure, build, artefacts, determinism, golden, Wave909, pluginval).
+[`.github/workflows/build.yml`](.github/workflows/build.yml): configure, build, then `python3 vst-testing-ops/run_business.py --profile ci-verify`. Nightly: [`nightly-qa.yml`](.github/workflows/nightly-qa.yml). Setup: [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md).
 
 Optional Slack: CI ([`ci-slack-notify.yml`](.github/workflows/ci-slack-notify.yml)), Antigravity inbox ([`antigravity-inbox-slack.yml`](.github/workflows/antigravity-inbox-slack.yml)), Airtable handoff ([`airtable-antigravity-handoff.yml`](.github/workflows/airtable-antigravity-handoff.yml)) — configure with [`scripts/setup-disklordz-integrations.sh`](scripts/setup-disklordz-integrations.sh).
 

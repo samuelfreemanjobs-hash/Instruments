@@ -44,6 +44,8 @@ streamlit run vst-testing-ops/app.py                       # operations dashboar
 
 **After editing plugin C++ (`Source/`, `Wave909/`, etc.):** run `run_business.py --profile ci` before pushing; on failure read `vst-testing-ops/error_log.txt` and fix until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit updated WAVs.
 
+- [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
+
 ## Git
 
 - Do not force-push or deploy production unless the user asks.  

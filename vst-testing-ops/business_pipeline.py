@@ -256,6 +256,16 @@ def _build_stage(jobs: int | None) -> Callable[[], StageResult]:
 
 PROFILES: dict[str, PipelineConfig] = {
     "ci": PipelineConfig(disklordz_web=False),
+    "ci-verify": PipelineConfig(
+        configure=False,
+        build_all=False,
+        check_artefacts=True,
+        determinism=True,
+        golden=True,
+        wave909_tests=True,
+        pluginval=True,
+        disklordz_web=False,
+    ),
     "full": PipelineConfig(disklordz_web=True),
     "plugin-quick": PipelineConfig(
         configure=False,
