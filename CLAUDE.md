@@ -15,7 +15,7 @@ You are a coding agent in the same factory as **Cursor Cloud**. Git is the sourc
 | Product | Path | Branch example |
 |---------|------|----------------|
 | **SP-1200 VST** | `SP1200/` | `claude/sp1200-vst-*` |
-| **Vital preset pack** (Vital synth only) | `disklordz/packs/vital/` | `claude/vital-presets-*` |
+| **Pluggnb Vital preset pack** (1st SKU, Vital only) | `disklordz/packs/vital/` | `claude/pluggnb-vital-*` |
 
 Update PR URLs in [docs/agent-registry.json](docs/agent-registry.json) when you push.
 

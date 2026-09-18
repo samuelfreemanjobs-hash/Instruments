@@ -15,7 +15,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-909** (sampleless trap wavetable synth) | [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md) | `Wave909_VST3`, `Wave909_CLAP`, `Wave909_Standalone`, `Wave909Tests` |
 | **SP-1200** (VST drum sampler — Claude lane) | [SP1200/ARCHITECTURE.md](SP1200/ARCHITECTURE.md) | TBD — scaffold |
-| **Vital preset pack** (Vital synth content) | [disklordz/packs/vital/ARCHITECTURE.md](disklordz/packs/vital/ARCHITECTURE.md) | presets only |
+| **Pluggnb Vital preset pack** (first preset SKU) | [disklordz/packs/vital/ARCHITECTURE.md](disklordz/packs/vital/ARCHITECTURE.md) | Vital `.vital` / `.vitalbank` |
 
 ## Repository layout
 

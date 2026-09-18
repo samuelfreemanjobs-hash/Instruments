@@ -38,15 +38,15 @@
       "notes": "Claude Code primary; sample-based drum instrument"
     },
     {
-      "id": "vital-preset-pack",
-      "name": "Vital Preset Pack",
+      "id": "pluggnb-vital-pack",
+      "name": "Pluggnb Vital Preset Pack",
       "repoPath": "disklordz/packs/vital/",
       "lane": "content-vital",
       "primaryAgent": "claude",
       "claudeAllowed": true,
       "manifest": "disklordz/packs/vital/pack.manifest.json",
-      "branchExample": "claude/vital-presets-<suffix>",
-      "notes": "Presets for Vital synth only — unrelated to SP-1200 VST SKU"
+      "branchExample": "claude/pluggnb-vital-<suffix>",
+      "notes": "First Instruments preset SKU; Vital synth only; genre Pluggnb"
     },
     {
       "id": "disklordz-website",
@@ -93,10 +93,10 @@
       "ownerHuman": "owner"
     },
     {
-      "id": "vital-preset-pack",
-      "name": "Vital Preset Pack",
+      "id": "pluggnb-vital-pack",
+      "name": "Pluggnb Vital Preset Pack",
       "repoPath": "disklordz/packs/vital/",
-      "branch": "claude/vital-presets-TBD",
+      "branch": "claude/pluggnb-vital-TBD",
       "githubIssueOrPr": "TBD — paste PR URL when pushed",
       "ownerHuman": "owner"
     }

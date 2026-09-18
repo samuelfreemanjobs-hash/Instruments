@@ -11,7 +11,7 @@
 | **C** | **JD Upgraded** | `Source/` | JUCE VST3 + CLAP | Cursor |
 | **D** | **HISE sketch** | [hise-sketch/](../hise-sketch/) | HISE → VST3 (local) | Antigravity |
 | **E** | **SP-1200 VST** | [SP1200/](../SP1200/) | JUCE (in progress) | **Claude Code** |
-| **F** | **Vital preset pack** | [disklordz/packs/vital/](../disklordz/packs/vital/) | Vital `.vital` / `.vitalbank` | **Claude Code** |
+| **F** | **Pluggnb Vital preset pack** (1st preset SKU) | [disklordz/packs/vital/](../disklordz/packs/vital/) | Vital `.vital` / `.vitalbank` | **Claude Code** |
 
 Junova-X and NovaDrum (JUCE / iPlug2 factory tracks A–B) are documented on the Junova handoff branch / open PRs — merge those before expecting paths under `Junova-X/` and `vst-tr808/`.
 
@@ -23,4 +23,4 @@ Junova-X and NovaDrum (JUCE / iPlug2 factory tracks A–B) are documented on the
 
 ## WIP (Factory Manager)
 
-Max **2** Cursor implementation WOs on JUCE/repo work. **Claude Code** owns **Track E** (SP-1200 VST) and **Track F** (Vital preset pack for Vital synth only) — see [agent-registry.json](agent-registry.json). HISE sketches are excluded unless a **JUCE port** work order is opened.
+Max **2** Cursor implementation WOs on JUCE/repo work. **Claude Code** owns **Track E** (SP-1200 VST) and **Track F** (Pluggnb Vital preset pack — first Instruments preset SKU) — see [agent-registry.json](agent-registry.json). HISE sketches are excluded unless a **JUCE port** work order is opened.

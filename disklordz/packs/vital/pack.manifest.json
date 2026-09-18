@@ -1,13 +1,17 @@
 {
-  "packId": "vital-presets",
-  "displayName": "Vital Preset Pack",
+  "packId": "pluggnb-vital",
+  "displayName": "Pluggnb Vital Preset Pack",
   "targetSynth": "Vital",
   "version": "0.0.1",
-  "description": "Factory-style preset bank for Matt Tytel Vital (.vital / .vitalbank). Not tied to any other plugin SKU.",
+  "genre": "pluggnb",
+  "productOrdinal": 1,
+  "description": "First Instruments preset pack: Matt Tytel Vital patches tailored for Pluggnb — airy bells, spacey keys, pads, and 808-friendly subs/leads.",
+  "sonicIdentity": "Pluggnb: wide detuned bells, soft attack plucks, lush stereo pads, clean but moody low end for sliding 808 lines",
   "primaryCodingAgent": "claude",
   "repoPath": "disklordz/packs/vital",
   "releaseStatus": "idea",
   "presetPolicy": { "rcMin": 16, "betaMin": 32, "retailMin": 64 },
+  "suggestedCategories": ["BELL", "KEYS", "PAD", "PLUCK", "LEAD", "BASS", "FX"],
   "formats": ["vitalbank", "individual .vital"],
   "storefrontSku": "TBD"
 }
