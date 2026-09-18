@@ -36,6 +36,7 @@ Colab: [docs/COLAB_ZERO_INSTALL_TESTING.md](docs/COLAB_ZERO_INSTALL_TESTING.md).
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
 cmake --build build -j
+python3 scripts/vst/run_pluginval.py --default-artefacts  # headless VST3 after build
 ```
 
 ## Git

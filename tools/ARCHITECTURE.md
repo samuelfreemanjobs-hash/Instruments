@@ -44,6 +44,23 @@ Committed under `tests/golden/` with **`manifest.tsv`** (program, note, duration
 - `tests/golden/refresh_golden.sh` — rewrite all golden WAVs via `OfflineRender`
 - `tests/golden/verify_golden.sh` — CI/local regression (`SpectralDiff` per manifest row)
 
+## Headless VST3 validation (pluginval)
+
+[`scripts/vst/run_pluginval.py`](../scripts/vst/run_pluginval.py) downloads Tracktion **pluginval** v1.0.4 (cached under `build/tools/pluginval/`), runs strict in-process fuzz tests on built `.vst3` bundles, and prints a failure tail for agents/CI.
+
+```bash
+cmake --build build -j --target JDUpgraded_VST3
+python3 scripts/vst/run_pluginval.py --plugin "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3"
+# or validate all default monorepo artefacts (JD Upgraded, Wave909 when built):
+python3 scripts/vst/run_pluginval.py --default-artefacts
+# watch build output after incremental compiles:
+python3 scripts/vst/run_pluginval.py --watch build/JDUpgraded_artefacts/Release/VST3
+```
+
+Environment overrides: `PLUGINVAL_BIN`, `PLUGINVAL_DOWNLOAD_URL`, `PLUGINVAL_CACHE_DIR`.
+
+CI: [`.github/workflows/build.yml`](../.github/workflows/build.yml) runs the script after golden WAV verification.
+
 ## Extension points
 
 - Add a new tool: `add_executable` in `CMakeLists.txt`, document it in this file and in root [ARCHITECTURE.md](../ARCHITECTURE.md).
