@@ -1,6 +1,6 @@
 # Disklordz Drum SaaS — go-live checklist
 
-Use this after **WO-SAAS-007–015** land on `main`.
+Use this after **WO-SAAS-007–015** land on `main`. **Full business checklist:** [DISKLORDZ_COMPLETION_PLAN.md](DISKLORDZ_COMPLETION_PLAN.md).
 
 ## Automated go-live (recommended)
 

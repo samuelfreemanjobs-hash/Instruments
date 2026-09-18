@@ -32,7 +32,7 @@ Covers: website `lint` + `build`, daw-inbox syntax, RAG chunk + keyword query sm
 
 ## Roadmap
 
-v0 checklist: [docs/DISKLORDZ_SAAS_V0.md](../docs/DISKLORDZ_SAAS_V0.md) · ILLUGEN phases: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](../docs/DISKLORDZ_ILLUGEN_RESEARCH.md)
+v0 checklist: [docs/DISKLORDZ_SAAS_V0.md](../docs/DISKLORDZ_SAAS_V0.md) · ILLUGEN phases: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](../docs/DISKLORDZ_ILLUGEN_RESEARCH.md) · **End-to-end business plan:** [docs/DISKLORDZ_COMPLETION_PLAN.md](../docs/DISKLORDZ_COMPLETION_PLAN.md)
 
 ## Agent workflow
 
