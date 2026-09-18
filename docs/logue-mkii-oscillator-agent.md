@@ -15,7 +15,9 @@
 ## Agent entry points
 
 - System prompt: [.cursor/agents/logue-mkii-oscillator/SYSTEM.md](../.cursor/agents/logue-mkii-oscillator/SYSTEM.md)
-- Skill: [.cursor/skills/logue-hardware-port/SKILL.md](../.cursor/skills/logue-hardware-port/SKILL.md)
+- **Workflows & slash commands:** [logue-mkii-workflow.md](logue-mkii-workflow.md) · `.agents/workflows/logue-mkii-*.md`
+- Orchestrator skill: [.agents/skills/logue-mkii-oscillator/SKILL.md](../.agents/skills/logue-mkii-oscillator/SKILL.md)
+- Port skill: [.cursor/skills/logue-hardware-port/SKILL.md](../.cursor/skills/logue-hardware-port/SKILL.md)
 - Golden unit: [logue-mkii-golden-unit.md](logue-mkii-golden-unit.md)
 
 ## Workflow

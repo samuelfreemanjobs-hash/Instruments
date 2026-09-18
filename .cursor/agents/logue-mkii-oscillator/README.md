@@ -10,4 +10,15 @@ Cursor agent for **Korg logue SDK v2** custom user oscillators. **NTS-1 mkII** i
 
 Invoke: *“Use the logue mkII oscillator agent to …”*
 
+## Slash commands
+
+See [docs/logue-mkii-workflow.md](../../docs/logue-mkii-workflow.md). Quick start:
+
+```
+/logue-mkii-setup
+/logue-mkii-new my_bass_slug
+```
+
+Or stepwise: `/logue-mkii-brief` → `design` → `scaffold` → `impl` → `eval` → `ship`
+
 Golden reference slug: **`tr808_kick_phonk`** — see [docs/logue-mkii-golden-unit.md](../../docs/logue-mkii-golden-unit.md).

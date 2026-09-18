@@ -15,6 +15,7 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 | Doc | Purpose |
 |-----|---------|
 | [docs/logue-mkii-oscillator-agent.md](docs/logue-mkii-oscillator-agent.md) | Agent workflow, deliverables, evaluation |
+| [docs/logue-mkii-workflow.md](docs/logue-mkii-workflow.md) | `/logue-mkii-*` slash commands & phases |
 | [.cursor/agents/logue-mkii-oscillator/SYSTEM.md](.cursor/agents/logue-mkii-oscillator/SYSTEM.md) | Master system prompt |
 | [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md) | Port v1.1 → mkII, build, load |
 | [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md) | Catalog + presets |

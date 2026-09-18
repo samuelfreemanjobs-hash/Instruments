@@ -41,6 +41,12 @@ MIDI / panel → unit_render (SDK) → Osc::setPitch / setParameter
 - New slug: scaffold from v1 folder or copy `template_osc`
 - Presets: document in v1 `manifest.json` `_agent.presets`; mirror semantics in mkII param scaling
 
+## Agent workflows
+
+Slash commands: `/logue-mkii-setup` … `/logue-mkii-ship` — see [docs/logue-mkii-workflow.md](../docs/logue-mkii-workflow.md).
+
+Per-unit state: `src/mkii/oscillators/<slug>/.agent/status.json` (example: `template_osc/.agent/status.json.example`).
+
 ## Related docs
 
 - [docs/nts1-mkii-porting.md](../docs/nts1-mkii-porting.md)
