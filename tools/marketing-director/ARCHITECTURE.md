@@ -4,7 +4,7 @@
 
 **Marketing Director** supervises marketing specialists (research, creative, copy, media, analytics, compliance) using a **supervisory pattern**: the Director plans and delegates; **Cursor Cloud / Claude Code teammates** execute each specialist role and commit JSON artifacts — **no Anthropic API in repo CI**.
 
-Optional **local live mode** (`marketing_director_live.py`) exists for developers who run their own API key outside CI; it is not imported by automation.
+Optional **local live mode** (`marketing_director_live.py`) and **eval harness** (`test_harness.py`) for developers with `ANTHROPIC_API_KEY`; CI runs **mocked** harness only.
 
 ## Build & run (team mode — default)
 
@@ -42,7 +42,10 @@ User request
 | Path | Role |
 |------|------|
 | `marketing_director_team.py` | Scaffold runs, validate completeness |
-| `marketing_director_live.py` | Optional local API orchestrator (dev only) |
+| `marketing_director.py` | Importable orchestrator (live + tests) |
+| `marketing_director_live.py` | Optional local API CLI (dev only) |
+| `test_harness.py` | Mocked / smoke / full eval (`--mode mocked` in CI) |
+| `eval_cases.py` | Eval case definitions |
 | `brand_memory/instruments_disklordz.json` | Default brand_memory_read |
 | `../../docs/business-agents/skills/marketing-plan-current-quarter/SKILL.md` | Current quarter strategy |
 | `../../docs/business-agents/skills/brand-voice/SKILL.md` | Brand voice skill (copy, creative, director) |

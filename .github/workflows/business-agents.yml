@@ -6,10 +6,12 @@ on:
       - "business-agents/**"
       - "docs/business-agents/**"
       - "scripts/business-agents/**"
+      - "tools/marketing-director/**"
   push:
     branches: [main]
     paths:
       - "business-agents/**"
+      - "tools/marketing-director/**"
   workflow_dispatch:
     inputs:
       product_id:
@@ -26,6 +28,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate business-agents JSON
         run: python3 scripts/business-agents/business_agent.py check-pr
+      - name: Marketing Director harness (mocked)
+        run: python3 tools/marketing-director/test_harness.py --mode mocked
 
   sku-intake-scaffold:
     if: github.event_name == 'workflow_dispatch'
