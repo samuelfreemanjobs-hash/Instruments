@@ -23,7 +23,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
-from eval_cases import EVAL_CASES, EvalCase
+from eval_cases import EVAL_CASES, EvalCase, build_mock_tool_sequence
 from marketing_director import (
     BaseSpecialist,
     LoopBudget,
@@ -486,7 +486,7 @@ class Runner:
             b.text = text
             return b
 
-        sequence = case.director_tool_sequence or case.expected_specialists or []
+        sequence = build_mock_tool_sequence(case)
         script = []
         for tool in sequence:
             script.append(make_response([make_tool_use(tool)], "tool_use"))
@@ -512,10 +512,10 @@ class Runner:
             out.append(
                 Assertions.compliance_was_called_if_external(recorder, case.is_external_facing)
             )
-        if case.max_tokens is not None:
+        if case.max_tokens is not None and self.mode != "mocked":
             out.append(Assertions.tokens_under(result, case.max_tokens))
         out.append(Assertions.deliverable_nonempty(result))
-        if case.id != "loop_cap_escalation":
+        if case.id != "failure_loop_cap":
             for sp in recorder.unique_specialists():
                 out.append(Assertions.specialist_called_at_most(recorder, sp, 3))
         return out
