@@ -18,14 +18,20 @@ STRIPE_PRO_PRICE_ID=price_...
 
 Requires `SUPABASE_SERVICE_ROLE_KEY` for credit spend + webhook updates.
 
+## Stripe MCP (Cursor agents)
+
+[STRIPE_MCP.md](STRIPE_MCP.md) — plugin + `https://mcp.stripe.com` + `stripe_implementation_planner`.  
+Integration plan: [STRIPE_INTEGRATION_PLAN.md](STRIPE_INTEGRATION_PLAN.md).
+
 ## Stripe Dashboard
 
-1. Create a **Product** → recurring **Price** (monthly Pro).
-2. Copy Price ID → `STRIPE_PRO_PRICE_ID`.
-3. Developers → Webhooks → endpoint  
+1. Enable **Customer portal** (Settings → Billing → Customer portal) for cancel/update payment method.
+2. Create a **Product** → recurring **Price** (monthly Pro).
+3. Copy Price ID → `STRIPE_PRO_PRICE_ID`.
+4. Developers → Webhooks → endpoint  
    `https://YOUR_DOMAIN/api/stripe/webhook`  
    Events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
-4. Copy signing secret → `STRIPE_WEBHOOK_SECRET`.
+5. Copy signing secret → `STRIPE_WEBHOOK_SECRET`.
 
 ## SQL
 

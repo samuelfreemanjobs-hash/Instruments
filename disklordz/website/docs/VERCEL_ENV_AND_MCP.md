@@ -114,6 +114,10 @@ In [Cloud Agent environment](https://cursor.com/dashboard/cloud-agents) for **In
 
 MCP does **not** configure Vercel; it only lets agents talk to Supabase from the IDE.
 
+### Stripe MCP (payments)
+
+[STRIPE_MCP.md](STRIPE_MCP.md) — install **Stripe** Cursor plugin or connect **stripe** in MCP settings (`https://mcp.stripe.com`). Optional env: `STRIPE_RESTRICTED_KEY` for bearer auth. Use **`stripe_implementation_planner`** in a new chat for a tailored plan.
+
 ---
 
 ## G. CLI alternative (Vercel)
