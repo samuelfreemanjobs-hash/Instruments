@@ -1,9 +1,2 @@
-bin/pluginval
-bin/pluginval.exe
-bin/pluginval.zip
-error_log.txt
-last_build.log
-reports/
-last_run_report.json
-my_plugins/*.vst3
-my_plugins/**/*.vst3
+__pycache__/
+*.pyc
