@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://instruments.local/schemas/content-draft.json",
+  "title": "Marketing content draft metadata",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "content_type",
+    "sku_or_product",
+    "title",
+    "body_markdown",
+    "metadata"
+  ],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "content_type": {
+      "enum": [
+        "landing_hero",
+        "store_listing",
+        "social_thread",
+        "email",
+        "release_notes"
+      ]
+    },
+    "sku_or_product": { "type": "string" },
+    "title": { "type": "string" },
+    "body_markdown": { "type": "string", "minLength": 50 },
+    "metadata": {
+      "type": "object",
+      "required": ["word_count", "tone", "publish_status"],
+      "properties": {
+        "word_count": { "type": "integer" },
+        "reading_time_min": { "type": "number" },
+        "tone": { "type": "string" },
+        "topics_covered": { "type": "array", "items": { "type": "string" } },
+        "publish_status": { "enum": ["draft", "owner_review", "published"] }
+      }
+    },
+    "cta": { "type": "string" },
+    "generated_at": { "type": "string" }
+  }
+}

@@ -36,12 +36,12 @@ Cloud default for **Instruments monorepo plugin/SaaS** per [AGENTS.md](../AGENTS
 | Role | Owner | Delivers |
 |------|--------|----------|
 | **Owner / release** | You | Production deploy, pricing, merge to main, “ship it” |
-| **PM agent** | Cursor | WO scope, `GATES.md` status, RELEASE BLOCKED vs RC/beta |
+| **PM agent** | Cursor | WO scope, `GATES.md` status, RELEASE BLOCKED vs RC/beta — intake from [business-agents](business-agents/WORKFLOWS.md) `sku` briefs |
 | **Factory / C++ agent** | Cursor Cloud or **Claude Code** (one per `repoPath`) | Manifest-locked code, CMake, tests, CI |
 | **DSP / A&R** | You + agent draft | Presets, sonic sign-off; agent generates params/WAVs, **you listen** |
 | **SaaS agent** | Cursor | `npm ci && build && test`, API/UI diffs; **no prod** without ask |
-| **Marketing agent** | Cursor draft | Copy, hero scripts; **you publish** |
-| **Workflow automation** | Cursor + GitHub | `build.yml`, golden verify, bridge scripts, optional Slack/Airtable |
+| **Marketing agent** | Cursor draft | Copy, hero scripts; **you publish** — use [business-agents](business-agents/WORKFLOWS.md) `content` CLI |
+| **Workflow automation** | Cursor + GitHub | `build.yml`, golden verify, bridge scripts, optional Slack/Airtable · **[business agents](../docs/business-agents/ARCHITECTURE.md)** (SKU research, content, ship eval) |
 
 Agents communicate in **git artifacts** (specs, manifest, validation report) — not chat-only.
 
@@ -79,6 +79,8 @@ Idea or Airtable WO
 
 Structured task template: [CURSOR_AGENT_PLAYBOOK.md](CURSOR_AGENT_PLAYBOOK.md) §2.
 
+**Business agents (company-wide):** [business-agents/ARCHITECTURE.md](business-agents/ARCHITECTURE.md) — SKU research JSON (#5/9) → Planner; content drafts (#2) → you publish; ship evaluator (#8) → RELEASE READY gate. CLI: `scripts/business-agents/business_agent.py`.
+
 ---
 
 ## 6. Tooling map (this repo)
@@ -90,6 +92,7 @@ Structured task template: [CURSOR_AGENT_PLAYBOOK.md](CURSOR_AGENT_PLAYBOOK.md) �
 | JUCE CI | `.github/workflows/build.yml` |
 | SaaS build | `cd disklordz/website && npm ci && npm run build && npm test` |
 | RAG | `python3 disklordz/rag/scripts/chunk_corpus.py` |
+| Business agents | `python3 scripts/business-agents/business_agent.py` · [business-agents/ARCHITECTURE.md](business-agents/ARCHITECTURE.md) |
 | Antigravity send | `./scripts/antigravity-bridge/antigravity-bridge.sh send --wo …` |
 | Claude Code entry | [CLAUDE.md](../CLAUDE.md), [CLAUDE_CODE_INTEGRATION.md](CLAUDE_CODE_INTEGRATION.md) |
 | Agent / product ownership | [agent-registry.json](agent-registry.json) |

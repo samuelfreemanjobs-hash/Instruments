@@ -118,6 +118,31 @@
       "notes": "Windows + HISE; use antigravity bridge, not Claude on Linux for export"
     }
   ],
+  "businessAgents": {
+    "description": "Company-wide patterns — not repoPath implementers",
+    "cli": "scripts/business-agents/business_agent.py",
+    "docs": "docs/business-agents/ARCHITECTURE.md",
+    "agents": [
+      {
+        "id": "sku-research",
+        "pattern": "market-research-5-9",
+        "outputDir": "business-agents/sku-briefs/",
+        "ownerHuman": "Business Planner"
+      },
+      {
+        "id": "content-marketing",
+        "pattern": "content-2",
+        "outputDir": "business-agents/content-drafts/",
+        "ownerHuman": "Marketing (owner publishes)"
+      },
+      {
+        "id": "ship-evaluator",
+        "pattern": "evaluator-8",
+        "outputDir": "business-agents/ship-evaluations/",
+        "ownerHuman": "Owner / release"
+      }
+    ]
+  },
   "claudeActiveProducts": [
     {
       "id": "sp1200-vst",

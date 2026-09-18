@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://instruments.local/schemas/ship-evaluation.json",
+  "title": "Ship / customer-facing quality evaluation",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "artifact_paths",
+    "original_request",
+    "overall_quality",
+    "quality_assessment",
+    "assessment_summary",
+    "ready_for_approval"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "const": "1" },
+    "artifact_type": {
+      "enum": [
+        "store_listing",
+        "landing_copy",
+        "product_spec",
+        "preset_pack_readme",
+        "saas_marketing",
+        "release_ready_bundle"
+      ]
+    },
+    "artifact_paths": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "original_request": { "type": "string" },
+    "target_audience": { "type": "string" },
+    "overall_quality": { "type": "integer", "minimum": 1, "maximum": 10 },
+    "quality_assessment": { "enum": ["ACCEPT", "REVISE", "REJECT"] },
+    "assessment_summary": { "type": "string" },
+    "evaluation_by_criteria": { "type": "array" },
+    "strengths": { "type": "array", "items": { "type": "string" } },
+    "critical_issues": { "type": "array", "items": { "type": "string" } },
+    "nice_to_have_improvements": { "type": "array", "items": { "type": "string" } },
+    "ready_for_approval": { "type": "boolean" },
+    "revision_priority": { "enum": ["high", "medium", "low"] },
+    "release_decision": {
+      "enum": ["RELEASE BLOCKED", "RC OK", "BETA OK", "RETAIL BLOCKED"]
+    },
+    "generated_at": { "type": "string" },
+    "evaluator": { "type": "string" }
+  }
+}

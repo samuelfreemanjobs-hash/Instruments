@@ -1,0 +1,29 @@
+# SKU intake — copy to business-agents/sku-briefs/<product_id>/intake.yaml
+
+product_id: DL-SKU-EXAMPLE
+sku_name: Example Product
+lane: juce-factory  # juce-factory | content-vital | disklordz | tr808-pwa | hise
+
+research_question: |
+  Should we ship this SKU in the next quarter? Who competes, what price band,
+  and does it duplicate Junova-X, WAVE-909, or Disklordz SaaS?
+
+business_context: |
+  Solo operator + agents; max 2 Cursor JUCE WOs; Claude on SP-1200 and Vital pack.
+
+constraints:
+  budget_notes: optional
+  deadline: optional
+  must_not_duplicate:
+    - WAVE-909
+    - Disklordz drum kit SaaS
+
+approved_sources:
+  - docs/DISKLORDZ_ILLUGEN_RESEARCH.md
+  - Public plugin store listings (user will paste snippets)
+
+competitors_to_consider: []
+
+target_price_band: "$29–49 launch"
+
+owner_human: owner

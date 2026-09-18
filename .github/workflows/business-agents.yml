@@ -1,0 +1,85 @@
+name: Business agents
+
+on:
+  pull_request:
+    paths:
+      - "business-agents/**"
+      - "docs/business-agents/**"
+      - "scripts/business-agents/**"
+  push:
+    branches: [main]
+    paths:
+      - "business-agents/**"
+  workflow_dispatch:
+    inputs:
+      product_id:
+        description: "SKU product_id (e.g. DL-PLUGIN-WAVE909-LAUNCH)"
+        required: true
+      sku_name:
+        description: "Display name"
+        required: true
+      run_research:
+        description: "Call LLM if ANTHROPIC_API_KEY or OPENAI_API_KEY secret set"
+        type: boolean
+        default: false
+
+jobs:
+  validate-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate business-agents JSON
+        run: python3 scripts/business-agents/business_agent.py check-pr
+
+  sku-intake-scaffold:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Init SKU brief folder
+        run: |
+          python3 scripts/business-agents/business_agent.py sku init \
+            --product-id "${{ inputs.product_id }}" \
+            --name "${{ inputs.sku_name }}"
+      - name: Optional LLM research
+        if: inputs.run_research == true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          INTAKE="business-agents/sku-briefs/${{ inputs.product_id }}/intake.yaml"
+          python3 scripts/business-agents/business_agent.py sku prompt --intake "$INTAKE" --run || true
+      - name: Upload scaffold artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sku-brief-${{ inputs.product_id }}
+          path: business-agents/sku-briefs/${{ inputs.product_id }}/
+
+  customer-facing-hint:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check customer-facing paths
+        id: cf
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          PATHS=$(git diff --name-only "$BASE" "$HEAD" || true)
+          echo "$PATHS" | tee /tmp/changed.txt
+          HIT=0
+          while IFS= read -r f; do
+            case "$f" in
+              */Docs/PRODUCT_SPEC.md|*/PRODUCT_SPEC.md|disklordz/website/**/*.tsx|disklordz/website/**/*.md|disklordz/packs/**/*README*|disklordz/packs/**/PRESET_INDEX.md|business-agents/content-drafts/*)
+                HIT=1
+                echo "customer-facing: $f"
+                ;;
+            esac
+          done <<< "$PATHS"
+          echo "hit=$HIT" >> "$GITHUB_OUTPUT"
+      - name: Remind ship evaluator
+        if: steps.cf.outputs.hit == '1'
+        run: |
+          echo "::notice title=Ship evaluator::Customer-facing files changed. Run evaluate prompt and attach business-agents/ship-evaluations/*.json (or add PR label ship-eval-waived if intentionally skipped)."

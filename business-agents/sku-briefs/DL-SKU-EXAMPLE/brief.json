@@ -1,0 +1,26 @@
+{
+  "schema_version": "1",
+  "product_id": "DL-SKU-EXAMPLE",
+  "sku_name": "Example Product",
+  "lane": "juce-factory",
+  "research_question": "Should we ship a example SKU in Q4 without duplicating WAVE-909?",
+  "findings": [
+    {
+      "finding": "Example finding for CI validation only.",
+      "source": "docs/business-agents/ARCHITECTURE.md",
+      "confidence": "low",
+      "supporting_data": "Placeholder — replace when running real research."
+    }
+  ],
+  "gaps_and_opportunities": ["Replace this file after real sku prompt run."],
+  "information_gaps": ["No live market data in example."],
+  "planner_recommendation": {
+    "decision": "needs_human",
+    "rationale": "Example artifact for schema validation in CI.",
+    "suggested_wo_title": "[Plugin][Example] Replace with real WO",
+    "price_tier_notes": "TBD"
+  },
+  "recommended_next_research": ["Run sku prompt with real intake."],
+  "generated_at": "2026-09-18T00:00:00Z",
+  "human_approved": false
+}

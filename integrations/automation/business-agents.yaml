@@ -1,0 +1,41 @@
+# Business agents — automation schedule (human-in-loop)
+
+# Times are America/New_York; jobs are reminders unless BUSINESS_AGENT_CRON_RUN=1 + API keys on runner.
+
+version: "1"
+
+reminders:
+  - id: mon-sku-review
+    cron: "0 9 * * 1"
+    action: reminder
+    message: "Review open business-agents/sku-briefs/*/brief.json — Planner approve or defer."
+
+  - id: wed-content-draft
+    cron: "0 10 * * 3"
+    action: reminder
+    message: "Run content prompt for active SKU launch; validate JSON before publish."
+
+  - id: fri-ship-eval
+    cron: "0 16 * * 5"
+    action: reminder
+    message: "Run ship evaluator on any PR labeled customer-facing this week."
+
+workflows:
+  new_sku:
+    steps:
+      - cli: python3 scripts/business-agents/business_agent.py sku init --product-id {product_id} --name "{sku_name}"
+      - cli: python3 scripts/business-agents/business_agent.py sku prompt --intake business-agents/sku-briefs/{product_id}/intake.yaml
+      - human: Save brief.json and run sku validate
+      - gate: planner_recommendation.decision in [proceed, defer, kill, needs_human]
+
+  ship_gate:
+    steps:
+      - cli: python3 scripts/business-agents/business_agent.py evaluate prompt --artifact {path} --type {artifact_type}
+      - human: Save eval JSON and run evaluate validate
+      - gate: quality_assessment == ACCEPT and ready_for_approval == true
+
+integrations:
+  github:
+    workflow: business-agents.yml
+  airtable:
+    note: "Optional — create WO from brief.json suggested_wo_title manually or via future script"
