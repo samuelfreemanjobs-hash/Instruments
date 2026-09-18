@@ -53,7 +53,7 @@ If a Claude product lives on a **branch not yet merged** (e.g. VMPC, Character F
 | Product | Path |
 |---------|------|
 | SP-1200 VST | `SP1200/` |
-| SP-1200 Vital preset pack | `disklordz/packs/sp1200-vital/` |
+| Vital preset pack (Vital synth) | `disklordz/packs/vital/` |
 
 **Do not** let Claude and Cursor edit the same folder on different branches without coordinating — merge or rebase one line of work first.
 

@@ -8,7 +8,16 @@ You are a coding agent in the same factory as **Cursor Cloud**. Git is the sourc
 2. [docs/AGENTIC_OPERATING_MODEL.md](docs/AGENTIC_OPERATING_MODEL.md) — lanes, gates, who runs where  
 3. [docs/CLAUDE_CODE_INTEGRATION.md](docs/CLAUDE_CODE_INTEGRATION.md) — branch rules, handoffs, registry  
 4. [docs/agent-registry.json](docs/agent-registry.json) — **which agent owns which product**  
-5. Product doc for your task (e.g. [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md), [disklordz/website/ARCHITECTURE.md](disklordz/website/ARCHITECTURE.md))
+5. Product doc for your task — **Claude-owned:** [SP1200/ARCHITECTURE.md](SP1200/ARCHITECTURE.md), [disklordz/packs/vital/ARCHITECTURE.md](disklordz/packs/vital/ARCHITECTURE.md) · Cursor examples: [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md)
+
+## Claude-owned products (do not let Cursor implement without handoff)
+
+| Product | Path | Branch example |
+|---------|------|----------------|
+| **SP-1200 VST** | `SP1200/` | `claude/sp1200-vst-*` |
+| **Vital preset pack** (Vital synth only) | `disklordz/packs/vital/` | `claude/vital-presets-*` |
+
+Update PR URLs in [docs/agent-registry.json](docs/agent-registry.json) when you push.
 
 ## New JUCE plugin work
 

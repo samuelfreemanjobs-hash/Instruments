@@ -10,7 +10,9 @@
   "formats": ["VST3", "Standalone"],
   "platforms": ["Windows", "macOS", "Linux"],
   "sonicIdentity": "SP-1200 style 12-bit sampling, tight drums, classic swing and grit",
-  "p0Features": [],
+  "p0Features": [
+    "SP-1200 style drum playback and 12-bit character (scope TBD)"
+  ],
   "p1Features": [],
   "presetPolicy": { "rcMin": 8, "betaMin": 16, "retailMin": 32 },
   "cmakeTarget": "SP1200",

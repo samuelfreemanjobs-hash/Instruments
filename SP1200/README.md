@@ -9,5 +9,3 @@ Before coding:
 3. [ARCHITECTURE.md](ARCHITECTURE.md)
 
 Branch: `claude/sp1200-<description>-<suffix>`
-
-Pair with Vital pack: [disklordz/packs/sp1200-vital/](../disklordz/packs/sp1200-vital/)

@@ -21,7 +21,7 @@ One page. **Hybrid:** agents build and document; humans own taste, money, and pr
 | Environment | Use for | Do not use for |
 |-------------|---------|----------------|
 | **Cursor Cloud Agent** | Long JUCE builds, Plugin Factory runs, SaaS PRs from `cursor/*`, docs/CI, RAG scripts | Antigravity GUI, HISE export, Windows-only MSVC |
-| **Claude Code** | **SP-1200 VST** (`SP1200/`), **Vital preset pack** (`disklordz/packs/sp1200-vital/`), other `claude/*` lanes | Same `repoPath` as active Cursor PR without handoff; HISE export on Linux |
+| **Claude Code** | **SP-1200 VST** (`SP1200/`), **Vital preset pack** (`disklordz/packs/vital/`), other `claude/*` lanes | Same `repoPath` as active Cursor PR without handoff; HISE export on Linux |
 | **Cursor IDE (local Agent)** | Tight loops, uncommitted DSP/UI, listening in a DAW on your machine | Pretending DAW/pluginval ran in Cloud |
 | **VS Code + Antigravity** | HISE projects, Windows VST3 export, `hise-sketch/` | Root CMake CLAP CI, Disklordz deploy |
 | **Antigravity bridge** | Async handoff Cursor ↔ Windows (`disklordz/antigravity/inbox|outbox/`) | Real-time pair programming |

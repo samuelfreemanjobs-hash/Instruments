@@ -1,0 +1,13 @@
+{
+  "packId": "vital-presets",
+  "displayName": "Vital Preset Pack",
+  "targetSynth": "Vital",
+  "version": "0.0.1",
+  "description": "Factory-style preset bank for Matt Tytel Vital (.vital / .vitalbank). Not tied to any other plugin SKU.",
+  "primaryCodingAgent": "claude",
+  "repoPath": "disklordz/packs/vital",
+  "releaseStatus": "idea",
+  "presetPolicy": { "rcMin": 16, "betaMin": 32, "retailMin": 64 },
+  "formats": ["vitalbank", "individual .vital"],
+  "storefrontSku": "TBD"
+}

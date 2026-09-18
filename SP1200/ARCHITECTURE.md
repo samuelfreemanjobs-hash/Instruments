@@ -18,7 +18,6 @@ Will follow root `add_subdirectory(SP1200)` pattern like [Wave909/](../Wave909/)
 ## Coordination
 
 - Do **not** collide with Cursor WIP on the same branch without handoff — see [docs/agent-registry.json](../docs/agent-registry.json).
-- Companion content: Vital preset pack in [disklordz/packs/sp1200-vital/](../disklordz/packs/sp1200-vital/).
 
 ## Related docs
 

@@ -35,18 +35,18 @@
       "claudeAllowed": true,
       "manifest": "SP1200/plugin.manifest.json",
       "branchExample": "claude/sp1200-vst-<suffix>",
-      "notes": "Claude Code primary; add CMake when DSP scoped; sample-based drum instrument"
+      "notes": "Claude Code primary; sample-based drum instrument"
     },
     {
-      "id": "sp1200-vital-pack",
-      "name": "SP-1200 Vital Preset Pack",
-      "repoPath": "disklordz/packs/sp1200-vital/",
+      "id": "vital-preset-pack",
+      "name": "Vital Preset Pack",
+      "repoPath": "disklordz/packs/vital/",
       "lane": "content-vital",
       "primaryAgent": "claude",
       "claudeAllowed": true,
-      "manifest": "disklordz/packs/sp1200-vital/pack.manifest.json",
-      "branchExample": "claude/sp1200-vital-<suffix>",
-      "notes": "Vital .vital / .vitalbank only — not VST3 build"
+      "manifest": "disklordz/packs/vital/pack.manifest.json",
+      "branchExample": "claude/vital-presets-<suffix>",
+      "notes": "Presets for Vital synth only — unrelated to SP-1200 VST SKU"
     },
     {
       "id": "disklordz-website",
@@ -90,17 +90,15 @@
       "repoPath": "SP1200/",
       "branch": "claude/sp1200-vst-TBD",
       "githubIssueOrPr": "TBD — paste PR URL when pushed",
-      "ownerHuman": "owner",
-      "companion": "sp1200-vital-pack"
+      "ownerHuman": "owner"
     },
     {
-      "id": "sp1200-vital-pack",
-      "name": "SP-1200 Vital Preset Pack",
-      "repoPath": "disklordz/packs/sp1200-vital/",
-      "branch": "claude/sp1200-vital-TBD",
+      "id": "vital-preset-pack",
+      "name": "Vital Preset Pack",
+      "repoPath": "disklordz/packs/vital/",
+      "branch": "claude/vital-presets-TBD",
       "githubIssueOrPr": "TBD — paste PR URL when pushed",
-      "ownerHuman": "owner",
-      "companion": "sp1200-vst"
+      "ownerHuman": "owner"
     }
   ]
 }
