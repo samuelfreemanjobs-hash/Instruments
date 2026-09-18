@@ -13,7 +13,10 @@ Developers and agents validate compiled `.vst3` bundles with **pluginval** (Trac
 | `my_plugins/` | Drop finished `.vst3` bundles here (gitignored). |
 | `bin/` | Optional local `pluginval` / `pluginval.exe`; otherwise auto-download to `build/tools/pluginval/`. |
 | `test_runner.py` | Entry script: strictness 5, in-process validation, writes `error_log.txt` on failure. |
+| `app.py` | Streamlit dashboard: CMake build → `test_runner.py` in one click. |
+| `requirements.txt` | `streamlit` for the dashboard (`pip install -r vst-testing-ops/requirements.txt`). |
 | `error_log.txt` | Generated on failure only (gitignored). |
+| `last_build.log` | Last CMake output from the dashboard (gitignored). |
 
 ## Build & run
 
@@ -35,6 +38,13 @@ python3 vst-testing-ops/test_runner.py --watch   # re-test on every drop/rebuild
 ```
 
 **Phase 3 — on failure**, open `error_log.txt` in Cursor and ask an agent to fix `Source/` from the log.
+
+**Dashboard (compile + test in one UI):**
+
+```bash
+pip install -r vst-testing-ops/requirements.txt
+streamlit run vst-testing-ops/app.py
+```
 
 Custom plugin name: `VST_NAME=MyFirstPlugin.vst3 python3 vst-testing-ops/test_runner.py`
 
