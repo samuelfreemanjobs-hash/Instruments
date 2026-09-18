@@ -56,3 +56,12 @@ git commit -m "Refresh golden WAVs after intentional DSP change"
 ```
 
 Do **not** refresh goldens to make a failing pipeline green — fix the regression or update manifest thresholds in `verify_golden.sh` / `SpectralDiff` only with justification.
+
+## Disklordz QA (no cloud secrets)
+
+```bash
+./disklordz/scripts/run_qa.sh
+python3 vst-testing-ops/run_business.py --profile full   # plugins + SaaS build
+```
+
+Production go-live still requires [docs/DISKLORDZ_GO_LIVE_SECRETS.md](DISKLORDZ_GO_LIVE_SECRETS.md) and manual **Disklordz go-live** workflow.
