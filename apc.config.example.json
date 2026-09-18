@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "juce": {
+    "required_major": 8,
+    "path": "vst/JUCE"
+  },
+  "paths": {
+    "plugins_dir": "plugins",
+    "vst_dir": "vst",
+    "build_dir": "build",
+    "release_dir": "release",
+    "reference_audio_dir": "reference-audio"
+  },
+  "defaults": {
+    "ui_framework_preference": "juce-native",
+    "enable_webview": false
+  },
+  "models": {
+    "profile": "balanced",
+    "phases": {
+      "setup": { "notes": "economy / fast model" },
+      "dream": { "notes": "creative / strong" },
+      "plan": { "notes": "strong reasoning" },
+      "design": { "notes": "creative" },
+      "impl": { "notes": "strong coding" },
+      "test": { "notes": "default" },
+      "debug": { "notes": "strongest" },
+      "ship": { "notes": "economy" },
+      "status": { "notes": "economy" },
+      "resume": { "notes": "economy" }
+    },
+    "notes": "Set concrete model IDs in your Cursor/Claude settings; keys here are reminders per phase."
+  },
+  "setup": {
+    "completed": false,
+    "completed_at": null,
+    "platform": null
+  }
+}

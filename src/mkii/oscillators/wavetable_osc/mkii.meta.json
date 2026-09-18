@@ -1,0 +1,6 @@
+{
+  "v1_path": "oscillators/wavetable",
+  "v1_source": "wavetable.cc",
+  "mkii_slug": "wavetable_osc",
+  "project": "wavetable_osc"
+}

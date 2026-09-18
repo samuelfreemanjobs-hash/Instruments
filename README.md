@@ -1,6 +1,6 @@
-# Instruments
+# Instruments — JD Upgraded, plugins, logue mkII oscillators
 
-This monorepo hosts **JD Upgraded** (Roland JD-style synth) and the **MyFirstPlugin** JUCE starter templates.
+This monorepo hosts **JD Upgraded** (Roland JD-style synth), **MyFirstPlugin** / **vst/** JUCE templates, **Disklordz SaaS**, and **logue SDK** custom oscillators (**NTS-1 mkII** standard).
 
 ---
 
@@ -30,24 +30,12 @@ cmake --build build -j
 
 AU (macOS): see [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
-## Features (current)
-
-- 32-voice pool, 4 tones per voice, zero heap allocation on the audio thread
-- 256-wave clean-room ROM with 24 multisample sets (8 zones each)
-- 128 factory patches (EP, pad, bass, vapor, R&B, elite categories)
-- Global and per-tone Amp/Filter ADSR, wave palette by category
-- Roland JD patch SysEx import (partial APVTS mapping) — [docs/SYSEX.md](docs/SYSEX.md)
-- AVX2 SIMD tone sum (independent coupling path); NEON on ARM when AVX2 is unavailable
-
 ## Docs
 
 - [Repository architecture index](ARCHITECTURE.md) (required reading for agents)
 - [JD Upgraded architecture](docs/ARCHITECTURE.md)
 - [Offline tools architecture](tools/ARCHITECTURE.md)
-- [UI](docs/UI.md) · [Installer policy](docs/INSTALLER_POLICY.md)
-- [Presets](docs/PRESETS.md)
-- [Agent handoff](docs/HANDOFF.md)
-- [Phase 5 roadmap](docs/PHASE5.md)
+- [UI](docs/UI.md) · [Agent handoff](docs/HANDOFF.md)
 
 ## Environment
 
@@ -57,9 +45,28 @@ AU (macOS): see [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
 # MyFirstPlugin (starter)
 
-CMake-native [JUCE](https://juce.com/) effect and synth templates under [`MyFirstPlugin/`](MyFirstPlugin/). JUCE version is pinned in [`JUCE_VERSION`](JUCE_VERSION) (fetched on first configure for that subproject).
+CMake-native [JUCE](https://juce.com/) templates under [`MyFirstPlugin/`](MyFirstPlugin/). See [`MyFirstPlugin/VISUAL_STUDIO.md`](MyFirstPlugin/VISUAL_STUDIO.md) on Windows.
 
-**Windows:** `MyFirstPlugin/Build Plugin.bat` or see [`MyFirstPlugin/VISUAL_STUDIO.md`](MyFirstPlugin/VISUAL_STUDIO.md).  
-**macOS / Linux:** `cd MyFirstPlugin && ./build.sh`
+---
 
-CI for the starter: [`.github/workflows/build-plugin.yml`](.github/workflows/build-plugin.yml).
+# logue SDK — NTS-1 mkII custom oscillators (standard)
+
+**Ship target:** NTS-1 mkII (SDK **v2**, `.nts1mkiiunit`).  
+**Agent:** [docs/logue-mkii-oscillator-agent.md](docs/logue-mkii-oscillator-agent.md) · golden unit [docs/logue-mkii-golden-unit.md](docs/logue-mkii-golden-unit.md)
+
+```bash
+chmod +x tools/mkii-automate.sh tools/osc-eval-mkii.sh
+./tools/mkii-automate.sh bootstrap
+./tools/osc-eval-mkii.sh tr808_kick_phonk    # golden reference build
+./tools/build-mkii.sh <mkii-slug>
+```
+
+Catalog (v1.1 sources + mkII ports): [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md) · porting [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md)
+
+Optional **v1.1** (Minilogue XD / NTS-1 mkI / Prologue): `./tools/build.sh oscillators/<name> minilogue-xd` — [docs/platform-matrix.md](docs/platform-matrix.md).
+
+---
+
+# VST / APC lane
+
+New plugins from `vst/template/`: [vst/README.md](vst/README.md) · [docs/apc-workflow.md](docs/apc-workflow.md)

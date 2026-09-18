@@ -8,6 +8,30 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 - [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
 - `.cursor/rules/*.mdc` — always-on architecture and security  
 
+## logue SDK mkII custom oscillator agent (NTS-1 mkII standard)
+
+**Primary lane:** design and implement **SDK v2** user oscillators for **NTS-1 mkII** (`.nts1mkiiunit`).
+
+| Doc | Purpose |
+|-----|---------|
+| [docs/logue-mkii-oscillator-agent.md](docs/logue-mkii-oscillator-agent.md) | Agent workflow, deliverables, evaluation |
+| [.cursor/agents/logue-mkii-oscillator/SYSTEM.md](.cursor/agents/logue-mkii-oscillator/SYSTEM.md) | Master system prompt |
+| [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md) | Port v1.1 → mkII, build, load |
+| [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md) | Catalog + presets |
+| [docs/logue-mkii-golden-unit.md](docs/logue-mkii-golden-unit.md) | Golden reference unit for CI/agents |
+
+```bash
+chmod +x tools/mkii-automate.sh tools/osc-eval-mkii.sh
+./tools/mkii-automate.sh bootstrap          # LOGUE_SDK + ARM gcc (once)
+./tools/mkii-automate.sh scaffold           # refresh mkII trees
+./tools/osc-eval-mkii.sh tr808_kick_phonk   # build + smoke checks (golden)
+./tools/build-mkii.sh <slug>                # single unit when bootstrapped
+```
+
+Optional **v1.1** builds (Minilogue XD / NTS-1 mkI / Prologue): `./tools/build.sh oscillators/<name> minilogue-xd` — see [docs/platform-matrix.md](docs/platform-matrix.md).
+
+Legacy **Claude oscillator bundle** (v1 fiction API): quarantined under [docs/archive/quarantined-claude-osc-bundle/](docs/archive/quarantined-claude-osc-bundle/) — do not use for codegen.
+
 ## Disklordz SaaS (web)
 
 ```bash
@@ -38,7 +62,9 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_
 cmake --build build -j
 ```
 
+**APC / VST lane** (when editing `vst/`): [docs/apc-workflow.md](docs/apc-workflow.md) · `.agents/workflows/apc-*.md`
+
 ## Git
 
 - Do not force-push or deploy production unless the user asks.  
-- Cloud feature branches: `cursor/<description>-<suffix>` when required by environment.  
+- Cloud feature branches: `cursor/<description>-<suffix>` when required by environment.

@@ -1,0 +1,26 @@
+name: logue mkII oscillator eval (static)
+
+on:
+  pull_request:
+    paths:
+      - 'src/mkii/**'
+      - 'tools/osc-eval-mkii.sh'
+      - 'tools/build-mkii.sh'
+      - 'tools/mkii/**'
+  push:
+    branches: [main]
+    paths:
+      - 'src/mkii/**'
+      - 'tools/osc-eval-mkii.sh'
+
+jobs:
+  static-golden:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ripgrep
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+      - name: Golden unit static eval
+        run: |
+          chmod +x tools/osc-eval-mkii.sh
+          ./tools/osc-eval-mkii.sh tr808_kick_phonk --static-only

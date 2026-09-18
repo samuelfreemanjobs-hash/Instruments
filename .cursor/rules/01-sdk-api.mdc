@@ -1,0 +1,63 @@
+---
+description: logue SDK API surface, types, and entry points
+globs: ["src/**/*.cc", "src/**/*.h"]
+alwaysApply: false
+---
+
+# logue SDK API reference (agent summary)
+
+## Oscillator entry points
+
+Include `userosc.h` and implement the `user_osc` hook table.
+
+```c
+// Required hooks for a custom oscillator (v1.1.0 naming)
+void OSC_INIT(uint32_t platform, uint32_t api);
+void OSC_CYCLE(const user_osc_param_t *params, int32_t *yn, uint32_t frames);
+void OSC_NOTEON(const user_osc_param_t *params);
+void OSC_NOTEOFF(const user_osc_param_t *params);
+void OSC_PARAM(uint16_t index, uint16_t value);
+```
+
+Note: Some docs abbreviate note hooks as `OSC_NOTE_ON(note, velocity)`; the v1.1.0
+headers pass `user_osc_param_t` on note on/off. Read `userosc.h` for your SDK tree.
+
+## Effect entry points
+
+| Effect type | Header        | Required hooks                          |
+|-------------|---------------|-----------------------------------------|
+| Modulation  | `usermodfx.h` | MODFX_INIT, MODFX_PROCESS, MODFX_PARAM    |
+| Delay       | `userdelfx.h` | DELFX_INIT, DELFX_PROCESS, DELFX_PARAM  |
+| Reverb      | `userrevfx.h` | REVFX_INIT, REVFX_PROCESS, REVFX_PARAM |
+
+## Key runtime types
+
+```c
+// user_osc_param_t (from userosc.h)
+typedef struct {
+  int32_t  shape_lfo;   // LFO value applied to shape
+  uint16_t pitch;       // high byte: note number, low byte: fine (0-255)
+  uint16_t cutoff;      // 0x0000–0x1fff
+  uint16_t resonance;   // 0x0000–0x1fff
+  uint16_t reserved0[3];
+} user_osc_param_t;
+```
+
+## DSP helpers provided by the SDK
+
+- `dsp::SimpleLFO` — bipolar/unipolar sine LFO with phase offset.
+- `q31_to_f32()` / `f32_to_q31()` — fixed-point conversion (`utils/fixed_math.h`).
+- `fsel(a, b, cond)` — branchless select.
+- `osc_w0(pitch)` — phase increment from MIDI pitch field.
+- Fast sinf / cosf approximations (use with care).
+
+## Manifest requirements
+
+Every unit needs a `manifest.json` declaring (SDK v1.1.0 shape):
+
+- `header.platform`, `header.module` (`osc`, `modfx`, `delfx`, `revfx`)
+- `header.api`, `header.name`, `header.version`, `header.num_param`
+- `header.params` — array of `[name, min, max, unit]` per knob
+
+Set `platform` to `nutekt-digital`, `minilogue-xd`, or `prologue` at build time.
+Agent docs may also list logical `targets` (see `docs/platform-matrix.md`).
