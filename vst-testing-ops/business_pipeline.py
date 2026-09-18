@@ -86,15 +86,26 @@ class PipelineRun:
         }
 
 
-def _run(cmd: list[str], *, cwd: Path | None = None, env: dict | None = None) -> tuple[int, str]:
-    proc = subprocess.run(
-        cmd,
-        cwd=str(cwd or REPO_ROOT),
-        capture_output=True,
-        text=True,
-        env=env,
-        check=False,
-    )
+def _run(
+    cmd: list[str],
+    *,
+    cwd: Path | None = None,
+    env: dict | None = None,
+    timeout_s: float | None = None,
+) -> tuple[int, str]:
+    try:
+        proc = subprocess.run(
+            cmd,
+            cwd=str(cwd or REPO_ROOT),
+            capture_output=True,
+            text=True,
+            env=env,
+            check=False,
+            timeout=timeout_s,
+        )
+    except subprocess.TimeoutExpired as exc:
+        out = (exc.stdout or "") + (exc.stderr or "")
+        return 124, out + f"\n[timeout after {timeout_s}s]\n"
     out = (proc.stdout or "") + (proc.stderr or "")
     return proc.returncode, out
 
@@ -210,8 +221,24 @@ def stage_pluginval() -> StageResult:
     bin_pv = OPS_ROOT / "bin" / "pluginval"
     if bin_pv.is_file():
         env["PLUGINVAL_BIN"] = str(bin_pv)
-    code, out = _run([sys.executable, str(ORCHESTRATOR), "--default-artefacts"], env=env)
-    return StageResult(StageId.PLUGINVAL, code == 0, time.time() - t0, out)
+    bundles = [
+        REPO_ROOT / "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3",
+        WAVE909_VST3_BUNDLE,
+    ]
+    chunks: list[str] = []
+    for bundle in bundles:
+        if not bundle.is_dir():
+            chunks.append(f"[skip missing] {bundle}\n")
+            continue
+        code, out = _run(
+            [sys.executable, str(ORCHESTRATOR), "--plugin", str(bundle)],
+            env=env,
+            timeout_s=300,
+        )
+        chunks.append(out)
+        if code != 0:
+            return StageResult(StageId.PLUGINVAL, False, time.time() - t0, "".join(chunks))
+    return StageResult(StageId.PLUGINVAL, True, time.time() - t0, "".join(chunks))
 
 
 def stage_disklordz_web() -> StageResult:

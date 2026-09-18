@@ -123,18 +123,20 @@ def run_pluginval(
     validate_in_process: bool,
     extra_args: list[str],
 ) -> ValidationResult:
-    cmd = [
-        str(binary),
-        "--strictness-level",
-        str(strictness),
-        "--timeout-ms",
-        str(timeout_ms),
-        "--file",
-        str(plugin),
-    ]
+    cmd = [str(binary)]
+    cmd.extend(pluginval_extra_cli_args())
+    cmd.extend(
+        [
+            "--strictness-level",
+            str(strictness),
+            "--timeout-ms",
+            str(timeout_ms),
+            "--file",
+            str(plugin),
+        ]
+    )
     if validate_in_process:
         cmd.insert(1, "--validate-in-process")
-    cmd.extend(pluginval_extra_cli_args())
     cmd.extend(extra_args)
 
     proc = subprocess.run(
@@ -142,6 +144,7 @@ def run_pluginval(
         capture_output=True,
         text=True,
         check=False,
+        timeout=max(timeout_ms // 1000 + 60, 120),
     )
     output = (proc.stdout or "") + (proc.stderr or "")
     return ValidationResult(plugin=plugin, exit_code=proc.returncode, output=output)
