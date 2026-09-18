@@ -42,6 +42,7 @@ Owner / Planner idea
 | Path | Role |
 |------|------|
 | `docs/business-agents/prompts/` | System prompts |
+| `docs/business-agents/skills/marketing-plan-current-quarter/` | Quarterly marketing plan (Director) |
 | `docs/business-agents/skills/brand-voice/` | Brand voice skill (marketing teammates) |
 | `docs/business-agents/skills/prohibited-claims-and-disclaimers/` | Compliance / prohibited claims skill |
 | `scripts/business-agents/business_agent.py` | Scaffold, validate, team task template |

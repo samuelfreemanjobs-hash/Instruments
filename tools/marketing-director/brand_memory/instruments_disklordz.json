@@ -7,6 +7,11 @@
     "path": "docs/business-agents/skills/prohibited-claims-and-disclaimers/SKILL.md",
     "version": "1.0.0"
   },
+  "marketing_plan_skill": {
+    "path": "docs/business-agents/skills/marketing-plan-current-quarter/SKILL.md",
+    "version": "1.0.0",
+    "quarter": "Q3 2026"
+  },
   "brand_voice": {
     "company": "Instruments + Disklordz",
     "tone": "Confident, musician-first, direct — no corporate fluff",
@@ -28,6 +33,7 @@
   "budget_authorization_usd": 25000,
   "publish_owner": "human_only",
   "docs_index": [
+    "docs/business-agents/skills/marketing-plan-current-quarter/SKILL.md",
     "docs/business-agents/skills/brand-voice/SKILL.md",
     "docs/business-agents/skills/prohibited-claims-and-disclaimers/SKILL.md",
     "docs/TR808_JUNOVA_PRODUCT_MATRIX.md",

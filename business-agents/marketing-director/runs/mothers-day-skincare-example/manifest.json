@@ -8,6 +8,7 @@
   "specialists_expected": [],
   "external_facing": null,
   "compliance_required": true,
+  "marketing_plan_skill_version": "1.0.0",
   "escalated": false,
   "human_review_ids": []
 }

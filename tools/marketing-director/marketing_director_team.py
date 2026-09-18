@@ -57,6 +57,7 @@ def plan_run(request: str, slug: str | None = None, force: bool = False) -> Path
         "specialists_expected": [],
         "external_facing": None,
         "compliance_required": True,
+        "marketing_plan_skill_version": "1.0.0",
         "escalated": False,
         "human_review_ids": [],
     }
@@ -71,6 +72,7 @@ def plan_run(request: str, slug: str | None = None, force: bool = False) -> Path
 Act as **marketing-director** (supervisory orchestrator). **No repo API keys.**
 
 ## Read
+- docs/business-agents/skills/marketing-plan-current-quarter/SKILL.md (align audience, pillars, conflicts)
 - docs/business-agents/prompts/marketing-director-system.md
 - tools/marketing-director/brand_memory/instruments_disklordz.json (or run snapshot)
 - docs/business-agents/TEAM_ROLES.md
@@ -80,7 +82,7 @@ Act as **marketing-director** (supervisory orchestrator). **No repo API keys.**
 {request}
 
 ## Plan
-1. CLASSIFY the request; write a brief plan inside `<plan></plan>` in `director-notes.md`.
+1. CLASSIFY the request; check Q3 plan in/out of scope; write plan in `<plan></plan>` in `director-notes.md`.
 2. Call **brand_memory_read** conceptually — use `brand_memory_snapshot.json` before delegating.
 3. Apply `docs/business-agents/skills/brand-voice/SKILL.md` in copy/creative handoffs and final synthesis.
 4. Delegate only needed specialists; each writes JSON under `specialists/<name>.json` using prompts in `docs/business-agents/prompts/specialists/`.
