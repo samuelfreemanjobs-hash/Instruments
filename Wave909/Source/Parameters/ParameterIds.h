@@ -3,6 +3,8 @@
 namespace wave909
 {
 
+constexpr int kStateVersion = 1;
+
 struct ParameterIDs
 {
     static constexpr const char* outputGain = "outputGain";

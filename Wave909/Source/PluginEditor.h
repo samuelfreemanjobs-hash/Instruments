@@ -18,7 +18,8 @@ public:
     }
 };
 
-class Wave909AudioProcessorEditor final : public juce::AudioProcessorEditor
+class Wave909AudioProcessorEditor final : public juce::AudioProcessorEditor,
+                                          private juce::Timer
 {
 public:
     explicit Wave909AudioProcessorEditor (Wave909AudioProcessor&);
@@ -30,16 +31,19 @@ public:
 private:
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
-    using ComboAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
 
     void addKnob (const char* paramId, juce::String label, int x, int y, int w, int h);
+    void timerCallback() override;
 
     Wave909AudioProcessor& processor_;
     Wave909LookAndFeel laf_;
+    int lastProgramSeen_ = -1;
 
     juce::ComboBox presetBox_;
     juce::Label titleLabel_ { {}, "WAVE-909" };
     juce::Label subtitleLabel_ { {}, "Analog/Digital Hybrid Engine" };
+    juce::Label ampSection_ { {}, "AMP" };
+    juce::Label filtSection_ { {}, "FILTER ENV" };
 
     std::vector<std::unique_ptr<juce::Slider>> sliders_;
     std::vector<std::unique_ptr<juce::Label>> labels_;

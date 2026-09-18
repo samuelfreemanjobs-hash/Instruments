@@ -1,4 +1,5 @@
 #include "DSP/WavetableBank.h"
+#include "DSP/Filter/ZdfLowpass.h"
 #include "Engine/VoiceManager.h"
 #include "Engine/SynthParams.h"
 
@@ -64,7 +65,22 @@ int main()
         return EXIT_FAILURE;
     }
 
+    wave909::dsp::ZdfLowpass filter;
+    filter.prepare (48000.0);
+    float lpPeak = 0.0f;
+    for (int i = 0; i < 500; ++i)
+    {
+        const float x = (i == 0) ? 1.0f : 0.0f;
+        const float y = filter.process (x, 0.5f, 0.2f);
+        lpPeak = std::max (lpPeak, std::abs (y));
+    }
+    if (! std::isfinite (lpPeak) || lpPeak <= 0.0f)
+    {
+        std::cerr << "filter unstable: " << lpPeak << '\n';
+        return EXIT_FAILURE;
+    }
+
     std::cout << "Wave909Tests OK peak0=" << peak0 << " peak63=" << peak63
-              << " renderPeak=" << renderPeak << '\n';
+              << " renderPeak=" << renderPeak << " lpPeak=" << lpPeak << '\n';
     return EXIT_SUCCESS;
 }

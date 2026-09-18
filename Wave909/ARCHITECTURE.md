@@ -1,6 +1,6 @@
 # WAVE-909 — architecture
 
-Sampleless wavetable synthesizer (VST3 + Standalone). Repo index: [ARCHITECTURE.md](../ARCHITECTURE.md).
+Sampleless wavetable synthesizer (VST3 + CLAP + Standalone). Repo index: [ARCHITECTURE.md](../ARCHITECTURE.md).
 
 ## Purpose
 
@@ -11,7 +11,9 @@ Dark trap / phonk instrument: morphing algorithmic wavetables, dual filter circu
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
-cmake --build build -j --target Wave909_VST3 Wave909_Standalone Wave909Tests
+cmake --build build -j --target Wave909_VST3 Wave909_CLAP Wave909_Standalone Wave909OfflineRender
+ctest --test-dir build -R Wave909
+bash Wave909/tests/golden/verify_golden.sh
 ```
 
 Artifact: `build/Wave909/Wave909_artefacts/Release/VST3/WAVE-909.vst3`

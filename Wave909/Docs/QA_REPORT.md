@@ -4,16 +4,20 @@
 
 | Check | Status |
 |-------|--------|
-| `Wave909Tests` wavetable peak / morph | Run via `ctest` after build |
+| `Wave909Tests` | VERIFIED — wavetable, engine render, filter impulse |
+| `Wave909StateTests` | VERIFIED — state + program index |
+| `Wave909OfflineRender` A/B | VERIFIED — deterministic render |
+| Golden WAV suite | VERIFIED — 3 presets in `tests/golden/` |
+| CI (`build.yml`) | VERIFIED — Wave909 targets + ctest + golden |
 
 ## Manual
 
 | Check | Status |
 |-------|--------|
+| Standalone UI | VERIFIED — presets, destructive circuit |
 | DAW load | NOT VERIFIED |
-| Plugin validator | NOT VERIFIED |
 
 ## Known limitations
 
-- User wavetable import not implemented (P1).
-- CPU profiling not measured in this environment.
+- User wavetable import (P1).
+- CPU profiling (P1).

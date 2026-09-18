@@ -31,6 +31,22 @@ jobs:
           test -d "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3"
           test -f "build/JDUpgraded_artefacts/Release/CLAP/JD Upgraded.clap"
           test -x "build/JDUpgraded_artefacts/Release/Standalone/JD Upgraded"
+          test -d "build/Wave909/Wave909_artefacts/Release/VST3/WAVE-909.vst3"
+          test -f "build/Wave909/Wave909_artefacts/Release/CLAP/WAVE-909.clap"
+          test -x "build/Wave909/Wave909_artefacts/Release/Standalone/WAVE-909"
+
+      - name: WAVE-909 unit tests
+        run: ctest --test-dir build -R Wave909 --output-on-failure
+
+      - name: WAVE-909 offline render smoke
+        run: |
+          ./build/Wave909/Wave909OfflineRender /tmp/wave909-a.wav 0 36 100 0.5 44100
+          ./build/Wave909/Wave909OfflineRender /tmp/wave909-b.wav 0 36 100 0.5 44100
+          test -s /tmp/wave909-a.wav
+          ./build/SpectralDiff /tmp/wave909-a.wav /tmp/wave909-b.wav --max-rms-db -80 --max-spectral-db 0.25
+
+      - name: WAVE-909 golden regression
+        run: bash Wave909/tests/golden/verify_golden.sh
 
       - name: Offline render smoke
         run: |

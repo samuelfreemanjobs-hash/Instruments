@@ -1,0 +1,4 @@
+# filename	program	midiNote	velocity	seconds	sampleRate
+preset0-subzero-c2-0.5s.wav	0	36	100	0.5	44100
+preset3-darkbell-c5-0.5s.wav	3	72	100	0.5	44100
+preset6-metallic-c4-0.5s.wav	6	60	100	0.5	44100

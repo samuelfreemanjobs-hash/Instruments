@@ -135,7 +135,11 @@ void Wave909AudioProcessor::applyFactoryPreset (int index)
 void Wave909AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     engine_.prepare (sampleRate, samplesPerBlock);
+    smoothedCutoff_.reset (sampleRate, 0.025);
+    smoothedWtPosition_.reset (sampleRate, 0.025);
     refreshParameters();
+    smoothedCutoff_.setCurrentAndTargetValue (liveParams_.filterCutoff);
+    smoothedWtPosition_.setCurrentAndTargetValue (liveParams_.wtPosition);
     pushParamsToEngine();
 }
 
@@ -195,10 +199,19 @@ void Wave909AudioProcessor::pushParamsToEngine() noexcept
     engine_.setParams (liveParams_);
 }
 
+void Wave909AudioProcessor::applyParameterSmoothing (int numSamples) noexcept
+{
+    smoothedCutoff_.setTargetValue (liveParams_.filterCutoff);
+    smoothedWtPosition_.setTargetValue (liveParams_.wtPosition);
+    liveParams_.filterCutoff = smoothedCutoff_.skip (numSamples);
+    liveParams_.wtPosition = smoothedWtPosition_.skip (numSamples);
+}
+
 void Wave909AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi)
 {
     juce::ScopedNoDenormals noDenormals;
     refreshParameters();
+    applyParameterSmoothing (buffer.getNumSamples());
     pushParamsToEngine();
 
     const int numSamples = buffer.getNumSamples();
@@ -237,6 +250,7 @@ juce::AudioProcessorEditor* Wave909AudioProcessor::createEditor()
 void Wave909AudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     auto state = apvts_.copyState();
+    state.setProperty ("stateVersion", wave909::kStateVersion, nullptr);
     state.setProperty ("currentProgram", currentProgram_, nullptr);
     std::unique_ptr<juce::XmlElement> xml (state.createXml());
     copyXmlToBinary (*xml, destData);
@@ -248,6 +262,11 @@ void Wave909AudioProcessor::setStateInformation (const void* data, int sizeInByt
     if (xml != nullptr && xml->hasTagName (apvts_.state.getType()))
     {
         auto vt = juce::ValueTree::fromXml (*xml);
+        const int version = static_cast<int> (vt.getProperty ("stateVersion", 0));
+        if (version > 0 && version != wave909::kStateVersion)
+        {
+            juce::Logger::writeToLog ("WAVE-909: unsupported state version " + juce::String (version));
+        }
         currentProgram_ = static_cast<int> (vt.getProperty ("currentProgram", 0));
         apvts_.replaceState (vt);
         refreshParameters();

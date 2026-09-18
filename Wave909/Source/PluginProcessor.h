@@ -47,11 +47,15 @@ private:
     void refreshParameters() noexcept;
     void pushParamsToEngine() noexcept;
     wave909::SynthParams readParamsFromApvts() const noexcept;
+    void applyParameterSmoothing (int numSamples) noexcept;
 
     juce::AudioProcessorValueTreeState apvts_;
     wave909::engine::SynthEngine engine_;
     wave909::SynthParams liveParams_{};
     int currentProgram_ = 0;
+
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> smoothedCutoff_;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> smoothedWtPosition_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Wave909AudioProcessor)
 };

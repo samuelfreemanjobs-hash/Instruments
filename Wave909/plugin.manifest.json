@@ -6,7 +6,7 @@
   "type": "instrument",
   "category": "synthesizer",
   "sampleless": true,
-  "formats": ["VST3", "Standalone"],
+  "formats": ["VST3", "CLAP", "Standalone"],
   "platforms": ["Linux", "Windows", "macOS"],
   "sonicIdentity": "Dark trap and drift phonk: morphing digital wavetables, warm ZDF lowpass, destructive saturation, tape wobble macro",
   "p0Features": [
