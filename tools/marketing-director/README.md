@@ -19,8 +19,8 @@ python3 scripts/business-agents/business_agent.py director plan --request "…" 
 
 ```bash
 cd tools/marketing-director
-python3 test_harness.py --mode mocked          # CI — no API key
-python3 test_harness.py --mode smoke           # 1 smoke case, needs ANTHROPIC_API_KEY
+python3 test_harness.py --mode mocked          # 14 cases — CI, no API key
+python3 test_harness.py --mode smoke           # 3 smoke cases (copy_subject_lines, campaign_mothers_day, ops_spend_pacing)
 python3 test_harness.py --mode full --report report.html
 python3 test_harness.py --case copy_subject_lines
 ```

@@ -1,3 +1,4 @@
 traces/
+__pycache__/
 *.html
 report.html
