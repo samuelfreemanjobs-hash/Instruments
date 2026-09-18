@@ -1,0 +1,6 @@
+bin/pluginval
+bin/pluginval.exe
+bin/pluginval.zip
+error_log.txt
+my_plugins/*.vst3
+my_plugins/**/*.vst3

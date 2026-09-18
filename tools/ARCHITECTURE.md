@@ -61,6 +61,8 @@ Environment overrides: `PLUGINVAL_BIN`, `PLUGINVAL_DOWNLOAD_URL`, `PLUGINVAL_CAC
 
 CI: [`.github/workflows/build.yml`](../.github/workflows/build.yml) runs the script after golden WAV verification.
 
+Local **command center** (drop-in folder + AI-friendly `error_log.txt`): [vst-testing-ops/](../vst-testing-ops/) — `python3 vst-testing-ops/test_runner.py`.
+
 ## Extension points
 
 - Add a new tool: `add_executable` in `CMakeLists.txt`, document it in this file and in root [ARCHITECTURE.md](../ARCHITECTURE.md).
