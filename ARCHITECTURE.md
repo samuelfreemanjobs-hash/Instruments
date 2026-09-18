@@ -37,7 +37,7 @@ cmake --build build -j
 
 ## CI
 
-[`.github/workflows/build.yml`](.github/workflows/build.yml): Release build, determinism (`OfflineRender` ×2), golden WAV compare via `SpectralDiff`, and headless **pluginval** on VST3 artefacts (`scripts/vst/run_pluginval.py`).
+[`.github/workflows/build.yml`](.github/workflows/build.yml): `python3 vst-testing-ops/run_business.py --profile ci` (configure, build, artefacts, determinism, golden, Wave909, pluginval).
 
 Optional Slack: CI ([`ci-slack-notify.yml`](.github/workflows/ci-slack-notify.yml)), Antigravity inbox ([`antigravity-inbox-slack.yml`](.github/workflows/antigravity-inbox-slack.yml)), Airtable handoff ([`airtable-antigravity-handoff.yml`](.github/workflows/airtable-antigravity-handoff.yml)) — configure with [`scripts/setup-disklordz-integrations.sh`](scripts/setup-disklordz-integrations.sh).
 

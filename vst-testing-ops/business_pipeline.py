@@ -7,7 +7,7 @@ import os
 import subprocess
 import sys
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from enum import Enum
 from pathlib import Path
 from typing import Callable
@@ -19,6 +19,12 @@ ERROR_LOG = OPS_ROOT / "error_log.txt"
 BUILD_LOG = OPS_ROOT / "last_build.log"
 REPORT_JSON = OPS_ROOT / "last_run_report.json"
 ORCHESTRATOR = REPO_ROOT / "scripts" / "vst" / "run_pluginval.py"
+
+# Wave909 uses a nested build dir (see Wave909/ARCHITECTURE.md)
+WAVE909_VST3_BUNDLE = (
+    REPO_ROOT / "build/Wave909/Wave909_artefacts/Release/VST3/WAVE-909.vst3"
+)
+WAVE909_VST3_DISCOVER = REPO_ROOT / "build/Wave909/Wave909_artefacts/Release/VST3"
 
 
 class StageId(str, Enum):
@@ -93,11 +99,12 @@ def _run(cmd: list[str], *, cwd: Path | None = None, env: dict | None = None) ->
     return proc.returncode, out
 
 
-def stage_configure() -> StageResult:
-    t0 = time.time()
-    build = REPO_ROOT / "build"
+def ensure_cmake_configured(project_root: Path | None = None) -> tuple[bool, str]:
+    root = project_root or REPO_ROOT
+    build = root / "build"
     if (build / "CMakeCache.txt").is_file():
-        return StageResult(StageId.CONFIGURE, True, time.time() - t0, "CMake cache present.\n")
+        return True, "CMake cache present.\n"
+    build.mkdir(parents=True, exist_ok=True)
     cmd = [
         "cmake",
         "-B",
@@ -106,8 +113,14 @@ def stage_configure() -> StageResult:
     ]
     if sys.platform != "win32":
         cmd.extend(["-DCMAKE_CXX_COMPILER=g++-12", "-DCMAKE_C_COMPILER=gcc-12"])
-    code, out = _run(cmd)
-    return StageResult(StageId.CONFIGURE, code == 0, time.time() - t0, out)
+    code, out = _run(cmd, cwd=root)
+    return code == 0, out
+
+
+def stage_configure() -> StageResult:
+    t0 = time.time()
+    ok, out = ensure_cmake_configured(REPO_ROOT)
+    return StageResult(StageId.CONFIGURE, ok, time.time() - t0, out)
 
 
 def stage_build(jobs: int | None) -> StageResult:
@@ -130,6 +143,7 @@ def stage_artefacts() -> StageResult:
         REPO_ROOT / "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3",
         REPO_ROOT / "build/JDUpgraded_artefacts/Release/CLAP/JD Upgraded.clap",
         REPO_ROOT / "build/JDUpgraded_artefacts/Release/Standalone/JD Upgraded",
+        WAVE909_VST3_BUNDLE,
     ]
     lines: list[str] = []
     ok = True
@@ -181,9 +195,9 @@ def stage_wave909_tests() -> StageResult:
     if code != 0 and "No tests were found" in out:
         return StageResult(
             StageId.WAVE909_TESTS,
-            True,
+            False,
             time.time() - t0,
-            "Wave909Tests not built — skipped (enable wave909_tests after Wave909 target build).\n",
+            "Wave909 tests not registered — run a full build (cmake --build build -j).\n" + out,
         )
     return StageResult(StageId.WAVE909_TESTS, code == 0, time.time() - t0, out)
 
@@ -293,7 +307,10 @@ def run_pipeline(
     stop_on_fail: bool = True,
     progress_cb: Callable[[StageResult], None] | None = None,
 ) -> PipelineRun:
-    cfg = config or PROFILES.get(profile, PROFILES["ci"])
+    if config is None:
+        cfg = replace(PROFILES.get(profile, PROFILES["ci"]))
+    else:
+        cfg = config
     run = PipelineRun(profile=profile, started_at=time.time())
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -327,7 +344,7 @@ def fleet_status() -> dict[str, bool]:
         "JD Upgraded VST3": REPO_ROOT / "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3",
         "JD Upgraded CLAP": REPO_ROOT / "build/JDUpgraded_artefacts/Release/CLAP/JD Upgraded.clap",
         "OfflineRender": REPO_ROOT / "build/OfflineRender",
-        "Wave909 VST3": REPO_ROOT / "build/Wave909_artefacts/Release/VST3/Wave909.vst3",
+        "Wave909 VST3": WAVE909_VST3_BUNDLE,
         "pluginval cached": OPS_ROOT / "bin/pluginval",
     }
     return {name: p.is_dir() or p.is_file() for name, p in paths.items()}

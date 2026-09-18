@@ -37,7 +37,8 @@ def resolve_plugin_path(vst_name: str) -> Path:
         return local
     candidates = [
         REPO_ROOT / "build" / "JDUpgraded_artefacts" / "Release" / "VST3" / vst_name,
-        REPO_ROOT / "build" / "Wave909_artefacts" / "Release" / "VST3" / vst_name,
+        REPO_ROOT / "build" / "Wave909" / "Wave909_artefacts" / "Release" / "VST3" / vst_name,
+        REPO_ROOT / "build" / "Wave909" / "Wave909_artefacts" / "Release" / "VST3" / "WAVE-909.vst3",
         REPO_ROOT
         / "MyFirstPlugin"
         / "build"

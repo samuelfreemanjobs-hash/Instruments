@@ -27,7 +27,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--with-saas", action="store_true", help="Include Disklordz npm build (full profile)")
     args = parser.parse_args(argv)
 
-    cfg = PROFILES[args.profile]
+    cfg = replace(PROFILES[args.profile])
     if args.with_saas:
         cfg = replace(cfg, disklordz_web=True)
 

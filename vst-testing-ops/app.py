@@ -3,11 +3,10 @@
 
 from __future__ import annotations
 
-import json
-import sys
-from dataclasses import dataclass, replace
 import os
 import subprocess
+import sys
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import streamlit as st
@@ -20,7 +19,7 @@ from business_pipeline import (  # noqa: E402
     ERROR_LOG,
     PROFILES,
     REPORT_JSON,
-    PipelineConfig,
+    ensure_cmake_configured,
     fleet_status,
     resolve_stages,
     run_pipeline,
@@ -47,11 +46,14 @@ class PluginTarget:
 
 QUICK_TARGETS: list[PluginTarget] = [
     PluginTarget("JD Upgraded", "JD Upgraded.vst3", "JDUpgraded_VST3", REPO_ROOT),
-    PluginTarget("Wave909", "Wave909.vst3", "Wave909_VST3", REPO_ROOT),
+    PluginTarget("Wave909", "WAVE-909.vst3", "Wave909_VST3", REPO_ROOT),
 ]
 
 
 def run_quick_build_and_test(target: PluginTarget) -> tuple[bool, str]:
+    ok_cfg, cfg_out = ensure_cmake_configured(target.project_root)
+    if not ok_cfg:
+        return False, cfg_out
     cmd_build = ["cmake", "--build", "build", "-j", "--target", target.cmake_target]
     proc_b = subprocess.run(
         cmd_build,

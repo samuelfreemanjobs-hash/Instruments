@@ -67,7 +67,23 @@ run_business.py / app.py
 
 ## CI
 
-GitHub Actions runs the same steps inline in `build.yml`; local/agents should prefer `run_business.py --profile ci` to avoid drift.
+GitHub Actions runs the same entrypoint as local agents:
+
+[`python3 vst-testing-ops/run_business.py --profile ci`](../vst-testing-ops/run_business.py) in [`.github/workflows/build.yml`](../.github/workflows/build.yml).
+
+## Automation roadmap
+
+| Layer | Status | Next step |
+|-------|--------|-----------|
+| **Gate on every PR** | `build.yml` → `run_business.py --profile ci` | Require check before merge; optional Slack on fail (`ci-slack-notify.yml`) |
+| **Local / agent habit** | `AGENTS.md` commands | Cloud Agent: run `--profile ci` after plugin DSP changes |
+| **Post-compile watch** | `test_runner.py --watch my_plugins/` | Optional `entr`/`watchmedo` on `build/*_artefacts` in dev |
+| **Full business** | `--profile full` | Run nightly or pre-release (Disklordz + plugins) |
+| **VST3 DSP via bundle** | Not built | Future: headless host MIDI→WAV through `.vst3` (complement `OfflineRender`) |
+| **Dashboard** | Streamlit `app.py` | Optional long-running service on dev machine only |
+
+**Cursor should:** after C++ plugin edits, run `python3 vst-testing-ops/run_business.py --profile ci` (or `dsp-only` for DSP-only diffs); on failure read `vst-testing-ops/error_log.txt`, patch, re-run until green; update golden WAVs only via `tests/golden/refresh_golden.sh` when DSP output intentionally changes.
+
 
 ## Related docs
 

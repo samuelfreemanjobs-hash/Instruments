@@ -262,7 +262,7 @@ def main(argv: list[str] | None = None) -> int:
         roots.extend(
             [
                 root / "build" / "JDUpgraded_artefacts" / "Release" / "VST3",
-                root / "build" / "Wave909_artefacts" / "Release" / "VST3",
+                root / "build" / "Wave909" / "Wave909_artefacts" / "Release" / "VST3",
                 root / "MyFirstPlugin" / "build" / "MyFirstPlugin_artefacts" / "Release" / "VST3",
             ]
         )
