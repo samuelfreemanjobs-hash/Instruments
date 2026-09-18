@@ -9,7 +9,7 @@ on:
       sync_vercel_env:
         description: "Push secrets to Vercel project env (needs VERCEL_TOKEN + env secrets)"
         type: boolean
-        default: true
+        default: false
       register_stripe_webhook:
         description: "Create Stripe webhook if missing (prints whsec once)"
         type: boolean
