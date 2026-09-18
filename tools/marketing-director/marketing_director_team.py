@@ -88,7 +88,7 @@ Act as **marketing-director** (supervisory orchestrator). **No repo API keys.**
 4. Delegate only needed specialists; each writes JSON under `specialists/<name>.json` using prompts in `docs/business-agents/prompts/specialists/`.
 5. **Never skip compliance_agent** for external-facing copy; HIGH/CRITICAL blocks publish.
 6. Synthesize `deliverable.md` (deliverable, rationale, decisions, next steps).
-7. Update `manifest.json`: `status`, `specialists_expected`, `external_facing`, `escalated`.
+7. Update `manifest.json`: `status`, `specialists_expected`, `external_facing`, `escalated`. If escalated, write `escalation.json`.
 8. Run: `python3 scripts/business-agents/business_agent.py director validate --run {dest.relative_to(REPO_ROOT)}`
 
 ## Escalate (document in escalation.json)
@@ -195,6 +195,11 @@ def validate_run(run_path: Path) -> list[str]:
         deliverable = run_path / "deliverable.md"
         if not deliverable.is_file() or len(deliverable.read_text(encoding="utf-8").strip()) < 80:
             errors.append("status=complete requires deliverable.md (min ~80 chars)")
+
+    if manifest.get("escalated") is True:
+        esc = run_path / "escalation.json"
+        if not esc.is_file():
+            errors.append("manifest escalated=true requires escalation.json")
 
     return errors
 

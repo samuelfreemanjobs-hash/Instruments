@@ -6,6 +6,18 @@
 
 Optional **local live mode** (`marketing_director_live.py`) and **eval harness** (`test_harness.py`) for developers with `ANTHROPIC_API_KEY`; CI runs **mocked** harness only.
 
+## Team mode vs API module vs mocked CI
+
+| Layer | What it validates | What it does *not* prove |
+|-------|-------------------|---------------------------|
+| **Team mode** (default) | Run folder artifacts, skills, compliance JSON, `director validate` completeness | Model routing on every request shape |
+| **API module** (`marketing_director.py`) | Live Anthropic orchestration when you run smoke/full locally | Same prompts/contracts as Cloud Agent teammates |
+| **Mocked harness** (CI) | Dispatch, escalation, loop cap, structural assertions on traces | LLM routing, copy quality, real compliance reasoning |
+
+Passing **`test_harness.py --mode mocked`** means routing/guardrail plumbing works — not that a Cloud Agent run will match eval cases verbatim. Production gates remain **team deliverables + ship-eval + owner publish**.
+
+Trace files: `traces/<run_id>_<case>.jsonl` (one JSON object per line; query like any orchestration event log).
+
 ## Build & run (team mode — default)
 
 ```bash

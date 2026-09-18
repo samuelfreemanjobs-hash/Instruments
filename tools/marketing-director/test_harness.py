@@ -286,6 +286,35 @@ class Assertions:
             detail="compliance_agent called" if called else "MISSING for external content",
         )
 
+    @staticmethod
+    def deliverable_must_not_contain(result: dict, substrings: list[str]) -> AssertionResult:
+        text = (result.get("deliverable") or "").lower()
+        hits = [s for s in substrings if s.lower() in text]
+        return AssertionResult(
+            name=f"deliverable_must_not_contain({substrings})",
+            passed=not hits,
+            detail=f"found forbidden: {hits}" if hits else "ok",
+        )
+
+    @staticmethod
+    def deliverable_acknowledges_block(result: dict) -> AssertionResult:
+        text = (result.get("deliverable") or "").lower()
+        markers = (
+            "blocked",
+            "compliance",
+            "high",
+            "critical",
+            "not approved",
+            "escalat",
+            "refused",
+        )
+        found = any(m in text for m in markers)
+        return AssertionResult(
+            name="deliverable_acknowledges_block",
+            passed=found,
+            detail="block acknowledged" if found else "missing compliance/escalation language",
+        )
+
 
 class LLMJudge:
     JUDGE_PROMPT: str = ""
@@ -492,7 +521,17 @@ class Runner:
             script.append(make_response([make_tool_use(tool)], "tool_use"))
         script.append(
             make_response(
-                [make_text(f"Final deliverable for case {case.id}: mocked synthesis.")],
+                [
+                    make_text(
+                        case.mock_final_deliverable
+                        or (
+                            "Compliance blocked publication. Prohibited claims omitted; "
+                            "see escalation notes."
+                            if case.deliverable_must_acknowledge_block
+                            else f"Final deliverable for case {case.id}: mocked synthesis."
+                        )
+                    )
+                ],
                 "end_turn",
             )
         )
@@ -515,6 +554,12 @@ class Runner:
         if case.max_tokens is not None and self.mode != "mocked":
             out.append(Assertions.tokens_under(result, case.max_tokens))
         out.append(Assertions.deliverable_nonempty(result))
+        if case.deliverable_must_not_contain:
+            out.append(
+                Assertions.deliverable_must_not_contain(result, case.deliverable_must_not_contain)
+            )
+        if case.deliverable_must_acknowledge_block:
+            out.append(Assertions.deliverable_acknowledges_block(result))
         if case.id != "failure_loop_cap":
             for sp in recorder.unique_specialists():
                 out.append(Assertions.specialist_called_at_most(recorder, sp, 3))

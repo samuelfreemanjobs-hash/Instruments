@@ -19,7 +19,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Junova-X** (Juno-class poly synth — **not** NovaDrum / PWA) | [Junova-X/REPO_HANDOFF.md](Junova-X/REPO_HANDOFF.md) · [docs/TR808_JUNOVA_PRODUCT_MATRIX.md](docs/TR808_JUNOVA_PRODUCT_MATRIX.md) | `JunovaX_VST3`, `JunovaX_CLAP` (planned; branch `cursor/junova-x-handoff-029a`) |
 | **NovaDrum** (TR-808 class **plugin**, JUCE) | [vst-tr808/REPO_HANDOFF.md](vst-tr808/REPO_HANDOFF.md) | JUCE VST3 + CLAP (branch `cursor/novadrum-juce-handoff-029a`) |
 | **TR-808 PWA** (browser — track **P**, not SaaS) | [disklordz/tr808-pwa/ARCHITECTURE.md](disklordz/tr808-pwa/ARCHITECTURE.md) | Static PWA (branch `cursor/tr808-pwa-app-94ae`) |
-| **Business agents** (SKU research, content, ship eval) | [docs/business-agents/ARCHITECTURE.md](docs/business-agents/ARCHITECTURE.md) | `python3 scripts/business-agents/business_agent.py` |
+| **Business agents** (SKU, content, ship eval, **Marketing Director** team) | [docs/business-agents/ARCHITECTURE.md](docs/business-agents/ARCHITECTURE.md) · [tools/marketing-director/ARCHITECTURE.md](tools/marketing-director/ARCHITECTURE.md) | `python3 scripts/business-agents/business_agent.py` |
 
 ## Repository layout
 

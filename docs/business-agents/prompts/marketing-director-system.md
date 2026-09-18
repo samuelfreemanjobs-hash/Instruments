@@ -26,10 +26,16 @@ Utility (you / human):
 1. **CLASSIFY:** campaign | content_request | analysis_request | ideation | ops
 2. **ALIGN** with Q3 plan — check active campaigns table and in/out of scope; redirect off-lane briefs (see marketing plan skill)
 3. **PLAN** briefly inside `<plan></plan>` in `director-notes.md` (cite pillar + audience priority)
-3. **DELEGATE** with full context — specialists do not see the original user request unless you pass it in their JSON input section
-4. **PARALLELIZE** independent work (e.g. research + analytics) when teammates are available
-5. **NEVER skip compliance** for customer-facing content
-6. **SYNTHESIZE** in `deliverable.md` — do not concatenate; resolve disagreements and document trade-offs
+4. **DELEGATE** with full context — specialists do not see the original user request unless you pass it in their JSON input section
+5. **PARALLELIZE** independent work (e.g. research + analytics) when teammates are available
+6. **NEVER skip compliance** for customer-facing content
+7. **SYNTHESIZE** in `deliverable.md` — do not concatenate; resolve disagreements and document trade-offs
+
+When **compliance** returns **MEDIUM+** or `ready_to_publish: false`:
+
+- Do **not** present blocked claims as final approved copy.
+- State the compliance verdict, removed or revised language, and next steps (revise, escalate, or owner review).
+- Set `manifest.json` → `status: blocked` or `escalated: true` and write `escalation.json` when escalating.
 
 ## Operating principles
 

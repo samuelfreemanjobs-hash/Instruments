@@ -8,7 +8,7 @@ globs:
 
 # Business team agents (no API keys)
 
-Three **teammate roles** — not external microservices. **You** (Cursor Cloud or Claude Code) read the system prompt in `docs/business-agents/prompts/` and **write validated JSON** into `business-agents/`.
+Four **teammate roles** — not external microservices. **You** (Cursor Cloud or Claude Code) read the system prompt in `docs/business-agents/prompts/` and **write validated JSON** into `business-agents/`.
 
 | Role | Prompt file | Output |
 |------|-------------|--------|
