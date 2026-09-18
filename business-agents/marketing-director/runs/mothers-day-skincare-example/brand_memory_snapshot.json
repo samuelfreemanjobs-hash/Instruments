@@ -1,39 +1,23 @@
 {
+  "brand_voice_skill": {
+    "path": "docs/business-agents/skills/brand-voice/SKILL.md",
+    "version": "1.0.0"
+  },
+  "compliance_skill": {
+    "path": "docs/business-agents/skills/prohibited-claims-and-disclaimers/SKILL.md",
+    "version": "1.0.0"
+  },
   "brand_voice": {
     "company": "Instruments + Disklordz",
-    "tone": "Confident, musician-first, direct \u2014 no corporate fluff",
-    "values": [
-      "Honest product claims",
-      "Underground/studio culture",
-      "MPC Sample workflow where relevant"
-    ],
-    "avoid": [
-      "Unverified superlatives",
-      "Fake analog warmth claims",
-      "Competitor trash talk"
-    ]
+    "tone": "Confident, musician-first, direct — no corporate fluff",
+    "values": ["Honest product claims", "Underground/studio culture", "MPC Sample workflow where relevant"],
+    "avoid": ["Unverified superlatives", "Fake analog warmth claims", "Competitor trash talk"]
   },
   "products": [
-    {
-      "name": "WAVE-909",
-      "lane": "juce-factory",
-      "pitch": "Sampleless trap/phonk wavetable synth"
-    },
-    {
-      "name": "Disklordz",
-      "lane": "disklordz",
-      "pitch": "AI-assisted drum kit SaaS"
-    },
-    {
-      "name": "TR-808 PWA",
-      "lane": "tr808-pwa",
-      "pitch": "Browser 808-style drum machine; not the SaaS site"
-    },
-    {
-      "name": "Pluggnb Vital pack",
-      "lane": "content-vital",
-      "pitch": "Vital preset pack \u2014 Pluggnb genre"
-    }
+    { "name": "WAVE-909", "lane": "juce-factory", "pitch": "Sampleless trap/phonk wavetable synth" },
+    { "name": "Disklordz", "lane": "disklordz", "pitch": "AI-assisted drum kit SaaS" },
+    { "name": "TR-808 PWA", "lane": "tr808-pwa", "pitch": "Browser 808-style drum machine; not the SaaS site" },
+    { "name": "Pluggnb Vital pack", "lane": "content-vital", "pitch": "Vital preset pack — Pluggnb genre" }
   ],
   "prohibited_claims": [
     "Guaranteed chart or streaming outcomes",
@@ -44,6 +28,8 @@
   "budget_authorization_usd": 25000,
   "publish_owner": "human_only",
   "docs_index": [
+    "docs/business-agents/skills/brand-voice/SKILL.md",
+    "docs/business-agents/skills/prohibited-claims-and-disclaimers/SKILL.md",
     "docs/TR808_JUNOVA_PRODUCT_MATRIX.md",
     "docs/DISKLORDZ_PLUGIN_TRACKS.md",
     "docs/business-agents/TEAM_ROLES.md"

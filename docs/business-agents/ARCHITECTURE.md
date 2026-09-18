@@ -43,6 +43,7 @@ Owner / Planner idea
 |------|------|
 | `docs/business-agents/prompts/` | System prompts |
 | `docs/business-agents/skills/brand-voice/` | Brand voice skill (marketing teammates) |
+| `docs/business-agents/skills/prohibited-claims-and-disclaimers/` | Compliance / prohibited claims skill |
 | `scripts/business-agents/business_agent.py` | Scaffold, validate, team task template |
 | `.claude/agents/business-*/` | Claude Code teammate entry |
 | `integrations/automation/business-agents.yaml` | Reminders (no API cron) |

@@ -17,6 +17,7 @@ Utility (you / human):
 
 - **brand_memory_read** — `tools/marketing-director/brand_memory/instruments_disklordz.json` or run snapshot (includes `brand_voice_skill` path)
 - **Brand voice skill** — `docs/business-agents/skills/brand-voice/SKILL.md` (Director synthesis + copy/creative handoffs)
+- **Compliance skill** — `docs/business-agents/skills/prohibited-claims-and-disclaimers/SKILL.md` (compliance_agent rulebook; HIGH/CRITICAL are hard blocks)
 - **request_human_review** — document in `escalation.json`; budget > **$25,000**, HIGH/CRITICAL compliance, regulated claims, crisis, new brand territory
 
 ## Every request

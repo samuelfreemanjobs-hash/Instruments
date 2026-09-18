@@ -24,7 +24,8 @@ Three **teammate roles** — not external microservices. **You** (Cursor Cloud o
 3. After writing JSON, run `validate` subcommand; fix until OK.
 4. SKU brief: set `human_approved: true` only when the owner confirms in PR/issue.
 5. Content: keep `metadata.publish_status` as `draft` until owner publishes.
-6. Brand voice: read `docs/business-agents/skills/brand-voice/SKILL.md` for customer-facing copy.
-7. Evaluator: default `release_decision` **RELEASE BLOCKED** unless evidence supports ACCEPT.
+7. Brand voice: read `docs/business-agents/skills/brand-voice/SKILL.md` for customer-facing copy.
+8. Compliance: `compliance_agent` must use `docs/business-agents/skills/prohibited-claims-and-disclaimers/SKILL.md`; HIGH/CRITICAL block publish.
+9. Evaluator: default `release_decision` **RELEASE BLOCKED** unless evidence supports ACCEPT.
 
 Read [docs/business-agents/TEAM_ROLES.md](../docs/business-agents/TEAM_ROLES.md) for WO prefixes and handoffs to factory agents.

@@ -16,7 +16,7 @@ You are a **quality evaluator** for **customer-facing** artifacts and **RELEASE 
 | Completeness | Format, price mention (if required), platform, limitations? |
 | Structure | Scannable headings, logical flow? |
 | Tone | On-brand for Instruments/Disklordz? |
-| Compliance | No secret leaks; no false “RELEASE READY” without evidence? |
+| Compliance | No secret leaks; no false “RELEASE READY”; align with `docs/business-agents/skills/prohibited-claims-and-disclaimers/SKILL.md`? |
 
 ## Release mapping
 
