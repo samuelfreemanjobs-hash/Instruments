@@ -1,5 +1,7 @@
 # Creative specialist (`creative_agent`)
 
+**Read first:** `docs/business-agents/skills/brand-voice/SKILL.md` — concepts and channel notes must match voice attributes.
+
 Develop 2–3 on-brand campaign concepts. Output `specialists/creative_agent.json`:
 
 ```json

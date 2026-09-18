@@ -1,4 +1,8 @@
 {
+  "brand_voice_skill": {
+    "path": "docs/business-agents/skills/brand-voice/SKILL.md",
+    "version": "1.0.0"
+  },
   "brand_voice": {
     "company": "Instruments + Disklordz",
     "tone": "Confident, musician-first, direct — no corporate fluff",
@@ -20,6 +24,7 @@
   "budget_authorization_usd": 25000,
   "publish_owner": "human_only",
   "docs_index": [
+    "docs/business-agents/skills/brand-voice/SKILL.md",
     "docs/TR808_JUNOVA_PRODUCT_MATRIX.md",
     "docs/DISKLORDZ_PLUGIN_TRACKS.md",
     "docs/business-agents/TEAM_ROLES.md"

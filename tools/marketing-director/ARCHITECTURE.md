@@ -44,6 +44,7 @@ User request
 | `marketing_director_team.py` | Scaffold runs, validate completeness |
 | `marketing_director_live.py` | Optional local API orchestrator (dev only) |
 | `brand_memory/instruments_disklordz.json` | Default brand_memory_read |
+| `../../docs/business-agents/skills/brand-voice/SKILL.md` | Brand voice skill (copy, creative, director) |
 | `../docs/business-agents/prompts/marketing-director-system.md` | Director system prompt |
 | `../docs/business-agents/prompts/specialists/*.md` | Specialist prompts |
 

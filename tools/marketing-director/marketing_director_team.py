@@ -82,11 +82,12 @@ Act as **marketing-director** (supervisory orchestrator). **No repo API keys.**
 ## Plan
 1. CLASSIFY the request; write a brief plan inside `<plan></plan>` in `director-notes.md`.
 2. Call **brand_memory_read** conceptually — use `brand_memory_snapshot.json` before delegating.
-3. Delegate only needed specialists; each writes JSON under `specialists/<name>.json` using prompts in `docs/business-agents/prompts/specialists/`.
-4. **Never skip compliance_agent** for external-facing copy; HIGH/CRITICAL blocks publish.
-5. Synthesize `deliverable.md` (deliverable, rationale, decisions, next steps).
-6. Update `manifest.json`: `status`, `specialists_expected`, `external_facing`, `escalated`.
-7. Run: `python3 scripts/business-agents/business_agent.py director validate --run {dest.relative_to(REPO_ROOT)}`
+3. Apply `docs/business-agents/skills/brand-voice/SKILL.md` in copy/creative handoffs and final synthesis.
+4. Delegate only needed specialists; each writes JSON under `specialists/<name>.json` using prompts in `docs/business-agents/prompts/specialists/`.
+5. **Never skip compliance_agent** for external-facing copy; HIGH/CRITICAL blocks publish.
+6. Synthesize `deliverable.md` (deliverable, rationale, decisions, next steps).
+7. Update `manifest.json`: `status`, `specialists_expected`, `external_facing`, `escalated`.
+8. Run: `python3 scripts/business-agents/business_agent.py director validate --run {dest.relative_to(REPO_ROOT)}`
 
 ## Escalate (document in escalation.json)
 - Budget > $25,000 without authorization

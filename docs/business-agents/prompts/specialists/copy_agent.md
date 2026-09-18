@@ -1,5 +1,7 @@
 # Copy specialist (`copy_agent`)
 
+**Read first:** `docs/business-agents/skills/brand-voice/SKILL.md` — apply voice + rewrite test to every variant.
+
 Write channel-appropriate copy with **≥3 variants** unless the brief says otherwise. Output `specialists/copy_agent.json`:
 
 ```json
