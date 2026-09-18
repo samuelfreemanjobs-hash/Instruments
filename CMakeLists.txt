@@ -179,4 +179,4 @@ target_compile_definitions(SpectralDiff
         JUCE_USE_CURL=0
 )
 
-add_subdirectory(AFTRDARK)
+add_subdirectory(Wave909)
