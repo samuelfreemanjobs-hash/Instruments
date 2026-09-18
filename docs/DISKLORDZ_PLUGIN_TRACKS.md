@@ -2,9 +2,9 @@
 
 **PM:** Airtable · **JUCE factory implementer:** Cursor Cloud Agent · **HISE sketch lane (D):** Antigravity (local Windows) · **Advisory:** Grok Plugin team  
 
-**HISE sketch lane:** [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md) (handoff) · [HISE_SKETCH_LANE.md](HISE_SKETCH_LANE.md) (full) — **Business Planner + Marketing** gate every customer-facing SKU.
+**Stack policy:** **JUCE** is the ship stack for all Plugin Lab native products (including NovaDrum). iPlug2 trees are import/reference only.
 
-**Three-product rule (808 / Juno family):** [TR808_JUNOVA_PRODUCT_MATRIX.md](TR808_JUNOVA_PRODUCT_MATRIX.md) — **Junova-X**, **NovaDrum** (`vst-tr808/`), and **TR-808 PWA** (`disklordz/tr808-pwa/`) are separate products, branches, and WOs.
+**Three-product rule:** [TR808_JUNOVA_PRODUCT_MATRIX.md](TR808_JUNOVA_PRODUCT_MATRIX.md) — **Junova-X**, **NovaDrum**, and **TR-808 PWA** are separate products, **branches**, and PRs.
 
 ## Tracks on `main` today
 
@@ -14,18 +14,21 @@
 | **D** | **HISE sketch** | [hise-sketch/](../hise-sketch/) | HISE → VST3 (local) | Antigravity |
 | **E** | **SP-1200 VST** | [SP1200/](../SP1200/) | JUCE (in progress) | **Claude Code** |
 | **F** | **Pluggnb Vital preset pack** (1st preset SKU) | [disklordz/packs/vital/](../disklordz/packs/vital/) | Vital `.vital` / `.vitalbank` | **Claude Code** |
+| **G** | **WAVE-909** | [Wave909/](../Wave909/) | JUCE VST3 + CLAP + Standalone | Cursor |
 
-## WIP plugin + app tracks (merge pending)
+**G** is the Plugin Factory **reference** implementation ([PLUGIN_FACTORY_OS.md](PLUGIN_FACTORY_OS.md)); new JUCE SKUs copy its manifest/CI pattern.
 
-Do **not** lump these in one PR or one `repoPath`. See matrix doc for branch names.
+## WIP tracks (merge pending — one branch each)
 
-| Track | Product | Path | Stack | Owner agent | Branch (reference) |
-|-------|---------|------|-------|-------------|-------------------|
-| **A** | **Junova-X** (poly synth) | [Junova-X/](../Junova-X/REPO_HANDOFF.md) | JUCE VST3 + CLAP | Cursor | `cursor/junova-tr808-handoff-94ae` |
-| **B** | **NovaDrum** (808-class **plugin**) | [vst-tr808/](../vst-tr808/) | iPlug2 + VST3 (spec) | Cursor / Grok advisory | `cursor/junova-tr808-handoff-94ae`, `cursor/tr808-design-spec-94ae` |
-| **App** | **TR-808 PWA** (browser drum machine) | [disklordz/tr808-pwa/](../disklordz/tr808-pwa/ARCHITECTURE.md) | Static PWA + Web Audio | Cursor | `cursor/tr808-pwa-app-94ae` |
+| Track | Product | Path | Stack | Branch |
+|-------|---------|------|-------|--------|
+| **A** | **Junova-X** (+ legacy `vst-juno106/` import) | [Junova-X/](../Junova-X/REPO_HANDOFF.md) | JUCE VST3 + CLAP | **`cursor/junova-x-handoff-029a`** |
+| **B** | **NovaDrum** | [vst-tr808/](../vst-tr808/REPO_HANDOFF.md) | JUCE VST3 + CLAP | **`cursor/novadrum-juce-handoff-029a`** |
+| **P** | **TR-808 PWA** (standalone app lane) | [disklordz/tr808-pwa/](../disklordz/tr808-pwa/ARCHITECTURE.md) | Static PWA + Web Audio | **`cursor/tr808-pwa-app-94ae`** |
 
-**App track (SaaS):** [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md) — web WOs stay separate from `[Plugin][Junova-X]` / `[Plugin][NovaDrum]` unless a written cross-product WO says otherwise.
+Do **not** use `cursor/junova-tr808-handoff-94ae` for new work (legacy combined handoff).
+
+**Disklordz SaaS** (kit generator): [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md) — **not** track **P**; no shared PR with PWA unless a written cross-product WO exists.
 
 ## Track D rules
 
@@ -35,6 +38,6 @@ Do **not** lump these in one PR or one `repoPath`. See matrix doc for branch nam
 
 ## WIP (Factory Manager)
 
-Max **2** Cursor implementation WOs on JUCE/repo work. **Claude Code** owns **Track E** (SP-1200 VST) and **Track F** (Pluggnb Vital preset pack — first Instruments preset SKU) — see [agent-registry.json](agent-registry.json). HISE sketches are excluded unless a **JUCE port** work order is opened.
+Max **2** Cursor implementation WOs on JUCE/repo work. **Claude Code** owns **E** and **F** — see [agent-registry.json](agent-registry.json). HISE sketches excluded unless **JUCE port** WO.
 
-Priority during Junova push (from handoff): finish **Junova-X** host smoke before NovaDrum **implementation** WOs; NovaDrum spec/DSP docs may run in parallel. **TR-808 PWA** is independent of NovaDrum plugin code.
+Priority: Junova-X host smoke before NovaDrum **implementation** WOs; NovaDrum spec may run in parallel. **Track P (PWA)** is independent.

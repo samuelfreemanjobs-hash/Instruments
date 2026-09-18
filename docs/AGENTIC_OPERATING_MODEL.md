@@ -4,15 +4,16 @@ One page. **Hybrid:** agents build and document; humans own taste, money, and pr
 
 ---
 
-## 1. Two product lanes
+## 1. Product lanes
 
 | Lane | Products | Ship shape | Source of truth |
 |------|----------|------------|-----------------|
-| **JUCE factory** | JD Upgraded, WAVE-909, **Junova-X**, future `Wave*/` plugins | VST3 + CLAP + Standalone, root CMake CI, golden/offline render | [PLUGIN_FACTORY_OS.md](PLUGIN_FACTORY_OS.md), `<product>/plugin.manifest.json`, `Docs/GATES.md` |
-| **Disklordz** | Drum SaaS (`disklordz/website/`), **TR-808 PWA** (`disklordz/tr808-pwa/`), RAG, automation | Next.js on Vercel; static PWA; Supabase RLS | [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md), [disklordz/tr808-pwa/ARCHITECTURE.md](../disklordz/tr808-pwa/ARCHITECTURE.md), [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md) |
+| **JUCE factory** | JD Upgraded, WAVE-909, Junova-X, **NovaDrum**, SP-1200, future plugins | **JUCE** VST3 + CLAP + Standalone; root CMake CI where applicable | [PLUGIN_FACTORY_OS.md](PLUGIN_FACTORY_OS.md), `<product>/plugin.manifest.json`, `Docs/GATES.md` |
+| **TR-808 PWA** (standalone) | Browser drum app only — `disklordz/tr808-pwa/` | Static PWA + Web Audio; own deploy | [disklordz/tr808-pwa/ARCHITECTURE.md](../disklordz/tr808-pwa/ARCHITECTURE.md), WO prefix **`[TR808-PWA]`** |
+| **Disklordz SaaS** | Drum kit generator (`disklordz/website/`), RAG, automation | Next.js on Vercel; Supabase RLS | [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md), [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md) |
 | **HISE sketch** (parallel R&D) | Rompler/sampler experiments | Local VST3 from HISE export — **not** monorepo CI until port WO | [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md), `hise-sketch/` |
 
-**Rule:** HISE lane does not silently become JUCE lane. Promotion = explicit **port WO** or new Plugin Factory manifest.
+**Rule:** **JUCE** is the business standard for native plugins. HISE does not silently become ship stack; iPlug2 folders are import reference only (e.g. `vst-juno106/` with Junova-X). PWA is **not** the SaaS lane even though files live under `disklordz/`.
 
 ---
 

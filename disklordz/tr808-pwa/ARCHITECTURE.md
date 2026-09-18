@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Single-file **Progressive Web App**: playable **Roland TR-808**–style virtual analog drum machine in the browser. Lead-magnet / SaaS front-end; **separate SKU** from **NovaDrum** (`vst-tr808/` plugin) and **Junova-X**.
+Single-file **Progressive Web App**: playable **Roland TR-808**–style virtual analog drum machine in the browser. **Standalone product lane** (track **P**) — **not** Disklordz drum kit SaaS (`disklordz/website/`), **not** NovaDrum, **not** Junova-X. WO prefix: **`[TR808-PWA]`** only.
 
 ## Build & run
 
@@ -51,5 +51,5 @@ All audio on **AudioContext** main thread; no allocation in hot path after init.
 ## Related docs
 
 - [docs/TR808_JUNOVA_PRODUCT_MATRIX.md](../../docs/TR808_JUNOVA_PRODUCT_MATRIX.md)
-- [disklordz/website/ARCHITECTURE.md](../website/ARCHITECTURE.md) — drum kit SaaS (different product)
+- [disklordz/website/ARCHITECTURE.md](../website/ARCHITECTURE.md) — drum kit SaaS (separate lane; do not mix PRs)
 - NovaDrum plugin: [vst-tr808/README.md](../../vst-tr808/README.md)

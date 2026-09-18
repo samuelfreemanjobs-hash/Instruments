@@ -1,36 +1,41 @@
 # Junova-X, NovaDrum, and TR-808 PWA — three products
 
-These are **not** one SKU, one folder, or one work order. Agents must pick the correct `repoPath` and branch before editing.
+These are **not** one SKU, one folder, or one work order. Agents must pick the correct `repoPath` and **dedicated branch** before editing.
 
-| Product | Customer-facing role | `repoPath` | Stack | Typical WO prefix |
-|---------|------------------------|------------|-------|-------------------|
-| **Junova-X** | Juno-class **poly synth** (JUCE factory) | `Junova-X/` | JUCE VST3 + CLAP | `[Plugin][Junova-X]` |
-| **NovaDrum** | TR-808 **circuit-class drum plugin** (DAW) | `vst-tr808/` | iPlug2 + VST3 (spec today; ship stack per handoff) | `[Plugin][NovaDrum]` |
-| **TR-808 PWA** | **Browser** 808-style drum machine (lead magnet / MPC Sample export) | `disklordz/tr808-pwa/` | Static HTML + Web Audio PWA | `[Disklordz][TR808-PWA]` or SaaS WO |
+**Business stack:** all **native plugins** ship **JUCE** (VST3 + CLAP + Standalone where applicable). iPlug2 folders are **legacy import reference only** (e.g. `vst-juno106/` with Junova-X), not the ship stack.
+
+| Product | Customer-facing role | `repoPath` | Stack | WO prefix |
+|---------|------------------------|------------|-------|-----------|
+| **Junova-X** | Juno-class **poly synth** | `Junova-X/` (+ legacy `vst-juno106/` import) | **JUCE** VST3 + CLAP | `[Plugin][Junova-X]` |
+| **NovaDrum** | TR-808 **circuit-class drum plugin** | `vst-tr808/` | **JUCE** VST3 + CLAP | `[Plugin][NovaDrum]` |
+| **TR-808 PWA** | **Browser** drum machine (lead magnet / MPC export) | `disklordz/tr808-pwa/` | Static PWA + Web Audio | **`[TR808-PWA]`** only |
+
+## Branch policy (split — do not use combined handoff)
+
+| Product | Canonical branch | Deprecated |
+|---------|------------------|------------|
+| **Junova-X** | **`cursor/junova-x-handoff-029a`** | `cursor/junova-tr808-handoff-94ae` (combined; do not open new PRs) |
+| **NovaDrum** | **`cursor/novadrum-juce-handoff-029a`** | same combined branch; do not treat `tr808-design-spec-94ae` as second source of truth after novadrum branch lands |
+| **TR-808 PWA** | **`cursor/tr808-pwa-app-94ae`** | — (standalone; never mixed with Junova/NovaDrum PRs) |
+
+One PR per product. **`vst-juno106/` stays on the Junova-X branch** as historical iPlug2 reference for porting; it is not NovaDrum and not a fourth SKU.
 
 ## What is *not* what
 
-- **NovaDrum** (`vst-tr808/`) ≠ **TR-808 PWA** (`disklordz/tr808-pwa/`). Same sonic family; different runtime (native plugin vs browser).
-- **Junova-X** (`Junova-X/`) ≠ either drum product. Analog poly synth lane only.
-- **Disklordz drum kit SaaS** (`disklordz/website/`, `sound-factory/`) generates **sample kits** — not the NovaDrum engine or the PWA shell.
-- **WAVE-909**, **SP-1200**, **Pluggnb Vital pack** are unrelated SKUs; see [agent-registry.json](agent-registry.json).
+- **NovaDrum** (`vst-tr808/`) ≠ **TR-808 PWA** (`disklordz/tr808-pwa/`).
+- **Junova-X** ≠ either drum product.
+- **TR-808 PWA** ≠ **Disklordz drum kit SaaS** (`disklordz/website/`). Different lane, WO prefix, and deploy path — see [AGENTIC_OPERATING_MODEL.md](AGENTIC_OPERATING_MODEL.md).
+- **Disklordz SaaS** generates sample kits — not NovaDrum engine or PWA shell.
 
-## Where the code lives today (`main` vs branches)
+## Where the code lives (`main` vs branches)
 
-| Product | On `main` | Landed on branch (merge pending) |
-|---------|-----------|----------------------------------|
-| Junova-X | Handoff stub only — see [Junova-X/REPO_HANDOFF.md](../Junova-X/REPO_HANDOFF.md) | `cursor/junova-tr808-handoff-94ae` |
-| NovaDrum | — | `cursor/junova-tr808-handoff-94ae`, `cursor/tr808-design-spec-94ae` (`vst-tr808/`) |
-| TR-808 PWA | Pointer doc only — see [disklordz/tr808-pwa/ARCHITECTURE.md](../disklordz/tr808-pwa/ARCHITECTURE.md) | `cursor/tr808-pwa-app-94ae` |
-
-After merge, update this table and [DISKLORDZ_PLUGIN_TRACKS.md](DISKLORDZ_PLUGIN_TRACKS.md) so paths on `main` match reality.
-
-## Shared semantics (optional, later)
-
-Voice maps and export presets may align between **PWA** and **NovaDrum** for marketing continuity. Implementation stays in **separate trees** until an explicit cross-product WO says otherwise.
+| Product | On `main` | Merge from |
+|---------|-----------|------------|
+| Junova-X | [Junova-X/REPO_HANDOFF.md](../Junova-X/REPO_HANDOFF.md) | `cursor/junova-x-handoff-029a` |
+| NovaDrum | [vst-tr808/REPO_HANDOFF.md](../vst-tr808/REPO_HANDOFF.md) | `cursor/novadrum-juce-handoff-029a` |
+| TR-808 PWA | [disklordz/tr808-pwa/ARCHITECTURE.md](../disklordz/tr808-pwa/ARCHITECTURE.md) | `cursor/tr808-pwa-app-94ae` |
 
 ## Related
 
-- [DISKLORDZ_PLUGIN_TRACKS.md](DISKLORDZ_PLUGIN_TRACKS.md) — tracks A/B (plugins) vs app lane (PWA)
-- [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md) — rompler lane; not Junova/NovaDrum unless port WO
-- [agent-registry.json](agent-registry.json) — one active agent per `repoPath`
+- [DISKLORDZ_PLUGIN_TRACKS.md](DISKLORDZ_PLUGIN_TRACKS.md) — track letters A / B / **P** / G
+- [agent-registry.json](agent-registry.json)

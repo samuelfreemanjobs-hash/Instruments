@@ -1,6 +1,6 @@
 {
   "$schema": "note: informal registry — update when agent ownership changes",
-  "updated": "2026-09-18T2",
+  "updated": "2026-09-18",
   "rules": {
     "oneActiveAgentPerRepoPath": true,
     "branchPrefixes": ["cursor/", "claude/", "agent/"],
@@ -24,6 +24,7 @@
       "primaryAgent": "cursor",
       "claudeAllowed": true,
       "manifest": "Wave909/plugin.manifest.json",
+      "track": "G",
       "notes": "Plugin Factory reference; manifest pluginName locked"
     },
     {
@@ -33,29 +34,32 @@
       "lane": "juce-factory",
       "primaryAgent": "cursor",
       "claudeAllowed": false,
-      "wipBranch": "cursor/junova-tr808-handoff-94ae",
-      "notes": "Poly synth only; not NovaDrum or TR-808 PWA. See docs/TR808_JUNOVA_PRODUCT_MATRIX.md"
+      "wipBranch": "cursor/junova-x-handoff-029a",
+      "legacyBranchDeprecated": "cursor/junova-tr808-handoff-94ae",
+      "relatedPaths": ["vst-juno106/"],
+      "notes": "Poly synth + legacy iPlug2 import vst-juno106 on same branch. Not NovaDrum or PWA."
     },
     {
       "id": "novadrum-vst",
       "name": "NovaDrum",
       "repoPath": "vst-tr808/",
-      "lane": "iplug2-factory",
+      "lane": "juce-factory",
       "primaryAgent": "cursor",
       "claudeAllowed": false,
-      "wipBranch": "cursor/junova-tr808-handoff-94ae",
-      "wipBranchAlt": "cursor/tr808-design-spec-94ae",
-      "notes": "TR-808 circuit-class VST plugin; not disklordz/tr808-pwa/"
+      "wipBranch": "cursor/novadrum-juce-handoff-029a",
+      "legacyBranchDeprecated": "cursor/junova-tr808-handoff-94ae",
+      "notes": "TR-808 circuit-class JUCE plugin; folder vst-tr808/. Not disklordz/tr808-pwa/"
     },
     {
       "id": "tr808-pwa",
       "name": "TR-808 PWA",
       "repoPath": "disklordz/tr808-pwa/",
-      "lane": "disklordz-static",
+      "lane": "tr808-pwa",
       "primaryAgent": "cursor",
       "claudeAllowed": true,
       "wipBranch": "cursor/tr808-pwa-app-94ae",
-      "notes": "Browser PWA + Web Audio; separate from NovaDrum vst-tr808 plugin"
+      "woPrefix": "[TR808-PWA]",
+      "notes": "Standalone PWA lane; not Disklordz SaaS website; not NovaDrum plugin"
     },
     {
       "id": "sp1200-vst",
