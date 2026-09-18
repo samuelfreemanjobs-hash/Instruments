@@ -6,6 +6,7 @@
   "type": "instrument",
   "category": "synthesizer",
   "sampleless": true,
+  "userContent": "import_p1",
   "formats": ["VST3", "CLAP", "Standalone"],
   "platforms": ["Linux", "Windows", "macOS"],
   "sonicIdentity": "Dark trap and drift phonk: morphing digital wavetables, warm ZDF lowpass, destructive saturation, tape wobble macro",
@@ -16,5 +17,25 @@
     "16-voice polyphony",
     "Factory preset bank",
     "APVTS state persistence"
+  ],
+  "p1Features": [
+    "User wavetable import",
+    "Preset bank expansion to betaMin",
+    "pluginval and DAW matrix",
+    "CPU profiling report"
+  ],
+  "presetPolicy": {
+    "rcMin": 8,
+    "betaMin": 24,
+    "retailMin": 48
+  },
+  "cmakeTarget": "Wave909",
+  "repoPath": "Wave909",
+  "releaseStatus": "rc",
+  "releaseBlockers": [
+    "DAW smoke not documented in VALIDATION_REPORT",
+    "pluginval not run in CI",
+    "Factory preset count 8 < betaMin 24",
+    "userContent import_p1 not implemented"
   ]
 }

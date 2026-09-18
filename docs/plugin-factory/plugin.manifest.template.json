@@ -1,0 +1,34 @@
+{
+  "projectId": "my-plugin",
+  "pluginName": "MY PLUGIN",
+  "codename": "Optional subtitle only",
+  "version": "0.1.0",
+  "type": "instrument",
+  "category": "synthesizer",
+  "sampleless": true,
+  "userContent": "none",
+  "formats": ["VST3", "CLAP", "Standalone"],
+  "platforms": ["Linux", "Windows", "macOS"],
+  "sonicIdentity": "One sentence: who it is for and how it should sound.",
+  "p0Features": [
+    "Core DSP",
+    "Parameters + APVTS state",
+    "Factory presets (meet rcMin)",
+    "Editor",
+    "Unit tests + offline render smoke"
+  ],
+  "p1Features": [
+    "User content import",
+    "Extended preset bank",
+    "pluginval + DAW matrix"
+  ],
+  "presetPolicy": {
+    "rcMin": 8,
+    "betaMin": 24,
+    "retailMin": 48
+  },
+  "cmakeTarget": "MyPlugin",
+  "repoPath": "MyPlugin",
+  "releaseStatus": "idea",
+  "releaseBlockers": []
+}

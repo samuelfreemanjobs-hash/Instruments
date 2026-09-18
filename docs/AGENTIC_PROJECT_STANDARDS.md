@@ -71,6 +71,7 @@ globs: "**/*.{ts,tsx}"
 - [ ] `ARCHITECTURE.md` updated if structure changed  
 - [ ] No debug logging left in production paths  
 - [ ] `.env.example` updated for new configuration  
+- [ ] **JUCE products:** manifest + `Docs/GATES.md` + [PLUGIN_FACTORY_OS.md](PLUGIN_FACTORY_OS.md) release status honest (VERIFIED / NOT VERIFIED)
 
 ---
 

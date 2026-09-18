@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Plugin Factory test plan",
+  "type": "object",
+  "required": ["projectId", "tests"],
+  "properties": {
+    "projectId": { "type": "string" },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "command"],
+        "properties": {
+          "id": { "type": "string" },
+          "kind": {
+            "enum": ["unit", "integration", "offline_render", "golden", "state", "manual"]
+          },
+          "command": { "type": "string" },
+          "evidence": { "type": "string", "description": "Path or artefact expected on pass" }
+        }
+      }
+    }
+  }
+}

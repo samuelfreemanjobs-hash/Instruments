@@ -58,3 +58,6 @@ Parameters: JUCE APVTS (`Parameters/ParameterIds.h`), read on audio thread via c
 - [Docs/PRODUCT_SPEC.md](Docs/PRODUCT_SPEC.md)
 - [Docs/DSP_SPEC.md](Docs/DSP_SPEC.md)
 - [Docs/PARAMETER_MAP.md](Docs/PARAMETER_MAP.md)
+- [Docs/GATES.md](Docs/GATES.md)
+- [test.plan.json](test.plan.json)
+- Factory: [docs/PLUGIN_FACTORY_OS.md](../docs/PLUGIN_FACTORY_OS.md)

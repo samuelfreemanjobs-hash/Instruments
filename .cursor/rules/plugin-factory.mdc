@@ -1,0 +1,16 @@
+---
+description: Plugin Factory OS — read before creating or extending JUCE products in this monorepo
+alwaysApply: true
+---
+
+# Plugin Factory
+
+When the user asks to **build a new audio plugin** or extend a product under `Wave909/`, `MyFirstPlugin/`, or a new top-level plugin folder:
+
+1. Read [docs/PLUGIN_FACTORY_OS.md](docs/PLUGIN_FACTORY_OS.md) (core constitution).
+2. Lock [plugin.manifest.json](docs/plugin-factory/plugin.manifest.template.json) **before** `Source/` — validate against [manifest.schema.json](docs/plugin-factory/manifest.schema.json).
+3. Never substitute a different product name from example prompts (e.g. do not rename to AFTRDARK if manifest says WAVE-909).
+4. Default outcome: **RELEASE BLOCKED** with VERIFIED / NOT VERIFIED evidence.
+5. Update [Docs/GATES.md](docs/plugin-factory/GATES.md) in the product tree.
+
+Reference product: [Wave909/](Wave909/). Extended detail: [docs/PLUGIN_FACTORY_PLAYBOOK.md](docs/PLUGIN_FACTORY_PLAYBOOK.md).

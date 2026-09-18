@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://instruments.local/schemas/plugin.manifest.json",
+  "title": "Plugin Factory manifest",
+  "description": "Machine-readable product contract for Plugin Factory OS. Generated or updated in DISCOVERY; names are locked before SCAFFOLD.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "projectId",
+    "pluginName",
+    "version",
+    "type",
+    "sampleless",
+    "userContent",
+    "formats",
+    "p0Features",
+    "presetPolicy",
+    "repoPath"
+  ],
+  "properties": {
+    "projectId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,48}$",
+      "description": "Stable slug (lowercase). Never rename after first release."
+    },
+    "pluginName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "DAW display name. LOCKED at scaffold — do not substitute codenames or example names from prompts."
+    },
+    "codename": {
+      "type": "string",
+      "maxLength": 128,
+      "description": "Optional internal/marketing subtitle only — not the CMake product name."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[a-zA-Z0-9.]+)?$"
+    },
+    "type": {
+      "enum": ["instrument", "effect", "midi_effect"]
+    },
+    "category": {
+      "type": "string",
+      "examples": ["synthesizer", "distortion", "utility"]
+    },
+    "sampleless": {
+      "type": "boolean",
+      "description": "If true, no embedded PCM in shipping build."
+    },
+    "userContent": {
+      "enum": ["none", "import_p1", "sample_based"],
+      "description": "none = procedural only; import_p1 = user wavetables/samples planned; sample_based = ROM/samples in product."
+    },
+    "formats": {
+      "type": "array",
+      "items": { "enum": ["VST3", "CLAP", "AU", "Standalone", "AAX"] },
+      "minItems": 1
+    },
+    "platforms": {
+      "type": "array",
+      "items": { "enum": ["Linux", "Windows", "macOS"] }
+    },
+    "sonicIdentity": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "p0Features": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "p1Features": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "presetPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rcMin", "betaMin", "retailMin"],
+      "properties": {
+        "rcMin": { "type": "integer", "minimum": 1 },
+        "betaMin": { "type": "integer", "minimum": 1 },
+        "retailMin": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "cmakeTarget": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+      "description": "juce_add_plugin target (no hyphens), e.g. Wave909"
+    },
+    "repoPath": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_/]*$",
+      "description": "Product root under monorepo, e.g. Wave909"
+    },
+    "releaseStatus": {
+      "enum": ["idea", "rc", "beta", "retail", "blocked"],
+      "default": "idea"
+    },
+    "releaseBlockers": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

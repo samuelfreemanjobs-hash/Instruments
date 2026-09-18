@@ -40,5 +40,13 @@ cmake --build build -j
 
 ## Git
 
-- Do not force-push or deploy production unless the user asks.  
-- Cloud feature branches: `cursor/<description>-<suffix>` when required by environment.  
+- Do not force-push or deploy production unless the user asks. 
+- Cloud feature branches: `cursor/<description>-<suffix>` when required by environment.
+
+## Plugin Factory (JUCE products)
+
+New or extended plugins: read [docs/PLUGIN_FACTORY_OS.md](docs/PLUGIN_FACTORY_OS.md) first.
+
+- Manifest: `<repoPath>/plugin.manifest.json` ([schema](docs/plugin-factory/manifest.schema.json))
+- Gates: `<repoPath>/Docs/GATES.md`
+- Reference implementation: [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md)

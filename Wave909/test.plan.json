@@ -1,0 +1,35 @@
+{
+  "projectId": "wave909",
+  "tests": [
+    {
+      "id": "wavetable_engine",
+      "kind": "unit",
+      "command": "ctest --test-dir build -R Wave909Wavetable --output-on-failure",
+      "evidence": "Wave909Tests OK"
+    },
+    {
+      "id": "state_roundtrip",
+      "kind": "state",
+      "command": "ctest --test-dir build -R Wave909State --output-on-failure",
+      "evidence": "Wave909StateTests OK"
+    },
+    {
+      "id": "offline_determinism",
+      "kind": "offline_render",
+      "command": "Wave909OfflineRender a.wav && Wave909OfflineRender b.wav && SpectralDiff a b",
+      "evidence": "rms_diff_db within threshold"
+    },
+    {
+      "id": "golden_presets",
+      "kind": "golden",
+      "command": "bash Wave909/tests/golden/verify_golden.sh",
+      "evidence": "WAVE-909 golden comparisons passed"
+    },
+    {
+      "id": "daw_smoke",
+      "kind": "manual",
+      "command": "Load VST3/CLAP in primary DAW; save/reopen project",
+      "evidence": "NOT VERIFIED — human"
+    }
+  ]
+}
