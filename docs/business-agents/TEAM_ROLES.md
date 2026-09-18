@@ -1,6 +1,6 @@
 # Business team roles (no API)
 
-These three roles are **members of the agent team**, same as factory or SaaS implementers. They use **Cursor Cloud** or **Claude Code** with repo prompts — **not** repo API keys or `business_agent.py --run`.
+These **four roles** are **members of the agent team**, same as factory or SaaS implementers. They use **Cursor Cloud** or **Claude Code** with repo prompts — **not** repo API keys or `business_agent.py --run`.
 
 ## Roster
 
@@ -9,6 +9,7 @@ These three roles are **members of the agent team**, same as factory or SaaS imp
 | **SKU research** | `business-sku-research` | Cursor Cloud (Planner WOs) | `brief.json` | Business Planner |
 | **Marketing content** | `business-content` | Cursor or Claude | `content-drafts/*.json` | Marketing (you publish) |
 | **Ship evaluator** | `business-ship-eval` | Cursor Cloud (PR / release WOs) | `ship-evaluations/*-eval.json` | Owner / release |
+| **Marketing Director** | `marketing-director` | Cursor Cloud (campaign WOs) | `marketing-director/runs/<slug>/` | Marketing (you publish) |
 
 Registry: [agent-registry.json](../agent-registry.json) → `businessAgents`.
 
@@ -38,6 +39,8 @@ Open repo root; read [.claude/agents/business-sku-research/AGENT.md](../../.clau
 
 ```bash
 python3 scripts/business-agents/business_agent.py sku init --product-id DL-… --name "…"
+python3 scripts/business-agents/business_agent.py director plan --request "…" --slug my-campaign
+python3 scripts/business-agents/business_agent.py director validate --run business-agents/marketing-director/runs/my-campaign
 python3 scripts/business-agents/business_agent.py sku validate --file …/brief.json
 python3 scripts/business-agents/business_agent.py check-pr
 ```
@@ -51,3 +54,4 @@ python3 scripts/business-agents/business_agent.py check-pr
 | `planner_recommendation.decision: proceed` | Cursor factory on `repoPath` from [agent-registry.json](../agent-registry.json) |
 | Content draft ACCEPT (human) | Owner pastes to site/store; optional SaaS agent for `disklordz/website/` |
 | Ship eval ACCEPT | Human DAW/deploy gates still required per [GATES.md](../plugin-factory/GATES.md) |
+| Director run `complete` + compliance OK | Owner publishes; optional `business-content` for site paste |

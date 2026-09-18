@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Compliance agent verdict",
+  "type": "object",
+  "required": ["schema_version", "severity", "issues", "ready_to_publish"],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "severity": {
+      "type": "string",
+      "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim", "rule_violated", "severity", "suggested_fix"],
+        "properties": {
+          "claim": { "type": "string" },
+          "rule_violated": { "type": "string" },
+          "severity": {
+            "type": "string",
+            "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+          },
+          "suggested_fix": { "type": "string" }
+        }
+      }
+    },
+    "required_disclaimers": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "ready_to_publish": { "type": "boolean" }
+  },
+  "additionalProperties": true
+}

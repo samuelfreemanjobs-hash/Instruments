@@ -1,8 +1,9 @@
 ---
-description: Business team agents (SKU research, marketing content, ship evaluator) — no standalone API; Cursor/Claude execute roles and commit JSON artifacts.
+description: Business team agents (SKU research, marketing content, ship evaluator, marketing director) — no standalone API; Cursor/Claude execute roles and commit JSON artifacts.
 globs:
   - business-agents/**
   - docs/business-agents/**
+  - tools/marketing-director/**
 ---
 
 # Business team agents (no API keys)
@@ -14,6 +15,7 @@ Three **teammate roles** — not external microservices. **You** (Cursor Cloud o
 | **SKU research** (Planner input) | `prompts/sku-research-system.md` | `business-agents/sku-briefs/<id>/brief.json` |
 | **Content** (Marketing draft) | `prompts/content-marketing-system.md` | `business-agents/content-drafts/*.json` |
 | **Ship evaluator** (RELEASE gate) | `prompts/ship-evaluator-system.md` | `business-agents/ship-evaluations/*-eval.json` |
+| **Marketing Director** (supervisor) | `prompts/marketing-director-system.md` | `business-agents/marketing-director/runs/<slug>/` |
 
 ## Workflow
 

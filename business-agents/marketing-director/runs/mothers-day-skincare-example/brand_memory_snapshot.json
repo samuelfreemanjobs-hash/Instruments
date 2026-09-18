@@ -1,0 +1,51 @@
+{
+  "brand_voice": {
+    "company": "Instruments + Disklordz",
+    "tone": "Confident, musician-first, direct \u2014 no corporate fluff",
+    "values": [
+      "Honest product claims",
+      "Underground/studio culture",
+      "MPC Sample workflow where relevant"
+    ],
+    "avoid": [
+      "Unverified superlatives",
+      "Fake analog warmth claims",
+      "Competitor trash talk"
+    ]
+  },
+  "products": [
+    {
+      "name": "WAVE-909",
+      "lane": "juce-factory",
+      "pitch": "Sampleless trap/phonk wavetable synth"
+    },
+    {
+      "name": "Disklordz",
+      "lane": "disklordz",
+      "pitch": "AI-assisted drum kit SaaS"
+    },
+    {
+      "name": "TR-808 PWA",
+      "lane": "tr808-pwa",
+      "pitch": "Browser 808-style drum machine; not the SaaS site"
+    },
+    {
+      "name": "Pluggnb Vital pack",
+      "lane": "content-vital",
+      "pitch": "Vital preset pack \u2014 Pluggnb genre"
+    }
+  ],
+  "prohibited_claims": [
+    "Guaranteed chart or streaming outcomes",
+    "DAW compatibility without VERIFIED matrix",
+    "RELEASE READY without ship evaluator ACCEPT and human gates",
+    "Conflating TR-808 PWA with NovaDrum plugin or drum kit SaaS"
+  ],
+  "budget_authorization_usd": 25000,
+  "publish_owner": "human_only",
+  "docs_index": [
+    "docs/TR808_JUNOVA_PRODUCT_MATRIX.md",
+    "docs/DISKLORDZ_PLUGIN_TRACKS.md",
+    "docs/business-agents/TEAM_ROLES.md"
+  ]
+}

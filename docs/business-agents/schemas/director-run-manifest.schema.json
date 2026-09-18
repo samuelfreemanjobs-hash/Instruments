@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Marketing Director run manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "slug",
+    "status",
+    "user_request"
+  ],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "slug": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "in_progress", "complete", "blocked", "incomplete"]
+    },
+    "user_request": { "type": "string", "minLength": 1 },
+    "brand_memory_path": { "type": "string" },
+    "specialists_expected": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "research_agent",
+          "creative_agent",
+          "copy_agent",
+          "media_agent",
+          "analytics_agent",
+          "compliance_agent"
+        ]
+      }
+    },
+    "external_facing": { "type": ["boolean", "null"] },
+    "compliance_required": { "type": "boolean" },
+    "escalated": { "type": "boolean" },
+    "human_review_ids": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}

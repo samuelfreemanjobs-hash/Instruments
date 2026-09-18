@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Marketing specialist output (generic envelope)",
+  "type": "object",
+  "required": ["schema_version", "agent", "status", "output"],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "agent": {
+      "type": "string",
+      "enum": [
+        "research_agent",
+        "creative_agent",
+        "copy_agent",
+        "media_agent",
+        "analytics_agent"
+      ]
+    },
+    "status": { "type": "string", "enum": ["ok", "incomplete", "error"] },
+    "output": { "type": "object" },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": true
+}

@@ -126,3 +126,72 @@ def validate_content_draft(data: dict[str, Any]) -> list[str]:
         if meta.get("publish_status") not in ("draft", "owner_review", "published"):
             errors.append("metadata.publish_status invalid")
     return errors
+
+
+def validate_director_manifest(data: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    if data.get("schema_version") != "1":
+        errors.append("manifest schema_version must be '1'")
+    for key in ("slug", "status", "user_request"):
+        _require(data, key, errors)
+    status = data.get("status")
+    if status and status not in {
+        "planned",
+        "in_progress",
+        "complete",
+        "blocked",
+        "incomplete",
+    }:
+        errors.append("manifest status invalid")
+    expected = data.get("specialists_expected")
+    if expected is not None and not isinstance(expected, list):
+        errors.append("specialists_expected must be array")
+    return errors
+
+
+def validate_specialist_output(data: dict[str, Any], prefix: str = "") -> list[str]:
+    errors: list[str] = []
+    p = prefix
+
+    def err(msg: str) -> None:
+        errors.append(f"{p}{msg}")
+
+    if data.get("schema_version") != "1":
+        err("schema_version must be '1'")
+    agent = data.get("agent")
+    if agent not in {
+        "research_agent",
+        "creative_agent",
+        "copy_agent",
+        "media_agent",
+        "analytics_agent",
+    }:
+        err("agent must be a specialist id")
+    if data.get("status") not in ("ok", "incomplete", "error"):
+        err("status must be ok|incomplete|error")
+    output = data.get("output")
+    if output is not None and not isinstance(output, dict):
+        err("output must be object")
+    return errors
+
+
+def validate_compliance_verdict(data: dict[str, Any], prefix: str = "") -> list[str]:
+    errors: list[str] = []
+    p = prefix
+
+    def err(msg: str) -> None:
+        errors.append(f"{p}{msg}")
+
+    if data.get("schema_version") != "1":
+        err("schema_version must be '1'")
+    sev = data.get("severity")
+    if sev not in {"NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"}:
+        err("severity invalid")
+    if "ready_to_publish" not in data:
+        err("missing ready_to_publish")
+    issues = data.get("issues")
+    if issues is not None and not isinstance(issues, list):
+        err("issues must be array")
+    if sev in {"MEDIUM", "HIGH", "CRITICAL"} and data.get("ready_to_publish") is True:
+        err("ready_to_publish must be false when severity >= MEDIUM")
+    return errors

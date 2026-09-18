@@ -1,0 +1,13 @@
+{
+  "schema_version": "1",
+  "slug": "mothers-day-skincare-example",
+  "created_at": "2026-09-18T19:55:42.981780+00:00",
+  "status": "planned",
+  "user_request": "Write three subject lines for Mother's Day skincare email.",
+  "brand_memory_path": "tools/marketing-director/brand_memory/instruments_disklordz.json",
+  "specialists_expected": [],
+  "external_facing": null,
+  "compliance_required": true,
+  "escalated": false,
+  "human_review_ids": []
+}

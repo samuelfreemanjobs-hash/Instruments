@@ -152,6 +152,16 @@
         "claudeAgentPath": ".claude/agents/business-ship-eval/AGENT.md",
         "outputDir": "business-agents/ship-evaluations/",
         "ownerHuman": "Owner / release"
+      },
+      {
+        "id": "marketing-director",
+        "pattern": "hierarchical-supervisor",
+        "primaryAgent": "cursor",
+        "claudeAllowed": true,
+        "claudeAgentPath": ".claude/agents/marketing-director/AGENT.md",
+        "outputDir": "business-agents/marketing-director/runs/",
+        "tooling": "tools/marketing-director/",
+        "ownerHuman": "Marketing (owner publishes)"
       }
     ]
   },

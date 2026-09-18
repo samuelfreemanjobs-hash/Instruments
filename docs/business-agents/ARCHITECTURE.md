@@ -9,6 +9,7 @@ Three **teammate roles** on the same roster as factory and SaaS agents. **Cursor
 | **business-sku-research** | #5 / #9 | `business-agents/sku-briefs/<id>/brief.json` |
 | **business-content** | #2 | `business-agents/content-drafts/*.json` |
 | **business-ship-eval** | #8 | `business-agents/ship-evaluations/*-eval.json` |
+| **marketing-director** | hierarchical supervisor | `business-agents/marketing-director/runs/<slug>/` |
 
 **Team roster:** [TEAM_ROLES.md](TEAM_ROLES.md) · **Cursor rule:** [`.cursor/rules/business-agents-team.mdc`](../../.cursor/rules/business-agents-team.mdc)
 
@@ -21,7 +22,9 @@ python3 scripts/business-agents/business_agent.py sku validate --file …/brief.
 python3 scripts/business-agents/business_agent.py check-pr
 ```
 
-Assign the printed **team** task to Cloud Agent, or open Claude with `.claude/agents/business-*/AGENT.md`.
+Assign the printed **team** task to Cloud Agent, or open Claude with `.claude/agents/business-*/AGENT.md` or `marketing-director/AGENT.md`.
+
+Marketing Director tooling: [tools/marketing-director/ARCHITECTURE.md](../../tools/marketing-director/ARCHITECTURE.md).
 
 ## Data flow
 

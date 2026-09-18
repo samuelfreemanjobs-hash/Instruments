@@ -12,6 +12,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 BRIEFS = REPO_ROOT / "business-agents" / "sku-briefs"
 CONTENT = REPO_ROOT / "business-agents" / "content-drafts"
 EVAL = REPO_ROOT / "business-agents" / "ship-evaluations"
+DIRECTOR_RUNS = REPO_ROOT / "business-agents" / "marketing-director" / "runs"
+MD_TEAM = REPO_ROOT / "tools" / "marketing-director" / "marketing_director_team.py"
 TASKS = REPO_ROOT / "business-agents" / "tasks"
 TEMPLATE = REPO_ROOT / "docs" / "business-agents" / "intake" / "sku-intake.template.yaml"
 
@@ -36,6 +38,12 @@ ROLE_META = {
         "prompt": "ship-evaluator-system.md",
         "claude": ".claude/agents/business-ship-eval/AGENT.md",
         "validate": "evaluate validate --file business-agents/ship-evaluations/<file>-eval.json",
+    },
+    "marketing-director": {
+        "title": "marketing-director",
+        "prompt": "marketing-director-system.md",
+        "claude": ".claude/agents/marketing-director/AGENT.md",
+        "validate": "director validate --run business-agents/marketing-director/runs/<slug>",
     },
 }
 
@@ -149,6 +157,30 @@ def cmd_evaluate_validate(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_director_plan(args: argparse.Namespace) -> int:
+    import subprocess
+
+    cmd = [
+        sys.executable,
+        str(MD_TEAM),
+        "plan",
+        "--request",
+        args.request,
+    ]
+    if args.slug:
+        cmd.extend(["--slug", args.slug])
+    if args.force:
+        cmd.append("--force")
+    return subprocess.call(cmd, cwd=str(REPO_ROOT))
+
+
+def cmd_director_validate(args: argparse.Namespace) -> int:
+    import subprocess
+
+    cmd = [sys.executable, str(MD_TEAM), "validate", "--run", args.run]
+    return subprocess.call(cmd, cwd=str(REPO_ROOT))
+
+
 def cmd_team_task(args: argparse.Namespace) -> int:
     meta = ROLE_META.get(args.role)
     if not meta:
@@ -196,7 +228,17 @@ def cmd_check_pr(args: argparse.Namespace) -> int:
             print(f"{path}: invalid JSON: {e}", file=sys.stderr)
             errors += 1
             continue
-        if "planner_recommendation" in data:
+        if path.name == "manifest.json" and "marketing-director" in path.parts:
+            errs = schema_validate.validate_director_manifest(data)
+            label = "director manifest"
+        elif path.parent.name == "specialists" and "marketing-director" in path.parts:
+            if path.stem == "compliance_agent":
+                errs = schema_validate.validate_compliance_verdict(data)
+                label = "compliance verdict"
+            else:
+                errs = schema_validate.validate_specialist_output(data)
+                label = "specialist output"
+        elif "planner_recommendation" in data:
             errs = schema_validate.validate_sku_brief(data)
             label = "sku brief"
         elif "quality_assessment" in data:
@@ -281,6 +323,17 @@ def main() -> int:
     evv = e_sub.add_parser("validate")
     evv.add_argument("--file", required=True)
     evv.set_defaults(func=cmd_evaluate_validate)
+
+    director = sub.add_parser("director", help="Marketing Director runs (team mode)")
+    d_sub = director.add_subparsers(dest="director_cmd", required=True)
+    dp = d_sub.add_parser("plan", help="Scaffold run under business-agents/marketing-director/runs/")
+    dp.add_argument("--request", required=True)
+    dp.add_argument("--slug", help="Folder name")
+    dp.add_argument("--force", action="store_true")
+    dp.set_defaults(func=cmd_director_plan)
+    dv = d_sub.add_parser("validate", help="Validate run folder")
+    dv.add_argument("--run", required=True)
+    dv.set_defaults(func=cmd_director_validate)
 
     chk = sub.add_parser("check-pr", help="Validate business-agents JSON in CI")
     chk.set_defaults(func=cmd_check_pr)
