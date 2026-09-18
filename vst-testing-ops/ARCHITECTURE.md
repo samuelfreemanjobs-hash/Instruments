@@ -17,18 +17,26 @@ Developers and agents validate compiled `.vst3` bundles with **pluginval** (Trac
 
 ## Build & run
 
+**Phase 1 — put pluginval in `bin/` (once):**
+
 ```bash
-# From repo root after a Release build:
+python3 vst-testing-ops/test_runner.py --install-pluginval
+```
+
+**Phase 2 — drop & run (or auto-find monorepo build artefacts):**
+
+```bash
 cmake --build build -j --target JDUpgraded_VST3
 python3 vst-testing-ops/test_runner.py
 
-# Or copy any bundle:
 cp -a "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3" vst-testing-ops/my_plugins/
 python3 vst-testing-ops/test_runner.py "JD Upgraded.vst3"
-
-# Custom name via env:
-VST_NAME=MyFirstPlugin.vst3 python3 vst-testing-ops/test_runner.py
+python3 vst-testing-ops/test_runner.py --watch   # re-test on every drop/rebuild copy
 ```
+
+**Phase 3 — on failure**, open `error_log.txt` in Cursor and ask an agent to fix `Source/` from the log.
+
+Custom plugin name: `VST_NAME=MyFirstPlugin.vst3 python3 vst-testing-ops/test_runner.py`
 
 ## Data flow
 
