@@ -1,12 +1,11 @@
 # Business agents CLI
 
-Company-wide **SKU research**, **marketing content**, and **ship evaluation** prompts + validation.
-
-Full docs: [docs/business-agents/ARCHITECTURE.md](../../docs/business-agents/ARCHITECTURE.md)
+Scaffold folders, **validate JSON**, and print **Cloud Agent task** text.  
+**Teammates** (Cursor Cloud / Claude Code) write artifacts — no API keys in this repo.
 
 ```bash
-python3 scripts/business-agents/business_agent.py sku init --product-id DL-FOO --name "Foo"
+python3 scripts/business-agents/business_agent.py team --role sku-research --request "…"
 python3 scripts/business-agents/business_agent.py check-pr
 ```
 
-Optional `--run` requires `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` in the environment (never commit keys).
+[docs/business-agents/TEAM_ROLES.md](../../docs/business-agents/TEAM_ROLES.md)

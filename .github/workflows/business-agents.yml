@@ -18,10 +18,6 @@ on:
       sku_name:
         description: "Display name"
         required: true
-      run_research:
-        description: "Call LLM if ANTHROPIC_API_KEY or OPENAI_API_KEY secret set"
-        type: boolean
-        default: false
 
 jobs:
   validate-artifacts:
@@ -41,14 +37,6 @@ jobs:
           python3 scripts/business-agents/business_agent.py sku init \
             --product-id "${{ inputs.product_id }}" \
             --name "${{ inputs.sku_name }}"
-      - name: Optional LLM research
-        if: inputs.run_research == true
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          INTAKE="business-agents/sku-briefs/${{ inputs.product_id }}/intake.yaml"
-          python3 scripts/business-agents/business_agent.py sku prompt --intake "$INTAKE" --run || true
       - name: Upload scaffold artifact
         uses: actions/upload-artifact@v4
         with:
@@ -79,7 +67,7 @@ jobs:
             esac
           done <<< "$PATHS"
           echo "hit=$HIT" >> "$GITHUB_OUTPUT"
-      - name: Remind ship evaluator
+      - name: Remind ship evaluator teammate
         if: steps.cf.outputs.hit == '1'
         run: |
-          echo "::notice title=Ship evaluator::Customer-facing files changed. Run evaluate prompt and attach business-agents/ship-evaluations/*.json (or add PR label ship-eval-waived if intentionally skipped)."
+          echo "::notice title=Ship evaluator teammate::Assign business-ship-eval (Cursor/Claude). Write business-agents/ship-evaluations/*.json and validate — see docs/business-agents/TEAM_ROLES.md"

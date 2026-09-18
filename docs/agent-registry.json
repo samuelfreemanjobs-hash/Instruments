@@ -119,25 +119,37 @@
     }
   ],
   "businessAgents": {
-    "description": "Company-wide patterns — not repoPath implementers",
+    "description": "Company teammates — Cursor/Claude execute roles; CLI scaffold+validate only (no API keys)",
     "cli": "scripts/business-agents/business_agent.py",
     "docs": "docs/business-agents/ARCHITECTURE.md",
+    "teamRoles": "docs/business-agents/TEAM_ROLES.md",
+    "cursorRule": ".cursor/rules/business-agents-team.mdc",
+    "execution": "teammate",
     "agents": [
       {
-        "id": "sku-research",
+        "id": "business-sku-research",
         "pattern": "market-research-5-9",
+        "primaryAgent": "cursor",
+        "claudeAllowed": true,
+        "claudeAgentPath": ".claude/agents/business-sku-research/AGENT.md",
         "outputDir": "business-agents/sku-briefs/",
         "ownerHuman": "Business Planner"
       },
       {
-        "id": "content-marketing",
+        "id": "business-content",
         "pattern": "content-2",
+        "primaryAgent": "cursor",
+        "claudeAllowed": true,
+        "claudeAgentPath": ".claude/agents/business-content/AGENT.md",
         "outputDir": "business-agents/content-drafts/",
         "ownerHuman": "Marketing (owner publishes)"
       },
       {
-        "id": "ship-evaluator",
+        "id": "business-ship-eval",
         "pattern": "evaluator-8",
+        "primaryAgent": "cursor",
+        "claudeAllowed": true,
+        "claudeAgentPath": ".claude/agents/business-ship-eval/AGENT.md",
         "outputDir": "business-agents/ship-evaluations/",
         "ownerHuman": "Owner / release"
       }

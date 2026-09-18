@@ -47,6 +47,10 @@ cmake --build build -j
 - Do not force-push or deploy production unless the user asks. 
 - Cloud feature branches: `cursor/<description>-<suffix>` when required by environment.
 
+## Business teammates (SKU research, content, ship eval)
+
+No repo API — **you** run these roles via prompts in [docs/business-agents/TEAM_ROLES.md](docs/business-agents/TEAM_ROLES.md). CLI: `python3 scripts/business-agents/business_agent.py team --role …`. Rule: [.cursor/rules/business-agents-team.mdc](.cursor/rules/business-agents-team.mdc).
+
 ## Plugin Factory (JUCE products)
 
 New or extended plugins: read [docs/PLUGIN_FACTORY_OS.md](docs/PLUGIN_FACTORY_OS.md) first.

@@ -1,11 +1,11 @@
 # Business agents — artifacts
 
-Git-tracked **Planner briefs**, **content drafts**, and **ship evaluations** live here.
+Git-tracked outputs from **business teammates** (Cursor Cloud / Claude Code).
 
-See [docs/business-agents/ARCHITECTURE.md](../docs/business-agents/ARCHITECTURE.md).
+See [docs/business-agents/TEAM_ROLES.md](../docs/business-agents/TEAM_ROLES.md).
 
 ```bash
-python3 scripts/business-agents/business_agent.py sku init --product-id MY-ID --name "My SKU"
+python3 scripts/business-agents/business_agent.py team --role sku-research --request "…"
 ```
 
-Do not commit API keys or unpublished pricing you are not ready to leak.
+`tasks/` — optional saved Cloud Agent task markdown (local convenience).

@@ -24,9 +24,12 @@ def build_messages(system_file: str, user_content: str) -> list[dict[str, str]]:
 
 
 def format_prompt_bundle(agent: str, system_file: str, user_content: str) -> str:
-    """Human/CLI path: paste into Cursor or Claude Code."""
+    """Context for Cursor Cloud / Claude Code teammate (no repo API)."""
     lines = [
-        f"# Business agent: {agent}",
+        f"# Business teammate: {agent}",
+        "",
+        "You are on the **Instruments team**. Read the system prompt, produce the JSON artifact,",
+        "commit to `business-agents/`, then run the validate subcommand from TEAM_ROLES.md.",
         "",
         "## System",
         read_prompt(system_file),
@@ -35,8 +38,7 @@ def format_prompt_bundle(agent: str, system_file: str, user_content: str) -> str
         user_content,
         "",
         "---",
-        "Save model JSON output under business-agents/ then run:",
-        f"  python3 scripts/business-agents/business_agent.py {agent} validate --file <path>",
+        "Docs: docs/business-agents/TEAM_ROLES.md",
     ]
     return "\n".join(lines)
 

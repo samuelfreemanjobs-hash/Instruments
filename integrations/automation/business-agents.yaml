@@ -1,6 +1,6 @@
 # Business agents — automation schedule (human-in-loop)
 
-# Times are America/New_York; jobs are reminders unless BUSINESS_AGENT_CRON_RUN=1 + API keys on runner.
+# Teammates are Cursor Cloud / Claude Code — no repo API keys. CLI = scaffold + validate only.
 
 version: "1"
 
@@ -8,34 +8,35 @@ reminders:
   - id: mon-sku-review
     cron: "0 9 * * 1"
     action: reminder
-    message: "Review open business-agents/sku-briefs/*/brief.json — Planner approve or defer."
+    message: "Assign business-sku-research on open sku-briefs; validate brief.json after teammate commits."
 
   - id: wed-content-draft
     cron: "0 10 * * 3"
     action: reminder
-    message: "Run content prompt for active SKU launch; validate JSON before publish."
+    message: "Assign business-content for active launch; validate draft JSON before owner publishes."
 
   - id: fri-ship-eval
     cron: "0 16 * * 5"
     action: reminder
-    message: "Run ship evaluator on any PR labeled customer-facing this week."
+    message: "Assign business-ship-eval on customer-facing PRs this week."
 
 workflows:
   new_sku:
     steps:
       - cli: python3 scripts/business-agents/business_agent.py sku init --product-id {product_id} --name "{sku_name}"
-      - cli: python3 scripts/business-agents/business_agent.py sku prompt --intake business-agents/sku-briefs/{product_id}/intake.yaml
-      - human: Save brief.json and run sku validate
+      - teammate: business-sku-research (Cursor Cloud or Claude) writes brief.json
+      - cli: python3 scripts/business-agents/business_agent.py sku validate --file business-agents/sku-briefs/{product_id}/brief.json
       - gate: planner_recommendation.decision in [proceed, defer, kill, needs_human]
 
   ship_gate:
     steps:
-      - cli: python3 scripts/business-agents/business_agent.py evaluate prompt --artifact {path} --type {artifact_type}
-      - human: Save eval JSON and run evaluate validate
+      - teammate: business-ship-eval reads artifact; writes eval JSON
+      - cli: python3 scripts/business-agents/business_agent.py evaluate validate --file …
       - gate: quality_assessment == ACCEPT and ready_for_approval == true
 
 integrations:
   github:
     workflow: business-agents.yml
-  airtable:
-    note: "Optional — create WO from brief.json suggested_wo_title manually or via future script"
+  cursor:
+    rule: .cursor/rules/business-agents-team.mdc
+    task: python3 scripts/business-agents/business_agent.py team --role <sku-research|content|ship-eval> --request "…"

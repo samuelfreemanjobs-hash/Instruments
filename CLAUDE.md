@@ -19,6 +19,16 @@ You are a coding agent in the same factory as **Cursor Cloud**. Git is the sourc
 
 Update PR URLs in [docs/agent-registry.json](docs/agent-registry.json) when you push.
 
+## Business teammates (no API)
+
+Same repo, **no** separate API keys: [docs/business-agents/TEAM_ROLES.md](docs/business-agents/TEAM_ROLES.md)
+
+| Teammate | Claude entry |
+|----------|----------------|
+| SKU research | [.claude/agents/business-sku-research/AGENT.md](.claude/agents/business-sku-research/AGENT.md) |
+| Marketing content | [.claude/agents/business-content/AGENT.md](.claude/agents/business-content/AGENT.md) |
+| Ship evaluator | [.claude/agents/business-ship-eval/AGENT.md](.claude/agents/business-ship-eval/AGENT.md) |
+
 ## New JUCE plugin work
 
 Follow [docs/PLUGIN_FACTORY_OS.md](docs/PLUGIN_FACTORY_OS.md): lock `plugin.manifest.json` **before** `Source/`. Never rename `pluginName` from prompt examples.

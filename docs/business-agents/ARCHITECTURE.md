@@ -2,71 +2,48 @@
 
 ## Purpose
 
-Three **company-wide** LLM patterns (not product code):
+Three **teammate roles** on the same roster as factory and SaaS agents. **Cursor Cloud** and **Claude Code** read prompts and **commit JSON artifacts** — the repo CLI does **not** call LLM APIs.
 
-| Agent | Pattern | Output | Human gate |
-|-------|---------|--------|------------|
-| **SKU research** | #5 / #9 | `business-agents/sku-briefs/<id>/brief.json` | Business Planner approves `product_id` |
-| **Content** | #2 | `business-agents/content-drafts/*.json` | Owner **publishes** |
-| **Ship evaluator** | #8 | `business-agents/ship-evaluations/*.json` | Required before **RELEASE READY** / customer-facing merge |
+| Teammate | Pattern | Artifact |
+|----------|---------|----------|
+| **business-sku-research** | #5 / #9 | `business-agents/sku-briefs/<id>/brief.json` |
+| **business-content** | #2 | `business-agents/content-drafts/*.json` |
+| **business-ship-eval** | #8 | `business-agents/ship-evaluations/*-eval.json` |
 
-Prompts: [prompts/](prompts/) · Schemas: [schemas/](schemas/) · Workflows: [WORKFLOWS.md](WORKFLOWS.md)
+**Team roster:** [TEAM_ROLES.md](TEAM_ROLES.md) · **Cursor rule:** [`.cursor/rules/business-agents-team.mdc`](../../.cursor/rules/business-agents-team.mdc)
 
-## Build & run
+## Build & run (CLI — no API)
 
 ```bash
-# Scaffold new SKU research folder
-python3 scripts/business-agents/business_agent.py sku init \
-  --product-id DL-PLUGIN-EXAMPLE --name "Example Synth"
-
-# Print prompt bundle (paste into Cursor / Claude Code)
-python3 scripts/business-agents/business_agent.py sku prompt \
-  --intake business-agents/sku-briefs/DL-PLUGIN-EXAMPLE/intake.yaml
-
-# Validate Planner JSON (after model saves brief.json)
-python3 scripts/business-agents/business_agent.py sku validate \
-  --file business-agents/sku-briefs/DL-PLUGIN-EXAMPLE/brief.json
-
-# Optional: automated LLM (ANTHROPIC_API_KEY or OPENAI_API_KEY)
-python3 scripts/business-agents/business_agent.py sku prompt --intake .../intake.yaml --run
+python3 scripts/business-agents/business_agent.py sku init --product-id DL-… --name "…"
+python3 scripts/business-agents/business_agent.py team --role sku-research --request "Complete brief for …"
+python3 scripts/business-agents/business_agent.py sku validate --file …/brief.json
+python3 scripts/business-agents/business_agent.py check-pr
 ```
 
-Same CLI subcommands: `content prompt|validate`, `evaluate prompt|validate`, `check-pr`.
+Assign the printed **team** task to Cloud Agent, or open Claude with `.claude/agents/business-*/AGENT.md`.
 
 ## Data flow
 
 ```text
-Idea / Airtable WO
+Owner / Planner idea
   → sku init + intake.yaml
-  → sku prompt → brief.json (Planner decision)
-  → GitHub issue + agent-registry row
-  → Factory implements
-  → content prompt → draft JSON (Marketing)
-  → evaluate prompt on PRODUCT_SPEC / landing / listing
-  → ACCEPT + human ship gate → merge / deploy
+  → Cloud Agent as business-sku-research → brief.json + validate
+  → Factory agent on repoPath
+  → business-content → draft JSON
+  → business-ship-eval → eval JSON → human ship
 ```
-
-## Threading / realtime
-
-N/A — offline CLI and CI; no audio thread.
 
 ## Key modules
 
 | Path | Role |
 |------|------|
-| `scripts/business-agents/business_agent.py` | CLI |
-| `scripts/business-agents/lib/schema_validate.py` | Stdlib JSON gate |
-| `scripts/business-agents/lib/llm_optional.py` | Optional API completion |
-| `integrations/automation/business-agents.yaml` | Schedule hints (human-in-loop) |
-| `.github/workflows/business-agents.yml` | PR validation + manual intake |
-
-## Extension points
-
-- Wire Airtable WO create from `brief.json` (`planner_recommendation.proceed`).
-- n8n webhook calling `business_agent.py … --run` (secrets in env only).
-- Add `claudeStrategyAgents` rows in [agent-registry.json](../agent-registry.json).
+| `docs/business-agents/prompts/` | System prompts |
+| `scripts/business-agents/business_agent.py` | Scaffold, validate, team task template |
+| `.claude/agents/business-*/` | Claude Code teammate entry |
+| `integrations/automation/business-agents.yaml` | Reminders (no API cron) |
 
 ## Related
 
 - [AGENTIC_OPERATING_MODEL.md](../AGENTIC_OPERATING_MODEL.md)
-- [PLUGIN_FACTORY_OS.md](../PLUGIN_FACTORY_OS.md) · [GATES.md](../plugin-factory/GATES.md)
+- [agent-registry.json](../agent-registry.json) → `businessAgents`

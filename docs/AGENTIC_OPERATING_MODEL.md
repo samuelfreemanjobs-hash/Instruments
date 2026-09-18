@@ -79,7 +79,7 @@ Idea or Airtable WO
 
 Structured task template: [CURSOR_AGENT_PLAYBOOK.md](CURSOR_AGENT_PLAYBOOK.md) §2.
 
-**Business agents (company-wide):** [business-agents/ARCHITECTURE.md](business-agents/ARCHITECTURE.md) — SKU research JSON (#5/9) → Planner; content drafts (#2) → you publish; ship evaluator (#8) → RELEASE READY gate. CLI: `scripts/business-agents/business_agent.py`.
+**Business agents (company-wide):** [business-agents/ARCHITECTURE.md](business-agents/ARCHITECTURE.md) — three **teammates** (Cursor/Claude); CLI validates JSON only, no API keys.
 
 ---
 
