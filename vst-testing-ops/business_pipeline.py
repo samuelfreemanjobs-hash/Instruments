@@ -251,11 +251,21 @@ def stage_disklordz_web() -> StageResult:
     ok = True
     for label, cwd, cmd in [
         ("website npm ci", website, ["npm", "ci"]),
+        ("website npm run lint", website, ["npm", "run", "lint"]),
         ("website npm run build", website, ["npm", "run", "build"]),
+        ("rag chunk corpus", REPO_ROOT / "disklordz/rag", ["python3", "scripts/chunk_corpus.py"]),
+        (
+            "rag query smoke",
+            REPO_ROOT / "disklordz/rag",
+            ["python3", "scripts/query_local.py", "disklordz"],
+        ),
         ("daw-inbox npm ci", inbox, ["npm", "ci"]),
         ("daw-inbox syntax", inbox, ["node", "--check", "bin/watch.mjs"]),
     ]:
         if label.startswith("daw-inbox") and not (inbox / "package.json").is_file():
+            chunks.append(f"[skip] {label}\n")
+            continue
+        if label.startswith("rag") and not (REPO_ROOT / "disklordz/rag/scripts/chunk_corpus.py").is_file():
             chunks.append(f"[skip] {label}\n")
             continue
         code, out = _run(cmd, cwd=cwd)
