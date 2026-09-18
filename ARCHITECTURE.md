@@ -16,13 +16,18 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **WAVE-909** (sampleless trap wavetable synth) | [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md) | `Wave909_VST3`, `Wave909_CLAP`, `Wave909_Standalone`, `Wave909Tests` |
 | **SP-1200** (VST drum sampler — Claude lane) | [SP1200/ARCHITECTURE.md](SP1200/ARCHITECTURE.md) | TBD — scaffold |
 | **Pluggnb Vital preset pack** (first preset SKU) | [disklordz/packs/vital/ARCHITECTURE.md](disklordz/packs/vital/ARCHITECTURE.md) | Vital `.vital` / `.vitalbank` |
+| **Junova-X** (Juno-class poly synth — **not** NovaDrum / PWA) | [Junova-X/REPO_HANDOFF.md](Junova-X/REPO_HANDOFF.md) · [docs/TR808_JUNOVA_PRODUCT_MATRIX.md](docs/TR808_JUNOVA_PRODUCT_MATRIX.md) | `JunovaX_VST3`, `JunovaX_CLAP` (planned; branch `cursor/junova-tr808-handoff-94ae`) |
+| **NovaDrum** (TR-808 class **plugin**) | [vst-tr808/README.md](vst-tr808/README.md) | iPlug2 VST3 (spec; same matrix doc) |
+| **TR-808 PWA** (browser drum machine — **not** NovaDrum) | [disklordz/tr808-pwa/ARCHITECTURE.md](disklordz/tr808-pwa/ARCHITECTURE.md) | Static PWA (`python3 -m http.server`; branch `cursor/tr808-pwa-app-94ae`) |
 
 ## Repository layout
 
 ```
 Source/          Plugin processor, DSP, assets, preset import
+Junova-X/        Junova-X synth (JUCE) — handoff pointer until branch merge
+vst-tr808/       NovaDrum / 808-class **plugin** spec lane (not PWA)
 hise-sketch/     HISE / Antigravity projects (optional imports)
-disklordz/       Drum SaaS (`website/`) and sound-factory scripts
+disklordz/       Drum SaaS (`website/`), TR-808 PWA (`tr808-pwa/`), sound-factory
 tools/           CLI binaries (link JUCE / plugin static lib)
 docs/            User and agent docs (SYSEX, ROM, phases, handoff)
 tests/golden/    manifest.tsv + golden WAVs; verify_golden.sh / refresh_golden.sh

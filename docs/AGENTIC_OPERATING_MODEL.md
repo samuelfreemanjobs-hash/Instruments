@@ -8,8 +8,8 @@ One page. **Hybrid:** agents build and document; humans own taste, money, and pr
 
 | Lane | Products | Ship shape | Source of truth |
 |------|----------|------------|-----------------|
-| **JUCE factory** | JD Upgraded, WAVE-909, future `Wave*/` plugins | VST3 + CLAP + Standalone, root CMake CI, golden/offline render | [PLUGIN_FACTORY_OS.md](PLUGIN_FACTORY_OS.md), `<product>/plugin.manifest.json`, `Docs/GATES.md` |
-| **Disklordz** | Drum SaaS (`disklordz/website/`), RAG, automation | Next.js on Vercel, Supabase RLS | [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md), [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md) |
+| **JUCE factory** | JD Upgraded, WAVE-909, **Junova-X**, future `Wave*/` plugins | VST3 + CLAP + Standalone, root CMake CI, golden/offline render | [PLUGIN_FACTORY_OS.md](PLUGIN_FACTORY_OS.md), `<product>/plugin.manifest.json`, `Docs/GATES.md` |
+| **Disklordz** | Drum SaaS (`disklordz/website/`), **TR-808 PWA** (`disklordz/tr808-pwa/`), RAG, automation | Next.js on Vercel; static PWA; Supabase RLS | [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md), [disklordz/tr808-pwa/ARCHITECTURE.md](../disklordz/tr808-pwa/ARCHITECTURE.md), [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md) |
 | **HISE sketch** (parallel R&D) | Rompler/sampler experiments | Local VST3 from HISE export — **not** monorepo CI until port WO | [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md), `hise-sketch/` |
 
 **Rule:** HISE lane does not silently become JUCE lane. Promotion = explicit **port WO** or new Plugin Factory manifest.
