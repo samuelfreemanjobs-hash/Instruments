@@ -14,6 +14,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Disklordz RAG** (prompt knowledge) | [disklordz/rag/ARCHITECTURE.md](disklordz/rag/ARCHITECTURE.md) · [docs/RAG_AND_INTELLIGENT_AUTOMATION.md](docs/RAG_AND_INTELLIGENT_AUTOMATION.md) | `python3 disklordz/rag/scripts/chunk_corpus.py` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-909** (sampleless trap wavetable synth) | [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md) | `Wave909_VST3`, `Wave909_Standalone`, `Wave909Tests` |
+| **logue mkII oscillators** (NTS-1 mkII user osc) | [src/mkii/ARCHITECTURE.md](src/mkii/ARCHITECTURE.md) · [docs/logue-mkii-oscillator-agent.md](docs/logue-mkii-oscillator-agent.md) | `./tools/build-mkii.sh <slug>` · `./tools/osc-eval-mkii.sh` |
 
 ## Repository layout
 

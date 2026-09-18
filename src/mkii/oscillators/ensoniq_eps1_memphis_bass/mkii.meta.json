@@ -1,0 +1,6 @@
+{
+  "v1_path": "oscillators/ensoniq-eps1",
+  "v1_source": "eps_bass.cc",
+  "mkii_slug": "ensoniq_eps1_memphis_bass",
+  "project": "ensoniq_eps1_memphis_bass"
+}

@@ -1,0 +1,36 @@
+---
+description: logue SDK mkII custom oscillator agent — /logue-mkii-* slash commands
+alwaysApply: true
+---
+
+# logue mkII oscillator slash commands
+
+When the user message contains **`/logue-mkii-`** (or **`/mkii-osc-`** alias):
+
+1. Load **`.agents/skills/logue-mkii-oscillator/SKILL.md`** (command router).
+2. Load **`.cursor/agents/logue-mkii-oscillator/SYSTEM.md`** (hard constraints).
+3. Load the matching **`.agents/workflows/logue-mkii-<phase>.md`** file.
+4. Execute the matching **`.agents/skills/logue-mkii-<phase>/SKILL.md`** when present.
+5. Read/update **`src/mkii/oscillators/<slug>/.agent/status.json`** (create on first brief).
+6. **Stop after one phase** unless user said `/logue-mkii-new` or asked to continue.
+7. **Ship** requires passing **`./tools/osc-eval-mkii.sh <slug>`** (build when `LOGUE_SDK` available).
+
+| Command | Workflow | Phase skill |
+|---------|----------|-------------|
+| `/logue-mkii-setup` | `logue-mkii-setup.md` | `logue-mkii-setup` |
+| `/logue-mkii-brief` | `logue-mkii-brief.md` | `logue-mkii-brief` |
+| `/logue-mkii-design` | `logue-mkii-design.md` | `logue-mkii-design` |
+| `/logue-mkii-scaffold` | `logue-mkii-scaffold.md` | `logue-mkii-scaffold` |
+| `/logue-mkii-impl` | `logue-mkii-impl.md` | `logue-mkii-impl` |
+| `/logue-mkii-eval` | `logue-mkii-eval.md` | `logue-mkii-eval` |
+| `/logue-mkii-ship` | `logue-mkii-ship.md` | `logue-mkii-ship` |
+| `/logue-mkii-debug` | `logue-mkii-debug.md` | `logue-mkii-debug` |
+| `/logue-mkii-status` | `logue-mkii-status.md` | — |
+| `/logue-mkii-resume` | `logue-mkii-resume.md` | — |
+| `/logue-mkii-new` | `logue-mkii-new.md` | all phases (confirm between) |
+
+**Aliases:** `/mkii-osc-brief` = `/logue-mkii-brief`, etc.
+
+**Default target:** NTS-1 mkII (`.nts1mkiiunit`). v1.1 only when user explicitly requests `tools/build.sh`.
+
+**Docs:** `docs/logue-mkii-workflow.md` · golden slug `tr808_kick_phonk`

@@ -2,7 +2,12 @@ node_modules/
 
 build/
 _deps/
+.deps/
 cmake-build-*/
+apc.config.json
+release/
+plugins/*/build/
+vst/*/build/
 MyFirstPlugin/build/
 MyFirstPlugin/build-ninja/
 *.user

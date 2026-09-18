@@ -1,0 +1,52 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "Dilla Bass",
+    "num_param": 9,
+    "params": [
+      ["Vibe", 0, 100, "%"],
+      ["Glide", 0, 100, "%"],
+      ["Wobble", 0, 100, "%"],
+      ["Warmth", 0, 100, "%"],
+      ["Grit", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"],
+      ["Thick", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "dilla_type_bass",
+    "type": "osc",
+    "collection": "nts1-multi-bass",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "J Dilla inspired multifunction bass: loose pitch wobble, glide, warm muffled tone, MPC-ish grit. Vibe morphs pillowy to round to gritty.",
+    "presets": [
+      {
+        "name": "Donuts pillow",
+        "midi_hint": "E2-G2, legato, cutoff low-mid",
+        "values": [18, 52, 32, 68, 18, 16, 45, 48, 22]
+      },
+      {
+        "name": "Stones Throw round",
+        "midi_hint": "D2-F2, medium glide",
+        "values": [38, 48, 38, 55, 30, 12, 40, 42, 38]
+      },
+      {
+        "name": "MPC drunk wobble",
+        "midi_hint": "E1-A2, loose lines",
+        "values": [52, 62, 58, 50, 35, 10, 38, 40, 45]
+      },
+      {
+        "name": "Gritty crate dig",
+        "midi_hint": "G2, brighter cutoff",
+        "values": [72, 35, 42, 48, 58, 8, 32, 35, 52]
+      }
+    ]
+  }
+}

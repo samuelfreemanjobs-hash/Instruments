@@ -1,0 +1,46 @@
+---
+description: Mandatory VST/VSTi lifecycle — Dream → Plan → Design → Implement → Ship (no skipped phases)
+alwaysApply: true
+---
+
+# VST / VSTi lifecycle (mandatory process)
+
+**Every** new or continued VST/VSTi in this repo **must** follow this order.  
+This matches the Noizefield APC walkthrough and `docs/vst-lifecycle.md`.
+
+```
+/apc-dream  →  /apc-plan  →  /apc-design  →  /apc-impl  →  /apc-test  →  /apc-ship
+```
+
+| Phase | User command | Workspace | Forbidden before this phase |
+|-------|--------------|-----------|-----------------------------|
+| **Dream** | `/apc-dream <Name>` | `plugins/<Name>/.ideas/` brief + params | `vst/<Name>/` code, CMake |
+| **Plan** | `/apc-plan <Name>` | `architecture.md`, complexity, UI framework | DSP/C++ implementation |
+| **Design** | `/apc-design <Name>` | `design-spec.md` | `PluginEditor` layout code |
+| **Implement** | `/apc-impl <Name>` | `vst/<Name>/` DSP + core logic | Skipping any prior phase files |
+| **Test** | `/apc-test <Name>` | Build + smoke | Ship |
+| **Ship** | `/apc-ship <Name>` | `release/<Name>/` installer package | Untested builds |
+
+## Agent rules (strict)
+
+1. **Do not** run `new-vst.sh`, edit `vst/<Name>/Source/*`, or write `processBlock` until **Dream, Plan, and Design** artifacts exist under `plugins/<Name>/` (unless the user explicitly says **"skip to impl"** for a one-off fix).
+2. **Do not** mark a plugin finished without **`/apc-ship`** — shipping means `tools/package-vst.sh` output (or documented platform installer), not only a local `build/` folder.
+3. **One phase per turn** unless the user runs `/apc-new <Name>` or asks to run the full chain.
+4. Before **Implement**, read `plugins/<Name>/status.json` and confirm:
+   - `validation.creative_brief_exists`
+   - `validation.parameter_spec_exists`
+   - `validation.architecture_defined`
+   - `validation.design_complete`
+5. **Implement** focuses on **program chain** (DSP/core) first, then **surface chain** (APVTS/editor) per `docs/dsp-architecture-specification.md`.
+6. **Ship** produces a **distributable** under `release/<Name>/` (versioned zip/installer script); see `.agents/skills/ship/SKILL.md`.
+
+## State
+
+- APC workspace: `plugins/<Name>/` + `status.json`
+- Code: `vst/<Name>/` (created in Implement)
+- Check progress: `/apc-status <Name>` or `bash bin/apc status <Name>`
+
+## Exceptions
+
+- Bugfix on an **already shipped** plugin: may use `/apc-debug` → `/apc-test` → `/apc-ship` without re-dreaming.
+- **logue** hardware units use `src/oscillators/` — this lifecycle applies to **VST/VSTi only**.
