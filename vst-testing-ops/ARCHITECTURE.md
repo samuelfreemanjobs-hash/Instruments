@@ -1,72 +1,76 @@
 # VST testing ops — command center
 
-Plain-English automation for **drop VST3 → run script → AI reads log on failure**. Part of the [Instruments](../ARCHITECTURE.md) monorepo; CI uses the same engine via [`scripts/vst/run_pluginval.py`](../scripts/vst/run_pluginval.py).
+Operations hub for the **Instruments** monorepo: one pipeline matches [`.github/workflows/build.yml`](../.github/workflows/build.yml), optional Disklordz SaaS smoke, Streamlit UI, and single-plugin fast lanes.
 
 ## Purpose
 
-Developers and agents validate compiled `.vst3` bundles with **pluginval** (Tracktion) without opening a DAW. Failures land in `error_log.txt` for Cursor / Claude Code to fix C++.
+Run the whole product QA loop without manual DAW checks — configure/build, artefact gates, DSP determinism, golden WAV regression, Wave909 unit tests, pluginval, and (optionally) `disklordz/website` + daw-inbox syntax checks.
 
 ## Layout
 
 | Path | Role |
 |------|------|
-| `my_plugins/` | Drop finished `.vst3` bundles here (gitignored). |
-| `bin/` | Optional local `pluginval` / `pluginval.exe`; otherwise auto-download to `build/tools/pluginval/`. |
-| `test_runner.py` | Entry script: strictness 5, in-process validation, writes `error_log.txt` on failure. |
-| `app.py` | Streamlit dashboard: CMake build → `test_runner.py` in one click. |
-| `requirements.txt` | `streamlit` for the dashboard (`pip install -r vst-testing-ops/requirements.txt`). |
-| `error_log.txt` | Generated on failure only (gitignored). |
-| `last_build.log` | Last CMake output from the dashboard (gitignored). |
+| `business_pipeline.py` | Stage runners + profiles (`ci`, `full`, `plugin-quick`, `dsp-only`). |
+| `run_business.py` | CLI: `python3 vst-testing-ops/run_business.py --profile ci` |
+| `app.py` | Streamlit **Operations Command Center** (fleet status + full pipeline). |
+| `test_runner.py` | Single-VST pluginval + `error_log.txt` / `--watch`. |
+| `my_plugins/` | Drop `.vst3` bundles (gitignored). |
+| `bin/` | Optional local `pluginval` binary. |
+| `reports/` | Timestamped JSON run history (gitignored). |
+| `error_log.txt` | First failing stage tail for agents (gitignored). |
+| `last_run_report.json` | Latest pipeline summary (gitignored). |
+
+## Pipeline stages (profile `ci`)
+
+1. **configure** — CMake Release (`g++-12` on Linux)
+2. **build** — full monorepo `cmake --build build -j`
+3. **artefacts** — JD Upgraded VST3, CLAP, Standalone exist
+4. **determinism** — dual `OfflineRender` + `SpectralDiff`
+5. **golden** — `tests/golden/verify_golden.sh`
+6. **wave909_tests** — `Wave909Tests` or `ctest -R Wave909`
+7. **pluginval** — `scripts/vst/run_pluginval.py --default-artefacts`
+
+Profile **`full`** adds **disklordz_web** (`npm ci` / `npm run build` + daw-inbox `node --check`).
 
 ## Build & run
 
-**Phase 1 — put pluginval in `bin/` (once):**
+**Whole business (CLI, CI parity):**
 
 ```bash
-python3 vst-testing-ops/test_runner.py --install-pluginval
+python3 vst-testing-ops/run_business.py --profile ci
+python3 vst-testing-ops/run_business.py --profile full    # + SaaS
+python3 vst-testing-ops/run_business.py --profile ci --with-saas
 ```
 
-**Phase 2 — drop & run (or auto-find monorepo build artefacts):**
-
-```bash
-cmake --build build -j --target JDUpgraded_VST3
-python3 vst-testing-ops/test_runner.py
-
-cp -a "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3" vst-testing-ops/my_plugins/
-python3 vst-testing-ops/test_runner.py "JD Upgraded.vst3"
-python3 vst-testing-ops/test_runner.py --watch   # re-test on every drop/rebuild copy
-```
-
-**Phase 3 — on failure**, open `error_log.txt` in Cursor and ask an agent to fix `Source/` from the log.
-
-**Dashboard (compile + test in one UI):**
+**Dashboard:**
 
 ```bash
 pip install -r vst-testing-ops/requirements.txt
 streamlit run vst-testing-ops/app.py
 ```
 
-Custom plugin name: `VST_NAME=MyFirstPlugin.vst3 python3 vst-testing-ops/test_runner.py`
+**Single-plugin stress only:**
+
+```bash
+python3 vst-testing-ops/test_runner.py --install-pluginval
+python3 vst-testing-ops/test_runner.py --watch
+```
 
 ## Data flow
 
 ```
-.vst3 in my_plugins/ (or build/*_artefacts)
-    → test_runner.py
-    → scripts/vst/run_pluginval.py → pluginval CLI
-    → pass: exit 0 | fail: error_log.txt
+run_business.py / app.py
+  → business_pipeline.run_pipeline
+  → stages (subprocess): cmake, OfflineRender, golden, ctest, run_pluginval.py
+  → pass: last_run_report.json | fail: error_log.txt + report
 ```
 
 ## CI
 
-[`.github/workflows/build.yml`](../.github/workflows/build.yml) runs `python3 scripts/vst/run_pluginval.py --default-artefacts` after golden WAV tests.
-
-## Extension points
-
-- Add plugins: drop under `my_plugins/` or extend `resolve_plugin_path()` in `test_runner.py`.
-- Stricter checks: pass extra args through by calling `run_pluginval.py` directly (see [tools/ARCHITECTURE.md](../tools/ARCHITECTURE.md)).
+GitHub Actions runs the same steps inline in `build.yml`; local/agents should prefer `run_business.py --profile ci` to avoid drift.
 
 ## Related docs
 
-- [tools/ARCHITECTURE.md](../tools/ARCHITECTURE.md) — `OfflineRender` / golden WAV DSP regression
-- [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) — JD Upgraded testing section
+- [tools/ARCHITECTURE.md](../tools/ARCHITECTURE.md) — offline tools
+- [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) — JD Upgraded testing
+- [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md) — SaaS build

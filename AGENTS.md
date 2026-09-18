@@ -36,8 +36,9 @@ Colab: [docs/COLAB_ZERO_INSTALL_TESTING.md](docs/COLAB_ZERO_INSTALL_TESTING.md).
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
 cmake --build build -j
-python3 scripts/vst/run_pluginval.py --default-artefacts  # headless VST3 after build
-python3 vst-testing-ops/test_runner.py                     # drop-in ops folder + error_log.txt on fail
+python3 vst-testing-ops/run_business.py --profile ci       # full plugin QA (matches build.yml)
+python3 vst-testing-ops/test_runner.py                     # single-VST pluginval + error_log.txt
+streamlit run vst-testing-ops/app.py                       # operations dashboard
 ```
 
 ## Git
