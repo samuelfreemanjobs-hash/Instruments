@@ -1,0 +1,119 @@
+# One-click production go-live: migrations → optional Vercel env → deploy hook → smoke test.
+# Secrets: docs/DISKLORDZ_GO_LIVE_SECRETS.md
+
+name: Disklordz go-live
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync_vercel_env:
+        description: "Push secrets to Vercel project env (needs VERCEL_TOKEN + env secrets)"
+        type: boolean
+        default: true
+      register_stripe_webhook:
+        description: "Create Stripe webhook if missing (prints whsec once)"
+        type: boolean
+        default: false
+      skip_migrations:
+        description: "Skip Supabase db push"
+        type: boolean
+        default: false
+      skip_deploy:
+        description: "Skip Vercel deploy hook"
+        type: boolean
+        default: false
+      skip_smoke:
+        description: "Skip verify-go-live curl tests"
+        type: boolean
+        default: false
+
+jobs:
+  go-live:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: disklordz/website
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preflight secrets
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          DISKLORDZ_URL: ${{ secrets.DISKLORDZ_URL }}
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          missing=0
+          for v in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_REF DISKLORDZ_URL; do
+            if [ -z "${!v}" ]; then echo "::error::Missing secret $v — see docs/DISKLORDZ_GO_LIVE_SECRETS.md"; missing=1; fi
+          done
+          if [ "${{ inputs.skip_deploy }}" != "true" ] && [ -z "$VERCEL_DEPLOY_HOOK_URL" ]; then
+            echo "::error::Missing VERCEL_DEPLOY_HOOK_URL (or enable skip_deploy)"
+            missing=1
+          fi
+          [ "$missing" -eq 0 ] || exit 1
+
+      - uses: supabase/setup-cli@v1
+        if: ${{ inputs.skip_migrations != true }}
+        with:
+          version: latest
+
+      - name: Supabase db push
+        if: ${{ inputs.skip_migrations != true }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          supabase link --project-ref "$SUPABASE_PROJECT_REF"
+          supabase db push
+
+      - name: Register Stripe webhook
+        if: ${{ inputs.register_stripe_webhook == true }}
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          DISKLORDZ_URL: ${{ secrets.DISKLORDZ_URL }}
+        run: bash scripts/setup-stripe-webhook.sh
+
+      - name: Sync Vercel environment variables
+        if: ${{ inputs.sync_vercel_env == true }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PRO_PRICE_ID: ${{ secrets.STRIPE_PRO_PRICE_ID }}
+          SAAS_DAILY_GEN_LIMIT: ${{ secrets.SAAS_DAILY_GEN_LIMIT }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::error::sync_vercel_env needs VERCEL_TOKEN and VERCEL_PROJECT_ID"
+            exit 1
+          fi
+          bash scripts/sync-vercel-env.sh
+
+      - name: Trigger Vercel production deploy
+        if: ${{ inputs.skip_deploy != true }}
+        env:
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          curl -fsS -X POST "$VERCEL_DEPLOY_HOOK_URL"
+          echo "Deploy hook triggered."
+
+      - uses: actions/setup-node@v4
+        if: ${{ inputs.skip_smoke != true }}
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: disklordz/website/package-lock.json
+
+      - name: Production smoke test
+        if: ${{ inputs.skip_smoke != true }}
+        env:
+          DISKLORDZ_URL: ${{ secrets.DISKLORDZ_URL }}
+        run: |
+          npm ci
+          sleep 45
+          npm run verify:go-live

@@ -1,6 +1,16 @@
 # Disklordz Drum SaaS — go-live checklist
 
-Use this after **WO-SAAS-007–015** land on `main`. The Cloud Agent cannot access your Vercel/Supabase dashboards; these steps are **owner actions** with repo-backed verification at the end.
+Use this after **WO-SAAS-007–015** land on `main`.
+
+## Automated go-live (recommended)
+
+1. Add repository secrets once: **[DISKLORDZ_GO_LIVE_SECRETS.md](DISKLORDZ_GO_LIVE_SECRETS.md)**.
+2. Vercel → **Settings → Git → Deploy Hooks** → create Production hook → save URL as `VERCEL_DEPLOY_HOOK_URL`.
+3. **GitHub → Actions → Disklordz go-live → Run workflow** (migrations, optional Vercel env sync, deploy, smoke test).
+
+Local: `cd disklordz/website && bash scripts/go-live.sh --sync-vercel --stripe-webhook`
+
+Manual steps below remain useful for debugging; MCP (Supabase/Stripe) is still **Connect in Cursor** on your machine.
 
 ## What is Vercel?
 

@@ -7,7 +7,8 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "verify:go-live": "bash scripts/verify-go-live.sh"
+    "verify:go-live": "bash scripts/verify-go-live.sh",
+    "go-live": "bash scripts/go-live.sh --sync-vercel"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
