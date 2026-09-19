@@ -1,3 +1,4 @@
 # One plugin directory name per line (under plugins/).
 reference-effect
 reference-synth
+moog-voyager
