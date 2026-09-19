@@ -7,6 +7,7 @@ Command-line binaries built from `tools/` and registered in the root `CMakeLists
 | Target | Source | Role |
 |--------|--------|------|
 | `GenerateCleanroomRom` | `GenerateCleanroomRom.cpp` | Synthesize `jdupg_cleanroom.rom` at build time (256 waves, multisample metadata). |
+| `GenerateDisklordzRomplerPack` | `DisklordzRompler/tools/GenerateRomplerPack.cpp` | Synthesize `disklordz_factory.dlrom` (DLROMPR1) for DISKLORDZ ROMPLER. |
 | `OfflineRender` | `OfflineRender.cpp` | Instantiate `JDUpgradedAudioProcessor`, feed MIDI, write stereo 24-bit WAV. |
 | `SpectralDiff` | `SpectralDiff.cpp`, `WavCompare.h` | Peak-normalized mono comparison; RMS and mean spectral bin error. |
 | `ExportPreset` | `ExportPreset.cpp` | Write `.jdpreset` APVTS XML for a factory program index. |
