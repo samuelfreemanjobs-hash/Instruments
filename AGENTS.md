@@ -4,7 +4,9 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 
 ## Standards
 
-- [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts  
+- [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts 
+- [docs/PLUGIN_FACTORY_OS_PROMPT.md](docs/PLUGIN_FACTORY_OS_PROMPT.md) — plugin factory + Cursor incremental workflow
+- [docs/DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](docs/DISKLORDZ_ROMPLER_CURSOR_PROMPT.md) — DISKLORDZ ROMPLER agent kickoff (UI mocks in `docs/assets/`) 
 - [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
 - `.cursor/rules/*.mdc` — always-on architecture and security  
 
