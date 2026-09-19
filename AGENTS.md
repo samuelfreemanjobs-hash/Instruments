@@ -6,6 +6,7 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 
 - [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts 
 - [docs/PLUGIN_FACTORY_OS_PROMPT.md](docs/PLUGIN_FACTORY_OS_PROMPT.md) — plugin factory + Cursor incremental workflow
+- [docs/DPCP.md](docs/DPCP.md) — **DPCP** (DiskLordz Platform Content Pipeline); always-on rule `.cursor/rules/dpcp-disklordz-content-pipeline.mdc` — start Phase 0 for ROM Factory / ROMpler content work
 - [docs/DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](docs/DISKLORDZ_ROMPLER_CURSOR_PROMPT.md) — **DISKLORDZ ROMPLER** (own sample rompler VSTi; not WAVE-909; UI mocks in `docs/assets/`) 
 - [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
 - `.cursor/rules/*.mdc` — always-on architecture and security  

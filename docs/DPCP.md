@@ -1,5 +1,7 @@
 # DPCP — DiskLordz Platform Content Pipeline (Cursor Prompt)
 
+**Cursor rule:** [.cursor/rules/dpcp-disklordz-content-pipeline.mdc](../.cursor/rules/dpcp-disklordz-content-pipeline.mdc) (`alwaysApply: true` for agents in this repo).
+
 Use this **instead of ad-hoc prompts** when building the ROM Factory, expansions, and ROMpler content integration. Follow [PLUGIN_FACTORY_OS_PROMPT.md](PLUGIN_FACTORY_OS_PROMPT.md) **§0** (Discover → Specify → Vertical slices → Validate) **within each phase below**.
 
 **Products:** `DisklordzSynth/` = ROM Factory · `DisklordzRompler/` = ROMpler engine · do **not** edit `Wave909/` for this line.
