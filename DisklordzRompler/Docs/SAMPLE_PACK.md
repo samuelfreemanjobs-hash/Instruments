@@ -6,12 +6,12 @@ All factory audio is **synthesized at build time** by **[DisklordzSynth](../../D
 
 Categories per tone slot:
 
-| Tone | Category | Generator |
-|------|----------|-----------|
-| 0 | Bell | Inharmonic partial stacks + decay |
-| 1 | Keys | Karplus–Strong plucks |
-| 2 | Pad | Filtered noise loops |
-| 3 | Sub | Sine 808-style decays |
+| Tone | Category | DisklordzSynth engine |
+|------|----------|------------------------|
+| 0 | Bell | **additive** |
+| 1 | Keys | **karplus** |
+| 2 | Pad | **wave** (looped) |
+| 3 | Sub | **subtractive** |
 
 Eight velocity/key zones per tone (roots 36–84) → 32 regions total.
 

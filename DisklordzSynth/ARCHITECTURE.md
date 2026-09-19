@@ -6,14 +6,14 @@ Repo index: [ARCHITECTURE.md](../ARCHITECTURE.md).
 
 ## Purpose
 
-Clean-room synthesis of trap/phonk-oriented material:
+Four sellable offline engines ([Docs/ENGINES.md](Docs/ENGINES.md)):
 
-| Engine | Output |
-|--------|--------|
-| `bell` | Inharmonic decaying partials |
-| `keys` | Karplus–Strong plucks |
-| `pad` | Filtered noise loops |
-| `sub808` | Punchy sine subs |
+| Engine | Technique |
+|--------|-----------|
+| `additive` | Harmonic partial sums + decay |
+| `karplus` | Karplus–Strong / plucked strings |
+| `wave` | Procedural single-cycle wavetable scan |
+| `subtractive` | Saw/pulse through resonant LP-style filter |
 
 ## Build
 

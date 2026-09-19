@@ -1,6 +1,7 @@
 # DisklordzSynth — offline procedural engines (retain as separate commercial tools).
 
 add_library (DisklordzSynth STATIC
+    src/EngineParams.cpp
     src/ProceduralSynth.cpp
     src/FactoryPackBuilder.cpp
     src/WavWriter.cpp

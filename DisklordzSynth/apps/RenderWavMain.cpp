@@ -1,3 +1,4 @@
+#include "disklordz/EngineParams.h"
 #include "disklordz/ProceduralSynth.h"
 #include "disklordz/WavWriter.h"
 
@@ -5,30 +6,17 @@
 #include <iostream>
 #include <string>
 
-namespace
-{
-
-disklordz::synth::EngineId parseEngine (const std::string& name)
-{
-    if (name == "bell") return disklordz::synth::EngineId::bell;
-    if (name == "keys") return disklordz::synth::EngineId::keys;
-    if (name == "pad") return disklordz::synth::EngineId::pad;
-    if (name == "sub808" || name == "sub") return disklordz::synth::EngineId::sub808;
-    return disklordz::synth::EngineId::bell;
-}
-
-} // namespace
-
 int main (int argc, char** argv)
 {
     if (argc < 4)
     {
         std::cerr << "Usage: DisklordzSynth_RenderWav <engine> <frames> <output.wav> [paramA] [paramB] [sampleRate]\n"
-                  << "  engine: bell | keys | pad | sub808\n";
+                  << "  engine: subtractive | additive | karplus | wave\n"
+                  << "  aliases: sub808, bell, keys, pad, wavetable\n";
         return EXIT_FAILURE;
     }
 
-    const auto engine = parseEngine (argv[1]);
+    const auto engine = disklordz::synth::parseEngineId (argv[1]);
     const std::size_t frames = static_cast<std::size_t> (std::stoul (argv[2]));
     const std::string outPath = argv[3];
     const float paramA = argc > 4 ? std::stof (argv[4]) : 0.5f;
@@ -48,6 +36,7 @@ int main (int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    std::cout << "Wrote " << pcm.size() << " frames to " << outPath << " (" << disklordz::synth::engineIdName (engine) << ")\n";
+    std::cout << "Wrote " << pcm.size() << " frames to " << outPath << " ("
+              << disklordz::synth::engineIdName (engine) << ")\n";
     return EXIT_SUCCESS;
 }

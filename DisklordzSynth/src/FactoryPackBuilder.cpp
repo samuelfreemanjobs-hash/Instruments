@@ -34,6 +34,38 @@ void appendRegion (std::vector<PackRegionSpec>& specs,
     specs.push_back (std::move (r));
 }
 
+EngineParams factoryParams (EngineId id, int zoneIndex)
+{
+    const float z = static_cast<float> (zoneIndex) / 7.0f;
+    EngineParams p;
+    switch (id)
+    {
+        case EngineId::additive:
+            p.a = 0.45f + z * 0.35f;
+            p.b = 0.35f + z * 0.2f;
+            p.c = 0.4f + z * 0.15f;
+            break;
+        case EngineId::karplus:
+            p.a = 0.992f - z * 0.008f;
+            p.b = 0.25f + z * 0.35f;
+            p.d = 0.12f + z * 0.08f;
+            break;
+        case EngineId::wave:
+            p.a = 0.25f + z * 0.55f;
+            p.b = 0.3f + z * 0.2f;
+            p.c = 1.0f;
+            p.d = 0.5f;
+            break;
+        case EngineId::subtractive:
+            p.a = 0.15f + z * 0.25f;
+            p.b = 0.2f + z * 0.15f;
+            p.c = 0.0f;
+            p.d = 0.55f + z * 0.2f;
+            break;
+    }
+    return p;
+}
+
 } // namespace
 
 void buildRomplerFactoryRegions (std::vector<PackRegionSpec>& specs)
@@ -47,13 +79,13 @@ void buildRomplerFactoryRegions (std::vector<PackRegionSpec>& specs)
         const int hi = (i == 7) ? 127 : zoneRoots[i + 1];
 
         appendRegion (specs, dlrom::SampleCategory::bell, 0, root, lo, hi,
-                      renderBell (4096, 0.4f + 0.05f * static_cast<float> (i), 4.0f + 0.2f * i), false);
+                      renderEngine (EngineId::additive, 4096, factoryParams (EngineId::additive, i)), false);
         appendRegion (specs, dlrom::SampleCategory::keys, 1, root, lo, hi,
-                      renderKeys (8192, 0.992f - 0.002f * static_cast<float> (i), 0.3f + 0.04f * i), false);
+                      renderEngine (EngineId::karplus, 8192, factoryParams (EngineId::karplus, i)), false);
         appendRegion (specs, dlrom::SampleCategory::pad, 2, root, lo, hi,
-                      renderPad (16384, 0.08f + 0.01f * static_cast<float> (i), false), true);
+                      renderEngine (EngineId::wave, 16384, factoryParams (EngineId::wave, i)), true);
         appendRegion (specs, dlrom::SampleCategory::sub, 3, root, lo, hi,
-                      renderSub808 (12000, 0.6f + 0.03f * static_cast<float> (i)), false);
+                      renderEngine (EngineId::subtractive, 12000, factoryParams (EngineId::subtractive, i)), false);
     }
 }
 
