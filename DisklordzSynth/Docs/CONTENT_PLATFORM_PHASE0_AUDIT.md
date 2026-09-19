@@ -1,7 +1,7 @@
-# DPCP Phase 0 — Discover audit
+# Content platform — Phase 0 Discover audit
 
 **Date:** 2026-03-21 (agent)  
-**Prompt:** [docs/DPCP.md](../../docs/DPCP.md) Phase 0  
+**Workflow:** DPCP / [PLUGIN_FACTORY_OS_PROMPT.md](../../docs/PLUGIN_FACTORY_OS_PROMPT.md) §0 Phase A · Roadmap: [CONTENT_PLATFORM_ROADMAP.md](CONTENT_PLATFORM_ROADMAP.md) Phase 0  
 **Branch context:** `cursor/disklordz-rompler-build-9a2b`
 
 ## 1. Repository products (relevant)
@@ -38,7 +38,7 @@
 | Phase C Vertical slices | ROMPLER P0 shell/engine/UI partial; Factory Phase 2+ not started |
 | Phase D Validate | `ctest -R Disklordz` green; pluginval on ROMPLER as CI allows |
 
-## 4. Gaps (ordered for DPCP Phase 1–3)
+## 4. Gaps (ordered for roadmap Phases 1–3)
 
 1. **No sample database** — cannot track 8k–20k WAVs or enforce IDs at scale.
 2. **No `import-wav` / analyze pipeline** — manual `.manifest` only.
@@ -46,7 +46,7 @@
 4. **Processor uses `FactoryRomLoader`**, not `ContentEngine` — expansions not in runtime path.
 5. **No preset fan-out tooling** — 1,000 presets require generator + taxonomy DB.
 6. **Streaming not implemented** — OK until ROM > ~1–2 GB ([ROM_BUDGET_V1.md](ROM_BUDGET_V1.md)).
-7. **License/entitlement/installer** — documented only (DPCP Phase 7).
+7. **License/entitlement/installer** — documented only (roadmap Phase 7).
 
 ## 5. Phase 0 exit criteria
 
@@ -60,7 +60,7 @@
 
 ## 6. Recommended Phase 1 default (if user does not override)
 
-Proceed to **DPCP Phase 2 slice 1**: `DisklordzSynth_RomFactory import-wav` → JSON `SampleAsset` export, using [SAMPLE_STANDARD_V1.md](SAMPLE_STANDARD_V1.md) naming.
+Proceed to **roadmap Phase 2 slice 1**: `DisklordzSynth_RomFactory import-wav` → JSON `SampleAsset` export, using [SAMPLE_STANDARD_V1.md](SAMPLE_STANDARD_V1.md) naming.
 
 **Tier-A first instrument (proposed default):** 808/Sub family (aligns with phonk product identity, lightweight sampling strategy).
 
