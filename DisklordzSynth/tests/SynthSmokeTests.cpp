@@ -68,17 +68,17 @@ int main()
     }
 
     const fs::path tmp = fs::temp_directory_path() / "disklordz_rom_factory_smoke";
-    fs::create_directories (tmp / "samples");
     const std::vector<float> tone (2048, 0.0f);
     std::vector<float> click = tone;
     click[0] = 1.0f;
-    if (! disklordz::synth::writeMonoWav24 ((tmp / "samples/C4.wav").string(), click, 48000))
+    if (! disklordz::synth::writeMonoWav24 ((tmp / "C4.wav").string(), click, 48000))
     {
         std::cerr << "failed to write test wav\n";
         return EXIT_FAILURE;
     }
     std::ofstream manifest (tmp / "multisample.manifest");
-    manifest << "id smoke_test\nfamily keys\nlayer cyber_shift\nprogram 9\nzone 60 samples/C4.wav\n";
+    manifest << "id smoke_test\nfamily keys\nlayer cyber_shift\nprogram 9\nzone 60 C4.wav\n";
+    manifest.close();
 
     std::string err;
     if (! disklordz::factory::buildRomCardFromManifests (tmp.string(), (tmp / "card.dlrrom").string(), 12, err))
