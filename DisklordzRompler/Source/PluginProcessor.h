@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Assets/SampleBank.h"
+#include "Assets/RawRomBank.h"
 #include "Engine/RomplerEngine.h"
 #include "Engine/RomplerParams.h"
 #include "Parameters/ParameterIds.h"
@@ -49,7 +49,7 @@ private:
     disklordz::rompler::RomplerParams readParamsFromApvts() const noexcept;
 
     juce::AudioProcessorValueTreeState apvts_;
-    disklordz::rompler::assets::SampleBank sampleBank_;
+    disklordz::rompler::assets::RawRomBank romBank_;
     disklordz::rompler::engine::RomplerEngine engine_;
     disklordz::rompler::RomplerParams liveParams_{};
     int currentProgram_ = 0;

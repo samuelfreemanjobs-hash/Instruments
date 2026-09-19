@@ -47,9 +47,9 @@ DisklordzRomplerProcessor::DisklordzRomplerProcessor()
 #endif
       apvts_ (*this, nullptr, "DisklordzRompler", createParameterLayout())
 {
-    sampleBank_.loadEmbedded (BinaryData::disklordz_factory_dlrom,
-                              static_cast<std::size_t> (BinaryData::disklordz_factory_dlromSize));
-    engine_.setSampleBank (&sampleBank_);
+    romBank_.loadEmbedded (BinaryData::disklordz_factory_dlrrom,
+                           static_cast<std::size_t> (BinaryData::disklordz_factory_dlrromSize));
+    engine_.setRomBank (&romBank_);
     applyFactoryPreset (0);
 }
 

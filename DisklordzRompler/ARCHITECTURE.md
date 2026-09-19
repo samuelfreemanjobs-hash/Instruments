@@ -4,7 +4,7 @@ Sample-based four-tone rompler VSTi (not WAVE-909). Repo index: [ARCHITECTURE.md
 
 ## Purpose
 
-Dark trap / phonk rompler: four layered tones (bell, keys, pad, sub) driven by a **clean-room generated** sample pack (`DLROMPR1`), with performance macros and factory presets.
+Dark trap / phonk rompler: four layered tones (additive, karplus, wave, subtractive ROM banks) driven by a **clean-room generated** raw wave ROM (`DLRROM01`), with performance macros and factory presets.
 
 ## Build and run
 
@@ -17,16 +17,16 @@ ctest --test-dir build -R DisklordzRompler
 
 Artifact: `build/DisklordzRompler/DisklordzRompler_artefacts/Release/VST3/DISKLORDZ ROMPLER.vst3`
 
-## Sample pack pipeline
+## Raw ROM pipeline
 
 ```text
-GenerateDisklordzRomplerPack (offline synth)
+DisklordzSynth (4 engines) → buildRawRom()
         ↓
-disklordz_factory.dlrom (DLROMPR1)
+disklordz_factory.dlrrom (DLRROM01)
         ↓
 juce_add_binary_data → embedded in plugin
         ↓
-SampleBank at startup (no audio-thread load)
+RawRomBank at startup (no audio-thread load)
 ```
 
 Regenerate only via rebuild; see [Docs/SAMPLE_PACK.md](Docs/SAMPLE_PACK.md).
@@ -35,7 +35,7 @@ Regenerate only via rebuild; see [Docs/SAMPLE_PACK.md](Docs/SAMPLE_PACK.md).
 
 ```text
 MIDI → DisklordzRomplerProcessor → RomplerEngine → RomplerVoice × 24
-     → 4 tone layers × SampleBank region → mix → macro DSP → out
+     → 4 tone layers × ROM wave select (multisample set) → mix → macro DSP → out
 ```
 
 ## Threading
@@ -44,22 +44,22 @@ MIDI → DisklordzRomplerProcessor → RomplerEngine → RomplerVoice × 24
 |--------|------|
 | Audio | Voice render, parameter reads from APVTS atomics |
 | Message | Editor, preset changes |
-| Build-time | `GenerateDisklordzRomplerPack` procedural PCM |
+| Build-time | `DisklordzSynth_BuildRawRom` procedural PCM |
 
 ## Key modules
 
 | Path | Responsibility |
 |------|----------------|
-| `tools/GenerateRomplerPack.cpp` | Procedural bell/keys/pad/sub multisamples |
-| `Source/Assets/PackFormat.h`, `SampleBank.h` | DLROMPR1 parse + region lookup |
+| `DisklordzSynth/src/RawRomBuilder.cpp` | Engine-only factory ROM synthesis |
+| `Source/Assets/RawRomBank.h` | DLRROM01 parse + multisample wave lookup |
 | `Source/Engine/RomplerEngine.h` | Voice pool, MIDI sustain/bend |
-| `Source/Engine/RomplerVoice.h` | Per-layer sample playback |
+| `Source/Engine/RomplerVoice.h` | Per-layer wave playback |
 | `Source/Presets/FactoryPresets.*` | Factory programs |
-| `Source/PluginProcessor.*` | APVTS, pack embed, host glue |
+| `Source/PluginProcessor.*` | APVTS, ROM embed, host glue |
 
 ## Extension points
 
-- User packs: message-thread file load into `SampleBank` (P1)
+- User ROM: message-thread load into `RawRomBank` (P1)
 - UI tabs from mock: [Docs/UI_SPEC.md](Docs/UI_SPEC.md)
 - SaaS kit download hooks (document only)
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Assets/SampleBank.h"
+#include "Assets/RawRomBank.h"
 #include "Engine/RomplerParams.h"
 #include "Engine/RomplerVoice.h"
 
@@ -15,7 +15,7 @@ class RomplerEngine final
 public:
     static constexpr int kMaxVoices = 24;
 
-    void setSampleBank (const assets::SampleBank* bank) noexcept
+    void setRomBank (const assets::RawRomBank* bank) noexcept
     {
         bank_ = bank;
     }
@@ -127,7 +127,7 @@ private:
     }
 
     double sampleRate_ = 44100.0;
-    const assets::SampleBank* bank_ = nullptr;
+    const assets::RawRomBank* bank_ = nullptr;
     RomplerParams params_{};
     std::array<RomplerVoice, kMaxVoices> voices_{};
     std::array<bool, 128> keyHeld_{};

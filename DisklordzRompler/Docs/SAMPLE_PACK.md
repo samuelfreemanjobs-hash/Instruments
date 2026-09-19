@@ -1,40 +1,42 @@
-# DLROMPR1 — factory sample pack
+# DLRROM01 — factory raw wave ROM
 
 ## Origin
 
-All factory audio is **synthesized at build time** by **[DisklordzSynth](../../DisklordzSynth/)** (`DisklordzSynth_BuildFactoryPack`). No third-party samples or Roland/JD dumps are used. The synth tools are retained for separate WAV/pack products — see [DisklordzSynth/Docs/COMMERCIAL.md](../../DisklordzSynth/Docs/COMMERCIAL.md).
+All factory audio is **synthesized at build time** by the four **[DisklordzSynth](../../DisklordzSynth/)** engines (`DisklordzSynth_BuildRawRom`). The ROM is a flat **wave table + PCM pool** (JD-style multisample sets), not pre-mapped tone regions. No third-party samples or Roland/JD dumps are used.
 
-Categories per tone slot:
+| Rompler tone | Multisample set | Engine |
+|--------------|-----------------|--------|
+| 0 | 1 | **additive** |
+| 1 | 2 | **karplus** |
+| 2 | 3 | **wave** (looped waves) |
+| 3 | 4 | **subtractive** |
 
-| Tone | Category | DisklordzSynth engine |
-|------|----------|------------------------|
-| 0 | Bell | **additive** |
-| 1 | Keys | **karplus** |
-| 2 | Pad | **wave** (looped) |
-| 3 | Sub | **subtractive** |
-
-Eight velocity/key zones per tone (roots 36–84) → 32 regions total.
+Each set has eight root zones (MIDI 36–84). The plugin picks the closest root wave at note-on. Sixteen additional standalone waves (set id 0) live in the ROM for tooling and future programs.
 
 ## File layout
 
 ```text
-PackHeader   (magic DLROMPR1, version, counts)
-SampleRegion[regionCount]
-float pcm[pcmFloatCount]
+RomHeader     (magic DLRROM01, version, waveCount, pcmFloatCount)
+WaveEntry[]   (wave table: offsets, roots, loop points, engine id, multisample set id)
+float pcm[]   (interleaved mono pool)
 ```
 
-See `Source/Assets/PackFormat.h`.
+See `DisklordzSynth/include/disklordz/RawRomFormat.h` and `Source/Assets/RawRomBank.h`.
 
 ## Manual regeneration
 
 ```bash
-cmake --build build -j --target DisklordzSynth_BuildFactoryPack
-./build/DisklordzSynth/DisklordzSynth_BuildFactoryPack /tmp/test.dlrom
+cmake --build build -j --target DisklordzSynth_BuildRawRom
+./build/DisklordzSynth/DisklordzSynth_BuildRawRom /tmp/test.dlrrom
 ```
 
-Normal builds run this automatically before `juce_add_binary_data`.
+Normal plugin builds run this automatically before `juce_add_binary_data`.
+
+## Legacy DLROMPR1
+
+`DisklordzSynth_BuildFactoryPack` still builds the older region-pack format for separate commercial `.dlrom` products; the rompler no longer embeds it.
 
 ## Future
 
-- P1: import user WAV folders with manifest JSON
+- P1: import user WAV folders into a DLRROM01 builder
 - P1: optional link to Disklordz SaaS kit downloads (out of repo)

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Assets/SampleBank.h"
+#include "Assets/RawRomBank.h"
+#include "disklordz/RawRomFormat.h"
 #include "DSP/AdsrEnvelope.h"
 #include "Engine/RomplerParams.h"
 
@@ -15,7 +16,7 @@ namespace disklordz::rompler::engine
 class RomplerVoice final
 {
 public:
-    void prepare (double sampleRate, const assets::SampleBank* bank) noexcept
+    void prepare (double sampleRate, const assets::RawRomBank* bank) noexcept
     {
         sampleRate_ = sampleRate;
         bank_ = bank;
@@ -40,9 +41,11 @@ public:
         velocity_ = std::clamp (velocity, 0.0f, 1.0f);
         params_ = p;
 
-        for (std::uint8_t t = 0; t < assets::kMaxToneLayers; ++t)
+        for (std::uint8_t t = 0; t < rawrom::kMaxMultisampleSets; ++t)
         {
-            layers_[t].view = bank_ != nullptr ? bank_->findRegion (t, static_cast<std::uint8_t> (midiNote)) : nullptr;
+            layers_[t].wave = bank_ != nullptr
+                                  ? bank_->selectForToneAndNote (t, static_cast<std::uint8_t> (midiNote))
+                                  : assets::WaveView{};
             layers_[t].phase = 0.0;
         }
 
@@ -69,10 +72,10 @@ public:
         const float drive = params_.macroDrive * 2.5f;
         const float crushMix = params_.macroCrush;
 
-        for (std::uint8_t t = 0; t < assets::kMaxToneLayers; ++t)
+        for (std::uint8_t t = 0; t < rawrom::kMaxMultisampleSets; ++t)
         {
             auto& layer = layers_[t];
-            if (layer.view == nullptr || layer.view->frameCount == 0)
+            if (layer.wave.samples == nullptr || layer.wave.frameCount == 0)
                 continue;
 
             const float level = params_.toneLevel[static_cast<std::size_t> (t)];
@@ -80,7 +83,7 @@ public:
                 continue;
 
             const float bend = std::pow (2.0f, params_.pitchBendSemis / 12.0f);
-            const float noteDelta = static_cast<float> (note_) - static_cast<float> (layer.view->rootNote);
+            const float noteDelta = static_cast<float> (note_) - static_cast<float> (layer.wave.rootNote);
             const float rate = std::pow (2.0f, noteDelta / 12.0f) * bend;
 
             mix += sampleLayer (layer, rate) * level;
@@ -113,48 +116,38 @@ public:
 private:
     struct LayerState final
     {
-        const assets::SampleView* view = nullptr;
+        assets::WaveView wave{};
         double phase = 0.0;
     };
 
     float sampleLayer (LayerState& layer, float rate) noexcept
     {
-        const auto* view = layer.view;
-        const double pos = layer.phase;
-        const auto idx = static_cast<std::uint32_t> (pos);
-        if (idx >= view->frameCount)
-        {
-            if (view->loopEnd > view->loopStart && view->loopEnd <= view->frameCount)
-                layer.phase = static_cast<double> (view->loopStart);
-            else
-                return 0.0f;
-        }
-
-        const auto i0 = static_cast<std::uint32_t> (layer.phase) % view->frameCount;
-        const auto i1 = (i0 + 1) % view->frameCount;
+        const auto& view = layer.wave;
+        const auto i0 = static_cast<std::uint32_t> (layer.phase) % view.frameCount;
+        const auto i1 = (i0 + 1) % view.frameCount;
         const float frac = static_cast<float> (layer.phase - std::floor (layer.phase));
-        const float s = view->samples[i0] + (view->samples[i1] - view->samples[i0]) * frac;
+        const float s = view.samples[i0] + (view.samples[i1] - view.samples[i0]) * frac;
 
         layer.phase += static_cast<double> (rate);
-        if (view->loopEnd > view->loopStart)
+        if (view.looped && view.loopEnd > view.loopStart)
         {
-            if (layer.phase >= static_cast<double> (view->loopEnd))
-                layer.phase = static_cast<double> (view->loopStart)
-                              + std::fmod (layer.phase - static_cast<double> (view->loopStart),
-                                           static_cast<double> (view->loopEnd - view->loopStart));
+            if (layer.phase >= static_cast<double> (view.loopEnd))
+                layer.phase = static_cast<double> (view.loopStart)
+                              + std::fmod (layer.phase - static_cast<double> (view.loopStart),
+                                           static_cast<double> (view.loopEnd - view.loopStart));
         }
-        else if (layer.phase >= static_cast<double> (view->frameCount))
+        else if (layer.phase >= static_cast<double> (view.frameCount))
         {
-            layer.phase = static_cast<double> (view->frameCount - 1);
+            layer.phase = static_cast<double> (view.frameCount - 1);
         }
 
         return s;
     }
 
     double sampleRate_ = 44100.0;
-    const assets::SampleBank* bank_ = nullptr;
+    const assets::RawRomBank* bank_ = nullptr;
     RomplerParams params_{};
-    std::array<LayerState, assets::kMaxToneLayers> layers_{};
+    std::array<LayerState, rawrom::kMaxMultisampleSets> layers_{};
     dsp::AdsrEnvelope ampEnv_{};
     float lpState_ = 0.0f;
     bool active_ = false;

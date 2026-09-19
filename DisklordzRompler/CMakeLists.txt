@@ -1,20 +1,20 @@
 # DISKLORDZ ROMPLER — sample-based rompler (standalone product, not WAVE-909).
 
-set (DLROM_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
-set (DLROM_FILE "${DLROM_GENERATED_DIR}/disklordz_factory.dlrom")
+set (DLRROM_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+set (DLRROM_FILE "${DLRROM_GENERATED_DIR}/disklordz_factory.dlrrom")
 
 add_custom_command (
-    OUTPUT "${DLROM_FILE}"
-    COMMAND "${CMAKE_COMMAND}" -E make_directory "${DLROM_GENERATED_DIR}"
-    COMMAND DisklordzSynth_BuildFactoryPack "${DLROM_FILE}"
-    DEPENDS DisklordzSynth_BuildFactoryPack
-    COMMENT "Synthesizing Disklordz Rompler DLROMPR1 pack (DisklordzSynth)"
+    OUTPUT "${DLRROM_FILE}"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${DLRROM_GENERATED_DIR}"
+    COMMAND DisklordzSynth_BuildRawRom "${DLRROM_FILE}"
+    DEPENDS DisklordzSynth_BuildRawRom
+    COMMENT "Synthesizing Disklordz raw wave ROM DLRROM01 (DisklordzSynth engines)"
 )
 
-add_custom_target (DisklordzRompler_GeneratePack DEPENDS "${DLROM_FILE}")
+add_custom_target (DisklordzRompler_GenerateRom DEPENDS "${DLRROM_FILE}")
 
-juce_add_binary_data (DisklordzRomplerPackData SOURCES "${DLROM_FILE}")
-add_dependencies (DisklordzRomplerPackData DisklordzRompler_GeneratePack)
+juce_add_binary_data (DisklordzRomplerPackData SOURCES "${DLRROM_FILE}")
+add_dependencies (DisklordzRomplerPackData DisklordzRompler_GenerateRom)
 
 juce_add_plugin (DisklordzRompler
     COMPANY_NAME "Disklordz"
@@ -67,7 +67,7 @@ juce_generate_juce_header (DisklordzRompler)
 add_executable (DisklordzRomplerTests Tests/RomplerEngineTests.cpp)
 target_include_directories (DisklordzRomplerTests PRIVATE Source "${CMAKE_SOURCE_DIR}/DisklordzSynth/include")
 target_compile_features (DisklordzRomplerTests PRIVATE cxx_std_20)
-target_compile_definitions (DisklordzRomplerTests PRIVATE DLROM_TEST_PACK="${DLROM_FILE}")
-add_dependencies (DisklordzRomplerTests DisklordzRompler_GeneratePack)
+target_compile_definitions (DisklordzRomplerTests PRIVATE DLRROM_TEST_ROM="${DLRROM_FILE}")
+add_dependencies (DisklordzRomplerTests DisklordzRompler_GenerateRom)
 
 add_test (NAME DisklordzRomplerEngine COMMAND DisklordzRomplerTests)

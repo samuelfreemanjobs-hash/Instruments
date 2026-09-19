@@ -1,4 +1,4 @@
-#include "Assets/SampleBank.h"
+#include "Assets/RawRomBank.h"
 #include "Engine/RomplerEngine.h"
 #include "Engine/RomplerParams.h"
 
@@ -10,7 +10,7 @@
 
 namespace
 {
-bool loadPackFile (const char* path, std::vector<std::uint8_t>& out)
+bool loadRomFile (const char* path, std::vector<std::uint8_t>& out)
 {
     std::ifstream in (path, std::ios::binary);
     if (! in)
@@ -26,44 +26,44 @@ bool loadPackFile (const char* path, std::vector<std::uint8_t>& out)
 
 int main (int argc, char** argv)
 {
-    disklordz::rompler::assets::SampleBank bank;
+    disklordz::rompler::assets::RawRomBank bank;
 
-    const char* packPath =
-#if defined (DLROM_TEST_PACK)
-        DLROM_TEST_PACK;
+    const char* romPath =
+#if defined (DLRROM_TEST_ROM)
+        DLRROM_TEST_ROM;
 #else
         nullptr;
 #endif
 
     if (argc >= 2)
-        packPath = argv[1];
+        romPath = argv[1];
 
-    if (packPath == nullptr)
+    if (romPath == nullptr)
     {
-        std::cerr << "No pack path (build with DLROM_TEST_PACK or pass argv[1])\n";
+        std::cerr << "No ROM path (build with DLRROM_TEST_ROM or pass argv[1])\n";
         return EXIT_FAILURE;
     }
 
     std::vector<std::uint8_t> bytes;
-    if (! loadPackFile (packPath, bytes))
+    if (! loadRomFile (romPath, bytes))
     {
-        std::cerr << "Failed to read pack: " << packPath << '\n';
+        std::cerr << "Failed to read ROM: " << romPath << '\n';
         return EXIT_FAILURE;
     }
     if (! bank.loadEmbedded (bytes.data(), bytes.size()))
     {
-        std::cerr << "Failed to parse pack\n";
+        std::cerr << "Failed to parse DLRROM01\n";
         return EXIT_FAILURE;
     }
 
-    if (bank.getRegionCount() < 8)
+    if (bank.getWaveCount() < 32)
     {
-        std::cerr << "Expected >= 8 regions, got " << bank.getRegionCount() << '\n';
+        std::cerr << "Expected >= 32 waves in ROM, got " << bank.getWaveCount() << '\n';
         return EXIT_FAILURE;
     }
 
     disklordz::rompler::engine::RomplerEngine engine;
-    engine.setSampleBank (&bank);
+    engine.setRomBank (&bank);
     engine.prepare (48000.0);
 
     disklordz::rompler::RomplerParams p;
@@ -86,6 +86,6 @@ int main (int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    std::cout << "DisklordzRomplerTests OK regions=" << bank.getRegionCount() << " peak=" << peak << '\n';
+    std::cout << "DisklordzRomplerTests OK waves=" << bank.getWaveCount() << " peak=" << peak << '\n';
     return EXIT_SUCCESS;
 }
