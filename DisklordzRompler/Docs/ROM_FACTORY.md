@@ -1,5 +1,7 @@
 # DISKLORDZ ROM FACTORY
 
+Full platform map: [docs/DISKLORDZ_PLATFORM.md](../../docs/DISKLORDZ_PLATFORM.md) · Spec index: [DisklordzSynth/Docs/CONTENT_PLATFORM_INDEX.md](../../DisklordzSynth/Docs/CONTENT_PLATFORM_INDEX.md)
+
 Commercial-scale rompler content is **not** 1,000 independent sampled instruments. It is a production pipeline:
 
 ```text

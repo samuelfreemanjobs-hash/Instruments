@@ -1,6 +1,8 @@
 #include "disklordz/MultisampleRomBuilder.h"
 #include "disklordz/RawRomBuilder.h"
 #include "disklordz/RomFactorySpec.h"
+#include "disklordz/content/ContentValidation.h"
+#include "disklordz/content/ExpansionManifest.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -14,7 +16,8 @@ int main (int argc, char** argv)
                   << "Usage:\n"
                   << "  DisklordzSynth_RomFactory build-procedural <output_dir>\n"
                   << "  DisklordzSynth_RomFactory build-manifest <manifest_dir> <out.dlrrom> [bank_index]\n"
-                  << "  DisklordzSynth_RomFactory print-targets\n";
+                  << "  DisklordzSynth_RomFactory print-targets\n"
+                  << "  DisklordzSynth_RomFactory validate-package <expansion_or_package_dir>\n";
         return EXIT_FAILURE;
     }
 
@@ -53,6 +56,28 @@ int main (int argc, char** argv)
             return EXIT_FAILURE;
         }
         std::cout << "Wrote manifest ROM " << argv[3] << '\n';
+        return EXIT_SUCCESS;
+    }
+
+    if (cmd == "validate-package")
+    {
+        if (argc < 3)
+            return EXIT_FAILURE;
+        disklordz::content::ContentManifest manifest;
+        std::string error;
+        const std::string manifestPath = std::string (argv[2]) + "/manifest.json";
+        if (! disklordz::content::loadContentManifestJson (manifestPath, manifest, error))
+        {
+            std::cerr << error << '\n';
+            return EXIT_FAILURE;
+        }
+        const auto report = disklordz::content::validatePackageManifest (manifest);
+        if (! report.ok)
+        {
+            std::cerr << report.message << '\n';
+            return EXIT_FAILURE;
+        }
+        std::cout << "Package OK: " << manifest.contentId << " v" << manifest.version << '\n';
         return EXIT_SUCCESS;
     }
 

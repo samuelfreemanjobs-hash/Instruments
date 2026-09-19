@@ -4,6 +4,8 @@
 #include "disklordz/RawRomBuilder.h"
 #include "disklordz/RawRomFormat.h"
 #include "disklordz/WavWriter.h"
+#include "disklordz/content/ContentValidation.h"
+#include "disklordz/content/ExpansionManifest.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -84,6 +86,20 @@ int main()
     if (! disklordz::factory::buildRomCardFromManifests (tmp.string(), (tmp / "card.dlrrom").string(), 12, err))
     {
         std::cerr << "manifest ROM build failed: " << err << '\n';
+        return EXIT_FAILURE;
+    }
+
+    const std::string expManifest = "/workspace/DisklordzRompler/FactoryContent/expansions/DL_EXP_001/manifest.json";
+    disklordz::content::ContentManifest exp;
+    std::string merr;
+    if (! disklordz::content::loadContentManifestJson (expManifest, exp, merr))
+    {
+        std::cerr << "expansion manifest: " << merr << '\n';
+        return EXIT_FAILURE;
+    }
+    if (! disklordz::content::validatePackageManifest (exp).ok)
+    {
+        std::cerr << "expansion manifest validation failed\n";
         return EXIT_FAILURE;
     }
 

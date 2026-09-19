@@ -63,6 +63,20 @@ MIDI → DisklordzRomplerProcessor → RomplerEngine → RomplerVoice × 24
 - UI tabs from mock: [Docs/UI_SPEC.md](Docs/UI_SPEC.md)
 - SaaS kit download hooks (document only)
 
+## Seven-system platform
+
+ROM Factory (DisklordzSynth) and ROMpler (this plugin) are **separate systems**. See [docs/DISKLORDZ_PLATFORM.md](../docs/DISKLORDZ_PLATFORM.md).
+
+Entity chain: **SampleAsset → Multisample → Tone → Patch → Preset → Performance** (IDs, not filenames).
+
+## Content engine (P0+)
+
+- [Source/Content/ContentEngine.h](Source/Content/ContentEngine.h) — mount `DL_PKG_FACTORY` + `DL_EXP_*` (message thread)
+- [Source/Content/StreamingSampleCache.h](Source/Content/StreamingSampleCache.h) — multi-GB streaming policy (stub)
+- [Docs/STREAMING_ARCHITECTURE.md](Docs/STREAMING_ARCHITECTURE.md)
+
+License / entitlement must **never** run on the audio thread.
+
 ## ROM Factory (commercial scale)
 
 Raw WAV → multisample manifests → `.dlrrom` cards → tones → 4-tone patches → presets. See [Docs/ROM_FACTORY.md](Docs/ROM_FACTORY.md) and [FactoryContent/README.md](FactoryContent/README.md).

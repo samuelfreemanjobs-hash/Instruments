@@ -1,0 +1,10 @@
+{
+  "contentId": "DL_EXP_001",
+  "name": "Memphis After Dark",
+  "version": "1.0.0",
+  "engineVersion": "1.0.0",
+  "contentVersion": 1,
+  "schemaVersion": 1,
+  "manifestVersion": 1,
+  "presetCatalog": "patches/catalog.json"
+}

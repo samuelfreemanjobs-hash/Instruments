@@ -1,6 +1,8 @@
 # DisklordzSynth — architecture
 
-**Offline procedural sample engines** — kept as a **separate product line** from DISKLORDZ ROMPLER. You can ship/sell WAV packs, `.dlrom` banks, or license the static library without bundling the rompler VSTi.
+**DISKLORDZ ROM Factory** — separate from the JUCE ROMPLER plugin. Offline engines + content schemas + packaging tools. Ship/sell WAV packs, `.dlrrom` expansions, or license the static library without bundling the VSTi.
+
+Platform index: [Docs/CONTENT_PLATFORM_INDEX.md](Docs/CONTENT_PLATFORM_INDEX.md) · [docs/DISKLORDZ_PLATFORM.md](../docs/DISKLORDZ_PLATFORM.md)
 
 Repo index: [ARCHITECTURE.md](../ARCHITECTURE.md).
 

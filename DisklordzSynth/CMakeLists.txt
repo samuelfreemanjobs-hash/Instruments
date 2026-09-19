@@ -9,6 +9,9 @@ add_library (DisklordzSynth STATIC
     src/WavReader.cpp
     src/MultisampleManifest.cpp
     src/MultisampleRomBuilder.cpp
+    src/ContentIds.cpp
+    src/ExpansionManifest.cpp
+    src/ContentValidation.cpp
 )
 
 target_include_directories (DisklordzSynth

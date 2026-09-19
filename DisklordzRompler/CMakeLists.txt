@@ -43,6 +43,7 @@ target_sources (DisklordzRompler
         Source/PluginEditor.cpp
         Source/Presets/FactoryPresets.cpp
         Source/Assets/FactoryRomLoader.cpp
+        Source/Content/ContentEngine.cpp
 )
 
 target_compile_definitions (DisklordzRompler
