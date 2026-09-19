@@ -2,24 +2,44 @@
 
 namespace
 {
-const juce::Colour kPanelBlue { 0xff1a2744 };
-const juce::Colour kPanelWood { 0xff3d2817 };
-const juce::Colour kAccent { 0xffe8c547 };
+const juce::Colour kPanelBlue { 0xff152238 };
+const juce::Colour kPanelInset { 0xff0d1628 };
+const juce::Colour kPanelWood { 0xff5c3d22 };
+const juce::Colour kAccent { 0xfff0d060 };
+const juce::Colour kSectionText { 0xffe8eef8 };
 
-void layoutRow(juce::Rectangle<int> area, juce::Component& a, juce::Component& b, juce::Component& c, juce::Component& d)
+void drawSection(juce::Graphics& g, juce::Rectangle<int> r, const juce::String& title)
 {
-    const int w = area.getWidth() / 4;
-    a.setBounds(area.removeFromLeft(w).reduced(4));
-    b.setBounds(area.removeFromLeft(w).reduced(4));
-    c.setBounds(area.removeFromLeft(w).reduced(4));
-    d.setBounds(area.reduced(4));
+    g.setColour(kPanelInset);
+    g.fillRoundedRectangle(r.toFloat(), 8.0f);
+    g.setColour(kPanelWood);
+    g.drawRoundedRectangle(r.toFloat(), 8.0f, 2.0f);
+    g.setColour(kSectionText);
+    g.setFont(juce::FontOptions(14.0f, juce::Font::bold));
+    g.drawText(title, r.removeFromTop(22).reduced(8, 0), juce::Justification::centredLeft);
+}
+
+void layoutKnobRow(juce::Rectangle<int> area, std::initializer_list<juce::Slider*> knobs)
+{
+    const int n = static_cast<int>(knobs.size());
+    const int w = area.getWidth() / n;
+    int i = 0;
+    for (auto* k : knobs)
+    {
+        k->setBounds(area.removeFromLeft(w).reduced(6));
+        ++i;
+        juce::ignoreUnused(i);
+    }
 }
 } // namespace
 
-void MoogVoyagerAudioProcessorEditor::styleKnob(juce::Slider& s)
+void MoogVoyagerAudioProcessorEditor::styleKnob(juce::Slider& s, const juce::String& name)
 {
+    s.setName(name);
     s.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    s.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 56, 16);
+    s.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 64, 18);
+    s.setColour(juce::Slider::rotarySliderFillColourId, kAccent);
+    s.setColour(juce::Slider::thumbColourId, kAccent.brighter(0.2f));
 }
 
 void MoogVoyagerAudioProcessorEditor::bindCombo(juce::ComboBox& box, const juce::StringArray& items)
@@ -27,20 +47,54 @@ void MoogVoyagerAudioProcessorEditor::bindCombo(juce::ComboBox& box, const juce:
     box.addItemList(items, 1);
 }
 
+void MoogVoyagerAudioProcessorEditor::sectionLabel(juce::Label& label, const juce::String& text)
+{
+    label.setText(text, juce::dontSendNotification);
+    label.setJustificationType(juce::Justification::centred);
+    label.setColour(juce::Label::textColourId, kAccent);
+    label.setFont(juce::FontOptions(13.0f, juce::Font::bold));
+}
+
 MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudioProcessor& p)
     : AudioProcessorEditor(&p),
       processorRef(p)
 {
-    styleKnob(masterSlider);
-    addAndMakeVisible(masterSlider);
+    setOpaque(true);
+
+    titleLabel.setText("V VOYAGER", juce::dontSendNotification);
+    titleLabel.setJustificationType(juce::Justification::centred);
+    titleLabel.setColour(juce::Label::textColourId, kAccent);
+    titleLabel.setFont(juce::FontOptions(26.0f, juce::Font::bold));
+    addAndMakeVisible(titleLabel);
+
+    for (auto* lab : { &oscSectionLabel, &filterSectionLabel, &envSectionLabel, &modSectionLabel })
+    {
+        addAndMakeVisible(*lab);
+    }
+    sectionLabel(oscSectionLabel, "OSCILLATORS");
+    sectionLabel(filterSectionLabel, "LADDER FILTER");
+    sectionLabel(envSectionLabel, "ENVELOPES");
+    sectionLabel(modSectionLabel, "LFO / GLIDE");
 
     const juce::StringArray waves { "Saw", "Square", "Triangle", "Pulse" };
     const juce::StringArray octaves { "-2", "-1", "0", "+1", "+2" };
 
     for (int i = 0; i < 3; ++i)
     {
-        styleKnob(oscLevel[i]);
-        styleKnob(oscFine[i]);
+        oscIndexLabel[i].setText("OSC " + juce::String(i + 1), juce::dontSendNotification);
+        oscIndexLabel[i].setJustificationType(juce::Justification::centred);
+        oscIndexLabel[i].setColour(juce::Label::textColourId, kSectionText);
+        oscOctLabel[i].setText("Octave", juce::dontSendNotification);
+        oscWaveLabel[i].setText("Wave", juce::dontSendNotification);
+        for (auto* l : { &oscIndexLabel[i], &oscOctLabel[i], &oscWaveLabel[i] })
+        {
+            l->setJustificationType(juce::Justification::centred);
+            l->setColour(juce::Label::textColourId, kSectionText.withAlpha(0.9f));
+            addAndMakeVisible(*l);
+        }
+
+        styleKnob(oscLevel[i], "Level");
+        styleKnob(oscFine[i], "Fine");
         bindCombo(oscOctave[i], octaves);
         bindCombo(oscWave[i], waves);
         addAndMakeVisible(oscLevel[i]);
@@ -49,16 +103,32 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
         addAndMakeVisible(oscWave[i]);
     }
 
-    styleKnob(noiseSlider);
+    styleKnob(noiseSlider, "Noise");
     addAndMakeVisible(noiseSlider);
+
+    styleKnob(filterCutoff, "Cutoff");
+    styleKnob(filterRes, "Resonance");
+    styleKnob(filterDrive, "Drive");
+    styleKnob(filterEnvAmt, "F.Env");
+    styleKnob(filterKb, "KB Track");
+    styleKnob(fAttack, "F.A");
+    styleKnob(fDecay, "F.D");
+    styleKnob(fSustain, "F.S");
+    styleKnob(fRelease, "F.R");
+    styleKnob(aAttack, "A.A");
+    styleKnob(aDecay, "A.D");
+    styleKnob(aSustain, "A.S");
+    styleKnob(aRelease, "A.R");
+    styleKnob(lfoRate, "LFO Hz");
+    styleKnob(lfoPitch, "→ Pitch");
+    styleKnob(lfoFilter, "→ Filter");
+    styleKnob(glide, "Glide");
+    styleKnob(masterSlider, "Master");
 
     for (auto* s : { &filterCutoff, &filterRes, &filterDrive, &filterEnvAmt, &filterKb,
                      &fAttack, &fDecay, &fSustain, &fRelease, &aAttack, &aDecay, &aSustain, &aRelease,
-                     &lfoRate, &lfoPitch, &lfoFilter, &glide })
-    {
-        styleKnob(*s);
+                     &lfoRate, &lfoPitch, &lfoFilter, &glide, &masterSlider })
         addAndMakeVisible(*s);
-    }
 
     auto& apvts = processorRef.getApvts();
     masterAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::outputGainDb), masterSlider);
@@ -70,10 +140,14 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
 
     for (int i = 0; i < 3; ++i)
     {
-        oscLevelAttachments[i] = std::make_unique<SliderAttachment>(apvts, std::string(levelIds[i]), oscLevel[i]);
-        oscFineAttachments[i] = std::make_unique<SliderAttachment>(apvts, std::string(fineIds[i]), oscFine[i]);
-        oscOctaveAttachments[i] = std::make_unique<ComboAttachment>(apvts, std::string(octIds[i]), oscOctave[i]);
-        oscWaveAttachments[i] = std::make_unique<ComboAttachment>(apvts, std::string(waveIds[i]), oscWave[i]);
+        oscLevelAttachments[static_cast<size_t>(i)] =
+            std::make_unique<SliderAttachment>(apvts, std::string(levelIds[i]), oscLevel[i]);
+        oscFineAttachments[static_cast<size_t>(i)] =
+            std::make_unique<SliderAttachment>(apvts, std::string(fineIds[i]), oscFine[i]);
+        oscOctaveAttachments[static_cast<size_t>(i)] =
+            std::make_unique<ComboAttachment>(apvts, std::string(octIds[i]), oscOctave[i]);
+        oscWaveAttachments[static_cast<size_t>(i)] =
+            std::make_unique<ComboAttachment>(apvts, std::string(waveIds[i]), oscWave[i]);
     }
 
     noiseAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::noiseLevel), noiseSlider);
@@ -98,7 +172,8 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     lfoFilterAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::lfoToFilter), lfoFilter);
     glideAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::glideTime), glide);
 
-    setSize(980, 520);
+    setResizeLimits(900, 480, 1400, 800);
+    setSize(1040, 580);
 }
 
 MoogVoyagerAudioProcessorEditor::~MoogVoyagerAudioProcessorEditor() = default;
@@ -107,47 +182,58 @@ void MoogVoyagerAudioProcessorEditor::paint(juce::Graphics& g)
 {
     g.fillAll(kPanelBlue);
     g.setColour(kPanelWood);
-    g.fillRect(getLocalBounds().removeFromTop(48));
-    g.setColour(kAccent);
-    g.setFont(juce::FontOptions(22.0f, juce::Font::bold));
-    g.drawFittedText("V Voyager — Minimoog Voyager-style mono synth", getLocalBounds().removeFromTop(48),
-                     juce::Justification::centred, 1);
+    g.fillRect(0, 0, getWidth(), 52);
+    g.setColour(kAccent.withAlpha(0.35f));
+    g.fillRect(0, 52, getWidth(), 2);
 
-    g.setColour(juce::Colours::white.withAlpha(0.85f));
-    g.setFont(13.0f);
-    auto b = getLocalBounds().reduced(8).withTrimmedTop(52);
-    g.drawText("Oscillators", b.removeFromTop(18).removeFromLeft(320), juce::Justification::centredLeft);
-    g.drawText("Filter / LFO", b.removeFromTop(0), juce::Justification::centred);
+    auto bounds = getLocalBounds().reduced(12).withTrimmedTop(58);
+    auto oscBox = bounds.removeFromTop(175);
+    auto filterBox = bounds.removeFromTop(115);
+    auto envBox = bounds.removeFromTop(115);
+    auto modBox = bounds.removeFromTop(95);
+    juce::ignoreUnused(modBox);
+
+    drawSection(g, oscBox, "Oscillator bank");
+    drawSection(g, filterBox, "Moog ladder filter");
+    drawSection(g, envBox, "Filter & amplifier envelopes");
+    drawSection(g, bounds, "Modulation");
 }
 
 void MoogVoyagerAudioProcessorEditor::resized()
 {
-    auto area = getLocalBounds().reduced(10).withTrimmedTop(56);
-    auto top = area.removeFromTop(200);
-    auto oscRow = top.removeFromTop(180);
+    titleLabel.setBounds(0, 8, getWidth(), 36);
+
+    auto bounds = getLocalBounds().reduced(12).withTrimmedTop(58);
+    auto oscBox = bounds.removeFromTop(175);
+    oscSectionLabel.setBounds(oscBox.removeFromTop(20));
+    auto oscInner = oscBox.reduced(10, 4);
 
     for (int i = 0; i < 3; ++i)
     {
-        auto col = oscRow.removeFromLeft(oscRow.getWidth() / 3).reduced(6);
-        auto r1 = col.removeFromTop(col.getHeight() / 2);
-        oscLevel[i].setBounds(r1.removeFromLeft(r1.getWidth() / 2).reduced(2));
-        oscFine[i].setBounds(r1.reduced(2));
-        oscOctave[i].setBounds(col.removeFromTop(28));
-        oscWave[i].setBounds(col.removeFromTop(28));
+        auto col = oscInner.removeFromLeft(oscInner.getWidth() / 3).reduced(4);
+        oscIndexLabel[i].setBounds(col.removeFromTop(18));
+        auto knobs = col.removeFromTop(col.getHeight() - 52);
+        oscLevel[i].setBounds(knobs.removeFromLeft(knobs.getWidth() / 2).reduced(2));
+        oscFine[i].setBounds(knobs.reduced(2));
+        oscOctLabel[i].setBounds(col.removeFromTop(14));
+        oscOctave[i].setBounds(col.removeFromTop(22));
+        oscWaveLabel[i].setBounds(col.removeFromTop(14));
+        oscWave[i].setBounds(col.removeFromTop(22));
     }
 
-    auto mid = area.removeFromTop(140);
-    auto filterArea = mid.removeFromLeft(mid.getWidth() * 2 / 3);
-    layoutRow(filterArea.removeFromTop(70), filterCutoff, filterRes, filterDrive, filterEnvAmt);
-    filterKb.setBounds(filterArea.reduced(8));
+    auto filterBox = bounds.removeFromTop(115);
+    filterSectionLabel.setBounds(filterBox.removeFromTop(20));
+    auto fIn = filterBox.reduced(10, 4);
+    layoutKnobRow(fIn.removeFromTop(78), { &filterCutoff, &filterRes, &filterDrive, &filterEnvAmt, &filterKb });
 
-    auto envArea = mid;
-    layoutRow(envArea.removeFromTop(65), fAttack, fDecay, fSustain, fRelease);
-    layoutRow(envArea, aAttack, aDecay, aSustain, aRelease);
+    auto envBox = bounds.removeFromTop(115);
+    envSectionLabel.setBounds(envBox.removeFromTop(20));
+    auto eIn = envBox.reduced(10, 4);
+    layoutKnobRow(eIn.removeFromTop(38), { &fAttack, &fDecay, &fSustain, &fRelease });
+    layoutKnobRow(eIn, { &aAttack, &aDecay, &aSustain, &aRelease });
 
-    auto bottom = area;
-    layoutRow(bottom.removeFromTop(80), lfoRate, lfoPitch, lfoFilter, glide);
-    auto tail = bottom;
-    noiseSlider.setBounds(tail.removeFromLeft(120).reduced(8));
-    masterSlider.setBounds(tail.removeFromRight(140).reduced(8));
+    auto modBox = bounds.removeFromTop(95);
+    modSectionLabel.setBounds(modBox.removeFromTop(20));
+    auto mIn = modBox.reduced(10, 4);
+    layoutKnobRow(mIn, { &lfoRate, &lfoPitch, &lfoFilter, &glide, &noiseSlider, &masterSlider });
 }

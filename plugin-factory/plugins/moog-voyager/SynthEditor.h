@@ -2,6 +2,7 @@
 
 #include "SynthProcessor.h"
 #include <JuceHeader.h>
+#include <array>
 
 class MoogVoyagerAudioProcessorEditor : public juce::AudioProcessorEditor
 {
@@ -16,14 +17,19 @@ private:
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     using ComboAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
 
-    static void styleKnob(juce::Slider& s);
+    static void styleKnob(juce::Slider& s, const juce::String& name);
     static void bindCombo(juce::ComboBox& box, const juce::StringArray& items);
+    static void sectionLabel(juce::Label& label, const juce::String& text);
 
     MoogVoyagerAudioProcessor& processorRef;
+
+    juce::Label titleLabel;
+    juce::Label oscSectionLabel, filterSectionLabel, envSectionLabel, modSectionLabel;
 
     juce::Slider masterSlider;
     juce::Slider oscLevel[3], oscFine[3], noiseSlider;
     juce::ComboBox oscOctave[3], oscWave[3];
+    juce::Label oscIndexLabel[3], oscOctLabel[3], oscWaveLabel[3];
 
     juce::Slider filterCutoff, filterRes, filterDrive, filterEnvAmt, filterKb;
     juce::Slider fAttack, fDecay, fSustain, fRelease;
