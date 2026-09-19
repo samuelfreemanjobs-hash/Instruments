@@ -1,6 +1,6 @@
 # PLUGIN FACTORY OS — agent prompt template
 
-Use with **Cursor Cloud Agent** or **IDE Agent** in the Instruments monorepo. The factory defines *what* to build; **DPCP / DPCS** defines *how* on every project — see [DPCS_BUILD_METHODOLOGY.md](DPCS_BUILD_METHODOLOGY.md) and [`.cursor/rules/dpcp.mdc`](../.cursor/rules/dpcp.mdc). **§0** below is the plugin-specific expansion of the same loop (Discover → Plan → Code → Prove).
+Use with **Cursor Cloud Agent** or **IDE Agent** in the Instruments monorepo. The factory defines *what* to build; **[DPCS_BUILD_METHODOLOGY.md](DPCS_BUILD_METHODOLOGY.md)** defines *how* on every project ([`.cursor/rules/dpcs.mdc`](../.cursor/rules/dpcs.mdc)). **§0** below is the plugin-specific slice template inside DPCS Phases 0–4.
 
 **DISKLORDZ ROMPLER (standalone sample rompler VSTi):** [DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](DISKLORDZ_ROMPLER_CURSOR_PROMPT.md) — not related to WAVE-909.
 

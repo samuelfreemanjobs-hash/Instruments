@@ -1,0 +1,26 @@
+---
+description: DPCS — phase-locked build methodology for every project (Phases 0–4). Always-on.
+alwaysApply: true
+---
+
+# DPCS — Build Methodology
+
+Follow **[docs/DPCS_BUILD_METHODOLOGY.md](docs/DPCS_BUILD_METHODOLOGY.md)** on **every** task. Same pipeline for all products in this monorepo.
+
+```
+PHASE 0  Constitution   scope, stack, non-negotiables, exclusions
+PHASE 1  PRD            behaviour only — ZERO code
+PHASE 2  Contract       headers only, compile-checked
+PHASE 3  Module         ONE .cpp per run, explicit file allowlist
+PHASE 4  Verify         script exits 0, or it isn't done
+```
+
+**Core laws:** DONE = commands exit 0; zero code in Phase 1; one module per Phase 3 run; upstream by path (cite files, not chat memory).
+
+**Debug:** facts → ≤3 hypotheses → root-cause proof paragraph **before** fix → minimal fix → regression test.
+
+Also respect [architecture-documentation.mdc](architecture-documentation.mdc), [security-baseline.mdc](security-baseline.mdc), and product `ARCHITECTURE.md`.
+
+**Plugin / greenfield products:** [PLUGIN_FACTORY_OS_PROMPT.md](docs/PLUGIN_FACTORY_OS_PROMPT.md) §0 is a compatible slice template inside DPCS — do not skip Constitution or Verify.
+
+**DiskLordz content-only roadmap** (optional): [disklordz-content-platform.mdc](disklordz-content-platform.mdc) when editing ROM Factory / ROMpler content paths.

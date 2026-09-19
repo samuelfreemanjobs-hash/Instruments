@@ -15,7 +15,7 @@ Use this for **Disklordz** and **any new repo** in the org. Pair with [AGENTIC_P
 | `.gitignore` | Secrets, build artifacts |
 | `.cursorignore` | Keep huge trees out of context |
 | CI workflow | `lint` / `test` / `build` on PR |
-| `.cursor/rules/dpcp.mdc` | `alwaysApply: true` — [DPCS_BUILD_METHODOLOGY.md](DPCS_BUILD_METHODOLOGY.md) on every project |
+| `.cursor/rules/dpcs.mdc` | `alwaysApply: true` — [DPCS_BUILD_METHODOLOGY.md](DPCS_BUILD_METHODOLOGY.md) on every project |
 | `.cursor/rules/*.mdc` | Architecture/security rules (see [AGENTIC_PROJECT_STANDARDS.md](AGENTIC_PROJECT_STANDARDS.md)) |
 
 First agent task: **one vertical slice** (scaffold + health check), not full product.

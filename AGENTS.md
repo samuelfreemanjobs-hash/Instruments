@@ -6,7 +6,7 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 
 - [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts 
 - [docs/PLUGIN_FACTORY_OS_PROMPT.md](docs/PLUGIN_FACTORY_OS_PROMPT.md) — plugin factory + Cursor incremental workflow
-- **DPCP / DPCS** — universal build methodology for **every project**: [docs/DPCS_BUILD_METHODOLOGY.md](docs/DPCS_BUILD_METHODOLOGY.md); always-on [`.cursor/rules/dpcp.mdc`](.cursor/rules/dpcp.mdc). Plugin detail: [PLUGIN_FACTORY_OS_PROMPT.md](docs/PLUGIN_FACTORY_OS_PROMPT.md) §0. DiskLordz content roadmap: [DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md](DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md)
+- **DPCS** — universal build methodology for **every project** (Phases 0–4): [docs/DPCS_BUILD_METHODOLOGY.md](docs/DPCS_BUILD_METHODOLOGY.md); always-on [`.cursor/rules/dpcs.mdc`](.cursor/rules/dpcs.mdc). Plugin detail: [PLUGIN_FACTORY_OS_PROMPT.md](docs/PLUGIN_FACTORY_OS_PROMPT.md) §0. DiskLordz content roadmap: [DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md](DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md)
 - [docs/DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](docs/DISKLORDZ_ROMPLER_CURSOR_PROMPT.md) — **DISKLORDZ ROMPLER** (own sample rompler VSTi; not WAVE-909; UI mocks in `docs/assets/`) 
 - [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
 - `.cursor/rules/*.mdc` — always-on architecture and security  

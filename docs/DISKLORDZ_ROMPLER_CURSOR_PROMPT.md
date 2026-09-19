@@ -54,7 +54,7 @@ Sonic target: phonk bells, dark keys, 808-friendly subs, lo-fi/grit options via 
 
 ## Execution mode (mandatory)
 
-Follow **[DPCS_BUILD_METHODOLOGY.md](DPCS_BUILD_METHODOLOGY.md) (DPCP)** on every slice, plus **PLUGIN FACTORY OS §0** for plugin slice detail. For ROM Factory / content scale-up, also use [DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md](../DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md) (start with Phase 0 audit in [CONTENT_PLATFORM_PHASE0_AUDIT.md](../DisklordzSynth/Docs/CONTENT_PLATFORM_PHASE0_AUDIT.md)). In order:
+Follow **[DPCS_BUILD_METHODOLOGY.md](DPCS_BUILD_METHODOLOGY.md)** on every slice, plus **PLUGIN FACTORY OS §0** for plugin slice detail. For ROM Factory / content scale-up, also use [DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md](../DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md) (start with Phase 0 audit in [CONTENT_PLATFORM_PHASE0_AUDIT.md](../DisklordzSynth/Docs/CONTENT_PLATFORM_PHASE0_AUDIT.md)). In order:
 
 ### Step 1 — Discover (commit: docs only)
 

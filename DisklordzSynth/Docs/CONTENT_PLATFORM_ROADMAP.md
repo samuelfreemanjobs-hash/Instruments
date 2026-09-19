@@ -1,6 +1,6 @@
 # DiskLordz content platform — phased roadmap
 
-**Agent workflow:** **DPCP** on every slice — [DPCS_BUILD_METHODOLOGY.md](../../docs/DPCS_BUILD_METHODOLOGY.md). This file is the **content-platform** phase roadmap (nested inside DPCP).
+**Agent workflow:** [DPCS_BUILD_METHODOLOGY.md](../../docs/DPCS_BUILD_METHODOLOGY.md) on every slice. This file is the **content-platform** phase roadmap (nested inside DPCS Verify/Constitution as appropriate).
 
 Use this roadmap for ROM Factory, expansions, and ROMpler content integration. Run **§0 inside each roadmap phase** below.
 
@@ -138,7 +138,7 @@ Report `NOT VERIFIED` for DAW matrix until run.
 ## How to invoke in Cursor
 
 ```text
-Follow DPCP (PLUGIN FACTORY OS §0) for each slice.
+Follow DPCS for each slice; PLUGIN FACTORY OS §0 for plugin-specific slice detail.
 For content-platform phase N, use DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md.
 Product boundary: DISKLORDZ ROMPLER + DisklordzSynth only; not WAVE-909.
 ```

@@ -1,5 +1,5 @@
 ---
-description: DiskLordz content platform roadmap (ROM Factory, expansions, preset scale) — use with universal DPCP rule.
+description: DiskLordz content platform roadmap (ROM Factory, expansions, preset scale) — use with universal DPCS rule.
 globs:
   - DisklordzSynth/**
   - DisklordzRompler/**
@@ -10,7 +10,7 @@ globs:
 
 # DiskLordz content platform (scoped)
 
-Universal workflow is **DPCP** ([dpcp.mdc](dpcp.mdc), [DPCS_BUILD_METHODOLOGY.md](../docs/DPCS_BUILD_METHODOLOGY.md)).
+Universal workflow is **DPCS** ([dpcs.mdc](dpcs.mdc), [DPCS_BUILD_METHODOLOGY.md](../docs/DPCS_BUILD_METHODOLOGY.md)).
 
 When editing ROM Factory or ROMpler **content**:
 

@@ -1,62 +1,64 @@
 # DPCS — Build Methodology
 
-**Cursor rule:** [`.cursor/rules/dpcp.mdc`](../.cursor/rules/dpcp.mdc) (`alwaysApply: true` on every agent task in this repo).
+Every module in this repo was built with the same phase-locked pipeline.
+Continue it.
 
-Agents and humans refer to this loop as **DPCP** — the default way to build **anything** here (JUCE plugins, `disklordz/website`, tools, docs-only work). It comes from the **Autonomous Builder / PLUGIN FACTORY OS** book prompt in [PLUGIN_FACTORY_OS_PROMPT.md](PLUGIN_FACTORY_OS_PROMPT.md).
-
-| Letter | Phase | You must |
-|--------|--------|----------|
-| **D** | **Discover** | Read `/ARCHITECTURE.md`, `AGENTS.md`, product `ARCHITECTURE.md`, and `.cursor/rules/*`. Search the repo for reuse. **No bulk product code** until context is written down. |
-| **P** | **Plan** (Specify) | Freeze intent in-repo: `PRODUCT_SPEC`, architecture, parameter/manifest skeletons, success criteria. Propose paths and CMake/npm targets before large diffs. |
-| **C** | **Code** | **Vertical slices** only — one shippable step per commit. Each slice ends green: build, test, or documented N/A for docs-only. |
-| **S** | **Ship** (Prove) | Evidence before PR: test output, `ctest`/`npm test`, pluginval when C++ DSP changed, walkthrough artifacts for UI. Draft PR; do not merge unless asked. |
-
-**DPCP** uses the same four phases; **S** = **Prove** with automated checks + honest `NOT VERIFIED` for manual steps.
-
----
-
-## Non-negotiables (every project)
-
-1. **Product boundary** — Edit only the product folder named in the task. Do not conflate separate product lines (e.g. DISKLORDZ ROMPLER ≠ WAVE-909).
-2. **Architecture rule** — Update `ARCHITECTURE.md` when you add targets, modules, or change data flow ([architecture-documentation.mdc](../.cursor/rules/architecture-documentation.mdc)).
-3. **Security baseline** — [security-baseline.mdc](../.cursor/rules/security-baseline.mdc): no secrets in git; validate public inputs; authZ on user data.
-4. **Branch policy** — `cursor/<description>-9a2b` (or team suffix); commit often; no force-push.
-5. **Anti-patterns (hard stop)** — One-shot mega-diffs; claiming tests ran when they did not; secrets or copyrighted samples in git; skipping specify before implementation.
-
----
-
-## Stack-specific Prove commands
-
-| Area | Typical Prove step |
-|------|---------------------|
-| JUCE / plugin | `cmake --build build -j`, `ctest -R <Product>`, `python3 vst-testing-ops/run_business.py --profile ci` after DSP edits |
-| Disklordz web | `cd disklordz/website && npm ci && npm run build && npm test` |
-| Docs / rules only | Link check + no broken paths; no compile required |
-
-See [AGENTS.md](../AGENTS.md) for the canonical matrix.
-
----
-
-## Plugin factory (when building VSTi)
-
-Use the full factory prompt in [PLUGIN_FACTORY_OS_PROMPT.md](PLUGIN_FACTORY_OS_PROMPT.md) for *what* to build; **DPCP** is always *how*. §0 in that file is the detailed plugin slice template (Phases A–D = DPCS).
-
-Product-specific Cursor prompts (e.g. [DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](DISKLORDZ_ROMPLER_CURSOR_PROMPT.md)) add scope on top of DPCP — they do not replace it.
-
----
-
-## DiskLordz content platform (extra roadmap)
-
-ROM Factory / 1,000-preset content work **still follows DPCP** for every slice. Additionally use [DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md](../DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md) for phased content delivery (optional Phase 0 audit: [CONTENT_PLATFORM_PHASE0_AUDIT.md](../DisklordzSynth/Docs/CONTENT_PLATFORM_PHASE0_AUDIT.md)).
-
----
-
-## How to invoke
-
-```text
-Follow DPCP.
-Follow DPCP from Discover only (docs commit).
-Follow DPCP — vertical slice: <one sentence>.
+```
+PHASE 0  Constitution   scope, stack, non-negotiables, exclusions
+PHASE 1  PRD            behaviour only — ZERO code, no imports or frameworks
+PHASE 2  Contract       headers only, compile-checked, no implementation
+PHASE 3  Module         ONE .cpp per run, explicit file allowlist
+PHASE 4  Verify         a script that exits 0, or it isn't done
 ```
 
-Product-specific roadmaps (content Phase N, ROMPLER UI tab, SaaS feature) must still exit each slice with **Prove**.
+## Core laws
+
+- **DONE = verifiable commands exit 0.** Not an opinion that something looks
+  good.
+- **Zero code in Phase 1.** Behaviour only.
+- **One module per Phase 3 run.** No refactors outside the allowlist, no
+  invented dependencies, no whole-app dumps.
+- **Upstream by path.** Cite artifact paths; never rely on chat memory.
+
+## Debug protocol
+
+Order matters. Do not skip ahead to the patch.
+
+1. Observable facts
+2. At most 3 hypotheses
+3. **Root cause proof paragraph — written before any fix**
+4. Minimal fix
+5. Regression test
+
+This protocol is why the corrections in `docs/SIGNAL_CHAIN.md` are specific
+rather than vague. Two examples:
+
+**C8** — the processing flow specified one resampler push per output sample.
+The proof: `phaseIncrement = kZOHRate / hostSampleRate` is 2.17 at 48 kHz, never
+1.0, so the flow would consume ZOH samples at 46% of the required rate. Shipped
+literally, every voice would have played a fifth of an octave low. Found by
+computing the ratio, not by listening.
+
+**MergeEvents** — 29 tests passed. Mutation testing survived one mutation, so
+rather than assume it was equivalent, the behaviour was measured: a batch of
+5,000 events with 3 in range was refused despite trivially fitting, because the
+capacity check counted raw batch size instead of storable events. That would
+have made the recorder retry forever and silently lose material after a
+truncation.
+
+## Verification techniques used here
+
+**Mutation testing.** Break a mechanism on purpose, confirm the suite catches
+it. A suite that passes against a broken implementation is not a suite.
+
+**Equivalent-mutant analysis.** When a mutation survives, measure whether it
+actually changes behaviour before writing a test. Two survivors in
+`SwingTransform` were proven equivalent by exhaustive check — an unreachable
+clamp and a bit-identical optimization. Writing tests for those would have been
+writing assertions that cannot fail. Both are documented in-source instead, so
+nobody later mistakes defensive code for load-bearing code.
+
+**Sanitizers as a distinct class of coverage.** Logic assertions cannot observe
+use-after-free, leaks, or data races. ASan found C12 (a full leak of the sample
+library) when every logic test passed. TSan covers the lock-free buffer swap in
+`SegmentStore`.

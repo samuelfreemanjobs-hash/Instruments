@@ -1,7 +1,7 @@
 # Content platform — Phase 0 Discover audit
 
 **Date:** 2026-03-21 (agent)  
-**Workflow:** DPCP / [PLUGIN_FACTORY_OS_PROMPT.md](../../docs/PLUGIN_FACTORY_OS_PROMPT.md) §0 Phase A · Roadmap: [CONTENT_PLATFORM_ROADMAP.md](CONTENT_PLATFORM_ROADMAP.md) Phase 0  
+**Workflow:** DPCS Phase 0 (Constitution) · [PLUGIN_FACTORY_OS_PROMPT.md](../../docs/PLUGIN_FACTORY_OS_PROMPT.md) §0 Discover · Roadmap: [CONTENT_PLATFORM_ROADMAP.md](CONTENT_PLATFORM_ROADMAP.md) Phase 0  
 **Branch context:** `cursor/disklordz-rompler-build-9a2b`
 
 ## 1. Repository products (relevant)
