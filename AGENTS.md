@@ -47,6 +47,15 @@ streamlit run vst-testing-ops/app.py                       # operations dashboar
 
 **After editing plugin C++ (`Source/`, `Wave909/`, etc.):** run `run_business.py --profile ci` before pushing; on failure read `vst-testing-ops/error_log.txt` and fix until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit updated WAVs.
 
+**DISKLORDZ ROMPLER factory ROM** (required for sound; not committed — ~387 MB under `build/`):
+
+```bash
+./scripts/build-factory-rom.sh
+# or: cmake --build build -j --target DisklordzRompler_VST3   # generates ROM + copies into VST3 Resources/DisklordzRom/
+```
+
+Procedural cards: `DisklordzSynth` four engines → 16× `pcm_bank_XX.dlrrom`. WAV multisamples: [DisklordzRompler/FactoryContent/README.md](DisklordzRompler/FactoryContent/README.md) → `DisklordzSynth_RomFactory build-manifest`.
+
 - [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
 
 ## Git

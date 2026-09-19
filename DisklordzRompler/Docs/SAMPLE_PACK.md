@@ -34,10 +34,13 @@ See `DisklordzSynth/include/disklordz/RawRomFormat.h` and `Source/Assets/RawRomB
 ## Manual regeneration
 
 ```bash
-cmake --build build -j --target DisklordzSynth_BuildRawRom DisklordzRompler_GenerateRom
-./build/DisklordzSynth/DisklordzSynth_BuildRawRom /tmp/pcm_roms
-ls /tmp/pcm_roms/pcm_bank_*.dlrrom | wc -l   # 16
+./scripts/build-factory-rom.sh
+# or
+cmake --build build -j --target DisklordzRompler_GenerateRom DisklordzRompler_VST3
+ls build/DisklordzRompler/generated/pcm_bank_*.dlrrom | wc -l   # 16
 ```
+
+Runtime override: `export DISKLORDZ_ROM_DIR=/path/to/dir/with/pcm_bank_*.dlrrom`
 
 Build output is **16 loose `.dlrrom` files** (~12 MB each, ~192 MB total library). They are copied into the VST3/Standalone bundle at `Resources/DisklordzRom/` (workstation-style swappable PCM cards). Optional **`DisklordzSynth_BundleRawRoms`** builds a DLRROMCAT shipping archive for sample-pack products.
 
