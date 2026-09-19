@@ -9,20 +9,45 @@ JUCE + C++ **multi-plugin build system** for shipping VST3 (and optional Standal
 
 ## Build & run
 
+**Zero-touch product path** (scaffold optional → build → artefact check → pluginval → ship):
+
+```bash
+cd plugin-factory
+./scripts/factory.sh release
+./scripts/factory.sh release --new effect my-drive   # create + full pipeline
+```
+
+Ship target defaults to `~/.vst3` (Linux), `~/Library/Audio/Plug-Ins/VST3` (macOS), or `%COMMONPROGRAMFILES%\VST3` (Windows). Override with `FACTORY_VST3_INSTALL_DIR`.
+
+**Monorepo full QA + factory + ship** (JD Upgraded / Wave909 CI parity plus factory):
+
+```bash
+python3 vst-testing-ops/run_business.py --profile release
+```
+
+Factory-only QA (no root CMake build):
+
+```bash
+python3 vst-testing-ops/run_business.py --profile factory
+```
+
+Manual steps:
+
 ```bash
 cd plugin-factory
 ./scripts/factory.sh build
-# or
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
-cmake --build build -j
+./scripts/factory.sh verify
+./scripts/factory.sh validate
+./scripts/factory.sh ship
 ```
 
-VST3 outputs: `build/<Target>_artefacts/Release/VST3/*.vst3`
+VST3 build outputs: `build/plugins/<registry-dir>/*_artefacts/Release/VST3/*.vst3`
 
-Validate (from repo root, after build):
+Validate from repo root:
 
 ```bash
-python3 scripts/vst/run_pluginval.py --discover plugin-factory/build/ReferenceEffect_artefacts/Release/VST3
+python3 scripts/vst/run_pluginval.py --factory-artefacts
+python3 plugin-factory/scripts/run_pluginval_factory.py
 ```
 
 ## Data flow
@@ -61,7 +86,9 @@ Factory reference code follows the same rules as production plugins:
 | `plugins/reference-effect` | Demo stereo effect (SVF + drive + LFO) |
 | `plugins/reference-synth` | Demo poly synth (JUCE `Synthesiser`) |
 | `templates/effect`, `templates/synth` | Scaffolding sources for `factory.sh new` |
-| `scripts/factory.sh` | `build`, `list`, `new` |
+| `scripts/factory.sh` | `build`, `verify`, `validate`, `ship`, `release`, `new` |
+| `scripts/factory_ops.py` | Discover VST3 artefacts, verify registry, ship to disk |
+| `scripts/run_pluginval_factory.py` | pluginval all registered factory bundles |
 | `shared/RealTimeSafety.h` | Optional RT helpers |
 
 ## Extension points

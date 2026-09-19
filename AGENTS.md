@@ -37,7 +37,10 @@ Colab: [docs/COLAB_ZERO_INSTALL_TESTING.md](docs/COLAB_ZERO_INSTALL_TESTING.md).
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
 cmake --build build -j
 python3 vst-testing-ops/run_business.py --profile ci       # full plugin QA (matches build.yml)
+python3 vst-testing-ops/run_business.py --profile release  # ci + Plugin Factory QA + ship
+python3 vst-testing-ops/run_business.py --profile factory  # factory-only build/QA/ship
 python3 vst-testing-ops/run_business.py --profile dsp-only # DSP/golden only (faster)
+cd plugin-factory && ./scripts/factory.sh release          # zero-touch factory product pipeline
 python3 vst-testing-ops/test_runner.py                     # single-VST pluginval
 streamlit run vst-testing-ops/app.py                       # operations dashboard
 ```

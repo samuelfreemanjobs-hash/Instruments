@@ -12,14 +12,21 @@ VST Plugin Factory OS
 
 Usage:
   factory.sh build [--target NAME]     Configure + build (default: all VST3 targets)
+  factory.sh verify                    Ensure every registry plugin has a Release VST3
+  factory.sh validate                pluginval on all factory VST3 bundles
+  factory.sh ship [--install-dir DIR] Copy VST3 bundles to disk (default: ~/.vst3)
+  factory.sh release [--new KIND NAME] Build + verify + validate + ship (zero-touch product)
   factory.sh list                      Show registered plugin directories
   factory.sh new effect <dir-name>     Scaffold a stereo effect from template
   factory.sh new synth <dir-name>      Scaffold a VSTi from template
 
+Monorepo full QA + factory + ship:
+  python3 vst-testing-ops/run_business.py --profile release
+
 Examples:
-  ./scripts/factory.sh build
-  ./scripts/factory.sh build --target ReferenceEffect_VST3
-  ./scripts/factory.sh new effect my-drive
+  ./scripts/factory.sh release
+  ./scripts/factory.sh release --new effect my-drive
+  FACTORY_VST3_INSTALL_DIR=$HOME/.vst3 ./scripts/factory.sh ship
 EOF
 }
 
@@ -99,6 +106,52 @@ random_plugin_code() {
   echo "${base}X"
 }
 
+cmd_verify() {
+  exec python3 "${ROOT}/scripts/factory_ops.py" verify-artefacts
+}
+
+cmd_validate() {
+  exec python3 "${ROOT}/scripts/run_pluginval_factory.py"
+}
+
+cmd_ship() {
+  local install_dir=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --install-dir) install_dir="$2"; shift 2 ;;
+      *) echo "Unknown ship arg: $1" >&2; exit 1 ;;
+    esac
+  done
+  if [[ -n "$install_dir" ]]; then
+    exec python3 "${ROOT}/scripts/factory_ops.py" ship --install-dir "$install_dir"
+  fi
+  exec python3 "${ROOT}/scripts/factory_ops.py" ship
+}
+
+cmd_release() {
+  local new_kind="" new_name=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --new)
+        new_kind="${2:-}"; new_name="${3:-}"
+        shift 3
+        ;;
+      *) echo "Unknown release arg: $1" >&2; exit 1 ;;
+    esac
+  done
+  if [[ -n "$new_kind" || -n "$new_name" ]]; then
+    if [[ -z "$new_kind" || -z "$new_name" ]]; then
+      echo "--new requires KIND and DIR-NAME (effect|synth)" >&2
+      exit 1
+    fi
+    cmd_new "$new_kind" "$new_name"
+  fi
+  cmd_build
+  python3 "${ROOT}/scripts/factory_ops.py" verify-artefacts
+  python3 "${ROOT}/scripts/run_pluginval_factory.py"
+  python3 "${ROOT}/scripts/factory_ops.py" ship
+}
+
 cmd_new() {
   local kind="${1:-}"
   local dir_name="${2:-}"
@@ -158,6 +211,10 @@ main() {
   shift || true
   case "$cmd" in
     build) cmd_build "$@" ;;
+    verify) cmd_verify ;;
+    validate) cmd_validate ;;
+    ship) cmd_ship "$@" ;;
+    release) cmd_release "$@" ;;
     list) cmd_list ;;
     new) cmd_new "$@" ;;
     -h|--help|help|"") usage ;;

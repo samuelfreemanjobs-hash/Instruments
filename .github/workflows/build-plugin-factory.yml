@@ -5,15 +5,17 @@ on:
     branches: [main, "cursor/**"]
     paths:
       - "plugin-factory/**"
+      - "vst-testing-ops/business_pipeline.py"
       - ".github/workflows/build-plugin-factory.yml"
   pull_request:
     branches: [main]
     paths:
       - "plugin-factory/**"
+      - "vst-testing-ops/business_pipeline.py"
       - ".github/workflows/build-plugin-factory.yml"
 
 jobs:
-  linux-vst3:
+  factory-release:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -24,18 +26,18 @@ jobs:
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libasound2-dev libfreetype-dev libgl1-mesa-dev \
+          sudo apt-get install -y build-essential g++-12 gcc-12 libasound2-dev libfreetype-dev libgl1-mesa-dev \
             libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libgtk-3-dev unzip curl xvfb
 
-      - name: Configure and build
-        run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
-          cmake --build build -j$(nproc) --target ReferenceEffect_VST3 ReferenceSynth_VST3
-
-      - name: Validate VST3 plugins
+      - name: Zero-touch factory release (build + verify + pluginval + ship)
         env:
           CI: true
+          FACTORY_VST3_INSTALL_DIR: ${{ github.workspace }}/build/factory-shipped-vst3
         run: |
-          python3 ../scripts/vst/run_pluginval.py --install-only
-          xvfb-run -a python3 ../scripts/vst/run_pluginval.py \
-            --discover build/ReferenceEffect_artefacts/Release/VST3
+          ./scripts/factory.sh release
+
+      - name: Assert shipped bundles on disk
+        run: |
+          test -d "$GITHUB_WORKSPACE/build/factory-shipped-vst3"
+          ls -la "$GITHUB_WORKSPACE/build/factory-shipped-vst3"
+          test "$(find "$GITHUB_WORKSPACE/build/factory-shipped-vst3" -name '*.vst3' -type d | wc -l)" -ge 2

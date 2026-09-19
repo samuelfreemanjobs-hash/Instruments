@@ -98,7 +98,9 @@ with left:
         options=list(PROFILES.keys()),
         format_func=lambda k: {
             "ci": "CI parity (build.yml)",
-            "full": "Full monorepo (+ SaaS build)",
+            "release": "CI + Plugin Factory + ship",
+            "factory": "Plugin Factory only + ship",
+            "full": "Full monorepo (+ SaaS + factory)",
             "plugin-quick": "pluginval only",
             "dsp-only": "OfflineRender + golden",
         }.get(k, k),
