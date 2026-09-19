@@ -34,10 +34,9 @@ See `DisklordzSynth/include/disklordz/RawRomFormat.h` and `Source/Assets/RawRomB
 ## Manual regeneration
 
 ```bash
+./scripts/build-disklordz-rompler.sh   # ROM first, then VST3 + Standalone
+# ROM only:
 ./scripts/build-factory-rom.sh
-# or
-cmake --build build -j --target DisklordzRompler_GenerateRom DisklordzRompler_VST3
-ls build/DisklordzRompler/generated/pcm_bank_*.dlrrom | wc -l   # 16
 ```
 
 Runtime override: `export DISKLORDZ_ROM_DIR=/path/to/dir/with/pcm_bank_*.dlrrom`
