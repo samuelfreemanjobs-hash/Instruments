@@ -34,7 +34,7 @@ If the API returns 404, enable **Settings → Branches → Branch protection rul
 
 ## CI Slack notifications
 
-Workflow [`.github/workflows/ci-slack-notify.yml`](../.github/workflows/ci-slack-notify.yml) runs when **Build**, **Build MyFirstPlugin**, or **Nightly QA** completes.
+Workflow [`.github/workflows/ci-slack-notify.yml`](../.github/workflows/ci-slack-notify.yml) runs when **Build**, **Build MyFirstPlugin**, **Build Plugin Factory OS**, or **Nightly QA** completes.
 
 Configure the repo secret (admin):
 
