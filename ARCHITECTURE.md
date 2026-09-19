@@ -2,6 +2,8 @@
 
 This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents should read this file first, then the product-specific `ARCHITECTURE.md` for the code they touch.
 
+**Agent workflow (all products):** [docs/DPCS_BUILD_METHODOLOGY.md](docs/DPCS_BUILD_METHODOLOGY.md) (**DPCP**) — always-on [`.cursor/rules/dpcp.mdc`](.cursor/rules/dpcp.mdc).
+
 ## Products
 
 | Product | Doc | CMake targets |
