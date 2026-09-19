@@ -1,5 +1,7 @@
 # DiskLordz content platform — spec index
 
+**Cursor workflow:** [docs/DPCP.md](../../docs/DPCP.md) (start Phase 0) · Phase 0 audit: [DPCP_PHASE0_AUDIT.md](DPCP_PHASE0_AUDIT.md)
+
 Build order (factory before 1,000 presets):
 
 | # | Document | Purpose |

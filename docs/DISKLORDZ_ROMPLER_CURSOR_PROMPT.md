@@ -54,7 +54,7 @@ Sonic target: phonk bells, dark keys, 808-friendly subs, lo-fi/grit options via 
 
 ## Execution mode (mandatory)
 
-Follow **PLUGIN FACTORY OS §0 Cursor Repository Workflow**. In order:
+Follow **PLUGIN FACTORY OS §0 Cursor Repository Workflow** and **[DPCP.md](DPCP.md)** (DiskLordz Platform Content Pipeline — start at Phase 0 for ROM/content work). In order:
 
 ### Step 1 — Discover (commit: docs only)
 
