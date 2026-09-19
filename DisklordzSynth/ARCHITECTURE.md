@@ -25,6 +25,7 @@ cmake --build build -j --target DisklordzSynth_BuildRawRom DisklordzSynth_Render
 
 | Binary | Role |
 |--------|------|
+| `DisklordzSynth_RomFactory` | ROM Factory CLI (`build-procedural`, `build-manifest`, `print-targets`) |
 | `DisklordzSynth_BuildRawRom` | Write 16-card `DLRROM01` library (or single card with `--single`) |
 | `DisklordzSynth_BundleRawRoms` | Optional DLRROMCAT archive of all `.dlrrom` cards |
 | `DisklordzSynth_BuildFactoryPack` | Legacy `DLROMPR1` region pack (commercial tooling) |

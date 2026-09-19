@@ -1,5 +1,6 @@
 #include "disklordz/RawRomBuilder.h"
 #include "disklordz/ProceduralSynth.h"
+#include "disklordz/RomFactorySpec.h"
 
 #include <cmath>
 #include <cstring>
@@ -144,7 +145,7 @@ bool buildRawRomBank (std::uint32_t bankIndex, BuiltRawRom& out)
     out.waves.clear();
     out.pcm.clear();
     out.bankIndex = bankIndex;
-    out.category = rawrom::categoryForFactoryBank (bankIndex);
+    out.category = static_cast<rawrom::RomBankCategory> (factory::romLayerForBankIndex (bankIndex));
 
     for (int engineIdx = 0; engineIdx < 4; ++engineIdx)
     {

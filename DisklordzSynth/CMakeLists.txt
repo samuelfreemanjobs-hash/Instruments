@@ -6,6 +6,9 @@ add_library (DisklordzSynth STATIC
     src/FactoryPackBuilder.cpp
     src/RawRomBuilder.cpp
     src/WavWriter.cpp
+    src/WavReader.cpp
+    src/MultisampleManifest.cpp
+    src/MultisampleRomBuilder.cpp
 )
 
 target_include_directories (DisklordzSynth
@@ -23,6 +26,9 @@ target_link_libraries (DisklordzSynth_BuildRawRom PRIVATE DisklordzSynth)
 
 add_executable (DisklordzSynth_BundleRawRoms apps/BundleRawRomsMain.cpp)
 target_link_libraries (DisklordzSynth_BundleRawRoms PRIVATE DisklordzSynth)
+
+add_executable (DisklordzSynth_RomFactory apps/RomFactoryMain.cpp)
+target_link_libraries (DisklordzSynth_RomFactory PRIVATE DisklordzSynth)
 
 add_executable (DisklordzSynth_RenderWav apps/RenderWavMain.cpp)
 target_link_libraries (DisklordzSynth_RenderWav PRIVATE DisklordzSynth)

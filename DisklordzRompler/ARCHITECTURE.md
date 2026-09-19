@@ -63,7 +63,12 @@ MIDI → DisklordzRomplerProcessor → RomplerEngine → RomplerVoice × 24
 - UI tabs from mock: [Docs/UI_SPEC.md](Docs/UI_SPEC.md)
 - SaaS kit download hooks (document only)
 
+## ROM Factory (commercial scale)
+
+Raw WAV → multisample manifests → `.dlrrom` cards → tones → 4-tone patches → presets. See [Docs/ROM_FACTORY.md](Docs/ROM_FACTORY.md) and [FactoryContent/README.md](FactoryContent/README.md).
+
 ## Related docs
 
 - [Docs/PRODUCT_SPEC.md](Docs/PRODUCT_SPEC.md)
 - [Docs/SAMPLE_PACK.md](Docs/SAMPLE_PACK.md)
+- [Docs/ROM_FACTORY.md](Docs/ROM_FACTORY.md)
