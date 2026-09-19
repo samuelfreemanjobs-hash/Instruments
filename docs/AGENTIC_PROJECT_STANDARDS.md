@@ -9,6 +9,7 @@ Copy this checklist when starting **any** app repo (SaaS, plugin, tools). Commit
 | File | Content |
 |------|---------|
 | `ARCHITECTURE.md` | Purpose, build/run, data flow, key modules, extension points |
+| `.cursor/rules/dpcp.mdc` | `alwaysApply: true` — **DPCP / DPCS** build methodology on every task |
 | `.cursor/rules/architecture-documentation.mdc` | `alwaysApply: true` — agents read ARCHITECTURE first |
 | `.cursor/rules/security-baseline.mdc` | No secrets in git; validate inputs; authZ |
 | `AGENTS.md` | Test commands, deploy steps, secret **names**, branch policy |

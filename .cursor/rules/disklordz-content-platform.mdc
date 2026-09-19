@@ -1,0 +1,19 @@
+---
+description: DiskLordz content platform roadmap (ROM Factory, expansions, preset scale) — use with universal DPCP rule.
+globs:
+  - DisklordzSynth/**
+  - DisklordzRompler/**
+  - docs/DISKLORDZ_PLATFORM.md
+  - docs/DISKLORDZ_ROMPLER_CURSOR_PROMPT.md
+  - DisklordzSynth/Docs/**
+---
+
+# DiskLordz content platform (scoped)
+
+Universal workflow is **DPCP** ([dpcp.mdc](dpcp.mdc), [DPCS_BUILD_METHODOLOGY.md](../docs/DPCS_BUILD_METHODOLOGY.md)).
+
+When editing ROM Factory or ROMpler **content**:
+
+- Do **not** implement ROMPLER in `Wave909/`.
+- Follow [CONTENT_PLATFORM_ROADMAP.md](../DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md); update [CONTENT_PLATFORM_PHASE0_AUDIT.md](../DisklordzSynth/Docs/CONTENT_PLATFORM_PHASE0_AUDIT.md) on Discover when the landscape changed.
+- Entity chain: sample assets → multisample → tone → patch → preset (IDs, not filenames).

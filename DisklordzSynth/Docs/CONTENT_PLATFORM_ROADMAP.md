@@ -1,6 +1,6 @@
 # DiskLordz content platform — phased roadmap
 
-**Agent workflow:** **DPCP** = [PLUGIN_FACTORY_OS_PROMPT.md](../../docs/PLUGIN_FACTORY_OS_PROMPT.md) **§0** (Discover → Specify → Code in vertical slices → Prove). Defined in [.cursor/rules/autonomous-builder-dpcp.mdc](../../.cursor/rules/autonomous-builder-dpcp.mdc).
+**Agent workflow:** **DPCP** on every slice — [DPCS_BUILD_METHODOLOGY.md](../../docs/DPCS_BUILD_METHODOLOGY.md). This file is the **content-platform** phase roadmap (nested inside DPCP).
 
 Use this roadmap for ROM Factory, expansions, and ROMpler content integration. Run **§0 inside each roadmap phase** below.
 

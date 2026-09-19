@@ -1,6 +1,6 @@
 # DiskLordz content platform — spec index
 
-**Cursor workflow:** DPCP = [PLUGIN_FACTORY_OS_PROMPT.md](../../docs/PLUGIN_FACTORY_OS_PROMPT.md) §0 · Content phases: [CONTENT_PLATFORM_ROADMAP.md](CONTENT_PLATFORM_ROADMAP.md) · Phase 0 audit: [CONTENT_PLATFORM_PHASE0_AUDIT.md](CONTENT_PLATFORM_PHASE0_AUDIT.md)
+**Cursor workflow:** [DPCS_BUILD_METHODOLOGY.md](../../docs/DPCS_BUILD_METHODOLOGY.md) (DPCP on every task) · Content phases: [CONTENT_PLATFORM_ROADMAP.md](CONTENT_PLATFORM_ROADMAP.md) · Phase 0 audit: [CONTENT_PLATFORM_PHASE0_AUDIT.md](CONTENT_PLATFORM_PHASE0_AUDIT.md)
 
 Build order (factory before 1,000 presets):
 
