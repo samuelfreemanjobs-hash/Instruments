@@ -31,7 +31,7 @@ private:
     juce::ComboBox oscOctave[3], oscWave[3];
     juce::Label oscIndexLabel[3], oscOctLabel[3], oscWaveLabel[3];
 
-    juce::Slider filterCutoff, filterRes, filterDrive, filterEnvAmt, filterKb;
+    juce::Slider filterCutoff, filterRes, filterDrive, filterEnvAmt, filterKb, mixerDriveSlider;
     juce::Slider fAttack, fDecay, fSustain, fRelease;
     juce::Slider aAttack, aDecay, aSustain, aRelease;
     juce::Slider lfoRate, lfoPitch, lfoFilter, glide;
@@ -41,7 +41,7 @@ private:
     std::array<std::unique_ptr<ComboAttachment>, 3> oscOctaveAttachments, oscWaveAttachments;
     std::unique_ptr<SliderAttachment> noiseAttachment;
     std::unique_ptr<SliderAttachment> filterCutoffAttachment, filterResAttachment, filterDriveAttachment;
-    std::unique_ptr<SliderAttachment> filterEnvAmtAttachment, filterKbAttachment;
+    std::unique_ptr<SliderAttachment> filterEnvAmtAttachment, filterKbAttachment, mixerDriveAttachment;
     std::unique_ptr<SliderAttachment> fAttackAttachment, fDecayAttachment, fSustainAttachment, fReleaseAttachment;
     std::unique_ptr<SliderAttachment> aAttackAttachment, aDecayAttachment, aSustainAttachment, aReleaseAttachment;
     std::unique_ptr<SliderAttachment> lfoRateAttachment, lfoPitchAttachment, lfoFilterAttachment, glideAttachment;

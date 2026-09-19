@@ -2,6 +2,8 @@
 
 Inspired by the **Minimoog Voyager** signal path: three oscillators, noise, 24 dB Moog ladder low-pass, separate filter and amp envelopes, LFO, glide.
 
+**Factory programs:** `G-Funk Lead` (default) and `G-Funk Bass` — switch via the DAW program/preset menu or `setCurrentProgram(0|1)`.
+
 Built with the Plugin Factory OS. Ship with:
 
 ```bash

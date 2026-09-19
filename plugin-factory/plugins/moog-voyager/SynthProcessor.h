@@ -60,9 +60,11 @@ public:
         float lfoToPitch = 0.0f;
         float lfoToFilter = 0.0f;
         float glideSeconds = 0.0f;
+        float mixerDrive = 2.0f;
     };
 
     VoiceParams readVoiceParams() const noexcept;
+    VoiceParams getCachedVoiceParams() const noexcept { return cachedVoiceParams; }
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -88,7 +90,10 @@ private:
         void renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override;
 
     private:
-        static float waveFromPhase(float phase01, int waveIndex) noexcept;
+        static float waveFromPhase(float phase01, float phaseIncrement, int waveIndex) noexcept;
+        static float mixerSaturate(float sample, float drive) noexcept;
+        static float computeCutoffHz(const VoiceParams& params, float filterEnv, float lfo,
+                                     int midiNote) noexcept;
         static float noteToHz(int midiNote, float octaveOffset, float fineCents) noexcept;
         float nextNoiseSample() noexcept;
 
@@ -106,6 +111,7 @@ private:
         float velocityGain = 1.0f;
         int currentMidiNote = 60;
         uint32_t rngState = 0xC0FFEEu;
+        float driftPhase[3] { 0.0f, 0.0f, 0.0f };
         bool prepared = false;
     };
 
@@ -113,6 +119,8 @@ private:
     juce::Synthesiser synthesiser;
 
     juce::LinearSmoothedValue<float> outputGainLinear;
+    VoiceParams cachedVoiceParams {};
+    int currentProgramIndex = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MoogVoyagerAudioProcessor)
 };

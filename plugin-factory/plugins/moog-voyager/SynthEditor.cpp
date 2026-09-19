@@ -125,7 +125,8 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     styleKnob(glide, "Glide");
     styleKnob(masterSlider, "Master");
 
-    for (auto* s : { &filterCutoff, &filterRes, &filterDrive, &filterEnvAmt, &filterKb,
+    styleKnob(mixerDriveSlider, "Mixer");
+    for (auto* s : { &filterCutoff, &filterRes, &filterDrive, &filterEnvAmt, &filterKb, &mixerDriveSlider,
                      &fAttack, &fDecay, &fSustain, &fRelease, &aAttack, &aDecay, &aSustain, &aRelease,
                      &lfoRate, &lfoPitch, &lfoFilter, &glide, &masterSlider })
         addAndMakeVisible(*s);
@@ -156,6 +157,8 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     filterDriveAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::filterDrive), filterDrive);
     filterEnvAmtAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::filterEnvAmount), filterEnvAmt);
     filterKbAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::filterKeyTrack), filterKb);
+    mixerDriveAttachment =
+        std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::mixerDrive), mixerDriveSlider);
 
     fAttackAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::filterAttack), fAttack);
     fDecayAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::filterDecay), fDecay);
@@ -224,7 +227,8 @@ void MoogVoyagerAudioProcessorEditor::resized()
     auto filterBox = bounds.removeFromTop(115);
     filterSectionLabel.setBounds(filterBox.removeFromTop(20));
     auto fIn = filterBox.reduced(10, 4);
-    layoutKnobRow(fIn.removeFromTop(78), { &filterCutoff, &filterRes, &filterDrive, &filterEnvAmt, &filterKb });
+    layoutKnobRow(fIn.removeFromTop(78),
+                  { &filterCutoff, &filterRes, &filterDrive, &filterEnvAmt, &filterKb, &mixerDriveSlider });
 
     auto envBox = bounds.removeFromTop(115);
     envSectionLabel.setBounds(envBox.removeFromTop(20));

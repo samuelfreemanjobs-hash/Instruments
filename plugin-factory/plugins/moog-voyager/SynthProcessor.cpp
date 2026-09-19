@@ -1,10 +1,28 @@
 #include "SynthProcessor.h"
 #include "SynthEditor.h"
+#include "GfunkPresets.h"
 
 namespace
 {
 constexpr int kNumVoices = 1;
 constexpr float kTwoPi = juce::MathConstants<float>::twoPi;
+
+float polyBlep(float phase, float dt) noexcept
+{
+    if (dt <= 0.0f)
+        return 0.0f;
+    if (phase < dt)
+    {
+        const float t = phase / dt;
+        return t + t - t * t - 1.0f;
+    }
+    if (phase > 1.0f - dt)
+    {
+        const float t = (phase - 1.0f) / dt;
+        return t * t + t + t + 1.0f;
+    }
+    return 0.0f;
+}
 
 float dbToLinear(float db) noexcept
 {
@@ -53,19 +71,40 @@ float MoogVoyagerAudioProcessor::SynthVoice::noteToHz(int midiNote, float octave
     return 440.0f * std::pow(2.0f, semitones / 12.0f);
 }
 
-float MoogVoyagerAudioProcessor::SynthVoice::waveFromPhase(float phase01, int waveIndex) noexcept
+float MoogVoyagerAudioProcessor::SynthVoice::mixerSaturate(float sample, float drive) noexcept
 {
+    const float d = juce::jmax(1.0f, drive);
+    return std::tanh(sample * d) / std::tanh(d);
+}
+
+float MoogVoyagerAudioProcessor::SynthVoice::computeCutoffHz(const VoiceParams& params, float filterEnv,
+                                                             float lfo, int midiNote) noexcept
+{
+    const float noteSemis = static_cast<float>(midiNote - 69) * params.filterKeyTrack;
+    const float envSemis = filterEnv * params.filterEnvAmount * 5.5f;
+    const float lfoSemis = lfo * params.lfoToFilter * 2.0f;
+    const float semis = noteSemis + envSemis + lfoSemis;
+    return juce::jlimit(20.0f, 20000.0f, params.filterCutoffHz * std::pow(2.0f, semis / 12.0f));
+}
+
+float MoogVoyagerAudioProcessor::SynthVoice::waveFromPhase(float phase01, float phaseIncrement,
+                                                           int waveIndex) noexcept
+{
+    const float dt = juce::jlimit(0.0f, 0.5f, phaseIncrement);
     switch (waveIndex)
     {
         case 1:
-            return phase01 < 0.5f ? 1.0f : -1.0f;
+        {
+            const float sq = phase01 < 0.5f ? 1.0f : -1.0f;
+            return sq + polyBlep(phase01, dt) - polyBlep(std::fmod(phase01 + 0.5f, 1.0f), dt);
+        }
         case 2:
             return 1.0f - 4.0f * std::abs(phase01 - 0.5f);
         case 3:
             return phase01 < 0.25f ? 1.0f : -1.0f;
         case 0:
         default:
-            return 2.0f * phase01 - 1.0f;
+            return (2.0f * phase01 - 1.0f) - polyBlep(phase01, dt);
     }
 }
 
@@ -126,9 +165,10 @@ void MoogVoyagerAudioProcessor::SynthVoice::renderNextBlock(juce::AudioBuffer<fl
     if (!isVoiceActive())
         return;
 
-    const auto params = owner.readVoiceParams();
+    const auto params = owner.getCachedVoiceParams();
     const float sr = static_cast<float>(getSampleRate());
     const float lfoInc = params.lfoRateHz / sr;
+    constexpr float driftRates[3] = { 0.07f, 0.11f, 0.05f };
 
     while (--numSamples >= 0)
     {
@@ -148,25 +188,23 @@ void MoogVoyagerAudioProcessor::SynthVoice::renderNextBlock(juce::AudioBuffer<fl
         float mixed = 0.0f;
         for (int o = 0; o < 3; ++o)
         {
+            driftPhase[o] += driftRates[o] / sr;
+            const float drift = 1.0f + 0.0012f * std::sin(driftPhase[o] * kTwoPi);
             const float hz = rootHz * std::pow(2.0f, params.oscOctave[o])
-                             * std::pow(2.0f, params.oscFine[o] / 1200.0f);
+                             * std::pow(2.0f, params.oscFine[o] / 1200.0f) * drift;
             const float inc = hz / sr;
             phase[o] += inc;
             if (phase[o] >= 1.0f)
                 phase[o] -= 1.0f;
-            mixed += waveFromPhase(phase[o], params.oscWave[o]) * params.oscLevel[o];
+            mixed += waveFromPhase(phase[o], inc, params.oscWave[o]) * params.oscLevel[o];
         }
         mixed += nextNoiseSample() * params.noiseLevel;
+        mixed = mixerSaturate(mixed, params.mixerDrive);
 
         const float filterEnv = filterAdsr.getNextSample();
         const float ampEnv = ampAdsr.getNextSample();
 
-        const float keyTrackHz = noteToHz(currentMidiNote, 0.0f, 0.0f);
-        const float kbOffset = (keyTrackHz - 440.0f) * params.filterKeyTrack;
-        const float envMod = filterEnv * params.filterEnvAmount * 12000.0f;
-        const float lfoFilter = lfo * params.lfoToFilter * 4000.0f;
-        float cutoff = params.filterCutoffHz + envMod + lfoFilter + kbOffset;
-        cutoff = juce::jlimit(20.0f, 20000.0f, cutoff);
+        const float cutoff = computeCutoffHz(params, filterEnv, lfo, currentMidiNote);
 
         ladder.setCutoffFrequencyHz(cutoff);
         ladder.setResonance(params.filterResonance);
@@ -240,6 +278,7 @@ MoogVoyagerAudioProcessor::VoiceParams MoogVoyagerAudioProcessor::readVoiceParam
     p.lfoToPitch = apvts.getRawParameterValue(std::string(SynthParamIDs::lfoToPitch))->load();
     p.lfoToFilter = apvts.getRawParameterValue(std::string(SynthParamIDs::lfoToFilter))->load();
     p.glideSeconds = apvts.getRawParameterValue(std::string(SynthParamIDs::glideTime))->load();
+    p.mixerDrive = apvts.getRawParameterValue(std::string(SynthParamIDs::mixerDrive))->load();
 
     return p;
 }
@@ -291,9 +330,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout MoogVoyagerAudioProcessor::c
             i == 3 ? 2 : 0));
     }
 
-    addFloat(SynthParamIDs::noiseLevel, "Noise", 0.0f, 1.0f, 0.05f);
+    addFloat(SynthParamIDs::noiseLevel, "Noise", 0.0f, 1.0f, 0.02f);
+    addFloat(SynthParamIDs::mixerDrive, "Mixer Drive", 1.0f, 4.0f, 2.2f);
 
-    addFloat(SynthParamIDs::filterCutoff, "Filter Cutoff", 20.0f, 18000.0f, 2200.0f, 0.3f);
+    addFloat(SynthParamIDs::filterCutoff, "Filter Cutoff", 20.0f, 18000.0f, 1800.0f, 0.3f);
     addFloat(SynthParamIDs::filterResonance, "Filter Resonance", 0.0f, 1.0f, 0.45f);
     addFloat(SynthParamIDs::filterDrive, "Filter Drive", 1.0f, 3.5f, 1.35f);
     addFloat(SynthParamIDs::filterEnvAmount, "Filter Env Amt", 0.0f, 1.0f, 0.7f);
@@ -312,7 +352,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MoogVoyagerAudioProcessor::c
     addFloat(SynthParamIDs::lfoRate, "LFO Rate", 0.05f, 20.0f, 0.6f, 0.35f);
     addFloat(SynthParamIDs::lfoToPitch, "LFO → Pitch", 0.0f, 1.0f, 0.0f);
     addFloat(SynthParamIDs::lfoToFilter, "LFO → Filter", 0.0f, 1.0f, 0.15f);
-    addFloat(SynthParamIDs::glideTime, "Glide", 0.0f, 2.0f, 0.08f, 0.45f);
+    addFloat(SynthParamIDs::glideTime, "Glide", 0.0f, 2.0f, 0.14f, 0.45f);
 
     return layout;
 }
@@ -327,6 +367,7 @@ MoogVoyagerAudioProcessor::MoogVoyagerAudioProcessor()
         synthesiser.addVoice(new SynthVoice(*this));
     synthesiser.addSound(new SynthSound());
     synthesiser.setNoteStealingEnabled(false);
+    gfunk::applyPreset(*this, gfunk::PresetId::gFunkLead);
 }
 
 MoogVoyagerAudioProcessor::~MoogVoyagerAudioProcessor() = default;
@@ -341,13 +382,21 @@ bool MoogVoyagerAudioProcessor::producesMidi() const { return false; }
 bool MoogVoyagerAudioProcessor::isMidiEffect() const { return false; }
 double MoogVoyagerAudioProcessor::getTailLengthSeconds() const { return 3.0; }
 
-int MoogVoyagerAudioProcessor::getNumPrograms() { return 1; }
-int MoogVoyagerAudioProcessor::getCurrentProgram() { return 0; }
-void MoogVoyagerAudioProcessor::setCurrentProgram(int index) { juce::ignoreUnused(index); }
+int MoogVoyagerAudioProcessor::getNumPrograms() { return 2; }
+int MoogVoyagerAudioProcessor::getCurrentProgram() { return currentProgramIndex; }
+void MoogVoyagerAudioProcessor::setCurrentProgram(int index)
+{
+    currentProgramIndex = juce::jlimit(0, getNumPrograms() - 1, index);
+    gfunk::applyPreset(*this,
+                       currentProgramIndex == 0 ? gfunk::PresetId::gFunkLead : gfunk::PresetId::gFunkBass);
+}
 const juce::String MoogVoyagerAudioProcessor::getProgramName(int index)
 {
-    juce::ignoreUnused(index);
-    return "Classic Lead";
+    if (index == 0)
+        return "G-Funk Lead";
+    if (index == 1)
+        return "G-Funk Bass";
+    return {};
 }
 void MoogVoyagerAudioProcessor::changeProgramName(int index, const juce::String& newName)
 {
@@ -378,6 +427,7 @@ void MoogVoyagerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 {
     juce::ScopedNoDenormals noDenormals;
     buffer.clear();
+    cachedVoiceParams = readVoiceParams();
 
     outputGainLinear.setTargetValue(
         dbToLinear(apvts.getRawParameterValue(std::string(SynthParamIDs::outputGainDb))->load()));

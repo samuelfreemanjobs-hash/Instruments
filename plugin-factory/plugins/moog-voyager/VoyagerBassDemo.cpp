@@ -1,4 +1,5 @@
 // Offline G-funk style bass render for V Voyager (used with UI screen capture).
+#include "GfunkPresets.h"
 #include "SynthProcessor.h"
 #include <JuceHeader.h>
 
@@ -44,26 +45,7 @@ void fillSnoopBassPattern(juce::MidiBuffer& midi, double sampleRate, int totalSa
 int main()
 {
     MoogVoyagerAudioProcessor processor;
-    auto& apvts = processor.getApvts();
-    auto setFloat = [&apvts](std::string_view id, float value) {
-        if (auto* param = apvts.getParameter(std::string(id)))
-            param->setValueNotifyingHost(param->convertTo0to1(value));
-    };
-    // G-funk sub: saw stack, low ladder filter, glide, moderate drive.
-    setFloat(SynthParamIDs::osc1Level, 0.95f);
-    setFloat(SynthParamIDs::osc2Level, 0.55f);
-    setFloat(SynthParamIDs::osc3Level, 0.35f);
-    setFloat(SynthParamIDs::osc1Octave, 2.0f); // choice index -> octave 0
-    setFloat(SynthParamIDs::filterCutoff, 520.0f);
-    setFloat(SynthParamIDs::filterResonance, 0.62f);
-    setFloat(SynthParamIDs::filterDrive, 1.85f);
-    setFloat(SynthParamIDs::filterEnvAmount, 0.55f);
-    setFloat(SynthParamIDs::glideTime, 0.11f);
-    setFloat(SynthParamIDs::ampAttack, 0.003f);
-    setFloat(SynthParamIDs::ampDecay, 0.18f);
-    setFloat(SynthParamIDs::ampSustain, 0.92f);
-    setFloat(SynthParamIDs::ampRelease, 0.35f);
-    setFloat(SynthParamIDs::outputGainDb, 2.0f);
+    gfunk::applyPreset(processor, gfunk::PresetId::gFunkBass);
 
     const double sampleRate = 44100.0;
     const int blockSize = 512;

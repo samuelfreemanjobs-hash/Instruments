@@ -44,4 +44,6 @@ inline constexpr std::string_view lfoToPitch { "lfoToPitch" };
 inline constexpr std::string_view lfoToFilter { "lfoToFilter" };
 
 inline constexpr std::string_view glideTime { "glideTime" };
+
+inline constexpr std::string_view mixerDrive { "mixerDrive" };
 } // namespace SynthParamIDs
