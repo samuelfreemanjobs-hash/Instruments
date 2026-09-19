@@ -2,7 +2,7 @@
 
 ## Origin
 
-All factory audio is **synthesized at build time** by `tools/GenerateRomplerPack.cpp`. No third-party samples or Roland/JD dumps are used.
+All factory audio is **synthesized at build time** by **[DisklordzSynth](../../DisklordzSynth/)** (`DisklordzSynth_BuildFactoryPack`). No third-party samples or Roland/JD dumps are used. The synth tools are retained for separate WAV/pack products — see [DisklordzSynth/Docs/COMMERCIAL.md](../../DisklordzSynth/Docs/COMMERCIAL.md).
 
 Categories per tone slot:
 
@@ -28,8 +28,8 @@ See `Source/Assets/PackFormat.h`.
 ## Manual regeneration
 
 ```bash
-cmake --build build -j --target GenerateDisklordzRomplerPack
-./build/DisklordzRompler/GenerateDisklordzRomplerPack /tmp/test.dlrom
+cmake --build build -j --target DisklordzSynth_BuildFactoryPack
+./build/DisklordzSynth/DisklordzSynth_BuildFactoryPack /tmp/test.dlrom
 ```
 
 Normal builds run this automatically before `juce_add_binary_data`.

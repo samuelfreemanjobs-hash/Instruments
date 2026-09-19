@@ -3,16 +3,12 @@
 set (DLROM_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set (DLROM_FILE "${DLROM_GENERATED_DIR}/disklordz_factory.dlrom")
 
-add_executable (GenerateDisklordzRomplerPack tools/GenerateRomplerPack.cpp)
-target_include_directories (GenerateDisklordzRomplerPack PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source")
-target_compile_features (GenerateDisklordzRomplerPack PRIVATE cxx_std_20)
-
 add_custom_command (
     OUTPUT "${DLROM_FILE}"
     COMMAND "${CMAKE_COMMAND}" -E make_directory "${DLROM_GENERATED_DIR}"
-    COMMAND GenerateDisklordzRomplerPack "${DLROM_FILE}"
-    DEPENDS GenerateDisklordzRomplerPack
-    COMMENT "Synthesizing Disklordz Rompler DLROMPR1 pack"
+    COMMAND DisklordzSynth_BuildFactoryPack "${DLROM_FILE}"
+    DEPENDS DisklordzSynth_BuildFactoryPack
+    COMMENT "Synthesizing Disklordz Rompler DLROMPR1 pack (DisklordzSynth)"
 )
 
 add_custom_target (DisklordzRompler_GeneratePack DEPENDS "${DLROM_FILE}")
@@ -62,13 +58,14 @@ target_link_libraries (DisklordzRompler
 target_include_directories (DisklordzRompler
     PRIVATE
         Source
+        "${CMAKE_SOURCE_DIR}/DisklordzSynth/include"
         "${CMAKE_CURRENT_BINARY_DIR}/juce_binarydata_DisklordzRomplerPackData/JuceLibraryCode"
 )
 
 juce_generate_juce_header (DisklordzRompler)
 
 add_executable (DisklordzRomplerTests Tests/RomplerEngineTests.cpp)
-target_include_directories (DisklordzRomplerTests PRIVATE Source)
+target_include_directories (DisklordzRomplerTests PRIVATE Source "${CMAKE_SOURCE_DIR}/DisklordzSynth/include")
 target_compile_features (DisklordzRomplerTests PRIVATE cxx_std_20)
 target_compile_definitions (DisklordzRomplerTests PRIVATE DLROM_TEST_PACK="${DLROM_FILE}")
 add_dependencies (DisklordzRomplerTests DisklordzRompler_GeneratePack)

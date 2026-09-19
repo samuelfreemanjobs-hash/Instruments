@@ -59,7 +59,7 @@ private:
 
         PackHeader hdr{};
         std::memcpy (&hdr, bytes.data(), sizeof (hdr));
-        if (std::memcmp (hdr.magic, kPackMagic, 8) != 0 || hdr.version != kPackVersion)
+        if (std::memcmp (hdr.magic, disklordz::dlrom::kPackMagic, 8) != 0 || hdr.version != kPackVersion)
             return false;
 
         const std::size_t tableBytes = static_cast<std::size_t> (hdr.regionCount) * sizeof (SampleRegion);
