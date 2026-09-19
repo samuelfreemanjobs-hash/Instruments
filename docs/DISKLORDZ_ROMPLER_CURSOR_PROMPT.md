@@ -1,10 +1,22 @@
 # DISKLORDZ ROMPLER — Cursor Cloud Agent prompt
 
-Paste this into a **Cloud Agent** task (optionally prepend the full factory from [PLUGIN_FACTORY_OS_PROMPT.md](PLUGIN_FACTORY_OS_PROMPT.md)). This prompt is **repository-oriented and incremental** — not a HISE dump or one-shot C++ generation.
+Paste this into a **Cloud Agent** task (optionally prepend the factory block from [PLUGIN_FACTORY_OS_PROMPT.md](PLUGIN_FACTORY_OS_PROMPT.md)). This prompt is **repository-oriented and incremental** — not a HISE dump or one-shot C++ generation.
+
+## Product boundary (read first)
+
+**DISKLORDZ ROMPLER is its own VSTi.** It is **not** WAVE-909, not a fork of `Wave909/`, and not a sampleless wavetable synth.
+
+| | DISKLORDZ ROMPLER | WAVE-909 (unrelated) |
+|--|-------------------|----------------------|
+| Engine | **Sample-based** multi-tone rompler | Sampleless algorithmic wavetable |
+| Folder | `DisklordzRompler/` (new) | `Wave909/` (do not edit for this work) |
+| CMake target | `DisklordzRompler_VST3`, etc. | `Wave909_*` |
+
+Do **not** reuse WAVE-909 DSP, presets, or branding. Reuse only **monorepo mechanics** (root CMake, JUCE patterns, `vst-testing-ops`).
 
 ## Goal
 
-Build **DISKLORDZ ROMPLER** v1.0: a **sample-based** multi-tone rompler for trap / phonk / dark 90s–00s workflow, matching the approved UI mockups, as a **JUCE + CMake** product in this monorepo.
+Build **DISKLORDZ ROMPLER** v1.0: a **sample-based** multi-tone rompler for trap / phonk / dark 90s–00s workflow, matching the approved UI mockups, as a **standalone JUCE + CMake** product in this monorepo.
 
 ## UI reference (source of truth for layout)
 
@@ -17,13 +29,13 @@ Build **DISKLORDZ ROMPLER** v1.0: a **sample-based** multi-tone rompler for trap
 
 ## Context — read before writing code
 
-1. [/ARCHITECTURE.md](../ARCHITECTURE.md) — monorepo index  
+1. [/ARCHITECTURE.md](../ARCHITECTURE.md) — monorepo index (register ROMPLER as its own product row)  
 2. [AGENTS.md](../AGENTS.md) — build, QA, git  
-3. [Wave909/ARCHITECTURE.md](../Wave909/ARCHITECTURE.md) — reference **JUCE product layout** (CMake subdirectory, APVTS, tests)  
-4. [docs/HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md) — rompler *content* may overlap; **this product is JUCE**, not HISE export  
+3. [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) — **JD Upgraded**: four-tone-per-voice PCM layout, voice pool, ROM/sample playback patterns (conceptual reference only — ROMPLER uses user/sample packs, not `JDUPGROM`)  
+4. [docs/HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md) — optional content lane; **implementation stays JUCE**, not HISE export  
 5. [.cursor/rules/architecture-documentation.mdc](../.cursor/rules/architecture-documentation.mdc)
 
-**Suggested product path:** `DisklordzRompler/` (adjust after repo search if a better name exists). Register in root `CMakeLists.txt` and root `ARCHITECTURE.md` when the shell builds.
+**Product path (fixed):** `DisklordzRompler/`. Add `add_subdirectory(DisklordzRompler)` in root `CMakeLists.txt`. **Do not** add code under `Wave909/` or change WAVE-909 targets.
 
 ## PLUGIN IDEA (product)
 
@@ -46,7 +58,8 @@ Follow **PLUGIN FACTORY OS §0 Cursor Repository Workflow**. In order:
 
 ### Step 1 — Discover (commit: docs only)
 
-- Search repo for rompler, sampler, multi-sample, `Synthesiser`, disk streaming patterns in `Source/`.
+- Search `Source/` (JD Upgraded) for multi-tone voice architecture, sample/ROM playback, and APVTS patterns — **do not copy JD ROM IP**; adapt structure only.
+- Search repo for rompler, sampler, multi-sample, `Synthesiser`, disk streaming (ignore `Wave909/` unless checking CMake subdirectory style).
 - Write `DisklordzRompler/Docs/PRODUCT_SPEC.md` (P0/P1/non-goals).
 - Write `DisklordzRompler/ARCHITECTURE.md` (threading, tone layers, sample loading thread, signal flow).
 - Write `DisklordzRompler/Docs/UI_SPEC.md` — map each tab to components; P0 = MAIN + minimal BROWSER.

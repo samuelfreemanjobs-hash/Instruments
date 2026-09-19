@@ -2,9 +2,9 @@
 
 Use with **Cursor Cloud Agent** or **IDE Agent** in the Instruments monorepo. The factory defines *what* to build; **§0 Cursor workflow** defines *how* agents work here (inspect → architect → vertical slices → test).
 
-**Product kickoff (DISKLORDZ ROMPLER):** [DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](DISKLORDZ_ROMPLER_CURSOR_PROMPT.md)
+**DISKLORDZ ROMPLER (standalone sample rompler VSTi):** [DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](DISKLORDZ_ROMPLER_CURSOR_PROMPT.md) — not related to WAVE-909.
 
-**Reference factory output:** [Wave909/Docs/PLUGIN_FACTORY_MANIFEST.md](../Wave909/Docs/PLUGIN_FACTORY_MANIFEST.md)
+**Example factory output (different product):** [Wave909/Docs/PLUGIN_FACTORY_MANIFEST.md](../Wave909/Docs/PLUGIN_FACTORY_MANIFEST.md)
 
 ---
 
@@ -15,7 +15,7 @@ Use with **Cursor Cloud Agent** or **IDE Agent** in the Instruments monorepo. Th
 | Read `/ARCHITECTURE.md`, `AGENTS.md`, product `ARCHITECTURE.md` before coding | Paste 5k+ lines of C++ in one response |
 | Add `ARCHITECTURE.md` + `Docs/PRODUCT_SPEC.md` before DSP | Implement full UI from mockups in pass one |
 | One vertical slice → `cmake --build` → `ctest` / pluginval | Skip build/test between subsystems |
-| Reuse patterns from `Wave909/`, `Source/` (JD Upgraded) | Ignore existing CMake/JUCE layout |
+| Reuse monorepo CMake/JUCE patterns from `Source/` or any `add_subdirectory` plugin | Edit unrelated products (e.g. do not build ROMPLER inside `Wave909/`) |
 | Branch `cursor/<name>-9a2b`, commit often, draft PR | Force-push or merge to main |
 
 Copy the block below into the agent task. Replace `PLUGIN IDEA:` with your concept.
@@ -106,7 +106,7 @@ You are running inside the **Instruments monorepo**, not a greenfield chat sessi
 ## Phase A — Discover (no product code yet)
 
 1. Read `/ARCHITECTURE.md` and `AGENTS.md`.
-2. Search the repo for related products (e.g. `Wave909/`, `Source/`, `hise-sketch/`, `tools/`).
+2. Search the repo for related products (e.g. `Source/` for PCM/multi-tone, `hise-sketch/` for rompler R&D, `tools/`). Use **only** the product folder named in the task — do not conflate separate VSTi lines (e.g. DISKLORDZ ROMPLER ≠ WAVE-909).
 3. Note reuse: CMake `add_subdirectory`, JUCE plugin targets, `vst-testing-ops/run_business.py`, golden tests.
 4. If the product folder does not exist, **propose** `PROJECT_ID/`, CMake target names, and doc paths — then create **docs only** in the first commit.
 
@@ -1344,5 +1344,5 @@ When building inside this repo:
 ## Usage notes
 
 - Keep the factory prompt **stable**; put product-specific ideas in `PLUGIN IDEA` or a dedicated file like [DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](DISKLORDZ_ROMPLER_CURSOR_PROMPT.md).
-- Reference JUCE product: [Wave909/](../Wave909/). Sample/rompler R&D lane: [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md) (do not confuse with JUCE build path).
+- **DISKLORDZ ROMPLER:** [DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](DISKLORDZ_ROMPLER_CURSOR_PROMPT.md) (own VSTi). **WAVE-909:** separate sampleless synth in [Wave909/](../Wave909/). Rompler content R&D: [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md).
 - Extend §42+ inside the fenced block if your template grows.
