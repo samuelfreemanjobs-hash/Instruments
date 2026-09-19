@@ -2,6 +2,8 @@
 
 This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents should read this file first, then the product-specific `ARCHITECTURE.md` for the code they touch.
 
+**Agent workflow (all products):** [docs/DPCS_BUILD_METHODOLOGY.md](docs/DPCS_BUILD_METHODOLOGY.md) — always-on [`.cursor/rules/dpcs.mdc`](.cursor/rules/dpcs.mdc).
+
 ## Products
 
 | Product | Doc | CMake targets |
@@ -15,6 +17,8 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Disklordz RAG** (prompt knowledge) | [disklordz/rag/ARCHITECTURE.md](disklordz/rag/ARCHITECTURE.md) · [docs/RAG_AND_INTELLIGENT_AUTOMATION.md](docs/RAG_AND_INTELLIGENT_AUTOMATION.md) | `python3 disklordz/rag/scripts/chunk_corpus.py` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-909** (sampleless trap wavetable synth) | [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md) | `Wave909_VST3`, `Wave909_Standalone`, `Wave909Tests` |
+| **DisklordzSynth** (offline procedural engines — sellable WAV/DLROM tools) | [DisklordzSynth/ARCHITECTURE.md](DisklordzSynth/ARCHITECTURE.md) | `DisklordzSynth_BuildRawRom`, `DisklordzSynth_RenderWav`, `DisklordzSynth_ExportWavPack` |
+| **DISKLORDZ ROMPLER** (standalone sample-based rompler VSTi; not WAVE-909) | [DisklordzRompler/ARCHITECTURE.md](DisklordzRompler/ARCHITECTURE.md) · [docs/DISKLORDZ_PLATFORM.md](docs/DISKLORDZ_PLATFORM.md) · [docs/DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](docs/DISKLORDZ_ROMPLER_CURSOR_PROMPT.md) | `DisklordzRompler_VST3`, `DisklordzRompler_Standalone`, `DisklordzRomplerTests` |
 
 ## Repository layout
 

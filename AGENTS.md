@@ -4,7 +4,10 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 
 ## Standards
 
-- [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts  
+- [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts 
+- [docs/PLUGIN_FACTORY_OS_PROMPT.md](docs/PLUGIN_FACTORY_OS_PROMPT.md) — plugin factory + Cursor incremental workflow
+- **DPCS** — universal build methodology for **every project** (Phases 0–4): [docs/DPCS_BUILD_METHODOLOGY.md](docs/DPCS_BUILD_METHODOLOGY.md); always-on [`.cursor/rules/dpcs.mdc`](.cursor/rules/dpcs.mdc). Plugin detail: [PLUGIN_FACTORY_OS_PROMPT.md](docs/PLUGIN_FACTORY_OS_PROMPT.md) §0. DiskLordz content roadmap: [DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md](DisklordzSynth/Docs/CONTENT_PLATFORM_ROADMAP.md)
+- [docs/DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](docs/DISKLORDZ_ROMPLER_CURSOR_PROMPT.md) — **DISKLORDZ ROMPLER** (own sample rompler VSTi; not WAVE-909; UI mocks in `docs/assets/`) 
 - [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
 - `.cursor/rules/*.mdc` — always-on architecture and security  
 
@@ -43,6 +46,16 @@ streamlit run vst-testing-ops/app.py                       # operations dashboar
 ```
 
 **After editing plugin C++ (`Source/`, `Wave909/`, etc.):** run `run_business.py --profile ci` before pushing; on failure read `vst-testing-ops/error_log.txt` and fix until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit updated WAVs.
+
+**DISKLORDZ ROMPLER** — create ROM, then VSTi (ROM not in git; ~387 MB under `build/`):
+
+```bash
+./scripts/build-disklordz-rompler.sh
+```
+
+ROM only: `./scripts/build-factory-rom.sh`
+
+Procedural cards: `DisklordzSynth` four engines → 16× `pcm_bank_XX.dlrrom`. WAV multisamples: [DisklordzRompler/FactoryContent/README.md](DisklordzRompler/FactoryContent/README.md) → `DisklordzSynth_RomFactory build-manifest`.
 
 - [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
 

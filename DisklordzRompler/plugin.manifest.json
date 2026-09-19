@@ -1,0 +1,17 @@
+{
+  "projectId": "disklordz_rompler",
+  "pluginName": "DISKLORDZ ROMPLER",
+  "version": "0.1.0",
+  "type": "instrument",
+  "category": "rompler",
+  "sampleless": false,
+  "formats": ["VST3", "Standalone"],
+  "platforms": ["Linux", "Windows", "macOS"],
+  "p0Features": [
+    "DLROMPR1 build-time sample pack",
+    "Four tone layers per voice",
+    "Eight performance macros",
+    "Factory presets",
+    "VST3 + Standalone"
+  ]
+}

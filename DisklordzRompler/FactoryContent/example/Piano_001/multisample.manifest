@@ -1,0 +1,7 @@
+# Example only — WAVs are generated in CI smoke test, not committed at scale
+id piano_example_001
+family acoustic_piano
+layer real
+tier core
+program 1
+zone 60 samples/C4.wav 0 127

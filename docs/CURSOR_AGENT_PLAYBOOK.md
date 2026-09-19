@@ -15,13 +15,16 @@ Use this for **Disklordz** and **any new repo** in the org. Pair with [AGENTIC_P
 | `.gitignore` | Secrets, build artifacts |
 | `.cursorignore` | Keep huge trees out of context |
 | CI workflow | `lint` / `test` / `build` on PR |
-| `.cursor/rules/*.mdc` | At least one `alwaysApply` architecture/security rule |
+| `.cursor/rules/dpcs.mdc` | `alwaysApply: true` — [DPCS_BUILD_METHODOLOGY.md](DPCS_BUILD_METHODOLOGY.md) on every project |
+| `.cursor/rules/*.mdc` | Architecture/security rules (see [AGENTIC_PROJECT_STANDARDS.md](AGENTIC_PROJECT_STANDARDS.md)) |
 
 First agent task: **one vertical slice** (scaffold + health check), not full product.
 
 ---
 
 ## 2. Structured prompting template
+
+**JUCE / plugin products:** use [PLUGIN_FACTORY_OS_PROMPT.md](PLUGIN_FACTORY_OS_PROMPT.md) (factory + §0 repo workflow). **DISKLORDZ ROMPLER:** [DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](DISKLORDZ_ROMPLER_CURSOR_PROMPT.md).
 
 Copy into every Cloud Agent or IDE Agent task:
 
