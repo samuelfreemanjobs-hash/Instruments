@@ -18,16 +18,17 @@ Four sellable offline engines ([Docs/ENGINES.md](Docs/ENGINES.md)):
 ## Build
 
 ```bash
-cmake --build build -j --target DisklordzSynth_BuildFactoryPack DisklordzSynth_RenderWav DisklordzSynth_ExportWavPack DisklordzSynthTests
+cmake --build build -j --target DisklordzSynth_BuildRawRom DisklordzSynth_RenderWav DisklordzSynth_ExportWavPack DisklordzSynthTests
 ```
 
 ## CLI products (retained)
 
 | Binary | Role |
 |--------|------|
-| `DisklordzSynth_BuildFactoryPack` | Write `DLROMPR1` pack (embedded by ROMPLER) |
+| `DisklordzSynth_BuildRawRom` | Write `DLRROM01` raw wave ROM (embedded by ROMPLER) |
+| `DisklordzSynth_BuildFactoryPack` | Legacy `DLROMPR1` region pack (commercial tooling) |
 | `DisklordzSynth_RenderWav` | Single-engine WAV export for sample packs |
-| `DisklordzSynth_ExportWavPack` | Dump full factory multis as WAV folder |
+| `DisklordzSynth_ExportWavPack` | Dump factory ROM waves as WAV folder |
 
 ## Library
 
@@ -35,7 +36,8 @@ cmake --build build -j --target DisklordzSynth_BuildFactoryPack DisklordzSynth_R
 
 ## Data formats
 
-- **DLROMPR1** — [include/disklordz/DlromPackFormat.h](include/disklordz/DlromPackFormat.h) (shared with ROMPLER loader)
+- **DLRROM01** — [include/disklordz/RawRomFormat.h](include/disklordz/RawRomFormat.h) (ROMPLER `RawRomBank`)
+- **DLROMPR1** — [include/disklordz/DlromPackFormat.h](include/disklordz/DlromPackFormat.h) (legacy pack builder only)
 - **WAV** — 24-bit mono via `WavWriter`
 
 ## Commercial use

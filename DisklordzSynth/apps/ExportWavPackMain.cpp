@@ -1,11 +1,11 @@
-#include "disklordz/FactoryPackBuilder.h"
+#include "disklordz/EngineParams.h"
+#include "disklordz/RawRomBuilder.h"
 #include "disklordz/WavWriter.h"
 
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
 #include <string>
-#include <vector>
 
 namespace fs = std::filesystem;
 
@@ -14,7 +14,7 @@ int main (int argc, char** argv)
     if (argc < 2)
     {
         std::cerr << "Usage: DisklordzSynth_ExportWavPack <output_directory> [sampleRate]\n"
-                  << "Exports all factory multisample regions as sellable WAV files.\n";
+                  << "Exports all waves from the factory DLRROM01 build as sellable WAV files.\n";
         return EXIT_FAILURE;
     }
 
@@ -29,19 +29,32 @@ int main (int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    std::vector<disklordz::synth::PackRegionSpec> specs;
-    disklordz::synth::buildRomplerFactoryRegions (specs);
+    disklordz::synth::BuiltRawRom built;
+    if (! disklordz::synth::buildRawRom (built))
+    {
+        std::cerr << "buildRawRom failed\n";
+        return EXIT_FAILURE;
+    }
 
     int written = 0;
-    for (std::size_t i = 0; i < specs.size(); ++i)
+    for (std::size_t i = 0; i < built.waves.size(); ++i)
     {
-        const auto& s = specs[i];
-        const std::string fname = "tone" + std::to_string (s.toneIndex)
-                                + "_root" + std::to_string (s.root)
-                                + "_cat" + std::to_string (static_cast<int> (s.category))
-                                + ".wav";
+        const auto& e = built.waves[i];
+        const std::size_t end = static_cast<std::size_t> (e.pcmOffset + e.numFrames);
+        if (end > built.pcm.size())
+            continue;
+
+        std::vector<float> mono (e.numFrames);
+        for (std::uint32_t f = 0; f < e.numFrames; ++f)
+            mono[f] = built.pcm[static_cast<std::size_t> (e.pcmOffset + f)];
+
+        const std::string eng = disklordz::synth::engineIdName (
+            static_cast<disklordz::synth::EngineId> (e.engineId));
+        const std::string fname = "wave" + std::to_string (e.waveId) + "_" + eng + "_set"
+                                + std::to_string (e.multisampleSetId) + "_root"
+                                + std::to_string (e.rootMidiNote) + ".wav";
         const fs::path path = outDir / fname;
-        if (disklordz::synth::writeMonoWav24 (path.string(), s.pcm, sr))
+        if (disklordz::synth::writeMonoWav24 (path.string(), mono, sr))
             ++written;
     }
 

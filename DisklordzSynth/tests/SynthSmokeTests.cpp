@@ -1,6 +1,6 @@
 #include "disklordz/EngineParams.h"
-#include "disklordz/FactoryPackBuilder.h"
 #include "disklordz/ProceduralSynth.h"
+#include "disklordz/RawRomBuilder.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -37,14 +37,20 @@ int main()
         }
     }
 
-    std::vector<disklordz::synth::PackRegionSpec> specs;
-    disklordz::synth::buildRomplerFactoryRegions (specs);
-    if (specs.size() != 32)
+    disklordz::synth::BuiltRawRom rom;
+    if (! disklordz::synth::buildRawRom (rom))
     {
-        std::cerr << "expected 32 regions, got " << specs.size() << '\n';
+        std::cerr << "buildRawRom failed\n";
         return EXIT_FAILURE;
     }
 
-    std::cout << "DisklordzSynthTests OK (4 engines)\n";
+    constexpr std::size_t kExpectedWaves = 4 * 8 + 4 * 4;
+    if (rom.waves.size() != kExpectedWaves)
+    {
+        std::cerr << "expected " << kExpectedWaves << " waves, got " << rom.waves.size() << '\n';
+        return EXIT_FAILURE;
+    }
+
+    std::cout << "DisklordzSynthTests OK (4 engines, raw ROM " << rom.waves.size() << " waves)\n";
     return EXIT_SUCCESS;
 }

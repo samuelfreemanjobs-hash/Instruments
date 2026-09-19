@@ -4,6 +4,7 @@ add_library (DisklordzSynth STATIC
     src/EngineParams.cpp
     src/ProceduralSynth.cpp
     src/FactoryPackBuilder.cpp
+    src/RawRomBuilder.cpp
     src/WavWriter.cpp
 )
 
@@ -16,6 +17,9 @@ target_compile_features (DisklordzSynth PUBLIC cxx_std_20)
 
 add_executable (DisklordzSynth_BuildFactoryPack apps/BuildFactoryPackMain.cpp)
 target_link_libraries (DisklordzSynth_BuildFactoryPack PRIVATE DisklordzSynth)
+
+add_executable (DisklordzSynth_BuildRawRom apps/BuildRawRomMain.cpp)
+target_link_libraries (DisklordzSynth_BuildRawRom PRIVATE DisklordzSynth)
 
 add_executable (DisklordzSynth_RenderWav apps/RenderWavMain.cpp)
 target_link_libraries (DisklordzSynth_RenderWav PRIVATE DisklordzSynth)
