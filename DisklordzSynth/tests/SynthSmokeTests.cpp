@@ -1,6 +1,7 @@
 #include "disklordz/EngineParams.h"
 #include "disklordz/ProceduralSynth.h"
 #include "disklordz/RawRomBuilder.h"
+#include "disklordz/RawRomFormat.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -15,6 +16,10 @@ float peakOf (const std::vector<float>& v)
         peak = std::max (peak, std::abs (s));
     return peak;
 }
+
+constexpr std::size_t kExpectedWavesPerBank =
+    disklordz::rawrom::kProgramsPerRomBank * disklordz::rawrom::kZonesPerProgram
+    + disklordz::rawrom::kStandaloneWavesPerBank;
 } // namespace
 
 int main()
@@ -38,19 +43,25 @@ int main()
     }
 
     disklordz::synth::BuiltRawRom rom;
-    if (! disklordz::synth::buildRawRom (rom))
+    if (! disklordz::synth::buildRawRomBank (0, rom))
     {
-        std::cerr << "buildRawRom failed\n";
+        std::cerr << "buildRawRomBank failed\n";
         return EXIT_FAILURE;
     }
 
-    constexpr std::size_t kExpectedWaves = 4 * 8 + 4 * 4;
-    if (rom.waves.size() != kExpectedWaves)
+    if (rom.waves.size() != kExpectedWavesPerBank)
     {
-        std::cerr << "expected " << kExpectedWaves << " waves, got " << rom.waves.size() << '\n';
+        std::cerr << "expected " << kExpectedWavesPerBank << " waves per ROM card, got " << rom.waves.size() << '\n';
         return EXIT_FAILURE;
     }
 
-    std::cout << "DisklordzSynthTests OK (4 engines, raw ROM " << rom.waves.size() << " waves)\n";
+    if (disklordz::rawrom::kFactoryRomBankCount < 8)
+    {
+        std::cerr << "factory ROM bank count too low\n";
+        return EXIT_FAILURE;
+    }
+
+    std::cout << "DisklordzSynthTests OK (4 engines, " << disklordz::rawrom::kFactoryRomBankCount
+              << " ROM cards × " << kExpectedWavesPerBank << " waves/card design)\n";
     return EXIT_SUCCESS;
 }

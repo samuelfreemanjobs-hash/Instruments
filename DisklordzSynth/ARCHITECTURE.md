@@ -25,7 +25,8 @@ cmake --build build -j --target DisklordzSynth_BuildRawRom DisklordzSynth_Render
 
 | Binary | Role |
 |--------|------|
-| `DisklordzSynth_BuildRawRom` | Write `DLRROM01` raw wave ROM (embedded by ROMPLER) |
+| `DisklordzSynth_BuildRawRom` | Write 16-card `DLRROM01` library (or single card with `--single`) |
+| `DisklordzSynth_BundleRawRoms` | Optional DLRROMCAT archive of all `.dlrrom` cards |
 | `DisklordzSynth_BuildFactoryPack` | Legacy `DLROMPR1` region pack (commercial tooling) |
 | `DisklordzSynth_RenderWav` | Single-engine WAV export for sample packs |
 | `DisklordzSynth_ExportWavPack` | Dump factory ROM waves as WAV folder |

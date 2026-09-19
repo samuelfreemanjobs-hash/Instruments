@@ -15,16 +15,16 @@ class RomplerEngine final
 public:
     static constexpr int kMaxVoices = 24;
 
-    void setRomBank (const assets::RawRomBank* bank) noexcept
+    void setRomLibrary (const assets::RawRomLibrary* library) noexcept
     {
-        bank_ = bank;
+        library_ = library;
     }
 
     void prepare (double sampleRate) noexcept
     {
         sampleRate_ = sampleRate;
         for (auto& v : voices_)
-            v.prepare (sampleRate, bank_);
+            v.prepare (sampleRate, library_);
     }
 
     void reset() noexcept
@@ -127,7 +127,7 @@ private:
     }
 
     double sampleRate_ = 44100.0;
-    const assets::RawRomBank* bank_ = nullptr;
+    const assets::RawRomLibrary* library_ = nullptr;
     RomplerParams params_{};
     std::array<RomplerVoice, kMaxVoices> voices_{};
     std::array<bool, 128> keyHeld_{};

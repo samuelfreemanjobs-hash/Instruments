@@ -49,7 +49,7 @@ private:
     disklordz::rompler::RomplerParams readParamsFromApvts() const noexcept;
 
     juce::AudioProcessorValueTreeState apvts_;
-    disklordz::rompler::assets::RawRomBank romBank_;
+    disklordz::rompler::assets::RawRomLibrary romLibrary_;
     disklordz::rompler::engine::RomplerEngine engine_;
     disklordz::rompler::RomplerParams liveParams_{};
     int currentProgram_ = 0;

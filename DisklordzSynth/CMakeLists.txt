@@ -21,6 +21,9 @@ target_link_libraries (DisklordzSynth_BuildFactoryPack PRIVATE DisklordzSynth)
 add_executable (DisklordzSynth_BuildRawRom apps/BuildRawRomMain.cpp)
 target_link_libraries (DisklordzSynth_BuildRawRom PRIVATE DisklordzSynth)
 
+add_executable (DisklordzSynth_BundleRawRoms apps/BundleRawRomsMain.cpp)
+target_link_libraries (DisklordzSynth_BundleRawRoms PRIVATE DisklordzSynth)
+
 add_executable (DisklordzSynth_RenderWav apps/RenderWavMain.cpp)
 target_link_libraries (DisklordzSynth_RenderWav PRIVATE DisklordzSynth)
 

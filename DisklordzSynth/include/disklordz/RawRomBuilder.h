@@ -2,25 +2,33 @@
 
 #include "disklordz/RawRomFormat.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
 namespace disklordz::synth
 {
 
-/**
- * Build a raw wave ROM using only the four offline engines.
- * Waves are stored in a flat table + PCM pool (not pre-mapped tone regions).
- */
-bool buildAndWriteRawRom (const std::string& outputPath);
-
-/** In-memory build for tests and exporters. */
 struct BuiltRawRom final
 {
     std::vector<rawrom::WaveEntry> waves;
     std::vector<float> pcm;
+    std::uint32_t bankIndex = 0;
+    rawrom::RomBankCategory category = rawrom::RomBankCategory::studioPop;
 };
 
+/** Legacy single-card build (bank 0 only). */
 bool buildRawRom (BuiltRawRom& out);
+
+/** One expansion-card ROM (hundreds of waves). */
+bool buildRawRomBank (std::uint32_t bankIndex, BuiltRawRom& out);
+
+/** Write DLRROM01/02 file from an in-memory build. */
+bool writeRawRomFile (const std::string& outputPath, const BuiltRawRom& built);
+
+/** All factory cards → `pcm_bank_XX.dlrrom` in outputDir. Returns number written. */
+int buildAndWriteAllFactoryRomBanks (const std::string& outputDir);
+
+bool buildAndWriteRawRom (const std::string& outputPath);
 
 } // namespace disklordz::synth

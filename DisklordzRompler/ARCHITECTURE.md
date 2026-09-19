@@ -20,13 +20,13 @@ Artifact: `build/DisklordzRompler/DisklordzRompler_artefacts/Release/VST3/DISKLO
 ## Raw ROM pipeline
 
 ```text
-DisklordzSynth (4 engines) → buildRawRom()
+DisklordzSynth (4 engines) → 16× buildRawRomBank()
         ↓
-disklordz_factory.dlrrom (DLRROM01)
+pcm_bank_00…15.dlrrom (DLRROM01 v2, ~448 waves/card)
         ↓
-juce_add_binary_data → embedded in plugin
+POST_BUILD → VST3/Standalone Resources/DisklordzRom/
         ↓
-RawRomBank at startup (no audio-thread load)
+RawRomLibrary load at startup (no audio-thread load)
 ```
 
 Regenerate only via rebuild; see [Docs/SAMPLE_PACK.md](Docs/SAMPLE_PACK.md).

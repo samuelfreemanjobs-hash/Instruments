@@ -24,6 +24,10 @@ struct RomplerParams final
     float ampSustain = 0.85f;
     float ampRelease = 0.35f;
     float pitchBendSemis = 0.0f;
+    /** Expansion ROM card index (0…15 factory). */
+    std::array<std::uint8_t, 4> toneRomBank { 0, 0, 0, 0 };
+    /** Program variant 0…7 within each tone's engine family on that card. */
+    std::array<std::uint8_t, 4> toneProgram { 0, 0, 0, 0 };
 };
 
 } // namespace disklordz::rompler

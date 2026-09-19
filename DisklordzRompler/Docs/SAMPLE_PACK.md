@@ -1,24 +1,32 @@
-# DLRROM01 — factory raw wave ROM
+# DLRROM01 — factory PCM expansion library
 
 ## Origin
 
-All factory audio is **synthesized at build time** by the four **[DisklordzSynth](../../DisklordzSynth/)** engines (`DisklordzSynth_BuildRawRom`). The ROM is a flat **wave table + PCM pool** (JD-style multisample sets), not pre-mapped tone regions. No third-party samples or Roland/JD dumps are used.
+Factory audio is **synthesized at build time** by the four **[DisklordzSynth](../../DisklordzSynth/)** engines. The rompler ships **16 separate raw ROM files** (`pcm_bank_00.dlrrom` … `pcm_bank_15.dlrrom`), modeled after workstation expansion cards (Fantom SRX / Triton EXB / Motif PLG-style **multi-ROM** libraries).
 
-| Rompler tone | Multisample set | Engine |
-|--------------|-----------------|--------|
-| 0 | 1 | **additive** |
-| 1 | 2 | **karplus** |
-| 2 | 3 | **wave** (looped waves) |
-| 3 | 4 | **subtractive** |
+Each card contains:
 
-Each set has eight root zones (MIDI 36–84). The plugin picks the closest root wave at note-on. Sixteen additional standalone waves (set id 0) live in the ROM for tooling and future programs.
+- **32 multisample programs** (8 per engine × 4 engines)
+- **12 zones** per program (roots 28–84)
+- **64 standalone** waves (set id 0) for one-shots and future mapping
 
-## File layout
+**~448 waves per card × 16 cards ≈ 7,168 waves** in the embedded factory library.
+
+| Rompler tone | Engine family | Program ids on a card |
+|--------------|---------------|------------------------|
+| 0 | additive | 1–8 |
+| 1 | karplus | 9–16 |
+| 2 | wave (looped) | 17–24 |
+| 3 | subtractive | 25–32 |
+
+Presets pick **ROM card** (`toneRomBank`) and **program variant** (`toneProgram` 0…7) per layer.
+
+## File layout (v2 header)
 
 ```text
-RomHeader     (magic DLRROM01, version, waveCount, pcmFloatCount)
-WaveEntry[]   (wave table: offsets, roots, loop points, engine id, multisample set id)
-float pcm[]   (interleaved mono pool)
+RomHeader     (magic DLRROM01, version 2, bankIndex, category, waveCount, pcm pool size)
+WaveEntry[]
+float pcm[]
 ```
 
 See `DisklordzSynth/include/disklordz/RawRomFormat.h` and `Source/Assets/RawRomBank.h`.
@@ -26,17 +34,14 @@ See `DisklordzSynth/include/disklordz/RawRomFormat.h` and `Source/Assets/RawRomB
 ## Manual regeneration
 
 ```bash
-cmake --build build -j --target DisklordzSynth_BuildRawRom
-./build/DisklordzSynth/DisklordzSynth_BuildRawRom /tmp/test.dlrrom
+cmake --build build -j --target DisklordzSynth_BuildRawRom DisklordzRompler_GenerateRom
+./build/DisklordzSynth/DisklordzSynth_BuildRawRom /tmp/pcm_roms
+ls /tmp/pcm_roms/pcm_bank_*.dlrrom | wc -l   # 16
 ```
 
-Normal plugin builds run this automatically before `juce_add_binary_data`.
-
-## Legacy DLROMPR1
-
-`DisklordzSynth_BuildFactoryPack` still builds the older region-pack format for separate commercial `.dlrom` products; the rompler no longer embeds it.
+Build output is **16 loose `.dlrrom` files** (~12 MB each, ~192 MB total library). They are copied into the VST3/Standalone bundle at `Resources/DisklordzRom/` (workstation-style swappable PCM cards). Optional **`DisklordzSynth_BundleRawRoms`** builds a DLRROMCAT shipping archive for sample-pack products.
 
 ## Future
 
-- P1: import user WAV folders into a DLRROM01 builder
-- P1: optional link to Disklordz SaaS kit downloads (out of repo)
+- P1: user-imported `.dlrrom` packs and card slots
+- P2: SaaS-generated expansion ROM downloads

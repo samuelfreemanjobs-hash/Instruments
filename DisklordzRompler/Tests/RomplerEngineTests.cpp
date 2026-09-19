@@ -4,13 +4,16 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <vector>
 
+namespace fs = std::filesystem;
+
 namespace
 {
-bool loadRomFile (const char* path, std::vector<std::uint8_t>& out)
+bool loadRomFile (const fs::path& path, std::vector<std::uint8_t>& out)
 {
     std::ifstream in (path, std::ios::binary);
     if (! in)
@@ -22,52 +25,67 @@ bool loadRomFile (const char* path, std::vector<std::uint8_t>& out)
     in.read (reinterpret_cast<char*> (out.data()), size);
     return in.good();
 }
+
+bool loadLibraryFromDirectory (const fs::path& dir, disklordz::rompler::assets::RawRomLibrary& library)
+{
+    if (! fs::is_directory (dir))
+        return false;
+
+    int loaded = 0;
+    for (const auto& entry : fs::directory_iterator (dir))
+    {
+        if (entry.path().extension() != ".dlrrom")
+            continue;
+        std::vector<std::uint8_t> bytes;
+        if (! loadRomFile (entry.path(), bytes))
+            continue;
+        if (library.loadBankEmbedded (bytes.data(), bytes.size()))
+            ++loaded;
+    }
+    return loaded > 0;
+}
 } // namespace
 
 int main (int argc, char** argv)
 {
-    disklordz::rompler::assets::RawRomBank bank;
+    disklordz::rompler::assets::RawRomLibrary library;
 
-    const char* romPath =
-#if defined (DLRROM_TEST_ROM)
-        DLRROM_TEST_ROM;
+    fs::path romDir =
+#if defined (DLRROM_TEST_ROM_DIR)
+        DLRROM_TEST_ROM_DIR;
 #else
-        nullptr;
+        fs::path {};
 #endif
 
     if (argc >= 2)
-        romPath = argv[1];
+        romDir = argv[1];
 
-    if (romPath == nullptr)
+    if (romDir.empty() || ! loadLibraryFromDirectory (romDir, library))
     {
-        std::cerr << "No ROM path (build with DLRROM_TEST_ROM or pass argv[1])\n";
+        std::cerr << "Failed to load ROM library from directory (use DLRROM_TEST_ROM_DIR or argv[1])\n";
         return EXIT_FAILURE;
     }
 
-    std::vector<std::uint8_t> bytes;
-    if (! loadRomFile (romPath, bytes))
+    if (library.getBankCount() < 1)
     {
-        std::cerr << "Failed to read ROM: " << romPath << '\n';
-        return EXIT_FAILURE;
-    }
-    if (! bank.loadEmbedded (bytes.data(), bytes.size()))
-    {
-        std::cerr << "Failed to parse DLRROM01\n";
+        std::cerr << "No ROM banks loaded\n";
         return EXIT_FAILURE;
     }
 
-    if (bank.getWaveCount() < 32)
+    if (library.getTotalWaveCount() < 400)
     {
-        std::cerr << "Expected >= 32 waves in ROM, got " << bank.getWaveCount() << '\n';
+        std::cerr << "Expected abundant wave pool (>=400), got " << library.getTotalWaveCount() << '\n';
         return EXIT_FAILURE;
     }
 
     disklordz::rompler::engine::RomplerEngine engine;
-    engine.setRomBank (&bank);
+    engine.setRomLibrary (&library);
     engine.prepare (48000.0);
 
     disklordz::rompler::RomplerParams p;
     p.toneLevel = { 1.0f, 0.6f, 0.4f, 0.8f };
+    p.toneRomBank = { 0, 0, 0, 0 };
+    p.toneProgram = { 0, 1, 2, 0 };
     p.ampSustain = 0.9f;
     engine.setParams (p);
     engine.noteOn (60, 1.0f);
@@ -86,6 +104,7 @@ int main (int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    std::cout << "DisklordzRomplerTests OK waves=" << bank.getWaveCount() << " peak=" << peak << '\n';
+    std::cout << "DisklordzRomplerTests OK banks=" << library.getBankCount()
+              << " waves=" << library.getTotalWaveCount() << " peak=" << peak << '\n';
     return EXIT_SUCCESS;
 }

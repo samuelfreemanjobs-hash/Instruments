@@ -16,10 +16,10 @@ namespace disklordz::rompler::engine
 class RomplerVoice final
 {
 public:
-    void prepare (double sampleRate, const assets::RawRomBank* bank) noexcept
+    void prepare (double sampleRate, const assets::RawRomLibrary* library) noexcept
     {
         sampleRate_ = sampleRate;
-        bank_ = bank;
+        library_ = library;
         ampEnv_.setSampleRate (sampleRate);
     }
 
@@ -41,10 +41,13 @@ public:
         velocity_ = std::clamp (velocity, 0.0f, 1.0f);
         params_ = p;
 
-        for (std::uint8_t t = 0; t < rawrom::kMaxMultisampleSets; ++t)
+        for (std::uint8_t t = 0; t < rawrom::kRomplerToneLayers; ++t)
         {
-            layers_[t].wave = bank_ != nullptr
-                                  ? bank_->selectForToneAndNote (t, static_cast<std::uint8_t> (midiNote))
+            layers_[t].wave = library_ != nullptr
+                                  ? library_->selectForTone (p.toneRomBank[static_cast<std::size_t> (t)],
+                                                             t,
+                                                             p.toneProgram[static_cast<std::size_t> (t)],
+                                                             static_cast<std::uint8_t> (midiNote))
                                   : assets::WaveView{};
             layers_[t].phase = 0.0;
         }
@@ -72,7 +75,7 @@ public:
         const float drive = params_.macroDrive * 2.5f;
         const float crushMix = params_.macroCrush;
 
-        for (std::uint8_t t = 0; t < rawrom::kMaxMultisampleSets; ++t)
+        for (std::uint8_t t = 0; t < rawrom::kRomplerToneLayers; ++t)
         {
             auto& layer = layers_[t];
             if (layer.wave.samples == nullptr || layer.wave.frameCount == 0)
@@ -145,9 +148,9 @@ private:
     }
 
     double sampleRate_ = 44100.0;
-    const assets::RawRomBank* bank_ = nullptr;
+    const assets::RawRomLibrary* library_ = nullptr;
     RomplerParams params_{};
-    std::array<LayerState, rawrom::kMaxMultisampleSets> layers_{};
+    std::array<LayerState, rawrom::kRomplerToneLayers> layers_{};
     dsp::AdsrEnvelope ampEnv_{};
     float lpState_ = 0.0f;
     bool active_ = false;

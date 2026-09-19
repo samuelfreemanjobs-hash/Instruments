@@ -1,7 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include "BinaryData.h"
+#include "Assets/FactoryRomLoader.h"
 
 namespace
 {
@@ -47,9 +47,9 @@ DisklordzRomplerProcessor::DisklordzRomplerProcessor()
 #endif
       apvts_ (*this, nullptr, "DisklordzRompler", createParameterLayout())
 {
-    romBank_.loadEmbedded (BinaryData::disklordz_factory_dlrrom,
-                           static_cast<std::size_t> (BinaryData::disklordz_factory_dlrromSize));
-    engine_.setRomBank (&romBank_);
+    if (! disklordz::rompler::assets::loadEmbeddedFactoryRomLibrary (romLibrary_))
+        jassertfalse;
+    engine_.setRomLibrary (&romLibrary_);
     applyFactoryPreset (0);
 }
 
