@@ -43,6 +43,8 @@ private:
     void saveProject();
     void loadProject();
     void syncUIFromEngine();
+    void applyVinylTuneIfNeeded (int padIndex);
+    void refreshLearnStatus();
     void syncPianoRollFromControls();
     void cycleFaderMode();
     int padIndexForComputerKey (const juce::KeyPress& key) const;
@@ -100,6 +102,14 @@ private:
     juce::Slider midiChannelSlider_;
     juce::ToggleButton midiOmniButton_ { "MIDI omni channel" };
     juce::Label setupInfoLabel_;
+    juce::ComboBox clockModeBox_;
+    juce::ComboBox learnPadBox_;
+    juce::TextButton learnNoteButton_ { "Learn NOTE" };
+    juce::TextButton learnCcButton_ { "Learn CC" };
+    juce::TextButton resetMidiMapButton_ { "Reset MIDI maps" };
+    juce::Label learnStatusLabel_;
+    std::array<juce::ComboBox, sp1200::kNumPads> chokeGroupBoxes_;
+    juce::ToggleButton vinylImportButton_ { "VINYL 33→45 import" };
 
     std::array<juce::TextButton, sp1200::kNumPads> padButtons_;
     std::array<juce::Slider, sp1200::kNumPads> faders_;

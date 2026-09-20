@@ -269,6 +269,72 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     midiOmniButton_.onClick = [this] { processor_.engine().setMidiOmni (midiOmniButton_.getToggleState()); };
     addAndMakeVisible (midiOmniButton_);
 
+    clockModeBox_.addItem ("Clock: internal", 1);
+    clockModeBox_.addItem ("Clock: MIDI in (slave)", 2);
+    clockModeBox_.addItem ("Clock: MIDI out (master)", 3);
+    clockModeBox_.setSelectedId (1);
+    clockModeBox_.onChange = [this]
+    {
+        const int id = clockModeBox_.getSelectedId();
+        auto mode = sp1200::MidiClockMode::internal;
+        if (id == 2)
+            mode = sp1200::MidiClockMode::slave;
+        else if (id == 3)
+            mode = sp1200::MidiClockMode::master;
+        processor_.engine().midiMapping().setClockMode (mode);
+    };
+    addAndMakeVisible (clockModeBox_);
+
+    for (int i = 0; i < sp1200::kNumPads; ++i)
+        learnPadBox_.addItem ("Pad " + juce::String (i + 1), i + 1);
+    learnPadBox_.setSelectedId (1);
+    addAndMakeVisible (learnPadBox_);
+
+    learnNoteButton_.onClick = [this]
+    {
+        const int pad = learnPadBox_.getSelectedId() - 1;
+        processor_.engine().midiMapping().beginLearnPad (pad);
+        refreshLearnStatus();
+    };
+    learnCcButton_.onClick = [this]
+    {
+        const int pad = learnPadBox_.getSelectedId() - 1;
+        processor_.engine().midiMapping().beginLearnFader (pad);
+        refreshLearnStatus();
+    };
+    resetMidiMapButton_.onClick = [this]
+    {
+        processor_.engine().midiMapping().resetToDefaults();
+        refreshLearnStatus();
+    };
+    for (auto* b : { &learnNoteButton_, &learnCcButton_, &resetMidiMapButton_ })
+        addAndMakeVisible (*b);
+
+    learnStatusLabel_.setText ("MIDI learn idle", juce::dontSendNotification);
+    addAndMakeVisible (learnStatusLabel_);
+
+    for (int i = 0; i < sp1200::kNumPads; ++i)
+    {
+        auto& box = chokeGroupBoxes_[static_cast<std::size_t> (i)];
+        box.addItem ("None", 1);
+        for (int g = 1; g <= sp1200::kMaxChokeGroups; ++g)
+            box.addItem ("Group " + juce::String (g), g + 1);
+        box.setSelectedId (1);
+        box.onChange = [this, i]
+        {
+            const int id = chokeGroupBoxes_[static_cast<std::size_t> (i)].getSelectedId();
+            const int group = id <= 1 ? sp1200::kNoChokeGroup : id - 1;
+            processor_.engine().setPadChokeGroup (i, group);
+        };
+        addAndMakeVisible (box);
+    }
+
+    vinylImportButton_.onClick = [this]
+    {
+        processor_.engine().setVinylImportEnabled (vinylImportButton_.getToggleState());
+    };
+    addAndMakeVisible (vinylImportButton_);
+
     for (int i = 0; i < static_cast<int> (songSlotBoxes_.size()); ++i)
     {
         auto& box = songSlotBoxes_[static_cast<std::size_t> (i)];
@@ -410,6 +476,7 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     songTab_.setToggleState (song, juce::dontSendNotification);
     setupTab_.setToggleState (setup, juce::dontSendNotification);
 
+    vinylImportButton_.setVisible (console && chopModal_ == nullptr);
     importButton_.setVisible (console && chopModal_ == nullptr);
     recordButton_.setVisible (console && chopModal_ == nullptr);
     chopButton_.setVisible (console && chopModal_ == nullptr);
@@ -453,6 +520,13 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     setupInfoLabel_.setVisible (setup);
     midiChannelSlider_.setVisible (setup);
     midiOmniButton_.setVisible (setup);
+    clockModeBox_.setVisible (setup);
+    learnPadBox_.setVisible (setup);
+    for (auto* b : { &learnNoteButton_, &learnCcButton_, &resetMidiMapButton_ })
+        b->setVisible (setup);
+    learnStatusLabel_.setVisible (setup);
+    for (auto& box : chokeGroupBoxes_)
+        box.setVisible (setup);
 
     for (auto& b : padButtons_)
         b.setVisible (console);
@@ -517,6 +591,7 @@ void SP1200AudioProcessorEditor::resized()
     auto bar = r.removeFromTop (32);
     if (view_ == ViewMode::console)
     {
+        vinylImportButton_.setBounds (bar.removeFromLeft (150).reduced (2));
         importButton_.setBounds (bar.removeFromLeft (100).reduced (2));
         recordButton_.setBounds (bar.removeFromLeft (100).reduced (2));
         mod11Button_.setBounds (bar.removeFromLeft (110).reduced (2));
@@ -558,8 +633,9 @@ void SP1200AudioProcessorEditor::resized()
     }
     else if (view_ == ViewMode::setup)
     {
-        midiChannelSlider_.setBounds (bar.removeFromLeft (220).reduced (2));
-        midiOmniButton_.setBounds (bar.removeFromLeft (160).reduced (2));
+        midiChannelSlider_.setBounds (bar.removeFromLeft (180).reduced (2));
+        midiOmniButton_.setBounds (bar.removeFromLeft (140).reduced (2));
+        clockModeBox_.setBounds (bar.removeFromLeft (200).reduced (2));
     }
     rateLabel_.setBounds (r.removeFromTop (24));
 
@@ -577,7 +653,28 @@ void SP1200AudioProcessorEditor::resized()
 
     if (view_ == ViewMode::setup)
     {
-        setupInfoLabel_.setBounds (r.reduced (8));
+        auto learnBar = r.removeFromTop (32);
+        learnPadBox_.setBounds (learnBar.removeFromLeft (100).reduced (2));
+        learnNoteButton_.setBounds (learnBar.removeFromLeft (100).reduced (2));
+        learnCcButton_.setBounds (learnBar.removeFromLeft (100).reduced (2));
+        resetMidiMapButton_.setBounds (learnBar.removeFromLeft (120).reduced (2));
+        learnStatusLabel_.setBounds (learnBar);
+
+        setupInfoLabel_.setBounds (r.removeFromTop (48).reduced (4));
+
+        const int cols = 4;
+        const int rows = 4;
+        const int cellW = r.getWidth() / cols;
+        const int cellH = juce::jmax (28, r.getHeight() / rows);
+        for (int i = 0; i < sp1200::kNumPads; ++i)
+        {
+            const int row = i / cols;
+            const int col = i % cols;
+            chokeGroupBoxes_[static_cast<std::size_t> (i)].setBounds (col * cellW + 4,
+                                                                      r.getY() + row * cellH + 2,
+                                                                      cellW - 8,
+                                                                      cellH - 4);
+        }
         return;
     }
 
@@ -633,6 +730,8 @@ void SP1200AudioProcessorEditor::resized()
 void SP1200AudioProcessorEditor::timerCallback()
 {
     refreshMemoryLabel();
+    if (view_ == ViewMode::setup)
+        refreshLearnStatus();
     if (view_ == ViewMode::sequencer)
     {
         refreshSeqInfo();
@@ -679,6 +778,7 @@ void SP1200AudioProcessorEditor::importSample()
                                   if (processor_.engine().getPad (p).segmentIndex < 0)
                                   {
                                       processor_.engine().assignSegmentToPad (p, static_cast<int> (*idx));
+                                      applyVinylTuneIfNeeded (p);
                                       break;
                                   }
                               }
@@ -708,6 +808,27 @@ void SP1200AudioProcessorEditor::runAutoChop16()
     refreshMemoryLabel();
 }
 
+void SP1200AudioProcessorEditor::applyVinylTuneIfNeeded (int padIndex)
+{
+    if (processor_.engine().vinylImportEnabled())
+        processor_.engine().setPadTune (padIndex, sp1200::kVinylImportTuneDownSemitones);
+}
+
+void SP1200AudioProcessorEditor::refreshLearnStatus()
+{
+    const auto& map = processor_.engine().midiMapping();
+    if (! map.isLearning())
+    {
+        learnStatusLabel_.setText ("MIDI learn idle", juce::dontSendNotification);
+        return;
+    }
+    const int pad = map.learnPadIndex() + 1;
+    if (map.learnTarget() == sp1200::MidiLearnTarget::pad)
+        learnStatusLabel_.setText ("Learning NOTE for pad " + juce::String (pad) + "…", juce::dontSendNotification);
+    else
+        learnStatusLabel_.setText ("Learning CC for pad " + juce::String (pad) + " fader…", juce::dontSendNotification);
+}
+
 void SP1200AudioProcessorEditor::syncUIFromEngine()
 {
     auto& eng = processor_.engine();
@@ -727,6 +848,25 @@ void SP1200AudioProcessorEditor::syncUIFromEngine()
     songLoopButton_.setToggleState (eng.sequencer().songLoop(), juce::dontSendNotification);
     midiChannelSlider_.setValue (eng.midiChannel(), juce::dontSendNotification);
     midiOmniButton_.setToggleState (eng.midiOmni(), juce::dontSendNotification);
+    vinylImportButton_.setToggleState (eng.vinylImportEnabled(), juce::dontSendNotification);
+    switch (eng.midiMapping().clockMode())
+    {
+        case sp1200::MidiClockMode::internal:
+            clockModeBox_.setSelectedId (1, juce::dontSendNotification);
+            break;
+        case sp1200::MidiClockMode::slave:
+            clockModeBox_.setSelectedId (2, juce::dontSendNotification);
+            break;
+        case sp1200::MidiClockMode::master:
+            clockModeBox_.setSelectedId (3, juce::dontSendNotification);
+            break;
+    }
+    for (int p = 0; p < sp1200::kNumPads; ++p)
+    {
+        const int g = eng.getPad (p).chokeGroup;
+        chokeGroupBoxes_[static_cast<std::size_t> (p)].setSelectedId (g == sp1200::kNoChokeGroup ? 1 : g + 1,
+                                                                      juce::dontSendNotification);
+    }
     for (int p = 0; p < sp1200::kNumPads; ++p)
     {
         const auto pad = eng.getPad (p);
@@ -845,6 +985,7 @@ void SP1200AudioProcessorEditor::toggleRecordInput()
                 if (processor_.engine().getPad (p).segmentIndex < 0)
                 {
                     processor_.engine().assignSegmentToPad (p, static_cast<int> (*idx));
+                    applyVinylTuneIfNeeded (p);
                     break;
                 }
             }

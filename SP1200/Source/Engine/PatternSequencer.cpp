@@ -1,5 +1,7 @@
 #include "PatternSequencer.h"
 
+#include "MidiMapping.h"
+
 #include <algorithm>
 #include <cmath>
 
@@ -194,6 +196,36 @@ void PatternSequencer::scheduleStep (int stepInPattern, std::vector<ScheduledHit
     }
 }
 
+bool PatternSequencer::advanceOneStep (std::vector<ScheduledHit>& padHits)
+{
+    if (! playing_ || stepsInPattern_ <= 0)
+        return false;
+
+    scheduleStep (currentStep_, padHits);
+    ++currentStep_;
+    if (currentStep_ >= stepsInPattern_)
+    {
+        currentStep_ = 0;
+        if (playingSong_ && ! advanceSongPositionAfterPattern())
+            playing_ = false;
+    }
+    return playing_;
+}
+
+void PatternSequencer::feedMidiClock (int clockPulses, std::vector<ScheduledHit>& padHits)
+{
+    if (! playing_ || clockPulses <= 0)
+        return;
+
+    midiClockAccum_ += clockPulses;
+    while (midiClockAccum_ >= kMidiClocksPerSixteenth)
+    {
+        midiClockAccum_ -= kMidiClocksPerSixteenth;
+        if (! advanceOneStep (padHits))
+            break;
+    }
+}
+
 void PatternSequencer::advance (double hostSampleRate, int numSamples, std::vector<ScheduledHit>& padHits)
 {
     if (! playing_ || stepsInPattern_ <= 0)
@@ -212,15 +244,9 @@ void PatternSequencer::advance (double hostSampleRate, int numSamples, std::vect
     samplesUntilNextStep_ -= static_cast<double> (numSamples);
     while (samplesUntilNextStep_ <= 0.0)
     {
-        scheduleStep (currentStep_, padHits);
         const double stepLen = samplesForStep (currentStep_);
-        ++currentStep_;
-        if (currentStep_ >= stepsInPattern_)
-        {
-            currentStep_ = 0;
-            if (playingSong_ && ! advanceSongPositionAfterPattern())
-                playing_ = false;
-        }
+        if (! advanceOneStep (padHits))
+            break;
         samplesUntilNextStep_ += stepLen;
     }
 }

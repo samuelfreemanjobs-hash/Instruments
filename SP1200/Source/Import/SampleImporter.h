@@ -22,12 +22,16 @@ class SampleImporter
 public:
     SampleImporter();
 
-    ImportResult importFromFile (const juce::File& file, int bankIndex, juce::String segmentName);
+    ImportResult importFromFile (const juce::File& file,
+                                 int bankIndex,
+                                 juce::String segmentName,
+                                 bool vinylRateTrick = false);
 
     ImportResult importFromAudioBuffer (const juce::AudioBuffer<float>& buffer,
                                         double sourceSampleRate,
                                         int bankIndex,
-                                        juce::String segmentName);
+                                        juce::String segmentName,
+                                        bool vinylRateTrick = false);
 
 private:
     juce::AudioFormatManager formatManager_;

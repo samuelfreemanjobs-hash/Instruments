@@ -24,12 +24,32 @@ void SamplerEngine::prepare (double sampleRate, int maxBlockSize)
 
 void SamplerEngine::process (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi)
 {
+    int clockPulses = 0;
     for (const auto metadata : midi)
-        handleMidi (metadata.getMessage());
+    {
+        const auto& msg = metadata.getMessage();
+        if (msg.isMidiClock())
+        {
+            ++clockPulses;
+            continue;
+        }
+        if (msg.isMidiStart())
+            sequencer_.startPattern();
+        else if (msg.isMidiStop())
+            sequencer_.stop();
+        else
+            handleMidi (msg);
+    }
 
     pendingPadHits_.clear();
     busFilter_.beginBlock();
-    sequencer_.advance (hostSampleRate_, buffer.getNumSamples(), pendingPadHits_);
+
+    const auto clockMode = midiMapping_.clockMode();
+    if (clockMode == MidiClockMode::slave)
+        sequencer_.feedMidiClock (clockPulses, pendingPadHits_);
+    else
+        sequencer_.advance (hostSampleRate_, buffer.getNumSamples(), pendingPadHits_);
+
     for (const auto& hit : pendingPadHits_)
         triggerPad (hit.pad, hit.velocity, hit.tuneSemitones, hit.pan, hit.filterCutoff);
 
@@ -53,11 +73,31 @@ void SamplerEngine::process (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
     }
 
     busFilter_.process (buffer);
+
+    if (clockMode == MidiClockMode::master && sequencer_.isPlaying())
+        emitMidiClock (midi, buffer.getNumSamples());
+}
+
+void SamplerEngine::emitMidiClock (juce::MidiBuffer& midi, int numSamples)
+{
+    if (hostSampleRate_ <= 0.0 || numSamples <= 0)
+        return;
+
+    const double pulsesPerSample = (sequencer_.bpm() / 60.0) * (24.0 / hostSampleRate_);
+    masterClockPhase_ += pulsesPerSample * static_cast<double> (numSamples);
+
+    int samplePos = 0;
+    while (masterClockPhase_ >= 1.0)
+    {
+        masterClockPhase_ -= 1.0;
+        midi.addEvent (juce::MidiMessage::midiClock(), samplePos);
+        samplePos = std::min (samplePos + 1, numSamples - 1);
+    }
 }
 
 std::optional<std::size_t> SamplerEngine::importFile (const juce::File& file, int bankIndex, juce::String name)
 {
-    auto result = importer_.importFromFile (file, bankIndex, std::move (name));
+    auto result = importer_.importFromFile (file, bankIndex, std::move (name), vinylImportEnabled_);
     if (! result.ok)
         return std::nullopt;
     return pool_.appendSegment (std::move (result.segment));
@@ -163,7 +203,11 @@ std::optional<std::size_t> SamplerEngine::commitRecording (const juce::AudioBuff
                                                            double sourceRate,
                                                            int bankIndex)
 {
-    auto result = importer_.importFromAudioBuffer (recorded, sourceRate, bankIndex, "INPUT REC");
+    auto result = importer_.importFromAudioBuffer (recorded,
+                                                 sourceRate,
+                                                 bankIndex,
+                                                 "INPUT REC",
+                                                 vinylImportEnabled_);
     if (! result.ok)
         return std::nullopt;
     return pool_.appendSegment (std::move (result.segment));
@@ -342,21 +386,42 @@ void SamplerEngine::triggerPad (int padIndex, float velocity, float extraTune, f
 
 void SamplerEngine::handleMidi (const juce::MidiMessage& msg)
 {
+    if (midiMapping_.isLearning())
+    {
+        if (msg.isNoteOn() && midiMapping_.learnTarget() == MidiLearnTarget::pad)
+        {
+            midiMapping_.tryApplyLearn (msg.getNoteNumber(), true);
+            return;
+        }
+        if (msg.isController() && midiMapping_.learnTarget() == MidiLearnTarget::fader)
+        {
+            midiMapping_.tryApplyLearn (msg.getControllerNumber(), false);
+            return;
+        }
+    }
+
     if (! midiOmni_ && msg.getChannel() != midiChannel_)
         return;
 
     if (msg.isNoteOn())
     {
         const int note = msg.getNoteNumber();
-        if (note >= kPadNoteStart && note < kPadNoteEnd)
-            triggerPad (note - kPadNoteStart, msg.getFloatVelocity());
+        for (int pad = 0; pad < kNumPads; ++pad)
+        {
+            if (note == midiMapping_.padNote (pad))
+            {
+                triggerPad (pad, msg.getFloatVelocity());
+                return;
+            }
+        }
     }
     else if (msg.isController())
     {
         const int cc = msg.getControllerNumber();
-        const int pad = cc - kFaderCcStart;
-        if (pad >= 0 && pad < kNumPads && cc >= kFaderCcStart && cc < kFaderCcEnd)
+        for (int pad = 0; pad < kNumPads; ++pad)
         {
+            if (cc != midiMapping_.faderCc (pad))
+                continue;
             const float norm = static_cast<float> (msg.getControllerValue()) / 127.0f;
             if (faderMode_ == 1)
                 setPadTune (pad, (norm - 0.5f) * 24.0f);
@@ -364,6 +429,7 @@ void SamplerEngine::handleMidi (const juce::MidiMessage& msg)
                 setPadDecay (pad, norm);
             else
                 setPadLevel (pad, norm * 2.0f);
+            return;
         }
     }
 }

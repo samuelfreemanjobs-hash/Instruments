@@ -87,6 +87,8 @@ public:
 
     /** Call from audio thread; returns pads to trigger this block. */
     void advance (double hostSampleRate, int numSamples, std::vector<ScheduledHit>& padHits);
+    /** MIDI clock slave: 24 PPQN, 6 clocks per 1/16 step. */
+    void feedMidiClock (int clockPulses, std::vector<ScheduledHit>& padHits);
 
 private:
     void scheduleStep (int stepInPattern, std::vector<ScheduledHit>& padHits);
@@ -107,6 +109,9 @@ private:
     bool songLoop_ = true;
 
     bool advanceSongPositionAfterPattern();
+    bool advanceOneStep (std::vector<ScheduledHit>& padHits);
+
+    int midiClockAccum_ = 0;
 };
 
 } // namespace sp1200

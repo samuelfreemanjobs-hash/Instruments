@@ -5,7 +5,7 @@ juce_add_plugin (SP1200
     BUNDLE_ID com.instruments.sp1200
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
-    NEEDS_MIDI_OUTPUT FALSE
+    NEEDS_MIDI_OUTPUT TRUE
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     COPY_PLUGIN_AFTER_BUILD FALSE
@@ -27,6 +27,7 @@ target_sources (SP1200
         Source/Engine/SampleVoice.cpp
         Source/Engine/SamplerEngine.cpp
         Source/Engine/PatternSequencer.cpp
+        Source/Engine/MidiMapping.cpp
         Source/Engine/SegmentEditor.cpp
         Source/Import/TransientChop.cpp
         Source/DSP/Ssm2044BusFilter.cpp
@@ -79,6 +80,7 @@ add_executable (SP1200ProjectFileTests
     Source/Import/TransientChop.cpp
     Source/DSP/Ssm2044BusFilter.cpp
     Source/Project/ProjectFile.cpp
+    Source/Engine/MidiMapping.cpp
 )
 
 foreach (t SP1200MemoryTests SP1200SequencerTests SP1200ProjectFileTests)

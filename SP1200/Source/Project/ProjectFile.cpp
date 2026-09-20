@@ -1,5 +1,6 @@
 #include "ProjectFile.h"
 
+#include "../Engine/MidiMapping.h"
 #include "../Engine/PadAssignments.h"
 #include "../Engine/SamplerEngine.h"
 
@@ -8,7 +9,7 @@ namespace sp1200
 namespace
 {
 constexpr std::uint32_t kMagic = 0x53503132; // 'SP12'
-constexpr std::uint16_t kVersion = 3;
+constexpr std::uint16_t kVersion = 4;
 
 void writeString (juce::MemoryOutputStream& out, const std::string& s)
 {
@@ -100,6 +101,13 @@ bool ProjectFile::saveToMemoryBlock (const SamplerEngine& engine, juce::MemoryBl
     out.writeBool (seq.songLoop());
     out.writeInt (engine.midiChannel());
     out.writeBool (engine.midiOmni());
+    out.writeBool (engine.vinylImportEnabled());
+    out.writeInt (static_cast<int> (engine.midiMapping().clockMode()));
+    for (int p = 0; p < kNumPads; ++p)
+    {
+        out.writeInt (engine.midiMapping().padNote (p));
+        out.writeInt (engine.midiMapping().faderCc (p));
+    }
 
     return true;
 }
@@ -184,6 +192,16 @@ bool ProjectFile::loadFromMemoryBlock (SamplerEngine& engine, const void* data, 
         seq.setSongLoop (in.readBool());
         engine.setMidiChannel (in.readInt());
         engine.setMidiOmni (in.readBool());
+    }
+    if (fileVersion >= 4)
+    {
+        engine.setVinylImportEnabled (in.readBool());
+        engine.midiMapping().setClockMode (static_cast<MidiClockMode> (in.readInt()));
+        for (int p = 0; p < kNumPads; ++p)
+        {
+            engine.midiMapping().setPadNote (p, in.readInt());
+            engine.midiMapping().setFaderCc (p, in.readInt());
+        }
     }
 
     return in.getNumBytesRemaining() >= 0;

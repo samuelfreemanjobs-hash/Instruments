@@ -32,6 +32,11 @@ inline constexpr int kSongSlotEnd = -1;
 inline constexpr int kNoChokeGroup = -1;
 /** Default open/closed hat choke (pads 5–6 and 13–14). */
 inline constexpr int kDefaultHatChokeGroup = 1;
+inline constexpr int kMaxChokeGroups = 4;
+
+/** 33 → 45 RPM vinyl trick: import as if ~+36% faster, then tune down. */
+inline constexpr double kVinylImportRateMultiplier = 45.0 / 33.0;
+inline constexpr float kVinylImportTuneDownSemitones = -5.02f; // 12*log2(33/45)
 
 /** Default multi-pitch semitone offsets (pad index → offset). */
 inline constexpr float kDefaultMultiPitchOffsets[kMultiPitchSlots] = {

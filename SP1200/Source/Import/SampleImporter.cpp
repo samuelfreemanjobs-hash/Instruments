@@ -52,7 +52,10 @@ SampleImporter::SampleImporter()
     formatManager_.registerBasicFormats();
 }
 
-ImportResult SampleImporter::importFromFile (const juce::File& file, int bankIndex, juce::String segmentName)
+ImportResult SampleImporter::importFromFile (const juce::File& file,
+                                             int bankIndex,
+                                             juce::String segmentName,
+                                             bool vinylRateTrick)
 {
     ImportResult result;
     std::unique_ptr<juce::AudioFormatReader> reader (formatManager_.createReaderFor (file));
@@ -66,13 +69,14 @@ ImportResult SampleImporter::importFromFile (const juce::File& file, int bankInd
                                      static_cast<int> (reader->lengthInSamples));
     reader->read (&buffer, 0, static_cast<int> (reader->lengthInSamples), 0, true, true);
 
-    return importFromAudioBuffer (buffer, reader->sampleRate, bankIndex, std::move (segmentName));
+    return importFromAudioBuffer (buffer, reader->sampleRate, bankIndex, std::move (segmentName), vinylRateTrick);
 }
 
 ImportResult SampleImporter::importFromAudioBuffer (const juce::AudioBuffer<float>& buffer,
                                                     double sourceSampleRate,
                                                     int bankIndex,
-                                                    juce::String segmentName)
+                                                    juce::String segmentName,
+                                                    bool vinylRateTrick)
 {
     ImportResult result;
     if (buffer.getNumSamples() <= 0 || sourceSampleRate <= 0.0)
@@ -89,6 +93,9 @@ ImportResult SampleImporter::importFromAudioBuffer (const juce::AudioBuffer<floa
         monoSumBuffer (copy);
         mono.copyFrom (0, 0, copy, 0, 0, copy.getNumSamples());
     }
+
+    if (vinylRateTrick)
+        sourceSampleRate *= kVinylImportRateMultiplier;
 
     const auto resampled = resampleToSpRate (mono.getReadPointer (0), mono.getNumSamples(), sourceSampleRate);
     if (resampled.empty())

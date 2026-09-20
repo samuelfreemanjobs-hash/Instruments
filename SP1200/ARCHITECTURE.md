@@ -65,11 +65,22 @@ MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → Ssm
 
 ## Module 10 SETUP tab
 
-- MIDI channel (1–16) and **omni** toggle; persisted in project **v3**.
+- MIDI channel (1–16), **omni**, **clock** internal / slave / master
+- **Learn NOTE / Learn CC** per pad; reset to SQ-1 defaults
+- **Choke group** per pad (None + groups 1–4)
+- Persisted in project **v4** (maps + vinyl toggle)
+
+## Module 30 (vinyl)
+
+- Console **VINYL 33→45 import**: import at 45/33 rate, auto **~−5 st** pad tune on assign
+
+## QA
+
+- [docs/SP1200_QA_CHECKLIST.md](../docs/SP1200_QA_CHECKLIST.md)
 
 ## Extension points
 
-- MIDI Learn, clock in/out, choke group editor per pad
+- Full MIDI Learn UI for transport; device picker; 96 PPQN micro-timing
 - Multi-pitch / chromatic cap via `quantizeToMultiPitch`
 
 ## Related

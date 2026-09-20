@@ -5,6 +5,7 @@
 #include "PadAssignments.h"
 #include "PatternSequencer.h"
 #include "../DSP/Ssm2044BusFilter.h"
+#include "MidiMapping.h"
 #include "SampleVoice.h"
 
 #include <array>
@@ -42,6 +43,16 @@ public:
     void setMidiOmni (bool omni);
     [[nodiscard]] int midiChannel() const noexcept { return midiChannel_; }
     [[nodiscard]] bool midiOmni() const noexcept { return midiOmni_; }
+
+    MidiMapping& midiMapping() noexcept { return midiMapping_; }
+    [[nodiscard]] const MidiMapping& midiMapping() const noexcept { return midiMapping_; }
+
+    void setVinylImportEnabled (bool on) { vinylImportEnabled_ = on; }
+    [[nodiscard]] bool vinylImportEnabled() const noexcept { return vinylImportEnabled_; }
+
+    /** Master clock: append 0xF8 events to buffer (24 PPQN). */
+    void emitMidiClock (juce::MidiBuffer& midi, int numSamples);
+
     void setFaderMode (int modeIndex) { faderMode_ = modeIndex; }
 
     [[nodiscard]] PadAssignment getPad (int padIndex) const;
@@ -100,6 +111,9 @@ private:
     std::uint32_t nextVoiceGen_ = 1;
     int midiChannel_ = kDefaultMidiChannel;
     bool midiOmni_ = false;
+    MidiMapping midiMapping_;
+    bool vinylImportEnabled_ = false;
+    double masterClockPhase_ = 0.0;
 };
 
 } // namespace sp1200

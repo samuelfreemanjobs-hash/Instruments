@@ -56,5 +56,12 @@ int main()
     seq.advance (sr, totalSamples, hits);
     ok &= expect (! seq.isPlaying(), "song stops at END slot");
 
+    seq.clearCurrentPattern();
+    seq.toggleStep (0, 0, 1.0f, 0.0f, false);
+    seq.startPattern();
+    std::vector<sp1200::ScheduledHit> clockHits;
+    seq.feedMidiClock (6, clockHits);
+    ok &= expect (clockHits.size() == 1, "6 MIDI clocks advance one 1/16 step");
+
     return ok ? 0 : 1;
 }
