@@ -57,6 +57,21 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     memoryLabel_.setJustificationType (juce::Justification::centredRight);
     addAndMakeVisible (memoryLabel_);
 
+    lcdPanel_ = std::make_unique<LcdPanelComponent>();
+    addAndMakeVisible (*lcdPanel_);
+
+    const int bankGroup = 9002;
+    for (int i = 0; i < sp1200::kNumBanks; ++i)
+    {
+        auto& b = bankButtons_[static_cast<std::size_t> (i)];
+        b.setButtonText ("BANK " + juce::String (static_cast<char> ('A' + i)));
+        b.setClickingTogglesState (true);
+        b.setRadioGroupId (bankGroup);
+        b.onClick = [this, i] { selectBank (i); };
+        addAndMakeVisible (b);
+    }
+    bankButtons_[0].setToggleState (true, juce::dontSendNotification);
+
     importButton_.onClick = [this] { importSample(); };
     addAndMakeVisible (importButton_);
 
@@ -356,7 +371,13 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     for (int i = 0; i < sp1200::kNumPads; ++i)
     {
         padButtons_[static_cast<std::size_t> (i)].setButtonText ("PAD " + juce::String (i + 1));
-        padButtons_[static_cast<std::size_t> (i)].onClick = [this, i] { triggerPad (i); };
+        padButtons_[static_cast<std::size_t> (i)].onClick = [this, i]
+        {
+            processor_.engine().setSelectedPad (i);
+            updatePadHighlight();
+            refreshLcd();
+            triggerPad (i);
+        };
         addAndMakeVisible (padButtons_[static_cast<std::size_t> (i)]);
 
         auto& s = faders_[static_cast<std::size_t> (i)];
@@ -378,6 +399,8 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
 
     startTimerHz (4);
     refreshMemoryLabel();
+    refreshLcd();
+    updatePadHighlight();
     setView (ViewMode::console);
 }
 
@@ -442,9 +465,22 @@ bool SP1200AudioProcessorEditor::keyPressed (const juce::KeyPress& key, juce::Co
         return true;
     }
 
+    if (view_ == ViewMode::console)
+    {
+        const int ch = key.getTextCharacter();
+        if (ch >= '1' && ch <= '4')
+        {
+            selectBank (ch - '1');
+            return true;
+        }
+    }
+
     const int pad = padIndexForComputerKey (key);
     if (pad >= 0)
     {
+        processor_.engine().setSelectedPad (pad);
+        updatePadHighlight();
+        refreshLcd();
         triggerPad (pad);
         return true;
     }
@@ -532,10 +568,15 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
         b.setVisible (console);
     for (auto& f : faders_)
         f.setVisible (console);
+    if (lcdPanel_ != nullptr)
+        lcdPanel_->setVisible (console);
+    for (auto& b : bankButtons_)
+        b.setVisible (console);
 
     if (seq && pianoRoll_ != nullptr)
         syncPianoRollFromControls();
 
+    refreshLcd();
     resized();
     repaint();
 }
@@ -701,6 +742,12 @@ void SP1200AudioProcessorEditor::resized()
 
     if (view_ == ViewMode::console)
     {
+        auto bankBar = r.removeFromTop (28);
+        for (auto& b : bankButtons_)
+            b.setBounds (bankBar.removeFromLeft (90).reduced (2));
+        if (lcdPanel_ != nullptr)
+            lcdPanel_->setBounds (r.removeFromTop (52).reduced (4));
+
         auto padArea = r.removeFromBottom (160);
         auto faderArea = r;
         const int cols = 8;
@@ -730,6 +777,8 @@ void SP1200AudioProcessorEditor::resized()
 void SP1200AudioProcessorEditor::timerCallback()
 {
     refreshMemoryLabel();
+    if (view_ == ViewMode::console)
+        refreshLcd();
     if (view_ == ViewMode::setup)
         refreshLearnStatus();
     if (view_ == ViewMode::sequencer)
@@ -740,10 +789,75 @@ void SP1200AudioProcessorEditor::timerCallback()
     }
 }
 
+void SP1200AudioProcessorEditor::selectBank (int bankIndex)
+{
+    processor_.engine().setCurrentBank (bankIndex);
+    for (int i = 0; i < sp1200::kNumBanks; ++i)
+        bankButtons_[static_cast<std::size_t> (i)].setToggleState (i == bankIndex, juce::dontSendNotification);
+    refreshMemoryLabel();
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::updatePadHighlight()
+{
+    const int sel = processor_.engine().selectedPad();
+    for (int i = 0; i < sp1200::kNumPads; ++i)
+    {
+        const bool on = i == sel;
+        padButtons_[static_cast<std::size_t> (i)].setColour (juce::TextButton::buttonOnColourId,
+                                                             on ? juce::Colour (0xff2d6a4f)
+                                                                : getLookAndFeel().findColour (juce::TextButton::buttonColourId));
+        padButtons_[static_cast<std::size_t> (i)].setToggleState (on, juce::dontSendNotification);
+    }
+}
+
+void SP1200AudioProcessorEditor::refreshLcd()
+{
+    if (lcdPanel_ == nullptr)
+        return;
+
+    juce::String mod = "MOD 10 CONSOLE";
+    switch (view_)
+    {
+        case ViewMode::console:
+            mod = "MOD 10 CONSOLE";
+            break;
+        case ViewMode::sequencer:
+            mod = "MOD 20 SEQ";
+            break;
+        case ViewMode::song:
+            mod = "MOD 24 SONG";
+            break;
+        case ViewMode::setup:
+            mod = "MOD 10 SETUP";
+            break;
+    }
+
+    const auto& eng = processor_.engine();
+    const char bank = sp1200::SamplerEngine::bankLetter (eng.currentBank());
+    const int pad = eng.selectedPad();
+    juce::String segName = "EMPTY";
+    const int seg = eng.getPad (pad).segmentIndex;
+    if (seg >= 0)
+    {
+        if (const auto* s = eng.memoryPool().getSegment (static_cast<std::size_t> (seg)))
+            segName = s->name.empty() ? "SEG" : juce::String (s->name).substring (0, 12);
+    }
+
+    const juce::String line1 = mod + " | BANK " + juce::String (bank);
+    const juce::String line2 = "PAD " + juce::String (pad + 1).paddedLeft ('0', 2) + " "
+                               + segName + " | 26.040k 12BIT";
+    lcdPanel_->setLines (line1, line2);
+}
+
 void SP1200AudioProcessorEditor::refreshMemoryLabel()
 {
     const auto& pool = processor_.engine().memoryPool();
-    memoryLabel_.setText ("MEMORY: " + formatMemoryTime (pool.usedSamples()) + " / 7:00 TOTAL",
+    const int bank = processor_.engine().currentBank();
+    const auto bankUsed = pool.usedSamplesInBank (bank);
+    memoryLabel_.setText ("MEMORY: " + formatMemoryTime (pool.usedSamples()) + " / 7:00 | BANK "
+                              + juce::String (sp1200::SamplerEngine::bankLetter (bank)) + ": "
+                              + formatMemoryTime (bankUsed) + " / 1:45",
                           juce::dontSendNotification);
 }
 
@@ -764,7 +878,8 @@ void SP1200AudioProcessorEditor::importSample()
                               const auto f = fc.getResult();
                               if (f == juce::File())
                                   return;
-                              auto idx = processor_.engine().importFile (f, 0, f.getFileNameWithoutExtension());
+                              const int bank = processor_.engine().currentBank();
+                              auto idx = processor_.engine().importFile (f, bank, f.getFileNameWithoutExtension());
                               if (! idx.has_value())
                               {
                                   juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
@@ -872,14 +987,20 @@ void SP1200AudioProcessorEditor::syncUIFromEngine()
         const auto pad = eng.getPad (p);
         faders_[static_cast<std::size_t> (p)].setValue (pad.level / 2.0, juce::dontSendNotification);
     }
+    selectBank (eng.currentBank());
+    processor_.engine().setSelectedPad (eng.selectedPad());
+    updatePadHighlight();
     syncPianoRollFromControls();
     refreshMemoryLabel();
     refreshSeqInfo();
+    refreshLcd();
 }
 
 void SP1200AudioProcessorEditor::openChopModal()
 {
-    int seg = lastSegmentForChop_;
+    int seg = processor_.engine().getPad (processor_.engine().selectedPad()).segmentIndex;
+    if (seg < 0)
+        seg = lastSegmentForChop_;
     if (seg < 0)
     {
         for (int p = 0; p < sp1200::kNumPads; ++p)
@@ -976,7 +1097,7 @@ void SP1200AudioProcessorEditor::toggleRecordInput()
     }
     else
     {
-        const auto idx = eng.stopRecordingAndCommit (0);
+        const auto idx = eng.stopRecordingAndCommit (eng.currentBank());
         if (idx.has_value())
         {
             lastSegmentForChop_ = static_cast<int> (*idx);

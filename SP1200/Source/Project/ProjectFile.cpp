@@ -9,7 +9,7 @@ namespace sp1200
 namespace
 {
 constexpr std::uint32_t kMagic = 0x53503132; // 'SP12'
-constexpr std::uint16_t kVersion = 4;
+constexpr std::uint16_t kVersion = 5;
 
 void writeString (juce::MemoryOutputStream& out, const std::string& s)
 {
@@ -108,6 +108,8 @@ bool ProjectFile::saveToMemoryBlock (const SamplerEngine& engine, juce::MemoryBl
         out.writeInt (engine.midiMapping().padNote (p));
         out.writeInt (engine.midiMapping().faderCc (p));
     }
+    out.writeInt (engine.currentBank());
+    out.writeInt (engine.selectedPad());
 
     return true;
 }
@@ -202,6 +204,11 @@ bool ProjectFile::loadFromMemoryBlock (SamplerEngine& engine, const void* data, 
             engine.midiMapping().setPadNote (p, in.readInt());
             engine.midiMapping().setFaderCc (p, in.readInt());
         }
+    }
+    if (fileVersion >= 5)
+    {
+        engine.setCurrentBank (in.readInt());
+        engine.setSelectedPad (in.readInt());
     }
 
     return in.getNumBytesRemaining() >= 0;

@@ -22,6 +22,8 @@ public:
     [[nodiscard]] std::int64_t maxSamples() const noexcept { return kMaxMemorySamples; }
     [[nodiscard]] std::int64_t usedSamples() const noexcept { return usedSamples_; }
     [[nodiscard]] std::int64_t freeSamples() const noexcept { return maxSamples() - usedSamples_; }
+    [[nodiscard]] std::int64_t usedSamplesInBank (int bankIndex) const;
+    [[nodiscard]] std::int64_t segmentCount() const noexcept { return segments_.size(); }
 
     /** Returns segment index or nullopt if over 7:00 cap. */
     std::optional<std::size_t> appendSegment (SampleSegment segment);

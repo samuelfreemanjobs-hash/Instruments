@@ -2,6 +2,7 @@
 
 #include "PluginProcessor.h"
 #include "UI/ChopModalComponent.h"
+#include "UI/LcdPanelComponent.h"
 #include "UI/PianoRollComponent.h"
 #include "UI/StepStackPanel.h"
 
@@ -45,6 +46,9 @@ private:
     void syncUIFromEngine();
     void applyVinylTuneIfNeeded (int padIndex);
     void refreshLearnStatus();
+    void refreshLcd();
+    void selectBank (int bankIndex);
+    void updatePadHighlight();
     void syncPianoRollFromControls();
     void cycleFaderMode();
     int padIndexForComputerKey (const juce::KeyPress& key) const;
@@ -62,6 +66,8 @@ private:
     juce::Label headerLabel_;
     juce::Label rateLabel_;
     juce::Label memoryLabel_;
+    std::unique_ptr<LcdPanelComponent> lcdPanel_;
+    std::array<juce::TextButton, sp1200::kNumBanks> bankButtons_;
     juce::Label engagedLabel_;
 
     juce::TextButton importButton_ { "Import WAV" };

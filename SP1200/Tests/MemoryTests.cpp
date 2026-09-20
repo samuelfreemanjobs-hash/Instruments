@@ -39,5 +39,18 @@ int main()
     big.data.resize (tooMany);
     ok &= expect (! pool.appendSegment (std::move (big)).has_value(), "7:00 cap");
 
+    sp1200::SampleMemoryPool pool2;
+    sp1200::SampleSegment a;
+    a.bank = 0;
+    a.data.resize (500);
+    sp1200::SampleSegment b;
+    b.bank = 1;
+    b.data.resize (700);
+    pool2.appendSegment (std::move (a));
+    pool2.appendSegment (std::move (b));
+    ok &= expect (pool2.usedSamplesInBank (0) == 500, "bank A used");
+    ok &= expect (pool2.usedSamplesInBank (1) == 700, "bank B used");
+    ok &= expect (pool2.usedSamplesInBank (2) == 0, "bank C empty");
+
     return ok ? 0 : 1;
 }

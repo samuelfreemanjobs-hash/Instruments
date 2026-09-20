@@ -39,3 +39,6 @@ Manual pass against [SP1200_STANDALONE_SPEC.md](SP1200_STANDALONE_SPEC.md). Auto
 
 - [ ] **MOD 11** chop modal: truncate, auto 8/16, preview
 - [ ] Tabs: **10 CONSOLE**, **MOD 20**, **24 SONG**, **10 SETUP**
+- [ ] **BANK A–D** selector; imports land in active bank; memory shows **bank / 1:45** quota
+- [ ] **LCD** two-line status: module, bank, selected pad + segment name
+- [ ] Keys **1–4** select bank on console; pad click selects pad for MOD 11

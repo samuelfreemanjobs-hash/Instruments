@@ -74,6 +74,11 @@ MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → Ssm
 
 - Console **VINYL 33→45 import**: import at 45/33 rate, auto **~−5 st** pad tune on assign
 
+## Banks & LCD
+
+- **BANK A–D** selects import/record target (`SampleSegment::bank`); display quota **1:45/bank** on top of **7:00** global pool.
+- **LcdPanelComponent** mirrors module + bank + selected pad/segment (keypad shell v1).
+
 ## QA
 
 - [docs/SP1200_QA_CHECKLIST.md](../docs/SP1200_QA_CHECKLIST.md)

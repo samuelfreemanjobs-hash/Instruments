@@ -44,4 +44,15 @@ void SampleMemoryPool::recomputeUsed()
         usedSamples_ += static_cast<std::int64_t> (s.data.size());
 }
 
+std::int64_t SampleMemoryPool::usedSamplesInBank (int bankIndex) const
+{
+    if (bankIndex < 0 || bankIndex >= kNumBanks)
+        return 0;
+    std::int64_t sum = 0;
+    for (const auto& s : segments_)
+        if (s.bank == bankIndex)
+            sum += static_cast<std::int64_t> (s.data.size());
+    return sum;
+}
+
 } // namespace sp1200

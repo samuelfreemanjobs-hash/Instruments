@@ -241,6 +241,22 @@ void SamplerEngine::triggerPadFromUi (int padIndex, float velocity)
     triggerPad (padIndex, velocity);
 }
 
+void SamplerEngine::setCurrentBank (int bankIndex)
+{
+    currentBank_ = std::clamp (bankIndex, 0, kNumBanks - 1);
+}
+
+void SamplerEngine::setSelectedPad (int padIndex)
+{
+    selectedPad_ = std::clamp (padIndex, 0, kNumPads - 1);
+}
+
+char SamplerEngine::bankLetter (int bankIndex) noexcept
+{
+    const int b = std::clamp (bankIndex, 0, kNumBanks - 1);
+    return static_cast<char> ('A' + b);
+}
+
 void SamplerEngine::recordStepOnCurrentPattern (int padIndex, float velocity)
 {
     sequencer_.addStep (padIndex, sequencer_.recordStepCursor(), velocity, pads_.pads[padIndex].tuneSemitones);

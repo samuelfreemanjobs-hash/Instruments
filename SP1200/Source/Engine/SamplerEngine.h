@@ -85,6 +85,12 @@ public:
 
     void recordStepOnCurrentPattern (int padIndex, float velocity);
 
+    void setCurrentBank (int bankIndex);
+    [[nodiscard]] int currentBank() const noexcept { return currentBank_; }
+    void setSelectedPad (int padIndex);
+    [[nodiscard]] int selectedPad() const noexcept { return selectedPad_; }
+    static char bankLetter (int bankIndex) noexcept;
+
 private:
     int findFreeVoice() noexcept;
     void triggerPad (int padIndex, float velocity, float extraTune = 0.0f, float pan = 0.0f, float filterStep = 0.5f);
@@ -114,6 +120,8 @@ private:
     MidiMapping midiMapping_;
     bool vinylImportEnabled_ = false;
     double masterClockPhase_ = 0.0;
+    int currentBank_ = 0;
+    int selectedPad_ = 0;
 };
 
 } // namespace sp1200

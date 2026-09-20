@@ -33,6 +33,7 @@ target_sources (SP1200
         Source/DSP/Ssm2044BusFilter.cpp
         Source/Project/ProjectFile.cpp
         Source/UI/ChopModalComponent.cpp
+        Source/UI/LcdPanelComponent.cpp
 )
 
 target_compile_definitions (SP1200

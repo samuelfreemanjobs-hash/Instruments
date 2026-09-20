@@ -14,6 +14,10 @@ inline constexpr std::int64_t kMaxMemorySamples =
 inline constexpr int kNumPads = 16;
 inline constexpr int kNumVoices = 16;
 inline constexpr int kNumBanks = 4;
+/** Planning quota per bank (7:00 / 4); pool remains global. */
+inline constexpr std::int64_t kBankQuotaSeconds = kMaxMemorySeconds / kNumBanks;
+inline constexpr std::int64_t kBankQuotaSamples =
+    static_cast<std::int64_t> (kSampleRateHz) * kBankQuotaSeconds;
 
 inline constexpr int kMaxPatterns = 99;
 inline constexpr int kMinPatternBars = 1;
