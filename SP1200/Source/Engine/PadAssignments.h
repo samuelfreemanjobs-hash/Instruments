@@ -2,6 +2,8 @@
 
 #include "../SP1200Constants.h"
 
+#include <array>
+
 namespace sp1200
 {
 struct MultiPitchState

@@ -35,6 +35,9 @@ public:
     void replaceAll (std::vector<SampleSegment> segments);
     void recomputeUsedPublic() { recomputeUsed(); }
 
+    /** Removes segment; caller must remap pad indices above removed index. */
+    void removeSegment (std::size_t index);
+
 private:
     void recomputeUsed();
 

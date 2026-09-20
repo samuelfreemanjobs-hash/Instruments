@@ -34,6 +34,7 @@ target_sources (SP1200
         Source/Project/ProjectFile.cpp
         Source/UI/ChopModalComponent.cpp
         Source/UI/LcdPanelComponent.cpp
+        Source/UI/KeypadComponent.cpp
 )
 
 target_compile_definitions (SP1200
@@ -61,6 +62,7 @@ add_executable (SP1200MemoryTests
     Tests/MemoryTests.cpp
     Source/Memory/TwelveBitBuffer.cpp
     Source/Memory/SampleMemoryPool.cpp
+    Source/Engine/SegmentEditor.cpp
 )
 
 add_executable (SP1200SequencerTests

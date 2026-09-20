@@ -42,3 +42,6 @@ Manual pass against [SP1200_STANDALONE_SPEC.md](SP1200_STANDALONE_SPEC.md). Auto
 - [ ] **BANK A–D** selector; imports land in active bank; memory shows **bank / 1:45** quota
 - [ ] **LCD** two-line status: module, bank, selected pad + segment name
 - [ ] Keys **1–4** select bank on console; pad click selects pad for MOD 11
+- [ ] **MOD 30 COMBINE**: two pads with segments → one longer segment; memory decreases
+- [ ] **SEG → BANK** moves segment bank tag; bank quota line updates
+- [ ] **Keypad** / digits: ENTER pattern (seq tab) or bank 1–4 (console)

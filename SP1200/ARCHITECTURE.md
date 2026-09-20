@@ -70,9 +70,12 @@ MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → Ssm
 - **Choke group** per pad (None + groups 1–4)
 - Persisted in project **v4** (maps + vinyl toggle)
 
-## Module 30 (vinyl)
+## Module 30 (special)
 
 - Console **VINYL 33→45 import**: import at 45/33 rate, auto **~−5 st** pad tune on assign
+- **COMBINE**: select pad A → **MOD 30 COMBINE** → pick pad B; appends B onto A segment and removes B from pool (`SegmentEditor::combineSegments`)
+- **SEG → BANK**: sets selected pad segment `SampleSegment::bank` to active bank A–D
+- **KeypadComponent**: 0–9 + ENTER/CANCEL; pattern entry on **MOD 20**, bank entry on console (keyboard digits also wired)
 
 ## Banks & LCD
 

@@ -72,4 +72,58 @@ bool normalizeSegmentInPlace (SampleMemoryPool& pool, std::size_t index)
     return true;
 }
 
+void remapPadSegmentIndex (PadBank& pads, std::size_t removedIndex, int replacementIndex)
+{
+    const int removed = static_cast<int> (removedIndex);
+    for (int p = 0; p < kNumPads; ++p)
+    {
+        int& idx = pads.pads[p].segmentIndex;
+        if (idx == removed)
+            idx = replacementIndex;
+        else if (idx > removed)
+            --idx;
+    }
+}
+
+bool setSegmentBank (SampleMemoryPool& pool, std::size_t index, int bankIndex)
+{
+    if (bankIndex < 0 || bankIndex >= kNumBanks)
+        return false;
+
+    auto* seg = pool.getSegment (index);
+    if (seg == nullptr)
+        return false;
+
+    seg->bank = bankIndex;
+    return true;
+}
+
+bool combineSegments (SampleMemoryPool& pool, PadBank& pads, std::size_t indexA, std::size_t indexB)
+{
+    if (indexA == indexB)
+        return false;
+
+    auto* segA = pool.getSegment (indexA);
+    auto* segB = pool.getSegment (indexB);
+    if (segA == nullptr || segB == nullptr || segB->data.empty())
+        return false;
+
+    const std::size_t primary = indexA;
+    const std::size_t secondary = indexB;
+    auto* primarySeg = pool.getSegment (primary);
+    const std::size_t offset = primarySeg->data.size();
+    const std::size_t appendLen = segB->data.size();
+    primarySeg->data.resize (offset + appendLen);
+    for (std::size_t i = 0; i < appendLen; ++i)
+        primarySeg->data.setSample (offset + i, segB->data.getSample (i));
+
+    const int replacementIndex =
+        static_cast<int> (primary > secondary ? primary - 1 : primary);
+
+    pool.removeSegment (secondary);
+    pool.recomputeUsedPublic();
+    remapPadSegmentIndex (pads, secondary, replacementIndex);
+    return true;
+}
+
 } // namespace sp1200

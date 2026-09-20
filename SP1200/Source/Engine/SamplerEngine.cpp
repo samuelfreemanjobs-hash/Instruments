@@ -1,6 +1,7 @@
 #include "SamplerEngine.h"
 
 #include "../Import/TransientChop.h"
+#include "SegmentEditor.h"
 #include "../SP1200Constants.h"
 
 #include <algorithm>
@@ -255,6 +256,46 @@ char SamplerEngine::bankLetter (int bankIndex) noexcept
 {
     const int b = std::clamp (bankIndex, 0, kNumBanks - 1);
     return static_cast<char> ('A' + b);
+}
+
+void SamplerEngine::remapMultiPitchSourceAfterSegmentRemove (int removedIndex, int replacementIndex)
+{
+    if (multiPitch_.sourceSegmentIndex < 0)
+        return;
+
+    if (multiPitch_.sourceSegmentIndex == removedIndex)
+        multiPitch_.sourceSegmentIndex = replacementIndex;
+    else if (multiPitch_.sourceSegmentIndex > removedIndex)
+        --multiPitch_.sourceSegmentIndex;
+}
+
+bool SamplerEngine::combinePads (int padIndexA, int padIndexB)
+{
+    if (padIndexA < 0 || padIndexA >= kNumPads || padIndexB < 0 || padIndexB >= kNumPads || padIndexA == padIndexB)
+        return false;
+
+    const int segA = pads_.pads[padIndexA].segmentIndex;
+    const int segB = pads_.pads[padIndexB].segmentIndex;
+    if (segA < 0 || segB < 0)
+        return false;
+
+    const std::size_t indexA = static_cast<std::size_t> (segA);
+    const std::size_t indexB = static_cast<std::size_t> (segB);
+    const int replacementIndex = static_cast<int> (indexA > indexB ? indexA - 1 : indexA);
+
+    if (! combineSegments (pool_, pads_, indexA, indexB))
+        return false;
+
+    remapMultiPitchSourceAfterSegmentRemove (static_cast<int> (indexB), replacementIndex);
+    return true;
+}
+
+bool SamplerEngine::moveSelectedSegmentToCurrentBank()
+{
+    const int seg = pads_.pads[selectedPad_].segmentIndex;
+    if (seg < 0)
+        return false;
+    return setSegmentBank (pool_, static_cast<std::size_t> (seg), currentBank_);
 }
 
 void SamplerEngine::recordStepOnCurrentPattern (int padIndex, float velocity)

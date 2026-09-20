@@ -44,6 +44,14 @@ void SampleMemoryPool::recomputeUsed()
         usedSamples_ += static_cast<std::int64_t> (s.data.size());
 }
 
+void SampleMemoryPool::removeSegment (std::size_t index)
+{
+    if (index >= segments_.size())
+        return;
+    usedSamples_ -= static_cast<std::int64_t> (segments_[index].data.size());
+    segments_.erase (segments_.begin() + static_cast<std::ptrdiff_t> (index));
+}
+
 std::int64_t SampleMemoryPool::usedSamplesInBank (int bankIndex) const
 {
     if (bankIndex < 0 || bankIndex >= kNumBanks)

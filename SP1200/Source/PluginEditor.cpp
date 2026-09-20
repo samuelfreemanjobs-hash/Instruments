@@ -60,6 +60,12 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     lcdPanel_ = std::make_unique<LcdPanelComponent>();
     addAndMakeVisible (*lcdPanel_);
 
+    keypad_ = std::make_unique<KeypadComponent>();
+    keypad_->onDigit = [this] (int d) { handleKeypadDigit (d); };
+    keypad_->onEnter = [this] { commitKeypadEntry(); };
+    keypad_->onCancel = [this] { cancelKeypadEntry(); };
+    addAndMakeVisible (*keypad_);
+
     const int bankGroup = 9002;
     for (int i = 0; i < sp1200::kNumBanks; ++i)
     {
@@ -350,6 +356,22 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     };
     addAndMakeVisible (vinylImportButton_);
 
+    mod30CombineButton_.onClick = [this] { armCombineWithSecondPad(); };
+    mod30MoveBankButton_.onClick = [this]
+    {
+        if (! processor_.engine().moveSelectedSegmentToCurrentBank())
+        {
+            juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::InfoIcon,
+                                                    "MOD 30",
+                                                    "Select a pad with a sample, then move.");
+            return;
+        }
+        refreshMemoryLabel();
+        refreshLcd();
+    };
+    addAndMakeVisible (mod30CombineButton_);
+    addAndMakeVisible (mod30MoveBankButton_);
+
     for (int i = 0; i < static_cast<int> (songSlotBoxes_.size()); ++i)
     {
         auto& box = songSlotBoxes_[static_cast<std::size_t> (i)];
@@ -373,7 +395,22 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
         padButtons_[static_cast<std::size_t> (i)].setButtonText ("PAD " + juce::String (i + 1));
         padButtons_[static_cast<std::size_t> (i)].onClick = [this, i]
         {
-            processor_.engine().setSelectedPad (i);
+            auto& eng = processor_.engine();
+            if (combineArm_)
+            {
+                combineArm_ = false;
+                mod30CombineButton_.setButtonText ("MOD 30 COMBINE");
+                const int a = eng.selectedPad();
+                if (a != i && ! eng.combinePads (a, i))
+                {
+                    juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
+                                                            "MOD 30",
+                                                            "Combine failed (missing segment or same pad).");
+                }
+                else
+                    refreshMemoryLabel();
+            }
+            eng.setSelectedPad (i);
             updatePadHighlight();
             refreshLcd();
             triggerPad (i);
@@ -465,6 +502,21 @@ bool SP1200AudioProcessorEditor::keyPressed (const juce::KeyPress& key, juce::Co
         return true;
     }
 
+    if (view_ == ViewMode::console || view_ == ViewMode::sequencer)
+    {
+        const int ch = key.getTextCharacter();
+        if (ch >= '0' && ch <= '9')
+        {
+            handleKeypadDigit (ch - '0');
+            return true;
+        }
+        if (key == juce::KeyPress::returnKey)
+        {
+            commitKeypadEntry();
+            return true;
+        }
+    }
+
     if (view_ == ViewMode::console)
     {
         const int ch = key.getTextCharacter();
@@ -501,6 +553,9 @@ void SP1200AudioProcessorEditor::buttonClicked (juce::Button* button)
 
 void SP1200AudioProcessorEditor::setView (ViewMode mode)
 {
+    cancelKeypadEntry();
+    combineArm_ = false;
+    mod30CombineButton_.setButtonText ("MOD 30 COMBINE");
     view_ = mode;
     const bool console = mode == ViewMode::console;
     const bool seq = mode == ViewMode::sequencer;
@@ -513,6 +568,8 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     setupTab_.setToggleState (setup, juce::dontSendNotification);
 
     vinylImportButton_.setVisible (console && chopModal_ == nullptr);
+    mod30CombineButton_.setVisible (console && chopModal_ == nullptr);
+    mod30MoveBankButton_.setVisible (console && chopModal_ == nullptr);
     importButton_.setVisible (console && chopModal_ == nullptr);
     recordButton_.setVisible (console && chopModal_ == nullptr);
     chopButton_.setVisible (console && chopModal_ == nullptr);
@@ -568,8 +625,11 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
         b.setVisible (console);
     for (auto& f : faders_)
         f.setVisible (console);
+    const bool lcdKeypad = (console || seq) && chopModal_ == nullptr;
     if (lcdPanel_ != nullptr)
-        lcdPanel_->setVisible (console);
+        lcdPanel_->setVisible (lcdKeypad);
+    if (keypad_ != nullptr)
+        keypad_->setVisible (lcdKeypad);
     for (auto& b : bankButtons_)
         b.setVisible (console);
 
@@ -633,6 +693,8 @@ void SP1200AudioProcessorEditor::resized()
     if (view_ == ViewMode::console)
     {
         vinylImportButton_.setBounds (bar.removeFromLeft (150).reduced (2));
+        mod30CombineButton_.setBounds (bar.removeFromLeft (130).reduced (2));
+        mod30MoveBankButton_.setBounds (bar.removeFromLeft (100).reduced (2));
         importButton_.setBounds (bar.removeFromLeft (100).reduced (2));
         recordButton_.setBounds (bar.removeFromLeft (100).reduced (2));
         mod11Button_.setBounds (bar.removeFromLeft (110).reduced (2));
@@ -721,6 +783,13 @@ void SP1200AudioProcessorEditor::resized()
 
     if (view_ == ViewMode::sequencer && pianoRoll_ != nullptr)
     {
+        if (lcdPanel_ != nullptr && keypad_ != nullptr)
+        {
+            auto lcdRow = r.removeFromTop (56);
+            lcdPanel_->setBounds (lcdRow.removeFromLeft (lcdRow.getWidth() * 2 / 3).reduced (2));
+            keypad_->setBounds (lcdRow.reduced (2));
+        }
+
         auto stackBar = r.removeFromBottom (28);
         stackVelButton_.setBounds (stackBar.removeFromLeft (90).reduced (2));
         stackPitchButton_.setBounds (stackBar.removeFromLeft (70).reduced (2));
@@ -745,8 +814,12 @@ void SP1200AudioProcessorEditor::resized()
         auto bankBar = r.removeFromTop (28);
         for (auto& b : bankButtons_)
             b.setBounds (bankBar.removeFromLeft (90).reduced (2));
-        if (lcdPanel_ != nullptr)
-            lcdPanel_->setBounds (r.removeFromTop (52).reduced (4));
+        if (lcdPanel_ != nullptr && keypad_ != nullptr)
+        {
+            auto lcdRow = r.removeFromTop (56);
+            lcdPanel_->setBounds (lcdRow.removeFromLeft (lcdRow.getWidth() * 2 / 3).reduced (2));
+            keypad_->setBounds (lcdRow.reduced (2));
+        }
 
         auto padArea = r.removeFromBottom (160);
         auto faderArea = r;
@@ -844,10 +917,74 @@ void SP1200AudioProcessorEditor::refreshLcd()
             segName = s->name.empty() ? "SEG" : juce::String (s->name).substring (0, 12);
     }
 
-    const juce::String line1 = mod + " | BANK " + juce::String (bank);
-    const juce::String line2 = "PAD " + juce::String (pad + 1).paddedLeft ('0', 2) + " "
-                               + segName + " | 26.040k 12BIT";
+    juce::String line1 = mod + " | BANK " + juce::String (bank);
+    juce::String line2 = "PAD " + juce::String (pad + 1).paddedLeft ('0', 2) + " "
+                         + segName + " | 26.040k 12BIT";
+
+    if (keypadMode_ == KeypadEntryMode::pattern)
+        line1 = "KEYPAD | ENTER PAT";
+    else if (keypadMode_ == KeypadEntryMode::bank)
+        line1 = "KEYPAD | ENTER BANK 1-4";
+
+    if (keypadMode_ != KeypadEntryMode::idle && ! keypadBuffer_.isEmpty())
+        line2 = "ENTRY: " + keypadBuffer_;
+
+    if (combineArm_)
+        line2 = "COMBINE: pick 2nd pad | " + line2;
+
     lcdPanel_->setLines (line1, line2);
+}
+
+void SP1200AudioProcessorEditor::armCombineWithSecondPad()
+{
+    combineArm_ = ! combineArm_;
+    mod30CombineButton_.setButtonText (combineArm_ ? "COMBINE: pick pad…" : "MOD 30 COMBINE");
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::handleKeypadDigit (int digit)
+{
+    if (keypadMode_ == KeypadEntryMode::idle)
+        keypadMode_ = view_ == ViewMode::sequencer ? KeypadEntryMode::pattern : KeypadEntryMode::bank;
+
+    if (keypadBuffer_.length() >= 3)
+        return;
+
+    keypadBuffer_ += juce::String (digit);
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::commitKeypadEntry()
+{
+    if (keypadBuffer_.isEmpty())
+    {
+        cancelKeypadEntry();
+        return;
+    }
+
+    const int value = keypadBuffer_.getIntValue();
+    if (keypadMode_ == KeypadEntryMode::pattern)
+    {
+        const int pat = std::clamp (value, 1, sp1200::kMaxPatterns);
+        processor_.engine().sequencer().setCurrentPattern (pat - 1);
+        patternSlider_.setValue (pat, juce::dontSendNotification);
+        syncPianoRollFromControls();
+        refreshSeqInfo();
+    }
+    else if (keypadMode_ == KeypadEntryMode::bank)
+    {
+        const int bank = std::clamp (value, 1, sp1200::kNumBanks);
+        selectBank (bank - 1);
+    }
+
+    cancelKeypadEntry();
+}
+
+void SP1200AudioProcessorEditor::cancelKeypadEntry()
+{
+    keypadMode_ = KeypadEntryMode::idle;
+    keypadBuffer_.clear();
+    refreshLcd();
 }
 
 void SP1200AudioProcessorEditor::refreshMemoryLabel()

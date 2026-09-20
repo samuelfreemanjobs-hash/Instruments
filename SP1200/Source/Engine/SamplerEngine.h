@@ -91,7 +91,14 @@ public:
     [[nodiscard]] int selectedPad() const noexcept { return selectedPad_; }
     static char bankLetter (int bankIndex) noexcept;
 
+    /** MOD 30: append pad B segment onto pad A segment; remove B from pool. */
+    bool combinePads (int padIndexA, int padIndexB);
+
+    /** MOD 30: tag selected pad's segment with current bank index. */
+    bool moveSelectedSegmentToCurrentBank();
+
 private:
+    void remapMultiPitchSourceAfterSegmentRemove (int removedIndex, int replacementIndex);
     int findFreeVoice() noexcept;
     void triggerPad (int padIndex, float velocity, float extraTune = 0.0f, float pan = 0.0f, float filterStep = 0.5f);
     void handleMidi (const juce::MidiMessage& msg);

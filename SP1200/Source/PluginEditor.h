@@ -2,6 +2,7 @@
 
 #include "PluginProcessor.h"
 #include "UI/ChopModalComponent.h"
+#include "UI/KeypadComponent.h"
 #include "UI/LcdPanelComponent.h"
 #include "UI/PianoRollComponent.h"
 #include "UI/StepStackPanel.h"
@@ -50,6 +51,10 @@ private:
     void selectBank (int bankIndex);
     void updatePadHighlight();
     void syncPianoRollFromControls();
+    void handleKeypadDigit (int digit);
+    void commitKeypadEntry();
+    void cancelKeypadEntry();
+    void armCombineWithSecondPad();
     void cycleFaderMode();
     int padIndexForComputerKey (const juce::KeyPress& key) const;
     void buttonClicked (juce::Button* button) override;
@@ -67,6 +72,15 @@ private:
     juce::Label rateLabel_;
     juce::Label memoryLabel_;
     std::unique_ptr<LcdPanelComponent> lcdPanel_;
+    std::unique_ptr<KeypadComponent> keypad_;
+    enum class KeypadEntryMode
+    {
+        idle,
+        pattern,
+        bank
+    };
+    KeypadEntryMode keypadMode_ = KeypadEntryMode::idle;
+    juce::String keypadBuffer_;
     std::array<juce::TextButton, sp1200::kNumBanks> bankButtons_;
     juce::Label engagedLabel_;
 
@@ -116,6 +130,9 @@ private:
     juce::Label learnStatusLabel_;
     std::array<juce::ComboBox, sp1200::kNumPads> chokeGroupBoxes_;
     juce::ToggleButton vinylImportButton_ { "VINYL 33→45 import" };
+    juce::TextButton mod30CombineButton_ { "MOD 30 COMBINE" };
+    juce::TextButton mod30MoveBankButton_ { "SEG → BANK" };
+    bool combineArm_ = false;
 
     std::array<juce::TextButton, sp1200::kNumPads> padButtons_;
     std::array<juce::Slider, sp1200::kNumPads> faders_;
