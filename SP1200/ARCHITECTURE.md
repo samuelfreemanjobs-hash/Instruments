@@ -11,8 +11,8 @@ Performance sampler with **16 pads**, **16 voices**, **7:00** embedded sample RA
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
-cmake --build build -j --target SP1200_Standalone SP1200Tests
-ctest --test-dir build -R SP1200Memory
+cmake --build build -j --target SP1200_Standalone SP1200MemoryTests SP1200SequencerTests
+ctest --test-dir build -R SP1200
 ```
 
 Artifact: `build/SP1200/SP1200_artefacts/Release/Standalone/SP-1200 Drumulator`
@@ -45,8 +45,10 @@ MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → ste
 
 ## Extension points
 
-- MOD 11 chop modal + transient auto-chop
-- MOD 20 piano roll pattern format
+- MOD 11 waveform chop modal (transient chop engine done)
+- MOD 20 piano roll UI (pattern data + SEQ tab in place)
+- Song tab: 8-slot chain; pattern bank 99, bars 1–4
+- Multi-pitch / chromatic cap via `quantizeToMultiPitch`
 - Project `.sp12p` embed in `getStateInformation`
 - Bus SSM2044 filter (Module 15)
 

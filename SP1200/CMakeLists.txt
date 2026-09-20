@@ -24,6 +24,8 @@ target_sources (SP1200
         Source/Import/SampleImporter.cpp
         Source/Engine/SampleVoice.cpp
         Source/Engine/SamplerEngine.cpp
+        Source/Engine/PatternSequencer.cpp
+        Source/Import/TransientChop.cpp
 )
 
 target_compile_definitions (SP1200
@@ -47,13 +49,22 @@ target_include_directories (SP1200 PRIVATE Source)
 
 juce_generate_juce_header (SP1200)
 
-add_executable (SP1200Tests
+add_executable (SP1200MemoryTests
     Tests/MemoryTests.cpp
     Source/Memory/TwelveBitBuffer.cpp
     Source/Memory/SampleMemoryPool.cpp
 )
 
-target_include_directories (SP1200Tests PRIVATE Source)
-target_compile_features (SP1200Tests PRIVATE cxx_std_20)
+add_executable (SP1200SequencerTests
+    Tests/SequencerTests.cpp
+    Source/Engine/PatternSequencer.cpp
+    Source/Import/TransientChop.cpp
+)
 
-add_test (NAME SP1200Memory COMMAND SP1200Tests)
+foreach (t SP1200MemoryTests SP1200SequencerTests)
+    target_include_directories (${t} PRIVATE Source)
+    target_compile_features (${t} PRIVATE cxx_std_20)
+endforeach()
+
+add_test (NAME SP1200Memory COMMAND SP1200MemoryTests)
+add_test (NAME SP1200Sequencer COMMAND SP1200SequencerTests)

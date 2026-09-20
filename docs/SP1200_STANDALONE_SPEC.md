@@ -147,7 +147,8 @@ Document in UI (spec sheet table):
 - **Power / vinyl resample** toggles per mockup.
 - **Linear faders:** **60 mm** travel, **VOL / TUN** dual role (same as **fader mode** + spec sheet default **tune on sliders**).
 - **Pads:** **logarithmic velocity** response; **exclusive choke groups** (blueprint: e.g. pads **4 & 5** hats, **7 & 8** perc — configurable per project).
-- **16-multi-pitch mode:** one segment, **8 pitch steps** across pads (extend to **16 steps** on second row when enabled).
+- **Multi-pitch mode:** one segment shared across pads; **16 capped pitch steps** (pad *i* → fixed semitone offset from table, SP-style — not a free keyboard).
+- **Chromatic SSM (roll):** same cap as multi-pitch — per-step pitch must be one of the **16 defined offsets** for that segment (or ±12 st quantized to multi-pitch slots), not unlimited MIDI range.
 - **Timing readout:** **Repeat resolution** (e.g. **1/16 triplets**); **Swing template** e.g. **59% SP-GROOVE**; engine **96 PPQN** with **+12 tick** micro-delay on swung steps (spec sheet “SP-groove logic”).
 
 ### 4.2 State machine
@@ -241,7 +242,7 @@ Full-screen or tab view (mockup tabs: **10 CONSOLE | 11 WAVE CHOP | MOD 20 PIANO
 
 - Tool palette: pencil, eraser, select (minimal set).
 - **Snap:** 1/4, 1/8, **1/16**, 1/16T, 1/32.
-- **Map mode:** **SP drum map** (lanes = pads, pitch fixed per lane) vs **Chromatic SSM** (note pitch on lane for sample chromatic playback within 12-bit engine rules).
+- **Map mode:** **SP drum map** (lanes = pads, pitch fixed per lane) vs **Chromatic SSM** (**capped like multi-pitch** — see below).
 
 **Grid**
 
@@ -320,11 +321,23 @@ Mouse/touch on pads, faders, modules, keypad — same actions as hardware maps.
 
 ## 6. Sequencer and sync
 
-- **Module 20 SEQ / Piano roll:** one pattern, **16 lanes**, grid edit + **rec overdub** from pads; **REPEAT**, **AUTO CORRECT**, **SP swing**; per-step velocity/tune/pan/filter stacks (§4.4).
-- **Console mode (Module 20 on hardware):** step record via **16 pads** without opening piano roll — must share pattern format with roll.
-- **Module 24 SONG:** pattern chains (tab in roll mockup).
+### 6.1 Patterns (Module 20)
+
+- **Pattern length:** user **1–4 bars** per pattern (default **2**).
+- **Pattern count:** **multiple patterns** (storage for **99** like SP; UI may page in batches).
+- **Grid:** **16 lanes** (pads), **1/16** steps → `bars × 16` steps per pattern.
+- **Timing:** **96 PPQN**, **SP swing %**; pad record, overdub, and piano roll share **one pattern struct**.
+
+### 6.2 Song (Module 24)
+
+- **Song arrangement screen:** ordered list of **pattern numbers** (with repeats TBD); playback runs patterns sequentially then loops song or stops (user option).
+- Same data embedded in project file as patterns.
+
+### 6.3 Other
+
+- **Console mode:** step record via **16 pads** without opening piano roll.
 - **MIDI clock:** in/out; SQ-1 can master or slave per SETUP.
-- Pattern/song data stored inside project file (single timeline model: steps + optional micro-timing within quantize).
+- Pattern/song data stored inside project file (steps + optional micro-timing within quantize).
 
 ---
 
@@ -401,6 +414,9 @@ When code starts: add product `ARCHITECTURE.md` and index row in root `/ARCHITEC
 | — | **Auto-chop by transients** (8 or 16 slices), not silence-only |
 | — | GUI **blueprint / spec sheet** Rev 2.4: directory codes, signal flow, 96 PPQN SP-groove |
 | — | All UI: **26.040 kHz** and **7:00 TOTAL** memory (not art-sheet 10.07 s / 26.041) |
+| — | **Auto-chop: transient-based** only |
+| — | **Chromatic capped** like **multi-pitch** (16 pitch slots) |
+| — | Patterns **1–4 bars**, **99** slots; **Module 24 song** arrangement screen |
 
 ---
 

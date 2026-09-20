@@ -11,6 +11,12 @@ juce::String formatMemoryTime (std::int64_t samples)
     const int ss = static_cast<int> (seconds % 60);
     return juce::String::formatted ("%d:%02d", mm, ss);
 }
+
+void setVisibleArray (bool on, auto& arr)
+{
+    for (auto& c : arr)
+        c.setVisible (on);
+}
 } // namespace
 
 SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
@@ -18,6 +24,13 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
 {
     setResizeLimits (900, 640, 1600, 1000);
     setSize (1100, 720);
+
+    for (auto* tab : { &consoleTab_, &seqTab_, &songTab_ })
+        addAndMakeVisible (*tab);
+
+    consoleTab_.onClick = [this] { setView (ViewMode::console); };
+    seqTab_.onClick = [this] { setView (ViewMode::sequencer); };
+    songTab_.onClick = [this] { setView (ViewMode::song); };
 
     headerLabel_.setText ("SP-1200 SAMPLING DRUMULATOR", juce::dontSendNotification);
     headerLabel_.setFont (juce::FontOptions (18.0f, juce::Font::bold));
@@ -39,6 +52,28 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     recordButton_.onClick = [this] { toggleRecordInput(); };
     addAndMakeVisible (recordButton_);
 
+    chopButton_.onClick = [this] { runAutoChop16(); };
+    addAndMakeVisible (chopButton_);
+
+    multiPitchButton_.onClick = [this]
+    {
+        auto& eng = processor_.engine();
+        eng.setMultiPitchEnabled (multiPitchButton_.getToggleState());
+        if (multiPitchButton_.getToggleState())
+        {
+            for (int p = 0; p < sp1200::kNumPads; ++p)
+            {
+                const int seg = eng.getPad (p).segmentIndex;
+                if (seg >= 0)
+                {
+                    eng.setMultiPitchSourceSegment (seg);
+                    break;
+                }
+            }
+        }
+    };
+    addAndMakeVisible (multiPitchButton_);
+
     faderModeButton_.onClick = [this]
     {
         faderMode_ = (faderMode_ + 1) % 3;
@@ -47,6 +82,56 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
         faderModeButton_.setButtonText ("FADER: " + juce::String (names[faderMode_]));
     };
     addAndMakeVisible (faderModeButton_);
+
+    patternSlider_.setRange (1, sp1200::kMaxPatterns, 1);
+    patternSlider_.setValue (1);
+    patternSlider_.onValueChange = [this]
+    {
+        processor_.engine().sequencer().setCurrentPattern (static_cast<int> (patternSlider_.getValue()) - 1);
+        refreshSeqInfo();
+    };
+    addAndMakeVisible (patternSlider_);
+
+    barsSlider_.setRange (sp1200::kMinPatternBars, sp1200::kMaxPatternBars, 1);
+    barsSlider_.setValue (2);
+    barsSlider_.onValueChange = [this]
+    {
+        processor_.engine().sequencer().setPatternBars (static_cast<int> (barsSlider_.getValue()));
+        refreshSeqInfo();
+    };
+    addAndMakeVisible (barsSlider_);
+
+    seqInfoLabel_.setText ("PAT 01 | 2 bars | 1/16", juce::dontSendNotification);
+    addAndMakeVisible (seqInfoLabel_);
+
+    seqPlayButton_.onClick = [this] { processor_.engine().sequencer().startPattern(); };
+    seqStopButton_.onClick = [this] { processor_.engine().sequencer().stop(); };
+    addAndMakeVisible (seqPlayButton_);
+    addAndMakeVisible (seqStopButton_);
+
+    seqRecordSteps_.onClick = [this] { seqRecordMode_ = seqRecordSteps_.getToggleState(); };
+    addAndMakeVisible (seqRecordSteps_);
+
+    songInfoLabel_.setText ("Song chain (8 slots) → patterns 1–99", juce::dontSendNotification);
+    addAndMakeVisible (songInfoLabel_);
+
+    songPlayButton_.onClick = [this] { processor_.engine().sequencer().startSong(); };
+    addAndMakeVisible (songPlayButton_);
+
+    for (int i = 0; i < static_cast<int> (songSlotBoxes_.size()); ++i)
+    {
+        auto& box = songSlotBoxes_[static_cast<std::size_t> (i)];
+        for (int p = 1; p <= sp1200::kMaxPatterns; ++p)
+            box.addItem ("PAT " + juce::String (p).paddedLeft ('0', 2), p);
+        box.addItem ("END", -1);
+        box.setSelectedId (i + 1);
+        box.onChange = [this, i]
+        {
+            const int id = songSlotBoxes_[static_cast<std::size_t> (i)].getSelectedId();
+            processor_.engine().sequencer().setSongSlot (i, id - 1);
+        };
+        addAndMakeVisible (box);
+    }
 
     for (int i = 0; i < sp1200::kNumPads; ++i)
     {
@@ -73,53 +158,135 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
 
     startTimerHz (4);
     refreshMemoryLabel();
+    setView (ViewMode::console);
 }
 
 SP1200AudioProcessorEditor::~SP1200AudioProcessorEditor() = default;
+
+void SP1200AudioProcessorEditor::setView (ViewMode mode)
+{
+    view_ = mode;
+    const bool console = mode == ViewMode::console;
+    const bool seq = mode == ViewMode::sequencer;
+    const bool song = mode == ViewMode::song;
+
+    importButton_.setVisible (console);
+    recordButton_.setVisible (console);
+    chopButton_.setVisible (console);
+    multiPitchButton_.setVisible (console);
+    faderModeButton_.setVisible (console || seq);
+
+    patternSlider_.setVisible (seq);
+    barsSlider_.setVisible (seq);
+    seqInfoLabel_.setVisible (seq);
+    seqPlayButton_.setVisible (seq);
+    seqStopButton_.setVisible (seq || song);
+    seqRecordSteps_.setVisible (seq);
+
+    songInfoLabel_.setVisible (song);
+    songPlayButton_.setVisible (song);
+    for (auto& box : songSlotBoxes_)
+        box.setVisible (song);
+
+    setVisibleArray (console || seq, padButtons_);
+    setVisibleArray (console || seq, faders_);
+
+    resized();
+}
+
+void SP1200AudioProcessorEditor::refreshSeqInfo()
+{
+    auto& seq = processor_.engine().sequencer();
+    const int pat = seq.currentPattern() + 1;
+    const int bars = seq.patternBars();
+    seqInfoLabel_.setText ("PAT " + juce::String (pat).paddedLeft ('0', 2) + " | " + juce::String (bars)
+                               + " bar(s) | 1/16 | steps: "
+                               + juce::String (seq.pattern (seq.currentPattern()).steps.size()),
+                           juce::dontSendNotification);
+}
 
 void SP1200AudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colour (0xffd9d2c4));
     g.setColour (juce::Colours::black.withAlpha (0.15f));
-    g.fillRect (getLocalBounds().removeFromTop (48));
+    g.fillRect (getLocalBounds().removeFromTop (88));
 }
 
 void SP1200AudioProcessorEditor::resized()
 {
     auto r = getLocalBounds().reduced (8);
+    auto tabs = r.removeFromTop (28);
+    consoleTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
+    seqTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
+    songTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
+
     auto top = r.removeFromTop (40);
     headerLabel_.setBounds (top.removeFromLeft (360));
     engagedLabel_.setBounds (top.removeFromLeft (260));
     memoryLabel_.setBounds (top);
 
     auto bar = r.removeFromTop (32);
-    importButton_.setBounds (bar.removeFromLeft (120).reduced (2));
-    recordButton_.setBounds (bar.removeFromLeft (120).reduced (2));
-    faderModeButton_.setBounds (bar.removeFromLeft (140).reduced (2));
-    rateLabel_.setBounds (bar);
-
-    auto padArea = r.removeFromBottom (160);
-    auto faderArea = r;
-
-    const int cols = 8;
-    const int rows = 2;
-    const int cellW = padArea.getWidth() / cols;
-    const int fCellH = faderArea.getHeight() / rows;
-    const int pCellH = padArea.getHeight() / rows;
-
-    for (int row = 0; row < rows; ++row)
+    if (view_ == ViewMode::console)
     {
-        for (int col = 0; col < cols; ++col)
+        importButton_.setBounds (bar.removeFromLeft (120).reduced (2));
+        recordButton_.setBounds (bar.removeFromLeft (120).reduced (2));
+        chopButton_.setBounds (bar.removeFromLeft (180).reduced (2));
+        multiPitchButton_.setBounds (bar.removeFromLeft (160).reduced (2));
+        faderModeButton_.setBounds (bar.removeFromLeft (140).reduced (2));
+    }
+    else if (view_ == ViewMode::sequencer)
+    {
+        patternSlider_.setBounds (bar.removeFromLeft (200).reduced (2));
+        barsSlider_.setBounds (bar.removeFromLeft (160).reduced (2));
+        seqPlayButton_.setBounds (bar.removeFromLeft (120).reduced (2));
+        seqStopButton_.setBounds (bar.removeFromLeft (80).reduced (2));
+        seqRecordSteps_.setBounds (bar.removeFromLeft (160).reduced (2));
+        seqInfoLabel_.setBounds (bar);
+    }
+    else if (view_ == ViewMode::song)
+    {
+        songPlayButton_.setBounds (bar.removeFromLeft (120).reduced (2));
+        seqStopButton_.setBounds (bar.removeFromLeft (80).reduced (2));
+        songInfoLabel_.setBounds (bar);
+    }
+    rateLabel_.setBounds (r.removeFromTop (24));
+
+    if (view_ == ViewMode::song)
+    {
+        auto songArea = r.reduced (4);
+        const int rowH = songArea.getHeight() / 8;
+        for (int i = 0; i < 8; ++i)
         {
-            const int idx = row * cols + col;
-            faders_[static_cast<std::size_t> (idx)].setBounds (col * cellW + 8,
-                                                                 row * fCellH + 4,
-                                                                 cellW - 16,
-                                                                 fCellH - 8);
-            padButtons_[static_cast<std::size_t> (idx)].setBounds (col * cellW + 4,
-                                                                   padArea.getY() + row * pCellH + 4,
-                                                                   cellW - 8,
-                                                                   pCellH - 8);
+            auto row = songArea.removeFromTop (rowH);
+            songSlotBoxes_[static_cast<std::size_t> (i)].setBounds (row.removeFromLeft (200).reduced (2));
+        }
+        return;
+    }
+
+    if (view_ == ViewMode::sequencer || view_ == ViewMode::console)
+    {
+        auto padArea = r.removeFromBottom (160);
+        auto faderArea = r;
+        const int cols = 8;
+        const int rows = 2;
+        const int cellW = padArea.getWidth() / cols;
+        const int fCellH = faderArea.getHeight() / rows;
+        const int pCellH = padArea.getHeight() / rows;
+
+        for (int row = 0; row < rows; ++row)
+        {
+            for (int col = 0; col < cols; ++col)
+            {
+                const int idx = row * cols + col;
+                faders_[static_cast<std::size_t> (idx)].setBounds (col * cellW + 8,
+                                                                     row * fCellH + 4,
+                                                                     cellW - 16,
+                                                                     fCellH - 8);
+                padButtons_[static_cast<std::size_t> (idx)].setBounds (col * cellW + 4,
+                                                                         padArea.getY() + row * pCellH + 4,
+                                                                         cellW - 8,
+                                                                         pCellH - 8);
+            }
         }
     }
 }
@@ -127,19 +294,23 @@ void SP1200AudioProcessorEditor::resized()
 void SP1200AudioProcessorEditor::timerCallback()
 {
     refreshMemoryLabel();
+    if (view_ == ViewMode::sequencer)
+        refreshSeqInfo();
 }
 
 void SP1200AudioProcessorEditor::refreshMemoryLabel()
 {
     const auto& pool = processor_.engine().memoryPool();
-    const auto used = formatMemoryTime (pool.usedSamples());
-    const auto total = juce::String ("7:00");
-    memoryLabel_.setText ("MEMORY: " + used + " / " + total + " TOTAL", juce::dontSendNotification);
+    memoryLabel_.setText ("MEMORY: " + formatMemoryTime (pool.usedSamples()) + " / 7:00 TOTAL",
+                          juce::dontSendNotification);
 }
 
 void SP1200AudioProcessorEditor::triggerPad (int padIndex)
 {
-    processor_.triggerPad (padIndex, 0.9f);
+    if (view_ == ViewMode::sequencer && seqRecordMode_)
+        processor_.engine().recordStepOnCurrentPattern (padIndex, 0.9f);
+    else
+        processor_.triggerPad (padIndex, 0.9f);
 }
 
 void SP1200AudioProcessorEditor::importSample()
@@ -159,6 +330,7 @@ void SP1200AudioProcessorEditor::importSample()
                                                                           "Could not import (memory cap or format).");
                                   return;
                               }
+                              lastSegmentForChop_ = static_cast<int> (*idx);
                               for (int p = 0; p < sp1200::kNumPads; ++p)
                               {
                                   if (processor_.engine().getPad (p).segmentIndex < 0)
@@ -169,6 +341,28 @@ void SP1200AudioProcessorEditor::importSample()
                               }
                               refreshMemoryLabel();
                           });
+}
+
+void SP1200AudioProcessorEditor::runAutoChop16()
+{
+    if (lastSegmentForChop_ < 0)
+    {
+        juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::InfoIcon,
+                                              "Auto-chop",
+                                              "Import a sample first.");
+        return;
+    }
+    const auto slices = processor_.engine().autoChopSegment (static_cast<std::size_t> (lastSegmentForChop_), 16);
+    if (slices.empty())
+    {
+        juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
+                                              "Auto-chop",
+                                              "No transients detected.");
+        return;
+    }
+    for (std::size_t i = 0; i < slices.size() && i < static_cast<std::size_t> (sp1200::kNumPads); ++i)
+        processor_.engine().assignSegmentToPad (static_cast<int> (i), static_cast<int> (slices[i]));
+    refreshMemoryLabel();
 }
 
 void SP1200AudioProcessorEditor::toggleRecordInput()
@@ -185,6 +379,7 @@ void SP1200AudioProcessorEditor::toggleRecordInput()
         const auto idx = eng.stopRecordingAndCommit (0);
         if (idx.has_value())
         {
+            lastSegmentForChop_ = static_cast<int> (*idx);
             for (int p = 0; p < sp1200::kNumPads; ++p)
             {
                 if (processor_.engine().getPad (p).segmentIndex < 0)

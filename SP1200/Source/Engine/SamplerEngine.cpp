@@ -1,11 +1,15 @@
 #include "SamplerEngine.h"
 
+#include "../Import/TransientChop.h"
 #include "../SP1200Constants.h"
 
 #include <algorithm>
+#include <vector>
 
 namespace sp1200
 {
+SamplerEngine::SamplerEngine() = default;
+
 void SamplerEngine::prepare (double sampleRate, int maxBlockSize)
 {
     juce::ignoreUnused (maxBlockSize);
@@ -17,6 +21,11 @@ void SamplerEngine::process (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
 {
     for (const auto metadata : midi)
         handleMidi (metadata.getMessage());
+
+    pendingPadHits_.clear();
+    sequencer_.advance (hostSampleRate_, buffer.getNumSamples(), pendingPadHits_);
+    for (const auto& hit : pendingPadHits_)
+        triggerPad (hit.first, hit.second);
 
     buffer.clear();
     auto* left = buffer.getWritePointer (0);
@@ -57,7 +66,7 @@ void SamplerEngine::setPadLevel (int padIndex, float level)
 void SamplerEngine::setPadTune (int padIndex, float semitones)
 {
     if (padIndex >= 0 && padIndex < kNumPads)
-        pads_.pads[padIndex].tuneSemitones = std::clamp (semitones, -12.0f, 12.0f);
+        pads_.pads[padIndex].tuneSemitones = quantizeToMultiPitch (semitones);
 }
 
 PadAssignment SamplerEngine::getPad (int padIndex) const
@@ -105,6 +114,13 @@ void SamplerEngine::triggerPadFromUi (int padIndex, float velocity)
     triggerPad (padIndex, velocity);
 }
 
+void SamplerEngine::recordStepOnCurrentPattern (int padIndex, float velocity)
+{
+    sequencer_.addStep (padIndex, sequencer_.recordStepCursor(), velocity, pads_.pads[padIndex].tuneSemitones);
+    const int total = sequencer_.pattern (sequencer_.currentPattern()).totalSteps();
+    sequencer_.setRecordStepCursor ((sequencer_.recordStepCursor() + 1) % std::max (1, total));
+}
+
 void SamplerEngine::appendRecording (const juce::AudioBuffer<float>& input)
 {
     if (! recording_)
@@ -132,27 +148,78 @@ void SamplerEngine::appendRecording (const juce::AudioBuffer<float>& input)
     }
 }
 
+std::vector<std::size_t> SamplerEngine::autoChopSegment (std::size_t segmentIndex, int numSlices)
+{
+    std::vector<std::size_t> created;
+    const auto* seg = pool_.getSegment (segmentIndex);
+    if (seg == nullptr || numSlices <= 0)
+        return created;
+
+    const auto n = seg->data.size();
+    std::vector<float> mono (n);
+    seg->data.writeToFloat (mono.data(), n);
+
+    const auto slices = detectTransientSlices (mono.data(),
+                                               n,
+                                               0,
+                                               static_cast<std::int64_t> (n),
+                                               numSlices,
+                                               kSampleRateHz);
+    if (slices.empty())
+        return created;
+
+    for (std::size_t i = 0; i < slices.size(); ++i)
+    {
+        const auto& sl = slices[i];
+        const auto len = static_cast<std::size_t> (sl.endSample - sl.startSample);
+        if (len == 0)
+            continue;
+
+        SampleSegment piece;
+        piece.name = seg->name + "_CHOP" + std::to_string (i + 1);
+        piece.bank = seg->bank;
+        piece.data.resize (len);
+        for (std::size_t s = 0; s < len; ++s)
+            piece.data.setSample (s, seg->data.getSample (static_cast<std::size_t> (sl.startSample) + s));
+
+        if (auto idx = pool_.appendSegment (std::move (piece)))
+            created.push_back (*idx);
+    }
+    return created;
+}
+
 int SamplerEngine::findFreeVoice() noexcept
 {
     for (int i = 0; i < kNumVoices; ++i)
         if (! voices_[static_cast<std::size_t> (i)].isActive())
             return i;
-    return 0; // steal voice 0
+    return 0;
 }
 
-void SamplerEngine::triggerPad (int padIndex, float velocity)
+void SamplerEngine::triggerPad (int padIndex, float velocity, float extraTune)
 {
     if (padIndex < 0 || padIndex >= kNumPads)
         return;
-    const auto& pad = pads_.pads[padIndex];
-    if (pad.segmentIndex < 0)
+
+    int segIdx = pads_.pads[padIndex].segmentIndex;
+    float tune = pads_.pads[padIndex].tuneSemitones + extraTune;
+
+    if (multiPitch_.enabled && multiPitch_.sourceSegmentIndex >= 0)
+    {
+        segIdx = multiPitch_.sourceSegmentIndex;
+        tune = multiPitch_.semitoneOffsets[static_cast<std::size_t> (padIndex)];
+    }
+
+    if (segIdx < 0)
         return;
-    const auto* seg = pool_.getSegment (static_cast<std::size_t> (pad.segmentIndex));
+
+    const auto* seg = pool_.getSegment (static_cast<std::size_t> (segIdx));
     if (seg == nullptr)
         return;
 
+    tune = quantizeToMultiPitch (tune);
     const int vi = findFreeVoice();
-    voices_[static_cast<std::size_t> (vi)].start (&seg->data, velocity, pad.tuneSemitones, pad.level);
+    voices_[static_cast<std::size_t> (vi)].start (&seg->data, velocity, tune, pads_.pads[padIndex].level);
 }
 
 void SamplerEngine::handleMidi (const juce::MidiMessage& msg)
