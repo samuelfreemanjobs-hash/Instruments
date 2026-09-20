@@ -1,8 +1,10 @@
 #pragma once
 
 #include "PluginProcessor.h"
+#include "UI/PianoRollComponent.h"
 
 #include <array>
+#include <memory>
 
 class SP1200AudioProcessorEditor : public juce::AudioProcessorEditor,
                                    private juce::Timer
@@ -29,10 +31,8 @@ private:
     void importSample();
     void toggleRecordInput();
     void setView (ViewMode mode);
-    void layoutConsole (juce::Rectangle<int> area);
-    void layoutSequencer (juce::Rectangle<int> area);
-    void layoutSong (juce::Rectangle<int> area);
     void runAutoChop16();
+    void syncPianoRollFromControls();
 
     SP1200AudioProcessor& processor_;
 
@@ -59,6 +59,11 @@ private:
     juce::TextButton seqPlayButton_ { "PLAY PATTERN" };
     juce::TextButton seqStopButton_ { "STOP" };
     juce::ToggleButton seqRecordSteps_ { "Record steps (pads)" };
+    juce::ToggleButton chromaticMapButton_ { "CHROMATIC SSM" };
+    juce::ComboBox chromaticTuneBox_;
+    juce::TextButton clearPatternButton_ { "Clear pattern" };
+
+    std::unique_ptr<PianoRollComponent> pianoRoll_;
 
     juce::Label songInfoLabel_;
     std::array<juce::ComboBox, 8> songSlotBoxes_;

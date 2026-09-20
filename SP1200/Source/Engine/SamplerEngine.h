@@ -72,7 +72,7 @@ private:
     double recordSourceRate_ = kSampleRateHz;
     double hostSampleRate_ = kSampleRateHz;
 
-    std::vector<std::pair<int, float>> pendingPadHits_;
+    std::vector<ScheduledHit> pendingPadHits_;
 };
 
 } // namespace sp1200

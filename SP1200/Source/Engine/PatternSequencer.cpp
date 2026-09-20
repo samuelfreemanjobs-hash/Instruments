@@ -42,7 +42,15 @@ const Pattern& PatternSequencer::pattern (int index) const
 
 void PatternSequencer::setPatternBars (int bars)
 {
-    pattern (currentPattern_).bars = std::clamp (bars, kMinPatternBars, kMaxPatternBars);
+    auto& p = pattern (currentPattern_);
+    p.bars = std::clamp (bars, kMinPatternBars, kMaxPatternBars);
+    const int maxStep = p.totalSteps();
+    p.steps.erase (std::remove_if (p.steps.begin(), p.steps.end(),
+                                   [maxStep] (const PatternStep& st)
+                                   {
+                                       return st.stepIndex >= maxStep;
+                                   }),
+                   p.steps.end());
 }
 
 int PatternSequencer::patternBars() const
@@ -64,6 +72,44 @@ void PatternSequencer::addStep (int pad, int stepIndex, float velocity, float tu
 void PatternSequencer::clearCurrentPattern()
 {
     pattern (currentPattern_).steps.clear();
+}
+
+void PatternSequencer::toggleStep (int pad, int stepIndex, float velocity, float tuneSemis, bool chromaticMode)
+{
+    auto& p = pattern (currentPattern_);
+    const int maxStep = std::max (1, p.totalSteps()) - 1;
+    const int step = std::clamp (stepIndex, 0, maxStep);
+    const int padCl = std::clamp (pad, 0, kNumPads - 1);
+
+    for (auto it = p.steps.begin(); it != p.steps.end(); ++it)
+    {
+        if (it->pad == padCl && it->stepIndex == step)
+        {
+            p.steps.erase (it);
+            return;
+        }
+    }
+
+    const float tune = chromaticMode ? quantizeToMultiPitch (tuneSemis) : 0.0f;
+    addStep (padCl, step, velocity, tune);
+}
+
+bool PatternSequencer::hasStep (int pad, int stepIndex) const
+{
+    const auto& p = pattern (currentPattern_);
+    for (const auto& st : p.steps)
+        if (st.pad == pad && st.stepIndex == stepIndex)
+            return true;
+    return false;
+}
+
+float PatternSequencer::stepTune (int pad, int stepIndex) const
+{
+    const auto& p = pattern (currentPattern_);
+    for (const auto& st : p.steps)
+        if (st.pad == pad && st.stepIndex == stepIndex)
+            return st.tuneSemitones;
+    return 0.0f;
 }
 
 void PatternSequencer::setSongSlot (int slot, int patternIndex)
@@ -105,17 +151,17 @@ void PatternSequencer::stop()
     playing_ = false;
 }
 
-void PatternSequencer::scheduleStep (int stepInPattern, std::vector<std::pair<int, float>>& padHits)
+void PatternSequencer::scheduleStep (int stepInPattern, std::vector<ScheduledHit>& padHits)
 {
     const auto& p = pattern (currentPattern_);
     for (const auto& st : p.steps)
     {
         if (st.stepIndex == stepInPattern)
-            padHits.emplace_back (st.pad, st.velocity);
+            padHits.push_back ({ st.pad, st.velocity, st.tuneSemitones });
     }
 }
 
-void PatternSequencer::advance (double hostSampleRate, int numSamples, std::vector<std::pair<int, float>>& padHits)
+void PatternSequencer::advance (double hostSampleRate, int numSamples, std::vector<ScheduledHit>& padHits)
 {
     if (! playing_ || stepsInPattern_ <= 0)
         return;

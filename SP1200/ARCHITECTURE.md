@@ -46,7 +46,7 @@ MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → ste
 ## Extension points
 
 - MOD 11 waveform chop modal (transient chop engine done)
-- MOD 20 piano roll UI (pattern data + SEQ tab in place)
+- MOD 20 **PianoRollComponent** (16 lanes, click toggle steps, playhead, chromatic cap)
 - Song tab: 8-slot chain; pattern bank 99, bars 1–4
 - Multi-pitch / chromatic cap via `quantizeToMultiPitch`
 - Project `.sp12p` embed in `getStateInformation`

@@ -29,6 +29,13 @@ struct SongSlot
     int patternIndex = 0; // 0-based into pattern bank
 };
 
+struct ScheduledHit
+{
+    int pad = 0;
+    float velocity = 0.9f;
+    float tuneSemitones = 0.0f;
+};
+
 /** Quantize chromatic / roll pitch to nearest multi-pitch slot offset. */
 float quantizeToMultiPitch (float semitones) noexcept;
 
@@ -47,7 +54,11 @@ public:
     [[nodiscard]] int patternBars() const;
 
     void addStep (int pad, int stepIndex, float velocity, float tuneSemis = 0.0f);
+    /** Add if missing, remove if same pad+step exists. */
+    void toggleStep (int pad, int stepIndex, float velocity, float tuneSemis, bool chromaticMode);
     void clearCurrentPattern();
+    [[nodiscard]] bool hasStep (int pad, int stepIndex) const;
+    [[nodiscard]] float stepTune (int pad, int stepIndex) const;
     [[nodiscard]] int recordStepCursor() const noexcept { return recordStepCursor_; }
     void setRecordStepCursor (int step) { recordStepCursor_ = std::max (0, step); }
 
@@ -63,12 +74,13 @@ public:
     void startSong();
     void stop();
     [[nodiscard]] bool isPlaying() const noexcept { return playing_; }
+    [[nodiscard]] int playbackStepIndex() const noexcept { return currentStep_; }
 
     /** Call from audio thread; returns pads to trigger this block. */
-    void advance (double hostSampleRate, int numSamples, std::vector<std::pair<int, float>>& padHits);
+    void advance (double hostSampleRate, int numSamples, std::vector<ScheduledHit>& padHits);
 
 private:
-    void scheduleStep (int stepInPattern, std::vector<std::pair<int, float>>& padHits);
+    void scheduleStep (int stepInPattern, std::vector<ScheduledHit>& padHits);
 
     std::array<Pattern, kMaxPatterns> patterns_ {};
     std::array<SongSlot, 32> song_ {};

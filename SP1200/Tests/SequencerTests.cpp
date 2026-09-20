@@ -37,5 +37,10 @@ int main()
                                                        0.03);
     ok &= expect (slices.size() >= 2, "transient slices");
 
+    seq.toggleStep (0, 4, 0.9f, 3.0f, true);
+    ok &= expect (seq.hasStep (0, 4), "toggle add");
+    seq.toggleStep (0, 4, 0.9f, 3.0f, true);
+    ok &= expect (! seq.hasStep (0, 4), "toggle remove");
+
     return ok ? 0 : 1;
 }

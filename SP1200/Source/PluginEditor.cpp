@@ -29,6 +29,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
         addAndMakeVisible (*tab);
 
     consoleTab_.onClick = [this] { setView (ViewMode::console); };
+    seqTab_.setButtonText ("MOD 20 PIANO ROLL");
     seqTab_.onClick = [this] { setView (ViewMode::sequencer); };
     songTab_.onClick = [this] { setView (ViewMode::song); };
 
@@ -88,6 +89,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     patternSlider_.onValueChange = [this]
     {
         processor_.engine().sequencer().setCurrentPattern (static_cast<int> (patternSlider_.getValue()) - 1);
+        syncPianoRollFromControls();
         refreshSeqInfo();
     };
     addAndMakeVisible (patternSlider_);
@@ -97,6 +99,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     barsSlider_.onValueChange = [this]
     {
         processor_.engine().sequencer().setPatternBars (static_cast<int> (barsSlider_.getValue()));
+        syncPianoRollFromControls();
         refreshSeqInfo();
     };
     addAndMakeVisible (barsSlider_);
@@ -111,6 +114,51 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
 
     seqRecordSteps_.onClick = [this] { seqRecordMode_ = seqRecordSteps_.getToggleState(); };
     addAndMakeVisible (seqRecordSteps_);
+
+    chromaticMapButton_.onClick = [this]
+    {
+        if (pianoRoll_ != nullptr)
+            pianoRoll_->setChromaticMode (chromaticMapButton_.getToggleState());
+        chromaticTuneBox_.setVisible (view_ == ViewMode::sequencer && chromaticMapButton_.getToggleState());
+        resized();
+    };
+    addAndMakeVisible (chromaticMapButton_);
+
+    for (int i = 0; i < sp1200::kMultiPitchSlots; ++i)
+    {
+        const float st = sp1200::kDefaultMultiPitchOffsets[i];
+        chromaticTuneBox_.addItem (juce::String (st, 1) + " st", i + 1);
+    }
+    chromaticTuneBox_.setSelectedId (1);
+    chromaticTuneBox_.onChange = [this]
+    {
+        const int idx = chromaticTuneBox_.getSelectedItemIndex();
+        if (idx >= 0 && idx < sp1200::kMultiPitchSlots && pianoRoll_ != nullptr)
+            pianoRoll_->setChromaticTune (sp1200::kDefaultMultiPitchOffsets[idx]);
+    };
+    addAndMakeVisible (chromaticTuneBox_);
+
+    clearPatternButton_.onClick = [this]
+    {
+        processor_.engine().sequencer().clearCurrentPattern();
+        syncPianoRollFromControls();
+        refreshSeqInfo();
+    };
+    addAndMakeVisible (clearPatternButton_);
+
+    pianoRoll_ = std::make_unique<PianoRollComponent> (
+        processor_.engine().sequencer(),
+        [this] (int padIndex) -> juce::String
+        {
+            const int seg = processor_.engine().getPad (padIndex).segmentIndex;
+            if (seg < 0)
+                return "P" + juce::String (padIndex + 1).paddedLeft ('0', 2);
+            const auto* s = processor_.engine().memoryPool().getSegment (static_cast<std::size_t> (seg));
+            if (s == nullptr || s->name.empty())
+                return "P" + juce::String (padIndex + 1).paddedLeft ('0', 2);
+            return juce::String (s->name).substring (0, 10);
+        });
+    addAndMakeVisible (*pianoRoll_);
 
     songInfoLabel_.setText ("Song chain (8 slots) → patterns 1–99", juce::dontSendNotification);
     addAndMakeVisible (songInfoLabel_);
@@ -182,16 +230,35 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     seqPlayButton_.setVisible (seq);
     seqStopButton_.setVisible (seq || song);
     seqRecordSteps_.setVisible (seq);
+    chromaticMapButton_.setVisible (seq);
+    chromaticTuneBox_.setVisible (seq && chromaticMapButton_.getToggleState());
+    clearPatternButton_.setVisible (seq);
+    if (pianoRoll_ != nullptr)
+        pianoRoll_->setVisible (seq);
 
     songInfoLabel_.setVisible (song);
     songPlayButton_.setVisible (song);
     for (auto& box : songSlotBoxes_)
         box.setVisible (song);
 
-    setVisibleArray (console || seq, padButtons_);
-    setVisibleArray (console || seq, faders_);
+    setVisibleArray (console, padButtons_);
+    setVisibleArray (console, faders_);
+
+    if (seq && pianoRoll_ != nullptr)
+        syncPianoRollFromControls();
 
     resized();
+}
+
+void SP1200AudioProcessorEditor::syncPianoRollFromControls()
+{
+    if (pianoRoll_ == nullptr)
+        return;
+    pianoRoll_->setChromaticMode (chromaticMapButton_.getToggleState());
+    const int idx = chromaticTuneBox_.getSelectedItemIndex();
+    if (idx >= 0 && idx < sp1200::kMultiPitchSlots)
+        pianoRoll_->setChromaticTune (sp1200::kDefaultMultiPitchOffsets[idx]);
+    pianoRoll_->refreshFromPattern();
 }
 
 void SP1200AudioProcessorEditor::refreshSeqInfo()
@@ -236,11 +303,14 @@ void SP1200AudioProcessorEditor::resized()
     }
     else if (view_ == ViewMode::sequencer)
     {
-        patternSlider_.setBounds (bar.removeFromLeft (200).reduced (2));
-        barsSlider_.setBounds (bar.removeFromLeft (160).reduced (2));
-        seqPlayButton_.setBounds (bar.removeFromLeft (120).reduced (2));
-        seqStopButton_.setBounds (bar.removeFromLeft (80).reduced (2));
-        seqRecordSteps_.setBounds (bar.removeFromLeft (160).reduced (2));
+        patternSlider_.setBounds (bar.removeFromLeft (160).reduced (2));
+        barsSlider_.setBounds (bar.removeFromLeft (120).reduced (2));
+        seqPlayButton_.setBounds (bar.removeFromLeft (110).reduced (2));
+        seqStopButton_.setBounds (bar.removeFromLeft (70).reduced (2));
+        chromaticMapButton_.setBounds (bar.removeFromLeft (130).reduced (2));
+        chromaticTuneBox_.setBounds (bar.removeFromLeft (90).reduced (2));
+        clearPatternButton_.setBounds (bar.removeFromLeft (100).reduced (2));
+        seqRecordSteps_.setBounds (bar.removeFromLeft (140).reduced (2));
         seqInfoLabel_.setBounds (bar);
     }
     else if (view_ == ViewMode::song)
@@ -263,7 +333,13 @@ void SP1200AudioProcessorEditor::resized()
         return;
     }
 
-    if (view_ == ViewMode::sequencer || view_ == ViewMode::console)
+    if (view_ == ViewMode::sequencer && pianoRoll_ != nullptr)
+    {
+        pianoRoll_->setBounds (r);
+        return;
+    }
+
+    if (view_ == ViewMode::console)
     {
         auto padArea = r.removeFromBottom (160);
         auto faderArea = r;
@@ -295,7 +371,11 @@ void SP1200AudioProcessorEditor::timerCallback()
 {
     refreshMemoryLabel();
     if (view_ == ViewMode::sequencer)
+    {
         refreshSeqInfo();
+        if (pianoRoll_ != nullptr && processor_.engine().sequencer().isPlaying())
+            pianoRoll_->repaint();
+    }
 }
 
 void SP1200AudioProcessorEditor::refreshMemoryLabel()

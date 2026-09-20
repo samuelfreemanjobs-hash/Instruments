@@ -25,7 +25,7 @@ void SamplerEngine::process (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
     pendingPadHits_.clear();
     sequencer_.advance (hostSampleRate_, buffer.getNumSamples(), pendingPadHits_);
     for (const auto& hit : pendingPadHits_)
-        triggerPad (hit.first, hit.second);
+        triggerPad (hit.pad, hit.velocity, hit.tuneSemitones);
 
     buffer.clear();
     auto* left = buffer.getWritePointer (0);
