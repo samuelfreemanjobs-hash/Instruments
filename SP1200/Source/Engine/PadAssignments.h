@@ -17,7 +17,23 @@ struct PadAssignment
     float tuneSemitones = 0.0f;
     float level = 1.0f;
     float decay = 1.0f;
+    int chokeGroup = kNoChokeGroup;
 };
+
+struct PadBank
+{
+    PadAssignment pads[kNumPads] {};
+};
+
+inline void assignDefaultPadChokeGroups (PadBank& bank)
+{
+    for (int p = 0; p < kNumPads; ++p)
+    {
+        const int ch = p % 8;
+        if (ch == 4 || ch == 5)
+            bank.pads[p].chokeGroup = kDefaultHatChokeGroup;
+    }
+}
 
 inline MultiPitchState defaultMultiPitchState()
 {
@@ -26,10 +42,5 @@ inline MultiPitchState defaultMultiPitchState()
         s.semitoneOffsets[static_cast<std::size_t> (i)] = kDefaultMultiPitchOffsets[i];
     return s;
 }
-
-struct PadBank
-{
-    PadAssignment pads[kNumPads] {};
-};
 
 } // namespace sp1200

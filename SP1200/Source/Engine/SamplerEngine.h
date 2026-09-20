@@ -31,10 +31,17 @@ public:
     std::optional<std::size_t> importFile (const juce::File& file, int bankIndex, juce::String name);
     void assignSegmentToPad (int padIndex, int segmentIndex);
     void setPadAssignment (int padIndex, PadAssignment assignment);
+    void applyDefaultPadChokeGroups();
 
     void setPadLevel (int padIndex, float level);
     void setPadTune (int padIndex, float semitones);
     void setPadDecay (int padIndex, float decayNorm);
+    void setPadChokeGroup (int padIndex, int groupId);
+
+    void setMidiChannel (int channel1to16);
+    void setMidiOmni (bool omni);
+    [[nodiscard]] int midiChannel() const noexcept { return midiChannel_; }
+    [[nodiscard]] bool midiOmni() const noexcept { return midiOmni_; }
     void setFaderMode (int modeIndex) { faderMode_ = modeIndex; }
 
     [[nodiscard]] PadAssignment getPad (int padIndex) const;
@@ -91,6 +98,8 @@ private:
     float filterResonance_ = 0.35f;
     std::array<std::uint32_t, kNumVoices> voiceGeneration_ {};
     std::uint32_t nextVoiceGen_ = 1;
+    int midiChannel_ = kDefaultMidiChannel;
+    bool midiOmni_ = false;
 };
 
 } // namespace sp1200

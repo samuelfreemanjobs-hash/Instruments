@@ -114,7 +114,11 @@ float PatternSequencer::stepTune (int pad, int stepIndex) const
 
 void PatternSequencer::setSongSlot (int slot, int patternIndex)
 {
-    if (slot >= 0 && slot < static_cast<int> (song_.size()))
+    if (slot < 0 || slot >= static_cast<int> (song_.size()))
+        return;
+    if (patternIndex == kSongSlotEnd)
+        song_[static_cast<std::size_t> (slot)].patternIndex = kSongSlotEnd;
+    else
         song_[static_cast<std::size_t> (slot)].patternIndex = std::clamp (patternIndex, 0, kMaxPatterns - 1);
 }
 
@@ -138,9 +142,19 @@ void PatternSequencer::startPattern()
 void PatternSequencer::startSong()
 {
     playingSong_ = true;
-    playing_ = true;
     songPosition_ = 0;
-    currentPattern_ = song_[0].patternIndex;
+    while (songPosition_ < static_cast<int> (song_.size()) && isSongSlotEnd (songPosition_))
+        ++songPosition_;
+
+    if (songPosition_ >= static_cast<int> (song_.size()) || isSongSlotEnd (songPosition_))
+    {
+        playing_ = false;
+        playingSong_ = false;
+        return;
+    }
+
+    playing_ = true;
+    currentPattern_ = song_[static_cast<std::size_t> (songPosition_)].patternIndex;
     currentStep_ = 0;
     stepsInPattern_ = pattern (currentPattern_).totalSteps();
     samplesUntilNextStep_ = 0.0;
@@ -149,6 +163,25 @@ void PatternSequencer::startSong()
 void PatternSequencer::stop()
 {
     playing_ = false;
+}
+
+bool PatternSequencer::advanceSongPositionAfterPattern()
+{
+    int next = songPosition_ + 1;
+    if (next >= static_cast<int> (song_.size()))
+    {
+        if (! songLoop_)
+            return false;
+        next = 0;
+    }
+
+    songPosition_ = next;
+    if (isSongSlotEnd (songPosition_))
+        return false;
+
+    currentPattern_ = song_[static_cast<std::size_t> (songPosition_)].patternIndex;
+    stepsInPattern_ = pattern (currentPattern_).totalSteps();
+    return true;
 }
 
 void PatternSequencer::scheduleStep (int stepInPattern, std::vector<ScheduledHit>& padHits)
@@ -185,14 +218,8 @@ void PatternSequencer::advance (double hostSampleRate, int numSamples, std::vect
         if (currentStep_ >= stepsInPattern_)
         {
             currentStep_ = 0;
-            if (playingSong_)
-            {
-                songPosition_ = (songPosition_ + 1) % static_cast<int> (song_.size());
-                if (song_[static_cast<std::size_t> (songPosition_)].patternIndex < 0)
-                    songPosition_ = 0;
-                currentPattern_ = std::max (0, song_[static_cast<std::size_t> (songPosition_)].patternIndex);
-                stepsInPattern_ = pattern (currentPattern_).totalSteps();
-            }
+            if (playingSong_ && ! advanceSongPositionAfterPattern())
+                playing_ = false;
         }
         samplesUntilNextStep_ += stepLen;
     }

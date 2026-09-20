@@ -42,5 +42,19 @@ int main()
     seq.toggleStep (0, 4, 0.9f, 3.0f, true);
     ok &= expect (! seq.hasStep (0, 4), "toggle remove");
 
+    seq.setSongSlot (0, 0);
+    seq.setSongSlot (1, sp1200::kSongSlotEnd);
+    seq.setSongLoop (false);
+    seq.setPatternBars (1);
+    seq.startSong();
+    ok &= expect (seq.isPlaying(), "song starts on first slot");
+    std::vector<sp1200::ScheduledHit> hits;
+    const double sr = 48000.0;
+    const int steps = seq.pattern (0).totalSteps();
+    const double samplesPerStep = (60.0 / seq.bpm()) / 16.0 * sr;
+    const int totalSamples = static_cast<int> (samplesPerStep * static_cast<double> (steps + 2));
+    seq.advance (sr, totalSamples, hits);
+    ok &= expect (! seq.isPlaying(), "song stops at END slot");
+
     return ok ? 0 : 1;
 }

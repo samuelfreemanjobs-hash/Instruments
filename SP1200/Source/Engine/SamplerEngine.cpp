@@ -8,7 +8,10 @@
 
 namespace sp1200
 {
-SamplerEngine::SamplerEngine() = default;
+SamplerEngine::SamplerEngine()
+{
+    assignDefaultPadChokeGroups (pads_);
+}
 
 void SamplerEngine::prepare (double sampleRate, int maxBlockSize)
 {
@@ -73,6 +76,11 @@ void SamplerEngine::setPadAssignment (int padIndex, PadAssignment assignment)
         pads_.pads[padIndex] = assignment;
 }
 
+void SamplerEngine::applyDefaultPadChokeGroups()
+{
+    assignDefaultPadChokeGroups (pads_);
+}
+
 void SamplerEngine::setFilterCutoffNorm (float norm)
 {
     filterCutoffNorm_ = std::clamp (norm, 0.0f, 1.0f);
@@ -126,6 +134,22 @@ void SamplerEngine::setPadDecay (int padIndex, float decayNorm)
 {
     if (padIndex >= 0 && padIndex < kNumPads)
         pads_.pads[padIndex].decay = std::clamp (decayNorm, 0.0f, 1.0f);
+}
+
+void SamplerEngine::setPadChokeGroup (int padIndex, int groupId)
+{
+    if (padIndex >= 0 && padIndex < kNumPads)
+        pads_.pads[padIndex].chokeGroup = groupId;
+}
+
+void SamplerEngine::setMidiChannel (int channel1to16)
+{
+    midiChannel_ = std::clamp (channel1to16, 1, 16);
+}
+
+void SamplerEngine::setMidiOmni (bool omni)
+{
+    midiOmni_ = omni;
 }
 
 PadAssignment SamplerEngine::getPad (int padIndex) const
@@ -288,6 +312,19 @@ void SamplerEngine::triggerPad (int padIndex, float velocity, float extraTune, f
         if (v.isActive() && v.padIndex() == padIndex)
             v.forceStop();
 
+    const int choke = pads_.pads[padIndex].chokeGroup;
+    if (choke != kNoChokeGroup)
+    {
+        for (auto& v : voices_)
+        {
+            if (! v.isActive())
+                continue;
+            const int other = v.padIndex();
+            if (other >= 0 && other < kNumPads && other != padIndex && pads_.pads[other].chokeGroup == choke)
+                v.forceStop();
+        }
+    }
+
     const int vi = findFreeVoice();
     voiceGeneration_[static_cast<std::size_t> (vi)] = nextVoiceGen_++;
     voices_[static_cast<std::size_t> (vi)].start (&seg->data,
@@ -299,12 +336,13 @@ void SamplerEngine::triggerPad (int padIndex, float velocity, float extraTune, f
                                                  0,
                                                  pads_.pads[padIndex].decay,
                                                  hostSampleRate_,
-                                                 padIndex);
+                                                 padIndex,
+                                                 filterRoleForPad (padIndex));
 }
 
 void SamplerEngine::handleMidi (const juce::MidiMessage& msg)
 {
-    if (msg.getChannel() != kDefaultMidiChannel)
+    if (! midiOmni_ && msg.getChannel() != midiChannel_)
         return;
 
     if (msg.isNoteOn())

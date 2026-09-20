@@ -29,7 +29,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     addKeyListener (this);
 
     const int tabGroup = 9001;
-    for (auto* tab : { &consoleTab_, &seqTab_, &songTab_ })
+    for (auto* tab : { &consoleTab_, &seqTab_, &songTab_, &setupTab_ })
     {
         tab->setClickingTogglesState (true);
         tab->setRadioGroupId (tabGroup);
@@ -40,6 +40,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     consoleTab_.addListener (this);
     seqTab_.addListener (this);
     songTab_.addListener (this);
+    setupTab_.addListener (this);
     consoleTab_.setToggleState (true, juce::dontSendNotification);
 
     headerLabel_.setText ("SP-1200 SAMPLING DRUMULATOR", juce::dontSendNotification);
@@ -244,6 +245,30 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     songPlayButton_.onClick = [this] { processor_.engine().sequencer().startSong(); };
     addAndMakeVisible (songPlayButton_);
 
+    songLoopButton_.setToggleState (true, juce::dontSendNotification);
+    songLoopButton_.onClick = [this]
+    {
+        processor_.engine().sequencer().setSongLoop (songLoopButton_.getToggleState());
+    };
+    addAndMakeVisible (songLoopButton_);
+
+    setupInfoLabel_.setText ("SQ-1 default: ch 10, notes 36-51, CC 20-35. Pads 5-6 / 13-14 share hat choke group.",
+                             juce::dontSendNotification);
+    addAndMakeVisible (setupInfoLabel_);
+
+    midiChannelSlider_.setSliderStyle (juce::Slider::LinearHorizontal);
+    midiChannelSlider_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 40, 18);
+    midiChannelSlider_.setRange (1.0, 16.0, 1.0);
+    midiChannelSlider_.setValue (processor_.engine().midiChannel());
+    midiChannelSlider_.onValueChange = [this]
+    {
+        processor_.engine().setMidiChannel (static_cast<int> (midiChannelSlider_.getValue()));
+    };
+    addAndMakeVisible (midiChannelSlider_);
+
+    midiOmniButton_.onClick = [this] { processor_.engine().setMidiOmni (midiOmniButton_.getToggleState()); };
+    addAndMakeVisible (midiOmniButton_);
+
     for (int i = 0; i < static_cast<int> (songSlotBoxes_.size()); ++i)
     {
         auto& box = songSlotBoxes_[static_cast<std::size_t> (i)];
@@ -254,7 +279,10 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
         box.onChange = [this, i]
         {
             const int id = songSlotBoxes_[static_cast<std::size_t> (i)].getSelectedId();
-            processor_.engine().sequencer().setSongSlot (i, id - 1);
+            if (id == -1)
+                processor_.engine().sequencer().setSongSlot (i, sp1200::kSongSlotEnd);
+            else
+                processor_.engine().sequencer().setSongSlot (i, id - 1);
         };
         addAndMakeVisible (box);
     }
@@ -365,6 +393,8 @@ void SP1200AudioProcessorEditor::buttonClicked (juce::Button* button)
         setView (ViewMode::sequencer);
     else if (button == &songTab_)
         setView (ViewMode::song);
+    else if (button == &setupTab_)
+        setView (ViewMode::setup);
 }
 
 void SP1200AudioProcessorEditor::setView (ViewMode mode)
@@ -373,10 +403,12 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     const bool console = mode == ViewMode::console;
     const bool seq = mode == ViewMode::sequencer;
     const bool song = mode == ViewMode::song;
+    const bool setup = mode == ViewMode::setup;
 
     consoleTab_.setToggleState (console, juce::dontSendNotification);
     seqTab_.setToggleState (seq, juce::dontSendNotification);
     songTab_.setToggleState (song, juce::dontSendNotification);
+    setupTab_.setToggleState (setup, juce::dontSendNotification);
 
     importButton_.setVisible (console && chopModal_ == nullptr);
     recordButton_.setVisible (console && chopModal_ == nullptr);
@@ -414,8 +446,13 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
 
     songInfoLabel_.setVisible (song);
     songPlayButton_.setVisible (song);
+    songLoopButton_.setVisible (song);
     for (auto& box : songSlotBoxes_)
         box.setVisible (song);
+
+    setupInfoLabel_.setVisible (setup);
+    midiChannelSlider_.setVisible (setup);
+    midiOmniButton_.setVisible (setup);
 
     for (auto& b : padButtons_)
         b.setVisible (console);
@@ -467,6 +504,7 @@ void SP1200AudioProcessorEditor::resized()
     consoleTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
     seqTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
     songTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
+    setupTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
     consoleTab_.toFront (false);
     seqTab_.toFront (false);
     songTab_.toFront (false);
@@ -513,9 +551,15 @@ void SP1200AudioProcessorEditor::resized()
     {
         songPlayButton_.setBounds (bar.removeFromLeft (120).reduced (2));
         seqStopButton_.setBounds (bar.removeFromLeft (80).reduced (2));
+        songLoopButton_.setBounds (bar.removeFromLeft (130).reduced (2));
         bpmSlider_.setBounds (bar.removeFromLeft (120).reduced (2));
         swingSlider_.setBounds (bar.removeFromLeft (120).reduced (2));
         songInfoLabel_.setBounds (bar);
+    }
+    else if (view_ == ViewMode::setup)
+    {
+        midiChannelSlider_.setBounds (bar.removeFromLeft (220).reduced (2));
+        midiOmniButton_.setBounds (bar.removeFromLeft (160).reduced (2));
     }
     rateLabel_.setBounds (r.removeFromTop (24));
 
@@ -528,6 +572,12 @@ void SP1200AudioProcessorEditor::resized()
             auto row = songArea.removeFromTop (rowH);
             songSlotBoxes_[static_cast<std::size_t> (i)].setBounds (row.removeFromLeft (200).reduced (2));
         }
+        return;
+    }
+
+    if (view_ == ViewMode::setup)
+    {
+        setupInfoLabel_.setBounds (r.reduced (8));
         return;
     }
 
@@ -671,8 +721,12 @@ void SP1200AudioProcessorEditor::syncUIFromEngine()
     for (int i = 0; i < static_cast<int> (songSlotBoxes_.size()); ++i)
     {
         const int pat = eng.sequencer().songSlot (i);
-        songSlotBoxes_[static_cast<std::size_t> (i)].setSelectedId (pat + 1, juce::dontSendNotification);
+        songSlotBoxes_[static_cast<std::size_t> (i)].setSelectedId (pat == sp1200::kSongSlotEnd ? -1 : pat + 1,
+                                                                  juce::dontSendNotification);
     }
+    songLoopButton_.setToggleState (eng.sequencer().songLoop(), juce::dontSendNotification);
+    midiChannelSlider_.setValue (eng.midiChannel(), juce::dontSendNotification);
+    midiOmniButton_.setToggleState (eng.midiOmni(), juce::dontSendNotification);
     for (int p = 0; p < sp1200::kNumPads; ++p)
     {
         const auto pad = eng.getPad (p);

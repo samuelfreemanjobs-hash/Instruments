@@ -28,6 +28,11 @@ inline constexpr int kPadNoteEnd = 52; // exclusive (36–51)
 inline constexpr int kFaderCcStart = 20;
 inline constexpr int kFaderCcEnd = 36; // exclusive (20–35 → pads 0–15)
 
+inline constexpr int kSongSlotEnd = -1;
+inline constexpr int kNoChokeGroup = -1;
+/** Default open/closed hat choke (pads 5–6 and 13–14). */
+inline constexpr int kDefaultHatChokeGroup = 1;
+
 /** Default multi-pitch semitone offsets (pad index → offset). */
 inline constexpr float kDefaultMultiPitchOffsets[kMultiPitchSlots] = {
     0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 7.0f, 9.0f,

@@ -8,7 +8,7 @@ namespace sp1200
 namespace
 {
 constexpr std::uint32_t kMagic = 0x53503132; // 'SP12'
-constexpr std::uint16_t kVersion = 2;
+constexpr std::uint16_t kVersion = 3;
 
 void writeString (juce::MemoryOutputStream& out, const std::string& s)
 {
@@ -66,6 +66,7 @@ bool ProjectFile::saveToMemoryBlock (const SamplerEngine& engine, juce::MemoryBl
         out.writeFloat (pad.tuneSemitones);
         out.writeFloat (pad.level);
         out.writeFloat (pad.decay);
+        out.writeInt (pad.chokeGroup);
     }
 
     out.writeBool (engine.multiPitchEnabled());
@@ -96,6 +97,9 @@ bool ProjectFile::saveToMemoryBlock (const SamplerEngine& engine, juce::MemoryBl
     out.writeFloat (seq.swing());
     out.writeFloat (engine.getFilterCutoffNorm());
     out.writeFloat (engine.getFilterResonance());
+    out.writeBool (seq.songLoop());
+    out.writeInt (engine.midiChannel());
+    out.writeBool (engine.midiOmni());
 
     return true;
 }
@@ -106,7 +110,7 @@ bool ProjectFile::loadFromMemoryBlock (SamplerEngine& engine, const void* data, 
     if (in.readInt() != static_cast<int> (kMagic))
         return false;
     const int fileVersion = in.readShort();
-    if (fileVersion != 1 && fileVersion != static_cast<int> (kVersion))
+    if (fileVersion < 1 || fileVersion > static_cast<int> (kVersion))
         return false;
 
     juce::ignoreUnused (in.readInt()); // used samples meta
@@ -135,8 +139,12 @@ bool ProjectFile::loadFromMemoryBlock (SamplerEngine& engine, const void* data, 
         pad.tuneSemitones = in.readFloat();
         pad.level = in.readFloat();
         pad.decay = in.readFloat();
+        if (fileVersion >= 3)
+            pad.chokeGroup = in.readInt();
         engine.setPadAssignment (p, pad);
     }
+    if (fileVersion < 3)
+        engine.applyDefaultPadChokeGroups();
 
     engine.setMultiPitchEnabled (in.readBool());
     engine.setMultiPitchSourceSegment (in.readInt());
@@ -171,6 +179,12 @@ bool ProjectFile::loadFromMemoryBlock (SamplerEngine& engine, const void* data, 
         seq.setSwing (in.readFloat());
     engine.setFilterCutoffNorm (in.readFloat());
     engine.setFilterResonance (in.readFloat());
+    if (fileVersion >= 3)
+    {
+        seq.setSongLoop (in.readBool());
+        engine.setMidiChannel (in.readInt());
+        engine.setMidiOmni (in.readBool());
+    }
 
     return in.getNumBytesRemaining() >= 0;
 }

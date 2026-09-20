@@ -54,10 +54,22 @@ MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → Ssm
 | SQ-1 knobs | Ch **10**, CC **20–35** → faders (VOL / PITCH / DECAY mode) |
 | Keyboard | **Space** play, **Esc** stop, **R** step record (seq view), **Tab** fader mode, **Q–I / A–K** pads |
 
+## Song (Module 24)
+
+- Eight visible chain slots (32 stored); **END** (`kSongSlotEnd`) stops playback; optional **loop** wraps slot 0–7.
+
+## Choke & filter roles
+
+- Pads **5–6** and **13–14** default to hat **choke group** 1 (retrigger cuts siblings).
+- Pads **3–4** and **11–12** use per-voice **hi-trim** before bus SSM2044 (`PadFilterRoles.h`).
+
+## Module 10 SETUP tab
+
+- MIDI channel (1–16) and **omni** toggle; persisted in project **v3**.
+
 ## Extension points
 
-- Module 10 SETUP (MIDI Learn, device pick, clock)
-- Choke groups (spec §2.5)
+- MIDI Learn, clock in/out, choke group editor per pad
 - Multi-pitch / chromatic cap via `quantizeToMultiPitch`
 
 ## Related

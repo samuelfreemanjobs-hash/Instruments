@@ -68,6 +68,10 @@ public:
 
     void setSongSlot (int slot, int patternIndex);
     [[nodiscard]] int songSlot (int slot) const;
+    [[nodiscard]] bool isSongSlotEnd (int slot) const { return songSlot (slot) == kSongSlotEnd; }
+
+    void setSongLoop (bool loop) { songLoop_ = loop; }
+    [[nodiscard]] bool songLoop() const noexcept { return songLoop_; }
 
     void setBpm (double bpm) { bpm_ = std::clamp (bpm, 40.0, 240.0); }
     [[nodiscard]] double bpm() const noexcept { return bpm_; }
@@ -100,6 +104,9 @@ private:
     int currentStep_ = 0;
     int stepsInPattern_ = 32;
     int recordStepCursor_ = 0;
+    bool songLoop_ = true;
+
+    bool advanceSongPositionAfterPattern();
 };
 
 } // namespace sp1200

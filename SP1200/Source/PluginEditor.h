@@ -26,7 +26,8 @@ private:
     {
         console,
         sequencer,
-        song
+        song,
+        setup
     };
 
     void timerCallback() override;
@@ -54,6 +55,7 @@ private:
     juce::TextButton consoleTab_ { "10 CONSOLE" };
     juce::TextButton seqTab_ { "MOD 20 SEQ" };
     juce::TextButton songTab_ { "24 SONG" };
+    juce::TextButton setupTab_ { "10 SETUP" };
 
     juce::Label headerLabel_;
     juce::Label rateLabel_;
@@ -94,6 +96,10 @@ private:
     juce::Label songInfoLabel_;
     std::array<juce::ComboBox, 8> songSlotBoxes_;
     juce::TextButton songPlayButton_ { "PLAY SONG" };
+    juce::ToggleButton songLoopButton_ { "Loop song chain" };
+    juce::Slider midiChannelSlider_;
+    juce::ToggleButton midiOmniButton_ { "MIDI omni channel" };
+    juce::Label setupInfoLabel_;
 
     std::array<juce::TextButton, sp1200::kNumPads> padButtons_;
     std::array<juce::Slider, sp1200::kNumPads> faders_;

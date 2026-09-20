@@ -14,7 +14,8 @@ void SampleVoice::start (const TwelveBitBuffer* data,
                        std::size_t endSample,
                        float decayNorm,
                        double hostSampleRate,
-                       int padIndex)
+                       int padIndex,
+                       VoiceFilterRole filterRole)
 {
     data_ = data;
     startSample_ = startSample;
@@ -28,9 +29,12 @@ void SampleVoice::start (const TwelveBitBuffer* data,
     panL_ = std::sqrt (1.0f - norm);
     panR_ = std::sqrt (norm);
     padIndex_ = padIndex;
+    filterRole_ = filterRole;
+    hpfLpState_ = 0.0f;
+    const double sr = std::max (hostSampleRate, 8000.0);
+    hpfCoef_ = static_cast<float> (std::exp (-2.0 * 3.141592653589793 * 2800.0 / sr));
     ampEnv_ = 1.0f;
     const float d = std::clamp (decayNorm, 0.0f, 1.0f);
-    const double sr = std::max (hostSampleRate, 8000.0);
     const double releaseSec = 0.02 + static_cast<double> (d) * 2.5;
     ampDecayCoeff_ = static_cast<float> (std::exp (-1.0 / (releaseSec * sr)));
     active_ = data_ != nullptr && endPhase_ > phase_;
@@ -57,7 +61,14 @@ float SampleVoice::renderNextSample() noexcept
     const auto s12 = data_->getSample (idx);
     const float sample = (static_cast<float> (s12) - 2048.0f) / 2048.0f;
     phase_ += phaseInc_;
-    const float out = sample * level_ * ampEnv_;
+    float shaped = sample;
+    if (filterRole_ == VoiceFilterRole::hiTrim)
+    {
+        hpfLpState_ += hpfCoef_ * (shaped - hpfLpState_);
+        shaped = shaped - hpfLpState_;
+    }
+
+    const float out = shaped * level_ * ampEnv_;
     ampEnv_ *= ampDecayCoeff_;
     return out;
 }
