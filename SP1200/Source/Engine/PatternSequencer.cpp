@@ -167,12 +167,20 @@ void PatternSequencer::advance (double hostSampleRate, int numSamples, std::vect
         return;
 
     const double secPerStep = (60.0 / bpm_) / static_cast<double> (kStepsPerBar);
-    const double samplesPerStep = secPerStep * hostSampleRate;
+
+    auto samplesForStep = [&] (int stepIndex) -> double
+    {
+        double dur = secPerStep;
+        if ((stepIndex % 2) == 1)
+            dur += secPerStep * static_cast<double> (swing_) * 0.5;
+        return dur * hostSampleRate;
+    };
 
     samplesUntilNextStep_ -= static_cast<double> (numSamples);
     while (samplesUntilNextStep_ <= 0.0)
     {
         scheduleStep (currentStep_, padHits);
+        const double stepLen = samplesForStep (currentStep_);
         ++currentStep_;
         if (currentStep_ >= stepsInPattern_)
         {
@@ -186,7 +194,7 @@ void PatternSequencer::advance (double hostSampleRate, int numSamples, std::vect
                 stepsInPattern_ = pattern (currentPattern_).totalSteps();
             }
         }
-        samplesUntilNextStep_ += samplesPerStep;
+        samplesUntilNextStep_ += stepLen;
     }
 }
 

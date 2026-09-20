@@ -33,6 +33,7 @@ int main()
     a.setFilterCutoffNorm (0.55f);
     a.setFilterResonance (0.42f);
     a.sequencer().setBpm (110.0);
+    a.sequencer().setSwing (0.61f);
     a.sequencer().addStep (0, 0, 0.8f, 0.0f);
 
     juce::MemoryBlock block;
@@ -48,6 +49,7 @@ int main()
     assert (std::abs (b.getFilterCutoffNorm() - 0.55f) < 0.001f);
     assert (std::abs (b.getFilterResonance() - 0.42f) < 0.001f);
     assert (std::abs (b.sequencer().bpm() - 110.0) < 0.001);
+    assert (std::abs (b.sequencer().swing() - 0.61f) < 0.001f);
     assert (b.sequencer().pattern (0).steps.size() == 1);
 
     std::cout << "SP1200ProjectFileTests OK\n";

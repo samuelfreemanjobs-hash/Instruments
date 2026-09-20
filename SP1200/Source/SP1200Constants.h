@@ -21,8 +21,12 @@ inline constexpr int kMaxPatternBars = 4;
 inline constexpr int kStepsPerBar = 16; // 1/16 grid
 inline constexpr int kMultiPitchSlots = 16;
 
+/** Korg SQ-1 default map (1-based MIDI channel). */
 inline constexpr int kDefaultMidiChannel = 10;
 inline constexpr int kPadNoteStart = 36;
+inline constexpr int kPadNoteEnd = 52; // exclusive (36–51)
+inline constexpr int kFaderCcStart = 20;
+inline constexpr int kFaderCcEnd = 36; // exclusive (20–35 → pads 0–15)
 
 /** Default multi-pitch semitone offsets (pad index → offset). */
 inline constexpr float kDefaultMultiPitchOffsets[kMultiPitchSlots] = {

@@ -73,6 +73,7 @@ public:
     [[nodiscard]] double bpm() const noexcept { return bpm_; }
 
     void setSwing (float s) { swing_ = std::clamp (s, 0.0f, 1.0f); }
+    [[nodiscard]] float swing() const noexcept { return swing_; }
 
     void startPattern();
     void startSong();

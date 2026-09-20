@@ -4,7 +4,7 @@ Standalone **12-bit / 26.040 kHz** sampler inspired by the E-mu SP-1200 workflow
 
 ## Purpose
 
-Performance sampler with **16 pads**, **16 voices**, **7:00** embedded sample RAM, WAV import, audio input record, SQ-1-friendly MIDI maps (in progress).
+Performance sampler with **16 pads**, **16 voices**, **7:00** embedded sample RAM, WAV import, audio input record, **SQ-1 default MIDI map** (ch 10, notes 36–51, CC 20–35), keyboard transport (Space/Esc/R/Tab, Q–I / A–K pads).
 
 ## Build and run
 
@@ -46,10 +46,18 @@ MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → Ssm
 | `Source/Project/ProjectFile.*` | `.sp12p` embedded samples + patterns |
 | `Source/DSP/Ssm2044BusFilter.*` | Bus low-pass + per-step cutoff mod |
 
+## MIDI & keyboard (defaults)
+
+| Source | Mapping |
+|--------|---------|
+| SQ-1 row A/B | Ch **10**, notes **36–51** → pads 1–16 |
+| SQ-1 knobs | Ch **10**, CC **20–35** → faders (VOL / PITCH / DECAY mode) |
+| Keyboard | **Space** play, **Esc** stop, **R** step record (seq view), **Tab** fader mode, **Q–I / A–K** pads |
+
 ## Extension points
 
-- MOD 20 **PianoRollComponent** (16 lanes, step stacks incl. filter)
-- Song tab: 8-slot chain; pattern bank 99, bars 1–4
+- Module 10 SETUP (MIDI Learn, device pick, clock)
+- Choke groups (spec §2.5)
 - Multi-pitch / chromatic cap via `quantizeToMultiPitch`
 
 ## Related

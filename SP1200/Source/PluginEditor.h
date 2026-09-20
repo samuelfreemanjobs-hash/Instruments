@@ -10,7 +10,8 @@
 
 class SP1200AudioProcessorEditor : public juce::AudioProcessorEditor,
                                    private juce::Timer,
-                                   private juce::Button::Listener
+                                   private juce::Button::Listener,
+                                   private juce::KeyListener
 {
 public:
     explicit SP1200AudioProcessorEditor (SP1200AudioProcessor&);
@@ -18,6 +19,7 @@ public:
 
     void paint (juce::Graphics&) override;
     void resized() override;
+    bool keyPressed (const juce::KeyPress& key, juce::Component*) override;
 
 private:
     enum class ViewMode
@@ -41,6 +43,8 @@ private:
     void loadProject();
     void syncUIFromEngine();
     void syncPianoRollFromControls();
+    void cycleFaderMode();
+    int padIndexForComputerKey (const juce::KeyPress& key) const;
     void buttonClicked (juce::Button* button) override;
 
     SP1200AudioProcessor& processor_;
@@ -69,6 +73,8 @@ private:
 
     juce::Slider patternSlider_;
     juce::Slider barsSlider_;
+    juce::Slider bpmSlider_;
+    juce::Slider swingSlider_;
     juce::Label seqInfoLabel_;
     juce::TextButton seqPlayButton_ { "PLAY PATTERN" };
     juce::TextButton seqStopButton_ { "STOP" };

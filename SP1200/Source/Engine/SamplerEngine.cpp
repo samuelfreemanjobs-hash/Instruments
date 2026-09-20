@@ -104,7 +104,10 @@ void SamplerEngine::previewSegment (std::size_t segmentIndex, std::int64_t start
                                                  1.0f,
                                                  0.0f,
                                                  static_cast<std::size_t> (start),
-                                                 static_cast<std::size_t> (end));
+                                                 static_cast<std::size_t> (end),
+                                                 1.0f,
+                                                 hostSampleRate_,
+                                                 -1);
 }
 
 void SamplerEngine::setPadLevel (int padIndex, float level)
@@ -117,6 +120,12 @@ void SamplerEngine::setPadTune (int padIndex, float semitones)
 {
     if (padIndex >= 0 && padIndex < kNumPads)
         pads_.pads[padIndex].tuneSemitones = quantizeToMultiPitch (semitones);
+}
+
+void SamplerEngine::setPadDecay (int padIndex, float decayNorm)
+{
+    if (padIndex >= 0 && padIndex < kNumPads)
+        pads_.pads[padIndex].decay = std::clamp (decayNorm, 0.0f, 1.0f);
 }
 
 PadAssignment SamplerEngine::getPad (int padIndex) const
@@ -243,7 +252,12 @@ int SamplerEngine::findFreeVoice() noexcept
     for (int i = 0; i < kNumVoices; ++i)
         if (! voices_[static_cast<std::size_t> (i)].isActive())
             return i;
-    return 0;
+
+    int steal = 0;
+    for (int i = 1; i < kNumVoices; ++i)
+        if (voiceGeneration_[static_cast<std::size_t> (i)] < voiceGeneration_[static_cast<std::size_t> (steal)])
+            steal = i;
+    return steal;
 }
 
 void SamplerEngine::triggerPad (int padIndex, float velocity, float extraTune, float pan, float filterStep)
@@ -269,29 +283,47 @@ void SamplerEngine::triggerPad (int padIndex, float velocity, float extraTune, f
         return;
 
     tune = quantizeToMultiPitch (tune);
+
+    for (auto& v : voices_)
+        if (v.isActive() && v.padIndex() == padIndex)
+            v.forceStop();
+
     const int vi = findFreeVoice();
-    voices_[static_cast<std::size_t> (vi)].start (&seg->data, velocity, tune, pads_.pads[padIndex].level, pan);
+    voiceGeneration_[static_cast<std::size_t> (vi)] = nextVoiceGen_++;
+    voices_[static_cast<std::size_t> (vi)].start (&seg->data,
+                                                 velocity,
+                                                 tune,
+                                                 pads_.pads[padIndex].level,
+                                                 pan,
+                                                 0,
+                                                 0,
+                                                 pads_.pads[padIndex].decay,
+                                                 hostSampleRate_,
+                                                 padIndex);
 }
 
 void SamplerEngine::handleMidi (const juce::MidiMessage& msg)
 {
+    if (msg.getChannel() != kDefaultMidiChannel)
+        return;
+
     if (msg.isNoteOn())
     {
         const int note = msg.getNoteNumber();
-        if (note >= kPadNoteStart && note < kPadNoteStart + kNumPads)
+        if (note >= kPadNoteStart && note < kPadNoteEnd)
             triggerPad (note - kPadNoteStart, msg.getFloatVelocity());
     }
     else if (msg.isController())
     {
         const int cc = msg.getControllerNumber();
-        const int pad = cc - 20;
-        if (pad >= 0 && pad < kNumPads)
+        const int pad = cc - kFaderCcStart;
+        if (pad >= 0 && pad < kNumPads && cc >= kFaderCcStart && cc < kFaderCcEnd)
         {
             const float norm = static_cast<float> (msg.getControllerValue()) / 127.0f;
             if (faderMode_ == 1)
                 setPadTune (pad, (norm - 0.5f) * 24.0f);
             else if (faderMode_ == 2)
-                pads_.pads[pad].decay = norm;
+                setPadDecay (pad, norm);
             else
                 setPadLevel (pad, norm * 2.0f);
         }

@@ -8,7 +8,7 @@ namespace sp1200
 namespace
 {
 constexpr std::uint32_t kMagic = 0x53503132; // 'SP12'
-constexpr std::uint16_t kVersion = 1;
+constexpr std::uint16_t kVersion = 2;
 
 void writeString (juce::MemoryOutputStream& out, const std::string& s)
 {
@@ -93,6 +93,7 @@ bool ProjectFile::saveToMemoryBlock (const SamplerEngine& engine, juce::MemoryBl
         out.writeInt (seq.songSlot (i));
 
     out.writeDouble (seq.bpm());
+    out.writeFloat (seq.swing());
     out.writeFloat (engine.getFilterCutoffNorm());
     out.writeFloat (engine.getFilterResonance());
 
@@ -104,7 +105,8 @@ bool ProjectFile::loadFromMemoryBlock (SamplerEngine& engine, const void* data, 
     juce::MemoryInputStream in (data, size, false);
     if (in.readInt() != static_cast<int> (kMagic))
         return false;
-    if (in.readShort() != static_cast<int> (kVersion))
+    const int fileVersion = in.readShort();
+    if (fileVersion != 1 && fileVersion != static_cast<int> (kVersion))
         return false;
 
     juce::ignoreUnused (in.readInt()); // used samples meta
@@ -165,6 +167,8 @@ bool ProjectFile::loadFromMemoryBlock (SamplerEngine& engine, const void* data, 
         seq.setSongSlot (i, in.readInt());
 
     seq.setBpm (in.readDouble());
+    if (fileVersion >= 2)
+        seq.setSwing (in.readFloat());
     engine.setFilterCutoffNorm (in.readFloat());
     engine.setFilterResonance (in.readFloat());
 

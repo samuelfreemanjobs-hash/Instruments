@@ -25,6 +25,8 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
 {
     setResizeLimits (900, 640, 1600, 1000);
     setSize (1100, 720);
+    setWantsKeyboardFocus (true);
+    addKeyListener (this);
 
     const int tabGroup = 9001;
     for (auto* tab : { &consoleTab_, &seqTab_, &songTab_ })
@@ -112,13 +114,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     };
     addAndMakeVisible (multiPitchButton_);
 
-    faderModeButton_.onClick = [this]
-    {
-        faderMode_ = (faderMode_ + 1) % 3;
-        processor_.setFaderMode (faderMode_);
-        const char* names[] = { "VOL", "PITCH", "DECAY" };
-        faderModeButton_.setButtonText ("FADER: " + juce::String (names[faderMode_]));
-    };
+    faderModeButton_.onClick = [this] { cycleFaderMode(); };
     addAndMakeVisible (faderModeButton_);
 
     patternSlider_.setRange (1, sp1200::kMaxPatterns, 1);
@@ -140,6 +136,20 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
         refreshSeqInfo();
     };
     addAndMakeVisible (barsSlider_);
+
+    bpmSlider_.setSliderStyle (juce::Slider::LinearHorizontal);
+    bpmSlider_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 48, 18);
+    bpmSlider_.setRange (40.0, 240.0, 0.1);
+    bpmSlider_.setValue (processor_.engine().sequencer().bpm());
+    bpmSlider_.onValueChange = [this] { processor_.engine().sequencer().setBpm (bpmSlider_.getValue()); };
+    addAndMakeVisible (bpmSlider_);
+
+    swingSlider_.setSliderStyle (juce::Slider::LinearHorizontal);
+    swingSlider_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 48, 18);
+    swingSlider_.setRange (0.0, 1.0, 0.01);
+    swingSlider_.setValue (processor_.engine().sequencer().swing());
+    swingSlider_.onValueChange = [this] { processor_.engine().sequencer().setSwing (static_cast<float> (swingSlider_.getValue())); };
+    addAndMakeVisible (swingSlider_);
 
     seqInfoLabel_.setText ("PAT 01 | 2 bars | 1/16", juce::dontSendNotification);
     addAndMakeVisible (seqInfoLabel_);
@@ -265,7 +275,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
             if (faderMode_ == 1)
                 processor_.engine().setPadTune (i, static_cast<float> (faders_[static_cast<std::size_t> (i)].getValue() * 24.0 - 12.0));
             else if (faderMode_ == 2)
-                processor_.engine().setPadLevel (i, static_cast<float> (faders_[static_cast<std::size_t> (i)].getValue()));
+                processor_.engine().setPadDecay (i, static_cast<float> (faders_[static_cast<std::size_t> (i)].getValue()));
             else
                 processor_.engine().setPadLevel (i, static_cast<float> (faders_[static_cast<std::size_t> (i)].getValue() * 2.0));
         };
@@ -277,7 +287,75 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     setView (ViewMode::console);
 }
 
-SP1200AudioProcessorEditor::~SP1200AudioProcessorEditor() = default;
+SP1200AudioProcessorEditor::~SP1200AudioProcessorEditor()
+{
+    removeKeyListener (this);
+}
+
+void SP1200AudioProcessorEditor::cycleFaderMode()
+{
+    faderMode_ = (faderMode_ + 1) % 3;
+    processor_.setFaderMode (faderMode_);
+    const char* names[] = { "VOL", "PITCH", "DECAY" };
+    faderModeButton_.setButtonText ("FADER: " + juce::String (names[faderMode_]));
+}
+
+int SP1200AudioProcessorEditor::padIndexForComputerKey (const juce::KeyPress& key) const
+{
+    const int k = key.getKeyCode();
+    static const int rowA[] = { 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I' };
+    static const int rowB[] = { 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K' };
+    for (int i = 0; i < 8; ++i)
+    {
+        if (k == rowA[i])
+            return i;
+        if (k == rowB[i])
+            return i + 8;
+    }
+    return -1;
+}
+
+bool SP1200AudioProcessorEditor::keyPressed (const juce::KeyPress& key, juce::Component*)
+{
+    if (chopModal_ != nullptr)
+        return false;
+
+    if (key == juce::KeyPress::spaceKey)
+    {
+        if (view_ == ViewMode::song)
+            processor_.engine().sequencer().startSong();
+        else
+            processor_.engine().sequencer().startPattern();
+        return true;
+    }
+    if (key == juce::KeyPress::escapeKey)
+    {
+        processor_.engine().sequencer().stop();
+        return true;
+    }
+    if (key.getTextCharacter() == 'r' || key.getTextCharacter() == 'R')
+    {
+        if (view_ == ViewMode::sequencer)
+        {
+            seqRecordSteps_.setToggleState (! seqRecordSteps_.getToggleState(), juce::sendNotification);
+            seqRecordMode_ = seqRecordSteps_.getToggleState();
+        }
+        return true;
+    }
+    if (key == juce::KeyPress::tabKey)
+    {
+        cycleFaderMode();
+        return true;
+    }
+
+    const int pad = padIndexForComputerKey (key);
+    if (pad >= 0)
+    {
+        triggerPad (pad);
+        return true;
+    }
+    return false;
+}
 
 void SP1200AudioProcessorEditor::buttonClicked (juce::Button* button)
 {
@@ -313,6 +391,8 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
 
     patternSlider_.setVisible (seq);
     barsSlider_.setVisible (seq);
+    bpmSlider_.setVisible (seq || song);
+    swingSlider_.setVisible (seq || song);
     seqInfoLabel_.setVisible (seq);
     seqPlayButton_.setVisible (seq);
     seqStopButton_.setVisible (seq || song);
@@ -417,8 +497,10 @@ void SP1200AudioProcessorEditor::resized()
     }
     else if (view_ == ViewMode::sequencer)
     {
-        patternSlider_.setBounds (bar.removeFromLeft (160).reduced (2));
-        barsSlider_.setBounds (bar.removeFromLeft (120).reduced (2));
+        patternSlider_.setBounds (bar.removeFromLeft (140).reduced (2));
+        barsSlider_.setBounds (bar.removeFromLeft (100).reduced (2));
+        bpmSlider_.setBounds (bar.removeFromLeft (120).reduced (2));
+        swingSlider_.setBounds (bar.removeFromLeft (120).reduced (2));
         seqPlayButton_.setBounds (bar.removeFromLeft (110).reduced (2));
         seqStopButton_.setBounds (bar.removeFromLeft (70).reduced (2));
         chromaticMapButton_.setBounds (bar.removeFromLeft (130).reduced (2));
@@ -431,6 +513,8 @@ void SP1200AudioProcessorEditor::resized()
     {
         songPlayButton_.setBounds (bar.removeFromLeft (120).reduced (2));
         seqStopButton_.setBounds (bar.removeFromLeft (80).reduced (2));
+        bpmSlider_.setBounds (bar.removeFromLeft (120).reduced (2));
+        swingSlider_.setBounds (bar.removeFromLeft (120).reduced (2));
         songInfoLabel_.setBounds (bar);
     }
     rateLabel_.setBounds (r.removeFromTop (24));
@@ -582,6 +666,8 @@ void SP1200AudioProcessorEditor::syncUIFromEngine()
     multiPitchButton_.setToggleState (eng.multiPitchEnabled(), juce::dontSendNotification);
     patternSlider_.setValue (eng.sequencer().currentPattern() + 1, juce::dontSendNotification);
     barsSlider_.setValue (eng.sequencer().patternBars(), juce::dontSendNotification);
+    bpmSlider_.setValue (eng.sequencer().bpm(), juce::dontSendNotification);
+    swingSlider_.setValue (eng.sequencer().swing(), juce::dontSendNotification);
     for (int i = 0; i < static_cast<int> (songSlotBoxes_.size()); ++i)
     {
         const int pat = eng.sequencer().songSlot (i);

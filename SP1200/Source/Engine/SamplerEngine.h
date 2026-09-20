@@ -8,6 +8,7 @@
 #include "SampleVoice.h"
 
 #include <array>
+#include <cstdint>
 #include <optional>
 #include <vector>
 
@@ -33,6 +34,7 @@ public:
 
     void setPadLevel (int padIndex, float level);
     void setPadTune (int padIndex, float semitones);
+    void setPadDecay (int padIndex, float decayNorm);
     void setFaderMode (int modeIndex) { faderMode_ = modeIndex; }
 
     [[nodiscard]] PadAssignment getPad (int padIndex) const;
@@ -87,6 +89,8 @@ private:
     Ssm2044BusFilter busFilter_;
     float filterCutoffNorm_ = 0.72f;
     float filterResonance_ = 0.35f;
+    std::array<std::uint32_t, kNumVoices> voiceGeneration_ {};
+    std::uint32_t nextVoiceGen_ = 1;
 };
 
 } // namespace sp1200

@@ -11,7 +11,10 @@ void SampleVoice::start (const TwelveBitBuffer* data,
                        float level,
                        float pan,
                        std::size_t startSample,
-                       std::size_t endSample)
+                       std::size_t endSample,
+                       float decayNorm,
+                       double hostSampleRate,
+                       int padIndex)
 {
     data_ = data;
     startSample_ = startSample;
@@ -24,6 +27,12 @@ void SampleVoice::start (const TwelveBitBuffer* data,
     const float norm = std::clamp ((pan + 1.0f) * 0.5f, 0.0f, 1.0f);
     panL_ = std::sqrt (1.0f - norm);
     panR_ = std::sqrt (norm);
+    padIndex_ = padIndex;
+    ampEnv_ = 1.0f;
+    const float d = std::clamp (decayNorm, 0.0f, 1.0f);
+    const double sr = std::max (hostSampleRate, 8000.0);
+    const double releaseSec = 0.02 + static_cast<double> (d) * 2.5;
+    ampDecayCoeff_ = static_cast<float> (std::exp (-1.0 / (releaseSec * sr)));
     active_ = data_ != nullptr && endPhase_ > phase_;
 }
 
@@ -48,7 +57,9 @@ float SampleVoice::renderNextSample() noexcept
     const auto s12 = data_->getSample (idx);
     const float sample = (static_cast<float> (s12) - 2048.0f) / 2048.0f;
     phase_ += phaseInc_;
-    return sample * level_;
+    const float out = sample * level_ * ampEnv_;
+    ampEnv_ *= ampDecayCoeff_;
+    return out;
 }
 
 } // namespace sp1200

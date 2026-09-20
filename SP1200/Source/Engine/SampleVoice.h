@@ -13,8 +13,12 @@ public:
                 float level,
                 float pan = 0.0f,
                 std::size_t startSample = 0,
-                std::size_t endSample = 0);
+                std::size_t endSample = 0,
+                float decayNorm = 1.0f,
+                double hostSampleRate = 44100.0,
+                int padIndex = -1);
     void forceStop() noexcept;
+    [[nodiscard]] int padIndex() const noexcept { return padIndex_; }
     [[nodiscard]] bool isActive() const noexcept { return active_; }
 
     float renderNextSample() noexcept;
@@ -31,6 +35,9 @@ private:
     float panL_ = 1.0f;
     float panR_ = 1.0f;
     bool active_ = false;
+    int padIndex_ = -1;
+    float ampEnv_ = 1.0f;
+    float ampDecayCoeff_ = 1.0f;
 };
 
 } // namespace sp1200
