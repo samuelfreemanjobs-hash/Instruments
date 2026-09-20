@@ -20,6 +20,8 @@ public:
 
     void refreshFromPattern();
 
+    std::function<void (int pad, int step)> onCellSelected;
+
 private:
     void paint (juce::Graphics& g) override;
     void mouseDown (const juce::MouseEvent& e) override;

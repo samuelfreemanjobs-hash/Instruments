@@ -56,7 +56,7 @@ public:
 
 private:
     int findFreeVoice() noexcept;
-    void triggerPad (int padIndex, float velocity, float extraTune = 0.0f);
+    void triggerPad (int padIndex, float velocity, float extraTune = 0.0f, float pan = 0.0f);
     void handleMidi (const juce::MidiMessage& msg);
 
     SampleMemoryPool pool_;

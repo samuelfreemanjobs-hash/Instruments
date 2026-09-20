@@ -20,6 +20,7 @@ target_sources (SP1200
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
         Source/UI/PianoRollComponent.cpp
+        Source/UI/StepStackPanel.cpp
         Source/Memory/TwelveBitBuffer.cpp
         Source/Memory/SampleMemoryPool.cpp
         Source/Import/SampleImporter.cpp

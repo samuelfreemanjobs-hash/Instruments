@@ -25,7 +25,7 @@ void SamplerEngine::process (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
     pendingPadHits_.clear();
     sequencer_.advance (hostSampleRate_, buffer.getNumSamples(), pendingPadHits_);
     for (const auto& hit : pendingPadHits_)
-        triggerPad (hit.pad, hit.velocity, hit.tuneSemitones);
+        triggerPad (hit.pad, hit.velocity, hit.tuneSemitones, hit.pan); // filterCutoff → bus (TODO SSM2044)
 
     buffer.clear();
     auto* left = buffer.getWritePointer (0);
@@ -34,11 +34,16 @@ void SamplerEngine::process (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
 
     for (int i = 0; i < n; ++i)
     {
-        float s = 0.0f;
+        float sumL = 0.0f;
+        float sumR = 0.0f;
         for (auto& v : voices_)
-            s += v.renderNextSample();
-        left[i] = s;
-        right[i] = s;
+        {
+            const float s = v.renderNextSample();
+            sumL += s * v.lastPanLeft();
+            sumR += s * v.lastPanRight();
+        }
+        left[i] = sumL;
+        right[i] = sumR;
     }
 }
 
@@ -196,7 +201,7 @@ int SamplerEngine::findFreeVoice() noexcept
     return 0;
 }
 
-void SamplerEngine::triggerPad (int padIndex, float velocity, float extraTune)
+void SamplerEngine::triggerPad (int padIndex, float velocity, float extraTune, float pan)
 {
     if (padIndex < 0 || padIndex >= kNumPads)
         return;
@@ -219,7 +224,7 @@ void SamplerEngine::triggerPad (int padIndex, float velocity, float extraTune)
 
     tune = quantizeToMultiPitch (tune);
     const int vi = findFreeVoice();
-    voices_[static_cast<std::size_t> (vi)].start (&seg->data, velocity, tune, pads_.pads[padIndex].level);
+    voices_[static_cast<std::size_t> (vi)].start (&seg->data, velocity, tune, pads_.pads[padIndex].level, pan);
 }
 
 void SamplerEngine::handleMidi (const juce::MidiMessage& msg)

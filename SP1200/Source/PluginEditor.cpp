@@ -166,6 +166,37 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
         });
     addAndMakeVisible (*pianoRoll_);
 
+    stepStacks_ = std::make_unique<StepStackPanel> (processor_.engine().sequencer());
+    addAndMakeVisible (*stepStacks_);
+
+    stackPadSlider_.setRange (1, sp1200::kNumPads, 1);
+    stackPadSlider_.setValue (1);
+    stackPadSlider_.onValueChange = [this]
+    {
+        if (stepStacks_ != nullptr)
+            stepStacks_->setSelectedPad (static_cast<int> (stackPadSlider_.getValue()) - 1);
+    };
+    addAndMakeVisible (stackPadSlider_);
+
+    auto setStackMode = [this] (StepStackPanel::Mode mode)
+    {
+        if (stepStacks_ != nullptr)
+            stepStacks_->setMode (mode);
+    };
+    stackVelButton_.onClick = [setStackMode] { setStackMode (StepStackPanel::Mode::velocity); };
+    stackPitchButton_.onClick = [setStackMode] { setStackMode (StepStackPanel::Mode::pitch); };
+    stackPanButton_.onClick = [setStackMode] { setStackMode (StepStackPanel::Mode::pan); };
+    stackFilterButton_.onClick = [setStackMode] { setStackMode (StepStackPanel::Mode::filter); };
+    for (auto* b : { &stackVelButton_, &stackPitchButton_, &stackPanButton_, &stackFilterButton_ })
+        addAndMakeVisible (*b);
+
+    pianoRoll_->onCellSelected = [this] (int pad, int)
+    {
+        stackPadSlider_.setValue (pad + 1, juce::dontSendNotification);
+        if (stepStacks_ != nullptr)
+            stepStacks_->setSelectedPad (pad);
+    };
+
     songInfoLabel_.setText ("Song chain (8 slots) → patterns 1–99", juce::dontSendNotification);
     addAndMakeVisible (songInfoLabel_);
 
@@ -259,6 +290,11 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
         if (seq)
             pianoRoll_->toFront (false);
     }
+    if (stepStacks_ != nullptr)
+        stepStacks_->setVisible (seq);
+    stackPadSlider_.setVisible (seq);
+    for (auto* b : { &stackVelButton_, &stackPitchButton_, &stackPanButton_, &stackFilterButton_ })
+        b->setVisible (seq);
 
     songInfoLabel_.setVisible (song);
     songPlayButton_.setVisible (song);
@@ -286,6 +322,8 @@ void SP1200AudioProcessorEditor::syncPianoRollFromControls()
     if (idx >= 0 && idx < sp1200::kMultiPitchSlots)
         pianoRoll_->setChromaticTune (sp1200::kDefaultMultiPitchOffsets[idx]);
     pianoRoll_->refreshFromPattern();
+    if (stepStacks_ != nullptr)
+        stepStacks_->refresh();
 }
 
 void SP1200AudioProcessorEditor::refreshSeqInfo()
@@ -365,6 +403,15 @@ void SP1200AudioProcessorEditor::resized()
 
     if (view_ == ViewMode::sequencer && pianoRoll_ != nullptr)
     {
+        auto stackBar = r.removeFromBottom (28);
+        stackVelButton_.setBounds (stackBar.removeFromLeft (90).reduced (2));
+        stackPitchButton_.setBounds (stackBar.removeFromLeft (70).reduced (2));
+        stackPanButton_.setBounds (stackBar.removeFromLeft (60).reduced (2));
+        stackFilterButton_.setBounds (stackBar.removeFromLeft (80).reduced (2));
+        stackPadSlider_.setBounds (stackBar.removeFromLeft (120).reduced (2));
+
+        auto stacks = r.removeFromBottom (juce::jmax (100, r.getHeight() / 4));
+        stepStacks_->setBounds (stacks);
         pianoRoll_->setBounds (r);
         return;
     }

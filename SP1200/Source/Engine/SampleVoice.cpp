@@ -5,12 +5,15 @@
 
 namespace sp1200
 {
-void SampleVoice::start (const TwelveBitBuffer* data, float velocity, float tuneSemitones, float level)
+void SampleVoice::start (const TwelveBitBuffer* data, float velocity, float tuneSemitones, float level, float pan)
 {
     data_ = data;
     phase_ = 0.0;
     phaseInc_ = std::pow (2.0, static_cast<double> (tuneSemitones) / 12.0);
     level_ = level * std::clamp (velocity, 0.0f, 1.0f);
+    const float norm = std::clamp ((pan + 1.0f) * 0.5f, 0.0f, 1.0f);
+    panL_ = std::sqrt (1.0f - norm);
+    panR_ = std::sqrt (norm);
     active_ = data_ != nullptr && data_->size() > 0;
 }
 

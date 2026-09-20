@@ -13,7 +13,9 @@ struct PatternStep
     int pad = 0;
     int stepIndex = 0;
     float velocity = 0.9f;
-    float tuneSemitones = 0.0f; // capped via quantizeChromaticTune
+    float tuneSemitones = 0.0f;
+    float pan = 0.0f;           // -1 L … +1 R
+    float filterCutoff = 0.5f;  // per-step bus filter offset (0..1)
 };
 
 struct Pattern
@@ -34,6 +36,8 @@ struct ScheduledHit
     int pad = 0;
     float velocity = 0.9f;
     float tuneSemitones = 0.0f;
+    float pan = 0.0f;
+    float filterCutoff = 0.5f;
 };
 
 /** Quantize chromatic / roll pitch to nearest multi-pitch slot offset. */

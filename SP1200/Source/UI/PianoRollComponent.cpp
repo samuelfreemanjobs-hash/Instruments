@@ -131,5 +131,7 @@ void PianoRollComponent::mouseDown (const juce::MouseEvent& e)
         return;
 
     sequencer_.toggleStep (pad, step, 0.9f, chromaticTune_, chromaticMode_);
+    if (onCellSelected)
+        onCellSelected (pad, step);
     repaint();
 }

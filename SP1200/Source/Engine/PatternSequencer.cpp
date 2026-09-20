@@ -157,7 +157,7 @@ void PatternSequencer::scheduleStep (int stepInPattern, std::vector<ScheduledHit
     for (const auto& st : p.steps)
     {
         if (st.stepIndex == stepInPattern)
-            padHits.push_back ({ st.pad, st.velocity, st.tuneSemitones });
+            padHits.push_back ({ st.pad, st.velocity, st.tuneSemitones, st.pan, st.filterCutoff });
     }
 }
 

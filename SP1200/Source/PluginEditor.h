@@ -2,6 +2,7 @@
 
 #include "PluginProcessor.h"
 #include "UI/PianoRollComponent.h"
+#include "UI/StepStackPanel.h"
 
 #include <array>
 #include <memory>
@@ -66,6 +67,12 @@ private:
     juce::TextButton clearPatternButton_ { "Clear pattern" };
 
     std::unique_ptr<PianoRollComponent> pianoRoll_;
+    std::unique_ptr<StepStackPanel> stepStacks_;
+    juce::TextButton stackVelButton_ { "VELOCITY" };
+    juce::TextButton stackPitchButton_ { "PITCH" };
+    juce::TextButton stackPanButton_ { "PAN" };
+    juce::TextButton stackFilterButton_ { "FILTER" };
+    juce::Slider stackPadSlider_;
 
     juce::Label songInfoLabel_;
     std::array<juce::ComboBox, 8> songSlotBoxes_;
