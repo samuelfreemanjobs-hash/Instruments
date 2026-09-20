@@ -2,7 +2,13 @@
 
 Planning document for a **standalone** performance sampler/sequencer modeled on the **E-mu SP-1200** workflow, UI, and sonic constraints, with deliberate **extended** limits (memory, voices, pads). Implementation target: new product in the Instruments monorepo (likely **JUCE standalone**); not started in code yet.
 
-**Concept UI reference:** user mockup (module grid, LCD/keypad, 16 faders, 16 pads in two rows, banks, transport, vinyl resample).
+**Concept UI reference:**
+
+| Screen | Role |
+|--------|------|
+| Main console | Module grid, LCD/keypad, 16 faders, 16 pads (2×8), banks, transport |
+| **MOD 11 — Chop & Truncate** | Waveform editor modal; commit to RAM |
+| **MOD 20 — Piano roll** | 16-lane “drum roll” editor + per-step stacks (velocity, tune, pan, filter) |
 
 ---
 
@@ -26,7 +32,7 @@ Planning document for a **standalone** performance sampler/sequencer modeled on 
 | Front-panel pads | 8 | **16** (2 rows × 8) |
 | Disk | 3.5″ floppy | **Single project file** (“diskette” metaphor in UI) |
 
-Workflow and editing limitations (truncate, combine, assign, tune, decay, pattern/song sequencing) remain **SP-like**; avoid modern DAW features (warp, unlimited tracks, piano roll) unless listed under **Future**.
+Workflow and editing limitations (truncate, combine, assign, tune, decay, pattern/song sequencing) remain **SP-like**. **Module 20** adds a **pattern piano roll** (16 lanes, SP swing, step stacks) — an **extended** editor, not unlimited multi-track DAW timeline. No audio warp / elastic time-stretch.
 
 ---
 
@@ -93,6 +99,90 @@ Single source of truth drives LCD and keypad:
 
 Module button highlights and LCD module name must stay synchronized.
 
+### 4.3 MOD 11 — Sample setup: chop & truncate (modal)
+
+Opened from **11 SAMPLE** (title e.g. `MOD 11 | SAMPLE SETUP: CHOP & TRUNCATE`). Operates on the **current segment** in RAM before assign/commit.
+
+**Header / status**
+
+- Bank, segment id, **26.040 kHz // 12-BIT**, segment length (seconds + sample count).
+- **Bank quota display:** e.g. `32.0% BANK A (1:15 REM)` — scales to **105 s/bank** or **global 7:00** pool (implementation: show both total and bank %).
+- **Zoom** and **playback head** over selection.
+
+**Waveform**
+
+- Oscilloscope-style view; **START** (yellow) and **END / truncate** (red) markers.
+- Draggable markers + numeric fields (sample-accurate at 26.04 kHz).
+
+**Numeric scrub (SP-style steps)**
+
+| Field | Nudge buttons |
+|-------|----------------|
+| Start offset | −100, −10, +10, +100 (samples or ms — pick one primary, show both) |
+| Truncate / end point | same |
+
+**12-bit sample edit operations**
+
+| Action | Behavior |
+|--------|----------|
+| **Truncate discard** | Drop audio outside START–END; reclaims RAM |
+| **Auto-chop (N slices)** | Default **8**; user **16** when targeting 16 pads; silence- or level-threshold (TBD) |
+| **Normalize peak** | To SP headroom rules (no float “hot” master) |
+| **Reverse sample** | Reverse current segment |
+| **Vinyl resample** | e.g. 33→45 RPM hi-pitch preset; ties to global vinyl trick + Module 12 tune |
+
+**Audition**
+
+- **Pad slice buttons 1–16** (mockup shows 8; product uses **16** aligned with pad rows).
+- **Play audition selection** — hear START–END loop.
+- **Execute / commit to RAM** — destructive apply; updates memory accounting; closes or returns to Module 11 assign flow.
+
+All commits write **embedded project memory**, not external files.
+
+### 4.4 MOD 20 — Piano roll (“12-bit drum roll engine”)
+
+Full-screen or tab view (mockup tabs: **10 CONSOLE | 11 WAVE CHOP | MOD 20 PIANO ROLL | 24 SONG | SSM2044 VCF**).
+
+**Scope:** One **pattern** at a time; **16 lanes** fixed (lane *i* ↔ pad/voice *i* ↔ sample assignment). Not arbitrary track count.
+
+**Transport / header**
+
+- RTZ, Play, Stop, **Rec overdub**, click on/off.
+- LCD block: pattern name, BPM, bar (e.g. 02/04), **SWING % (SP)**, quantize **1/16 @ 96 PPQN** (or SP-equivalent grid).
+- Knobs: **Tempo**, **SP-Swing**, **Analog gain** (bus trim pre-SSM2044).
+
+**Edit tools**
+
+- Tool palette: pencil, eraser, select (minimal set).
+- **Snap:** 1/4, 1/8, **1/16**, 1/16T, 1/32.
+- **Map mode:** **SP drum map** (lanes = pads, pitch fixed per lane) vs **Chromatic SSM** (note pitch on lane for sample chromatic playback within 12-bit engine rules).
+
+**Grid**
+
+- Horizontal: bars/beats/substeps for active pattern length.
+- Vertical: 16 rows with sample names (e.g. `01 BD`, … `16 RH`).
+- Notes as blocks; optional pitch label in chromatic mode.
+
+**Per-step stacks (bottom panel)**
+
+Toggle one lane at a time or show active lane; modes mirror SP performance params:
+
+| Stack | Range / notes |
+|-------|----------------|
+| **Velocity (hit)** | Per-step velocity |
+| **Pitch tune** | ±12 semitones (finer in Module 12) |
+| **Pan (L/R)** | Per-step pan ( stereo output; mono samples ) |
+| **SSM filter cutoff** | Per-step bus filter offset or send (keep DSP on bus model) |
+
+**Footer status**
+
+- `MEMORY / BUFFER: … FREE` (7:00 total semantics).
+- `26.041 kHz 12-BIT LINEAR PCM` (display rounding OK; engine **26,040 Hz**).
+- Choke groups (e.g. **EXCL 1** open/closed hat).
+- MIDI sync: internal / external.
+
+**Relation to classic SP:** Real SP-1200 uses **step entry on pads**, not a piano roll. Module 20 is the **extended** visual editor; **pad record + SQ-1** must still write the same underlying pattern data as pencil entry.
+
 ---
 
 ## 5. Control — unified action map
@@ -144,10 +234,11 @@ Mouse/touch on pads, faders, modules, keypad — same actions as hardware maps.
 
 ## 6. Sequencer and sync
 
-- **Module 20 SEQ:** patterns, step entry, quantize, **REPEAT**, **AUTO CORRECT**, swing.
-- **Module 24 SONG:** pattern chains.
+- **Module 20 SEQ / Piano roll:** one pattern, **16 lanes**, grid edit + **rec overdub** from pads; **REPEAT**, **AUTO CORRECT**, **SP swing**; per-step velocity/tune/pan/filter stacks (§4.4).
+- **Console mode (Module 20 on hardware):** step record via **16 pads** without opening piano roll — must share pattern format with roll.
+- **Module 24 SONG:** pattern chains (tab in roll mockup).
 - **MIDI clock:** in/out; SQ-1 can master or slave per SETUP.
-- Pattern/song data stored inside project file.
+- Pattern/song data stored inside project file (single timeline model: steps + optional micro-timing within quantize).
 
 ---
 
@@ -173,12 +264,12 @@ Working name: `.sp12p` (or product-specific extension).
 | # | Name | Scope |
 |---|------|--------|
 | 10 | SETUP | Audio/MIDI devices, MIDI Learn, clock, keyboard map, mono input |
-| 11 | SAMPLE | Input record, import, truncate, assign, combine, memory free |
+| 11 | SAMPLE / WAVE CHOP | Record/import; **chop & truncate** modal (§4.3); assign; combine; memory free |
 | 12 | PITCH | Per-pad tune (LCD scrub + faders in PITCH mode) |
 | 13 | DECAY | Per-pad decay |
 | 14 | MIX | Per-pad levels (faders in VOLUME mode) |
 | 15 | FILTER | Bus SSM2044 |
-| 20 | SEQ | Patterns |
+| 20 | SEQ / PIANO ROLL | Patterns; 16-lane roll + stacks (§4.4); pad overdub |
 | 24 | SONG | Arrangement |
 | 30 | SPECIAL | Combine, utilities, vinyl-related tools |
 
@@ -190,8 +281,9 @@ Working name: `.sp12p` (or product-specific extension).
 |-------|-------------|
 | **P0** | Engine: 26.04 kHz / 12-bit / 16 voices / 7 min pool; WAV + input record; mono sum; project save/load |
 | **P1** | Main UI shell; 16 pads + 16 faders; keyboard + SQ-1 default maps; transport; Module 11/12/14 basics |
-| **P2** | SEQ + SONG; banks; MULTI-PITCH/LEVEL |
-| **P3** | Module 15 filter; Module 30; polish LCD/keypad state machine |
+| **P2** | MOD 11 chop/truncate modal; pattern data model; console step record |
+| **P2b** | MOD 20 piano roll + per-step stacks; SONG tab; choke groups |
+| **P3** | Module 15 filter + SSM tab; Module 30; polish LCD/keypad state machine |
 | **P4** | QA against SP workflow checklist; optional plugin export (non-goal for v1 unless requested) |
 
 When code starts: add product `ARCHITECTURE.md` and index row in root `/ARCHITECTURE.md`.
@@ -218,6 +310,23 @@ When code starts: add product `ARCHITECTURE.md` and index row in root `/ARCHITEC
 | — | Transport/mode: **keyboard + SQ-1**; SQ-1 MIDI only |
 | — | **Mono sum**; **filter in v1** (bus SSM2044) |
 | — | **Single project** with **embedded** samples |
+| — | **MOD 11** chop/truncate + **MOD 20** piano roll (16 lanes) in scope |
+
+---
+
+## 12. Concept art → spec traceability
+
+| UI element (mockup) | Spec section |
+|---------------------|--------------|
+| START/END waveform, truncate discard | §4.3 |
+| Auto-chop 8 slices | §4.3 → **16 slices** option |
+| Audition pads, commit to RAM | §4.3 |
+| Vinyl resample 33→45 | §4.3, §2.3 |
+| 16 track list + piano grid | §4.4 |
+| SP swing, 1/16 quant, 96 PPQN | §4.4, §6 |
+| Velocity / pitch / pan / filter stacks | §4.4 |
+| SP drum map vs chromatic | §4.4 |
+| Buffer 2.5 s free (art) | **7:00** total per decision log |
 
 ---
 
