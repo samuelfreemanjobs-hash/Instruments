@@ -6,9 +6,12 @@ KeypadComponent::KeypadComponent()
     {
         auto& b = digitButtons_[static_cast<std::size_t> (d)];
         b.setButtonText (juce::String (d));
+        b.setColour (juce::TextButton::buttonColourId, juce::Colour (0xffc8c0b8));
         b.onClick = [this, d] { if (onDigit) onDigit (d); };
         addAndMakeVisible (b);
     }
+    enterButton_.setColour (juce::TextButton::buttonColourId, juce::Colour (0xff7cb87c));
+    cancelButton_.setColour (juce::TextButton::buttonColourId, juce::Colour (0xffc08080));
     enterButton_.onClick = [this] { if (onEnter) onEnter(); };
     cancelButton_.onClick = [this] { if (onCancel) onCancel(); };
     addAndMakeVisible (enterButton_);

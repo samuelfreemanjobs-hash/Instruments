@@ -692,10 +692,10 @@ void SP1200AudioProcessorEditor::resized()
     auto bar = r.removeFromTop (32);
     if (view_ == ViewMode::console)
     {
-        vinylImportButton_.setBounds (bar.removeFromLeft (150).reduced (2));
-        mod30CombineButton_.setBounds (bar.removeFromLeft (130).reduced (2));
-        mod30MoveBankButton_.setBounds (bar.removeFromLeft (100).reduced (2));
-        importButton_.setBounds (bar.removeFromLeft (100).reduced (2));
+        vinylImportButton_.setBounds (bar.removeFromLeft (140).reduced (2));
+        mod30CombineButton_.setBounds (bar.removeFromLeft (115).reduced (2));
+        mod30MoveBankButton_.setBounds (bar.removeFromLeft (85).reduced (2));
+        importButton_.setBounds (bar.removeFromLeft (95).reduced (2));
         recordButton_.setBounds (bar.removeFromLeft (100).reduced (2));
         mod11Button_.setBounds (bar.removeFromLeft (110).reduced (2));
         chopButton_.setBounds (bar.removeFromLeft (150).reduced (2));
@@ -706,10 +706,10 @@ void SP1200AudioProcessorEditor::resized()
     if (view_ == ViewMode::console)
     {
         auto filterBar = r.removeFromTop (28);
-        busFilterSlider_.setBounds (filterBar.removeFromLeft (280).reduced (2));
-        busResSlider_.setBounds (filterBar.removeFromLeft (280).reduced (2));
-        multiPitchButton_.setBounds (filterBar.removeFromLeft (160).reduced (2));
-        faderModeButton_.setBounds (filterBar.removeFromLeft (140).reduced (2));
+        busFilterSlider_.setBounds (filterBar.removeFromLeft (240).reduced (2));
+        busResSlider_.setBounds (filterBar.removeFromLeft (220).reduced (2));
+        multiPitchButton_.setBounds (filterBar.removeFromLeft (150).reduced (2));
+        faderModeButton_.setBounds (filterBar.removeFromLeft (120).reduced (2));
     }
     else if (view_ == ViewMode::sequencer)
     {
@@ -947,7 +947,10 @@ void SP1200AudioProcessorEditor::handleKeypadDigit (int digit)
     if (keypadMode_ == KeypadEntryMode::idle)
         keypadMode_ = view_ == ViewMode::sequencer ? KeypadEntryMode::pattern : KeypadEntryMode::bank;
 
-    if (keypadBuffer_.length() >= 3)
+    if (keypadBuffer_.length() >= 2)
+        return;
+
+    if (keypadBuffer_.isEmpty() && digit == 0)
         return;
 
     keypadBuffer_ += juce::String (digit);
