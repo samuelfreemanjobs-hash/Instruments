@@ -1,5 +1,6 @@
 #include "PluginEditor.h"
 
+#include "Project/ProjectFile.h"
 #include "SP1200Constants.h"
 
 namespace
@@ -61,6 +62,36 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
 
     chopButton_.onClick = [this] { runAutoChop16(); };
     addAndMakeVisible (chopButton_);
+
+    mod11Button_.onClick = [this] { openChopModal(); };
+    addAndMakeVisible (mod11Button_);
+
+    saveProjectButton_.onClick = [this] { saveProject(); };
+    loadProjectButton_.onClick = [this] { loadProject(); };
+    addAndMakeVisible (saveProjectButton_);
+    addAndMakeVisible (loadProjectButton_);
+
+    busFilterSlider_.setSliderStyle (juce::Slider::LinearHorizontal);
+    busFilterSlider_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 48, 18);
+    busFilterSlider_.setRange (0.0, 1.0, 0.001);
+    busFilterSlider_.setValue (processor_.engine().getFilterCutoffNorm());
+    busFilterSlider_.setTextValueSuffix (" cut");
+    busFilterSlider_.onValueChange = [this]
+    {
+        processor_.engine().setFilterCutoffNorm (static_cast<float> (busFilterSlider_.getValue()));
+    };
+    addAndMakeVisible (busFilterSlider_);
+
+    busResSlider_.setSliderStyle (juce::Slider::LinearHorizontal);
+    busResSlider_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 48, 18);
+    busResSlider_.setRange (0.0, 1.0, 0.001);
+    busResSlider_.setValue (processor_.engine().getFilterResonance());
+    busResSlider_.setTextValueSuffix (" res");
+    busResSlider_.onValueChange = [this]
+    {
+        processor_.engine().setFilterResonance (static_cast<float> (busResSlider_.getValue()));
+    };
+    addAndMakeVisible (busResSlider_);
 
     multiPitchButton_.onClick = [this]
     {
@@ -269,11 +300,16 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     seqTab_.setToggleState (seq, juce::dontSendNotification);
     songTab_.setToggleState (song, juce::dontSendNotification);
 
-    importButton_.setVisible (console);
-    recordButton_.setVisible (console);
-    chopButton_.setVisible (console);
-    multiPitchButton_.setVisible (console);
-    faderModeButton_.setVisible (console || seq);
+    importButton_.setVisible (console && chopModal_ == nullptr);
+    recordButton_.setVisible (console && chopModal_ == nullptr);
+    chopButton_.setVisible (console && chopModal_ == nullptr);
+    mod11Button_.setVisible (console && chopModal_ == nullptr);
+    saveProjectButton_.setVisible (console && chopModal_ == nullptr);
+    loadProjectButton_.setVisible (console && chopModal_ == nullptr);
+    busFilterSlider_.setVisible (console && chopModal_ == nullptr);
+    busResSlider_.setVisible (console && chopModal_ == nullptr);
+    multiPitchButton_.setVisible (console && chopModal_ == nullptr);
+    faderModeButton_.setVisible ((console || seq) && chopModal_ == nullptr);
 
     patternSlider_.setVisible (seq);
     barsSlider_.setVisible (seq);
@@ -363,11 +399,21 @@ void SP1200AudioProcessorEditor::resized()
     auto bar = r.removeFromTop (32);
     if (view_ == ViewMode::console)
     {
-        importButton_.setBounds (bar.removeFromLeft (120).reduced (2));
-        recordButton_.setBounds (bar.removeFromLeft (120).reduced (2));
-        chopButton_.setBounds (bar.removeFromLeft (180).reduced (2));
-        multiPitchButton_.setBounds (bar.removeFromLeft (160).reduced (2));
-        faderModeButton_.setBounds (bar.removeFromLeft (140).reduced (2));
+        importButton_.setBounds (bar.removeFromLeft (100).reduced (2));
+        recordButton_.setBounds (bar.removeFromLeft (100).reduced (2));
+        mod11Button_.setBounds (bar.removeFromLeft (110).reduced (2));
+        chopButton_.setBounds (bar.removeFromLeft (150).reduced (2));
+        saveProjectButton_.setBounds (bar.removeFromLeft (90).reduced (2));
+        loadProjectButton_.setBounds (bar.removeFromLeft (90).reduced (2));
+    }
+
+    if (view_ == ViewMode::console)
+    {
+        auto filterBar = r.removeFromTop (28);
+        busFilterSlider_.setBounds (filterBar.removeFromLeft (280).reduced (2));
+        busResSlider_.setBounds (filterBar.removeFromLeft (280).reduced (2));
+        multiPitchButton_.setBounds (filterBar.removeFromLeft (160).reduced (2));
+        faderModeButton_.setBounds (filterBar.removeFromLeft (140).reduced (2));
     }
     else if (view_ == ViewMode::sequencer)
     {
@@ -413,6 +459,12 @@ void SP1200AudioProcessorEditor::resized()
         auto stacks = r.removeFromBottom (juce::jmax (100, r.getHeight() / 4));
         stepStacks_->setBounds (stacks);
         pianoRoll_->setBounds (r);
+        return;
+    }
+
+    if (chopModal_ != nullptr)
+    {
+        chopModal_->setBounds (getLocalBounds());
         return;
     }
 
@@ -520,6 +572,117 @@ void SP1200AudioProcessorEditor::runAutoChop16()
     for (std::size_t i = 0; i < slices.size() && i < static_cast<std::size_t> (sp1200::kNumPads); ++i)
         processor_.engine().assignSegmentToPad (static_cast<int> (i), static_cast<int> (slices[i]));
     refreshMemoryLabel();
+}
+
+void SP1200AudioProcessorEditor::syncUIFromEngine()
+{
+    auto& eng = processor_.engine();
+    busFilterSlider_.setValue (eng.getFilterCutoffNorm(), juce::dontSendNotification);
+    busResSlider_.setValue (eng.getFilterResonance(), juce::dontSendNotification);
+    multiPitchButton_.setToggleState (eng.multiPitchEnabled(), juce::dontSendNotification);
+    patternSlider_.setValue (eng.sequencer().currentPattern() + 1, juce::dontSendNotification);
+    barsSlider_.setValue (eng.sequencer().patternBars(), juce::dontSendNotification);
+    for (int i = 0; i < static_cast<int> (songSlotBoxes_.size()); ++i)
+    {
+        const int pat = eng.sequencer().songSlot (i);
+        songSlotBoxes_[static_cast<std::size_t> (i)].setSelectedId (pat + 1, juce::dontSendNotification);
+    }
+    for (int p = 0; p < sp1200::kNumPads; ++p)
+    {
+        const auto pad = eng.getPad (p);
+        faders_[static_cast<std::size_t> (p)].setValue (pad.level / 2.0, juce::dontSendNotification);
+    }
+    syncPianoRollFromControls();
+    refreshMemoryLabel();
+    refreshSeqInfo();
+}
+
+void SP1200AudioProcessorEditor::openChopModal()
+{
+    int seg = lastSegmentForChop_;
+    if (seg < 0)
+    {
+        for (int p = 0; p < sp1200::kNumPads; ++p)
+        {
+            seg = processor_.engine().getPad (p).segmentIndex;
+            if (seg >= 0)
+                break;
+        }
+    }
+    if (seg < 0)
+    {
+        juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::InfoIcon,
+                                              "MOD 11",
+                                              "Import or record a sample first.");
+        return;
+    }
+
+    chopModal_ = std::make_unique<ChopModalComponent> (
+        processor_.engine(),
+        static_cast<std::size_t> (seg),
+        [this] { closeChopModal(); });
+    addAndMakeVisible (*chopModal_);
+    chopModal_->toFront (true);
+    setView (view_);
+    resized();
+}
+
+void SP1200AudioProcessorEditor::closeChopModal()
+{
+    chopModal_.reset();
+    refreshMemoryLabel();
+    setView (view_);
+}
+
+void SP1200AudioProcessorEditor::saveProject()
+{
+    auto chooser = std::make_shared<juce::FileChooser> ("Save project",
+                                                        juce::File(),
+                                                        "*" + juce::String (sp1200::ProjectFile::kExtension));
+    chooser->launchAsync (juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles,
+                          [this, chooser] (const juce::FileChooser& fc)
+                          {
+                              auto f = fc.getResult();
+                              if (f == juce::File())
+                                  return;
+                              if (! f.hasFileExtension (sp1200::ProjectFile::kExtension))
+                                  f = f.withFileExtension (sp1200::ProjectFile::kExtension);
+                              if (! sp1200::ProjectFile::saveToFile (processor_.engine(), f))
+                              {
+                                  juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
+                                                                          "Save failed",
+                                                                          "Could not write project file.");
+                              }
+                          });
+}
+
+void SP1200AudioProcessorEditor::loadProject()
+{
+    auto chooser = std::make_shared<juce::FileChooser> ("Load project",
+                                                        juce::File(),
+                                                        "*" + juce::String (sp1200::ProjectFile::kExtension));
+    chooser->launchAsync (juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
+                          [this, chooser] (const juce::FileChooser& fc)
+                          {
+                              const auto f = fc.getResult();
+                              if (f == juce::File())
+                                  return;
+                              if (! sp1200::ProjectFile::loadFromFile (processor_.engine(), f))
+                              {
+                                  juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
+                                                                          "Load failed",
+                                                                          "Invalid or unsupported project file.");
+                                  return;
+                              }
+                              lastSegmentForChop_ = -1;
+                              for (std::size_t i = 0;; ++i)
+                              {
+                                  if (processor_.engine().memoryPool().getSegment (i) == nullptr)
+                                      break;
+                                  lastSegmentForChop_ = static_cast<int> (i);
+                              }
+                              syncUIFromEngine();
+                          });
 }
 
 void SP1200AudioProcessorEditor::toggleRecordInput()

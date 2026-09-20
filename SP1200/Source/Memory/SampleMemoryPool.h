@@ -30,6 +30,8 @@ public:
     [[nodiscard]] SampleSegment* getSegment (std::size_t index);
 
     void clear();
+    void replaceAll (std::vector<SampleSegment> segments);
+    void recomputeUsedPublic() { recomputeUsed(); }
 
 private:
     void recomputeUsed();

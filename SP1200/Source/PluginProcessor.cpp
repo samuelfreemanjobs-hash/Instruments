@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "Project/ProjectFile.h"
 
 SP1200AudioProcessor::SP1200AudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -71,16 +72,12 @@ juce::AudioProcessorEditor* SP1200AudioProcessor::createEditor()
 
 void SP1200AudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    juce::ValueTree root ("SP1200Project");
-    root.setProperty ("version", 1, nullptr);
-    if (auto xml = root.createXml())
-        copyXmlToBinary (*xml, destData);
+    sp1200::ProjectFile::saveToMemoryBlock (engine_, destData);
 }
 
 void SP1200AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    if (auto xml = getXmlFromBinary (data, sizeInBytes))
-        juce::ignoreUnused (juce::ValueTree::fromXml (*xml));
+    sp1200::ProjectFile::loadFromMemoryBlock (engine_, data, static_cast<std::size_t> (sizeInBytes));
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

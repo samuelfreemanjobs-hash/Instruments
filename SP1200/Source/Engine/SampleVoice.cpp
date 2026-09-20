@@ -5,16 +5,26 @@
 
 namespace sp1200
 {
-void SampleVoice::start (const TwelveBitBuffer* data, float velocity, float tuneSemitones, float level, float pan)
+void SampleVoice::start (const TwelveBitBuffer* data,
+                       float velocity,
+                       float tuneSemitones,
+                       float level,
+                       float pan,
+                       std::size_t startSample,
+                       std::size_t endSample)
 {
     data_ = data;
-    phase_ = 0.0;
+    startSample_ = startSample;
+    phase_ = static_cast<double> (startSample_);
+    const auto dataLen = data_ != nullptr ? data_->size() : 0u;
+    const auto end = endSample > startSample && endSample <= dataLen ? endSample : dataLen;
+    endPhase_ = static_cast<double> (end);
     phaseInc_ = std::pow (2.0, static_cast<double> (tuneSemitones) / 12.0);
     level_ = level * std::clamp (velocity, 0.0f, 1.0f);
     const float norm = std::clamp ((pan + 1.0f) * 0.5f, 0.0f, 1.0f);
     panL_ = std::sqrt (1.0f - norm);
     panR_ = std::sqrt (norm);
-    active_ = data_ != nullptr && data_->size() > 0;
+    active_ = data_ != nullptr && endPhase_ > phase_;
 }
 
 void SampleVoice::forceStop() noexcept
@@ -28,8 +38,7 @@ float SampleVoice::renderNextSample() noexcept
     if (! active_ || data_ == nullptr)
         return 0.0f;
 
-    const auto len = static_cast<double> (data_->size());
-    if (phase_ >= len)
+    if (phase_ >= endPhase_)
     {
         active_ = false;
         return 0.0f;

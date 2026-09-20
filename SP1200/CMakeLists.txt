@@ -27,7 +27,11 @@ target_sources (SP1200
         Source/Engine/SampleVoice.cpp
         Source/Engine/SamplerEngine.cpp
         Source/Engine/PatternSequencer.cpp
+        Source/Engine/SegmentEditor.cpp
         Source/Import/TransientChop.cpp
+        Source/DSP/Ssm2044BusFilter.cpp
+        Source/Project/ProjectFile.cpp
+        Source/UI/ChopModalComponent.cpp
 )
 
 target_compile_definitions (SP1200
@@ -63,10 +67,28 @@ add_executable (SP1200SequencerTests
     Source/Import/TransientChop.cpp
 )
 
-foreach (t SP1200MemoryTests SP1200SequencerTests)
+add_executable (SP1200ProjectFileTests
+    Tests/ProjectFileTests.cpp
+    Source/Engine/SamplerEngine.cpp
+    Source/Engine/SampleVoice.cpp
+    Source/Engine/PatternSequencer.cpp
+    Source/Engine/SegmentEditor.cpp
+    Source/Memory/TwelveBitBuffer.cpp
+    Source/Memory/SampleMemoryPool.cpp
+    Source/Import/SampleImporter.cpp
+    Source/Import/TransientChop.cpp
+    Source/DSP/Ssm2044BusFilter.cpp
+    Source/Project/ProjectFile.cpp
+)
+
+foreach (t SP1200MemoryTests SP1200SequencerTests SP1200ProjectFileTests)
     target_include_directories (${t} PRIVATE Source)
     target_compile_features (${t} PRIVATE cxx_std_20)
 endforeach()
 
+target_compile_definitions (SP1200ProjectFileTests PRIVATE JUCE_USE_CURL=0)
+target_link_libraries (SP1200ProjectFileTests PRIVATE juce::juce_core juce::juce_audio_basics juce::juce_dsp juce::juce_audio_formats)
+
 add_test (NAME SP1200Memory COMMAND SP1200MemoryTests)
 add_test (NAME SP1200Sequencer COMMAND SP1200SequencerTests)
+add_test (NAME SP1200ProjectFile COMMAND SP1200ProjectFileTests)

@@ -12,9 +12,11 @@ SamplerEngine::SamplerEngine() = default;
 
 void SamplerEngine::prepare (double sampleRate, int maxBlockSize)
 {
-    juce::ignoreUnused (maxBlockSize);
     hostSampleRate_ = sampleRate;
     recordSourceRate_ = sampleRate;
+    busFilter_.prepare (sampleRate, maxBlockSize);
+    busFilter_.setBaseCutoffNorm (filterCutoffNorm_);
+    busFilter_.setResonance (filterResonance_);
 }
 
 void SamplerEngine::process (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi)
@@ -23,9 +25,10 @@ void SamplerEngine::process (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
         handleMidi (metadata.getMessage());
 
     pendingPadHits_.clear();
+    busFilter_.beginBlock();
     sequencer_.advance (hostSampleRate_, buffer.getNumSamples(), pendingPadHits_);
     for (const auto& hit : pendingPadHits_)
-        triggerPad (hit.pad, hit.velocity, hit.tuneSemitones, hit.pan); // filterCutoff → bus (TODO SSM2044)
+        triggerPad (hit.pad, hit.velocity, hit.tuneSemitones, hit.pan, hit.filterCutoff);
 
     buffer.clear();
     auto* left = buffer.getWritePointer (0);
@@ -45,6 +48,8 @@ void SamplerEngine::process (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
         left[i] = sumL;
         right[i] = sumR;
     }
+
+    busFilter_.process (buffer);
 }
 
 std::optional<std::size_t> SamplerEngine::importFile (const juce::File& file, int bankIndex, juce::String name)
@@ -60,6 +65,46 @@ void SamplerEngine::assignSegmentToPad (int padIndex, int segmentIndex)
     if (padIndex < 0 || padIndex >= kNumPads)
         return;
     pads_.pads[padIndex].segmentIndex = segmentIndex;
+}
+
+void SamplerEngine::setPadAssignment (int padIndex, PadAssignment assignment)
+{
+    if (padIndex >= 0 && padIndex < kNumPads)
+        pads_.pads[padIndex] = assignment;
+}
+
+void SamplerEngine::setFilterCutoffNorm (float norm)
+{
+    filterCutoffNorm_ = std::clamp (norm, 0.0f, 1.0f);
+    busFilter_.setBaseCutoffNorm (filterCutoffNorm_);
+}
+
+void SamplerEngine::setFilterResonance (float norm)
+{
+    filterResonance_ = std::clamp (norm, 0.0f, 1.0f);
+    busFilter_.setResonance (filterResonance_);
+}
+
+void SamplerEngine::previewSegment (std::size_t segmentIndex, std::int64_t startSample, std::int64_t endSample)
+{
+    const auto* seg = pool_.getSegment (segmentIndex);
+    if (seg == nullptr)
+        return;
+
+    const auto n = static_cast<std::int64_t> (seg->data.size());
+    const auto start = std::clamp (startSample, std::int64_t { 0 }, n);
+    const auto end = endSample < 0 ? n : std::clamp (endSample, start, n);
+    if (end <= start)
+        return;
+
+    const int vi = findFreeVoice();
+    voices_[static_cast<std::size_t> (vi)].start (&seg->data,
+                                                 0.95f,
+                                                 0.0f,
+                                                 1.0f,
+                                                 0.0f,
+                                                 static_cast<std::size_t> (start),
+                                                 static_cast<std::size_t> (end));
 }
 
 void SamplerEngine::setPadLevel (int padIndex, float level)
@@ -201,8 +246,9 @@ int SamplerEngine::findFreeVoice() noexcept
     return 0;
 }
 
-void SamplerEngine::triggerPad (int padIndex, float velocity, float extraTune, float pan)
+void SamplerEngine::triggerPad (int padIndex, float velocity, float extraTune, float pan, float filterStep)
 {
+    busFilter_.pushStepModulation (filterStep);
     if (padIndex < 0 || padIndex >= kNumPads)
         return;
 

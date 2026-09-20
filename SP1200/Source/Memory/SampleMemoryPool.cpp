@@ -31,6 +31,12 @@ void SampleMemoryPool::clear()
     usedSamples_ = 0;
 }
 
+void SampleMemoryPool::replaceAll (std::vector<SampleSegment> segments)
+{
+    segments_ = std::move (segments);
+    recomputeUsed();
+}
+
 void SampleMemoryPool::recomputeUsed()
 {
     usedSamples_ = 0;

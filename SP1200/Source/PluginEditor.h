@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PluginProcessor.h"
+#include "UI/ChopModalComponent.h"
 #include "UI/PianoRollComponent.h"
 #include "UI/StepStackPanel.h"
 
@@ -34,6 +35,11 @@ private:
     void toggleRecordInput();
     void setView (ViewMode mode);
     void runAutoChop16();
+    void openChopModal();
+    void closeChopModal();
+    void saveProject();
+    void loadProject();
+    void syncUIFromEngine();
     void syncPianoRollFromControls();
     void buttonClicked (juce::Button* button) override;
 
@@ -54,7 +60,12 @@ private:
     juce::TextButton recordButton_ { "ARM INPUT" };
     juce::TextButton faderModeButton_ { "FADER: VOL" };
     juce::TextButton chopButton_ { "Auto-chop 16 (transient)" };
+    juce::TextButton mod11Button_ { "MOD 11 CHOP" };
+    juce::TextButton saveProjectButton_ { "Save .sp12p" };
+    juce::TextButton loadProjectButton_ { "Load .sp12p" };
     juce::ToggleButton multiPitchButton_ { "MULTI-PITCH (16 cap)" };
+    juce::Slider busFilterSlider_;
+    juce::Slider busResSlider_;
 
     juce::Slider patternSlider_;
     juce::Slider barsSlider_;
@@ -84,4 +95,5 @@ private:
     int faderMode_ = 0;
     int lastSegmentForChop_ = -1;
     bool seqRecordMode_ = false;
+    std::unique_ptr<ChopModalComponent> chopModal_;
 };

@@ -11,7 +11,7 @@ Performance sampler with **16 pads**, **16 voices**, **7:00** embedded sample RA
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
-cmake --build build -j --target SP1200_Standalone SP1200MemoryTests SP1200SequencerTests
+cmake --build build -j --target SP1200_Standalone SP1200MemoryTests SP1200SequencerTests SP1200ProjectFileTests
 ctest --test-dir build -R SP1200
 ```
 
@@ -21,7 +21,7 @@ Artifact: `build/SP1200/SP1200_artefacts/Release/Standalone/SP-1200 Drumulator`
 
 ```text
 WAV / input → SampleImporter (mono sum, resample) → TwelveBitBuffer → SampleMemoryPool
-MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → stereo out
+MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → Ssm2044BusFilter → stereo out
 ```
 
 ## Threading
@@ -41,16 +41,16 @@ MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → ste
 | `Source/Import/SampleImporter.*` | File/buffer → SP format |
 | `Source/Engine/SamplerEngine.*` | MIDI, voices, record |
 | `Source/PluginProcessor.*` | JUCE standalone shell |
-| `Source/PluginEditor.*` | Console UI v0 (16 faders/pads) |
+| `Source/PluginEditor.*` | Console, MOD 11 chop overlay, save/load |
+| `Source/UI/ChopModalComponent.*` | MOD 11 truncate / auto-chop / normalize |
+| `Source/Project/ProjectFile.*` | `.sp12p` embedded samples + patterns |
+| `Source/DSP/Ssm2044BusFilter.*` | Bus low-pass + per-step cutoff mod |
 
 ## Extension points
 
-- MOD 11 waveform chop modal (transient chop engine done)
-- MOD 20 **PianoRollComponent** (16 lanes, click toggle steps, playhead, chromatic cap)
+- MOD 20 **PianoRollComponent** (16 lanes, step stacks incl. filter)
 - Song tab: 8-slot chain; pattern bank 99, bars 1–4
 - Multi-pitch / chromatic cap via `quantizeToMultiPitch`
-- Project `.sp12p` embed in `getStateInformation`
-- Bus SSM2044 filter (Module 15)
 
 ## Related
 

@@ -7,7 +7,13 @@ namespace sp1200
 class SampleVoice
 {
 public:
-    void start (const TwelveBitBuffer* data, float velocity, float tuneSemitones, float level, float pan = 0.0f);
+    void start (const TwelveBitBuffer* data,
+                float velocity,
+                float tuneSemitones,
+                float level,
+                float pan = 0.0f,
+                std::size_t startSample = 0,
+                std::size_t endSample = 0);
     void forceStop() noexcept;
     [[nodiscard]] bool isActive() const noexcept { return active_; }
 
@@ -17,6 +23,8 @@ public:
 
 private:
     const TwelveBitBuffer* data_ = nullptr;
+    std::size_t startSample_ = 0;
+    double endPhase_ = 0.0;
     double phase_ = 0.0;
     double phaseInc_ = 1.0;
     float level_ = 1.0f;
