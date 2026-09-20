@@ -25,13 +25,19 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     setResizeLimits (900, 640, 1600, 1000);
     setSize (1100, 720);
 
+    const int tabGroup = 9001;
     for (auto* tab : { &consoleTab_, &seqTab_, &songTab_ })
+    {
+        tab->setClickingTogglesState (true);
+        tab->setRadioGroupId (tabGroup);
         addAndMakeVisible (*tab);
+    }
 
-    consoleTab_.onClick = [this] { setView (ViewMode::console); };
     seqTab_.setButtonText ("MOD 20 PIANO ROLL");
-    seqTab_.onClick = [this] { setView (ViewMode::sequencer); };
-    songTab_.onClick = [this] { setView (ViewMode::song); };
+    consoleTab_.addListener (this);
+    seqTab_.addListener (this);
+    songTab_.addListener (this);
+    consoleTab_.setToggleState (true, juce::dontSendNotification);
 
     headerLabel_.setText ("SP-1200 SAMPLING DRUMULATOR", juce::dontSendNotification);
     headerLabel_.setFont (juce::FontOptions (18.0f, juce::Font::bold));
@@ -211,12 +217,26 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
 
 SP1200AudioProcessorEditor::~SP1200AudioProcessorEditor() = default;
 
+void SP1200AudioProcessorEditor::buttonClicked (juce::Button* button)
+{
+    if (button == &consoleTab_)
+        setView (ViewMode::console);
+    else if (button == &seqTab_)
+        setView (ViewMode::sequencer);
+    else if (button == &songTab_)
+        setView (ViewMode::song);
+}
+
 void SP1200AudioProcessorEditor::setView (ViewMode mode)
 {
     view_ = mode;
     const bool console = mode == ViewMode::console;
     const bool seq = mode == ViewMode::sequencer;
     const bool song = mode == ViewMode::song;
+
+    consoleTab_.setToggleState (console, juce::dontSendNotification);
+    seqTab_.setToggleState (seq, juce::dontSendNotification);
+    songTab_.setToggleState (song, juce::dontSendNotification);
 
     importButton_.setVisible (console);
     recordButton_.setVisible (console);
@@ -234,20 +254,27 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     chromaticTuneBox_.setVisible (seq && chromaticMapButton_.getToggleState());
     clearPatternButton_.setVisible (seq);
     if (pianoRoll_ != nullptr)
+    {
         pianoRoll_->setVisible (seq);
+        if (seq)
+            pianoRoll_->toFront (false);
+    }
 
     songInfoLabel_.setVisible (song);
     songPlayButton_.setVisible (song);
     for (auto& box : songSlotBoxes_)
         box.setVisible (song);
 
-    setVisibleArray (console, padButtons_);
-    setVisibleArray (console, faders_);
+    for (auto& b : padButtons_)
+        b.setVisible (console);
+    for (auto& f : faders_)
+        f.setVisible (console);
 
     if (seq && pianoRoll_ != nullptr)
         syncPianoRollFromControls();
 
     resized();
+    repaint();
 }
 
 void SP1200AudioProcessorEditor::syncPianoRollFromControls()
@@ -286,6 +313,9 @@ void SP1200AudioProcessorEditor::resized()
     consoleTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
     seqTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
     songTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
+    consoleTab_.toFront (false);
+    seqTab_.toFront (false);
+    songTab_.toFront (false);
 
     auto top = r.removeFromTop (40);
     headerLabel_.setBounds (top.removeFromLeft (360));

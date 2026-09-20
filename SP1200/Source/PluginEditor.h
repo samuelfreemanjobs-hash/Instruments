@@ -7,7 +7,8 @@
 #include <memory>
 
 class SP1200AudioProcessorEditor : public juce::AudioProcessorEditor,
-                                   private juce::Timer
+                                   private juce::Timer,
+                                   private juce::Button::Listener
 {
 public:
     explicit SP1200AudioProcessorEditor (SP1200AudioProcessor&);
@@ -33,6 +34,7 @@ private:
     void setView (ViewMode mode);
     void runAutoChop16();
     void syncPianoRollFromControls();
+    void buttonClicked (juce::Button* button) override;
 
     SP1200AudioProcessor& processor_;
 
