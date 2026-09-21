@@ -1,0 +1,1757 @@
+#include "PluginEditor.h"
+
+#include "Engine/PadFilterRoles.h"
+#include "Project/ProjectFile.h"
+#include "SP1200Constants.h"
+
+#include <cmath>
+
+namespace
+{
+juce::String formatMemoryTime (std::int64_t samples)
+{
+    const auto seconds = samples / static_cast<std::int64_t> (sp1200::kSampleRateHz);
+    const int mm = static_cast<int> (seconds / 60);
+    const int ss = static_cast<int> (seconds % 60);
+    return juce::String::formatted ("%d:%02d", mm, ss);
+}
+
+void setVisibleArray (bool on, auto& arr)
+{
+    for (auto& c : arr)
+        c.setVisible (on);
+}
+} // namespace
+
+SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
+    : AudioProcessorEditor (&p), processor_ (p)
+{
+    setResizeLimits (900, 640, 1600, 1000);
+    setSize (1100, 720);
+    setWantsKeyboardFocus (true);
+    addKeyListener (this);
+
+    const int tabGroup = 9001;
+    for (auto* tab : { &consoleTab_, &waveChopTab_, &programTab_, &seqTab_, &songTab_, &filterTab_, &setupTab_ })
+    {
+        tab->setClickingTogglesState (true);
+        tab->setRadioGroupId (tabGroup);
+        addAndMakeVisible (*tab);
+    }
+
+    seqTab_.setButtonText ("MOD 20 PIANO ROLL");
+    filterTab_.setButtonText ("15 SSM2044");
+    consoleTab_.addListener (this);
+    waveChopTab_.addListener (this);
+    programTab_.addListener (this);
+    seqTab_.addListener (this);
+    songTab_.addListener (this);
+    filterTab_.addListener (this);
+    setupTab_.addListener (this);
+    consoleTab_.setToggleState (true, juce::dontSendNotification);
+
+    headerLabel_.setText ("SP-1200 SAMPLING DRUMULATOR", juce::dontSendNotification);
+    headerLabel_.setFont (juce::FontOptions (18.0f, juce::Font::bold));
+    addAndMakeVisible (headerLabel_);
+
+    engagedLabel_.setText ("12-BIT 26.040 kHz ENGAGED", juce::dontSendNotification);
+    engagedLabel_.setColour (juce::Label::textColourId, juce::Colour (0xff1a6b32));
+    addAndMakeVisible (engagedLabel_);
+
+    rateLabel_.setText ("SAMPLE RATE: 26.040 kHz 12-BIT LINEAR PCM", juce::dontSendNotification);
+    addAndMakeVisible (rateLabel_);
+
+    memoryLabel_.setJustificationType (juce::Justification::centredRight);
+    addAndMakeVisible (memoryLabel_);
+
+    lcdPanel_ = std::make_unique<LcdPanelComponent>();
+    addAndMakeVisible (*lcdPanel_);
+
+    keypad_ = std::make_unique<KeypadComponent>();
+    keypad_->onDigit = [this] (int d) { handleKeypadDigit (d); };
+    keypad_->onEnter = [this] { commitKeypadEntry(); };
+    keypad_->onCancel = [this] { cancelKeypadEntry(); };
+    addAndMakeVisible (*keypad_);
+
+    for (auto* b : { &lcdMinusButton_, &lcdPlusButton_, &lcdNoButton_, &lcdYesButton_ })
+        addAndMakeVisible (*b);
+    lcdMinusButton_.onClick = [this] { nudgeLcdEditField (-1); };
+    lcdPlusButton_.onClick = [this] { nudgeLcdEditField (1); };
+    lcdNoButton_.onClick = [this] { lcdNoBack(); };
+    lcdYesButton_.onClick = [this] { lcdYesExec(); };
+
+    filterRoleLabel_.setJustificationType (juce::Justification::topLeft);
+    filterTopologyLabel_.setJustificationType (juce::Justification::topLeft);
+    filterTopologyLabel_.setText (
+        "Bus: SSM2044 4-pole LP. Pads 3–4 & 11–12: hi-trim pre-bus. Piano-roll FILTER stack = per-step bus offset.",
+        juce::dontSendNotification);
+    addAndMakeVisible (filterRoleLabel_);
+    addAndMakeVisible (filterTopologyLabel_);
+
+    const int programModGroup = 9003;
+    for (auto* b : { &mod12PitchButton_, &mod13DecayButton_, &mod14MixButton_ })
+    {
+        b->setClickingTogglesState (true);
+        b->setRadioGroupId (programModGroup);
+        addAndMakeVisible (*b);
+    }
+    mod12PitchButton_.setToggleState (true, juce::dontSendNotification);
+    mod12PitchButton_.onClick = [this] { setProgramModule (ProgramModule::pitch); };
+    mod13DecayButton_.onClick = [this] { setProgramModule (ProgramModule::decay); };
+    mod14MixButton_.onClick = [this] { setProgramModule (ProgramModule::mix); };
+    programHelpLabel_.setText ("Per-pad tune ±12 st (0.1 st LCD scrub). Faders edit all 16 pads for active module.",
+                               juce::dontSendNotification);
+    addAndMakeVisible (programHelpLabel_);
+
+    waveChopEmptyLabel_.setText ("Import or record a sample, then return to MOD 11 CHOP.",
+                                 juce::dontSendNotification);
+    waveChopEmptyLabel_.setJustificationType (juce::Justification::centred);
+    addAndMakeVisible (waveChopEmptyLabel_);
+
+    const int bankGroup = 9002;
+    for (int i = 0; i < sp1200::kNumBanks; ++i)
+    {
+        auto& b = bankButtons_[static_cast<std::size_t> (i)];
+        b.setButtonText ("BANK " + juce::String (static_cast<char> ('A' + i)));
+        b.setClickingTogglesState (true);
+        b.setRadioGroupId (bankGroup);
+        b.onClick = [this, i] { selectBank (i); };
+        addAndMakeVisible (b);
+    }
+    bankButtons_[0].setToggleState (true, juce::dontSendNotification);
+
+    importButton_.onClick = [this] { importSample(); };
+    addAndMakeVisible (importButton_);
+
+    recordButton_.onClick = [this] { toggleRecordInput(); };
+    addAndMakeVisible (recordButton_);
+
+    chopButton_.onClick = [this] { runAutoChop16(); };
+    addAndMakeVisible (chopButton_);
+
+    mod11Button_.onClick = [this] { openChopModal(); };
+    addAndMakeVisible (mod11Button_);
+
+    saveProjectButton_.onClick = [this] { saveProject(); };
+    loadProjectButton_.onClick = [this] { loadProject(); };
+    addAndMakeVisible (saveProjectButton_);
+    addAndMakeVisible (loadProjectButton_);
+
+    busFilterSlider_.setSliderStyle (juce::Slider::LinearHorizontal);
+    busFilterSlider_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 48, 18);
+    busFilterSlider_.setRange (0.0, 1.0, 0.001);
+    busFilterSlider_.setValue (processor_.engine().getFilterCutoffNorm());
+    busFilterSlider_.setTextValueSuffix (" cut");
+    busFilterSlider_.onValueChange = [this]
+    {
+        processor_.engine().setFilterCutoffNorm (static_cast<float> (busFilterSlider_.getValue()));
+    };
+    addAndMakeVisible (busFilterSlider_);
+
+    busResSlider_.setSliderStyle (juce::Slider::LinearHorizontal);
+    busResSlider_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 48, 18);
+    busResSlider_.setRange (0.0, 1.0, 0.001);
+    busResSlider_.setValue (processor_.engine().getFilterResonance());
+    busResSlider_.setTextValueSuffix (" res");
+    busResSlider_.onValueChange = [this]
+    {
+        processor_.engine().setFilterResonance (static_cast<float> (busResSlider_.getValue()));
+    };
+    addAndMakeVisible (busResSlider_);
+
+    multiPitchButton_.onClick = [this]
+    {
+        auto& eng = processor_.engine();
+        eng.setMultiPitchEnabled (multiPitchButton_.getToggleState());
+        if (multiPitchButton_.getToggleState())
+        {
+            for (int p = 0; p < sp1200::kNumPads; ++p)
+            {
+                const int seg = eng.getPad (p).segmentIndex;
+                if (seg >= 0)
+                {
+                    eng.setMultiPitchSourceSegment (seg);
+                    break;
+                }
+            }
+        }
+    };
+    addAndMakeVisible (multiPitchButton_);
+
+    faderModeButton_.onClick = [this] { cycleFaderMode(); };
+    addAndMakeVisible (faderModeButton_);
+
+    patternSlider_.setRange (1, sp1200::kMaxPatterns, 1);
+    patternSlider_.setValue (1);
+    patternSlider_.onValueChange = [this]
+    {
+        processor_.engine().sequencer().setCurrentPattern (static_cast<int> (patternSlider_.getValue()) - 1);
+        syncPianoRollFromControls();
+        refreshSeqInfo();
+    };
+    addAndMakeVisible (patternSlider_);
+
+    barsSlider_.setRange (sp1200::kMinPatternBars, sp1200::kMaxPatternBars, 1);
+    barsSlider_.setValue (2);
+    barsSlider_.onValueChange = [this]
+    {
+        processor_.engine().sequencer().setPatternBars (static_cast<int> (barsSlider_.getValue()));
+        syncPianoRollFromControls();
+        refreshSeqInfo();
+    };
+    addAndMakeVisible (barsSlider_);
+
+    bpmSlider_.setSliderStyle (juce::Slider::LinearHorizontal);
+    bpmSlider_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 48, 18);
+    bpmSlider_.setRange (40.0, 240.0, 0.1);
+    bpmSlider_.setValue (processor_.engine().sequencer().bpm());
+    bpmSlider_.onValueChange = [this] { processor_.engine().sequencer().setBpm (bpmSlider_.getValue()); };
+    addAndMakeVisible (bpmSlider_);
+
+    swingSlider_.setSliderStyle (juce::Slider::LinearHorizontal);
+    swingSlider_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 48, 18);
+    swingSlider_.setRange (0.0, 1.0, 0.01);
+    swingSlider_.setValue (processor_.engine().sequencer().swing());
+    swingSlider_.onValueChange = [this] { processor_.engine().sequencer().setSwing (static_cast<float> (swingSlider_.getValue())); };
+    addAndMakeVisible (swingSlider_);
+
+    seqInfoLabel_.setText ("PAT 01 | 2 bars | 1/16", juce::dontSendNotification);
+    addAndMakeVisible (seqInfoLabel_);
+
+    seqPlayButton_.onClick = [this] { processor_.engine().sequencer().startPattern(); };
+    seqStopButton_.onClick = [this] { processor_.engine().sequencer().stop(); };
+    addAndMakeVisible (seqPlayButton_);
+    addAndMakeVisible (seqStopButton_);
+
+    seqRecordSteps_.onClick = [this] { seqRecordMode_ = seqRecordSteps_.getToggleState(); };
+    addAndMakeVisible (seqRecordSteps_);
+
+    chromaticMapButton_.onClick = [this]
+    {
+        if (pianoRoll_ != nullptr)
+            pianoRoll_->setChromaticMode (chromaticMapButton_.getToggleState());
+        chromaticTuneBox_.setVisible (view_ == ViewMode::sequencer && chromaticMapButton_.getToggleState());
+        resized();
+    };
+    addAndMakeVisible (chromaticMapButton_);
+
+    for (int i = 0; i < sp1200::kMultiPitchSlots; ++i)
+    {
+        const float st = sp1200::kDefaultMultiPitchOffsets[i];
+        chromaticTuneBox_.addItem (juce::String (st, 1) + " st", i + 1);
+    }
+    chromaticTuneBox_.setSelectedId (1);
+    chromaticTuneBox_.onChange = [this]
+    {
+        const int idx = chromaticTuneBox_.getSelectedItemIndex();
+        if (idx >= 0 && idx < sp1200::kMultiPitchSlots && pianoRoll_ != nullptr)
+            pianoRoll_->setChromaticTune (sp1200::kDefaultMultiPitchOffsets[idx]);
+    };
+    addAndMakeVisible (chromaticTuneBox_);
+
+    clearPatternButton_.onClick = [this] { armClearPatternConfirm(); };
+    addAndMakeVisible (clearPatternButton_);
+
+    pianoRoll_ = std::make_unique<PianoRollComponent> (
+        processor_.engine().sequencer(),
+        [this] (int padIndex) -> juce::String
+        {
+            const int seg = processor_.engine().getPad (padIndex).segmentIndex;
+            if (seg < 0)
+                return "P" + juce::String (padIndex + 1).paddedLeft ('0', 2);
+            const auto* s = processor_.engine().memoryPool().getSegment (static_cast<std::size_t> (seg));
+            if (s == nullptr || s->name.empty())
+                return "P" + juce::String (padIndex + 1).paddedLeft ('0', 2);
+            return juce::String (s->name).substring (0, 10);
+        });
+    addAndMakeVisible (*pianoRoll_);
+
+    stepStacks_ = std::make_unique<StepStackPanel> (processor_.engine().sequencer());
+    addAndMakeVisible (*stepStacks_);
+
+    stackPadSlider_.setRange (1, sp1200::kNumPads, 1);
+    stackPadSlider_.setValue (1);
+    stackPadSlider_.onValueChange = [this]
+    {
+        if (stepStacks_ != nullptr)
+            stepStacks_->setSelectedPad (static_cast<int> (stackPadSlider_.getValue()) - 1);
+    };
+    addAndMakeVisible (stackPadSlider_);
+
+    auto setStackMode = [this] (StepStackPanel::Mode mode)
+    {
+        if (stepStacks_ != nullptr)
+            stepStacks_->setMode (mode);
+    };
+    stackVelButton_.onClick = [setStackMode] { setStackMode (StepStackPanel::Mode::velocity); };
+    stackPitchButton_.onClick = [setStackMode] { setStackMode (StepStackPanel::Mode::pitch); };
+    stackPanButton_.onClick = [setStackMode] { setStackMode (StepStackPanel::Mode::pan); };
+    stackFilterButton_.onClick = [setStackMode] { setStackMode (StepStackPanel::Mode::filter); };
+    for (auto* b : { &stackVelButton_, &stackPitchButton_, &stackPanButton_, &stackFilterButton_ })
+        addAndMakeVisible (*b);
+
+    pianoRoll_->onCellSelected = [this] (int pad, int)
+    {
+        stackPadSlider_.setValue (pad + 1, juce::dontSendNotification);
+        if (stepStacks_ != nullptr)
+            stepStacks_->setSelectedPad (pad);
+    };
+
+    songInfoLabel_.setText ("Song chain (8 slots) → patterns 1–99", juce::dontSendNotification);
+    addAndMakeVisible (songInfoLabel_);
+
+    songPlayButton_.onClick = [this] { processor_.engine().sequencer().startSong(); };
+    addAndMakeVisible (songPlayButton_);
+
+    songLoopButton_.setToggleState (true, juce::dontSendNotification);
+    songLoopButton_.onClick = [this]
+    {
+        processor_.engine().sequencer().setSongLoop (songLoopButton_.getToggleState());
+    };
+    addAndMakeVisible (songLoopButton_);
+
+    setupInfoLabel_.setText ("SQ-1 default: ch 10, notes 36-51, CC 20-35. Pads 5-6 / 13-14 share hat choke group.",
+                             juce::dontSendNotification);
+    addAndMakeVisible (setupInfoLabel_);
+
+    midiChannelSlider_.setSliderStyle (juce::Slider::LinearHorizontal);
+    midiChannelSlider_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 40, 18);
+    midiChannelSlider_.setRange (1.0, 16.0, 1.0);
+    midiChannelSlider_.setValue (processor_.engine().midiChannel());
+    midiChannelSlider_.onValueChange = [this]
+    {
+        processor_.engine().setMidiChannel (static_cast<int> (midiChannelSlider_.getValue()));
+    };
+    addAndMakeVisible (midiChannelSlider_);
+
+    midiOmniButton_.onClick = [this] { processor_.engine().setMidiOmni (midiOmniButton_.getToggleState()); };
+    addAndMakeVisible (midiOmniButton_);
+
+    clockModeBox_.addItem ("Clock: internal", 1);
+    clockModeBox_.addItem ("Clock: MIDI in (slave)", 2);
+    clockModeBox_.addItem ("Clock: MIDI out (master)", 3);
+    clockModeBox_.setSelectedId (1);
+    clockModeBox_.onChange = [this]
+    {
+        const int id = clockModeBox_.getSelectedId();
+        auto mode = sp1200::MidiClockMode::internal;
+        if (id == 2)
+            mode = sp1200::MidiClockMode::slave;
+        else if (id == 3)
+            mode = sp1200::MidiClockMode::master;
+        processor_.engine().midiMapping().setClockMode (mode);
+    };
+    addAndMakeVisible (clockModeBox_);
+
+    for (int i = 0; i < sp1200::kNumPads; ++i)
+        learnPadBox_.addItem ("Pad " + juce::String (i + 1), i + 1);
+    learnPadBox_.setSelectedId (1);
+    addAndMakeVisible (learnPadBox_);
+
+    learnNoteButton_.onClick = [this]
+    {
+        const int pad = learnPadBox_.getSelectedId() - 1;
+        processor_.engine().midiMapping().beginLearnPad (pad);
+        refreshLearnStatus();
+    };
+    learnCcButton_.onClick = [this]
+    {
+        const int pad = learnPadBox_.getSelectedId() - 1;
+        processor_.engine().midiMapping().beginLearnFader (pad);
+        refreshLearnStatus();
+    };
+    resetMidiMapButton_.onClick = [this]
+    {
+        processor_.engine().midiMapping().resetToDefaults();
+        refreshLearnStatus();
+    };
+    for (auto* b : { &learnNoteButton_, &learnCcButton_, &resetMidiMapButton_ })
+        addAndMakeVisible (*b);
+
+    learnStatusLabel_.setText ("MIDI learn idle", juce::dontSendNotification);
+    addAndMakeVisible (learnStatusLabel_);
+
+    for (int i = 0; i < sp1200::kNumPads; ++i)
+    {
+        auto& box = chokeGroupBoxes_[static_cast<std::size_t> (i)];
+        box.addItem ("None", 1);
+        for (int g = 1; g <= sp1200::kMaxChokeGroups; ++g)
+            box.addItem ("Group " + juce::String (g), g + 1);
+        box.setSelectedId (1);
+        box.onChange = [this, i]
+        {
+            const int id = chokeGroupBoxes_[static_cast<std::size_t> (i)].getSelectedId();
+            const int group = id <= 1 ? sp1200::kNoChokeGroup : id - 1;
+            processor_.engine().setPadChokeGroup (i, group);
+        };
+        addAndMakeVisible (box);
+    }
+
+    vinylImportButton_.onClick = [this]
+    {
+        processor_.engine().setVinylImportEnabled (vinylImportButton_.getToggleState());
+    };
+    addAndMakeVisible (vinylImportButton_);
+
+    mod30CombineButton_.onClick = [this] { armCombineWithSecondPad(); };
+    mod30MoveBankButton_.onClick = [this]
+    {
+        if (! processor_.engine().moveSelectedSegmentToCurrentBank())
+        {
+            juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::InfoIcon,
+                                                    "MOD 30",
+                                                    "Select a pad with a sample, then move.");
+            return;
+        }
+        refreshMemoryLabel();
+        refreshLcd();
+    };
+    addAndMakeVisible (mod30CombineButton_);
+    addAndMakeVisible (mod30MoveBankButton_);
+
+    for (int i = 0; i < static_cast<int> (songSlotBoxes_.size()); ++i)
+    {
+        auto& box = songSlotBoxes_[static_cast<std::size_t> (i)];
+        for (int p = 1; p <= sp1200::kMaxPatterns; ++p)
+            box.addItem ("PAT " + juce::String (p).paddedLeft ('0', 2), p);
+        box.addItem ("END", -1);
+        box.setSelectedId (i + 1);
+        box.onChange = [this, i]
+        {
+            const int id = songSlotBoxes_[static_cast<std::size_t> (i)].getSelectedId();
+            if (id == -1)
+                processor_.engine().sequencer().setSongSlot (i, sp1200::kSongSlotEnd);
+            else
+                processor_.engine().sequencer().setSongSlot (i, id - 1);
+        };
+        addAndMakeVisible (box);
+    }
+
+    for (int i = 0; i < sp1200::kNumPads; ++i)
+    {
+        padButtons_[static_cast<std::size_t> (i)].setButtonText ("PAD " + juce::String (i + 1));
+        padButtons_[static_cast<std::size_t> (i)].onClick = [this, i]
+        {
+            auto& eng = processor_.engine();
+            if (combineArm_)
+            {
+                combineArm_ = false;
+                mod30CombineButton_.setButtonText ("MOD 30 COMBINE");
+                const int a = eng.selectedPad();
+                if (a != i && ! eng.combinePads (a, i))
+                {
+                    juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
+                                                            "MOD 30",
+                                                            "Combine failed (missing segment or same pad).");
+                }
+                else
+                    refreshMemoryLabel();
+            }
+            eng.setSelectedPad (i);
+            updatePadHighlight();
+            refreshFilterRoleLabel();
+            refreshLcd();
+            triggerPad (i);
+        };
+        addAndMakeVisible (padButtons_[static_cast<std::size_t> (i)]);
+
+        auto& s = faders_[static_cast<std::size_t> (i)];
+        s.setSliderStyle (juce::Slider::LinearVertical);
+        s.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+        s.setRange (0.0, 1.0, 0.001);
+        s.setValue (0.8);
+        s.onValueChange = [this, i]
+        {
+            const float v = static_cast<float> (faders_[static_cast<std::size_t> (i)].getValue());
+            if (view_ == ViewMode::program)
+            {
+                if (programModule_ == ProgramModule::pitch)
+                    processor_.engine().setPadTune (i, v * 24.0f - 12.0f);
+                else if (programModule_ == ProgramModule::decay)
+                    processor_.engine().setPadDecay (i, v);
+                else
+                    processor_.engine().setPadLevel (i, v * 2.0f);
+                if (processor_.engine().selectedPad() == i && editField_ == lcdFieldForProgramModule() && ! editStaged_)
+                    refreshLcd();
+                return;
+            }
+            if (faderMode_ == 1)
+                processor_.engine().setPadTune (i, v * 24.0f - 12.0f);
+            else if (faderMode_ == 2)
+                processor_.engine().setPadDecay (i, v);
+            else
+                processor_.engine().setPadLevel (i, v * 2.0f);
+        };
+        addAndMakeVisible (s);
+    }
+
+    startTimerHz (4);
+    refreshMemoryLabel();
+    refreshLcd();
+    updatePadHighlight();
+    setView (ViewMode::console);
+}
+
+SP1200AudioProcessorEditor::~SP1200AudioProcessorEditor()
+{
+    removeKeyListener (this);
+}
+
+void SP1200AudioProcessorEditor::cycleFaderMode()
+{
+    faderMode_ = (faderMode_ + 1) % 3;
+    processor_.setFaderMode (faderMode_);
+    const char* names[] = { "VOL", "PITCH", "DECAY" };
+    faderModeButton_.setButtonText ("FADER: " + juce::String (names[faderMode_]));
+    if (view_ == ViewMode::console)
+        beginLcdEdit (faderMode_ == 1 ? sp1200::LcdEditField::padTune
+                       : faderMode_ == 2 ? sp1200::LcdEditField::padDecay
+                                           : sp1200::LcdEditField::padLevel);
+}
+
+int SP1200AudioProcessorEditor::padIndexForComputerKey (const juce::KeyPress& key) const
+{
+    const int k = key.getKeyCode();
+    static const int rowA[] = { 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I' };
+    static const int rowB[] = { 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K' };
+    for (int i = 0; i < 8; ++i)
+    {
+        if (k == rowA[i])
+            return i;
+        if (k == rowB[i])
+            return i + 8;
+    }
+    return -1;
+}
+
+bool SP1200AudioProcessorEditor::keyPressed (const juce::KeyPress& key, juce::Component*)
+{
+    if (chopModal_ != nullptr && chopOverlayMode_)
+        return false;
+
+    if (key == juce::KeyPress::spaceKey)
+    {
+        if (view_ == ViewMode::song)
+            processor_.engine().sequencer().startSong();
+        else
+            processor_.engine().sequencer().startPattern();
+        return true;
+    }
+    if (key == juce::KeyPress::escapeKey)
+    {
+        processor_.engine().sequencer().stop();
+        return true;
+    }
+    if (key.getTextCharacter() == 'r' || key.getTextCharacter() == 'R')
+    {
+        if (view_ == ViewMode::sequencer)
+        {
+            seqRecordSteps_.setToggleState (! seqRecordSteps_.getToggleState(), juce::sendNotification);
+            seqRecordMode_ = seqRecordSteps_.getToggleState();
+        }
+        return true;
+    }
+    if (key == juce::KeyPress::tabKey)
+    {
+        if (key.getModifiers().isShiftDown())
+            cycleLcdEditField();
+        else
+            cycleFaderMode();
+        return true;
+    }
+    if (key.getTextCharacter() == '=' || key.getTextCharacter() == '+')
+    {
+        nudgeLcdEditField (1);
+        return true;
+    }
+    if (key.getTextCharacter() == '-' || key.getTextCharacter() == '_')
+    {
+        nudgeLcdEditField (-1);
+        return true;
+    }
+
+    if (view_ == ViewMode::console || view_ == ViewMode::sequencer || view_ == ViewMode::program)
+    {
+        const int ch = key.getTextCharacter();
+        if (ch >= '0' && ch <= '9')
+        {
+            handleKeypadDigit (ch - '0');
+            return true;
+        }
+        if (key == juce::KeyPress::returnKey)
+        {
+            commitKeypadEntry();
+            return true;
+        }
+    }
+
+    if (view_ == ViewMode::console || view_ == ViewMode::program)
+    {
+        const int ch = key.getTextCharacter();
+        if (ch >= '1' && ch <= '4')
+        {
+            selectBank (ch - '1');
+            return true;
+        }
+    }
+
+    const int pad = padIndexForComputerKey (key);
+    if (pad >= 0)
+    {
+        processor_.engine().setSelectedPad (pad);
+        updatePadHighlight();
+        refreshLcd();
+        triggerPad (pad);
+        return true;
+    }
+    return false;
+}
+
+void SP1200AudioProcessorEditor::buttonClicked (juce::Button* button)
+{
+    if (button == &consoleTab_)
+        setView (ViewMode::console);
+    else if (button == &waveChopTab_)
+        setView (ViewMode::waveChop);
+    else if (button == &seqTab_)
+        setView (ViewMode::sequencer);
+    else if (button == &songTab_)
+        setView (ViewMode::song);
+    else if (button == &programTab_)
+        setView (ViewMode::program);
+    else if (button == &filterTab_)
+        setView (ViewMode::filter);
+    else if (button == &setupTab_)
+        setView (ViewMode::setup);
+}
+
+void SP1200AudioProcessorEditor::setView (ViewMode mode)
+{
+    cancelKeypadEntry();
+    confirmPending_ = false;
+    pendingConfirm_ = PendingConfirmAction::none;
+    combineArm_ = false;
+    mod30CombineButton_.setButtonText ("MOD 30 COMBINE");
+    view_ = mode;
+    const bool console = mode == ViewMode::console;
+    const bool seq = mode == ViewMode::sequencer;
+    const bool song = mode == ViewMode::song;
+    const bool setup = mode == ViewMode::setup;
+    const bool filter = mode == ViewMode::filter;
+    const bool program = mode == ViewMode::program;
+    const bool waveChop = mode == ViewMode::waveChop;
+
+    consoleTab_.setToggleState (console, juce::dontSendNotification);
+    waveChopTab_.setToggleState (waveChop, juce::dontSendNotification);
+    programTab_.setToggleState (program, juce::dontSendNotification);
+    seqTab_.setToggleState (seq, juce::dontSendNotification);
+    songTab_.setToggleState (song, juce::dontSendNotification);
+    filterTab_.setToggleState (filter, juce::dontSendNotification);
+    setupTab_.setToggleState (setup, juce::dontSendNotification);
+
+    vinylImportButton_.setVisible (console && ! chopOverlayMode_);
+    const bool noOverlay = ! chopOverlayMode_;
+    mod30CombineButton_.setVisible (console && noOverlay);
+    mod30MoveBankButton_.setVisible (console && noOverlay);
+    importButton_.setVisible (console && noOverlay);
+    recordButton_.setVisible (console && noOverlay);
+    chopButton_.setVisible (console && noOverlay);
+    mod11Button_.setVisible (console && noOverlay);
+    saveProjectButton_.setVisible (console && noOverlay);
+    loadProjectButton_.setVisible (console && noOverlay);
+    busFilterSlider_.setVisible (filter && noOverlay);
+    busResSlider_.setVisible (filter && noOverlay);
+    filterRoleLabel_.setVisible (filter && noOverlay);
+    filterTopologyLabel_.setVisible (filter && noOverlay);
+    multiPitchButton_.setVisible (console && noOverlay);
+    faderModeButton_.setVisible ((console || seq) && noOverlay);
+    waveChopEmptyLabel_.setVisible (waveChop && chopModal_ == nullptr);
+    if (chopModal_ != nullptr)
+        chopModal_->setVisible ((waveChop || chopOverlayMode_) && chopModal_ != nullptr);
+
+    patternSlider_.setVisible (seq);
+    barsSlider_.setVisible (seq);
+    bpmSlider_.setVisible (seq || song);
+    swingSlider_.setVisible (seq || song);
+    seqInfoLabel_.setVisible (seq);
+    seqPlayButton_.setVisible (seq);
+    seqStopButton_.setVisible (seq || song);
+    seqRecordSteps_.setVisible (seq);
+    chromaticMapButton_.setVisible (seq);
+    chromaticTuneBox_.setVisible (seq && chromaticMapButton_.getToggleState());
+    clearPatternButton_.setVisible (seq);
+    if (pianoRoll_ != nullptr)
+    {
+        pianoRoll_->setVisible (seq);
+        if (seq)
+            pianoRoll_->toFront (false);
+    }
+    if (stepStacks_ != nullptr)
+        stepStacks_->setVisible (seq);
+    stackPadSlider_.setVisible (seq);
+    for (auto* b : { &stackVelButton_, &stackPitchButton_, &stackPanButton_, &stackFilterButton_ })
+        b->setVisible (seq);
+
+    songInfoLabel_.setVisible (song);
+    songPlayButton_.setVisible (song);
+    songLoopButton_.setVisible (song);
+    for (auto& box : songSlotBoxes_)
+        box.setVisible (song);
+
+    setupInfoLabel_.setVisible (setup);
+    midiChannelSlider_.setVisible (setup);
+    midiOmniButton_.setVisible (setup);
+    clockModeBox_.setVisible (setup);
+    learnPadBox_.setVisible (setup);
+    for (auto* b : { &learnNoteButton_, &learnCcButton_, &resetMidiMapButton_ })
+        b->setVisible (setup);
+    learnStatusLabel_.setVisible (setup);
+    for (auto& box : chokeGroupBoxes_)
+        box.setVisible (setup);
+
+    for (auto& b : padButtons_)
+        b.setVisible (console || program);
+    for (auto& f : faders_)
+        f.setVisible (console || program);
+    for (auto* b : { &mod12PitchButton_, &mod13DecayButton_, &mod14MixButton_ })
+        b->setVisible (program && chopModal_ == nullptr);
+    programHelpLabel_.setVisible (program && chopModal_ == nullptr);
+    const bool lcdKeypad = (console || seq || filter || program) && ! chopOverlayMode_;
+    const bool lcdScrub = lcdKeypad;
+    if (lcdPanel_ != nullptr)
+        lcdPanel_->setVisible (lcdKeypad);
+    if (keypad_ != nullptr)
+        keypad_->setVisible (lcdKeypad);
+    for (auto* b : { &lcdMinusButton_, &lcdPlusButton_, &lcdNoButton_, &lcdYesButton_ })
+        b->setVisible (lcdScrub);
+    for (auto& b : bankButtons_)
+        b.setVisible (console || program);
+
+    if (seq && pianoRoll_ != nullptr)
+        syncPianoRollFromControls();
+
+    if (filter)
+        beginLcdEdit (sp1200::LcdEditField::busCutoff);
+    else if (console)
+        beginLcdEdit (faderMode_ == 1 ? sp1200::LcdEditField::padTune
+                       : faderMode_ == 2 ? sp1200::LcdEditField::padDecay
+                                           : sp1200::LcdEditField::padLevel);
+    else if (program)
+    {
+        syncProgramFadersFromEngine();
+        beginLcdEdit (lcdFieldForProgramModule());
+    }
+    else if (waveChop)
+    {
+        editField_ = sp1200::LcdEditField::none;
+        if (resolveChopSegmentIndex().has_value())
+            showChopEditor (false);
+        else
+        {
+            chopOverlayMode_ = false;
+            if (chopModal_ != nullptr)
+                chopModal_->setVisible (false);
+            waveChopEmptyLabel_.setVisible (true);
+        }
+    }
+    else if (seq)
+        beginLcdEdit (sp1200::LcdEditField::bpm);
+    else
+    {
+        editField_ = sp1200::LcdEditField::none;
+        editStaged_ = false;
+    }
+
+    refreshFilterRoleLabel();
+    refreshLcd();
+    resized();
+    repaint();
+}
+
+void SP1200AudioProcessorEditor::syncPianoRollFromControls()
+{
+    if (pianoRoll_ == nullptr)
+        return;
+    pianoRoll_->setChromaticMode (chromaticMapButton_.getToggleState());
+    const int idx = chromaticTuneBox_.getSelectedItemIndex();
+    if (idx >= 0 && idx < sp1200::kMultiPitchSlots)
+        pianoRoll_->setChromaticTune (sp1200::kDefaultMultiPitchOffsets[idx]);
+    pianoRoll_->refreshFromPattern();
+    if (stepStacks_ != nullptr)
+        stepStacks_->refresh();
+}
+
+void SP1200AudioProcessorEditor::refreshSeqInfo()
+{
+    auto& seq = processor_.engine().sequencer();
+    const int pat = seq.currentPattern() + 1;
+    const int bars = seq.patternBars();
+    const int swingPct = static_cast<int> (std::lround (seq.swing() * 100.0f));
+    seqInfoLabel_.setText ("PAT " + juce::String (pat).paddedLeft ('0', 2) + " | " + juce::String (bars)
+                               + " bar(s) | 1/16 @ 96 PPQN | SWING " + juce::String (swingPct) + "% | steps: "
+                               + juce::String (seq.pattern (seq.currentPattern()).steps.size()),
+                           juce::dontSendNotification);
+}
+
+void SP1200AudioProcessorEditor::paint (juce::Graphics& g)
+{
+    g.fillAll (juce::Colour (0xffd9d2c4));
+    g.setColour (juce::Colours::black.withAlpha (0.15f));
+    g.fillRect (getLocalBounds().removeFromTop (88));
+}
+
+void SP1200AudioProcessorEditor::resized()
+{
+    auto r = getLocalBounds().reduced (8);
+    auto     tabs = r.removeFromTop (28);
+    consoleTab_.setBounds (tabs.removeFromLeft (100).reduced (2));
+    waveChopTab_.setBounds (tabs.removeFromLeft (85).reduced (2));
+    programTab_.setBounds (tabs.removeFromLeft (90).reduced (2));
+    seqTab_.setBounds (tabs.removeFromLeft (115).reduced (2));
+    songTab_.setBounds (tabs.removeFromLeft (90).reduced (2));
+    filterTab_.setBounds (tabs.removeFromLeft (100).reduced (2));
+    setupTab_.setBounds (tabs.removeFromLeft (95).reduced (2));
+    consoleTab_.toFront (false);
+    seqTab_.toFront (false);
+    songTab_.toFront (false);
+
+    auto top = r.removeFromTop (40);
+    headerLabel_.setBounds (top.removeFromLeft (360));
+    engagedLabel_.setBounds (top.removeFromLeft (260));
+    memoryLabel_.setBounds (top);
+
+    auto bar = r.removeFromTop (32);
+    if (view_ == ViewMode::console)
+    {
+        vinylImportButton_.setBounds (bar.removeFromLeft (140).reduced (2));
+        mod30CombineButton_.setBounds (bar.removeFromLeft (115).reduced (2));
+        mod30MoveBankButton_.setBounds (bar.removeFromLeft (85).reduced (2));
+        importButton_.setBounds (bar.removeFromLeft (95).reduced (2));
+        recordButton_.setBounds (bar.removeFromLeft (100).reduced (2));
+        mod11Button_.setBounds (bar.removeFromLeft (110).reduced (2));
+        chopButton_.setBounds (bar.removeFromLeft (150).reduced (2));
+        saveProjectButton_.setBounds (bar.removeFromLeft (90).reduced (2));
+        loadProjectButton_.setBounds (bar.removeFromLeft (90).reduced (2));
+    }
+    else if (view_ == ViewMode::program)
+    {
+        mod12PitchButton_.setBounds (bar.removeFromLeft (90).reduced (2));
+        mod13DecayButton_.setBounds (bar.removeFromLeft (90).reduced (2));
+        mod14MixButton_.setBounds (bar.removeFromLeft (80).reduced (2));
+        programHelpLabel_.setBounds (bar.reduced (2));
+    }
+
+    if (view_ == ViewMode::console)
+    {
+        auto filterBar = r.removeFromTop (28);
+        multiPitchButton_.setBounds (filterBar.removeFromLeft (150).reduced (2));
+        faderModeButton_.setBounds (filterBar.removeFromLeft (120).reduced (2));
+    }
+    else if (view_ == ViewMode::sequencer)
+    {
+        patternSlider_.setBounds (bar.removeFromLeft (140).reduced (2));
+        barsSlider_.setBounds (bar.removeFromLeft (100).reduced (2));
+        bpmSlider_.setBounds (bar.removeFromLeft (120).reduced (2));
+        swingSlider_.setBounds (bar.removeFromLeft (120).reduced (2));
+        seqPlayButton_.setBounds (bar.removeFromLeft (110).reduced (2));
+        seqStopButton_.setBounds (bar.removeFromLeft (70).reduced (2));
+        chromaticMapButton_.setBounds (bar.removeFromLeft (130).reduced (2));
+        chromaticTuneBox_.setBounds (bar.removeFromLeft (90).reduced (2));
+        clearPatternButton_.setBounds (bar.removeFromLeft (100).reduced (2));
+        seqRecordSteps_.setBounds (bar.removeFromLeft (140).reduced (2));
+        seqInfoLabel_.setBounds (bar);
+    }
+    else if (view_ == ViewMode::song)
+    {
+        songPlayButton_.setBounds (bar.removeFromLeft (120).reduced (2));
+        seqStopButton_.setBounds (bar.removeFromLeft (80).reduced (2));
+        songLoopButton_.setBounds (bar.removeFromLeft (130).reduced (2));
+        bpmSlider_.setBounds (bar.removeFromLeft (120).reduced (2));
+        swingSlider_.setBounds (bar.removeFromLeft (120).reduced (2));
+        songInfoLabel_.setBounds (bar);
+    }
+    else if (view_ == ViewMode::setup)
+    {
+        midiChannelSlider_.setBounds (bar.removeFromLeft (180).reduced (2));
+        midiOmniButton_.setBounds (bar.removeFromLeft (140).reduced (2));
+        clockModeBox_.setBounds (bar.removeFromLeft (200).reduced (2));
+    }
+    rateLabel_.setBounds (r.removeFromTop (24));
+
+    if (view_ == ViewMode::waveChop)
+    {
+        waveChopEmptyLabel_.setBounds (r.reduced (20));
+        if (chopModal_ != nullptr && chopModal_->isVisible())
+            chopModal_->setBounds (r.reduced (4));
+        return;
+    }
+
+    if (view_ == ViewMode::song)
+    {
+        auto songArea = r.reduced (4);
+        const int rowH = songArea.getHeight() / 8;
+        for (int i = 0; i < 8; ++i)
+        {
+            auto row = songArea.removeFromTop (rowH);
+            songSlotBoxes_[static_cast<std::size_t> (i)].setBounds (row.removeFromLeft (200).reduced (2));
+        }
+        return;
+    }
+
+    if (view_ == ViewMode::filter)
+    {
+        if (lcdPanel_ != nullptr && keypad_ != nullptr)
+        {
+            auto lcdRow = r.removeFromTop (56);
+            lcdPanel_->setBounds (lcdRow.removeFromLeft (lcdRow.getWidth() * 2 / 3).reduced (2));
+            keypad_->setBounds (lcdRow.reduced (2));
+        }
+        auto scrubRow = r.removeFromTop (28);
+        lcdMinusButton_.setBounds (scrubRow.removeFromLeft (48).reduced (2));
+        lcdPlusButton_.setBounds (scrubRow.removeFromLeft (48).reduced (2));
+        lcdNoButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
+        lcdYesButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
+
+        auto sliderRow = r.removeFromTop (36);
+        busFilterSlider_.setBounds (sliderRow.removeFromLeft (320).reduced (2));
+        busResSlider_.setBounds (sliderRow.removeFromLeft (320).reduced (2));
+
+        filterTopologyLabel_.setBounds (r.removeFromTop (48).reduced (4));
+        filterRoleLabel_.setBounds (r.reduced (4));
+        return;
+    }
+
+    if (view_ == ViewMode::setup)
+    {
+        auto learnBar = r.removeFromTop (32);
+        learnPadBox_.setBounds (learnBar.removeFromLeft (100).reduced (2));
+        learnNoteButton_.setBounds (learnBar.removeFromLeft (100).reduced (2));
+        learnCcButton_.setBounds (learnBar.removeFromLeft (100).reduced (2));
+        resetMidiMapButton_.setBounds (learnBar.removeFromLeft (120).reduced (2));
+        learnStatusLabel_.setBounds (learnBar);
+
+        setupInfoLabel_.setBounds (r.removeFromTop (48).reduced (4));
+
+        const int cols = 4;
+        const int rows = 4;
+        const int cellW = r.getWidth() / cols;
+        const int cellH = juce::jmax (28, r.getHeight() / rows);
+        for (int i = 0; i < sp1200::kNumPads; ++i)
+        {
+            const int row = i / cols;
+            const int col = i % cols;
+            chokeGroupBoxes_[static_cast<std::size_t> (i)].setBounds (col * cellW + 4,
+                                                                      r.getY() + row * cellH + 2,
+                                                                      cellW - 8,
+                                                                      cellH - 4);
+        }
+        return;
+    }
+
+    if (view_ == ViewMode::sequencer && pianoRoll_ != nullptr)
+    {
+        if (lcdPanel_ != nullptr && keypad_ != nullptr)
+        {
+            auto lcdRow = r.removeFromTop (56);
+            lcdPanel_->setBounds (lcdRow.removeFromLeft (lcdRow.getWidth() * 2 / 3).reduced (2));
+            keypad_->setBounds (lcdRow.reduced (2));
+        }
+        auto scrubRow = r.removeFromTop (28);
+        lcdMinusButton_.setBounds (scrubRow.removeFromLeft (48).reduced (2));
+        lcdPlusButton_.setBounds (scrubRow.removeFromLeft (48).reduced (2));
+        lcdNoButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
+        lcdYesButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
+
+        auto stackBar = r.removeFromBottom (28);
+        stackVelButton_.setBounds (stackBar.removeFromLeft (90).reduced (2));
+        stackPitchButton_.setBounds (stackBar.removeFromLeft (70).reduced (2));
+        stackPanButton_.setBounds (stackBar.removeFromLeft (60).reduced (2));
+        stackFilterButton_.setBounds (stackBar.removeFromLeft (80).reduced (2));
+        stackPadSlider_.setBounds (stackBar.removeFromLeft (120).reduced (2));
+
+        auto stacks = r.removeFromBottom (juce::jmax (100, r.getHeight() / 4));
+        stepStacks_->setBounds (stacks);
+        pianoRoll_->setBounds (r);
+        return;
+    }
+
+    if (chopModal_ != nullptr && chopOverlayMode_)
+    {
+        chopModal_->setBounds (getLocalBounds());
+        return;
+    }
+
+    if (view_ == ViewMode::console || view_ == ViewMode::program)
+    {
+        auto bankBar = r.removeFromTop (28);
+        for (auto& b : bankButtons_)
+            b.setBounds (bankBar.removeFromLeft (90).reduced (2));
+        if (lcdPanel_ != nullptr && keypad_ != nullptr)
+        {
+            auto lcdRow = r.removeFromTop (56);
+            lcdPanel_->setBounds (lcdRow.removeFromLeft (lcdRow.getWidth() * 2 / 3).reduced (2));
+            keypad_->setBounds (lcdRow.reduced (2));
+        }
+        auto scrubRow = r.removeFromTop (28);
+        lcdMinusButton_.setBounds (scrubRow.removeFromLeft (48).reduced (2));
+        lcdPlusButton_.setBounds (scrubRow.removeFromLeft (48).reduced (2));
+        lcdNoButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
+        lcdYesButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
+
+        layoutConsolePadsAndFaders (r);
+    }
+}
+
+void SP1200AudioProcessorEditor::layoutConsolePadsAndFaders (juce::Rectangle<int> area)
+{
+    auto padArea = area.removeFromBottom (160);
+    auto faderArea = area;
+    const int cols = 8;
+    const int rows = 2;
+    const int cellW = padArea.getWidth() / cols;
+    const int fCellH = faderArea.getHeight() / rows;
+    const int pCellH = padArea.getHeight() / rows;
+
+    for (int row = 0; row < rows; ++row)
+    {
+        for (int col = 0; col < cols; ++col)
+        {
+            const int idx = row * cols + col;
+            faders_[static_cast<std::size_t> (idx)].setBounds (col * cellW + 8,
+                                                                 row * fCellH + 4,
+                                                                 cellW - 16,
+                                                                 fCellH - 8);
+            padButtons_[static_cast<std::size_t> (idx)].setBounds (col * cellW + 4,
+                                                                     padArea.getY() + row * pCellH + 4,
+                                                                     cellW - 8,
+                                                                     pCellH - 8);
+        }
+    }
+}
+
+void SP1200AudioProcessorEditor::timerCallback()
+{
+    refreshMemoryLabel();
+    if (view_ == ViewMode::console || view_ == ViewMode::filter || view_ == ViewMode::program)
+        refreshLcd();
+    if (view_ == ViewMode::setup)
+        refreshLearnStatus();
+    if (view_ == ViewMode::sequencer)
+    {
+        refreshLcd();
+        refreshSeqInfo();
+        if (pianoRoll_ != nullptr && processor_.engine().sequencer().isPlaying())
+            pianoRoll_->repaint();
+    }
+}
+
+void SP1200AudioProcessorEditor::selectBank (int bankIndex)
+{
+    processor_.engine().setCurrentBank (bankIndex);
+    for (int i = 0; i < sp1200::kNumBanks; ++i)
+        bankButtons_[static_cast<std::size_t> (i)].setToggleState (i == bankIndex, juce::dontSendNotification);
+    refreshMemoryLabel();
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::updatePadHighlight()
+{
+    const int sel = processor_.engine().selectedPad();
+    for (int i = 0; i < sp1200::kNumPads; ++i)
+    {
+        const bool on = i == sel;
+        padButtons_[static_cast<std::size_t> (i)].setColour (juce::TextButton::buttonOnColourId,
+                                                             on ? juce::Colour (0xff2d6a4f)
+                                                                : getLookAndFeel().findColour (juce::TextButton::buttonColourId));
+        padButtons_[static_cast<std::size_t> (i)].setToggleState (on, juce::dontSendNotification);
+    }
+}
+
+void SP1200AudioProcessorEditor::refreshLcd()
+{
+    if (lcdPanel_ == nullptr)
+        return;
+
+    juce::String mod = "MOD 10 CONSOLE";
+    switch (view_)
+    {
+        case ViewMode::console:
+            mod = "MOD 10 CONSOLE";
+            break;
+        case ViewMode::sequencer:
+            mod = "MOD 20 SEQ";
+            break;
+        case ViewMode::song:
+            mod = "MOD 24 SONG";
+            break;
+        case ViewMode::setup:
+            mod = "MOD 10 SETUP";
+            break;
+        case ViewMode::filter:
+            mod = "MOD 15 FILTER";
+            break;
+        case ViewMode::program:
+            if (programModule_ == ProgramModule::decay)
+                mod = "MOD 13 DECAY";
+            else if (programModule_ == ProgramModule::mix)
+                mod = "MOD 14 MIX";
+            else
+                mod = "MOD 12 PITCH";
+            break;
+        case ViewMode::waveChop:
+            mod = "MOD 11 WAVE CHOP";
+            break;
+    }
+
+    const auto& eng = processor_.engine();
+    const char bank = sp1200::SamplerEngine::bankLetter (eng.currentBank());
+    const int pad = eng.selectedPad();
+    juce::String segName = "EMPTY";
+    const int seg = eng.getPad (pad).segmentIndex;
+    if (seg >= 0)
+    {
+        if (const auto* s = eng.memoryPool().getSegment (static_cast<std::size_t> (seg)))
+            segName = s->name.empty() ? "SEG" : juce::String (s->name).substring (0, 12);
+    }
+
+    juce::String line1 = mod + " | BANK " + juce::String (bank);
+    juce::String line2 = "PAD " + juce::String (pad + 1).paddedLeft ('0', 2) + " "
+                         + segName + " | 26.040k 12BIT";
+
+    if (keypadMode_ == KeypadEntryMode::pattern)
+        line1 = "KEYPAD | ENTER PAT";
+    else if (keypadMode_ == KeypadEntryMode::bank)
+        line1 = "KEYPAD | ENTER BANK 1-4";
+
+    if (keypadMode_ != KeypadEntryMode::idle && ! keypadBuffer_.isEmpty())
+        line2 = "ENTRY: " + keypadBuffer_;
+
+    if (combineArm_)
+        line2 = "COMBINE: pick 2nd pad | " + line2;
+
+    if (confirmPending_)
+    {
+        line1 = "CONFIRM?";
+        if (pendingConfirm_ == PendingConfirmAction::clearPattern)
+            line2 = "CLEAR PATTERN — YES·EXEC / NO·BACK";
+    }
+    else if (editField_ != sp1200::LcdEditField::none)
+    {
+        const float shown = editStaged_ ? stagedEditValue_ : readEditFieldValue (editField_);
+        line2 = juce::String (sp1200::lcdEditFieldLabel (editField_)) + ": "
+                + juce::String (shown, editField_ == sp1200::LcdEditField::padTune ? 1 : 2)
+                + (editStaged_ ? " *" : "");
+    }
+
+    lcdPanel_->setLines (line1, line2);
+}
+
+void SP1200AudioProcessorEditor::armCombineWithSecondPad()
+{
+    combineArm_ = ! combineArm_;
+    mod30CombineButton_.setButtonText (combineArm_ ? "COMBINE: pick pad…" : "MOD 30 COMBINE");
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::handleKeypadDigit (int digit)
+{
+    if (keypadMode_ == KeypadEntryMode::idle)
+        keypadMode_ = view_ == ViewMode::sequencer ? KeypadEntryMode::pattern : KeypadEntryMode::bank;
+
+    if (keypadBuffer_.length() >= 2)
+        return;
+
+    if (keypadBuffer_.isEmpty() && digit == 0)
+        return;
+
+    keypadBuffer_ += juce::String (digit);
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::commitKeypadEntry()
+{
+    if (keypadBuffer_.isEmpty())
+    {
+        cancelKeypadEntry();
+        return;
+    }
+
+    const int value = keypadBuffer_.getIntValue();
+    if (keypadMode_ == KeypadEntryMode::pattern)
+    {
+        const int pat = std::clamp (value, 1, sp1200::kMaxPatterns);
+        processor_.engine().sequencer().setCurrentPattern (pat - 1);
+        patternSlider_.setValue (pat, juce::dontSendNotification);
+        syncPianoRollFromControls();
+        refreshSeqInfo();
+    }
+    else if (keypadMode_ == KeypadEntryMode::bank)
+    {
+        const int bank = std::clamp (value, 1, sp1200::kNumBanks);
+        selectBank (bank - 1);
+    }
+
+    cancelKeypadEntry();
+}
+
+void SP1200AudioProcessorEditor::cancelKeypadEntry()
+{
+    keypadMode_ = KeypadEntryMode::idle;
+    keypadBuffer_.clear();
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::refreshMemoryLabel()
+{
+    const auto& pool = processor_.engine().memoryPool();
+    const int bank = processor_.engine().currentBank();
+    const auto bankUsed = pool.usedSamplesInBank (bank);
+    memoryLabel_.setText ("MEMORY: " + formatMemoryTime (pool.usedSamples()) + " / 7:00 | BANK "
+                              + juce::String (sp1200::SamplerEngine::bankLetter (bank)) + ": "
+                              + formatMemoryTime (bankUsed) + " / 1:45",
+                          juce::dontSendNotification);
+}
+
+void SP1200AudioProcessorEditor::triggerPad (int padIndex)
+{
+    if (view_ == ViewMode::sequencer && seqRecordMode_)
+        processor_.engine().recordStepOnCurrentPattern (padIndex, 0.9f);
+    else
+        processor_.triggerPad (padIndex, 0.9f);
+}
+
+void SP1200AudioProcessorEditor::importSample()
+{
+    auto chooser = std::make_shared<juce::FileChooser> ("Import WAV", juce::File(), "*.wav;*.aif;*.aiff;*.flac");
+    chooser->launchAsync (juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
+                          [this, chooser] (const juce::FileChooser& fc)
+                          {
+                              const auto f = fc.getResult();
+                              if (f == juce::File())
+                                  return;
+                              const int bank = processor_.engine().currentBank();
+                              auto idx = processor_.engine().importFile (f, bank, f.getFileNameWithoutExtension());
+                              if (! idx.has_value())
+                              {
+                                  juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
+                                                                          "Import failed",
+                                                                          "Could not import (memory cap or format).");
+                                  return;
+                              }
+                              lastSegmentForChop_ = static_cast<int> (*idx);
+                              for (int p = 0; p < sp1200::kNumPads; ++p)
+                              {
+                                  if (processor_.engine().getPad (p).segmentIndex < 0)
+                                  {
+                                      processor_.engine().assignSegmentToPad (p, static_cast<int> (*idx));
+                                      applyVinylTuneIfNeeded (p);
+                                      break;
+                                  }
+                              }
+                              refreshMemoryLabel();
+                          });
+}
+
+void SP1200AudioProcessorEditor::runAutoChop16()
+{
+    if (lastSegmentForChop_ < 0)
+    {
+        juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::InfoIcon,
+                                              "Auto-chop",
+                                              "Import a sample first.");
+        return;
+    }
+    const auto slices = processor_.engine().autoChopSegment (static_cast<std::size_t> (lastSegmentForChop_), 16);
+    if (slices.empty())
+    {
+        juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
+                                              "Auto-chop",
+                                              "No transients detected.");
+        return;
+    }
+    for (std::size_t i = 0; i < slices.size() && i < static_cast<std::size_t> (sp1200::kNumPads); ++i)
+        processor_.engine().assignSegmentToPad (static_cast<int> (i), static_cast<int> (slices[i]));
+    refreshMemoryLabel();
+}
+
+void SP1200AudioProcessorEditor::applyVinylTuneIfNeeded (int padIndex)
+{
+    if (processor_.engine().vinylImportEnabled())
+        processor_.engine().setPadTune (padIndex, sp1200::kVinylImportTuneDownSemitones);
+}
+
+void SP1200AudioProcessorEditor::refreshLearnStatus()
+{
+    const auto& map = processor_.engine().midiMapping();
+    if (! map.isLearning())
+    {
+        learnStatusLabel_.setText ("MIDI learn idle", juce::dontSendNotification);
+        return;
+    }
+    const int pad = map.learnPadIndex() + 1;
+    if (map.learnTarget() == sp1200::MidiLearnTarget::pad)
+        learnStatusLabel_.setText ("Learning NOTE for pad " + juce::String (pad) + "…", juce::dontSendNotification);
+    else
+        learnStatusLabel_.setText ("Learning CC for pad " + juce::String (pad) + " fader…", juce::dontSendNotification);
+}
+
+void SP1200AudioProcessorEditor::syncUIFromEngine()
+{
+    auto& eng = processor_.engine();
+    busFilterSlider_.setValue (eng.getFilterCutoffNorm(), juce::dontSendNotification);
+    busResSlider_.setValue (eng.getFilterResonance(), juce::dontSendNotification);
+    multiPitchButton_.setToggleState (eng.multiPitchEnabled(), juce::dontSendNotification);
+    patternSlider_.setValue (eng.sequencer().currentPattern() + 1, juce::dontSendNotification);
+    barsSlider_.setValue (eng.sequencer().patternBars(), juce::dontSendNotification);
+    bpmSlider_.setValue (eng.sequencer().bpm(), juce::dontSendNotification);
+    swingSlider_.setValue (eng.sequencer().swing(), juce::dontSendNotification);
+    for (int i = 0; i < static_cast<int> (songSlotBoxes_.size()); ++i)
+    {
+        const int pat = eng.sequencer().songSlot (i);
+        songSlotBoxes_[static_cast<std::size_t> (i)].setSelectedId (pat == sp1200::kSongSlotEnd ? -1 : pat + 1,
+                                                                  juce::dontSendNotification);
+    }
+    songLoopButton_.setToggleState (eng.sequencer().songLoop(), juce::dontSendNotification);
+    midiChannelSlider_.setValue (eng.midiChannel(), juce::dontSendNotification);
+    midiOmniButton_.setToggleState (eng.midiOmni(), juce::dontSendNotification);
+    vinylImportButton_.setToggleState (eng.vinylImportEnabled(), juce::dontSendNotification);
+    switch (eng.midiMapping().clockMode())
+    {
+        case sp1200::MidiClockMode::internal:
+            clockModeBox_.setSelectedId (1, juce::dontSendNotification);
+            break;
+        case sp1200::MidiClockMode::slave:
+            clockModeBox_.setSelectedId (2, juce::dontSendNotification);
+            break;
+        case sp1200::MidiClockMode::master:
+            clockModeBox_.setSelectedId (3, juce::dontSendNotification);
+            break;
+    }
+    for (int p = 0; p < sp1200::kNumPads; ++p)
+    {
+        const int g = eng.getPad (p).chokeGroup;
+        chokeGroupBoxes_[static_cast<std::size_t> (p)].setSelectedId (g == sp1200::kNoChokeGroup ? 1 : g + 1,
+                                                                      juce::dontSendNotification);
+    }
+    for (int p = 0; p < sp1200::kNumPads; ++p)
+    {
+        const auto pad = eng.getPad (p);
+        faders_[static_cast<std::size_t> (p)].setValue (pad.level / 2.0, juce::dontSendNotification);
+    }
+    selectBank (eng.currentBank());
+    processor_.engine().setSelectedPad (eng.selectedPad());
+    updatePadHighlight();
+    syncPianoRollFromControls();
+    refreshMemoryLabel();
+    refreshSeqInfo();
+    refreshLcd();
+}
+
+std::optional<int> SP1200AudioProcessorEditor::resolveChopSegmentIndex() const
+{
+    int seg = processor_.engine().getPad (processor_.engine().selectedPad()).segmentIndex;
+    if (seg < 0)
+        seg = lastSegmentForChop_;
+    if (seg < 0)
+    {
+        for (int p = 0; p < sp1200::kNumPads; ++p)
+        {
+            seg = processor_.engine().getPad (p).segmentIndex;
+            if (seg >= 0)
+                break;
+        }
+    }
+    if (seg < 0)
+        return std::nullopt;
+    return seg;
+}
+
+void SP1200AudioProcessorEditor::showChopEditor (bool overlay)
+{
+    const auto seg = resolveChopSegmentIndex();
+    if (! seg.has_value())
+    {
+        if (overlay)
+        {
+            juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::InfoIcon,
+                                                  "MOD 11",
+                                                  "Import or record a sample first.");
+        }
+        return;
+    }
+
+    chopOverlayMode_ = overlay;
+    if (chopModal_ == nullptr || chopSegmentIndex_ != *seg)
+    {
+        chopSegmentIndex_ = *seg;
+        chopModal_ = std::make_unique<ChopModalComponent> (
+            processor_.engine(),
+            static_cast<std::size_t> (*seg),
+            [this] { closeChopModal(); });
+        addAndMakeVisible (*chopModal_);
+    }
+
+    chopModal_->setEmbeddedMode (! overlay);
+    chopModal_->setVisible (true);
+    waveChopEmptyLabel_.setVisible (false);
+    if (overlay)
+        chopModal_->toFront (true);
+    resized();
+    repaint();
+}
+
+void SP1200AudioProcessorEditor::openChopModal()
+{
+    showChopEditor (true);
+    setView (view_);
+}
+
+void SP1200AudioProcessorEditor::closeChopModal()
+{
+    chopOverlayMode_ = false;
+    chopModal_.reset();
+    chopSegmentIndex_ = -1;
+    refreshMemoryLabel();
+    setView (view_);
+}
+
+void SP1200AudioProcessorEditor::saveProject()
+{
+    auto chooser = std::make_shared<juce::FileChooser> ("Save project",
+                                                        juce::File(),
+                                                        "*" + juce::String (sp1200::ProjectFile::kExtension));
+    chooser->launchAsync (juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles,
+                          [this, chooser] (const juce::FileChooser& fc)
+                          {
+                              auto f = fc.getResult();
+                              if (f == juce::File())
+                                  return;
+                              if (! f.hasFileExtension (sp1200::ProjectFile::kExtension))
+                                  f = f.withFileExtension (sp1200::ProjectFile::kExtension);
+                              if (! sp1200::ProjectFile::saveToFile (processor_.engine(), f))
+                              {
+                                  juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
+                                                                          "Save failed",
+                                                                          "Could not write project file.");
+                              }
+                          });
+}
+
+void SP1200AudioProcessorEditor::loadProject()
+{
+    auto chooser = std::make_shared<juce::FileChooser> ("Load project",
+                                                        juce::File(),
+                                                        "*" + juce::String (sp1200::ProjectFile::kExtension));
+    chooser->launchAsync (juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
+                          [this, chooser] (const juce::FileChooser& fc)
+                          {
+                              const auto f = fc.getResult();
+                              if (f == juce::File())
+                                  return;
+                              if (! sp1200::ProjectFile::loadFromFile (processor_.engine(), f))
+                              {
+                                  juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
+                                                                          "Load failed",
+                                                                          "Invalid or unsupported project file.");
+                                  return;
+                              }
+                              lastSegmentForChop_ = -1;
+                              for (std::size_t i = 0;; ++i)
+                              {
+                                  if (processor_.engine().memoryPool().getSegment (i) == nullptr)
+                                      break;
+                                  lastSegmentForChop_ = static_cast<int> (i);
+                              }
+                              syncUIFromEngine();
+                          });
+}
+
+void SP1200AudioProcessorEditor::toggleRecordInput()
+{
+    auto& eng = processor_.engine();
+    if (! eng.isRecording())
+    {
+        eng.startRecording();
+        recordButton_.setButtonText ("STOP + COMMIT");
+        recordButton_.setColour (juce::TextButton::buttonColourId, juce::Colours::darkred);
+    }
+    else
+    {
+        const auto idx = eng.stopRecordingAndCommit (eng.currentBank());
+        if (idx.has_value())
+        {
+            lastSegmentForChop_ = static_cast<int> (*idx);
+            for (int p = 0; p < sp1200::kNumPads; ++p)
+            {
+                if (processor_.engine().getPad (p).segmentIndex < 0)
+                {
+                    processor_.engine().assignSegmentToPad (p, static_cast<int> (*idx));
+                    applyVinylTuneIfNeeded (p);
+                    break;
+                }
+            }
+            refreshMemoryLabel();
+        }
+        recordButton_.setButtonText ("ARM INPUT");
+        recordButton_.setColour (juce::TextButton::buttonColourId,
+                                 getLookAndFeel().findColour (juce::TextButton::buttonColourId));
+    }
+}
+
+void SP1200AudioProcessorEditor::refreshFilterRoleLabel()
+{
+    const int pad = processor_.engine().selectedPad();
+    const auto role = sp1200::filterRoleForPad (pad);
+    const juce::String roleName = role == sp1200::VoiceFilterRole::hiTrim ? "HI-TRIM (RC)" : "FLAT → BUS SSM2044";
+    filterRoleLabel_.setText ("Selected pad " + juce::String (pad + 1) + ": " + roleName,
+                              juce::dontSendNotification);
+}
+
+float SP1200AudioProcessorEditor::readEditFieldValue (sp1200::LcdEditField field) const
+{
+    const auto& eng = processor_.engine();
+    switch (field)
+    {
+        case sp1200::LcdEditField::busCutoff: return eng.getFilterCutoffNorm();
+        case sp1200::LcdEditField::busResonance: return eng.getFilterResonance();
+        case sp1200::LcdEditField::bpm: return static_cast<float> (eng.sequencer().bpm());
+        case sp1200::LcdEditField::swing: return eng.sequencer().swing();
+        case sp1200::LcdEditField::padTune: return eng.getPad (eng.selectedPad()).tuneSemitones;
+        case sp1200::LcdEditField::padLevel: return eng.getPad (eng.selectedPad()).level;
+        case sp1200::LcdEditField::padDecay: return eng.getPad (eng.selectedPad()).decay;
+        default: return 0.0f;
+    }
+}
+
+void SP1200AudioProcessorEditor::writeEditFieldValue (sp1200::LcdEditField field, float value)
+{
+    auto& eng = processor_.engine();
+    const int pad = eng.selectedPad();
+    switch (field)
+    {
+        case sp1200::LcdEditField::busCutoff:
+            eng.setFilterCutoffNorm (value);
+            busFilterSlider_.setValue (value, juce::dontSendNotification);
+            break;
+        case sp1200::LcdEditField::busResonance:
+            eng.setFilterResonance (value);
+            busResSlider_.setValue (value, juce::dontSendNotification);
+            break;
+        case sp1200::LcdEditField::bpm:
+            eng.sequencer().setBpm (static_cast<double> (value));
+            bpmSlider_.setValue (value, juce::dontSendNotification);
+            break;
+        case sp1200::LcdEditField::swing:
+            eng.sequencer().setSwing (value);
+            swingSlider_.setValue (value, juce::dontSendNotification);
+            break;
+        case sp1200::LcdEditField::padTune:
+            eng.setPadTune (pad, value);
+            if (faderMode_ == 1)
+                faders_[static_cast<std::size_t> (pad)].setValue ((value + 12.0f) / 24.0f, juce::dontSendNotification);
+            break;
+        case sp1200::LcdEditField::padLevel:
+            eng.setPadLevel (pad, value);
+            if (faderMode_ == 0)
+                faders_[static_cast<std::size_t> (pad)].setValue (value / 2.0f, juce::dontSendNotification);
+            break;
+        case sp1200::LcdEditField::padDecay:
+            eng.setPadDecay (pad, value);
+            if (faderMode_ == 2)
+                faders_[static_cast<std::size_t> (pad)].setValue (value, juce::dontSendNotification);
+            break;
+        default:
+            break;
+    }
+}
+
+float SP1200AudioProcessorEditor::editFieldStep (sp1200::LcdEditField field) const
+{
+    switch (field)
+    {
+        case sp1200::LcdEditField::padTune: return 0.1f;
+        case sp1200::LcdEditField::bpm: return 1.0f;
+        case sp1200::LcdEditField::busCutoff:
+        case sp1200::LcdEditField::busResonance:
+        case sp1200::LcdEditField::swing:
+        case sp1200::LcdEditField::padLevel:
+        case sp1200::LcdEditField::padDecay:
+            return 0.01f;
+        default: return 0.01f;
+    }
+}
+
+void SP1200AudioProcessorEditor::beginLcdEdit (sp1200::LcdEditField field)
+{
+    if (field == sp1200::LcdEditField::none)
+        return;
+    editField_ = field;
+    editStaged_ = false;
+    stagedEditValue_ = readEditFieldValue (field);
+    confirmPending_ = false;
+    pendingConfirm_ = PendingConfirmAction::none;
+}
+
+void SP1200AudioProcessorEditor::nudgeLcdEditField (int direction)
+{
+    if (confirmPending_ || editField_ == sp1200::LcdEditField::none || direction == 0)
+        return;
+
+    if (! editStaged_)
+    {
+        stagedEditValue_ = readEditFieldValue (editField_);
+        editStaged_ = true;
+    }
+
+    stagedEditValue_ += editFieldStep (editField_) * static_cast<float> (direction);
+
+    switch (editField_)
+    {
+        case sp1200::LcdEditField::busCutoff:
+        case sp1200::LcdEditField::busResonance:
+        case sp1200::LcdEditField::swing:
+        case sp1200::LcdEditField::padLevel:
+        case sp1200::LcdEditField::padDecay:
+            stagedEditValue_ = std::clamp (stagedEditValue_, 0.0f, 1.0f);
+            break;
+        case sp1200::LcdEditField::padTune:
+            stagedEditValue_ = std::clamp (stagedEditValue_, -12.0f, 12.0f);
+            break;
+        case sp1200::LcdEditField::bpm:
+            stagedEditValue_ = std::clamp (stagedEditValue_, 40.0f, 240.0f);
+            break;
+        default:
+            break;
+    }
+
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::applyStagedLcdEdit()
+{
+    if (! editStaged_ || editField_ == sp1200::LcdEditField::none)
+        return;
+    writeEditFieldValue (editField_, stagedEditValue_);
+    editStaged_ = false;
+    refreshLcd();
+    refreshSeqInfo();
+}
+
+void SP1200AudioProcessorEditor::lcdYesExec()
+{
+    if (confirmPending_)
+    {
+        if (pendingConfirm_ == PendingConfirmAction::clearPattern)
+        {
+            processor_.engine().sequencer().clearCurrentPattern();
+            syncPianoRollFromControls();
+            refreshSeqInfo();
+        }
+        confirmPending_ = false;
+        pendingConfirm_ = PendingConfirmAction::none;
+        refreshLcd();
+        return;
+    }
+
+    applyStagedLcdEdit();
+}
+
+void SP1200AudioProcessorEditor::lcdNoBack()
+{
+    if (confirmPending_)
+    {
+        confirmPending_ = false;
+        pendingConfirm_ = PendingConfirmAction::none;
+        refreshLcd();
+        return;
+    }
+
+    editStaged_ = false;
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::cycleLcdEditField()
+{
+    if (view_ == ViewMode::filter)
+    {
+        if (editField_ == sp1200::LcdEditField::busCutoff)
+            beginLcdEdit (sp1200::LcdEditField::busResonance);
+        else
+            beginLcdEdit (sp1200::LcdEditField::busCutoff);
+        refreshLcd();
+        return;
+    }
+
+    if (view_ == ViewMode::sequencer)
+    {
+        if (editField_ == sp1200::LcdEditField::bpm)
+            beginLcdEdit (sp1200::LcdEditField::swing);
+        else
+            beginLcdEdit (sp1200::LcdEditField::bpm);
+        refreshLcd();
+        return;
+    }
+
+    if (view_ == ViewMode::console)
+    {
+        cycleFaderMode();
+        return;
+    }
+
+    if (view_ == ViewMode::program)
+    {
+        if (programModule_ == ProgramModule::pitch)
+            setProgramModule (ProgramModule::decay);
+        else if (programModule_ == ProgramModule::decay)
+            setProgramModule (ProgramModule::mix);
+        else
+            setProgramModule (ProgramModule::pitch);
+    }
+}
+
+void SP1200AudioProcessorEditor::armClearPatternConfirm()
+{
+    confirmPending_ = true;
+    pendingConfirm_ = PendingConfirmAction::clearPattern;
+    editStaged_ = false;
+    refreshLcd();
+}
+
+sp1200::LcdEditField SP1200AudioProcessorEditor::lcdFieldForProgramModule() const noexcept
+{
+    switch (programModule_)
+    {
+        case ProgramModule::decay: return sp1200::LcdEditField::padDecay;
+        case ProgramModule::mix: return sp1200::LcdEditField::padLevel;
+        case ProgramModule::pitch:
+        default: return sp1200::LcdEditField::padTune;
+    }
+}
+
+void SP1200AudioProcessorEditor::setProgramModule (ProgramModule module)
+{
+    programModule_ = module;
+    mod12PitchButton_.setToggleState (module == ProgramModule::pitch, juce::dontSendNotification);
+    mod13DecayButton_.setToggleState (module == ProgramModule::decay, juce::dontSendNotification);
+    mod14MixButton_.setToggleState (module == ProgramModule::mix, juce::dontSendNotification);
+    syncProgramFadersFromEngine();
+    beginLcdEdit (lcdFieldForProgramModule());
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::syncProgramFadersFromEngine()
+{
+    const auto& eng = processor_.engine();
+    for (int p = 0; p < sp1200::kNumPads; ++p)
+    {
+        const auto pad = eng.getPad (p);
+        float norm = 0.8f;
+        if (programModule_ == ProgramModule::pitch)
+            norm = (pad.tuneSemitones + 12.0f) / 24.0f;
+        else if (programModule_ == ProgramModule::decay)
+            norm = pad.decay;
+        else
+            norm = pad.level / 2.0f;
+        faders_[static_cast<std::size_t> (p)].setValue (norm, juce::dontSendNotification);
+    }
+}
