@@ -744,10 +744,15 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     else if (waveChop)
     {
         editField_ = sp1200::LcdEditField::none;
-        if (const auto seg = resolveChopSegmentIndex())
+        if (resolveChopSegmentIndex().has_value())
             showChopEditor (false);
-        else if (chopModal_ != nullptr)
-            chopModal_->setVisible (false);
+        else
+        {
+            chopOverlayMode_ = false;
+            if (chopModal_ != nullptr)
+                chopModal_->setVisible (false);
+            waveChopEmptyLabel_.setVisible (true);
+        }
     }
     else if (seq)
         beginLcdEdit (sp1200::LcdEditField::bpm);
