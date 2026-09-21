@@ -79,6 +79,11 @@ public:
     void setSwing (float s) { swing_ = std::clamp (s, 0.0f, 1.0f); }
     [[nodiscard]] float swing() const noexcept { return swing_; }
 
+    /** Duration of one 1/16 step at 96 PPQN (includes SP swing tick shift). */
+    [[nodiscard]] double stepDurationTicks (int stepIndex) const noexcept;
+    [[nodiscard]] double stepDurationSeconds (int stepIndex) const noexcept;
+    [[nodiscard]] double midiClockPulsesForStep (int stepIndex) const noexcept;
+
     void startPattern();
     void startSong();
     void stop();

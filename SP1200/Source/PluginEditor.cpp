@@ -4,6 +4,8 @@
 #include "Project/ProjectFile.h"
 #include "SP1200Constants.h"
 
+#include <cmath>
+
 namespace
 {
 juce::String formatMemoryTime (std::int64_t samples)
@@ -30,7 +32,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     addKeyListener (this);
 
     const int tabGroup = 9001;
-    for (auto* tab : { &consoleTab_, &programTab_, &seqTab_, &songTab_, &filterTab_, &setupTab_ })
+    for (auto* tab : { &consoleTab_, &waveChopTab_, &programTab_, &seqTab_, &songTab_, &filterTab_, &setupTab_ })
     {
         tab->setClickingTogglesState (true);
         tab->setRadioGroupId (tabGroup);
@@ -40,6 +42,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     seqTab_.setButtonText ("MOD 20 PIANO ROLL");
     filterTab_.setButtonText ("15 SSM2044");
     consoleTab_.addListener (this);
+    waveChopTab_.addListener (this);
     programTab_.addListener (this);
     seqTab_.addListener (this);
     songTab_.addListener (this);
@@ -99,6 +102,11 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     programHelpLabel_.setText ("Per-pad tune ±12 st (0.1 st LCD scrub). Faders edit all 16 pads for active module.",
                                juce::dontSendNotification);
     addAndMakeVisible (programHelpLabel_);
+
+    waveChopEmptyLabel_.setText ("Import or record a sample, then return to MOD 11 CHOP.",
+                                 juce::dontSendNotification);
+    waveChopEmptyLabel_.setJustificationType (juce::Justification::centred);
+    addAndMakeVisible (waveChopEmptyLabel_);
 
     const int bankGroup = 9002;
     for (int i = 0; i < sp1200::kNumBanks; ++i)
@@ -518,7 +526,7 @@ int SP1200AudioProcessorEditor::padIndexForComputerKey (const juce::KeyPress& ke
 
 bool SP1200AudioProcessorEditor::keyPressed (const juce::KeyPress& key, juce::Component*)
 {
-    if (chopModal_ != nullptr)
+    if (chopModal_ != nullptr && chopOverlayMode_)
         return false;
 
     if (key == juce::KeyPress::spaceKey)
@@ -603,6 +611,8 @@ void SP1200AudioProcessorEditor::buttonClicked (juce::Button* button)
 {
     if (button == &consoleTab_)
         setView (ViewMode::console);
+    else if (button == &waveChopTab_)
+        setView (ViewMode::waveChop);
     else if (button == &seqTab_)
         setView (ViewMode::sequencer);
     else if (button == &songTab_)
@@ -629,29 +639,35 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     const bool setup = mode == ViewMode::setup;
     const bool filter = mode == ViewMode::filter;
     const bool program = mode == ViewMode::program;
+    const bool waveChop = mode == ViewMode::waveChop;
 
     consoleTab_.setToggleState (console, juce::dontSendNotification);
+    waveChopTab_.setToggleState (waveChop, juce::dontSendNotification);
     programTab_.setToggleState (program, juce::dontSendNotification);
     seqTab_.setToggleState (seq, juce::dontSendNotification);
     songTab_.setToggleState (song, juce::dontSendNotification);
     filterTab_.setToggleState (filter, juce::dontSendNotification);
     setupTab_.setToggleState (setup, juce::dontSendNotification);
 
-    vinylImportButton_.setVisible (console && chopModal_ == nullptr);
-    mod30CombineButton_.setVisible (console && chopModal_ == nullptr);
-    mod30MoveBankButton_.setVisible (console && chopModal_ == nullptr);
-    importButton_.setVisible (console && chopModal_ == nullptr);
-    recordButton_.setVisible (console && chopModal_ == nullptr);
-    chopButton_.setVisible (console && chopModal_ == nullptr);
-    mod11Button_.setVisible (console && chopModal_ == nullptr);
-    saveProjectButton_.setVisible (console && chopModal_ == nullptr);
-    loadProjectButton_.setVisible (console && chopModal_ == nullptr);
-    busFilterSlider_.setVisible (filter && chopModal_ == nullptr);
-    busResSlider_.setVisible (filter && chopModal_ == nullptr);
-    filterRoleLabel_.setVisible (filter && chopModal_ == nullptr);
-    filterTopologyLabel_.setVisible (filter && chopModal_ == nullptr);
-    multiPitchButton_.setVisible (console && chopModal_ == nullptr);
-    faderModeButton_.setVisible ((console || seq) && chopModal_ == nullptr);
+    vinylImportButton_.setVisible (console && ! chopOverlayMode_);
+    const bool noOverlay = ! chopOverlayMode_;
+    mod30CombineButton_.setVisible (console && noOverlay);
+    mod30MoveBankButton_.setVisible (console && noOverlay);
+    importButton_.setVisible (console && noOverlay);
+    recordButton_.setVisible (console && noOverlay);
+    chopButton_.setVisible (console && noOverlay);
+    mod11Button_.setVisible (console && noOverlay);
+    saveProjectButton_.setVisible (console && noOverlay);
+    loadProjectButton_.setVisible (console && noOverlay);
+    busFilterSlider_.setVisible (filter && noOverlay);
+    busResSlider_.setVisible (filter && noOverlay);
+    filterRoleLabel_.setVisible (filter && noOverlay);
+    filterTopologyLabel_.setVisible (filter && noOverlay);
+    multiPitchButton_.setVisible (console && noOverlay);
+    faderModeButton_.setVisible ((console || seq) && noOverlay);
+    waveChopEmptyLabel_.setVisible (waveChop && chopModal_ == nullptr);
+    if (chopModal_ != nullptr)
+        chopModal_->setVisible ((waveChop || chopOverlayMode_) && chopModal_ != nullptr);
 
     patternSlider_.setVisible (seq);
     barsSlider_.setVisible (seq);
@@ -700,7 +716,7 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     for (auto* b : { &mod12PitchButton_, &mod13DecayButton_, &mod14MixButton_ })
         b->setVisible (program && chopModal_ == nullptr);
     programHelpLabel_.setVisible (program && chopModal_ == nullptr);
-    const bool lcdKeypad = (console || seq || filter || program) && chopModal_ == nullptr;
+    const bool lcdKeypad = (console || seq || filter || program) && ! chopOverlayMode_;
     const bool lcdScrub = lcdKeypad;
     if (lcdPanel_ != nullptr)
         lcdPanel_->setVisible (lcdKeypad);
@@ -724,6 +740,14 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     {
         syncProgramFadersFromEngine();
         beginLcdEdit (lcdFieldForProgramModule());
+    }
+    else if (waveChop)
+    {
+        editField_ = sp1200::LcdEditField::none;
+        if (const auto seg = resolveChopSegmentIndex())
+            showChopEditor (false);
+        else if (chopModal_ != nullptr)
+            chopModal_->setVisible (false);
     }
     else if (seq)
         beginLcdEdit (sp1200::LcdEditField::bpm);
@@ -757,8 +781,9 @@ void SP1200AudioProcessorEditor::refreshSeqInfo()
     auto& seq = processor_.engine().sequencer();
     const int pat = seq.currentPattern() + 1;
     const int bars = seq.patternBars();
+    const int swingPct = static_cast<int> (std::lround (seq.swing() * 100.0f));
     seqInfoLabel_.setText ("PAT " + juce::String (pat).paddedLeft ('0', 2) + " | " + juce::String (bars)
-                               + " bar(s) | 1/16 | steps: "
+                               + " bar(s) | 1/16 @ 96 PPQN | SWING " + juce::String (swingPct) + "% | steps: "
                                + juce::String (seq.pattern (seq.currentPattern()).steps.size()),
                            juce::dontSendNotification);
 }
@@ -775,8 +800,9 @@ void SP1200AudioProcessorEditor::resized()
     auto r = getLocalBounds().reduced (8);
     auto     tabs = r.removeFromTop (28);
     consoleTab_.setBounds (tabs.removeFromLeft (100).reduced (2));
-    programTab_.setBounds (tabs.removeFromLeft (95).reduced (2));
-    seqTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
+    waveChopTab_.setBounds (tabs.removeFromLeft (85).reduced (2));
+    programTab_.setBounds (tabs.removeFromLeft (90).reduced (2));
+    seqTab_.setBounds (tabs.removeFromLeft (115).reduced (2));
     songTab_.setBounds (tabs.removeFromLeft (90).reduced (2));
     filterTab_.setBounds (tabs.removeFromLeft (100).reduced (2));
     setupTab_.setBounds (tabs.removeFromLeft (95).reduced (2));
@@ -846,6 +872,14 @@ void SP1200AudioProcessorEditor::resized()
         clockModeBox_.setBounds (bar.removeFromLeft (200).reduced (2));
     }
     rateLabel_.setBounds (r.removeFromTop (24));
+
+    if (view_ == ViewMode::waveChop)
+    {
+        waveChopEmptyLabel_.setBounds (r.reduced (20));
+        if (chopModal_ != nullptr && chopModal_->isVisible())
+            chopModal_->setBounds (r.reduced (4));
+        return;
+    }
 
     if (view_ == ViewMode::song)
     {
@@ -936,7 +970,7 @@ void SP1200AudioProcessorEditor::resized()
         return;
     }
 
-    if (chopModal_ != nullptr)
+    if (chopModal_ != nullptr && chopOverlayMode_)
     {
         chopModal_->setBounds (getLocalBounds());
         return;
@@ -1058,6 +1092,9 @@ void SP1200AudioProcessorEditor::refreshLcd()
                 mod = "MOD 14 MIX";
             else
                 mod = "MOD 12 PITCH";
+            break;
+        case ViewMode::waveChop:
+            mod = "MOD 11 WAVE CHOP";
             break;
     }
 
@@ -1305,7 +1342,7 @@ void SP1200AudioProcessorEditor::syncUIFromEngine()
     refreshLcd();
 }
 
-void SP1200AudioProcessorEditor::openChopModal()
+std::optional<int> SP1200AudioProcessorEditor::resolveChopSegmentIndex() const
 {
     int seg = processor_.engine().getPad (processor_.engine().selectedPad()).segmentIndex;
     if (seg < 0)
@@ -1320,26 +1357,55 @@ void SP1200AudioProcessorEditor::openChopModal()
         }
     }
     if (seg < 0)
+        return std::nullopt;
+    return seg;
+}
+
+void SP1200AudioProcessorEditor::showChopEditor (bool overlay)
+{
+    const auto seg = resolveChopSegmentIndex();
+    if (! seg.has_value())
     {
-        juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::InfoIcon,
-                                              "MOD 11",
-                                              "Import or record a sample first.");
+        if (overlay)
+        {
+            juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::InfoIcon,
+                                                  "MOD 11",
+                                                  "Import or record a sample first.");
+        }
         return;
     }
 
-    chopModal_ = std::make_unique<ChopModalComponent> (
-        processor_.engine(),
-        static_cast<std::size_t> (seg),
-        [this] { closeChopModal(); });
-    addAndMakeVisible (*chopModal_);
-    chopModal_->toFront (true);
-    setView (view_);
+    chopOverlayMode_ = overlay;
+    if (chopModal_ == nullptr || chopSegmentIndex_ != *seg)
+    {
+        chopSegmentIndex_ = *seg;
+        chopModal_ = std::make_unique<ChopModalComponent> (
+            processor_.engine(),
+            static_cast<std::size_t> (*seg),
+            [this] { closeChopModal(); });
+        addAndMakeVisible (*chopModal_);
+    }
+
+    chopModal_->setEmbeddedMode (! overlay);
+    chopModal_->setVisible (true);
+    waveChopEmptyLabel_.setVisible (false);
+    if (overlay)
+        chopModal_->toFront (true);
     resized();
+    repaint();
+}
+
+void SP1200AudioProcessorEditor::openChopModal()
+{
+    showChopEditor (true);
+    setView (view_);
 }
 
 void SP1200AudioProcessorEditor::closeChopModal()
 {
+    chopOverlayMode_ = false;
     chopModal_.reset();
+    chopSegmentIndex_ = -1;
     refreshMemoryLabel();
     setView (view_);
 }

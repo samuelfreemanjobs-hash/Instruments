@@ -212,15 +212,42 @@ bool PatternSequencer::advanceOneStep (std::vector<ScheduledHit>& padHits)
     return playing_;
 }
 
+double PatternSequencer::stepDurationTicks (int stepIndex) const noexcept
+{
+    double ticks = static_cast<double> (kTicksPerSixteenthStep);
+    if (swing_ > 0.0f)
+    {
+        const double shift = static_cast<double> (kSwingTickOffsetMax) * static_cast<double> (swing_);
+        if ((stepIndex % 2) == 1)
+            ticks += shift;
+        else
+            ticks -= shift;
+    }
+    return std::max (1.0, ticks);
+}
+
+double PatternSequencer::stepDurationSeconds (int stepIndex) const noexcept
+{
+    return stepDurationTicks (stepIndex) * (60.0 / bpm_) / static_cast<double> (kSequencerPpqn);
+}
+
+double PatternSequencer::midiClockPulsesForStep (int stepIndex) const noexcept
+{
+    return stepDurationTicks (stepIndex) * (24.0 / static_cast<double> (kSequencerPpqn));
+}
+
 void PatternSequencer::feedMidiClock (int clockPulses, std::vector<ScheduledHit>& padHits)
 {
     if (! playing_ || clockPulses <= 0)
         return;
 
     midiClockAccum_ += clockPulses;
-    while (midiClockAccum_ >= kMidiClocksPerSixteenth)
+    while (playing_)
     {
-        midiClockAccum_ -= kMidiClocksPerSixteenth;
+        const double need = midiClockPulsesForStep (currentStep_);
+        if (midiClockAccum_ < need)
+            break;
+        midiClockAccum_ -= need;
         if (! advanceOneStep (padHits))
             break;
     }
@@ -231,20 +258,10 @@ void PatternSequencer::advance (double hostSampleRate, int numSamples, std::vect
     if (! playing_ || stepsInPattern_ <= 0)
         return;
 
-    const double secPerStep = (60.0 / bpm_) / static_cast<double> (kStepsPerBar);
-
-    auto samplesForStep = [&] (int stepIndex) -> double
-    {
-        double dur = secPerStep;
-        if ((stepIndex % 2) == 1)
-            dur += secPerStep * static_cast<double> (swing_) * 0.5;
-        return dur * hostSampleRate;
-    };
-
     samplesUntilNextStep_ -= static_cast<double> (numSamples);
     while (samplesUntilNextStep_ <= 0.0)
     {
-        const double stepLen = samplesForStep (currentStep_);
+        const double stepLen = stepDurationSeconds (currentStep_) * hostSampleRate;
         if (! advanceOneStep (padHits))
             break;
         samplesUntilNextStep_ += stepLen;

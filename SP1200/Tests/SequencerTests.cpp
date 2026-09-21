@@ -46,14 +46,13 @@ int main()
     seq.setSongSlot (1, sp1200::kSongSlotEnd);
     seq.setSongLoop (false);
     seq.setPatternBars (1);
+    seq.setSwing (0.0f);
     seq.startSong();
     ok &= expect (seq.isPlaying(), "song starts on first slot");
     std::vector<sp1200::ScheduledHit> hits;
     const double sr = 48000.0;
-    const int steps = seq.pattern (0).totalSteps();
-    const double samplesPerStep = (60.0 / seq.bpm()) / 16.0 * sr;
-    const int totalSamples = static_cast<int> (samplesPerStep * static_cast<double> (steps + 2));
-    seq.advance (sr, totalSamples, hits);
+    for (int guard = 0; seq.isPlaying() && guard < 4096; ++guard)
+        seq.advance (sr, 512, hits);
     ok &= expect (! seq.isPlaying(), "song stops at END slot");
 
     seq.clearCurrentPattern();
@@ -62,6 +61,16 @@ int main()
     std::vector<sp1200::ScheduledHit> clockHits;
     seq.feedMidiClock (6, clockHits);
     ok &= expect (clockHits.size() == 1, "6 MIDI clocks advance one 1/16 step");
+
+    seq.setSwing (0.0f);
+    ok &= expect (std::abs (seq.stepDurationTicks (0) - 24.0) < 0.01, "96 PPQN sixteenth = 24 ticks");
+    seq.setSwing (1.0f);
+    ok &= expect (std::abs (seq.stepDurationTicks (0) - 12.0) < 0.01, "swing shortens even step");
+    ok &= expect (std::abs (seq.stepDurationTicks (1) - 36.0) < 0.01, "swing lengthens odd step");
+    ok &= expect (std::abs (seq.stepDurationTicks (0) + seq.stepDurationTicks (1) - 48.0) < 0.01,
+                  "swing pair preserves two-step tick sum");
+    ok &= expect (std::abs (seq.midiClockPulsesForStep (0) - 3.0) < 0.01, "swung even = 3 MIDI clocks");
+    ok &= expect (std::abs (seq.midiClockPulsesForStep (1) - 9.0) < 0.01, "swung odd = 9 MIDI clocks");
 
     return ok ? 0 : 1;
 }

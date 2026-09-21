@@ -79,6 +79,16 @@ MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → Ssm
 - **SEG → BANK**: sets selected pad segment `SampleSegment::bank` to active bank A–D
 - **KeypadComponent**: 0–9 + ENTER/CANCEL; pattern entry on **MOD 20**, bank entry on console (keyboard digits also wired)
 
+## Timing (96 PPQN + SP swing)
+
+- Sequencer grid **96 PPQN**; each 1/16 step = **24 ticks** at swing 0.
+- Swing applies **±12 tick** shift on even/odd sixteenths (pair sum unchanged); internal `advance()` and MIDI **slave** clock use per-step pulse counts (3/9 clocks at max swing vs 6/6 flat).
+
+## MOD 11 WAVE CHOP tab
+
+- **11 CHOP** tab embeds the chop/truncate editor (same as console overlay **MOD 11 CHOP**).
+- Console button still opens full-screen overlay with **Close**.
+
 ## Module 12–14 PROGRAM tab
 
 - **12–14 PROG** tab: soft keys **12 PITCH**, **13 DECAY**, **14 MIX**; 16 faders + pads (same grid as console).

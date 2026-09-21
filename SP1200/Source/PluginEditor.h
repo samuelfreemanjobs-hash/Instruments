@@ -10,6 +10,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 
 class SP1200AudioProcessorEditor : public juce::AudioProcessorEditor,
                                    private juce::Timer,
@@ -32,7 +33,8 @@ private:
         song,
         setup,
         filter,
-        program
+        program,
+        waveChop
     };
 
     enum class ProgramModule
@@ -52,6 +54,8 @@ private:
     void runAutoChop16();
     void openChopModal();
     void closeChopModal();
+    [[nodiscard]] std::optional<int> resolveChopSegmentIndex() const;
+    void showChopEditor (bool overlay);
     void saveProject();
     void loadProject();
     void syncUIFromEngine();
@@ -94,6 +98,7 @@ private:
     juce::TextButton setupTab_ { "10 SETUP" };
     juce::TextButton filterTab_ { "15 FILTER" };
     juce::TextButton programTab_ { "12–14 PROG" };
+    juce::TextButton waveChopTab_ { "11 CHOP" };
 
     juce::Label headerLabel_;
     juce::Label rateLabel_;
@@ -189,4 +194,7 @@ private:
     int lastSegmentForChop_ = -1;
     bool seqRecordMode_ = false;
     std::unique_ptr<ChopModalComponent> chopModal_;
+    bool chopOverlayMode_ = false;
+    int chopSegmentIndex_ = -1;
+    juce::Label waveChopEmptyLabel_;
 };

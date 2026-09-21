@@ -17,6 +17,9 @@ public:
     void mouseDown (const juce::MouseEvent& e) override;
     void mouseDrag (const juce::MouseEvent& e) override;
 
+    /** Tab embed: hide close (leave via module tabs). */
+    void setEmbeddedMode (bool embedded) noexcept;
+
 private:
     void refreshWaveform();
     void sampleFromX (int x, std::int64_t& outSample) const;
@@ -25,6 +28,7 @@ private:
     sp1200::SamplerEngine& engine_;
     std::size_t segmentIndex_;
     std::function<void()> onClosed_;
+    bool embeddedMode_ = false;
 
     std::vector<float> waveform_;
     std::int64_t startSample_ = 0;

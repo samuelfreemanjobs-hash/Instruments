@@ -38,6 +38,8 @@ Manual pass against [SP1200_STANDALONE_SPEC.md](SP1200_STANDALONE_SPEC.md). Auto
 ## UI modules
 
 - [ ] **MOD 11** chop modal: truncate, auto 8/16, preview
+- [ ] **11 CHOP** tab embeds editor; console overlay still works
+- [ ] Swing changes odd/even 1/16 spacing (96 PPQN ±12 ticks); slave MIDI uses 3/9 clocks at max swing
 - [ ] Tabs: **10 CONSOLE**, **12–14 PROG**, **MOD 20**, **24 SONG**, **15 SSM2044**, **10 SETUP**
 - [ ] **MOD 12/13/14**: faders retarget pitch/decay/mix; LCD scrub on selected pad
 - [ ] **MOD 15**: bus SSM sliders; pad 3/4/11/12 hi-trim label; LCD ±1 + YES/NO scrub

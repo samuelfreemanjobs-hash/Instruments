@@ -66,6 +66,12 @@ ChopModalComponent::ChopModalComponent (sp1200::SamplerEngine& engine,
     refreshWaveform();
 }
 
+void ChopModalComponent::setEmbeddedMode (bool embedded) noexcept
+{
+    embeddedMode_ = embedded;
+    closeButton_.setVisible (! embedded);
+}
+
 void ChopModalComponent::refreshWaveform()
 {
     const auto* seg = engine_.memoryPool().getSegment (segmentIndex_);

@@ -23,6 +23,11 @@ inline constexpr int kMaxPatterns = 99;
 inline constexpr int kMinPatternBars = 1;
 inline constexpr int kMaxPatternBars = 4;
 inline constexpr int kStepsPerBar = 16; // 1/16 grid
+/** Internal sequencer grid (spec §4.1 / §6). */
+inline constexpr int kSequencerPpqn = 96;
+inline constexpr int kTicksPerSixteenthStep = kSequencerPpqn / 4; // 24 ticks @ 96 PPQN
+/** Max micro-delay on odd 1/16 steps when swing = 1 (SP-groove). */
+inline constexpr int kSwingTickOffsetMax = 12;
 inline constexpr int kMultiPitchSlots = 16;
 
 /** Korg SQ-1 default map (1-based MIDI channel). */
