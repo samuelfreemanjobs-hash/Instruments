@@ -11,7 +11,7 @@ juce_add_plugin (SP1200
     COPY_PLUGIN_AFTER_BUILD FALSE
     PLUGIN_MANUFACTURER_CODE Inst
     PLUGIN_CODE Sp12
-    FORMATS Standalone
+    FORMATS Standalone VST3
     PRODUCT_NAME "SP-1200 Drumulator"
 )
 

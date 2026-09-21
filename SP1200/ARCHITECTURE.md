@@ -11,11 +11,13 @@ Performance sampler with **16 pads**, **16 voices**, **7:00** embedded sample RA
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
-cmake --build build -j --target SP1200_Standalone SP1200MemoryTests SP1200SequencerTests SP1200ProjectFileTests
+cmake --build build -j --target SP1200_Standalone SP1200_VST3 SP1200MemoryTests SP1200SequencerTests SP1200ProjectFileTests
 ctest --test-dir build -R SP1200
 ```
 
-Artifact: `build/SP1200/SP1200_artefacts/Release/Standalone/SP-1200 Drumulator`
+Artifacts:
+- Standalone: `build/SP1200/SP1200_artefacts/Release/Standalone/SP-1200 Drumulator`
+- VST3: `build/SP1200/SP1200_artefacts/Release/VST3/SP-1200 Drumulator.vst3`
 
 ## Data flow
 
@@ -76,6 +78,12 @@ MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → Ssm
 - **COMBINE**: select pad A → **MOD 30 COMBINE** → pick pad B; appends B onto A segment and removes B from pool (`SegmentEditor::combineSegments`)
 - **SEG → BANK**: sets selected pad segment `SampleSegment::bank` to active bank A–D
 - **KeypadComponent**: 0–9 + ENTER/CANCEL; pattern entry on **MOD 20**, bank entry on console (keyboard digits also wired)
+
+## Module 12–14 PROGRAM tab
+
+- **12–14 PROG** tab: soft keys **12 PITCH**, **13 DECAY**, **14 MIX**; 16 faders + pads (same grid as console).
+- Faders edit all pads for the active module; LCD scrub targets selected pad (±12 st tune @ 0.1 st steps).
+- **Shift+Tab** cycles pitch → decay → mix while on program tab.
 
 ## Module 15 FILTER tab
 

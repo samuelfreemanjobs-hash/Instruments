@@ -30,7 +30,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     addKeyListener (this);
 
     const int tabGroup = 9001;
-    for (auto* tab : { &consoleTab_, &seqTab_, &songTab_, &filterTab_, &setupTab_ })
+    for (auto* tab : { &consoleTab_, &programTab_, &seqTab_, &songTab_, &filterTab_, &setupTab_ })
     {
         tab->setClickingTogglesState (true);
         tab->setRadioGroupId (tabGroup);
@@ -40,6 +40,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     seqTab_.setButtonText ("MOD 20 PIANO ROLL");
     filterTab_.setButtonText ("15 SSM2044");
     consoleTab_.addListener (this);
+    programTab_.addListener (this);
     seqTab_.addListener (this);
     songTab_.addListener (this);
     filterTab_.addListener (this);
@@ -83,6 +84,21 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
         juce::dontSendNotification);
     addAndMakeVisible (filterRoleLabel_);
     addAndMakeVisible (filterTopologyLabel_);
+
+    const int programModGroup = 9003;
+    for (auto* b : { &mod12PitchButton_, &mod13DecayButton_, &mod14MixButton_ })
+    {
+        b->setClickingTogglesState (true);
+        b->setRadioGroupId (programModGroup);
+        addAndMakeVisible (*b);
+    }
+    mod12PitchButton_.setToggleState (true, juce::dontSendNotification);
+    mod12PitchButton_.onClick = [this] { setProgramModule (ProgramModule::pitch); };
+    mod13DecayButton_.onClick = [this] { setProgramModule (ProgramModule::decay); };
+    mod14MixButton_.onClick = [this] { setProgramModule (ProgramModule::mix); };
+    programHelpLabel_.setText ("Per-pad tune ±12 st (0.1 st LCD scrub). Faders edit all 16 pads for active module.",
+                               juce::dontSendNotification);
+    addAndMakeVisible (programHelpLabel_);
 
     const int bankGroup = 9002;
     for (int i = 0; i < sp1200::kNumBanks; ++i)
@@ -438,12 +454,25 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
         s.setValue (0.8);
         s.onValueChange = [this, i]
         {
+            const float v = static_cast<float> (faders_[static_cast<std::size_t> (i)].getValue());
+            if (view_ == ViewMode::program)
+            {
+                if (programModule_ == ProgramModule::pitch)
+                    processor_.engine().setPadTune (i, v * 24.0f - 12.0f);
+                else if (programModule_ == ProgramModule::decay)
+                    processor_.engine().setPadDecay (i, v);
+                else
+                    processor_.engine().setPadLevel (i, v * 2.0f);
+                if (processor_.engine().selectedPad() == i && editField_ == lcdFieldForProgramModule() && ! editStaged_)
+                    refreshLcd();
+                return;
+            }
             if (faderMode_ == 1)
-                processor_.engine().setPadTune (i, static_cast<float> (faders_[static_cast<std::size_t> (i)].getValue() * 24.0 - 12.0));
+                processor_.engine().setPadTune (i, v * 24.0f - 12.0f);
             else if (faderMode_ == 2)
-                processor_.engine().setPadDecay (i, static_cast<float> (faders_[static_cast<std::size_t> (i)].getValue()));
+                processor_.engine().setPadDecay (i, v);
             else
-                processor_.engine().setPadLevel (i, static_cast<float> (faders_[static_cast<std::size_t> (i)].getValue() * 2.0));
+                processor_.engine().setPadLevel (i, v * 2.0f);
         };
         addAndMakeVisible (s);
     }
@@ -533,7 +562,7 @@ bool SP1200AudioProcessorEditor::keyPressed (const juce::KeyPress& key, juce::Co
         return true;
     }
 
-    if (view_ == ViewMode::console || view_ == ViewMode::sequencer)
+    if (view_ == ViewMode::console || view_ == ViewMode::sequencer || view_ == ViewMode::program)
     {
         const int ch = key.getTextCharacter();
         if (ch >= '0' && ch <= '9')
@@ -548,7 +577,7 @@ bool SP1200AudioProcessorEditor::keyPressed (const juce::KeyPress& key, juce::Co
         }
     }
 
-    if (view_ == ViewMode::console)
+    if (view_ == ViewMode::console || view_ == ViewMode::program)
     {
         const int ch = key.getTextCharacter();
         if (ch >= '1' && ch <= '4')
@@ -578,6 +607,8 @@ void SP1200AudioProcessorEditor::buttonClicked (juce::Button* button)
         setView (ViewMode::sequencer);
     else if (button == &songTab_)
         setView (ViewMode::song);
+    else if (button == &programTab_)
+        setView (ViewMode::program);
     else if (button == &filterTab_)
         setView (ViewMode::filter);
     else if (button == &setupTab_)
@@ -597,8 +628,10 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     const bool song = mode == ViewMode::song;
     const bool setup = mode == ViewMode::setup;
     const bool filter = mode == ViewMode::filter;
+    const bool program = mode == ViewMode::program;
 
     consoleTab_.setToggleState (console, juce::dontSendNotification);
+    programTab_.setToggleState (program, juce::dontSendNotification);
     seqTab_.setToggleState (seq, juce::dontSendNotification);
     songTab_.setToggleState (song, juce::dontSendNotification);
     filterTab_.setToggleState (filter, juce::dontSendNotification);
@@ -661,10 +694,13 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
         box.setVisible (setup);
 
     for (auto& b : padButtons_)
-        b.setVisible (console);
+        b.setVisible (console || program);
     for (auto& f : faders_)
-        f.setVisible (console);
-    const bool lcdKeypad = (console || seq || filter) && chopModal_ == nullptr;
+        f.setVisible (console || program);
+    for (auto* b : { &mod12PitchButton_, &mod13DecayButton_, &mod14MixButton_ })
+        b->setVisible (program && chopModal_ == nullptr);
+    programHelpLabel_.setVisible (program && chopModal_ == nullptr);
+    const bool lcdKeypad = (console || seq || filter || program) && chopModal_ == nullptr;
     const bool lcdScrub = lcdKeypad;
     if (lcdPanel_ != nullptr)
         lcdPanel_->setVisible (lcdKeypad);
@@ -673,7 +709,7 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     for (auto* b : { &lcdMinusButton_, &lcdPlusButton_, &lcdNoButton_, &lcdYesButton_ })
         b->setVisible (lcdScrub);
     for (auto& b : bankButtons_)
-        b.setVisible (console);
+        b.setVisible (console || program);
 
     if (seq && pianoRoll_ != nullptr)
         syncPianoRollFromControls();
@@ -684,6 +720,11 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
         beginLcdEdit (faderMode_ == 1 ? sp1200::LcdEditField::padTune
                        : faderMode_ == 2 ? sp1200::LcdEditField::padDecay
                                            : sp1200::LcdEditField::padLevel);
+    else if (program)
+    {
+        syncProgramFadersFromEngine();
+        beginLcdEdit (lcdFieldForProgramModule());
+    }
     else if (seq)
         beginLcdEdit (sp1200::LcdEditField::bpm);
     else
@@ -733,11 +774,12 @@ void SP1200AudioProcessorEditor::resized()
 {
     auto r = getLocalBounds().reduced (8);
     auto     tabs = r.removeFromTop (28);
-    consoleTab_.setBounds (tabs.removeFromLeft (110).reduced (2));
-    seqTab_.setBounds (tabs.removeFromLeft (130).reduced (2));
-    songTab_.setBounds (tabs.removeFromLeft (100).reduced (2));
-    filterTab_.setBounds (tabs.removeFromLeft (110).reduced (2));
-    setupTab_.setBounds (tabs.removeFromLeft (100).reduced (2));
+    consoleTab_.setBounds (tabs.removeFromLeft (100).reduced (2));
+    programTab_.setBounds (tabs.removeFromLeft (95).reduced (2));
+    seqTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
+    songTab_.setBounds (tabs.removeFromLeft (90).reduced (2));
+    filterTab_.setBounds (tabs.removeFromLeft (100).reduced (2));
+    setupTab_.setBounds (tabs.removeFromLeft (95).reduced (2));
     consoleTab_.toFront (false);
     seqTab_.toFront (false);
     songTab_.toFront (false);
@@ -759,6 +801,13 @@ void SP1200AudioProcessorEditor::resized()
         chopButton_.setBounds (bar.removeFromLeft (150).reduced (2));
         saveProjectButton_.setBounds (bar.removeFromLeft (90).reduced (2));
         loadProjectButton_.setBounds (bar.removeFromLeft (90).reduced (2));
+    }
+    else if (view_ == ViewMode::program)
+    {
+        mod12PitchButton_.setBounds (bar.removeFromLeft (90).reduced (2));
+        mod13DecayButton_.setBounds (bar.removeFromLeft (90).reduced (2));
+        mod14MixButton_.setBounds (bar.removeFromLeft (80).reduced (2));
+        programHelpLabel_.setBounds (bar.reduced (2));
     }
 
     if (view_ == ViewMode::console)
@@ -893,7 +942,7 @@ void SP1200AudioProcessorEditor::resized()
         return;
     }
 
-    if (view_ == ViewMode::console)
+    if (view_ == ViewMode::console || view_ == ViewMode::program)
     {
         auto bankBar = r.removeFromTop (28);
         for (auto& b : bankButtons_)
@@ -910,28 +959,33 @@ void SP1200AudioProcessorEditor::resized()
         lcdNoButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
         lcdYesButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
 
-        auto padArea = r.removeFromBottom (160);
-        auto faderArea = r;
-        const int cols = 8;
-        const int rows = 2;
-        const int cellW = padArea.getWidth() / cols;
-        const int fCellH = faderArea.getHeight() / rows;
-        const int pCellH = padArea.getHeight() / rows;
+        layoutConsolePadsAndFaders (r);
+    }
+}
 
-        for (int row = 0; row < rows; ++row)
+void SP1200AudioProcessorEditor::layoutConsolePadsAndFaders (juce::Rectangle<int> area)
+{
+    auto padArea = area.removeFromBottom (160);
+    auto faderArea = area;
+    const int cols = 8;
+    const int rows = 2;
+    const int cellW = padArea.getWidth() / cols;
+    const int fCellH = faderArea.getHeight() / rows;
+    const int pCellH = padArea.getHeight() / rows;
+
+    for (int row = 0; row < rows; ++row)
+    {
+        for (int col = 0; col < cols; ++col)
         {
-            for (int col = 0; col < cols; ++col)
-            {
-                const int idx = row * cols + col;
-                faders_[static_cast<std::size_t> (idx)].setBounds (col * cellW + 8,
-                                                                     row * fCellH + 4,
-                                                                     cellW - 16,
-                                                                     fCellH - 8);
-                padButtons_[static_cast<std::size_t> (idx)].setBounds (col * cellW + 4,
-                                                                         padArea.getY() + row * pCellH + 4,
-                                                                         cellW - 8,
-                                                                         pCellH - 8);
-            }
+            const int idx = row * cols + col;
+            faders_[static_cast<std::size_t> (idx)].setBounds (col * cellW + 8,
+                                                                 row * fCellH + 4,
+                                                                 cellW - 16,
+                                                                 fCellH - 8);
+            padButtons_[static_cast<std::size_t> (idx)].setBounds (col * cellW + 4,
+                                                                     padArea.getY() + row * pCellH + 4,
+                                                                     cellW - 8,
+                                                                     pCellH - 8);
         }
     }
 }
@@ -939,7 +993,7 @@ void SP1200AudioProcessorEditor::resized()
 void SP1200AudioProcessorEditor::timerCallback()
 {
     refreshMemoryLabel();
-    if (view_ == ViewMode::console || view_ == ViewMode::filter)
+    if (view_ == ViewMode::console || view_ == ViewMode::filter || view_ == ViewMode::program)
         refreshLcd();
     if (view_ == ViewMode::setup)
         refreshLearnStatus();
@@ -996,6 +1050,14 @@ void SP1200AudioProcessorEditor::refreshLcd()
             break;
         case ViewMode::filter:
             mod = "MOD 15 FILTER";
+            break;
+        case ViewMode::program:
+            if (programModule_ == ProgramModule::decay)
+                mod = "MOD 13 DECAY";
+            else if (programModule_ == ProgramModule::mix)
+                mod = "MOD 14 MIX";
+            else
+                mod = "MOD 12 PITCH";
             break;
     }
 
@@ -1560,7 +1622,20 @@ void SP1200AudioProcessorEditor::cycleLcdEditField()
     }
 
     if (view_ == ViewMode::console)
+    {
         cycleFaderMode();
+        return;
+    }
+
+    if (view_ == ViewMode::program)
+    {
+        if (programModule_ == ProgramModule::pitch)
+            setProgramModule (ProgramModule::decay);
+        else if (programModule_ == ProgramModule::decay)
+            setProgramModule (ProgramModule::mix);
+        else
+            setProgramModule (ProgramModule::pitch);
+    }
 }
 
 void SP1200AudioProcessorEditor::armClearPatternConfirm()
@@ -1569,4 +1644,43 @@ void SP1200AudioProcessorEditor::armClearPatternConfirm()
     pendingConfirm_ = PendingConfirmAction::clearPattern;
     editStaged_ = false;
     refreshLcd();
+}
+
+sp1200::LcdEditField SP1200AudioProcessorEditor::lcdFieldForProgramModule() const noexcept
+{
+    switch (programModule_)
+    {
+        case ProgramModule::decay: return sp1200::LcdEditField::padDecay;
+        case ProgramModule::mix: return sp1200::LcdEditField::padLevel;
+        case ProgramModule::pitch:
+        default: return sp1200::LcdEditField::padTune;
+    }
+}
+
+void SP1200AudioProcessorEditor::setProgramModule (ProgramModule module)
+{
+    programModule_ = module;
+    mod12PitchButton_.setToggleState (module == ProgramModule::pitch, juce::dontSendNotification);
+    mod13DecayButton_.setToggleState (module == ProgramModule::decay, juce::dontSendNotification);
+    mod14MixButton_.setToggleState (module == ProgramModule::mix, juce::dontSendNotification);
+    syncProgramFadersFromEngine();
+    beginLcdEdit (lcdFieldForProgramModule());
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::syncProgramFadersFromEngine()
+{
+    const auto& eng = processor_.engine();
+    for (int p = 0; p < sp1200::kNumPads; ++p)
+    {
+        const auto pad = eng.getPad (p);
+        float norm = 0.8f;
+        if (programModule_ == ProgramModule::pitch)
+            norm = (pad.tuneSemitones + 12.0f) / 24.0f;
+        else if (programModule_ == ProgramModule::decay)
+            norm = pad.decay;
+        else
+            norm = pad.level / 2.0f;
+        faders_[static_cast<std::size_t> (p)].setValue (norm, juce::dontSendNotification);
+    }
 }

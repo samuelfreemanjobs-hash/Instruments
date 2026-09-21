@@ -31,7 +31,15 @@ private:
         sequencer,
         song,
         setup,
-        filter
+        filter,
+        program
+    };
+
+    enum class ProgramModule
+    {
+        pitch,
+        decay,
+        mix
     };
 
     void timerCallback() override;
@@ -66,6 +74,10 @@ private:
     void beginLcdEdit (sp1200::LcdEditField field);
     void applyStagedLcdEdit();
     void armClearPatternConfirm();
+    void setProgramModule (ProgramModule module);
+    void syncProgramFadersFromEngine();
+    void layoutConsolePadsAndFaders (juce::Rectangle<int> area);
+    [[nodiscard]] sp1200::LcdEditField lcdFieldForProgramModule() const noexcept;
     [[nodiscard]] float readEditFieldValue (sp1200::LcdEditField field) const;
     void writeEditFieldValue (sp1200::LcdEditField field, float value);
     [[nodiscard]] float editFieldStep (sp1200::LcdEditField field) const;
@@ -81,6 +93,7 @@ private:
     juce::TextButton songTab_ { "24 SONG" };
     juce::TextButton setupTab_ { "10 SETUP" };
     juce::TextButton filterTab_ { "15 FILTER" };
+    juce::TextButton programTab_ { "12–14 PROG" };
 
     juce::Label headerLabel_;
     juce::Label rateLabel_;
@@ -111,6 +124,11 @@ private:
     juce::TextButton lcdYesButton_ { "YES·EXEC" };
     juce::Label filterRoleLabel_;
     juce::Label filterTopologyLabel_;
+    juce::TextButton mod12PitchButton_ { "12 PITCH" };
+    juce::TextButton mod13DecayButton_ { "13 DECAY" };
+    juce::TextButton mod14MixButton_ { "14 MIX" };
+    juce::Label programHelpLabel_;
+    ProgramModule programModule_ = ProgramModule::pitch;
     std::array<juce::TextButton, sp1200::kNumBanks> bankButtons_;
     juce::Label engagedLabel_;
 
