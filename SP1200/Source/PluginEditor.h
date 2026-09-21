@@ -3,6 +3,7 @@
 #include "PluginProcessor.h"
 #include "UI/ChopModalComponent.h"
 #include "UI/KeypadComponent.h"
+#include "UI/LcdEditField.h"
 #include "UI/LcdPanelComponent.h"
 #include "UI/PianoRollComponent.h"
 #include "UI/StepStackPanel.h"
@@ -29,7 +30,8 @@ private:
         console,
         sequencer,
         song,
-        setup
+        setup,
+        filter
     };
 
     void timerCallback() override;
@@ -48,6 +50,7 @@ private:
     void applyVinylTuneIfNeeded (int padIndex);
     void refreshLearnStatus();
     void refreshLcd();
+    void refreshFilterRoleLabel();
     void selectBank (int bankIndex);
     void updatePadHighlight();
     void syncPianoRollFromControls();
@@ -56,6 +59,16 @@ private:
     void cancelKeypadEntry();
     void armCombineWithSecondPad();
     void cycleFaderMode();
+    void cycleLcdEditField();
+    void nudgeLcdEditField (int direction);
+    void lcdYesExec();
+    void lcdNoBack();
+    void beginLcdEdit (sp1200::LcdEditField field);
+    void applyStagedLcdEdit();
+    void armClearPatternConfirm();
+    [[nodiscard]] float readEditFieldValue (sp1200::LcdEditField field) const;
+    void writeEditFieldValue (sp1200::LcdEditField field, float value);
+    [[nodiscard]] float editFieldStep (sp1200::LcdEditField field) const;
     int padIndexForComputerKey (const juce::KeyPress& key) const;
     void buttonClicked (juce::Button* button) override;
 
@@ -67,6 +80,7 @@ private:
     juce::TextButton seqTab_ { "MOD 20 SEQ" };
     juce::TextButton songTab_ { "24 SONG" };
     juce::TextButton setupTab_ { "10 SETUP" };
+    juce::TextButton filterTab_ { "15 FILTER" };
 
     juce::Label headerLabel_;
     juce::Label rateLabel_;
@@ -81,6 +95,22 @@ private:
     };
     KeypadEntryMode keypadMode_ = KeypadEntryMode::idle;
     juce::String keypadBuffer_;
+    sp1200::LcdEditField editField_ = sp1200::LcdEditField::none;
+    bool editStaged_ = false;
+    float stagedEditValue_ = 0.0f;
+    bool confirmPending_ = false;
+    enum class PendingConfirmAction
+    {
+        none,
+        clearPattern
+    };
+    PendingConfirmAction pendingConfirm_ = PendingConfirmAction::none;
+    juce::TextButton lcdMinusButton_ { "-1" };
+    juce::TextButton lcdPlusButton_ { "+1" };
+    juce::TextButton lcdNoButton_ { "NO·BACK" };
+    juce::TextButton lcdYesButton_ { "YES·EXEC" };
+    juce::Label filterRoleLabel_;
+    juce::Label filterTopologyLabel_;
     std::array<juce::TextButton, sp1200::kNumBanks> bankButtons_;
     juce::Label engagedLabel_;
 

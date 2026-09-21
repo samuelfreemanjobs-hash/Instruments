@@ -77,10 +77,16 @@ MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → Ssm
 - **SEG → BANK**: sets selected pad segment `SampleSegment::bank` to active bank A–D
 - **KeypadComponent**: 0–9 + ENTER/CANCEL; pattern entry on **MOD 20**, bank entry on console (keyboard digits also wired)
 
+## Module 15 FILTER tab
+
+- **15 SSM2044** tab: bus cutoff/resonance sliders, pad hi-trim vs flat role readout, LCD scrub (**±1**, **YES·EXEC** / **NO·BACK**).
+- Console bus SSM controls moved here (console keeps fader/multi-pitch row only).
+
 ## Banks & LCD
 
 - **BANK A–D** selects import/record target (`SampleSegment::bank`); display quota **1:45/bank** on top of **7:00** global pool.
-- **LcdPanelComponent** mirrors module + bank + selected pad/segment (keypad shell v1).
+- **LcdPanelComponent** + **KeypadComponent** + scrub row; `LcdEditField` drives staged edits (Shift+Tab cycles field on filter/seq).
+- **Clear pattern** requires LCD confirm (YES·EXEC).
 
 ## QA
 

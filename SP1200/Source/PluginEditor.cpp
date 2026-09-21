@@ -1,5 +1,6 @@
 #include "PluginEditor.h"
 
+#include "Engine/PadFilterRoles.h"
 #include "Project/ProjectFile.h"
 #include "SP1200Constants.h"
 
@@ -29,7 +30,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     addKeyListener (this);
 
     const int tabGroup = 9001;
-    for (auto* tab : { &consoleTab_, &seqTab_, &songTab_, &setupTab_ })
+    for (auto* tab : { &consoleTab_, &seqTab_, &songTab_, &filterTab_, &setupTab_ })
     {
         tab->setClickingTogglesState (true);
         tab->setRadioGroupId (tabGroup);
@@ -37,9 +38,11 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     }
 
     seqTab_.setButtonText ("MOD 20 PIANO ROLL");
+    filterTab_.setButtonText ("15 SSM2044");
     consoleTab_.addListener (this);
     seqTab_.addListener (this);
     songTab_.addListener (this);
+    filterTab_.addListener (this);
     setupTab_.addListener (this);
     consoleTab_.setToggleState (true, juce::dontSendNotification);
 
@@ -65,6 +68,21 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     keypad_->onEnter = [this] { commitKeypadEntry(); };
     keypad_->onCancel = [this] { cancelKeypadEntry(); };
     addAndMakeVisible (*keypad_);
+
+    for (auto* b : { &lcdMinusButton_, &lcdPlusButton_, &lcdNoButton_, &lcdYesButton_ })
+        addAndMakeVisible (*b);
+    lcdMinusButton_.onClick = [this] { nudgeLcdEditField (-1); };
+    lcdPlusButton_.onClick = [this] { nudgeLcdEditField (1); };
+    lcdNoButton_.onClick = [this] { lcdNoBack(); };
+    lcdYesButton_.onClick = [this] { lcdYesExec(); };
+
+    filterRoleLabel_.setJustificationType (juce::Justification::topLeft);
+    filterTopologyLabel_.setJustificationType (juce::Justification::topLeft);
+    filterTopologyLabel_.setText (
+        "Bus: SSM2044 4-pole LP. Pads 3–4 & 11–12: hi-trim pre-bus. Piano-roll FILTER stack = per-step bus offset.",
+        juce::dontSendNotification);
+    addAndMakeVisible (filterRoleLabel_);
+    addAndMakeVisible (filterTopologyLabel_);
 
     const int bankGroup = 9002;
     for (int i = 0; i < sp1200::kNumBanks; ++i)
@@ -207,12 +225,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     };
     addAndMakeVisible (chromaticTuneBox_);
 
-    clearPatternButton_.onClick = [this]
-    {
-        processor_.engine().sequencer().clearCurrentPattern();
-        syncPianoRollFromControls();
-        refreshSeqInfo();
-    };
+    clearPatternButton_.onClick = [this] { armClearPatternConfirm(); };
     addAndMakeVisible (clearPatternButton_);
 
     pianoRoll_ = std::make_unique<PianoRollComponent> (
@@ -412,6 +425,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
             }
             eng.setSelectedPad (i);
             updatePadHighlight();
+            refreshFilterRoleLabel();
             refreshLcd();
             triggerPad (i);
         };
@@ -452,6 +466,10 @@ void SP1200AudioProcessorEditor::cycleFaderMode()
     processor_.setFaderMode (faderMode_);
     const char* names[] = { "VOL", "PITCH", "DECAY" };
     faderModeButton_.setButtonText ("FADER: " + juce::String (names[faderMode_]));
+    if (view_ == ViewMode::console)
+        beginLcdEdit (faderMode_ == 1 ? sp1200::LcdEditField::padTune
+                       : faderMode_ == 2 ? sp1200::LcdEditField::padDecay
+                                           : sp1200::LcdEditField::padLevel);
 }
 
 int SP1200AudioProcessorEditor::padIndexForComputerKey (const juce::KeyPress& key) const
@@ -498,7 +516,20 @@ bool SP1200AudioProcessorEditor::keyPressed (const juce::KeyPress& key, juce::Co
     }
     if (key == juce::KeyPress::tabKey)
     {
-        cycleFaderMode();
+        if (key.getModifiers().isShiftDown())
+            cycleLcdEditField();
+        else
+            cycleFaderMode();
+        return true;
+    }
+    if (key.getTextCharacter() == '=' || key.getTextCharacter() == '+')
+    {
+        nudgeLcdEditField (1);
+        return true;
+    }
+    if (key.getTextCharacter() == '-' || key.getTextCharacter() == '_')
+    {
+        nudgeLcdEditField (-1);
         return true;
     }
 
@@ -547,6 +578,8 @@ void SP1200AudioProcessorEditor::buttonClicked (juce::Button* button)
         setView (ViewMode::sequencer);
     else if (button == &songTab_)
         setView (ViewMode::song);
+    else if (button == &filterTab_)
+        setView (ViewMode::filter);
     else if (button == &setupTab_)
         setView (ViewMode::setup);
 }
@@ -554,6 +587,8 @@ void SP1200AudioProcessorEditor::buttonClicked (juce::Button* button)
 void SP1200AudioProcessorEditor::setView (ViewMode mode)
 {
     cancelKeypadEntry();
+    confirmPending_ = false;
+    pendingConfirm_ = PendingConfirmAction::none;
     combineArm_ = false;
     mod30CombineButton_.setButtonText ("MOD 30 COMBINE");
     view_ = mode;
@@ -561,10 +596,12 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     const bool seq = mode == ViewMode::sequencer;
     const bool song = mode == ViewMode::song;
     const bool setup = mode == ViewMode::setup;
+    const bool filter = mode == ViewMode::filter;
 
     consoleTab_.setToggleState (console, juce::dontSendNotification);
     seqTab_.setToggleState (seq, juce::dontSendNotification);
     songTab_.setToggleState (song, juce::dontSendNotification);
+    filterTab_.setToggleState (filter, juce::dontSendNotification);
     setupTab_.setToggleState (setup, juce::dontSendNotification);
 
     vinylImportButton_.setVisible (console && chopModal_ == nullptr);
@@ -576,8 +613,10 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     mod11Button_.setVisible (console && chopModal_ == nullptr);
     saveProjectButton_.setVisible (console && chopModal_ == nullptr);
     loadProjectButton_.setVisible (console && chopModal_ == nullptr);
-    busFilterSlider_.setVisible (console && chopModal_ == nullptr);
-    busResSlider_.setVisible (console && chopModal_ == nullptr);
+    busFilterSlider_.setVisible (filter && chopModal_ == nullptr);
+    busResSlider_.setVisible (filter && chopModal_ == nullptr);
+    filterRoleLabel_.setVisible (filter && chopModal_ == nullptr);
+    filterTopologyLabel_.setVisible (filter && chopModal_ == nullptr);
     multiPitchButton_.setVisible (console && chopModal_ == nullptr);
     faderModeButton_.setVisible ((console || seq) && chopModal_ == nullptr);
 
@@ -625,17 +664,35 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
         b.setVisible (console);
     for (auto& f : faders_)
         f.setVisible (console);
-    const bool lcdKeypad = (console || seq) && chopModal_ == nullptr;
+    const bool lcdKeypad = (console || seq || filter) && chopModal_ == nullptr;
+    const bool lcdScrub = lcdKeypad;
     if (lcdPanel_ != nullptr)
         lcdPanel_->setVisible (lcdKeypad);
     if (keypad_ != nullptr)
         keypad_->setVisible (lcdKeypad);
+    for (auto* b : { &lcdMinusButton_, &lcdPlusButton_, &lcdNoButton_, &lcdYesButton_ })
+        b->setVisible (lcdScrub);
     for (auto& b : bankButtons_)
         b.setVisible (console);
 
     if (seq && pianoRoll_ != nullptr)
         syncPianoRollFromControls();
 
+    if (filter)
+        beginLcdEdit (sp1200::LcdEditField::busCutoff);
+    else if (console)
+        beginLcdEdit (faderMode_ == 1 ? sp1200::LcdEditField::padTune
+                       : faderMode_ == 2 ? sp1200::LcdEditField::padDecay
+                                           : sp1200::LcdEditField::padLevel);
+    else if (seq)
+        beginLcdEdit (sp1200::LcdEditField::bpm);
+    else
+    {
+        editField_ = sp1200::LcdEditField::none;
+        editStaged_ = false;
+    }
+
+    refreshFilterRoleLabel();
     refreshLcd();
     resized();
     repaint();
@@ -675,11 +732,12 @@ void SP1200AudioProcessorEditor::paint (juce::Graphics& g)
 void SP1200AudioProcessorEditor::resized()
 {
     auto r = getLocalBounds().reduced (8);
-    auto tabs = r.removeFromTop (28);
-    consoleTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
-    seqTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
-    songTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
-    setupTab_.setBounds (tabs.removeFromLeft (120).reduced (2));
+    auto     tabs = r.removeFromTop (28);
+    consoleTab_.setBounds (tabs.removeFromLeft (110).reduced (2));
+    seqTab_.setBounds (tabs.removeFromLeft (130).reduced (2));
+    songTab_.setBounds (tabs.removeFromLeft (100).reduced (2));
+    filterTab_.setBounds (tabs.removeFromLeft (110).reduced (2));
+    setupTab_.setBounds (tabs.removeFromLeft (100).reduced (2));
     consoleTab_.toFront (false);
     seqTab_.toFront (false);
     songTab_.toFront (false);
@@ -706,8 +764,6 @@ void SP1200AudioProcessorEditor::resized()
     if (view_ == ViewMode::console)
     {
         auto filterBar = r.removeFromTop (28);
-        busFilterSlider_.setBounds (filterBar.removeFromLeft (240).reduced (2));
-        busResSlider_.setBounds (filterBar.removeFromLeft (220).reduced (2));
         multiPitchButton_.setBounds (filterBar.removeFromLeft (150).reduced (2));
         faderModeButton_.setBounds (filterBar.removeFromLeft (120).reduced (2));
     }
@@ -754,6 +810,29 @@ void SP1200AudioProcessorEditor::resized()
         return;
     }
 
+    if (view_ == ViewMode::filter)
+    {
+        if (lcdPanel_ != nullptr && keypad_ != nullptr)
+        {
+            auto lcdRow = r.removeFromTop (56);
+            lcdPanel_->setBounds (lcdRow.removeFromLeft (lcdRow.getWidth() * 2 / 3).reduced (2));
+            keypad_->setBounds (lcdRow.reduced (2));
+        }
+        auto scrubRow = r.removeFromTop (28);
+        lcdMinusButton_.setBounds (scrubRow.removeFromLeft (48).reduced (2));
+        lcdPlusButton_.setBounds (scrubRow.removeFromLeft (48).reduced (2));
+        lcdNoButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
+        lcdYesButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
+
+        auto sliderRow = r.removeFromTop (36);
+        busFilterSlider_.setBounds (sliderRow.removeFromLeft (320).reduced (2));
+        busResSlider_.setBounds (sliderRow.removeFromLeft (320).reduced (2));
+
+        filterTopologyLabel_.setBounds (r.removeFromTop (48).reduced (4));
+        filterRoleLabel_.setBounds (r.reduced (4));
+        return;
+    }
+
     if (view_ == ViewMode::setup)
     {
         auto learnBar = r.removeFromTop (32);
@@ -789,6 +868,11 @@ void SP1200AudioProcessorEditor::resized()
             lcdPanel_->setBounds (lcdRow.removeFromLeft (lcdRow.getWidth() * 2 / 3).reduced (2));
             keypad_->setBounds (lcdRow.reduced (2));
         }
+        auto scrubRow = r.removeFromTop (28);
+        lcdMinusButton_.setBounds (scrubRow.removeFromLeft (48).reduced (2));
+        lcdPlusButton_.setBounds (scrubRow.removeFromLeft (48).reduced (2));
+        lcdNoButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
+        lcdYesButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
 
         auto stackBar = r.removeFromBottom (28);
         stackVelButton_.setBounds (stackBar.removeFromLeft (90).reduced (2));
@@ -820,6 +904,11 @@ void SP1200AudioProcessorEditor::resized()
             lcdPanel_->setBounds (lcdRow.removeFromLeft (lcdRow.getWidth() * 2 / 3).reduced (2));
             keypad_->setBounds (lcdRow.reduced (2));
         }
+        auto scrubRow = r.removeFromTop (28);
+        lcdMinusButton_.setBounds (scrubRow.removeFromLeft (48).reduced (2));
+        lcdPlusButton_.setBounds (scrubRow.removeFromLeft (48).reduced (2));
+        lcdNoButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
+        lcdYesButton_.setBounds (scrubRow.removeFromLeft (90).reduced (2));
 
         auto padArea = r.removeFromBottom (160);
         auto faderArea = r;
@@ -850,12 +939,13 @@ void SP1200AudioProcessorEditor::resized()
 void SP1200AudioProcessorEditor::timerCallback()
 {
     refreshMemoryLabel();
-    if (view_ == ViewMode::console)
+    if (view_ == ViewMode::console || view_ == ViewMode::filter)
         refreshLcd();
     if (view_ == ViewMode::setup)
         refreshLearnStatus();
     if (view_ == ViewMode::sequencer)
     {
+        refreshLcd();
         refreshSeqInfo();
         if (pianoRoll_ != nullptr && processor_.engine().sequencer().isPlaying())
             pianoRoll_->repaint();
@@ -904,6 +994,9 @@ void SP1200AudioProcessorEditor::refreshLcd()
         case ViewMode::setup:
             mod = "MOD 10 SETUP";
             break;
+        case ViewMode::filter:
+            mod = "MOD 15 FILTER";
+            break;
     }
 
     const auto& eng = processor_.engine();
@@ -931,6 +1024,20 @@ void SP1200AudioProcessorEditor::refreshLcd()
 
     if (combineArm_)
         line2 = "COMBINE: pick 2nd pad | " + line2;
+
+    if (confirmPending_)
+    {
+        line1 = "CONFIRM?";
+        if (pendingConfirm_ == PendingConfirmAction::clearPattern)
+            line2 = "CLEAR PATTERN — YES·EXEC / NO·BACK";
+    }
+    else if (editField_ != sp1200::LcdEditField::none)
+    {
+        const float shown = editStaged_ ? stagedEditValue_ : readEditFieldValue (editField_);
+        line2 = juce::String (sp1200::lcdEditFieldLabel (editField_)) + ": "
+                + juce::String (shown, editField_ == sp1200::LcdEditField::padTune ? 1 : 2)
+                + (editStaged_ ? " *" : "");
+    }
 
     lcdPanel_->setLines (line1, line2);
 }
@@ -1256,4 +1363,210 @@ void SP1200AudioProcessorEditor::toggleRecordInput()
         recordButton_.setColour (juce::TextButton::buttonColourId,
                                  getLookAndFeel().findColour (juce::TextButton::buttonColourId));
     }
+}
+
+void SP1200AudioProcessorEditor::refreshFilterRoleLabel()
+{
+    const int pad = processor_.engine().selectedPad();
+    const auto role = sp1200::filterRoleForPad (pad);
+    const juce::String roleName = role == sp1200::VoiceFilterRole::hiTrim ? "HI-TRIM (RC)" : "FLAT → BUS SSM2044";
+    filterRoleLabel_.setText ("Selected pad " + juce::String (pad + 1) + ": " + roleName,
+                              juce::dontSendNotification);
+}
+
+float SP1200AudioProcessorEditor::readEditFieldValue (sp1200::LcdEditField field) const
+{
+    const auto& eng = processor_.engine();
+    switch (field)
+    {
+        case sp1200::LcdEditField::busCutoff: return eng.getFilterCutoffNorm();
+        case sp1200::LcdEditField::busResonance: return eng.getFilterResonance();
+        case sp1200::LcdEditField::bpm: return static_cast<float> (eng.sequencer().bpm());
+        case sp1200::LcdEditField::swing: return eng.sequencer().swing();
+        case sp1200::LcdEditField::padTune: return eng.getPad (eng.selectedPad()).tuneSemitones;
+        case sp1200::LcdEditField::padLevel: return eng.getPad (eng.selectedPad()).level;
+        case sp1200::LcdEditField::padDecay: return eng.getPad (eng.selectedPad()).decay;
+        default: return 0.0f;
+    }
+}
+
+void SP1200AudioProcessorEditor::writeEditFieldValue (sp1200::LcdEditField field, float value)
+{
+    auto& eng = processor_.engine();
+    const int pad = eng.selectedPad();
+    switch (field)
+    {
+        case sp1200::LcdEditField::busCutoff:
+            eng.setFilterCutoffNorm (value);
+            busFilterSlider_.setValue (value, juce::dontSendNotification);
+            break;
+        case sp1200::LcdEditField::busResonance:
+            eng.setFilterResonance (value);
+            busResSlider_.setValue (value, juce::dontSendNotification);
+            break;
+        case sp1200::LcdEditField::bpm:
+            eng.sequencer().setBpm (static_cast<double> (value));
+            bpmSlider_.setValue (value, juce::dontSendNotification);
+            break;
+        case sp1200::LcdEditField::swing:
+            eng.sequencer().setSwing (value);
+            swingSlider_.setValue (value, juce::dontSendNotification);
+            break;
+        case sp1200::LcdEditField::padTune:
+            eng.setPadTune (pad, value);
+            if (faderMode_ == 1)
+                faders_[static_cast<std::size_t> (pad)].setValue ((value + 12.0f) / 24.0f, juce::dontSendNotification);
+            break;
+        case sp1200::LcdEditField::padLevel:
+            eng.setPadLevel (pad, value);
+            if (faderMode_ == 0)
+                faders_[static_cast<std::size_t> (pad)].setValue (value / 2.0f, juce::dontSendNotification);
+            break;
+        case sp1200::LcdEditField::padDecay:
+            eng.setPadDecay (pad, value);
+            if (faderMode_ == 2)
+                faders_[static_cast<std::size_t> (pad)].setValue (value, juce::dontSendNotification);
+            break;
+        default:
+            break;
+    }
+}
+
+float SP1200AudioProcessorEditor::editFieldStep (sp1200::LcdEditField field) const
+{
+    switch (field)
+    {
+        case sp1200::LcdEditField::padTune: return 0.1f;
+        case sp1200::LcdEditField::bpm: return 1.0f;
+        case sp1200::LcdEditField::busCutoff:
+        case sp1200::LcdEditField::busResonance:
+        case sp1200::LcdEditField::swing:
+        case sp1200::LcdEditField::padLevel:
+        case sp1200::LcdEditField::padDecay:
+            return 0.01f;
+        default: return 0.01f;
+    }
+}
+
+void SP1200AudioProcessorEditor::beginLcdEdit (sp1200::LcdEditField field)
+{
+    if (field == sp1200::LcdEditField::none)
+        return;
+    editField_ = field;
+    editStaged_ = false;
+    stagedEditValue_ = readEditFieldValue (field);
+    confirmPending_ = false;
+    pendingConfirm_ = PendingConfirmAction::none;
+}
+
+void SP1200AudioProcessorEditor::nudgeLcdEditField (int direction)
+{
+    if (confirmPending_ || editField_ == sp1200::LcdEditField::none || direction == 0)
+        return;
+
+    if (! editStaged_)
+    {
+        stagedEditValue_ = readEditFieldValue (editField_);
+        editStaged_ = true;
+    }
+
+    stagedEditValue_ += editFieldStep (editField_) * static_cast<float> (direction);
+
+    switch (editField_)
+    {
+        case sp1200::LcdEditField::busCutoff:
+        case sp1200::LcdEditField::busResonance:
+        case sp1200::LcdEditField::swing:
+        case sp1200::LcdEditField::padLevel:
+        case sp1200::LcdEditField::padDecay:
+            stagedEditValue_ = std::clamp (stagedEditValue_, 0.0f, 1.0f);
+            break;
+        case sp1200::LcdEditField::padTune:
+            stagedEditValue_ = std::clamp (stagedEditValue_, -12.0f, 12.0f);
+            break;
+        case sp1200::LcdEditField::bpm:
+            stagedEditValue_ = std::clamp (stagedEditValue_, 40.0f, 240.0f);
+            break;
+        default:
+            break;
+    }
+
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::applyStagedLcdEdit()
+{
+    if (! editStaged_ || editField_ == sp1200::LcdEditField::none)
+        return;
+    writeEditFieldValue (editField_, stagedEditValue_);
+    editStaged_ = false;
+    refreshLcd();
+    refreshSeqInfo();
+}
+
+void SP1200AudioProcessorEditor::lcdYesExec()
+{
+    if (confirmPending_)
+    {
+        if (pendingConfirm_ == PendingConfirmAction::clearPattern)
+        {
+            processor_.engine().sequencer().clearCurrentPattern();
+            syncPianoRollFromControls();
+            refreshSeqInfo();
+        }
+        confirmPending_ = false;
+        pendingConfirm_ = PendingConfirmAction::none;
+        refreshLcd();
+        return;
+    }
+
+    applyStagedLcdEdit();
+}
+
+void SP1200AudioProcessorEditor::lcdNoBack()
+{
+    if (confirmPending_)
+    {
+        confirmPending_ = false;
+        pendingConfirm_ = PendingConfirmAction::none;
+        refreshLcd();
+        return;
+    }
+
+    editStaged_ = false;
+    refreshLcd();
+}
+
+void SP1200AudioProcessorEditor::cycleLcdEditField()
+{
+    if (view_ == ViewMode::filter)
+    {
+        if (editField_ == sp1200::LcdEditField::busCutoff)
+            beginLcdEdit (sp1200::LcdEditField::busResonance);
+        else
+            beginLcdEdit (sp1200::LcdEditField::busCutoff);
+        refreshLcd();
+        return;
+    }
+
+    if (view_ == ViewMode::sequencer)
+    {
+        if (editField_ == sp1200::LcdEditField::bpm)
+            beginLcdEdit (sp1200::LcdEditField::swing);
+        else
+            beginLcdEdit (sp1200::LcdEditField::bpm);
+        refreshLcd();
+        return;
+    }
+
+    if (view_ == ViewMode::console)
+        cycleFaderMode();
+}
+
+void SP1200AudioProcessorEditor::armClearPatternConfirm()
+{
+    confirmPending_ = true;
+    pendingConfirm_ = PendingConfirmAction::clearPattern;
+    editStaged_ = false;
+    refreshLcd();
 }
