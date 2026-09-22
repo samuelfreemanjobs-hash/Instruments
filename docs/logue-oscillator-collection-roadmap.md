@@ -35,7 +35,7 @@
 | 10 | Detroit rap TB-303 | `tb303_detroit_acid` | _(new)_ | _(new)_ | **New** |
 | 11 | Korg DW-8000 | `korg_dw8000_dig` | _(new)_ | _(new)_ | **New** (DWGS + analog-ish edge) |
 | 12 | Korg Poly-61 | `korg_poly61_dco` | _(new)_ | _(new)_ | **New** (DCO + simple poly char) |
-| 13 | Prophet-6 / OB-6 | `sequential_p6_ob6` | _(new)_ | _(new)_ | **New** (dual-personality macro) |
+| 13 | Prophet-6 / OB-6 | `sequential_p6_ob6` _(or split later)_ | _(new)_ | _(new)_ | **New** (dual-personality or **2 units** — TBD) |
 | 14 | Ensoniq SQ-80 | `ensoniq_sq80_wt` | extend `ensoniq-eps1` ideas | _(new)_ | **New** + wavetable bank |
 | 15 | Solina string ensemble | `solina_string_ensemble` | _(new)_ | _(new)_ | **New** (divide-down + ensemble) |
 | 16 | Rage rap saw synth | `rage_rap_supersaw` | _(new)_ | _(new)_ | **New** (genre-tuned supersaw core) |
@@ -59,7 +59,7 @@
 |------|----------------|
 | `jp8000_supersaw` | Roland JP-8000: 7 voices, bright, trance/lead |
 | `virus_hypersaw` | Access Virus: tighter spread, more HP, “hypersaw” density |
-| `rage_rap_supersaw` | Preset-first: detuned saws + sub, 808-friendly, modern rage rap |
+| `rage_rap_supersaw` | Preset-first: detuned saws + sub — **Playboi Carti** + **Trippie Redd** targets (locked) |
 
 **Plan:** Implement `src/common/logue/supersaw_core.h` (or copy per unit if flash linking is awkward) once; three manifests / param curves.
 
@@ -201,24 +201,18 @@ Oscillators **cannot** replace the FX slot — plan **two FX binaries** plus dru
 
 **Goal:** One loadable unit with **four 808 voices**: bass drum, snare, closed hat, open hat.
 
-**Voice selection (pick one default; confirm in brainstorm):**
+**Voice selection (locked):** **`Voice` param** (0–3) — kick / snare / closed hat / open hat. MIDI pitch still sets **tuning** and envelope feel per hit.
 
-| Method | Pros | Cons |
-|--------|------|------|
-| **MIDI note map** (recommended) | Play like a mini kit from keyboard/pad | User learns note map (document in `manifest.json`) |
-| **Voice param** (0–3) | Single-note “kit mode” | Awkward for live drumming |
-| **Hybrid** | Param picks kit piece + MIDI pitch sets tune/decay | Uses 1–2 params |
+| `Voice` | Drum |
+|---------|------|
+| 0 | Kick |
+| 1 | Snare |
+| 2 | Closed hat |
+| 3 | Open hat |
 
-**Draft MIDI map (808-ish, tunable):**
+Optional later: **hybrid** preset in docs (param + note map) for pad controllers — not v1 default.
 
-| Voice | Suggested notes |
-|-------|-----------------|
-| Kick | C1 |
-| Snare | D1 |
-| Closed hat | F#1 |
-| Open hat | A#1 |
-
-**Shared macros (≤10):** **Voice** (if hybrid), **Tone**, **Decay**, **Punch**, **Snare Snap**, **Hat Length**, **OH Decay**, **Drive**, **Level**, **Tune** (global or per-voice via note).
+**Shared macros (≤10):** **Voice**, **Tone**, **Decay**, **Punch**, **Snare Snap**, **Hat Length**, **OH Decay**, **Drive**, **Level**, **Tune**.
 
 **DSP sketch:**
 
@@ -245,7 +239,7 @@ Oscillators **cannot** replace the FX slot — plan **two FX binaries** plus dru
 
 **Params:** **Voice** or MIDI map, **FM Index**, **Ratio**, **Decay**, **Tone**, **Metal**, **Level**, …
 
-Optional: merge with kit later as `tr808_drumkit_extended` if flash/CPU tight — **default plan: separate unit** so each `.prg` / `.nts1mkiiunit` stays focused.
+**Locked:** **Always separate** from the 4-voice kit — you get **both** `tr808_drumkit_4voice` and `fm808_cowbell_perc` as their own `.prg` / `.nts1mkiiunit` files. NTS still loads **one osc at a time**; swap units when you switch from kit to cowbell/perc.
 
 ### C) `sp1200_fx` (custom FX — not an oscillator)
 
@@ -303,14 +297,26 @@ docs/logue-custom-fx-lane.md       # FX vs osc, load order on NTS
 
 ---
 
+## Decisions locked (owner)
+
+| Topic | Decision |
+|-------|----------|
+| 808 kit voice pick | **`Voice` param** (0–3), not MIDI-map-first |
+| Drum + FM perc | **Two separate oscillators** — both shipped |
+| Rage rap supersaw | Preset targets: **Playboi Carti**, **Trippie Redd** |
+| Supersaw priority | **`virus_hypersaw` first** after supersaw core (before JP-8000 / rage) |
+
+---
+
 ## Recommended delivery order
 
 ```text
 Phase 0   boilerplate + roadmap
 Phase 1a  memphis_dust_sub
 Phase 1b  sh101_classic, prophet5_analog, juno_dco_osc (ports)
+Phase 1c  supersaw core → virus_hypersaw          ← priority (owner)
 Phase 2a  minimoog_phatt, tb303_detroit_acid, obxa_analog, korg_poly61_dco
-Phase 2b  supersaw core → jp8000_supersaw → virus_hypersaw → rage_rap_supersaw
+Phase 2b  jp8000_supersaw → rage_rap_supersaw     ← Carti / Trippie presets
 Phase 2c  solina_string_ensemble, sequential_p6_ob6, korg_dw8000_dig
 Phase 3   wavetable tooling → prophet_vs_wt128 → ppg_microwave_wt → ensoniq_sq80_wt
 Phase 4   acoustic_pm_poly (after CPU baseline from Phase 2)
@@ -348,23 +354,19 @@ For each slug:
 
 ---
 
-## Open questions (for your brainstorm)
+## Open questions (remaining)
 
 1. **Minilogue XD:** Ship every unit on XD, or mkII-only for wavetable-heavy ones?
 2. **Prophet VS:** Will you supply ROM/dump, or OK with “VS-inspired” recreated waves?
 3. **Juno DCO:** Standalone DCO (osc only) vs keep full `juno-rnb` bass envelope/filter in the osc slot?
 4. **303:** Pure osc (saw/square) vs include **internal accent/slide** (uses more CPU)?
-5. **P6 vs OB-6:** One unit with **Mode** knob vs two separate `.prg` / `.nts1mkiiunit` files?
+5. **P6 vs OB-6:** One unit with **Mode** knob vs **two separate** loadables?
 6. **SQ-80:** Full TransWave ambition vs **32 curated** waves for flash limits?
-7. **Rage rap saw:** Reference tracks / artists for preset targets (e.g. early Carti vs current hyperpop)?
-8. **Acoustic PM:** Pluck-only v1 OK, or **Strike** required for v1?
-9. **DW-8000:** Emphasis on **digital wave cycles** vs **slammed SSM filter** (host filter does most filter work)?
-10. **Priority tweak:** Any of the new eight ahead of Phase 2a (e.g. Virus or Solina before OB-Xa)?
-11. **808 kit:** **MIDI note map** vs **Voice param** vs hybrid for the 4 voices?
-12. **FM perc:** Separate unit OK, or merge cowbell/rim/clave into the 4-voice kit as an **extended** osc?
-13. **FX target:** mkII only first, or Minilogue XD / NTS mkI custom FX too (platform-dependent)?
-14. **Dream reverb:** More **shimmer/ambient** or **dark dub** default?
-15. **SP-1200 FX:** Emphasis on **bit/sample-rate** vs **short delay smear** (classic SP “feel”)?
+7. **Acoustic PM:** Pluck-only v1 OK, or **Strike** required for v1?
+8. **DW-8000:** Emphasis on **digital wave cycles** vs **slammed SSM filter** (host filter does most filter work)?
+9. **FX target:** mkII only first, or Minilogue XD / NTS mkI custom FX too (platform-dependent)?
+10. **Dream reverb:** More **shimmer/ambient** or **dark dub** default?
+11. **SP-1200 FX:** Emphasis on **bit/sample-rate** vs **short delay smear** (classic SP “feel”)?
 
 ---
 
