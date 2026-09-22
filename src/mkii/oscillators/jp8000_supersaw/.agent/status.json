@@ -1,0 +1,6 @@
+{
+  "slug": "virus_hypersaw",
+  "current_phase": "eval",
+  "setup_completed": false,
+  "phases_completed": ["brief", "design", "scaffold", "impl"]
+}

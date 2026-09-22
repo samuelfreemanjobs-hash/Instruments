@@ -97,3 +97,12 @@ inline SupersawTuning supersaw_tuning_jp8000() {
   t.voice_gain = 1.f;
   return t;
 }
+
+inline SupersawTuning supersaw_tuning_rage() {
+  SupersawTuning t{};
+  t.detune_cents_max = 48.f;
+  t.hp_hz_default = 115.f;
+  t.sub_mix_default = 0.58f;
+  t.voice_gain = 1.05f;
+  return t;
+}
