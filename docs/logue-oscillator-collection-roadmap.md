@@ -410,7 +410,7 @@ If a unit overflows flash after `arm-none-eabi-size`, drop to **32 × 64** befor
 Phase 0   boilerplate + roadmap
 Phase 1a  memphis_dust_sub
 Phase 1b  sh101_classic, prophet5_analog, juno_dco_osc (ports)
-Phase 1c  supersaw core → virus_hypersaw          ← priority (owner)
+Phase 1c  supersaw core → virus_hypersaw          ← **virus_hypersaw shipped**; next jp8000 / rage
 Phase 2a  minimoog_phatt, tb303_detroit_acid, obxa_analog, korg_poly61_dco
 Phase 2b  jp8000_supersaw → rage_rap_supersaw     ← Carti / Trippie presets
 Phase 2c  solina_string_ensemble, prophet6_analog, ob6_analog, korg_dw8000_dig

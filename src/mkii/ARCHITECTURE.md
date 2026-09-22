@@ -30,6 +30,7 @@ MIDI / panel → unit_render (SDK) → Osc::setPitch / setParameter
 | Path | Role |
 |------|------|
 | `src/mkii/oscillators/*/osc.h` | DSP (`Osc` class) |
+| `src/mkii/common/` | Shared headers (e.g. `supersaw_core.h`) |
 | `src/mkii/oscillators/*/unit.cc` | SDK glue |
 | `src/oscillators/*` | v1.1 sources for porting |
 | `tools/mkii/scaffold-mkii.py` | Generate mkII tree |
