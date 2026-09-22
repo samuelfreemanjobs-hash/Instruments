@@ -29,7 +29,9 @@ chmod +x tools/mkii-automate.sh tools/osc-eval-mkii.sh
 ./tools/build-mkii.sh <slug>                # single unit when bootstrapped
 ```
 
-Optional **v1.1** builds (Minilogue XD / NTS-1 mkI / Prologue): `./tools/build.sh oscillators/<name> minilogue-xd` — see [docs/platform-matrix.md](docs/platform-matrix.md).
+**New mkII unit:** `./tools/new-mkii-oscillator.sh <slug> ["Name"]` — see [docs/logue-mkii-boilerplate.md](docs/logue-mkii-boilerplate.md).
+
+Optional **v1.1** builds (legacy): `./tools/build.sh oscillators/<name> minilogue-xd` — new collection is **mkII-only** per [docs/logue-oscillator-collection-roadmap.md](docs/logue-oscillator-collection-roadmap.md).
 
 Legacy **Claude oscillator bundle** (v1 fiction API): quarantined under [docs/archive/quarantined-claude-osc-bundle/](docs/archive/quarantined-claude-osc-bundle/) — do not use for codegen.
 
