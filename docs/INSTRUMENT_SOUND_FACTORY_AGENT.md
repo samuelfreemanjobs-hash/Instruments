@@ -4,7 +4,17 @@
 **Owner lane:** Disklordz product factory + JUCE/HISE instrument tracks.  
 **Read first:** [ARCHITECTURE.md](../ARCHITECTURE.md) · [DISKLORDZ_ILLUGEN_RESEARCH.md](DISKLORDZ_ILLUGEN_RESEARCH.md) · [DISKLORDZ_PLUGIN_TRACKS.md](DISKLORDZ_PLUGIN_TRACKS.md)
 
+### Locked decisions (product owner)
+
+| Topic | Decision |
+|-------|----------|
+| **Who starts runs** | **You** manually **or** **PM Agent / Airtable** plans the WO and kicks the factory agent |
+| **MPC deliverable** | Multisamples → **MPC Keygroup program** via your **Cursor MPC-agent** + **MPCTK** |
+| **Reference audio** | **YouTube allowed** — find real tracks, download **short segments for analysis/timbre match**; never commit or ship ref audio in products |
+| **Cloud VM** | **Heavy image only** (JUCE + factory tools); no slim split for now |
+
 ---
+
 
 ## 1. Mission
 
@@ -17,9 +27,9 @@ Build a **production-grade, mostly unattended** Cursor Cloud agent system that c
 | **Sound design** | Processing chains, layer maps, brief → spec JSON |
 | **Preset design** | JD Upgraded / Wave909 APVTS presets, factory programs |
 | **Multisample maps** | SFZ, internal zone tables (JD ROM / HISE maps) |
-| **MPC Software keygroup programs** | Intermediate **KeygroupSpec JSON** → MPC export (Phase 2) |
-| **Reference matching** | Spectral/ loudness / transient reports vs user-supplied refs |
-| **Research** | Song/track discovery (metadata only) + user-provided audio for analysis |
+| **MPC Keygroup programs** | Multisample zones → **Cursor MPC-agent** → MPCTK `.xpj` |
+| **Reference matching** | YouTube + spectral metrics; timbre-target factory params |
+| **Research** | Find tracks on YouTube/web; analysis segments in gitignored cache |
 | **JUCE DSP** | C++ changes with `run_business.py --profile ci` gate |
 | **HISE sketch** | Git handoff to Antigravity, not remote HISE in Cloud VM |
 
@@ -47,10 +57,10 @@ Add optional field on jobs: `"runtimeHint": "cloud" | "local" | "antigravity" | 
 
 | Jargon | What it means for you |
 |--------|------------------------|
-| **Worker trigger** | **What starts the agent when you are not chatting with it.** Examples: you click “Run Cloud Agent” with a task; you drop a file in `sound-factory/jobs/` and tell the agent to run it; later: a timer or Airtable row auto-starts a run. **Planning default:** you explicitly start runs (simplest). We add “wake up on schedule / new WO” only when you want hands-off nights. |
-| **MPC export path** | **How WAVs become a playable MPC project.** Preferred: your **[MPC Sample Toolkit (MPCTK)](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit)** — validated `.xpj` read/write, chromatic pad banks, WAV injection, CLI + macOS GUI, hardware-tested. Fallback: clicking in MPC Software (Bytebot) only if MPCTK cannot cover a case. There is no separate `mpc-agent` repo in your GitHub; MPCTK *is* the MPC automation layer for now (future: thin “agent wrapper” skill that calls `mpctk`). |
-| **Reference policy** | **What audio the agent is allowed to listen to and copy.** Web search = facts (BPM, key, gear). **Matching a song’s sound** = analyze **files you provide** (WAV/MP3 you drop in or attach), not ripped streaming audio. Optional later: a licensed folder of stems you own. |
-| **Cloud image split** | **Two different Cloud VM setups:** (A) heavy image with JUCE compile for plugin work; (B) light image with only Node/Python for drum-kit batches (faster/cheaper). Planning note: one image is fine until batch jobs feel slow or expensive — not a decision you need now. |
+| **Worker trigger** | **What starts a run:** (1) **You** start Cloud/VS Code Agent with a job file, or (2) **PM Agent / Airtable** creates the WO and triggers the implementation agent. See skill `pm-airtable-factory-trigger`. |
+| **MPC export path** | **Multisamples → Keygroup program:** your **Cursor MPC-agent** (specialist) + **[MPCTK](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit)**. Skill: `cursor-mpc-agent`. |
+| **Reference policy** | **YouTube enabled** for timbre: search → short yt-dlp segment → analyze → tune factory; refs stay in gitignored cache, not in SKU ZIPs. Skill: `sound-design-reference-match`. |
+| **Cloud image** | **Heavy only** — JUCE + ffmpeg/yt-dlp when WO lands; no separate slim Cloud image for now. |
 | **First vertical slice** | The **first end-to-end product story** we implement (e.g. kit → ZIP vs kit → SFZ → MPC). You will pick this after planning. |
 
 ---
@@ -116,7 +126,9 @@ Installed under [`.cursor/skills/`](../.cursor/skills/) — agents **read the SK
 | `audio-generation-batch` | Parametric + API batch, manifest discipline |
 | `sound-design-reference-match` | Analysis CLI, ref workflow, evidence |
 | `sfz-multisample-map` | SFZ opcodes, zone layout, round-robins |
-| `mpc-keygroup-program` | KeygroupSpec JSON → export pipeline (phased) |
+| `mpc-keygroup-program` | Multisample → MPC Keygroup program |
+| `cursor-mpc-agent` | Delegate to your Cursor MPC-agent + MPCTK |
+| `pm-airtable-factory-trigger` | WO / PM Agent → job JSON → Cloud run |
 | `preset-design-factory` | JD / Wave909 / HISE XML presets |
 | `juce-dsp-plugin-ci` | CMake, golden WAV, pluginval |
 | `hise-antigravity-handoff` | Bridge scripts, inbox/outbox |
@@ -137,17 +149,16 @@ Installed under [`.cursor/skills/`](../.cursor/skills/) — agents **read the SK
 
 Phase 1: **file-based queue** in git (no new infra). Phase 2: Supabase `factory_jobs` (see ILLUGEN job sketch in RAG doc).
 
-### 5.0 How jobs get started (worker triggers — simplified)
+### 5.0 How jobs get started (worker triggers)
 
-| Trigger | Who uses it | Status |
-|---------|-------------|--------|
-| **Manual** — you open Agent (Cloud or VS Code) and paste goal + job path | Everyone | **Default for planning** |
-| **Manual** — `@instrument-orchestrator` + “run `jobs/foo.json`” | Everyone | Same as above |
-| **Git** — PR or comment with `factory-run: jobs/foo.json` | Cloud | Phase 1 optional |
-| **Timer** — nightly “generate SKU X” | Cloud subscriptions MCP | Phase 2 optional |
-| **Airtable WO** — new row kicks Cloud Agent | Zapier + API | Phase 2 optional |
+| Trigger | Who | Status |
+|---------|-----|--------|
+| **Manual** — you run Cloud or VS Code Agent with goal + `jobs/<id>.json` | You | **Active** |
+| **PM Agent / Airtable** — WO row → issue → job JSON → Cloud Agent | Planner / PM Agent | **Active** (automation depth Phase 2) |
+| **Timer** — nightly SKU batch | subscriptions MCP | Optional later |
+| **Git comment** — `factory-run: jobs/foo.json` | Cloud | Optional |
 
-You do **not** need to pick a trigger now. Default = **you start the agent** with a job file or structured prompt.
+Skill: `.cursor/skills/pm-airtable-factory-trigger/SKILL.md`.
 
 ### 5.1 Work order → job DAG
 
@@ -166,7 +177,8 @@ You do **not** need to pick a trigger now. Default = **you start the agent** wit
     { "step": "generate.batch", "variations": 8 },
     { "step": "qa.spectral", "tool": "SpectralDiff" },
     { "step": "map.sfz" },
-    { "step": "export.mpc_keygroup", "optional": true },
+    { "step": "export.mpc_keygroup", "delegate": "cursor-mpc-agent", "required": true },
+    { "step": "reference.youtube", "url": "https://...", "segmentSec": 60 },
     { "step": "package.zip" }
   ],
   "acceptance": {
@@ -198,20 +210,23 @@ You do **not** need to pick a trigger now. Default = **you start the agent** wit
 - Skills document opcode subset: `sample`, `key`, `lokey`, `hikey`, `pitch_keycenter`, `volume`, `pan`, `loop_mode`, `cutoff`, envelope opcodes as needed.  
 - HISE lane can import SFZ or mirror the same spec.
 
-### 6.2 MPC Sample projects (MPCTK — primary)
+### 6.2 MPC Keygroup programs (MPC-agent + MPCTK)
 
-**Tool:** [MPC-Sample-Toolkit (MPCTK)](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit) — gzip `.xpj` read/write, chromatic pad banks, scale layouts, WAV injection, `mpctk` CLI, PySide6 GUI, validated on **physical MPC Sample** hardware.
+**Requirement:** multisample sets must land as a **Keygroup program**, not drum-one-shots only.
 
-**Integration plan (no vendoring into Instruments until WO):**
+| Layer | Role |
+|-------|------|
+| **Instrument orchestrator** | WAV render, `instrument-map.json`, manifest |
+| **Your Cursor MPC-agent** | Keygroup layout, QA, invokes MPCTK / extensions |
+| **[MPCTK](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit)** | `.xpj` + `_[ProjectData]` write path |
 
-1. Factory agent emits **source WAV(s)** + `manifest.json` (and optional **InstrumentMapSpec** for roots/transpose).  
-2. On **local VS Code** or **Antigravity** runtime: `mpctk` (or GUI) with structural XPJ template + source/target roots.  
-3. Output `.xpj` + `_[ProjectData]` package → user loads on hardware.  
-4. Optional WO: git submodule `tools/MPC-Sample-Toolkit` or documented clone + venv in `AGENTS.md`.
+Handoff directory: `disklordz/sound-factory/out/<jobId>/` — see skill `cursor-mpc-agent`.
 
-**KeygroupSpec JSON** remains the in-repo interchange format so SFZ and MPC steps share the same zone list; MPCTK is the **exporter**, not manual UI clicking.
+**InstrumentMapSpec / zone JSON** is shared with SFZ so one map feeds HISE, SFZ, and MPC.
 
-**Fallback:** Bytebot / MPC Software UI only for gaps MPCTK does not cover yet.
+**Runtime:** MPC-agent + MPCTK on **VS Code or Antigravity**; Cloud completes handoff + `HANDOFF_MPC.md` when `runtimeHint` is `split`.
+
+**Fallback:** Bytebot / MPC UI only if MPC-agent + MPCTK gap is documented in the WO.
 
 Orchestrator asks before overwriting user MPC project directories.
 
@@ -243,24 +258,26 @@ Batch skill requires: **SHA-256 per WAV**, `sourceId`, `provenance` enum extensi
 
 ---
 
-## 8. Reference listening & “find songs online”
+## 8. Reference listening (YouTube + uploads)
 
-**In plain terms:** the agent can Google *about* a track (tempo, key, machines used). To *sound like* something, you give it **audio files you are allowed to use** — a exported WAV, a sample pack file, or a recording you made — not “pull from Spotify.”
+**Owner policy:** for timbre matching, agents **find real songs on YouTube**, download **short segments for analysis**, and tune the factory. Skill: `sound-design-reference-match`.
 
-**Legal / safety baseline**
+**Guardrails (still required)**
 
-- Agent may **search the public web** for song titles, BPM, key, gear lists, interviews (facts).  
-- Agent must **not** download copyrighted audio from streaming/YouTube unless the **user supplies files** or confirms licensed assets.  
-- Reference **analysis** runs on user-provided WAV/MP3 in `disklordz/sound-factory/refs/` or WO attachments.
+- Cache under `disklordz/sound-factory/refs/youtube-cache/` — **gitignored**.  
+- **Do not** commit reference audio or include it in customer ZIPs / store assets.  
+- Prefer identifiable segments (user names hook/intro); default cap ~60s for analysis.  
+- PR evidence = `reference-report.json` + spectrograms + **synthetic** A/B WAVs only.
 
-**Technical pipeline (Cloud VM)**
+**Technical pipeline (heavy Cloud VM — WO-SF-011)**
 
-1. **Ingest:** user drops ref in `sound-factory/refs/` or attaches to WO.  
-2. **Analyze (Phase 1 CLI — to implement):** `python3 disklordz/sound-factory/scripts/analyze_reference.py` → JSON report (LUFS, centroid, transient rate, chroma sketch, optional mel PNG).  
-3. **Match:** adjust `GenerationSpec` + factory params; regenerate batch; `SpectralDiff` vs ref slice.  
-4. **Video:** `videoReview` subagent for user-supplied performance video; no audio extraction without permission.
+1. **Resolve:** WebSearch / user title → YouTube URL.  
+2. **Extract:** `yt-dlp` + `ffmpeg` → temp WAV in youtube-cache.  
+3. **Analyze:** `analyze_reference.py` → LUFS, centroid, transients, mel PNG.  
+4. **Match:** update `GenerationSpec` / multisample render params → regenerate zones.  
+5. **Optional:** user uploads in `sound-factory/refs/` or `videoReview` on attached MP4.
 
-**Evidence for acceptance:** report JSON + spectrogram PNG + A/B WAV clips in PR.
+**Legal:** private factory use under owner direction; agents remain fail-closed on shipping third-party audio.
 
 ---
 
@@ -278,21 +295,16 @@ Worker jobs **fail closed**: bad manifest schema, missing SHA-256, or QA over th
 
 ---
 
-## 10. Environment extensions (future `.cursor/environment.json`)
+## 10. Cloud environment (heavy image only)
 
-**Plain terms:** Cloud VMs are pre-installed Linux boxes. “Split image” just means we might offer a **slim** box for drum batches and a **fat** box for JUCE — defer until needed.
+Single **heavy** Cloud image: keep today’s JUCE/gcc-12 install; extend the same image when WOs land:
 
-| Profile | Install focus | Runtime |
-|---------|---------------|---------|
-| **plugin** (today) | JUCE + gcc-12 | Cloud |
-| **factory** (planned) | Node + Python scipy/ffmpeg for analysis | Cloud |
-| **local** | MPCTK venv, MPC template XPJ, optional HISE | VS Code / Antigravity |
+- `ffmpeg`, `yt-dlp` (YouTube analysis lane), Python scipy/librosa for metrics  
+- Optional Node for `disklordz/website` factory parity on same agent  
 
-Current Cloud install is JUCE-only. Planned additive packages for factory profile:
+**Not on Cloud:** MPCTK GUI, MPC-agent keygroup export, HISE — **local / Antigravity** only.
 
-- `ffmpeg`, `sox`, `python3-scipy`, `librosa` (or lightweight scipy-only features first)
-- **MPCTK:** local/Antigravity only (macOS GUI / hardware validation), not Cloud install
-- Optional: `yt-dlp` **disabled by default** until legal workflow documented
+**Local profile:** MPCTK venv, your **Cursor MPC-agent** rules/skills, MPC template `.xpj`.
 
 ---
 

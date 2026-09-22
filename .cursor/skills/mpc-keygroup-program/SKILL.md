@@ -1,31 +1,37 @@
 ---
 name: mpc-keygroup-program
-description: "Build Akai MPC Sample .xpj projects via MPC-Sample-Toolkit (MPCTK). Use for chromatic/keygroup programs from factory WAVs — on local VS Code or Antigravity, not Cloud."
+description: "Multisample sets → MPC Keygroup programs via Cursor MPC-agent + MPCTK. Use for chromatic/stacked zones across the keyboard, not one-shot drum pads only."
 ---
 
-# MPC keygroup / chromatic programs (MPCTK)
+# MPC Keygroup program (multisamples)
 
-## Primary tool
+## Goal
 
-**[MPC-Sample-Toolkit (MPCTK)](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit)** — not a separate `mpc-agent` repo.
+**Multisample WAV set + zone map → MPC Keygroup program** (playable `.xpj` on MPC Sample / MPC Software workflow you validate).
 
-- Reads/writes gzip `.xpj`, chromatic pad banks, scale layouts, WAV injection
-- CLI: `mpctk` · GUI: `mpctk-gui` (macOS)
-- Validated on physical MPC Sample hardware
+## Agents
 
-**Runtime:** local Cursor (VS Code) or Antigravity. Cloud Agent prepares WAV + manifest; human or local agent runs MPCTK.
+| Agent | Responsibility |
+|-------|----------------|
+| **Instrument orchestrator** | Renders WAVs, `instrument-map.json`, manifest |
+| **Cursor MPC-agent** (yours) | Keygroup layout, MPCTK invocation, pad/bank QA |
+| **MPCTK** | `.xpj` + `_[ProjectData]` package engine |
 
-## Workflow
+Read [cursor-mpc-agent](../cursor-mpc-agent/SKILL.md) for handoff files.
 
-1. Ingest factory output: WAV paths from `DISKLORDZ_*_MANIFEST` or `InstrumentMapSpec`.
-2. Choose structural XPJ template (MPCTK still requires template until that milestone ships).
-3. Set source root / target root for transposition.
-4. Run generation (CLI or GUI); output `.xpj` + `_[ProjectData]`.
-5. Optional: hardware smoke test on MPC Sample.
+## MPCTK
 
-## In-repo interchange
+https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit — chromatic/keygroup generation, WAV injection, hardware-validated.
 
-**InstrumentMapSpec / KeygroupSpec JSON** (future schema under `disklordz/sound-factory/schemas/`) lists zones before export so SFZ and MPC share one map.
+Extend MPCTK or MPC-agent when stock chromatic generator is not enough for **true keygroup** velocity layers / overlapping zones.
+
+## Pipeline step
+
+```json
+{ "step": "export.mpc_keygroup", "delegate": "cursor-mpc-agent", "required": true }
+```
+
+**Runtime:** local VS Code or Antigravity (not Cloud-only without handoff).
 
 ## Install (local)
 
@@ -33,9 +39,6 @@ description: "Build Akai MPC Sample .xpj projects via MPC-Sample-Toolkit (MPCTK)
 git clone https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit.git
 cd MPC-Sample-Toolkit && python3 -m venv .venv && source .venv/bin/activate
 python -m pip install -e .
-mpctk --help
 ```
 
-## Fallback
-
-Bytebot / MPC Software UI only when MPCTK lacks a feature. Confirm before writing into user project folders.
+Confirm before overwriting user MPC project directories.

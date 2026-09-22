@@ -33,7 +33,7 @@ Same skills and `disklordz/sound-factory/jobs/*.json`. Set `"runtimeHint"` on jo
 | **worker** (default) | Execute job DAG; draft PR or handoff artifact; no chat unless blocked |
 | **interactive** | Confirm MPC project writes, deploy, Zapier/Airtable writes |
 
-**Worker trigger (default):** user manually starts the agent with a job path — not a background daemon until Phase 2.
+**Worker trigger:** you start manually **or** PM Agent / Airtable WO → job JSON (skill `pm-airtable-factory-trigger`).
 
 ## Route to skills
 
@@ -41,9 +41,10 @@ Same skills and `disklordz/sound-factory/jobs/*.json`. Set `"runtimeHint"` on jo
 |------|--------|
 | WAV batch / manifests | `audio-generation-batch` |
 | SFZ / zones | `sfz-multisample-map` |
-| MPC keygroups | `mpc-keygroup-program` |
+| MPC Keygroup programs | `mpc-keygroup-program` + **`cursor-mpc-agent`** |
+| WO / PM kickoff | `pm-airtable-factory-trigger` |
 | JD / Wave909 / HISE presets | `preset-design-factory` |
-| Reference timbre | `sound-design-reference-match` |
+| Reference timbre (YouTube) | `sound-design-reference-match` |
 | C++ DSP | `juce-dsp-plugin-ci` |
 | HISE on Windows | `hise-antigravity-handoff` |
 

@@ -33,9 +33,13 @@ python3 disklordz/rag/scripts/query_local.py "memphis phonk lane"
 
 **Runtimes:** Cloud (JUCE + batch), local VS Code (**MPCTK** for `.xpj`), Antigravity (HISE + optional MPCTK). Same skills everywhere.
 
-**Default start:** you run the agent with a job under `disklordz/sound-factory/jobs/` — scheduled/Airtable triggers are optional later.
+**Start runs:** you manually **or** PM Agent / Airtable WO → job JSON → Cloud Agent (skill `pm-airtable-factory-trigger`).
 
-**MPC:** [MPC-Sample-Toolkit](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit) on local/Antigravity — not Cloud VM.
+**MPC Keygroup:** your **Cursor MPC-agent** + [MPC-Sample-Toolkit](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit) on local/Antigravity (skill `cursor-mpc-agent`).
+
+**References:** YouTube analysis segments allowed for timbre (gitignored cache; skill `sound-design-reference-match`).
+
+**Cloud:** heavy JUCE image only.
 
 ## RAG (prompt knowledge)
 

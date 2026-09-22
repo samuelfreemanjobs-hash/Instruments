@@ -12,3 +12,4 @@ MyFirstPlugin/build-ninja/
 # Sound factory worker artifacts (WAV batches, refs)
 disklordz/sound-factory/out/
 disklordz/sound-factory/refs/
+disklordz/sound-factory/refs/youtube-cache/

@@ -1,29 +1,40 @@
 ---
 name: sound-design-reference-match
-description: "Match factory output to user-supplied reference audio using analysis reports and spectral diff. Use for timbre goals, 'sounds like' briefs, and QA evidence."
+description: "Match factory timbre using YouTube and other references: find tracks, extract analysis audio, metrics, spectral diff. Use for 'sounds like' briefs."
 ---
 
-# Sound design & reference match
+# Sound design & reference match (incl. YouTube)
 
-## Legal
+## Product policy (owner-approved)
 
-- Search web for **metadata** (BPM, key, gear, era).
-- Analyze **only** audio the user provided or owns/licensed.
-- Do not download copyrighted tracks from streaming/YouTube without explicit user direction and rights.
+For **timbre matching**, the agent **may**:
+
+1. **Search** for the real recording (YouTube URL, title, artist, official uploads).  
+2. **Download short audio** from YouTube **for analysis only** (yt-dlp → temp file).  
+3. **Listen/analyze** (metrics, spectrogram, A/B) and tune factory params — **not** redistribute the reference in customer ZIPs or git.
+
+**Never:** commit reference audio to git; ship copyrighted refs in products; publish full rips.
+
+**Workspace:** `disklordz/sound-factory/refs/youtube-cache/` (gitignored). Delete or rotate after job closure when practical.
 
 ## Workflow
 
-1. Ingest reference WAV/MP3 to `disklordz/sound-factory/refs/` (or WO attachment path).
-2. Run analysis (when `analyze_reference.py` exists) or interim: `ffmpeg` + Python scipy for LUFS/centroid/PNG spectrogram.
-3. Derive targets: brightness, decay, transient density, stereo width → update `GenerationSpec` / factory params.
-4. Regenerate batch; compare candidate vs ref slice with `tools/SpectralDiff` where applicable.
-5. Attach report JSON + PNG + A/B clips to PR.
+1. **Resolve track:** `WebSearch` + user hint → pick best YouTube URL (official video / topic when possible).  
+2. **Extract:** `yt-dlp -x --audio-format wav --download-sections "*0:00-1:00" -o 'refs/youtube-cache/%(id)s.%(ext)s' <url>` (adjust segment; prefer chorus/hook user names).  
+3. **Analyze:** `analyze_reference.py` when shipped; interim: `ffmpeg` + scipy/LUFS + mel PNG.  
+4. **Target:** map metrics → `GenerationSpec` / factory params / layer notes.  
+5. **Regenerate** multisamples; `SpectralDiff` vs ref slice.  
+6. **Evidence:** `reference-report.json` (url, segment, metrics — **not** the WAV in PR), spectrogram PNG, synthetic A/B only.
 
-## Subagents
+## Also supported
 
-- `videoReview` — user reference **video** (visual + described timbre); no audio rip without permission.
-- `WebSearch` — song facts, not pirated audio.
+- User-dropped WAV/MP3 in `disklordz/sound-factory/refs/`  
+- `videoReview` subagent when user attaches MP4
 
-## Evidence
+## Cloud VM deps (heavy image)
 
-Spectrogram PNG, metrics JSON, and short WAV A/B are required for "matched reference" claims.
+Install when implementing WO-SF-011: `ffmpeg`, `yt-dlp` (analysis lane only).
+
+## Legal note
+
+Owner accepts responsibility for reference use in private factory workflows; agents still **fail closed** on committing or selling reference audio.
