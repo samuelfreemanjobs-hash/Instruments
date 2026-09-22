@@ -22,6 +22,17 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
+## Instrument & Sound Factory agent
+
+Enterprise design: [docs/INSTRUMENT_SOUND_FACTORY_AGENT.md](docs/INSTRUMENT_SOUND_FACTORY_AGENT.md). Entry skill: `.cursor/skills/instrument-orchestrator/SKILL.md`.
+
+```bash
+python3 disklordz/sound-factory/scripts/generate_kit.py --preset mpc-ready-808 --out /tmp/kit-out
+python3 disklordz/rag/scripts/query_local.py "memphis phonk lane"
+```
+
+**Default mode:** automated worker (job JSON → batch → manifest → draft PR). **MPC Software UI / HISE export:** Bytebot or Antigravity handoff — not Cloud VM.
+
 ## RAG (prompt knowledge)
 
 ```bash

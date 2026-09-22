@@ -1,0 +1,19 @@
+{
+  "workOrderId": "WO-SF-EXAMPLE",
+  "mode": "worker",
+  "brief": {
+    "prompt": "MPC-ready 808 kit smoke test",
+    "presetId": "mpc-ready-808",
+    "generationSpec": {
+      "mode": "one_shot",
+      "bpm": 90,
+      "key": "C minor"
+    }
+  },
+  "pipeline": [
+    { "step": "generate.batch", "variations": 1, "cli": "generate_kit.py" }
+  ],
+  "acceptance": {
+    "manifestFormat": "DISKLORDZ_DRUM_KIT_MANIFEST"
+  }
+}
