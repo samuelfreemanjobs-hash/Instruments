@@ -26,7 +26,7 @@ Build a **production-grade, mostly unattended** Cursor Cloud agent system that c
 | **Batch creation** | SKU folders, variation batches, ZIP packs |
 | **Sound design** | Processing chains, layer maps, brief → spec JSON |
 | **Preset design** | JD Upgraded / Wave909 APVTS presets, factory programs |
-| **Multisample maps** | SFZ, internal zone tables (JD ROM / HISE maps) |
+| **Multisample maps** | **SFZ required** on every project + internal zone tables |
 | **MPC Keygroup programs** | Multisample zones → **Cursor MPC-agent** → MPCTK `.xpj` |
 | **Reference matching** | YouTube + spectral metrics; timbre-target factory params |
 | **Research** | Find tracks on YouTube/web; analysis segments in gitignored cache |

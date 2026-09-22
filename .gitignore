@@ -13,3 +13,5 @@ MyFirstPlugin/build-ninja/
 disklordz/sound-factory/out/
 disklordz/sound-factory/refs/
 disklordz/sound-factory/refs/youtube-cache/
+__pycache__/
+*.pyc

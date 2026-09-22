@@ -17,6 +17,8 @@
     { "step": "reference.youtube" },
     { "step": "generate.batch", "variations": 1, "multisample": true },
     { "step": "map.instrument", "format": "instrument-map.json" },
+    { "step": "export.sfz", "required": true },
+    { "step": "qa.factory", "skill": "factory-qa-audio", "required": true },
     { "step": "export.mpc_keygroup", "delegate": "cursor-mpc-agent", "required": true }
   ],
   "acceptance": {

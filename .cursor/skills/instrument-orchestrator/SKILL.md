@@ -41,7 +41,11 @@ Same skills and `disklordz/sound-factory/jobs/*.json`. Set `"runtimeHint"` on jo
 |------|--------|
 | WAV batch / manifests | `audio-generation-batch` |
 | SFZ / zones | `sfz-multisample-map` |
+| SFZ + project bundle | **`export-sfz-mpc-project`** (required every project) |
 | MPC Keygroup programs | `mpc-keygroup-program` + **`cursor-mpc-agent`** |
+| JZ400 product | **`product-jz400`** |
+| REV2-TRAP-128 product | **`product-rev2-trap128`** |
+| Batch QA subagent | **`factory-qa-audio`** |
 | WO / PM kickoff | `pm-airtable-factory-trigger` |
 | JD / Wave909 / HISE presets | `preset-design-factory` |
 | Reference timbre (YouTube) | `sound-design-reference-match` |

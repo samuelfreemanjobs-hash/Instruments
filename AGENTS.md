@@ -27,9 +27,15 @@ Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md
 Enterprise design: [docs/INSTRUMENT_SOUND_FACTORY_AGENT.md](docs/INSTRUMENT_SOUND_FACTORY_AGENT.md). Entry skill: `.cursor/skills/instrument-orchestrator/SKILL.md`.
 
 ```bash
-python3 disklordz/sound-factory/scripts/generate_kit.py --preset mpc-ready-808 --out /tmp/kit-out
+python3 disklordz/sound-factory/scripts/seed_jz400_catalog.py
+python3 disklordz/sound-factory/scripts/run_product_batch.py \
+  --catalog disklordz/sound-factory/catalog/jz400_catalog.json \
+  --out disklordz/sound-factory/out --limit 50 --offset 0
+./disklordz/sound-factory/tests/run_tests.sh
 python3 disklordz/rag/scripts/query_local.py "memphis phonk lane"
 ```
+
+Products: [docs/products/JZ400.md](docs/products/JZ400.md) · [docs/products/REV2_TRAP128.md](docs/products/REV2_TRAP128.md) · workflow [docs/FACTORY_AGENTIC_WORKFLOW.md](docs/FACTORY_AGENTIC_WORKFLOW.md)
 
 **Runtimes:** Cloud (JUCE + batch), local VS Code (**MPCTK** for `.xpj`), Antigravity (HISE + optional MPCTK). Same skills everywhere.
 
