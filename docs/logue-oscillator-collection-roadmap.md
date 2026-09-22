@@ -33,7 +33,7 @@
 | 8 | Phat Minimoog bass | `minimoog_phatt` | blend `sub-phatty` / `moog-voyager-se` | partial exists | **New** dedicated osc |
 | 9 | SH-101 | `sh101_classic` | port `sh101-babyface` | `sh101_babyface_bass` | **Port** |
 | 10 | Detroit rap TB-303 | `tb303_detroit_acid` | _(new)_ | _(new)_ | **New** |
-| 11 | Korg DW-8000 | `korg_dw8000_dig` | _(new)_ | _(new)_ | **New** (DWGS + analog-ish edge) |
+| 11 | Korg DW-8000 | `korg_dw8000_dig` | _(new)_ | _(new)_ | **New** (DWGS **digital waves** primary) |
 | 12 | Korg Poly-61 | `korg_poly61_dco` | _(new)_ | _(new)_ | **New** (DCO + simple poly char) |
 | 13 | Prophet-6 / OB-6 | `prophet6_analog` + `ob6_analog` | _(new)_ | _(new)_ | **New** — **two separate units** (locked) |
 | 14 | Ensoniq SQ-80 | `ensoniq_sq80_wt` | extend `ensoniq-eps1` ideas | _(new)_ | **New** + wavetable bank |
@@ -95,7 +95,7 @@ Low risk, validates pipeline on hardware.
 |------|----------|--------|
 | `sh101_classic` | P1 | Port `sh101_bass.cc` → mkII |
 | `prophet5_analog` | P1 | Port `prophet_bass.cc`; widen lead/bass macros |
-| `juno_dco_osc` | P1 | Strip/enhance DCO+PWM from `juno_rnb.cc`; less “full bass rig”, more pure DCO |
+| `juno_dco_osc` | P1 | DCO+PWM from `juno_rnb.cc` + **on-board chorus**; no full bass LP/ADR rig |
 | `memphis_dust_sub` | P1 | **Your accepted design** — see brief below |
 
 **Each unit:** brief → design → impl → `./tools/osc-eval-mkii.sh <slug>` → `./tools/build-mkii.sh <slug>` → XD `./tools/build.sh`.
@@ -115,7 +115,7 @@ Low risk, validates pipeline on hardware.
 | `ob6_analog` | OB-6 SEM-style saws/pulse, spread | Detune, PWM, … |
 | `solina_string_ensemble` | Divide-down square waves (16′/8′/4′ mix) + slow ensemble chorus + EQ tilt | Mix, Ensemble, Tone, … |
 | `jp8000_supersaw` / `virus_hypersaw` / `rage_rap_supersaw` | Shared supersaw core (see table above) | Voices, Detune, Sub, Tone, … |
-| `korg_dw8000_dig` | Short **DWGS-style** cycle tables (8–16 waves) + digital grit; morph between waves | Wave, Morph, Grit, … |
+| `korg_dw8000_dig` | **Digital wave cycles** (DWGS-style tables, 8–16 waves), morph + grit; filter via host | Wave, Morph, Grit, … |
 
 **mkII + v1:** Implement v1 first (proven pattern), scaffold mkII, port.
 
@@ -167,13 +167,15 @@ tools/wavetable/
 
 A full **polyphonic** acoustic model (multiple strings/bodies, independent excitation) is **not realistic** in one logue **monophonic user osc** slot. Scoped deliverable:
 
-| Mode (string param or fixed build) | Technique | Use |
-|-----------------------------------|-----------|-----|
-| **Pluck** (default) | Karplus-Strong / waveguide lite, 1–2 delay lines | Guitar, harp-ish |
+| Mode | Technique | Use |
+|------|-----------|-----|
+| **Pluck** | Karplus-Strong / waveguide lite, 1–2 delay lines | Guitar, harp-ish |
 | **Strike** | Short noise burst + resonator | Mallet / piano-ish attack |
-| **Bow** (optional v2) | Continuous excitation + friction | Slower CPU; may drop if over budget |
+| **Bow** (v2 only) | Continuous excitation + friction | Drop if CPU over budget |
 
-**Params (≤10):** Excite, Decay, Damping, Tone, Body, Bright, … Host **cutoff** = fingerboard / body damping.
+**v1 (locked):** **Pluck + Strike** both ship — **Mode** (or **Excite**) param switches engines; shared **Decay / Damping / Tone**.
+
+**Params (≤10):** Mode, Decay, Damping, Tone, Body, Bright, StrikeHard, … Host **cutoff** = fingerboard / body damping.
 
 **“Poly” in the name:** Document as **polyphonic-friendly timbre** (long decay, chord stacks on external poly synth), not internal polyphony. If you need true poly PM, that belongs in a **multi-voice instrument** (JUCE/HISE lane), not NTS-1 single osc.
 
@@ -308,6 +310,8 @@ docs/logue-custom-fx-lane.md       # FX vs osc, load order on NTS
 | Juno-106 DCO scope | **Standalone DCO osc** (`juno_dco_osc`) — see below |
 | TB-303 | **Detroit rap bassline** — saw/square + **accent + slide** in unit |
 | SQ-80 table | **48 waves × 64 samples** (q31), morph between indices |
+| Acoustic PM v1 | **Pluck + Strike** modes in one unit |
+| DW-8000 | **Digital wave cycles** primary (not analog filter emulation in osc) |
 
 ### Juno-106 DCO scope (locked)
 
@@ -315,10 +319,18 @@ Two units, two jobs:
 
 | Slug | Role |
 |------|------|
-| `juno_dco_osc` | **Pure DCO:** saw + pulse/PWM, mild drift, **no** on-board chorus or 24 dB LP rig. Use NTS **cutoff/res** for tone. |
+| `juno_dco_osc` | **Juno-106 DCO voice:** saw + pulse/PWM, mild drift, **built-in chorus** (port from `juno_rnb.cc` chorus path). **No** full 24 dB LP stack or bass-oriented ADR rig — use NTS **cutoff/res** for filter sweeps. |
 | `juno_106_rnb_bass` | **Full bass voice:** port of `juno-rnb` (env, chorus, LP) — 80s R&B / bass lines. |
 
-Do not merge into one binary; params stay under 10 per unit.
+Do not merge into one binary; params stay under 10 per unit. **`juno_dco_osc` params (draft):** Vibe, Saw, PWM, Chorus, Glide, … (no Attack/Decay/Release block).
+
+### DW-8000 digital waves (locked)
+
+**Slug:** `korg_dw8000_dig`
+
+- Emphasis on **short digital single-cycle / DWGS-style tables** and **wave morph**, not SSM-style filter emulation inside the osc.
+- **Grit / edge** params for lo-fi digital character; musical filtering = **host cutoff/res**.
+- 8–16 internal waves; reuse wavetable pack tooling when available.
 
 ### TB-303 Detroit rap bassline (locked)
 
@@ -395,8 +407,7 @@ For each slug:
 
 ## Open questions (remaining)
 
-1. **Acoustic PM:** Pluck-only v1 OK, or **Strike** required for v1?
-2. **DW-8000:** Emphasis on **digital wave cycles** vs **slammed SSM filter** (host filter does most filter work)?
+_(None — collection spec locked; implementation continues per phase order.)_
 
 ---
 
