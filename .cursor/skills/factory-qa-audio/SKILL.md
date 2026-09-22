@@ -16,12 +16,14 @@ cd disklordz/sound-factory/scripts
 python3 factory_qa.py ../out/JZ400/**/samples/*.wav --json-out ../out/JZ400/qa-report.json --fail-fast
 ```
 
-## Fail closed
+## Fail closed (QA v2)
 
 | Reason | Action |
 |--------|--------|
 | `clipping` | Re-render lower drive or reject slot |
 | `near_silence` / `too_quiet` | Re-render or drop slot |
+| `harsh_crest` / `harsh_slope` | Lower drive / filter FM or best-of-N |
+| `mono_sub_only` | Wrong archetype — re-pick program |
 | `too_short` / `too_long` | Fix duration in generator |
 
 ## Best-of-N (optional)

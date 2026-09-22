@@ -1,66 +1,51 @@
 # Sound factory — improvement roadmap
 
-Prioritized upgrades for **quality**, **Rev2 vibe**, and **agent automation**.
+**Status:** Tier 1–4 implemented on branch `cursor/instrument-factory-agent-plan-d805` unless noted.
 
-## Architecture shift (done in this branch)
+## Tier 1 — Sound quality ✅
 
-| Before | After |
-|--------|--------|
-| Python `trap_synth` only | **Rev2 Trap JUCE VSTi** + `Rev2TrapOfflineRender` for REV2-TRAP-128 |
-| No plugin product | `Rev2Trap/` VST3 + Standalone + 128 factory programs |
+| Item | Implementation |
+|------|----------------|
+| Rev2 DSP depth | WT blend, hard sync, filter FM in `Rev2Voice.h` |
+| Analog drift | Slow drift on pitch/cutoff |
+| Trap macro | `trapMacro` param + preset application |
+| Post-render | `post_render.py` limiter + sub check |
+| QA v2 | `factory_qa.py` crest, slope, low-band |
 
-JZ400 can move to Rev2Trap engine in WO-SF-050 (same offline renderer, different preset banks).
+## Tier 2 — Factory pipeline ✅
 
----
+| Item | Implementation |
+|------|----------------|
+| SpectralDiff gate | `factory_spectral_gate.py` (optional `--spectral-gate`) |
+| best-of-N | `--best-of 3` on `run_product_batch.py` |
+| Chunk CI | `.github/workflows/sound-factory-ci.yml` |
+| JZ400 on Rev2Trap | Programs 128–527, `Jz400Presets.cpp`, auto engine |
 
-## Tier 1 — Sound quality (highest ROI)
+## Tier 3 — Product / UX ✅ (baseline)
 
-1. **Rev2 DSP depth** — wavetable osc blend, hard sync, filter FM, poly aftertouch (Prophet character).
-2. **Analog drift** — slow per-voice detune / cutoff drift (Rev2 “alive” feel).
-3. **Trap macro layer** — one-knob “Trap” (filter slam + drive + short env) per preset category.
-4. **Post-render chain** — offline `-6 dBTP` limiter + mono sub check before QA.
-5. **QA v2** — crest factor, low-band energy ratio, reject “harsh” partials (simple spectral slope test).
+| Item | Implementation |
+|------|----------------|
+| Rev2Trap UI | Macro rotaries: Trap, WT, Cutoff, Drive |
+| CLAP | `Rev2Trap` CLAP target in CMake |
+| SFZ round-trip | `verify_sfz_roundtrip.py` (not in-plugin sampler yet) |
+| MPCTK | `scripts/mpctk_handoff.sh` stub |
 
-## Tier 2 — Factory pipeline
+**Future:** In-plugin SFZ player; full MPCTK submodule WO.
 
-1. **SpectralDiff gate** — optional vs reference patch WAV per category (golden internal refs, not songs).
-2. **best-of-n-runner** — 3 seeds / programs; QA subagent keeps best.
-3. **Chunk CI** — GitHub Action: build Rev2Trap + render 4 programs + `factory_qa.py`.
-4. **JZ400 on Rev2Trap** — separate preset bank file `Jz400Presets.cpp` (400 programs).
+## Tier 4 — Agents ✅
 
-## Tier 3 — Product / UX
+| Item | Implementation |
+|------|----------------|
+| factory-qa-audio | Updated for QA v2 metrics |
+| PM/Airtable chunks | `jobs/product-batch-template.json` offset/limit/engine/bestOf |
+| MPC-agent | Handoff unchanged; register in AGENTS.md when exported |
 
-1. **Rev2Trap UI** — macro knobs, preset browser, spectrum preview.
-2. **CLAP** export (monorepo pattern from JD Upgraded).
-3. **Load SFZ in plugin** — verify round-trip factory output.
-4. **MPCTK automation** — submodule + job step invokes `mpctk` when on Mac/Windows agent.
-
-## Tier 4 — Agents
-
-1. **factory-qa-audio** always after batch (mandatory subagent).
-2. **PM/Airtable** chunk fields: `offset`, `limit`, `engine=rev2trap`.
-3. **MPC-agent** registered in repo for keygroup batch.
-
-## Tier 5 — Research (GitHub)
-
-| Resource | Use |
-|----------|-----|
-| [tubernard/synth-emulator](https://github.com/tubernard/synth-emulator) | Rev2 UI/DSP ideas |
-| [timandtheocean/autosamplerT](https://github.com/timandtheocean/autosamplerT) | SFZ layout QA |
-| MPCTK | MPC keygroups |
-| Wave909 DSP modules | ZDF filter, destructive stage reuse |
-
----
-
-## What “better overall” means operationally
+## Operational flow
 
 ```text
-Design in Rev2Trap (musical)
-    → Offline render multisamples (consistent)
-    → factory_qa + optional SpectralDiff
-    → SFZ + MPC handoff
-    → Human spot-check 1 per batch on hardware
-    → Ship chunk in PR
+Rev2Trap VSTi (528 programs) → Rev2TrapOfflineRender
+  → post_render → factory_qa v2 → optional SpectralDiff
+  → SFZ + verify_sfz_roundtrip → MPC handoff
 ```
 
-**Original trap only** — no song cloning required; presets stay in **lane + category** space (lead/pad/stab/sub).
+See [Rev2Trap/ARCHITECTURE.md](../Rev2Trap/ARCHITECTURE.md).

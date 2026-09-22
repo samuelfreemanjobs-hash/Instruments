@@ -50,7 +50,9 @@ python3 disklordz/sound-factory/scripts/run_product_batch.py \
 
 **Start runs:** you manually **or** PM Agent / Airtable WO → job JSON → Cloud Agent (skill `pm-airtable-factory-trigger`).
 
-**MPC Keygroup:** your **Cursor MPC-agent** + [MPC-Sample-Toolkit](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit) on local/Antigravity (skill `cursor-mpc-agent`).
+**MPC Keygroup:** your **Cursor MPC-agent** + [MPC-Sample-Toolkit](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit) on local/Antigravity (skill `cursor-mpc-agent`). Optional: `disklordz/sound-factory/scripts/mpctk_handoff.sh <inst-dir>`.
+
+**Register MPC-agent:** add path or repo URL here when exported to git.
 
 **References:** YouTube analysis segments allowed for timbre (gitignored cache; skill `sound-design-reference-match`).
 

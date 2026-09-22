@@ -32,12 +32,13 @@ public:
         ladder_.prepare (spec);
         ladder_.setMode (juce::dsp::LadderFilterMode::LPF24);
         ladder_.reset();
+        driftPhase_ = 0.0;
     }
 
     void reset() noexcept
     {
         active_ = false;
-        phase1_ = phase2_ = subPhase_ = 0.0;
+        phase1_ = phase2_ = subPhase_ = syncPhase_ = 0.0;
         ampEnv_.reset();
         filtEnv_.reset();
         ladder_.reset();
@@ -49,12 +50,13 @@ public:
     {
         note_ = midiNote;
         velocity_ = std::clamp (velocity, 0.0f, 1.0f);
+        applyTrapMacro (p);
         params_ = p;
         freqHz_ = 440.0f * std::pow (2.0f, (static_cast<float> (midiNote) - 69.0f) / 12.0f);
-        phase1_ = phase2_ = subPhase_ = 0.0;
+        phase1_ = phase2_ = subPhase_ = syncPhase_ = 0.0;
         ampEnv_.setParams (p.ampAttack, p.ampDecay, p.ampSustain, p.ampRelease);
         filtEnv_.setParams (p.filtAttack, p.filtDecay, p.filtSustain, p.filtRelease);
-        updateFilter (0.0f);
+        updateFilter (0.0f, 0.0f);
         ampEnv_.noteOn();
         filtEnv_.noteOn();
         active_ = true;
@@ -77,28 +79,43 @@ public:
         if (! isActive())
             return 0.0f;
 
-        const float fe = filtEnv_.process();
-        updateFilter (fe);
+        driftPhase_ += (2.0 * juce::MathConstants<double>::pi * 0.35) / sampleRate_;
+        const float drift = std::sin (static_cast<float> (driftPhase_)) * params_.driftAmount;
 
-        const double inc1 = freqHz_ / sampleRate_;
-        const double inc2 = inc1 * std::pow (2.0, params_.osc2DetuneCents / 1200.0);
+        const float fe = filtEnv_.process();
+        const double inc1 = freqHz_ / sampleRate_ * (1.0 + static_cast<double> (drift) * 0.02);
+        const double inc2 = inc1 * std::pow (2.0, (params_.osc2DetuneCents + drift * 8.0f) / 1200.0);
+
+        const double prevPhase1 = phase1_;
         phase1_ += inc1;
         phase2_ += inc2;
         subPhase_ += inc1 * 0.5;
+
+        if (params_.hardSyncAmount > 0.01f && phase1_ < prevPhase1)
+            phase2_ = syncPhase_ = 0.0;
 
         auto saw = [] (double ph)
         {
             const double x = ph / (2.0 * juce::MathConstants<double>::pi);
             return static_cast<float> (2.0 * (x - std::floor (x + 0.5)));
         };
+        auto tri = [] (double ph)
+        {
+            const double x = ph / (2.0 * juce::MathConstants<double>::pi);
+            const double s = 2.0 * (x - std::floor (x + 0.5));
+            return static_cast<float> (2.0 * (std::abs (s) - 0.5));
+        };
         auto square = [] (double ph) { return std::sin (ph) >= 0.0 ? 1.0f : -1.0f; };
 
-        const float osc1 = saw (phase1_);
-        const float osc2 = square (phase2_);
+        const float wt = std::clamp (params_.wavetableBlend, 0.0f, 1.0f);
+        const float osc1 = saw (phase1_) * (1.0f - wt) + tri (phase1_) * wt;
+        const float osc2 = square (phase2_) * (1.0f - params_.hardSyncAmount)
+                         + saw (phase2_) * params_.hardSyncAmount;
         const float sub = std::sin (static_cast<float> (subPhase_));
         float raw = (osc1 * (1.0f - params_.oscMix) + osc2 * params_.oscMix) + sub * params_.subLevel;
         raw = std::tanh (raw * params_.drive);
 
+        updateFilter (fe, raw * params_.filterFm);
         float filtered = ladder_.tick (raw);
         const float amp = ampEnv_.process() * velocity_;
         filtered *= amp;
@@ -110,10 +127,19 @@ public:
     }
 
 private:
-    void updateFilter (float envAmt) noexcept
+    static void applyTrapMacro (presets::SynthParams& p) noexcept
+    {
+        const float m = std::clamp (p.trapMacro, 0.0f, 1.0f);
+        p.filterEnv = std::min (1.0f, p.filterEnv * (1.0f + m * 0.85f));
+        p.drive = p.drive * (1.0f + m * 0.35f);
+        p.ampDecay = std::max (0.05f, p.ampDecay * (1.0f - m * 0.35f));
+        p.cutoff = std::min (1.0f, p.cutoff + m * 0.08f);
+    }
+
+    void updateFilter (float envAmt, float fmIn) noexcept
     {
         const float base = 120.0f + params_.cutoff * 9800.0f;
-        const float mod = base * (1.0f + params_.filterEnv * envAmt * 2.5f);
+        const float mod = base * (1.0f + params_.filterEnv * envAmt * 2.5f + fmIn * 1200.0f);
         ladder_.setCutoffFrequencyHz (std::clamp (mod, 80.0f, 12000.0f));
         ladder_.setResonance (std::clamp (0.1f + params_.resonance * 0.85f, 0.1f, 0.95f));
     }
@@ -122,7 +148,7 @@ private:
     AdsrEnvelope ampEnv_, filtEnv_;
     presets::SynthParams params_;
     double sampleRate_ = 44100.0;
-    double phase1_ = 0.0, phase2_ = 0.0, subPhase_ = 0.0;
+    double phase1_ = 0.0, phase2_ = 0.0, subPhase_ = 0.0, syncPhase_ = 0.0, driftPhase_ = 0.0;
     float freqHz_ = 440.0f;
     float velocity_ = 1.0f;
     int note_ = 60;

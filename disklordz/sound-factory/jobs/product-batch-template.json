@@ -1,0 +1,20 @@
+{
+  "workOrderId": "WO-SF-TEMPLATE",
+  "mode": "worker",
+  "runtimeHint": "split",
+  "productId": "REV2-TRAP-128",
+  "brief": {
+    "catalog": "disklordz/sound-factory/catalog/rev2_trap128_catalog.json",
+    "offset": 0,
+    "limit": 32,
+    "engine": "rev2trap",
+    "bestOf": 3
+  },
+  "pipeline": [
+    { "step": "generate.batch", "script": "run_product_batch.py" },
+    { "step": "export.sfz", "required": true },
+    { "step": "verify.sfz", "script": "verify_sfz_roundtrip.py" },
+    { "step": "qa.factory", "skill": "factory-qa-audio", "required": true },
+    { "step": "export.mpc_keygroup", "delegate": "cursor-mpc-agent" }
+  ]
+}

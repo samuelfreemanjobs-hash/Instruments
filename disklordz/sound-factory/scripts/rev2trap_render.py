@@ -2,17 +2,20 @@
 
 from __future__ import annotations
 
-import hashlib
-import json
 import subprocess
+import tempfile
 from pathlib import Path
 
-from factory_qa import analyze_wav
+from factory_qa import analyze_wav, qa_score
+from post_render import post_process_wav
 from trap_synth import default_multisample_roots
 from wav_util import SAMPLE_RATE
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_BINARY = ROOT.parents[1] / "build" / "Rev2Trap" / "Rev2TrapOfflineRender"
+JZ400_OFFSET = 128
+REV2_MAX = 127
+JZ400_MAX = 399
 
 
 def find_binary(explicit: Path | None = None) -> Path:
@@ -28,11 +31,62 @@ def find_binary(explicit: Path | None = None) -> Path:
 
 def program_index_from_slot(slot: dict) -> int:
     sid = slot.get("slotId", "REV2_001")
+    product = slot.get("productId", "REV2-TRAP-128")
     try:
         num = int(sid.split("_")[-1])
-        return max(0, min(127, num - 1))
     except ValueError:
-        return 0
+        num = 1
+    if product == "JZ400":
+        return JZ400_OFFSET + max(0, min(JZ400_MAX, num - 1))
+    return max(0, min(REV2_MAX, num - 1))
+
+
+def render_note(
+    render_bin: Path,
+    wav: Path,
+    program: int,
+    midi_note: int,
+    velocity: int = 110,
+    seconds: float = 2.8,
+) -> None:
+    subprocess.run(
+        [
+            str(render_bin),
+            str(wav),
+            str(program),
+            str(midi_note),
+            str(velocity),
+            str(seconds),
+            str(SAMPLE_RATE),
+        ],
+        check=True,
+    )
+    post_process_wav(wav)
+
+
+def pick_best_program(
+    render_bin: Path,
+    base_program: int,
+    product_id: str,
+    best_of: int,
+) -> int:
+    if best_of <= 1:
+        return base_program
+    candidates = []
+    for n in range(best_of):
+        if product_id == "JZ400":
+            prog = JZ400_OFFSET + ((base_program - JZ400_OFFSET + n) % (JZ400_MAX + 1))
+        else:
+            prog = (base_program + n) % (REV2_MAX + 1)
+        with tempfile.TemporaryDirectory() as tmp:
+            wav = Path(tmp) / "probe.wav"
+            render_note(render_bin, wav, prog, 60)
+            qa = analyze_wav(wav)
+            candidates.append((qa_score(qa), prog, qa.pass_qa))
+    passing = [c for c in candidates if c[2]]
+    pool = passing if passing else candidates
+    pool.sort(key=lambda x: x[0], reverse=True)
+    return pool[0][1]
 
 
 def build_zones_rev2trap(
@@ -40,9 +94,11 @@ def build_zones_rev2trap(
     instrument_id: str,
     slot: dict,
     binary: Path | None = None,
+    best_of: int = 1,
 ) -> dict:
     render_bin = find_binary(binary)
-    program = program_index_from_slot(slot)
+    base_program = program_index_from_slot(slot)
+    program = pick_best_program(render_bin, base_program, slot.get("productId", ""), best_of)
     roots = default_multisample_roots()
     zones = []
     for root in roots:
@@ -51,18 +107,7 @@ def build_zones_rev2trap(
         rel = f"samples/{fname}"
         wav = out_dir / rel
         wav.parent.mkdir(parents=True, exist_ok=True)
-        subprocess.run(
-            [
-                str(render_bin),
-                str(wav),
-                str(program),
-                str(root),
-                "110",
-                "2.8",
-                str(SAMPLE_RATE),
-            ],
-            check=True,
-        )
+        render_note(render_bin, wav, program, root)
         qa = analyze_wav(wav)
         if not qa.pass_qa:
             raise RuntimeError(f"QA failed {wav}: {qa.reasons}")
@@ -87,5 +132,5 @@ def build_zones_rev2trap(
         "engine": "Rev2TrapOfflineRender",
         "program": program,
         "zones": zones,
-        "metadata": {"provenance": "rev2_trap_vsti_v1"},
+        "metadata": {"provenance": "rev2_trap_vsti_v2"},
     }

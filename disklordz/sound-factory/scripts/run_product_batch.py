@@ -58,6 +58,9 @@ def main() -> None:
         help="auto: rev2trap for REV2-TRAP-128 when binary exists, else python",
     )
     p.add_argument("--rev2-binary", type=Path, default=None)
+    p.add_argument("--best-of", type=int, default=3)
+    p.add_argument("--skip-sfz-verify", action="store_true")
+    p.add_argument("--spectral-gate", action="store_true")
     args = p.parse_args()
 
     catalog = json.loads(args.catalog.read_text(encoding="utf-8"))
@@ -67,7 +70,7 @@ def main() -> None:
     def pick_engine() -> str:
         if args.engine != "auto":
             return args.engine
-        if product_id == "REV2-TRAP-128":
+        if product_id in ("REV2-TRAP-128", "JZ400"):
             try:
                 from rev2trap_render import find_binary
 
@@ -86,7 +89,9 @@ def main() -> None:
         inst_dir = args.out / product_id / inst_id
         try:
             if engine == "rev2trap":
-                imap = build_zones_rev2trap(inst_dir, inst_id, slot, args.rev2_binary)
+                imap = build_zones_rev2trap(
+                    inst_dir, inst_id, slot, args.rev2_binary, best_of=max(1, args.best_of)
+                )
             else:
                 seed = int(slot["slotId"].split("_")[-1]) if "_" in slot["slotId"] else 0
                 imap = build_zones(inst_dir, inst_id, lane, seed)
@@ -97,6 +102,19 @@ def main() -> None:
                 qa = analyze_wav(wav)
                 if not qa.pass_qa:
                     raise RuntimeError(qa.reasons)
+            if not args.skip_sfz_verify:
+                from verify_sfz_roundtrip import verify
+
+                sfz_err = verify(inst_dir)
+                if sfz_err:
+                    raise RuntimeError(sfz_err)
+            if args.spectral_gate:
+                from factory_spectral_gate import gate
+
+                cat = slot.get("category") or slot.get("archetype") or "trap_lead"
+                probe = inst_dir / imap["zones"][len(imap["zones"]) // 2]["samplePath"]
+                if not gate(probe, str(cat)):
+                    raise RuntimeError("spectral_gate_failed")
             export_project_bundle(inst_dir, product_id, slot)
             summary["rendered"].append(inst_id)
         except Exception as e:

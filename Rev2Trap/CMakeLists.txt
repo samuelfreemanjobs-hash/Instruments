@@ -9,7 +9,7 @@ juce_add_plugin(Rev2Trap
     COPY_PLUGIN_AFTER_BUILD FALSE
     PLUGIN_MANUFACTURER_CODE Inst
     PLUGIN_CODE Rv2T
-    FORMATS VST3 Standalone
+    FORMATS VST3 CLAP Standalone
     PRODUCT_NAME "Rev2 Trap"
 )
 
@@ -18,6 +18,7 @@ target_sources(Rev2Trap
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
         Source/Presets/FactoryPresets.cpp
+        Source/Presets/Jz400Presets.cpp
 )
 
 target_compile_definitions(Rev2Trap
@@ -38,6 +39,11 @@ target_link_libraries(Rev2Trap
 
 target_include_directories(Rev2Trap PRIVATE Source)
 juce_generate_juce_header(Rev2Trap)
+
+clap_juce_extensions_plugin(TARGET Rev2Trap
+    CLAP_ID "com.instruments.rev2trap"
+    CLAP_FEATURES instrument synthesizer stereo
+)
 
 add_executable(Rev2TrapOfflineRender tools/Rev2TrapOfflineRender.cpp)
 target_link_libraries(Rev2TrapOfflineRender

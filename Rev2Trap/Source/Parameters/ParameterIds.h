@@ -20,5 +20,10 @@ struct ParameterIDs
     static constexpr const char* filtDecay = "filtDecay";
     static constexpr const char* filtSustain = "filtSustain";
     static constexpr const char* filtRelease = "filtRelease";
+    static constexpr const char* wavetableBlend = "wavetableBlend";
+    static constexpr const char* hardSync = "hardSync";
+    static constexpr const char* filterFm = "filterFm";
+    static constexpr const char* drift = "drift";
+    static constexpr const char* trapMacro = "trapMacro";
 };
 } // namespace rev2trap

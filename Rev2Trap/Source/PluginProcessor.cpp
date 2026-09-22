@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "Presets/Jz400Presets.h"
 
 namespace
 {
@@ -28,6 +29,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout createLayout()
     add (PID::filtDecay, "Filt D", { 0.001f, 2.0f, 0.001f, 0.35f }, 0.4f);
     add (PID::filtSustain, "Filt S", { 0.0f, 1.0f, 0.001f }, 0.25f);
     add (PID::filtRelease, "Filt R", { 0.001f, 5.0f, 0.001f, 0.35f }, 0.5f);
+    add (PID::wavetableBlend, "WT Blend", { 0.0f, 1.0f, 0.001f }, 0.35f);
+    add (PID::hardSync, "Hard Sync", { 0.0f, 1.0f, 0.001f }, 0.0f);
+    add (PID::filterFm, "Filter FM", { 0.0f, 1.0f, 0.001f }, 0.15f);
+    add (PID::drift, "Drift", { 0.0f, 1.0f, 0.001f }, 0.1f);
+    add (PID::trapMacro, "Trap", { 0.0f, 1.0f, 0.001f }, 0.4f);
     return layout;
 }
 } // namespace
@@ -64,7 +70,7 @@ bool Rev2TrapAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
 
 void Rev2TrapAudioProcessor::refreshVoiceParams()
 {
-    currentParams_ = rev2trap::presets::getFactoryPreset (currentProgram_.load());
+    currentParams_ = rev2trap::presets::getPresetForProgram (currentProgram_.load());
     auto get = [this] (const char* id, float fallback) -> float
     {
         if (auto* p = apvts_.getRawParameterValue (id))
@@ -86,12 +92,18 @@ void Rev2TrapAudioProcessor::refreshVoiceParams()
     currentParams_.filtDecay = get (PID::filtDecay, currentParams_.filtDecay);
     currentParams_.filtSustain = get (PID::filtSustain, currentParams_.filtSustain);
     currentParams_.filtRelease = get (PID::filtRelease, currentParams_.filtRelease);
+    currentParams_.wavetableBlend = get (PID::wavetableBlend, currentParams_.wavetableBlend);
+    currentParams_.hardSyncAmount = get (PID::hardSync, currentParams_.hardSyncAmount);
+    currentParams_.filterFm = get (PID::filterFm, currentParams_.filterFm);
+    currentParams_.driftAmount = get (PID::drift, currentParams_.driftAmount);
+    currentParams_.trapMacro = get (PID::trapMacro, currentParams_.trapMacro);
 }
 
 void Rev2TrapAudioProcessor::applyPreset (int index)
 {
-    currentProgram_.store (index);
-    const auto p = rev2trap::presets::getFactoryPreset (index);
+    const int clamped = juce::jlimit (0, rev2trap::presets::kTotalFactoryPrograms - 1, index);
+    currentProgram_.store (clamped);
+    const auto p = rev2trap::presets::getPresetForProgram (clamped);
     auto set = [this] (const char* id, float v)
     {
         if (auto* param = apvts_.getParameter (id))
@@ -112,6 +124,11 @@ void Rev2TrapAudioProcessor::applyPreset (int index)
     set (PID::filtDecay, p.filtDecay);
     set (PID::filtSustain, p.filtSustain);
     set (PID::filtRelease, p.filtRelease);
+    set (PID::wavetableBlend, p.wavetableBlend);
+    set (PID::hardSync, p.hardSyncAmount);
+    set (PID::filterFm, p.filterFm);
+    set (PID::drift, p.driftAmount);
+    set (PID::trapMacro, p.trapMacro);
     refreshVoiceParams();
 }
 
@@ -163,7 +180,7 @@ juce::AudioProcessorEditor* Rev2TrapAudioProcessor::createEditor()
 
 int Rev2TrapAudioProcessor::getNumPrograms()
 {
-    return rev2trap::presets::kNumFactoryPresets;
+    return rev2trap::presets::kTotalFactoryPrograms;
 }
 
 int Rev2TrapAudioProcessor::getCurrentProgram()
@@ -178,6 +195,8 @@ void Rev2TrapAudioProcessor::setCurrentProgram (int index)
 
 const juce::String Rev2TrapAudioProcessor::getProgramName (int index)
 {
+    if (index >= rev2trap::presets::kJz400ProgramOffset)
+        return "JZ400 " + juce::String (index - rev2trap::presets::kJz400ProgramOffset + 1);
     return "Rev2 Trap " + juce::String (index + 1);
 }
 

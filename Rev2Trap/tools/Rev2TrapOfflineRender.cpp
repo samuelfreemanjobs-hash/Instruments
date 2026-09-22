@@ -1,4 +1,5 @@
 #include "PluginProcessor.h"
+#include "Presets/Jz400Presets.h"
 
 #include <juce_audio_formats/juce_audio_formats.h>
 #include <juce_audio_processors/juce_audio_processors.h>
@@ -26,7 +27,8 @@ int main (int argc, char** argv)
     }
 
     const juce::File outFile (argv[1]);
-    const int program = argc > 2 ? std::atoi (argv[2]) : 0;
+    int program = argc > 2 ? std::atoi (argv[2]) : 0;
+    program = juce::jlimit (0, rev2trap::presets::kTotalFactoryPrograms - 1, program);
     const int midiNote = argc > 3 ? std::atoi (argv[3]) : 60;
     const int velocity = argc > 4 ? std::atoi (argv[4]) : 100;
     const double seconds = argc > 5 ? std::atof (argv[5]) : 2.8;

@@ -22,7 +22,7 @@ Offline sample:
 
 MIDI → `Rev2TrapAudioProcessor` → 16× `Rev2Voice` (saw/square + sub → ladder LPF → ADSR) → stereo out.
 
-128 factory programs: procedural trap lanes in `Presets/FactoryPresets.cpp`.
+**528 factory programs:** 0–127 Rev2 trap (`FactoryPresets.cpp`), 128–527 JZ400 bank (`Jz400Presets.cpp`). DSP: wavetable blend, hard sync, filter FM, drift, trap macro.
 
 ## Threading
 

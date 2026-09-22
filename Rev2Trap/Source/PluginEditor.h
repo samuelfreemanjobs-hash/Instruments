@@ -13,5 +13,10 @@ public:
 
 private:
     Rev2TrapAudioProcessor& processor_;
+    juce::Slider trapMacro_, wtBlend_, cutoff_, drive_;
+    juce::Label presetLabel_;
+    using Att = juce::AudioProcessorValueTreeState::SliderAttachment;
+    std::unique_ptr<Att> trapAtt_, wtAtt_, cutoffAtt_, driveAtt_;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Rev2TrapAudioProcessorEditor)
 };

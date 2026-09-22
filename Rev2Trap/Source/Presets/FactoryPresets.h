@@ -22,6 +22,11 @@ struct SynthParams
     float filtDecay = 0.4f;
     float filtSustain = 0.25f;
     float filtRelease = 0.5f;
+    float wavetableBlend = 0.35f;
+    float hardSyncAmount = 0.0f;
+    float filterFm = 0.15f;
+    float driftAmount = 0.1f;
+    float trapMacro = 0.4f;
 };
 
 /** 128 procedural trap presets (Jeezy / Shawty Redd / Gucci / neutral lanes). */

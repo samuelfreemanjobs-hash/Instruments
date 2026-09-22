@@ -92,6 +92,11 @@ SynthParams getFactoryPreset (int programIndex) noexcept
     }
 
     p.drive = laneBias (lane, 1.05f, 1.2f, 1.1f, 1.0f) * p.drive;
+    p.wavetableBlend = 0.2f + 0.6f * static_cast<float> (category) / 7.0f;
+    p.hardSyncAmount = category <= 2 ? 0.5f : 0.12f;
+    p.filterFm = 0.08f + 0.25f * static_cast<float> (lane + 1) / 4.0f;
+    p.driftAmount = 0.06f + 0.14f * static_cast<float> (i % 11) / 10.0f;
+    p.trapMacro = 0.25f + 0.55f * static_cast<float> (category % 5) / 4.0f;
     return p;
 }
 
