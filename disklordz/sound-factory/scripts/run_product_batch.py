@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -17,6 +18,11 @@ from factory_qa import analyze_wav
 from generate_multisample_instrument import build_zones
 from rev2trap_render import build_zones_rev2trap
 from trap_synth import ProducerLane
+
+try:
+    from dawdreamer_render import build_zones_dawdreamer
+except ImportError:
+    build_zones_dawdreamer = None  # type: ignore[misc, assignment]
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -53,11 +59,13 @@ def main() -> None:
     p.add_argument("--fail-fast", action="store_true")
     p.add_argument(
         "--engine",
-        choices=("python", "rev2trap", "auto"),
+        choices=("python", "rev2trap", "dawdreamer", "auto"),
         default="auto",
-        help="auto: rev2trap for REV2-TRAP-128 when binary exists, else python",
+        help="auto: rev2trap for REV2/JZ400 when binary exists, else python; "
+        "dawdreamer needs --vst-path or FACTORY_VST_PATH",
     )
     p.add_argument("--rev2-binary", type=Path, default=None)
+    p.add_argument("--vst-path", type=Path, default=None, help="VST/VST3/CLAP for dawdreamer engine")
     p.add_argument("--best-of", type=int, default=3)
     p.add_argument("--skip-sfz-verify", action="store_true")
     p.add_argument("--spectral-gate", action="store_true")
@@ -77,10 +85,14 @@ def main() -> None:
                 find_binary(args.rev2_binary)
                 return "rev2trap"
             except FileNotFoundError:
-                return "python"
+                pass
+        if args.vst_path or os.environ.get("FACTORY_VST_PATH"):
+            return "dawdreamer"
         return "python"
 
     engine = pick_engine()
+    if engine == "dawdreamer" and build_zones_dawdreamer is None:
+        raise RuntimeError("dawdreamer engine unavailable (import failed)")
     summary = {"productId": product_id, "engine": engine, "rendered": [], "failed": []}
 
     for slot in slots:
@@ -91,6 +103,10 @@ def main() -> None:
             if engine == "rev2trap":
                 imap = build_zones_rev2trap(
                     inst_dir, inst_id, slot, args.rev2_binary, best_of=max(1, args.best_of)
+                )
+            elif engine == "dawdreamer":
+                imap = build_zones_dawdreamer(
+                    inst_dir, inst_id, slot, vst_path=args.vst_path
                 )
             else:
                 seed = int(slot["slotId"].split("_")[-1]) if "_" in slot["slotId"] else 0

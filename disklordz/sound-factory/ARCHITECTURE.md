@@ -25,6 +25,10 @@ Catalog JSON → `run_product_batch.py` → WAV zones → `instrument-map.json` 
 | Path | Role |
 |------|------|
 | `scripts/trap_synth.py` | Rev2-inspired parametric multisample source |
+| `scripts/DAWDreamer_renderer.py` | DawDreamer VST host entry (MPC-agent / multisample) |
+| `scripts/renderers/dawdreamer_renderer.py` | `DawDreamerRenderer` implementation |
+| `scripts/dawdreamer_render.py` | Zone batch via DawDreamer + `--vst-path` |
+| `scripts/rev2trap_render.py` | Zone batch via `Rev2TrapOfflineRender` |
 | `scripts/run_product_batch.py` | Chunked product renderer |
 | `scripts/factory_qa.py` | QA gates |
 | `scripts/emit_sfz.py` | SFZ writer |
@@ -37,7 +41,8 @@ Offline batch only; no audio thread.
 
 ## Extension points
 
-- Replace `trap_synth` with JUCE `OfflineRender` or external engine  
+- **`--engine dawdreamer`** + `requirements-dawdreamer.txt` for third-party VSTi  
+- Replace `trap_synth` with JUCE `OfflineRender` when Rev2Trap binary is enough  
 - Submodule MPCTK for automated `.xpj`  
 - YouTube ref tuning WO-SF-030  
 

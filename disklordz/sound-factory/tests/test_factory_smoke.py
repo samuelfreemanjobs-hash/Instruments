@@ -26,6 +26,13 @@ def test_seed_catalogs() -> None:
     assert len(rev["slots"]) == 128
 
 
+def test_dawdreamer_module_present() -> None:
+    sys.path.insert(0, str(SCRIPTS))
+    import DAWDreamer_renderer  # noqa: F401
+
+    assert (SCRIPTS / "renderers" / "dawdreamer_renderer.py").is_file()
+
+
 def test_render_and_sfz() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp)
@@ -50,6 +57,7 @@ def test_render_and_sfz() -> None:
 
 def main() -> None:
     test_seed_catalogs()
+    test_dawdreamer_module_present()
     test_render_and_sfz()
     print("OK sound-factory smoke tests")
 
