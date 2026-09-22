@@ -8,3 +8,7 @@ MyFirstPlugin/build-ninja/
 *.user
 .vs/
 .idea/
+
+# Sound factory worker artifacts (WAV batches, refs)
+disklordz/sound-factory/out/
+disklordz/sound-factory/refs/
