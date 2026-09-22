@@ -1,33 +1,41 @@
 ---
 name: mpc-keygroup-program
-description: "Plan and validate MPC Software keygroup programs via KeygroupSpec JSON. Use for MPC-ready multisample programs and drum keygroups."
+description: "Build Akai MPC Sample .xpj projects via MPC-Sample-Toolkit (MPCTK). Use for chromatic/keygroup programs from factory WAVs — on local VS Code or Antigravity, not Cloud."
 ---
 
-# MPC Software keygroup program
+# MPC keygroup / chromatic programs (MPCTK)
 
-## Phase 0 (planning)
+## Primary tool
 
-MPC project formats are **proprietary**. Do not corrupt binary `.xpm` files without a validated exporter.
+**[MPC-Sample-Toolkit (MPCTK)](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit)** — not a separate `mpc-agent` repo.
 
-## Canonical intermediate: KeygroupSpec JSON
+- Reads/writes gzip `.xpj`, chromatic pad banks, scale layouts, WAV injection
+- CLI: `mpctk` · GUI: `mpctk-gui` (macOS)
+- Validated on physical MPC Sample hardware
 
-Fields (illustrative): `name`, `programType` (keygroup | drum), `zones[]` with `samplePath`, `rootKey`, `loKey`, `hiKey`, `loVel`, `hiVel`, `tuneCents`, `level`, `filter`, `envelope`, `chokeGroup`.
+**Runtime:** local Cursor (VS Code) or Antigravity. Cloud Agent prepares WAV + manifest; human or local agent runs MPCTK.
 
-Schema file to add: `disklordz/sound-factory/schemas/keygroup-spec.json` (implementation WO).
+## Workflow
 
-## Export paths (choose per WO)
+1. Ingest factory output: WAV paths from `DISKLORDZ_*_MANIFEST` or `InstrumentMapSpec`.
+2. Choose structural XPJ template (MPCTK still requires template until that milestone ships).
+3. Set source root / target root for transposition.
+4. Run generation (CLI or GUI); output `.xpj` + `_[ProjectData]`.
+5. Optional: hardware smoke test on MPC Sample.
 
-| Path | Agent |
-|------|--------|
-| **UI automation** | Bytebot / `computerUse` on Windows with MPC Software |
-| **Project folder research** | Spike WO — parse MPC-exported text/XML if exposed |
-| **Manual handoff** | README steps + KeygroupSpec printout for human |
+## In-repo interchange
 
-## Inputs
+**InstrumentMapSpec / KeygroupSpec JSON** (future schema under `disklordz/sound-factory/schemas/`) lists zones before export so SFZ and MPC share one map.
 
-- WAVs + `DISKLORDZ_*_MANIFEST` or SFZ map
-- MPC neutral preset lane: `mpc-ready-808` in `prompt-params.ts`
+## Install (local)
 
-## Confirmation
+```bash
+git clone https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit.git
+cd MPC-Sample-Toolkit && python3 -m venv .venv && source .venv/bin/activate
+python -m pip install -e .
+mpctk --help
+```
 
-Any write into user's MPC project directory requires **interactive mode** user approval.
+## Fallback
+
+Bytebot / MPC Software UI only when MPCTK lacks a feature. Confirm before writing into user project folders.

@@ -27,11 +27,39 @@ Build a **production-grade, mostly unattended** Cursor Cloud agent system that c
 
 ---
 
+## 1.1 Three runtimes (same agent, different superpowers)
+
+One **logical agent** (same docs, skills, job JSON, manifests). You run it wherever the work needs to happen:
+
+| Runtime | Where | Best for | Cannot do (today) |
+|---------|--------|----------|-------------------|
+| **Cursor Cloud** | Linux VM in Cursor | Git PRs, JUCE CI, Python/Node batch WAV, SFZ, RAG, spectral QA | MPC `.xpj` build, HISE export, your local MPC hardware smoke test |
+| **VS Code / Cursor IDE (local)** | Your Mac or PC | **MPCTK** (`mpctk` CLI/GUI), drag WAVs to MPC, reference files on disk, faster iteration | Full monorepo JUCE CI unless you install toolchain |
+| **Antigravity** | Your Windows + HISE stack | HISE romplers, `batchCompile.bat`, optional **MPCTK** on same machine | Becomes source of truth for JUCE ship — hand off port WOs to Cloud |
+
+**Handoff pattern:** Cloud finishes **WAV + manifest (+ SFZ)** → commits or uploads artifacts → you (or Antigravity) run **MPCTK** or HISE on local runtime → optional note back in git (`outbox/` or PR comment).
+
+Add optional field on jobs: `"runtimeHint": "cloud" | "local" | "antigravity" | "split"` (`split` = Cloud generates, local exports MPC).
+
+---
+
+## 1.2 Plain-language glossary (planning)
+
+| Jargon | What it means for you |
+|--------|------------------------|
+| **Worker trigger** | **What starts the agent when you are not chatting with it.** Examples: you click “Run Cloud Agent” with a task; you drop a file in `sound-factory/jobs/` and tell the agent to run it; later: a timer or Airtable row auto-starts a run. **Planning default:** you explicitly start runs (simplest). We add “wake up on schedule / new WO” only when you want hands-off nights. |
+| **MPC export path** | **How WAVs become a playable MPC project.** Preferred: your **[MPC Sample Toolkit (MPCTK)](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit)** — validated `.xpj` read/write, chromatic pad banks, WAV injection, CLI + macOS GUI, hardware-tested. Fallback: clicking in MPC Software (Bytebot) only if MPCTK cannot cover a case. There is no separate `mpc-agent` repo in your GitHub; MPCTK *is* the MPC automation layer for now (future: thin “agent wrapper” skill that calls `mpctk`). |
+| **Reference policy** | **What audio the agent is allowed to listen to and copy.** Web search = facts (BPM, key, gear). **Matching a song’s sound** = analyze **files you provide** (WAV/MP3 you drop in or attach), not ripped streaming audio. Optional later: a licensed folder of stems you own. |
+| **Cloud image split** | **Two different Cloud VM setups:** (A) heavy image with JUCE compile for plugin work; (B) light image with only Node/Python for drum-kit batches (faster/cheaper). Planning note: one image is fine until batch jobs feel slow or expensive — not a decision you need now. |
+| **First vertical slice** | The **first end-to-end product story** we implement (e.g. kit → ZIP vs kit → SFZ → MPC). You will pick this after planning. |
+
+---
+
 ## 2. Fit in this monorepo
 
 ```text
                     ┌─────────────────────────────────────┐
-                    │  Orchestrator (Cloud Agent + WO)     │
+                    │  Orchestrator (Cloud / VS Code / AG)   │
                     └──────────────┬──────────────────────┘
            ┌───────────────────────┼───────────────────────┐
            ▼                       ▼                       ▼
@@ -70,7 +98,8 @@ Cursor **subagent types** map to factory roles (single orchestrator delegates; w
 | **JUCE CI failure** | `ci-investigator` | Red `build.yml` / pluginval |
 | **Parallel batch attempts** | `best-of-n-runner` | N variation seeds / export retries in worktrees |
 | **Reference video** | `videoReview` | User attaches performance/reference MP4 |
-| **MPC UI / desktop** | `computerUse` or **Bytebot local** | MPC Software clicks — **not** in Cloud VM |
+| **MPC `.xpj` build** | **Local / Antigravity** + MPCTK CLI/GUI | Chromatic/keygroup projects — **not** Cloud VM |
+| **MPC UI fallback** | Bytebot / `computerUse` | Only if MPCTK lacks a feature |
 | **Optional deep review** | `bugbot` / `security-review` | On explicit user request |
 
 **Human roles (gates):** Business Planner + Marketing (SKU), Factory Manager (WIP cap), legal for **reference audio** (see §8).
@@ -108,6 +137,18 @@ Installed under [`.cursor/skills/`](../.cursor/skills/) — agents **read the SK
 
 Phase 1: **file-based queue** in git (no new infra). Phase 2: Supabase `factory_jobs` (see ILLUGEN job sketch in RAG doc).
 
+### 5.0 How jobs get started (worker triggers — simplified)
+
+| Trigger | Who uses it | Status |
+|---------|-------------|--------|
+| **Manual** — you open Agent (Cloud or VS Code) and paste goal + job path | Everyone | **Default for planning** |
+| **Manual** — `@instrument-orchestrator` + “run `jobs/foo.json`” | Everyone | Same as above |
+| **Git** — PR or comment with `factory-run: jobs/foo.json` | Cloud | Phase 1 optional |
+| **Timer** — nightly “generate SKU X” | Cloud subscriptions MCP | Phase 2 optional |
+| **Airtable WO** — new row kicks Cloud Agent | Zapier + API | Phase 2 optional |
+
+You do **not** need to pick a trigger now. Default = **you start the agent** with a job file or structured prompt.
+
 ### 5.1 Work order → job DAG
 
 ```json
@@ -136,15 +177,16 @@ Phase 1: **file-based queue** in git (no new infra). Phase 2: Supabase `factory_
 }
 ```
 
-### 5.2 Worker loop (Cloud Agent)
+### 5.2 Worker loop (any runtime)
 
-1. Poll: Airtable WO / GitHub label `factory-worker` / `cursor-subscriptions` timer.  
+1. **Start** via trigger (default: manual).  
 2. Load orchestrator skill + product `ARCHITECTURE.md`.  
-3. Execute DAG; commit artifacts to **`disklordz/sound-factory/out/<jobId>/`** (gitignored) or storage backend when Supabase live.  
-4. Open **draft PR** with manifest + QA logs + walkthrough (spectrogram PNG / short demo video).  
-5. Mark WO Done only after human merge (agent never auto-merge).
+3. Execute DAG steps allowed on this runtime (`runtimeHint`); skip or defer MPC/HISE steps to local/Antigravity with a clear handoff file.  
+4. Write artifacts to **`disklordz/sound-factory/out/<jobId>/`** (gitignored) or storage when Supabase live.  
+5. **Cloud:** open draft PR with manifest + QA logs. **Local/Antigravity:** run MPCTK/HISE; report paths or push branch.  
+6. Mark WO Done only after human merge (agent never auto-merge).
 
-**Idle behavior:** subscribe to queue; optional nightly batch from `manifest.json` SKUs.
+**Later:** optional poll/timer for unattended Cloud runs.
 
 ---
 
@@ -156,16 +198,22 @@ Phase 1: **file-based queue** in git (no new infra). Phase 2: Supabase `factory_
 - Skills document opcode subset: `sample`, `key`, `lokey`, `hikey`, `pitch_keycenter`, `volume`, `pan`, `loop_mode`, `cutoff`, envelope opcodes as needed.  
 - HISE lane can import SFZ or mirror the same spec.
 
-### 6.2 MPC Software keygroup (Phase 2 — proprietary)
+### 6.2 MPC Sample projects (MPCTK — primary)
 
-- Do **not** binary-edit `.xpm` blindly in v1.  
-- **KeygroupSpec JSON** (zones, root, tune, filter, envelope, sample path, group mute/solo rules) validated by schema.  
-- Export paths (pick one in implementation WO):
-  - **A)** Documented MPC Software UI steps + Bytebot/computerUse on Windows host.  
-  - **B)** Reverse-engineered text/XML fragment if MPC exposes it in project folder (research WO).  
-  - **C)** Akai official export from MPC Beats / documented interchange if available.
+**Tool:** [MPC-Sample-Toolkit (MPCTK)](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit) — gzip `.xpj` read/write, chromatic pad banks, scale layouts, WAV injection, `mpctk` CLI, PySide6 GUI, validated on **physical MPC Sample** hardware.
 
-Orchestrator treats MPC export as **optional step** with explicit user confirmation before writing project files.
+**Integration plan (no vendoring into Instruments until WO):**
+
+1. Factory agent emits **source WAV(s)** + `manifest.json` (and optional **InstrumentMapSpec** for roots/transpose).  
+2. On **local VS Code** or **Antigravity** runtime: `mpctk` (or GUI) with structural XPJ template + source/target roots.  
+3. Output `.xpj` + `_[ProjectData]` package → user loads on hardware.  
+4. Optional WO: git submodule `tools/MPC-Sample-Toolkit` or documented clone + venv in `AGENTS.md`.
+
+**KeygroupSpec JSON** remains the in-repo interchange format so SFZ and MPC steps share the same zone list; MPCTK is the **exporter**, not manual UI clicking.
+
+**Fallback:** Bytebot / MPC Software UI only for gaps MPCTK does not cover yet.
+
+Orchestrator asks before overwriting user MPC project directories.
 
 ### 6.3 JUCE multisample (JD Upgraded)
 
@@ -197,11 +245,13 @@ Batch skill requires: **SHA-256 per WAV**, `sourceId`, `provenance` enum extensi
 
 ## 8. Reference listening & “find songs online”
 
+**In plain terms:** the agent can Google *about* a track (tempo, key, machines used). To *sound like* something, you give it **audio files you are allowed to use** — a exported WAV, a sample pack file, or a recording you made — not “pull from Spotify.”
+
 **Legal / safety baseline**
 
 - Agent may **search the public web** for song titles, BPM, key, gear lists, interviews (facts).  
 - Agent must **not** download copyrighted audio from streaming/YouTube unless the **user supplies files** or confirms licensed assets.  
-- Reference **analysis** runs on user-provided WAV/MP3 in repo or artifact upload.
+- Reference **analysis** runs on user-provided WAV/MP3 in `disklordz/sound-factory/refs/` or WO attachments.
 
 **Technical pipeline (Cloud VM)**
 
@@ -230,12 +280,19 @@ Worker jobs **fail closed**: bad manifest schema, missing SHA-256, or QA over th
 
 ## 10. Environment extensions (future `.cursor/environment.json`)
 
-Current install is JUCE-only. Planned additive packages for sound factory worker:
+**Plain terms:** Cloud VMs are pre-installed Linux boxes. “Split image” just means we might offer a **slim** box for drum batches and a **fat** box for JUCE — defer until needed.
+
+| Profile | Install focus | Runtime |
+|---------|---------------|---------|
+| **plugin** (today) | JUCE + gcc-12 | Cloud |
+| **factory** (planned) | Node + Python scipy/ffmpeg for analysis | Cloud |
+| **local** | MPCTK venv, MPC template XPJ, optional HISE | VS Code / Antigravity |
+
+Current Cloud install is JUCE-only. Planned additive packages for factory profile:
 
 - `ffmpeg`, `sox`, `python3-scipy`, `librosa` (or lightweight scipy-only features first)
+- **MPCTK:** local/Antigravity only (macOS GUI / hardware validation), not Cloud install
 - Optional: `yt-dlp` **disabled by default** until legal workflow documented
-
-Separate **web-only** Cloud image: Node 20 + `disklordz/website` build without full JUCE (faster kit batches).
 
 ---
 
@@ -247,7 +304,7 @@ Separate **web-only** Cloud image: Node 20 + `disklordz/website` build without f
 | **1** | `InstrumentMapSpec` + SFZ emitter + unit tests | `WO-SF-010` |
 | **1** | `analyze_reference.py` + report schema | `WO-SF-011` |
 | **1** | Batch driver: read job JSON, call `generate_kit.py` / API | `WO-SF-012` |
-| **2** | KeygroupSpec schema + MPC export research spike | `WO-SF-020` |
+| **2** | KeygroupSpec schema + MPCTK handoff doc / optional submodule | `WO-SF-020` |
 | **2** | Supabase `factory_jobs` + worker subscription | `WO-SF-021` |
 | **3** | Async generation gateway alignment (ILLUGEN 03–07) | `WO-SAAS-007+` |
 | **3** | HISE import of SFZ / map spec via handoff | `[Plugin][HISE]` |
@@ -282,5 +339,6 @@ Run factory job WO-SF-xxx unattended until draft PR.
 
 - [DISKLORDZ_SAAS_AGENT_LANES.md](DISKLORDZ_SAAS_AGENT_LANES.md)
 - [RAG_AND_INTELLIGENT_AUTOMATION.md](RAG_AND_INTELLIGENT_AUTOMATION.md)
-- [BYTEBOT_SETUP.md](BYTEBOT_SETUP.md) — MPC desktop automation
+- [MPC-Sample-Toolkit](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit) — `.xpj` generation (local/Antigravity)
+- [BYTEBOT_SETUP.md](BYTEBOT_SETUP.md) — MPC UI fallback only
 - [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md)

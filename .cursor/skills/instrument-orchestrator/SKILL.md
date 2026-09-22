@@ -16,12 +16,24 @@ description: "Route Instrument & Sound Factory work across generation, maps, pre
 2. Product area: [ARCHITECTURE.md](../../../ARCHITECTURE.md) → JD / Wave909 / `disklordz/website` / `hise-sketch`
 3. [AGENTS.md](../../../AGENTS.md) for test commands
 
+## Runtimes
+
+| Runtime | Use |
+|---------|-----|
+| **Cursor Cloud** | JUCE CI, Python/Node batch, SFZ, PRs |
+| **VS Code (local)** | MPCTK `.xpj`, refs on disk, MPC hardware |
+| **Antigravity** | HISE export; MPCTK on same Windows/Mac box |
+
+Same skills and `disklordz/sound-factory/jobs/*.json`. Set `"runtimeHint"` on jobs when steps split across machines.
+
 ## Mode selection
 
 | Mode | Behavior |
 |------|----------|
-| **worker** (default) | Execute job DAG; draft PR; no user chat unless blocked |
+| **worker** (default) | Execute job DAG; draft PR or handoff artifact; no chat unless blocked |
 | **interactive** | Confirm MPC project writes, deploy, Zapier/Airtable writes |
+
+**Worker trigger (default):** user manually starts the agent with a job path — not a background daemon until Phase 2.
 
 ## Route to skills
 

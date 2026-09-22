@@ -31,7 +31,11 @@ python3 disklordz/sound-factory/scripts/generate_kit.py --preset mpc-ready-808 -
 python3 disklordz/rag/scripts/query_local.py "memphis phonk lane"
 ```
 
-**Default mode:** automated worker (job JSON → batch → manifest → draft PR). **MPC Software UI / HISE export:** Bytebot or Antigravity handoff — not Cloud VM.
+**Runtimes:** Cloud (JUCE + batch), local VS Code (**MPCTK** for `.xpj`), Antigravity (HISE + optional MPCTK). Same skills everywhere.
+
+**Default start:** you run the agent with a job under `disklordz/sound-factory/jobs/` — scheduled/Airtable triggers are optional later.
+
+**MPC:** [MPC-Sample-Toolkit](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit) on local/Antigravity — not Cloud VM.
 
 ## RAG (prompt knowledge)
 
