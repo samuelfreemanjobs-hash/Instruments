@@ -1,6 +1,6 @@
 # logue custom oscillator collection — roadmap
 
-**Owner intent:** NTS-1 mkII (primary) + Minilogue XD (v1.1 `.prg` where applicable).  
+**Owner intent:** **NTS-1 mkII only** for new units (`.nts1mkiiunit`). v1.1 / Minilogue XD builds are **out of scope** unless a legacy port is explicitly revived.  
 **Status:** Planning (2026-09-22, expanded). **24 oscillator products** + **2 custom FX units** + Phase 0 infra. Update as slugs ship.
 
 **Scope split:** This repo’s agent tooling today is **osc-first** (`src/mkii/oscillators/`). **SP-1200** and **dream reverb** are **logue custom FX** (delay/reverb slot), not user oscillators — Phase 5 adds an FX lane and scaffolds.
@@ -35,7 +35,7 @@
 | 10 | Detroit rap TB-303 | `tb303_detroit_acid` | _(new)_ | _(new)_ | **New** |
 | 11 | Korg DW-8000 | `korg_dw8000_dig` | _(new)_ | _(new)_ | **New** (DWGS + analog-ish edge) |
 | 12 | Korg Poly-61 | `korg_poly61_dco` | _(new)_ | _(new)_ | **New** (DCO + simple poly char) |
-| 13 | Prophet-6 / OB-6 | `sequential_p6_ob6` _(or split later)_ | _(new)_ | _(new)_ | **New** (dual-personality or **2 units** — TBD) |
+| 13 | Prophet-6 / OB-6 | `prophet6_analog` + `ob6_analog` | _(new)_ | _(new)_ | **New** — **two separate units** (locked) |
 | 14 | Ensoniq SQ-80 | `ensoniq_sq80_wt` | extend `ensoniq-eps1` ideas | _(new)_ | **New** + wavetable bank |
 | 15 | Solina string ensemble | `solina_string_ensemble` | _(new)_ | _(new)_ | **New** (divide-down + ensemble) |
 | 16 | Rage rap saw synth | `rage_rap_supersaw` | _(new)_ | _(new)_ | **New** (genre-tuned supersaw core) |
@@ -111,7 +111,8 @@ Low risk, validates pipeline on hardware.
 | `minimoog_phatt` | 3 osc stack (24′/16′/8′), sync optional, saturation | Osc mix, Glide, Drive, … |
 | `tb303_detroit_acid` | Saw/square, accent envelope, slide, **filter emphasis via host res/cutoff** | Wave, Env, Slide, Accent, … |
 | `korg_poly61_dco` | Single DCO: saw/pulse/PWM, mild drift; host filter for “Polysix-adjacent” tone | PWM, Drift, Wave, … |
-| `sequential_p6_ob6` | **Mode param:** P6 wavetable/analog blend vs OB-6 SEM-style saws; shared envelope hooks | Mode, Blend, Detune, … |
+| `prophet6_analog` | P6-style wavetable/analog blend, soft FM edges | Blend, Detune, … |
+| `ob6_analog` | OB-6 SEM-style saws/pulse, spread | Detune, PWM, … |
 | `solina_string_ensemble` | Divide-down square waves (16′/8′/4′ mix) + slow ensemble chorus + EQ tilt | Mix, Ensemble, Tone, … |
 | `jp8000_supersaw` / `virus_hypersaw` / `rage_rap_supersaw` | Shared supersaw core (see table above) | Voices, Detune, Sub, Tone, … |
 | `korg_dw8000_dig` | Short **DWGS-style** cycle tables (8–16 waves) + digital grit; morph between waves | Wave, Morph, Grit, … |
@@ -201,18 +202,18 @@ Oscillators **cannot** replace the FX slot — plan **two FX binaries** plus dru
 
 **Goal:** One loadable unit with **four 808 voices**: bass drum, snare, closed hat, open hat.
 
-**Voice selection (locked):** **`Voice` param** (0–3) — kick / snare / closed hat / open hat. MIDI pitch still sets **tuning** and envelope feel per hit.
+**Voice selection (locked):** **MIDI note map** — each drum on its own key (pad-friendly). Document map in `manifest.json` + `.agent/brief.md`.
 
-| `Voice` | Drum |
-|---------|------|
-| 0 | Kick |
-| 1 | Snare |
-| 2 | Closed hat |
-| 3 | Open hat |
+| Drum | Default MIDI note |
+|------|-------------------|
+| Kick | **C1** (36) |
+| Snare | **D1** (38) |
+| Closed hat | **F#1** (42) |
+| Open hat | **A#1** (46) |
 
-Optional later: **hybrid** preset in docs (param + note map) for pad controllers — not v1 default.
+Optional later: **Voice** param override for one-key “selector” mode — not v1.
 
-**Shared macros (≤10):** **Voice**, **Tone**, **Decay**, **Punch**, **Snare Snap**, **Hat Length**, **OH Decay**, **Drive**, **Level**, **Tune**.
+**Shared macros (≤10):** **Tone**, **Decay**, **Punch**, **Snare Snap**, **Hat Length**, **OH Decay**, **Drive**, **Level**, **Tune**, **Accent** (or spare for kit-wide tone).
 
 **DSP sketch:**
 
@@ -243,23 +244,23 @@ Optional later: **hybrid** preset in docs (param + note map) for pad controllers
 
 ### C) `sp1200_fx` (custom FX — not an oscillator)
 
-**Goal:** **Emu SP-1200** vibe on incoming audio: 12-bit crunch, ~26 kHz bandwidth feel, mono-ish image, short **micro-delay** smear, gentle **input saturation**.
+**Goal:** **Emu SP-1200** vibe on incoming audio — **locked emphasis: bit crush + sample-rate reduction** (12-bit / ~26 kHz feel). Smear/saturation are secondary.
 
 **FX type:** Custom **delay** or **reverb** slot (implementation follows logue-sdk **Fx** / `unit_fx` pattern — mirror `dummy-delay` in SDK).
 
-**Params (≤10):** **Crush**, **SampleRate**, **Drive**, **Width**, **Smear**, **Mix**, **Output**, …
+**Params (≤10):** **Crush**, **SampleRate**, **Drive**, **Mix**, **Output**, … (minimal **Smear** / width — low default)
 
-**Repo:** `src/mkii/fx/sp1200_fx/` (+ optional v1 `src/fx/sp1200/` for nutekt if supported).
+**Repo:** `src/mkii/fx/sp1200_fx/` — **mkII only** (no nutekt v1 FX path planned).
 
 **Note:** Separate **SP-1200 sampler emulation** exists elsewhere in the monorepo (JUCE lane); this FX unit is **color only**, not sampling.
 
 ### D) `dream_reverb_fx` (custom FX)
 
-**Goal:** “Dream” reverb — long tail, **shimmer** (octave/+5th in feedback), dark/modulated wash (Valhalla-style **inspired**, not a clone).
+**Goal:** “Dream” reverb — **locked default: bright shimmer** (octave / +5th in feedback, airy tail). Optional **Dark** param pulls toward dub; factory presets start bright.
 
 **Engine:** Schroeder/Moorer-lite + **pitch-shifted feedback tap** (grain or all-pass diffusion); cap delay lines for MCU.
 
-**Params:** **Size**, **Decay**, **Shimmer**, **Dark**, **Mod**, **PreDelay**, **Mix**, **Tone**, …
+**Params:** **Size**, **Decay**, **Shimmer**, **Bright**, **Mod**, **PreDelay**, **Mix**, **Tone**, …
 
 **Repo:** `src/mkii/fx/dream_reverb_fx/`
 
@@ -278,7 +279,7 @@ docs/logue-custom-fx-lane.md       # FX vs osc, load order on NTS
 ## Dusty Memphis sub-bass — design brief (accepted)
 
 **Slug:** `memphis_dust_sub`  
-**Target:** NTS-1 mkII + XD  
+**Target:** NTS-1 mkII  
 **Role:** Sub layer under 808 kick; Three 6 / Memphis rap trunk, **more lo-fi and “dust”** than `memphis-juicy`.
 
 | Param | Intent |
@@ -301,10 +302,14 @@ docs/logue-custom-fx-lane.md       # FX vs osc, load order on NTS
 
 | Topic | Decision |
 |-------|----------|
-| 808 kit voice pick | **`Voice` param** (0–3), not MIDI-map-first |
+| 808 kit voice pick | **MIDI note map** (C1/D1/F#1/A#1 defaults) |
 | Drum + FM perc | **Two separate oscillators** — both shipped |
 | Rage rap supersaw | Preset targets: **Playboi Carti**, **Trippie Redd** |
 | Supersaw priority | **`virus_hypersaw` first** after supersaw core (before JP-8000 / rage) |
+| Prophet-6 / OB-6 | **Two units:** `prophet6_analog`, `ob6_analog` |
+| Platform | **mkII-only** for new osc + FX (no XD v1.1 ship target) |
+| Dream reverb | **Bright shimmer** factory default |
+| SP-1200 FX | **Bit crush / sample-rate** primary; smear secondary |
 
 ---
 
@@ -317,7 +322,7 @@ Phase 1b  sh101_classic, prophet5_analog, juno_dco_osc (ports)
 Phase 1c  supersaw core → virus_hypersaw          ← priority (owner)
 Phase 2a  minimoog_phatt, tb303_detroit_acid, obxa_analog, korg_poly61_dco
 Phase 2b  jp8000_supersaw → rage_rap_supersaw     ← Carti / Trippie presets
-Phase 2c  solina_string_ensemble, sequential_p6_ob6, korg_dw8000_dig
+Phase 2c  solina_string_ensemble, prophet6_analog, ob6_analog, korg_dw8000_dig
 Phase 3   wavetable tooling → prophet_vs_wt128 → ppg_microwave_wt → ensoniq_sq80_wt
 Phase 4   acoustic_pm_poly (after CPU baseline from Phase 2)
 Phase 5a  tr808_drumkit_4voice (+ port kick DSP), fm808_cowbell_perc
@@ -356,17 +361,12 @@ For each slug:
 
 ## Open questions (remaining)
 
-1. **Minilogue XD:** Ship every unit on XD, or mkII-only for wavetable-heavy ones?
-2. **Prophet VS:** Will you supply ROM/dump, or OK with “VS-inspired” recreated waves?
-3. **Juno DCO:** Standalone DCO (osc only) vs keep full `juno-rnb` bass envelope/filter in the osc slot?
-4. **303:** Pure osc (saw/square) vs include **internal accent/slide** (uses more CPU)?
-5. **P6 vs OB-6:** One unit with **Mode** knob vs **two separate** loadables?
-6. **SQ-80:** Full TransWave ambition vs **32 curated** waves for flash limits?
-7. **Acoustic PM:** Pluck-only v1 OK, or **Strike** required for v1?
-8. **DW-8000:** Emphasis on **digital wave cycles** vs **slammed SSM filter** (host filter does most filter work)?
-9. **FX target:** mkII only first, or Minilogue XD / NTS mkI custom FX too (platform-dependent)?
-10. **Dream reverb:** More **shimmer/ambient** or **dark dub** default?
-11. **SP-1200 FX:** Emphasis on **bit/sample-rate** vs **short delay smear** (classic SP “feel”)?
+1. **Prophet VS:** Will you supply ROM/dump, or OK with “VS-inspired” recreated waves?
+2. **Juno DCO:** Standalone DCO (osc only) vs keep full `juno-rnb` bass envelope/filter in the osc slot?
+3. **303:** Pure osc (saw/square) vs include **internal accent/slide** (uses more CPU)?
+4. **SQ-80:** Full TransWave ambition vs **32 curated** waves for flash limits?
+5. **Acoustic PM:** Pluck-only v1 OK, or **Strike** required for v1?
+6. **DW-8000:** Emphasis on **digital wave cycles** vs **slammed SSM filter** (host filter does most filter work)?
 
 ---
 
