@@ -1,9 +1,9 @@
 # logue custom oscillator collection — roadmap
 
 **Owner intent:** **NTS-1 mkII only** for new units (`.nts1mkiiunit`). v1.1 / Minilogue XD builds are **out of scope** unless a legacy port is explicitly revived.  
-**Status:** Planning (2026-09-22, expanded). **25 oscillator products** + **2 custom FX units** + Phase 0 infra. Update as slugs ship.
+**Status:** Planning (2026-09-22, expanded). **33 oscillator products** + **5 custom FX units** + Phase 0 infra. **`memphis_dust_sub`** implemented (mkII).
 
-**Scope split:** This repo’s agent tooling today is **osc-first** (`src/mkii/oscillators/`). **SP-1200** and **dream reverb** are **logue custom FX** (delay/reverb slot), not user oscillators — Phase 5 adds an FX lane and scaffolds.
+**Scope split:** **Osc-first** (`src/mkii/oscillators/`). **Custom FX** (`src/mkii/fx/`) — delay/reverb slot on mkII: SP-1200, dream reverb, tape echo, saturator, cassette hiss.
 
 ## Current repo baseline
 
@@ -45,6 +45,17 @@
 | 20 | FM cowbell + perc | `fm808_cowbell_perc` | _(new)_ | _(new)_ | **New** (FM + modal perc) |
 | 21 | SP-1200-style processing | `sp1200_fx` | _(new FX lane)_ | `src/mkii/fx/` | **New custom FX** |
 | 22 | Dream / shimmer reverb | `dream_reverb_fx` | _(new FX lane)_ | `src/mkii/fx/` | **New custom FX** |
+| 23 | Rhodes / Wurlitzer EP | `rhodes_wurli_ep` | _(new)_ | _(new)_ | **New** (Euro/R&B EP tines) |
+| 24 | MS-20 sync / scream | `ms20_sync_osc` | _(new)_ | _(new)_ | **New** |
+| 25 | Reese / detuned sub | `reese_sub_osc` | _(new)_ | _(new)_ | **New** |
+| 26 | DX7 FM bass (extended) | `dx7_fm_bass` | _(new)_ | _(new)_ | **New** (harder FM vs Lately) |
+| 27 | DX7 Lately Bass | `dx7_lately_bass` | port `dx7-lately` | `dx7_lately_bass` scaffold | **Port** |
+| 28 | Jupiter-8 stack | `jupiter8_analog` | _(new)_ | _(new)_ | **New** (cross-mod / bright stack) |
+| 29 | Mellotron / tape flute | `mellotron_tape_flute` | _(new)_ | _(new)_ | **New** (small WT + tape wow) |
+| 30 | TR-909 drum kit | `tr909_drumkit_4voice` | _(new)_ | _(new)_ | **New** (MIDI map, separate from 808) |
+| 31 | Tape echo / dub delay | `tape_echo_dub_fx` | _(FX)_ | `src/mkii/fx/` | **New custom FX** |
+| 32 | Soft clip / tape saturator | `tape_sat_fx` | _(FX)_ | `src/mkii/fx/` | **New custom FX** |
+| 33 | Cassette tape hiss | `cassette_hiss_fx` | _(FX)_ | `src/mkii/fx/` | **New custom FX** |
 
 **Already close (rename optional, not duplicate work):**
 
@@ -52,6 +63,7 @@
 - Moog family → `sub-phatty`, `moog-voyager-se`, `west-coast-moog` (Minimoog osc should be its own macro set).
 - Ensoniq grit → `ensoniq-eps1` / `ensoniq_eps1_memphis_bass` (SQ-80 unit is **broader WT**, not Memphis-specific).
 - 808 kick only → `tr808-kick` / `tr808_kick_phonk` (keep; **4-voice kit** is a separate loadable unit).
+- DX7 → **`dx7_lately_bass`** (house/Lately port) + **`dx7_fm_bass`** (general FM bass/keys) — two loadables.
 
 ### Supersaw family (share one DSP core)
 
@@ -270,6 +282,39 @@ docs/logue-custom-fx-lane.md       # FX vs osc, load order on NTS
 
 **Agent:** Extend orchestrator or add `.cursor/agents/logue-mkii-fx/` when FX work starts.
 
+### E–G) FX expansion (owner approved)
+
+| Slug | Role | Notes |
+|------|------|--------|
+| `tape_echo_dub_fx` | **Tape echo / dub delay** | Wow/flutter lite, filtered feedback, reggae/dub presets; pairs with `dream_reverb_fx` |
+| `tape_sat_fx` | **Soft clip / tape saturator** | Warm drive only — lighter than `sp1200_fx` bit crush |
+| `cassette_hiss_fx` | **Cassette hiss / noise floor** | Pink hiss + optional hum; mix as **always-on bed** or send |
+
+All **mkII custom FX**; share scaffold with Phase 5b.
+
+### H) TR-909 drum kit (owner approved)
+
+**Slug:** `tr909_drumkit_4voice` — same pattern as 808: **MIDI note map**, separate binary from `tr808_drumkit_4voice`.
+
+| Drum | Default MIDI |
+|------|----------------|
+| Kick | **C2** (36) — 909 long kick |
+| Snare | **D2** (38) |
+| Closed hat | **F#2** (42) |
+| Open hat | **A#2** (46) |
+
+Voices: punchy kick, snappy snare, bright CH/OH (tuned vs 808 Lately). Share drum voice helpers with 808 kit when possible.
+
+### I) Rhodes / EP, MS-20, Reese, Jupiter-8, Mellotron (owner approved)
+
+| Slug | Sketch |
+|------|--------|
+| `rhodes_wurli_ep` | Tine FM-ish + pickup buzz; **Rhodes** vs **Wurli** macro; Euro disco + R&B presets |
+| `ms20_sync_osc` | Hard sync saws, **MS-20** scream via host res; bass + lead |
+| `reese_sub_osc` | 2–3 detuned saws, moving phase; DnB/phonk **Reese** under supersaw units |
+| `jupiter8_analog` | Dual DCO stack, **cross-mod** option, bright JP-8 lead (not same as Juno DCO) |
+| `mellotron_tape_flute` | 1–3 tape **flute/string** cycles (64-sample WT), wow + noise |
+
 ---
 
 ## Dusty Memphis sub-bass — design brief (accepted)
@@ -371,8 +416,10 @@ Phase 2b  jp8000_supersaw → rage_rap_supersaw     ← Carti / Trippie presets
 Phase 2c  solina_string_ensemble, prophet6_analog, ob6_analog, korg_dw8000_dig
 Phase 3   wavetable tooling → prophet_vs_wt128 → ppg_microwave_wt → ensoniq_sq80_wt
 Phase 4   acoustic_pm_poly (after CPU baseline from Phase 2)
-Phase 5a  tr808_drumkit_4voice (+ port kick DSP), fm808_cowbell_perc
-Phase 5b  FX lane bootstrap → sp1200_fx → dream_reverb_fx
+Phase 5a  tr808_drumkit_4voice (+ port kick DSP), fm808_cowbell_perc, tr909_drumkit_4voice
+Phase 5b  FX bootstrap → sp1200_fx → dream_reverb_fx → tape_echo_dub_fx → tape_sat_fx → cassette_hiss_fx
+Phase 6a  dx7_lately_bass (port), dx7_fm_bass, reese_sub_osc, ms20_sync_osc
+Phase 6b  rhodes_wurli_ep, mellotron_tape_flute, jupiter8_analog
 ```
 
 Parallel track: **mkII ports** for every v1 unit touched.
@@ -387,7 +434,7 @@ Split catalog for clarity:
 |-----|----------|
 | [nts1-multi-bass-oscillators.md](nts1-multi-bass-oscillators.md) | Bass / sub / 303 / Memphis |
 | `docs/logue-oscillator-catalog.md` _(planned)_ | Leads, supersaws, strings, PM, WT, drums/FM perc |
-| `docs/logue-custom-fx-lane.md` _(planned)_ | SP-1200, dream reverb, future FX |
+| `docs/logue-custom-fx-lane.md` _(planned)_ | SP-1200, dream reverb, tape echo, sat, hiss |
 
 ---
 
