@@ -1,7 +1,9 @@
 # logue custom oscillator collection — roadmap
 
 **Owner intent:** NTS-1 mkII (primary) + Minilogue XD (v1.1 `.prg` where applicable).  
-**Status:** Planning (2026-09-22, expanded). **22 oscillator products** + Phase 0 infra. Update as slugs ship.
+**Status:** Planning (2026-09-22, expanded). **24 oscillator products** + **2 custom FX units** + Phase 0 infra. Update as slugs ship.
+
+**Scope split:** This repo’s agent tooling today is **osc-first** (`src/mkii/oscillators/`). **SP-1200** and **dream reverb** are **logue custom FX** (delay/reverb slot), not user oscillators — Phase 5 adds an FX lane and scaffolds.
 
 ## Current repo baseline
 
@@ -39,12 +41,17 @@
 | 16 | Rage rap saw synth | `rage_rap_supersaw` | _(new)_ | _(new)_ | **New** (genre-tuned supersaw core) |
 | 17 | Virus hypersaw | `virus_hypersaw` | _(new)_ | _(new)_ | **New** (shared supersaw engine) |
 | 18 | Acoustic physical modeling (poly) | `acoustic_pm_poly` | _(new)_ | _(new)_ | **New** (scoped PM — see below) |
+| 19 | TR-808 **4-voice drum** (kick/snare/CH/OH) | `tr808_drumkit_4voice` | extend `tr808-kick` | _(new)_ | **New** (multi-voice drum osc) |
+| 20 | FM cowbell + perc | `fm808_cowbell_perc` | _(new)_ | _(new)_ | **New** (FM + modal perc) |
+| 21 | SP-1200-style processing | `sp1200_fx` | _(new FX lane)_ | `src/mkii/fx/` | **New custom FX** |
+| 22 | Dream / shimmer reverb | `dream_reverb_fx` | _(new FX lane)_ | `src/mkii/fx/` | **New custom FX** |
 
 **Already close (rename optional, not duplicate work):**
 
 - Memphis trunk sub → `memphis-juicy` / `juicy_j_three6_memphis_bass` (different vibe from “dust” — keep both).
 - Moog family → `sub-phatty`, `moog-voyager-se`, `west-coast-moog` (Minimoog osc should be its own macro set).
 - Ensoniq grit → `ensoniq-eps1` / `ensoniq_eps1_memphis_bass` (SQ-80 unit is **broader WT**, not Memphis-specific).
+- 808 kick only → `tr808-kick` / `tr808_kick_phonk` (keep; **4-voice kit** is a separate loadable unit).
 
 ### Supersaw family (share one DSP core)
 
@@ -179,6 +186,101 @@ A full **polyphonic** acoustic model (multiple strings/bodies, independent excit
 
 ---
 
+## Phase 5 — Drums, FM perc, and custom FX
+
+### Hardware reality (NTS-1 / mkII / XD)
+
+| Slot | What loads | Your ask |
+|------|------------|----------|
+| **User oscillator** | One custom osc at a time (monophonic output per note) | 4-voice 808 kit, FM cowbell/perc |
+| **User delay / reverb (FX)** | One custom FX at a time (mkII / supported platforms) | SP-1200 color, dream reverb |
+
+Oscillators **cannot** replace the FX slot — plan **two FX binaries** plus drum/FM **osc** binaries. On mkI NTS-1, FX custom units depend on SDK/platform support (verify in logue-sdk `platform/*/custom_fx` README when implementing).
+
+### A) `tr808_drumkit_4voice` (oscillator)
+
+**Goal:** One loadable unit with **four 808 voices**: bass drum, snare, closed hat, open hat.
+
+**Voice selection (pick one default; confirm in brainstorm):**
+
+| Method | Pros | Cons |
+|--------|------|------|
+| **MIDI note map** (recommended) | Play like a mini kit from keyboard/pad | User learns note map (document in `manifest.json`) |
+| **Voice param** (0–3) | Single-note “kit mode” | Awkward for live drumming |
+| **Hybrid** | Param picks kit piece + MIDI pitch sets tune/decay | Uses 1–2 params |
+
+**Draft MIDI map (808-ish, tunable):**
+
+| Voice | Suggested notes |
+|-------|-----------------|
+| Kick | C1 |
+| Snare | D1 |
+| Closed hat | F#1 |
+| Open hat | A#1 |
+
+**Shared macros (≤10):** **Voice** (if hybrid), **Tone**, **Decay**, **Punch**, **Snare Snap**, **Hat Length**, **OH Decay**, **Drive**, **Level**, **Tune** (global or per-voice via note).
+
+**DSP sketch:**
+
+- **Kick:** Reuse/port `kick808.cc` synthesis (sine sweep + clip).
+- **Snare:** Tone + noise burst, optional body tone ~180 Hz.
+- **CH:** Short filtered noise + weak square click.
+- **OH:** Longer noise + decay; shared noise gen, no alloc.
+
+**CPU:** One voice active per note event (monophonic legato off); overlapping hats may need **steal** or **short parallel env** — profile on hardware.
+
+**Relationship:** Keep `tr808_kick_phonk` as **kick-only** phonk specialist; kit is general 808 drums.
+
+### B) `fm808_cowbell_perc` (oscillator)
+
+**Goal:** FM and metallic perc — **808 cowbell**, rimshot-adjacent click, hand clave / tunable bell family.
+
+**Voice map (similar to kit):**
+
+| Voice | Engine |
+|-------|--------|
+| Cowbell | 2-op FM (fixed ratio ~1.75:1 style), short decay |
+| Metal perc | FM or ring-mod sine pairs |
+| Clave / stick | Sine + fast env |
+
+**Params:** **Voice** or MIDI map, **FM Index**, **Ratio**, **Decay**, **Tone**, **Metal**, **Level**, …
+
+Optional: merge with kit later as `tr808_drumkit_extended` if flash/CPU tight — **default plan: separate unit** so each `.prg` / `.nts1mkiiunit` stays focused.
+
+### C) `sp1200_fx` (custom FX — not an oscillator)
+
+**Goal:** **Emu SP-1200** vibe on incoming audio: 12-bit crunch, ~26 kHz bandwidth feel, mono-ish image, short **micro-delay** smear, gentle **input saturation**.
+
+**FX type:** Custom **delay** or **reverb** slot (implementation follows logue-sdk **Fx** / `unit_fx` pattern — mirror `dummy-delay` in SDK).
+
+**Params (≤10):** **Crush**, **SampleRate**, **Drive**, **Width**, **Smear**, **Mix**, **Output**, …
+
+**Repo:** `src/mkii/fx/sp1200_fx/` (+ optional v1 `src/fx/sp1200/` for nutekt if supported).
+
+**Note:** Separate **SP-1200 sampler emulation** exists elsewhere in the monorepo (JUCE lane); this FX unit is **color only**, not sampling.
+
+### D) `dream_reverb_fx` (custom FX)
+
+**Goal:** “Dream” reverb — long tail, **shimmer** (octave/+5th in feedback), dark/modulated wash (Valhalla-style **inspired**, not a clone).
+
+**Engine:** Schroeder/Moorer-lite + **pitch-shifted feedback tap** (grain or all-pass diffusion); cap delay lines for MCU.
+
+**Params:** **Size**, **Decay**, **Shimmer**, **Dark**, **Mod**, **PreDelay**, **Mix**, **Tone**, …
+
+**Repo:** `src/mkii/fx/dream_reverb_fx/`
+
+### Phase 5 infra (planned)
+
+```text
+tools/mkii/scaffold-mkii-fx.py     # from logue-sdk dummy-delay / dummy-reverb
+tools/build-mkii-fx.sh <slug>
+docs/logue-custom-fx-lane.md       # FX vs osc, load order on NTS
+```
+
+**Agent:** Extend orchestrator or add `.cursor/agents/logue-mkii-fx/` when FX work starts.
+
+---
+
 ## Dusty Memphis sub-bass — design brief (accepted)
 
 **Slug:** `memphis_dust_sub`  
@@ -212,9 +314,13 @@ Phase 2b  supersaw core → jp8000_supersaw → virus_hypersaw → rage_rap_supe
 Phase 2c  solina_string_ensemble, sequential_p6_ob6, korg_dw8000_dig
 Phase 3   wavetable tooling → prophet_vs_wt128 → ppg_microwave_wt → ensoniq_sq80_wt
 Phase 4   acoustic_pm_poly (after CPU baseline from Phase 2)
+Phase 5a  tr808_drumkit_4voice (+ port kick DSP), fm808_cowbell_perc
+Phase 5b  FX lane bootstrap → sp1200_fx → dream_reverb_fx
 ```
 
 Parallel track: **mkII ports** for every v1 unit touched.
+
+**Drums priority option:** If you want kits before analog synths, move **Phase 5a** up after Phase 1 (kick port already exists).
 
 ### Collection docs (when implementing)
 
@@ -223,7 +329,8 @@ Split catalog for clarity:
 | Doc | Contents |
 |-----|----------|
 | [nts1-multi-bass-oscillators.md](nts1-multi-bass-oscillators.md) | Bass / sub / 303 / Memphis |
-| `docs/logue-oscillator-catalog.md` _(planned)_ | Leads, supersaws, strings, PM, WT |
+| `docs/logue-oscillator-catalog.md` _(planned)_ | Leads, supersaws, strings, PM, WT, drums/FM perc |
+| `docs/logue-custom-fx-lane.md` _(planned)_ | SP-1200, dream reverb, future FX |
 
 ---
 
@@ -253,6 +360,11 @@ For each slug:
 8. **Acoustic PM:** Pluck-only v1 OK, or **Strike** required for v1?
 9. **DW-8000:** Emphasis on **digital wave cycles** vs **slammed SSM filter** (host filter does most filter work)?
 10. **Priority tweak:** Any of the new eight ahead of Phase 2a (e.g. Virus or Solina before OB-Xa)?
+11. **808 kit:** **MIDI note map** vs **Voice param** vs hybrid for the 4 voices?
+12. **FM perc:** Separate unit OK, or merge cowbell/rim/clave into the 4-voice kit as an **extended** osc?
+13. **FX target:** mkII only first, or Minilogue XD / NTS mkI custom FX too (platform-dependent)?
+14. **Dream reverb:** More **shimmer/ambient** or **dark dub** default?
+15. **SP-1200 FX:** Emphasis on **bit/sample-rate** vs **short delay smear** (classic SP “feel”)?
 
 ---
 
