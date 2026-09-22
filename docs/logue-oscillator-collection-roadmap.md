@@ -1,7 +1,7 @@
 # logue custom oscillator collection — roadmap
 
 **Owner intent:** **NTS-1 mkII only** for new units (`.nts1mkiiunit`). v1.1 / Minilogue XD builds are **out of scope** unless a legacy port is explicitly revived.  
-**Status:** Planning (2026-09-22, expanded). **24 oscillator products** + **2 custom FX units** + Phase 0 infra. Update as slugs ship.
+**Status:** Planning (2026-09-22, expanded). **25 oscillator products** + **2 custom FX units** + Phase 0 infra. Update as slugs ship.
 
 **Scope split:** This repo’s agent tooling today is **osc-first** (`src/mkii/oscillators/`). **SP-1200** and **dream reverb** are **logue custom FX** (delay/reverb slot), not user oscillators — Phase 5 adds an FX lane and scaffolds.
 
@@ -14,7 +14,7 @@
 | Golden mkII reference | `tr808_kick_phonk` | Use for porting patterns |
 | Agent workflow | `/logue-mkii-*` | [logue-mkii-workflow.md](logue-mkii-workflow.md) |
 
-**Implication:** Most of your list can **reuse v1 DSP** on XD today; mkII needs **ports** (or greenfield `osc.h`) per unit.
+**Implication:** Legacy v1 sources under `src/oscillators/` are **reference ports** into mkII `osc.h`; new work ships **mkII-only** per owner decision.
 
 ---
 
@@ -109,7 +109,7 @@ Low risk, validates pipeline on hardware.
 | `jp8000_supersaw` | 2–7 detuned saws + HP/LP tone; optional spread | Detune, Voices, Mix, Tone, Width, … |
 | `obxa_analog` | Dual saw/pulse, cross-mod lite, OB-style filter tracking via host cutoff | Mix, PWM, Detune, Brute, … |
 | `minimoog_phatt` | 3 osc stack (24′/16′/8′), sync optional, saturation | Osc mix, Glide, Drive, … |
-| `tb303_detroit_acid` | Saw/square, accent envelope, slide, **filter emphasis via host res/cutoff** | Wave, Env, Slide, Accent, … |
+| `tb303_detroit_acid` | Detroit rap **bassline:** saw/square, **slide + accent**, filter via host res/cutoff | Wave, Slide, Accent, EnvAmt, … |
 | `korg_poly61_dco` | Single DCO: saw/pulse/PWM, mild drift; host filter for “Polysix-adjacent” tone | PWM, Drift, Wave, … |
 | `prophet6_analog` | P6-style wavetable/analog blend, soft FM edges | Blend, Detune, … |
 | `ob6_analog` | OB-6 SEM-style saws/pulse, spread | Detune, PWM, … |
@@ -129,21 +129,15 @@ Low risk, validates pipeline on hardware.
 
 **Constraints:**
 
-- **Legal / source:** Prophet VS ROM is copyrighted. The repo cannot ship extracted Sequential ROM. Acceptable paths:
-  1. **You provide** a licensed dump or your own captures → `tools/wavetable/import_vs128.py` → `.inc` blobs
-  2. **Recreate** a subset of classic VS waves procedurally (document as “inspired by”, not “VS ROM”)
-  3. Hybrid: 32–64 recreated + user slot for custom waves
-- **Flash size:** 128 × 256 × 4 B ≈ 128 KiB raw q31 — likely **too large** for one unit. Plan:
-  - **64 samples/wave** (like EPS unit) → ~32 KiB for 128 waves, or
-  - **128 waves × 128 samples**, or
-  - **Two banks** (64+64) selected by param
+- **Source (locked):** **Recreated VS-inspired waves** only (document in unit README).
+- **Flash plan:** **64 samples/wave**; aim **128 waves**, ship **64-wave v1** if size gate fails; optional **Bank** param for 64+64 later.
 - **Playback:** Linear interp + optional spectral morph between adjacent waves; `Wave` / `Morph` / `Character` params
 
 ### B) `ppg_microwave_wt`
 
 **Goal:** PPG Wave 2 + Waldorf Microwave character in one morphable table.
 
-- Smaller curated set (16–32 waves): PPG-ish sync sweeps, wavetable 64 partials, Microwave digital edge
+- Curated set (16–32 waves, 64 samples): PPG-ish sync sweeps, Microwave digital edge — separate from SQ-80’s **48-wave** bank
 - Share **wavetable tooling** with VS unit: `tools/wavetable/pack_tables.py` → `wt_bank.inc`
 - Reference implementation pattern: `ensoniq-eps1` (multi-table, q31, 64-point)
 
@@ -151,7 +145,7 @@ Low risk, validates pipeline on hardware.
 
 **Goal:** SQ-80 **TransWave** / wavetable character (not a ROM dump of Ensoniq factory disks).
 
-- Curated **24–48 waves** (vocal formants, bells, hybrid analog-digital) in one morph osc
+- **48 × 64** locked bank (vocal formants, bells, hybrid analog-digital) in one morph osc
 - Reuse `pack_tables.py`; optional user WAV import (gitignored)
 - Params: **Wave**, **Morph**, **FilterTrack** (follow host cutoff), **Edge**, **Attack** (WT start bias)
 - Relationship: broader than `ensoniq-eps1` (Memphis bass); can share table **pack format** only
@@ -310,6 +304,46 @@ docs/logue-custom-fx-lane.md       # FX vs osc, load order on NTS
 | Platform | **mkII-only** for new osc + FX (no XD v1.1 ship target) |
 | Dream reverb | **Bright shimmer** factory default |
 | SP-1200 FX | **Bit crush / sample-rate** primary; smear secondary |
+| Prophet VS waves | **Recreated / VS-inspired** — no ROM in repo |
+| Juno-106 DCO scope | **Standalone DCO osc** (`juno_dco_osc`) — see below |
+| TB-303 | **Detroit rap bassline** — saw/square + **accent + slide** in unit |
+| SQ-80 table | **48 waves × 64 samples** (q31), morph between indices |
+
+### Juno-106 DCO scope (locked)
+
+Two units, two jobs:
+
+| Slug | Role |
+|------|------|
+| `juno_dco_osc` | **Pure DCO:** saw + pulse/PWM, mild drift, **no** on-board chorus or 24 dB LP rig. Use NTS **cutoff/res** for tone. |
+| `juno_106_rnb_bass` | **Full bass voice:** port of `juno-rnb` (env, chorus, LP) — 80s R&B / bass lines. |
+
+Do not merge into one binary; params stay under 10 per unit.
+
+### TB-303 Detroit rap bassline (locked)
+
+**Slug:** `tb303_detroit_acid`
+
+- **Wave:** saw / square (303-style)
+- **Slide:** portamento between legato notes (essential for Detroit / electro-rap 303 lines)
+- **Accent:** velocity or auto-accent envelope bump on selected notes
+- **Filter:** track **host cutoff + resonance** (squawk); optional internal env **Amount** param
+- **Presets:** “Detroit slide”, “Fast 16ths”, “Reso rip”, “Sub 303 under kick”
+
+### SQ-80 table size (locked)
+
+| Setting | Value | Flash (approx.) |
+|---------|-------|-----------------|
+| Waves | **48** curated TransWave-style | — |
+| Samples / wave | **64** (power-of-two, EPS pattern) | 48 × 64 × 4 B ≈ **12 KiB** q31 |
+| Morph | Adjacent-wave crossfade + **Wave** index | headroom for CPU |
+
+If a unit overflows flash after `arm-none-eabi-size`, drop to **32 × 64** before shrinking sample length.
+
+### Prophet VS128 (recreated waves)
+
+- **No Sequential ROM** in tree; procedural + curated **VS-inspired** single cycles
+- Target **64–128 waves** with same **64-sample** cycles (128 × 64 × 4 B ≈ 32 KiB) — ship **64-wave v1** if 128 exceeds flash; second bank param later
 
 ---
 
@@ -361,12 +395,8 @@ For each slug:
 
 ## Open questions (remaining)
 
-1. **Prophet VS:** Will you supply ROM/dump, or OK with “VS-inspired” recreated waves?
-2. **Juno DCO:** Standalone DCO (osc only) vs keep full `juno-rnb` bass envelope/filter in the osc slot?
-3. **303:** Pure osc (saw/square) vs include **internal accent/slide** (uses more CPU)?
-4. **SQ-80:** Full TransWave ambition vs **32 curated** waves for flash limits?
-5. **Acoustic PM:** Pluck-only v1 OK, or **Strike** required for v1?
-6. **DW-8000:** Emphasis on **digital wave cycles** vs **slammed SSM filter** (host filter does most filter work)?
+1. **Acoustic PM:** Pluck-only v1 OK, or **Strike** required for v1?
+2. **DW-8000:** Emphasis on **digital wave cycles** vs **slammed SSM filter** (host filter does most filter work)?
 
 ---
 
