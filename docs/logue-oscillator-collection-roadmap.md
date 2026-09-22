@@ -1,7 +1,7 @@
 # logue custom oscillator collection — roadmap
 
 **Owner intent:** NTS-1 mkII (primary) + Minilogue XD (v1.1 `.prg` where applicable).  
-**Status:** Planning (2026-09-22). Update as slugs ship.
+**Status:** Planning (2026-09-22, expanded). **22 oscillator products** + Phase 0 infra. Update as slugs ship.
 
 ## Current repo baseline
 
@@ -31,11 +31,30 @@
 | 8 | Phat Minimoog bass | `minimoog_phatt` | blend `sub-phatty` / `moog-voyager-se` | partial exists | **New** dedicated osc |
 | 9 | SH-101 | `sh101_classic` | port `sh101-babyface` | `sh101_babyface_bass` | **Port** |
 | 10 | Detroit rap TB-303 | `tb303_detroit_acid` | _(new)_ | _(new)_ | **New** |
+| 11 | Korg DW-8000 | `korg_dw8000_dig` | _(new)_ | _(new)_ | **New** (DWGS + analog-ish edge) |
+| 12 | Korg Poly-61 | `korg_poly61_dco` | _(new)_ | _(new)_ | **New** (DCO + simple poly char) |
+| 13 | Prophet-6 / OB-6 | `sequential_p6_ob6` | _(new)_ | _(new)_ | **New** (dual-personality macro) |
+| 14 | Ensoniq SQ-80 | `ensoniq_sq80_wt` | extend `ensoniq-eps1` ideas | _(new)_ | **New** + wavetable bank |
+| 15 | Solina string ensemble | `solina_string_ensemble` | _(new)_ | _(new)_ | **New** (divide-down + ensemble) |
+| 16 | Rage rap saw synth | `rage_rap_supersaw` | _(new)_ | _(new)_ | **New** (genre-tuned supersaw core) |
+| 17 | Virus hypersaw | `virus_hypersaw` | _(new)_ | _(new)_ | **New** (shared supersaw engine) |
+| 18 | Acoustic physical modeling (poly) | `acoustic_pm_poly` | _(new)_ | _(new)_ | **New** (scoped PM — see below) |
 
 **Already close (rename optional, not duplicate work):**
 
 - Memphis trunk sub → `memphis-juicy` / `juicy_j_three6_memphis_bass` (different vibe from “dust” — keep both).
 - Moog family → `sub-phatty`, `moog-voyager-se`, `west-coast-moog` (Minimoog osc should be its own macro set).
+- Ensoniq grit → `ensoniq-eps1` / `ensoniq_eps1_memphis_bass` (SQ-80 unit is **broader WT**, not Memphis-specific).
+
+### Supersaw family (share one DSP core)
+
+| Slug | Differentiator |
+|------|----------------|
+| `jp8000_supersaw` | Roland JP-8000: 7 voices, bright, trance/lead |
+| `virus_hypersaw` | Access Virus: tighter spread, more HP, “hypersaw” density |
+| `rage_rap_supersaw` | Preset-first: detuned saws + sub, 808-friendly, modern rage rap |
+
+**Plan:** Implement `src/common/logue/supersaw_core.h` (or copy per unit if flash linking is awkward) once; three manifests / param curves.
 
 ---
 
@@ -84,12 +103,17 @@ Low risk, validates pipeline on hardware.
 | `obxa_analog` | Dual saw/pulse, cross-mod lite, OB-style filter tracking via host cutoff | Mix, PWM, Detune, Brute, … |
 | `minimoog_phatt` | 3 osc stack (24′/16′/8′), sync optional, saturation | Osc mix, Glide, Drive, … |
 | `tb303_detroit_acid` | Saw/square, accent envelope, slide, **filter emphasis via host res/cutoff** | Wave, Env, Slide, Accent, … |
+| `korg_poly61_dco` | Single DCO: saw/pulse/PWM, mild drift; host filter for “Polysix-adjacent” tone | PWM, Drift, Wave, … |
+| `sequential_p6_ob6` | **Mode param:** P6 wavetable/analog blend vs OB-6 SEM-style saws; shared envelope hooks | Mode, Blend, Detune, … |
+| `solina_string_ensemble` | Divide-down square waves (16′/8′/4′ mix) + slow ensemble chorus + EQ tilt | Mix, Ensemble, Tone, … |
+| `jp8000_supersaw` / `virus_hypersaw` / `rage_rap_supersaw` | Shared supersaw core (see table above) | Voices, Detune, Sub, Tone, … |
+| `korg_dw8000_dig` | Short **DWGS-style** cycle tables (8–16 waves) + digital grit; morph between waves | Wave, Morph, Grit, … |
 
 **mkII + v1:** Implement v1 first (proven pattern), scaffold mkII, port.
 
 ---
 
-## Phase 3 — Wavetable oscillators (two products)
+## Phase 3 — Wavetable oscillators (multi-product)
 
 ### A) `prophet_vs_wt128`
 
@@ -115,6 +139,15 @@ Low risk, validates pipeline on hardware.
 - Share **wavetable tooling** with VS unit: `tools/wavetable/pack_tables.py` → `wt_bank.inc`
 - Reference implementation pattern: `ensoniq-eps1` (multi-table, q31, 64-point)
 
+### C) `ensoniq_sq80_wt`
+
+**Goal:** SQ-80 **TransWave** / wavetable character (not a ROM dump of Ensoniq factory disks).
+
+- Curated **24–48 waves** (vocal formants, bells, hybrid analog-digital) in one morph osc
+- Reuse `pack_tables.py`; optional user WAV import (gitignored)
+- Params: **Wave**, **Morph**, **FilterTrack** (follow host cutoff), **Edge**, **Attack** (WT start bias)
+- Relationship: broader than `ensoniq-eps1` (Memphis bass); can share table **pack format** only
+
 **Shared tooling (Phase 3 prep):**
 
 ```text
@@ -123,6 +156,26 @@ tools/wavetable/
   import_vs128.py     # user-supplied dump only (gitignored input)
   validate_size.sh    # arm-none-eabi-size gate vs budget
 ```
+
+---
+
+## Phase 4 — Physical modeling (scoped)
+
+**Slug:** `acoustic_pm_poly`
+
+A full **polyphonic** acoustic model (multiple strings/bodies, independent excitation) is **not realistic** in one logue **monophonic user osc** slot. Scoped deliverable:
+
+| Mode (string param or fixed build) | Technique | Use |
+|-----------------------------------|-----------|-----|
+| **Pluck** (default) | Karplus-Strong / waveguide lite, 1–2 delay lines | Guitar, harp-ish |
+| **Strike** | Short noise burst + resonator | Mallet / piano-ish attack |
+| **Bow** (optional v2) | Continuous excitation + friction | Slower CPU; may drop if over budget |
+
+**Params (≤10):** Excite, Decay, Damping, Tone, Body, Bright, … Host **cutoff** = fingerboard / body damping.
+
+**“Poly” in the name:** Document as **polyphonic-friendly timbre** (long decay, chord stacks on external poly synth), not internal polyphony. If you need true poly PM, that belongs in a **multi-voice instrument** (JUCE/HISE lane), not NTS-1 single osc.
+
+**Risk:** CPU on mkI v1.1 — profile early; simplify delay length on nutekt-digital if needed.
 
 ---
 
@@ -151,14 +204,26 @@ tools/wavetable/
 ## Recommended delivery order
 
 ```text
-Phase 0  boilerplate + roadmap (this doc)
-Phase 1a memphis_dust_sub (new, your priority)
-Phase 1b sh101_classic, prophet5_analog, juno_dco_osc (ports)
-Phase 2  jp8000_supersaw, minimoog_phatt, tb303_detroit_acid, obxa_analog
-Phase 3  wavetable tooling → prophet_vs_wt128 → ppg_microwave_wt
+Phase 0   boilerplate + roadmap
+Phase 1a  memphis_dust_sub
+Phase 1b  sh101_classic, prophet5_analog, juno_dco_osc (ports)
+Phase 2a  minimoog_phatt, tb303_detroit_acid, obxa_analog, korg_poly61_dco
+Phase 2b  supersaw core → jp8000_supersaw → virus_hypersaw → rage_rap_supersaw
+Phase 2c  solina_string_ensemble, sequential_p6_ob6, korg_dw8000_dig
+Phase 3   wavetable tooling → prophet_vs_wt128 → ppg_microwave_wt → ensoniq_sq80_wt
+Phase 4   acoustic_pm_poly (after CPU baseline from Phase 2)
 ```
 
-Parallel track: **mkII ports** for any v1 unit touched in Phase 1–2.
+Parallel track: **mkII ports** for every v1 unit touched.
+
+### Collection docs (when implementing)
+
+Split catalog for clarity:
+
+| Doc | Contents |
+|-----|----------|
+| [nts1-multi-bass-oscillators.md](nts1-multi-bass-oscillators.md) | Bass / sub / 303 / Memphis |
+| `docs/logue-oscillator-catalog.md` _(planned)_ | Leads, supersaws, strings, PM, WT |
 
 ---
 
@@ -182,7 +247,12 @@ For each slug:
 2. **Prophet VS:** Will you supply ROM/dump, or OK with “VS-inspired” recreated waves?
 3. **Juno DCO:** Standalone DCO (osc only) vs keep full `juno-rnb` bass envelope/filter in the osc slot?
 4. **303:** Pure osc (saw/square) vs include **internal accent/slide** (uses more CPU)?
-5. **Collection naming:** Second doc `docs/logue-oscillator-catalog.md` for supersaw/303/wavetable (non-bass)?
+5. **P6 vs OB-6:** One unit with **Mode** knob vs two separate `.prg` / `.nts1mkiiunit` files?
+6. **SQ-80:** Full TransWave ambition vs **32 curated** waves for flash limits?
+7. **Rage rap saw:** Reference tracks / artists for preset targets (e.g. early Carti vs current hyperpop)?
+8. **Acoustic PM:** Pluck-only v1 OK, or **Strike** required for v1?
+9. **DW-8000:** Emphasis on **digital wave cycles** vs **slammed SSM filter** (host filter does most filter work)?
+10. **Priority tweak:** Any of the new eight ahead of Phase 2a (e.g. Virus or Solina before OB-Xa)?
 
 ---
 
