@@ -35,7 +35,16 @@ python3 disklordz/sound-factory/scripts/run_product_batch.py \
 python3 disklordz/rag/scripts/query_local.py "memphis phonk lane"
 ```
 
-Products: [docs/products/JZ400.md](docs/products/JZ400.md) · [docs/products/REV2_TRAP128.md](docs/products/REV2_TRAP128.md) · workflow [docs/FACTORY_AGENTIC_WORKFLOW.md](docs/FACTORY_AGENTIC_WORKFLOW.md)
+Products: [docs/products/JZ400.md](docs/products/JZ400.md) · [docs/products/REV2_TRAP128.md](docs/products/REV2_TRAP128.md) · workflow [docs/FACTORY_AGENTIC_WORKFLOW.md](docs/FACTORY_AGENTIC_WORKFLOW.md) · improvements [docs/FACTORY_IMPROVEMENT_ROADMAP.md](docs/FACTORY_IMPROVEMENT_ROADMAP.md)
+
+Rev2Trap generator:
+
+```bash
+cmake --build build -j --target Rev2TrapOfflineRender Rev2TrapTests
+python3 disklordz/sound-factory/scripts/run_product_batch.py \
+  --catalog disklordz/sound-factory/catalog/rev2_trap128_catalog.json \
+  --out disklordz/sound-factory/out --engine rev2trap --limit 4
+```
 
 **Runtimes:** Cloud (JUCE + batch), local VS Code (**MPCTK** for `.xpj`), Antigravity (HISE + optional MPCTK). Same skills everywhere.
 

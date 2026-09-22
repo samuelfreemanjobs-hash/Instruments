@@ -15,6 +15,7 @@ if str(SCRIPT_DIR) not in sys.path:
 from emit_sfz import emit_sfz
 from factory_qa import analyze_wav
 from generate_multisample_instrument import build_zones
+from rev2trap_render import build_zones_rev2trap
 from trap_synth import ProducerLane
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -50,20 +51,45 @@ def main() -> None:
     p.add_argument("--offset", type=int, default=0)
     p.add_argument("--limit", type=int, default=10)
     p.add_argument("--fail-fast", action="store_true")
+    p.add_argument(
+        "--engine",
+        choices=("python", "rev2trap", "auto"),
+        default="auto",
+        help="auto: rev2trap for REV2-TRAP-128 when binary exists, else python",
+    )
+    p.add_argument("--rev2-binary", type=Path, default=None)
     args = p.parse_args()
 
     catalog = json.loads(args.catalog.read_text(encoding="utf-8"))
     product_id = catalog["productId"]
     slots = catalog["slots"][args.offset : args.offset + args.limit]
-    summary = {"productId": product_id, "rendered": [], "failed": []}
+
+    def pick_engine() -> str:
+        if args.engine != "auto":
+            return args.engine
+        if product_id == "REV2-TRAP-128":
+            try:
+                from rev2trap_render import find_binary
+
+                find_binary(args.rev2_binary)
+                return "rev2trap"
+            except FileNotFoundError:
+                return "python"
+        return "python"
+
+    engine = pick_engine()
+    summary = {"productId": product_id, "engine": engine, "rendered": [], "failed": []}
 
     for slot in slots:
         inst_id = slot["instrumentId"]
         lane: ProducerLane = slot.get("lane", "jeezy")
         inst_dir = args.out / product_id / inst_id
         try:
-            seed = int(slot["slotId"].split("_")[-1]) if "_" in slot["slotId"] else 0
-            imap = build_zones(inst_dir, inst_id, lane, seed)
+            if engine == "rev2trap":
+                imap = build_zones_rev2trap(inst_dir, inst_id, slot, args.rev2_binary)
+            else:
+                seed = int(slot["slotId"].split("_")[-1]) if "_" in slot["slotId"] else 0
+                imap = build_zones(inst_dir, inst_id, lane, seed)
             (inst_dir / "instrument-map.json").write_text(json.dumps(imap, indent=2), encoding="utf-8")
             emit_sfz(imap, inst_dir)
             for z in imap["zones"]:

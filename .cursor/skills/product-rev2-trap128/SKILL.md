@@ -9,12 +9,16 @@ Read [docs/products/REV2_TRAP128.md](../../../docs/products/REV2_TRAP128.md).
 
 ## Steps
 
-1. `seed_rev2_trap128_catalog.py`  
-2. `run_product_batch.py --limit 32` × 4 chunks  
-3. **factory-qa-audio** each chunk  
-4. SFZ + MPC handoff via **export-sfz-mpc-project**  
-5. VSTi Phase B: JUCE + [tubernard/synth-emulator](https://github.com/tubernard/synth-emulator) research WO  
+1. Build **`Rev2TrapOfflineRender`** (see `Rev2Trap/ARCHITECTURE.md`).  
+2. `seed_rev2_trap128_catalog.py`  
+3. `run_product_batch.py --engine rev2trap --limit 32` × 4 chunks  
+4. **factory-qa-audio** subagent each chunk (mandatory)  
+5. SFZ + MPC via **export-sfz-mpc-project**  
 
-## Lanes
+## Sound direction
 
-`trap_synth.LANE_PATCH`: `jeezy`, `shawty_redd`, `gucci`, `neutral`.
+**Original trap** + **Prophet Rev2 vibe** — no song references required. Tune programs in `Rev2Trap/Source/Presets/FactoryPresets.cpp`.
+
+## Fallback
+
+`--engine python` uses legacy `trap_synth.py` if VST binary unavailable.
