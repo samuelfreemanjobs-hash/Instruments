@@ -44,8 +44,10 @@ python3 scripts/gearmulator/render_capture_plan.py --plan my-plan.tsv
 ```bash
 git submodule update --init --recursive gearmulator-lane/gearmulator
 ./scripts/gearmulator/build-je8086-console.sh   # smoke without ROM
-# Full VST3: upstream build_linux.sh inside submodule after ROM on disk
+./scripts/gearmulator/build-gearmulator-vsti.sh # JE8086.vst3 → source gearmulator-lane/.gearmulator-vsti.env
 ```
+
+MPC one-shot capture + SFZ + MPC draft: `python3 mpc-agent/scripts/capture_and_export.py --plugin "${GEARMULATOR_JE8086_VST3}" ...` (ROM required at runtime).
 
 ## Subagents
 
