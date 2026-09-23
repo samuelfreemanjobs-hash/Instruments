@@ -75,6 +75,10 @@ No **Access Virus**, **Roland JP-8000**, **Ensoniq ASR**, or **Roland SU-700**.
 
 ---
 
+## MIDI editors (repo)
+
+**microKORG:** [Open-microKORG](https://github.com/gabrielmagno/Open-microKORG) submodule — [HARDWARE_MIDI_EDITORS.md](HARDWARE_MIDI_EDITORS.md).
+
 ## Related team memory
 
 - [TEAM_AGENT_MEMORY.md](TEAM_AGENT_MEMORY.md)

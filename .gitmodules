@@ -4,3 +4,6 @@
 [submodule "mpc-agent"]
 	path = mpc-agent
 	url = https://github.com/samuelfreemanjobs-hash/mpc-agent.git
+[submodule "hardware-lane/editors/open-microkorg"]
+	path = hardware-lane/editors/open-microkorg
+	url = https://github.com/gabrielmagno/Open-microKORG.git

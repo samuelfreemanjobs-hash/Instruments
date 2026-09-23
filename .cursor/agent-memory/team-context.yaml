@@ -33,6 +33,17 @@ hardware_capture_rack:
     - SU-700
   capture_mode: midi_plus_audio_local_export_to_map
 
+hardware_editors:
+  doc: docs/HARDWARE_MIDI_EDITORS.md
+  lane: hardware-lane/ARCHITECTURE.md
+  registry: hardware-lane/editors/REGISTRY.md
+  submodules:
+    - name: open-microkorg
+      path: hardware-lane/editors/open-microkorg
+      url: https://github.com/gabrielmagno/Open-microKORG
+      license: GPL-3.0
+      device: microKORG
+
 lanes:
   gearmulator_track_e:
     branch: cursor/gearmulator-lane-62b1

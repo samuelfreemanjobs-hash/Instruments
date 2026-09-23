@@ -46,6 +46,8 @@ Summary: **MPC Live** (primary kit host), **Maschine+**, **MicroFreak**, **Micro
 
 Hardware → WAV locally; repo holds **maps + mpc-agent**, not samples.
 
+**MIDI editors:** [HARDWARE_MIDI_EDITORS.md](HARDWARE_MIDI_EDITORS.md) · submodule **Open-microKORG** under `hardware-lane/editors/open-microkorg` (GPLv3). More editor repos → add to [hardware-lane/editors/REGISTRY.md](../hardware-lane/editors/REGISTRY.md).
+
 ---
 
 ## Product decisions (remember)
