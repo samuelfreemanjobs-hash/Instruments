@@ -1,10 +1,13 @@
 """Shared DawDreamer multisample session rendering (one plugin load per grid)."""
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import dawdreamer as daw
 from scipy.io import wavfile
+
+from map_lib import finalize_session_dir
 
 
 def normalise_vst3_path(path: Path) -> Path:
@@ -40,11 +43,15 @@ def render_session_grid(
     preset_path: Path | None,
     instrument_label: str,
     source_plugin: str,
+    *,
+    instrument_id: str | None = None,
+    write_sfz: bool = False,
 ) -> Path:
     dest.mkdir(parents=True, exist_ok=True)
     manifest = dest / "manifest.tsv"
+    plugin_path = str(normalise_vst3_path(plugin).resolve())
     header = (
-        "instrument_label\tsource_plugin\tprogram\tpreset_path\tnote\tvelocity\t"
+        "instrument_label\tsource_plugin\tplugin_path\tprogram\tpreset_path\tnote\tvelocity\t"
         "seconds\tsample_rate\tengine\twav\n"
     )
     manifest.write_text(header, encoding="utf-8")
@@ -75,8 +82,17 @@ def render_session_grid(
 
         with manifest.open("a", encoding="utf-8") as mf:
             mf.write(
-                f"{instrument_label}\t{source_plugin}\t{program}\t{preset_col}\t{note}\t"
+                f"{instrument_label}\t{source_plugin}\t{plugin_path}\t{program}\t{preset_col}\t{note}\t"
                 f"{velocity}\t{seconds}\t{sample_rate}\tdawdreamer\t{wav_path}\n"
             )
 
+    if write_sfz or os.environ.get("MULTISAMPLE_WRITE_SFZ", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    ):
+        write_sfz = True
+
+    map_path = finalize_session_dir(dest, instrument_id=instrument_id, write_sfz=write_sfz)
+    print(f"Wrote {map_path}")
     return manifest

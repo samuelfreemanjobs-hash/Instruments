@@ -25,6 +25,11 @@ def main() -> int:
     parser.add_argument("--out-dir", type=Path, default=repo_root / "gearmulator-lane/multisamples/out")
     parser.add_argument("--name", default="dawdreamer_capture", help="Session folder suffix")
     parser.add_argument("--instrument-label", default="", help="Name for your new preset/instrument SKU")
+    parser.add_argument(
+        "--source-plugin",
+        default="",
+        help="Short source name in map (default: plugin bundle stem)",
+    )
     parser.add_argument("--program", type=int, default=0)
     parser.add_argument("--preset", type=Path, default=None, help=".fxp or .vstpreset")
     parser.add_argument("--note-start", type=int, default=36)
@@ -34,6 +39,8 @@ def main() -> int:
     parser.add_argument("--seconds", type=float, default=3.0)
     parser.add_argument("--sample-rate", type=int, default=48000)
     parser.add_argument("--block-size", type=int, default=512)
+    parser.add_argument("--instrument-id", default=None, help="Override instrument_id in instrument.map.json")
+    parser.add_argument("--sfz", action="store_true", help="Also write instrument.sfz from the map")
     args = parser.parse_args()
 
     if not args.plugin.exists():
@@ -58,9 +65,12 @@ def main() -> int:
         block_size=args.block_size,
         preset_path=args.preset,
         instrument_label=label,
-        source_plugin=str(args.plugin),
+        source_plugin=args.source_plugin or Path(args.plugin).stem,
+        instrument_id=args.instrument_id,
+        write_sfz=args.sfz,
     )
     print(f"Done. Manifest: {manifest}")
+    print(f"Map: {dest / 'instrument.map.json'}")
     return 0
 
 

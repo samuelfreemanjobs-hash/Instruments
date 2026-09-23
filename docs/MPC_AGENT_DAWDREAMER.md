@@ -50,7 +50,7 @@ python3 scripts/gearmulator/render_multisample_dawdreamer.py \
   --velocity 100 --seconds 3
 ```
 
-Output: `gearmulator-lane/multisamples/out/<session>/` + `manifest.tsv` (column `engine=dawdreamer`).
+Output: `gearmulator-lane/multisamples/out/<session>/` + **`instrument.map.json`** (canonical) + `manifest.tsv` (column `engine=dawdreamer`).
 
 Gearmulator JE-8086 / Osirus: build VST3 from [gearmulator-lane](gearmulator-lane/) submodule, mount ROM per upstream docs, pass `--plugin /path/to/Plugin.vst3`.
 
@@ -62,7 +62,7 @@ Gearmulator JE-8086 / Osirus: build VST3 from [gearmulator-lane](gearmulator-lan
 git submodule update --init --recursive mpc-agent
 ```
 
-Future **MPC Software** exporters, preset naming, and agent prompts live in **mpc-agent**; call into these scripts via subprocess or shared `manifest.tsv` format.
+Future **MPC Software** exporters, preset naming, and agent prompts live in **mpc-agent**; read **`instrument.map.json` v1** ([MULTISAMPLE_MAP_FORMAT.md](MULTISAMPLE_MAP_FORMAT.md)) or call `finalize_multisample_session.py` / render scripts via subprocess.
 
 Cloud Agents need token access to mpc-agent — `.cursor/environment.json` lists `repositoryDependencies` for that repo.
 

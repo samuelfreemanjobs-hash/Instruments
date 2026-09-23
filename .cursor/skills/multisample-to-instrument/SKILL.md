@@ -5,16 +5,16 @@ description: Turn captured WAV grids into new presets/instruments (SFZ, HISE, mp
 
 # Skill: Multisample → instrument
 
-Read [docs/MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md](../../../docs/MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md).
+Read [docs/MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md](../../../docs/MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md) and [docs/MULTISAMPLE_MAP_FORMAT.md](../../../docs/MULTISAMPLE_MAP_FORMAT.md).
 
 ## Steps
 
-1. **Capture** — skill **gearmulator-multisample-capture**
-2. **SFZ starter**
+1. **Capture** — skill **gearmulator-multisample-capture** (writes `instrument.map.json` automatically)
+2. **SFZ starter** (optional)
 
 ```bash
-python3 scripts/gearmulator/manifest_to_sfz.py \
-  gearmulator-lane/multisamples/out/<session>/manifest.tsv
+python3 scripts/gearmulator/map_to_sfz.py \
+  gearmulator-lane/multisamples/out/<session>/instrument.map.json
 ```
 
 3. **Author** — HISE (Track D / Antigravity handoff) or **mpc-agent** submodule for MPC Software

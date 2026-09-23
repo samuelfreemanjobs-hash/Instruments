@@ -1,17 +1,26 @@
 #!/usr/bin/env python3
-"""Build a simple SFZ map from a session manifest.tsv (import into HISE / sforzando / MPC workflow)."""
+"""Deprecated: prefer instrument.map.json + map_to_sfz.py (finalize runs automatically after capture)."""
 from __future__ import annotations
 
 import argparse
 import csv
+import sys
 from pathlib import Path
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="Legacy SFZ from manifest.tsv — use finalize_multisample_session.py + map_to_sfz.py instead",
+    )
     parser.add_argument("manifest", type=Path)
     parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args()
+
+    print(
+        "Note: manifest_to_sfz.py is legacy. Capture scripts write instrument.map.json; "
+        "use map_to_sfz.py on that file.",
+        file=sys.stderr,
+    )
 
     rows = []
     with args.manifest.open(encoding="utf-8") as f:

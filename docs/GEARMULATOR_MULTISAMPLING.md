@@ -12,7 +12,7 @@
 
 Cloud Agent pods **do not include Docker**; use the VM scripts here, or run the container on your laptop / a CI runner with Docker installed.
 
-Treat multisampling as an **offline batch job** in the VM: load VST3 → MIDI note grid → 24-bit WAV → `manifest.tsv`.
+Treat multisampling as an **offline batch job** in the VM: load VST3 → MIDI note grid → 24-bit WAV → `manifest.tsv` → **`instrument.map.json`** ([MULTISAMPLE_MAP_FORMAT.md](MULTISAMPLE_MAP_FORMAT.md)).
 
 ## Prerequisites
 
@@ -51,6 +51,7 @@ Output (gitignored):
 
 ```
 gearmulator-lane/multisamples/out/je8086_factory_001_p0_v100/
+  instrument.map.json
   manifest.tsv
   note_036_vel_100.wav
   ...

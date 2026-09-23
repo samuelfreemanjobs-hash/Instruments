@@ -17,6 +17,8 @@ Run skill **instruments-cloud-bootstrap** if submodules or DawDreamer missing.
 
 ## Capture (Python — preferred on VM)
 
+Each session outputs **`instrument.map.json`** (canonical) + `manifest.tsv` — see [docs/MULTISAMPLE_MAP_FORMAT.md](../../../docs/MULTISAMPLE_MAP_FORMAT.md).
+
 ```bash
 python3 scripts/gearmulator/render_multisample_dawdreamer.py \
   --plugin /path/to/Plugin.vst3 \

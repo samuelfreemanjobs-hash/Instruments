@@ -6,8 +6,8 @@ You capture **static snapshots** from Gearmulator (or factory) VSTi, then **auth
 
 ```text
 1. PLAN     capture-plan.tsv (what to render)
-2. CAPTURE  DawDreamer / Docker / Vst3OfflineRender → WAV + manifest.tsv
-3. MAP      SFZ or HISE sample map (+ velocity layers)
+2. CAPTURE  DawDreamer / Docker / Vst3OfflineRender → WAV + manifest.tsv + **instrument.map.json**
+3. MAP      Edit map zones / SFZ export / HISE sample map (+ velocity layers)
 4. PRESET   Macros, filters, MPC programs — your sound design
 5. SHIP     HISE VST3 (Track D), mpc-agent kit, or JUCE rompler SKU (Track C)
 ```
@@ -51,11 +51,18 @@ python3 scripts/gearmulator/render_multisample_dawdreamer.py \
 
 ## Step 2 — Build a playable map (start of your “instrument”)
 
-Generate a starter **SFZ** from the session manifest:
+Every capture session writes **`instrument.map.json`** automatically ([MULTISAMPLE_MAP_FORMAT.md](MULTISAMPLE_MAP_FORMAT.md)). Re-run finalize if you hand-edit `manifest.tsv`:
 
 ```bash
-python3 scripts/gearmulator/manifest_to_sfz.py \
-  gearmulator-lane/multisamples/out/je8086_lead_v100_p0_v100/manifest.tsv
+python3 scripts/gearmulator/finalize_multisample_session.py \
+  gearmulator-lane/multisamples/out/je8086_lead_v100_p0_v100 --sfz
+```
+
+Or export SFZ only from the canonical map:
+
+```bash
+python3 scripts/gearmulator/map_to_sfz.py \
+  gearmulator-lane/multisamples/out/je8086_lead_v100_p0_v100/instrument.map.json
 ```
 
 Import SFZ + WAV folder into:
@@ -85,7 +92,8 @@ Each **retail SKU** needs its own Airtable `product_id` and Marketing sign-off (
 ## Step 4 — Naming convention (recommended)
 
 ```text
-out/<session_name>/manifest.tsv
+out/<session_name>/instrument.map.json   ← canonical for mpc-agent / HISE / SFZ
+out/<session_name>/manifest.tsv          ← render log
 instrument_label: Brand_Machine_Character_VelLayer
 e.g. Disklordz_JP8000_SawLead_v100 + Disklordz_JP8000_SawLead_v127 → one instrument, two velocity layers
 ```
