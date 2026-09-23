@@ -54,6 +54,17 @@ Output: `gearmulator-lane/multisamples/out/<session>/` + **`instrument.map.json`
 
 Gearmulator JE-8086 / Osirus: build VST3 from [gearmulator-lane](gearmulator-lane/) submodule, mount ROM per upstream docs, pass `--plugin /path/to/Plugin.vst3`.
 
+```bash
+./scripts/gearmulator/build-gearmulator-vsti.sh
+source gearmulator-lane/.gearmulator-vsti.env
+python3 mpc-agent/scripts/capture_and_export.py \
+  --plugin "${GEARMULATOR_JE8086_VST3}" \
+  --instrument-label YourPreset_Name \
+  --name je8086_lead_v100 --note-start 48 --note-end 72 --note-step 1
+```
+
+Writes `instrument.sfz` and `exports/mpc_program.draft.json` under the session folder. Templates: [mpc-agent/templates/](../mpc-agent/templates/).
+
 ---
 
 ## mpc-agent submodule

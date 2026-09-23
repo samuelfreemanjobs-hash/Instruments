@@ -15,7 +15,8 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Disklordz RAG** (prompt knowledge) | [disklordz/rag/ARCHITECTURE.md](disklordz/rag/ARCHITECTURE.md) · [docs/RAG_AND_INTELLIGENT_AUTOMATION.md](docs/RAG_AND_INTELLIGENT_AUTOMATION.md) | `python3 disklordz/rag/scripts/chunk_corpus.py` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-909** (sampleless trap wavetable synth) | [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md) | `Wave909_VST3`, `Wave909_Standalone`, `Wave909Tests` |
-| **Gearmulator reference** (LLE VA synths; out-of-tree) | [gearmulator-lane/ARCHITECTURE.md](gearmulator-lane/ARCHITECTURE.md) · [docs/GEARMULATOR_LANE.md](docs/GEARMULATOR_LANE.md) | `./scripts/gearmulator/build-je8086-console.sh` |
+| **Gearmulator reference** (LLE VA synths; out-of-tree) | [gearmulator-lane/ARCHITECTURE.md](gearmulator-lane/ARCHITECTURE.md) · [docs/GEARMULATOR_LANE.md](docs/GEARMULATOR_LANE.md) | `./scripts/gearmulator/build-gearmulator-vsti.sh` |
+| **mpc-agent** (MPC multisample orchestration) | [mpc-agent/ARCHITECTURE.md](mpc-agent/ARCHITECTURE.md) · [docs/MPC_AGENT_DAWDREAMER.md](docs/MPC_AGENT_DAWDREAMER.md) | `python3 mpc-agent/scripts/capture_and_export.py --plugin $GEARMULATOR_JE8086_VST3` |
 
 ## Repository layout
 

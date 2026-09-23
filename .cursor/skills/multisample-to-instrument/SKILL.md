@@ -9,8 +9,8 @@ Read [docs/MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md](../../../docs/MULTISAMPLE_TO_I
 
 ## Steps
 
-1. **Capture** — skill **gearmulator-multisample-capture** (writes `instrument.map.json` automatically)
-2. **SFZ starter** (optional)
+1. **Capture** — skill **gearmulator-multisample-capture** (writes `instrument.map.json` automatically), or `python3 mpc-agent/scripts/capture_and_export.py` for SFZ + MPC draft in one step
+2. **SFZ starter** (optional if not using capture_and_export)
 
 ```bash
 python3 scripts/gearmulator/map_to_sfz.py \

@@ -43,7 +43,6 @@ def render_session_grid(
     preset_path: Path | None,
     instrument_label: str,
     source_plugin: str,
-    *,
     instrument_id: str | None = None,
     write_sfz: bool = False,
 ) -> Path:

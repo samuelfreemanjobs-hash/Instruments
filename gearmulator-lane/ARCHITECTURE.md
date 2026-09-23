@@ -12,6 +12,7 @@ Not built by root `cmake`. On **Linux** (Cloud Agent / CI-style smoke):
 
 ```bash
 ./scripts/gearmulator/build-je8086-console.sh
+./scripts/gearmulator/build-gearmulator-vsti.sh   # JE8086 VST3 → gearmulator-lane/.gearmulator-vsti.env
 ```
 
 **Docker (host with Docker Engine):** [docker/Dockerfile](docker/Dockerfile) — reproducible multisample batch; mount plugins + ROM + output volumes. See [docs/GEARMULATOR_MULTISAMPLING.md](../docs/GEARMULATOR_MULTISAMPLING.md).
@@ -71,9 +72,14 @@ Gearmulator plugins follow JUCE realtime rules; emulation threads and DSP56300 J
 - Promote a SKU: open a **Planner + Marketing** row and a JUCE factory WO — do not ship GPLv3 emulation inside JD Upgraded without explicit approval.
 - Compare SysEx: use JE-8086 behavior as reference only; JD import remains [docs/SYSEX.md](../docs/SYSEX.md).
 
+## mpc-agent capture wrapper
+
+After VST3 build, use [mpc-agent/ARCHITECTURE.md](../mpc-agent/ARCHITECTURE.md) `capture_and_export.py` for DawDreamer capture plus SFZ and MPC draft JSON.
+
 ## Related docs
 
 - [docs/GEARMULATOR_TO_SYNTH_PATHS.md](../docs/GEARMULATOR_TO_SYNTH_PATHS.md) — rompler vs native synth vs GPLv3 product
+- [docs/MPC_AGENT_DAWDREAMER.md](../docs/MPC_AGENT_DAWDREAMER.md)
 - [docs/GEARMULATOR_LANE.md](../docs/GEARMULATOR_LANE.md) — lane policy vs JD Upgraded
 - [docs/DISKLORDZ_PLUGIN_TRACKS.md](../docs/DISKLORDZ_PLUGIN_TRACKS.md) — Track **E**
 - [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) — JD Upgraded product architecture
