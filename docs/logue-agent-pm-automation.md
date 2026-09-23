@@ -106,13 +106,13 @@ PR titles: `WO-LOGUE-IMPL-plug_nether_pluck: mkII pluck osc`.
 
 | Priority | Improvement | Effort | Impact |
 |----------|-------------|--------|--------|
-| P0 | **Expand CI** `logue-mkii-eval.yml` to run static eval on all `PORT_COMPLETE` slugs (script list), not only golden | Small | Catches regressions on collection PRs |
-| P0 | **Wire weekly loop** — enable workflow + one Cursor Automation using `--print-agent-prompt` | Small | Steady idea supply without waiting on you |
-| P1 | **Backlog as source of truth** — agent must read `logue-oscillator-ideas-backlog.md` before proposing new slugs | Doc + SYSTEM.md | Stops duplicate ideas |
-| P1 | **Slack on mkII PR** — extend `ci-slack-notify` or add path filter for `logue-mkii-eval` | Small | Team sees agent output |
-| P1 | **RAG corpus** — add roadmap + backlog to `disklordz/rag` chunk list for prompt grounding | Medium | Better genre fidelity (Plug, Drill, etc.) |
-| P2 | **FX lane bootstrap** — SDK dummy-delay scaffold + `build-mkii-fx.sh` | Medium | Unblocks SP-1200 / dream reverb |
-| P2 | **Issue → impl dispatch** — label `logue-implement` triggers workflow that comments “start Cloud Agent with slug X” | Medium | PM-driven sprint |
+| P0 | **Expand CI** `logue-mkii-eval.yml` to run static eval on all `PORT_COMPLETE` slugs (script list), not only golden | Small | **Done** — osc + FX lists |
+| P0 | **Wire weekly loop** — enable workflow + one Cursor Automation using `--print-agent-prompt` | Small | **Done** (workflow); Cursor Automation = team toggle |
+| P1 | **Backlog as source of truth** — agent must read `logue-oscillator-ideas-backlog.md` before proposing new slugs | Doc + SYSTEM.md | **Done** (SYSTEM.md + skill) |
+| P1 | **Slack on mkII PR** — extend `ci-slack-notify` or add path filter for `logue-mkii-eval` | Small | **Done** — `logue-mkii-slack-notify.yml` |
+| P1 | **RAG corpus** — add roadmap + backlog to `disklordz/rag` chunk list for prompt grounding | Medium | **Done** — manifest + re-chunk |
+| P2 | **FX lane bootstrap** — SDK dummy-delay scaffold + `build-mkii-fx.sh` | Medium | **Done** — 3 FX units + eval/build scripts |
+| P2 | **Issue → impl dispatch** — label `logue-implement` triggers workflow that comments “start Cloud Agent with slug X” | Medium | **Done** — `logue-implement-dispatch.yml` |
 | P2 | **Preset packs** — `_agent.presets` / mkII header defaults for genre units (rage, drill, plug) | Medium | Faster hardware sign-off |
 | P3 | **Hardware snapshot tests** — loguecli load + MIDI clip (manual checklist in PR template) | Large | True E2E |
 

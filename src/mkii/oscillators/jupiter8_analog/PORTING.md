@@ -1,3 +1,3 @@
 # mkII unit: jupiter8_analog
 
-PORT_COMPLETE — port of `prophet-funk`.
+PORT_COMPLETE — dual DCO + cross-mod, bright filter.

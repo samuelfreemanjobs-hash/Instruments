@@ -1,30 +1,43 @@
 # Custom FX lane (NTS-1 mkII)
 
-**Status:** Planned — requires `LOGUE_SDK` dummy-delay / dummy-reverb templates on the build host.
+**Status:** **FX units implemented** (static eval in CI). ARM build requires `LOGUE_SDK` on host.
 
 ## Layout
 
 | Path | Role |
 |------|------|
-| `src/mkii/fx/<slug>/` | Custom delay/reverb-slot units (`.nts1mkiiunit`) |
-| `tools/build-mkii-fx.sh` | Build wrapper (to add when SDK path is wired) |
-| `tools/mkii/scaffold-mkii-fx.py` | Copy from SDK dummy FX (to add) |
+| `src/mkii/fx/<slug>/` | modfx / revfx / delfx `.nts1mkiiunit` |
+| `src/mkii/fx/ARCHITECTURE.md` | Product architecture |
+| `tools/build-mkii-fx.sh` | Build one FX slug |
+| `tools/fx-eval-mkii.sh` | Static (+ optional build) gate |
 
-## Planned slugs
+## Slot types (mkII)
 
-- `sp1200_fx` — bit crush + sample-rate reduction (primary)
-- `dream_reverb_fx` — bright shimmer reverb
-- `tape_echo_dub_fx`, `tape_sat_fx`, `cassette_hiss_fx`
+| SDK module | Example slug |
+|------------|----------------|
+| `k_unit_module_modfx` | `broken_cassette_trap_fx`, `parallel_comp_fx` |
+| `k_unit_module_revfx` | `cardo_got_wings_spring_revfx` |
+| `k_unit_module_delfx` | _(planned: `tape_echo_dub_fx`)_ |
 
-## Load order on hardware
+Only **one custom unit per slot** is loaded at a time; swap `.nts1mkiiunit` files in Kontrol Editor.
 
-One custom **oscillator** and one custom **FX** can be loaded on NTS-1 mkII; FX processes the synth/drum output in the FX slot. Osc drum kits (`tr808_drumkit_4voice`, etc.) remain oscillators, not FX.
+## Shipped FX
 
-## Agent verify (when SDK available)
+| Slug | Genre / reference |
+|------|-------------------|
+| `broken_cassette_trap_fx` | **Trap**-tilted broken cassette — 16-step **digital glitch table**, crush, hiss, tempo gate |
+| `parallel_comp_fx` | Parallel NY compression (dry + squashed branch) |
+| `cardo_got_wings_spring_revfx` | **Cardo Got Wings** drum spring — preset **WINGZ** / OPEN / TIGHT |
+
+## Verify
 
 ```bash
 export LOGUE_SDK=/path/to/logue-sdk
-./tools/build-mkii-fx.sh sp1200_fx
+./tools/fx-eval-mkii.sh broken_cassette_trap_fx --static-only
+./tools/build-mkii-fx.sh cardo_got_wings_spring_revfx
 ```
 
-Cloud agents without SDK: document-only until bootstrap.
+## Related
+
+- [logue-agent-pm-automation.md](logue-agent-pm-automation.md)
+- [logue-oscillator-ideas-backlog.md](logue-oscillator-ideas-backlog.md)

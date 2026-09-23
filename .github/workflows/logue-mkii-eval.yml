@@ -5,8 +5,11 @@ on:
     paths:
       - 'src/mkii/**'
       - 'tools/osc-eval-mkii.sh'
+      - 'tools/fx-eval-mkii.sh'
       - 'tools/build-mkii.sh'
+      - 'tools/build-mkii-fx.sh'
       - 'tools/mkii/**'
+      - 'tools/logue/**'
   push:
     branches: [main]
     paths:
@@ -29,3 +32,10 @@ jobs:
             [ "$slug" = "tr808_kick_phonk" ] && continue
             ./tools/osc-eval-mkii.sh "$slug" --static-only
           done < <(./tools/logue/list-port-complete-slugs.sh)
+      - name: Static eval PORT_COMPLETE FX
+        run: |
+          chmod +x tools/fx-eval-mkii.sh tools/logue/list-port-complete-fx.sh
+          while IFS= read -r slug; do
+            [ -z "$slug" ] && continue
+            ./tools/fx-eval-mkii.sh "$slug" --static-only
+          done < <(./tools/logue/list-port-complete-fx.sh)

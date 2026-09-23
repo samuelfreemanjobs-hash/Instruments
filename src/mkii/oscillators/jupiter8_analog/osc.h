@@ -1,5 +1,5 @@
 #pragma once
-/* PORT_COMPLETE — mkII port of src/oscillators/prophet-funk/prophet_bass.cc (dual osc + LP). */
+/* PORT_COMPLETE — JP-8-ish dual DCO stack, cross-mod, bright LP. */
 #include "processor.h"
 #include "unit_osc.h"
 
@@ -23,7 +23,7 @@ public:
       detune_ = n;
       break;
     case 3:
-      sync_amt_ = n;
+      xmod_ = n;
       break;
     case 4:
       pwm_depth_ = n;
@@ -58,7 +58,7 @@ public:
     vibe_ = param_10bit_to_f32(409);
     osc_mix_ = param_10bit_to_f32(614);
     detune_ = param_10bit_to_f32(245);
-    sync_amt_ = param_10bit_to_f32(184);
+    xmod_ = param_10bit_to_f32(368);
     pwm_depth_ = param_10bit_to_f32(327);
     glide_ = param_10bit_to_f32(286);
     attack_sec_ = 0.012f;
@@ -143,16 +143,13 @@ public:
         if (phase_b_ >= 1.f) {
           phase_b_ -= floorf(phase_b_);
         }
-        if (sync_amt_ > 0.01f) {
-          phase_b_ = phase_a_ * (1.f + sync_amt_ * 2.f);
-          phase_b_ -= floorf(phase_b_);
-        }
-        const float width = 0.5f + sinf(k_two_pi * pwm_lfo_) * pwm_depth_ * 0.12f;
+        const float width = 0.5f + sinf(k_two_pi * pwm_lfo_) * pwm_depth_ * 0.14f;
         const float saw_a = 2.f * phase_a_ - 1.f;
-        const float saw_b = 2.f * phase_b_ - 1.f;
+        float saw_b = 2.f * phase_b_ - 1.f;
+        saw_b += sinf(k_two_pi * phase_a_) * xmod_ * 0.85f;
         const float pulse_b = (phase_b_ < width) ? 1.f : -1.f;
-        sig = saw_a * (1.f - osc_mix_) + (saw_b * 0.7f + pulse_b * 0.3f) * osc_mix_;
-        const float cut = 120.f + vibe_ * 4200.f + filt_env_ * 800.f;
+        sig = saw_a * (1.f - osc_mix_) + (saw_b * 0.65f + pulse_b * 0.35f) * osc_mix_;
+        const float cut = 280.f + vibe_ * 6800.f + filt_env_ * 1200.f;
         sig = filterOut(sig, cut);
         sig *= amp_ * 0.88f;
       }
@@ -179,6 +176,6 @@ private:
   bool gate_;
   float sustain_lvl_;
   float lp1_, lp2_, lp3_, lp4_;
-  float vibe_, osc_mix_, detune_, sync_amt_, pwm_depth_, glide_;
+  float vibe_, osc_mix_, detune_, xmod_, pwm_depth_, glide_;
   float attack_sec_, decay_sec_, release_sec_;
 };

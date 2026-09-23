@@ -5,6 +5,7 @@
 - Prompt **suggestions** and **Random** discovery (ILLUGEN-style)  
 - **Structured generation spec** drafting (genre → BPM → key)  
 - **Agent automation** (Airtable WOs, support macros) without hallucinating lane rules  
+- **Korg Logue Agent memory**: logue roadmap, ideas backlog, PM doc, and mkII FX architecture are in `disklordz/rag/corpus/manifest.json` — run `python3 disklordz/rag/scripts/chunk_corpus.py` then `query_local.py` for retrieval (not chat history).  
 
 Implementation home: [`disklordz/rag/`](../disklordz/rag/). **WO-SAAS-012** ships production RAG; v0 repo includes corpus manifest + build scripts.
 

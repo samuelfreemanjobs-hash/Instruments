@@ -29,6 +29,8 @@ chmod +x tools/mkii-automate.sh tools/osc-eval-mkii.sh
 ./tools/mkii-automate.sh scaffold           # refresh mkII trees
 ./tools/osc-eval-mkii.sh tr808_kick_phonk   # build + smoke checks (golden)
 ./tools/build-mkii.sh <slug>                # single unit when bootstrapped
+./tools/fx-eval-mkii.sh <fx-slug> --static-only
+./tools/build-mkii-fx.sh <fx-slug>
 ```
 
 **New mkII unit:** `./tools/new-mkii-oscillator.sh <slug> ["Name"]` — see [docs/logue-mkii-boilerplate.md](docs/logue-mkii-boilerplate.md).

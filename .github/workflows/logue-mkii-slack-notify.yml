@@ -1,0 +1,30 @@
+name: logue mkII Slack notify
+
+on:
+  workflow_run:
+    workflows: [logue mkII oscillator eval (static)]
+    types: [completed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_LOGUE_URL: ${{ secrets.SLACK_WEBHOOK_LOGUE_URL }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - name: Post result to Slack
+        env:
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          WEBHOOK="${SLACK_WEBHOOK_LOGUE_URL:-}"
+          if [ -z "$WEBHOOK" ]; then WEBHOOK="${SLACK_WEBHOOK_URL:-}"; fi
+          if [ -z "$WEBHOOK" ]; then
+            echo "No Slack webhook configured."
+            exit 0
+          fi
+          payload=$(jq -n \
+            --arg text "Korg Logue Agent CI: logue mkII eval — ${CONCLUSION} (${BRANCH}) ${URL}" \
+            '{text: $text}')
+          curl -sf -X POST -H 'Content-type: application/json' --data "$payload" "$WEBHOOK"

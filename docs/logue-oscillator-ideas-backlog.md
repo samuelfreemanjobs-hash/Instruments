@@ -24,8 +24,8 @@ This file is the **living idea list** alongside the locked [collection roadmap](
 
 | Slug (proposed) | Display | Genre / reference | DSP sketch | Params (≤10) | Status |
 |-----------------|---------|-------------------|------------|--------------|--------|
-| `plug_nether_pluck` | Plug / Nether Pluck | UK **Plug** / **Nether** — short pluck, sub weight, sparse | Sine+saw pluck; fast amp; optional 1-pole damp; sub octave | **Pluck**, **Decay**, **Tone**, **Sub**, **Detune**, **Glide**, **Drive**, **Level** | `planned` |
-| `drill_slide_808_tail` | Drill 808 Slide | **Drill** 808 — portamento **slide**, long **tail**, sub sustain | Port from kick808 pitch envelope + slide on note change; tail release | **Slide**, **Tail**, **Tune**, **Punch**, **Decay**, **Sub**, **Drive**, **Level** | `planned` |
+| `plug_nether_pluck` | Plug / Nether Pluck | UK **Plug** / **Nether** — short pluck, sub weight, sparse | Sine+saw pluck; fast amp; optional 1-pole damp; sub octave | **Pluck**, **Decay**, **Tone**, **Sub**, **Detune**, **Glide**, **Drive**, **Level** | `shipped` |
+| `drill_slide_808_tail` | Drill 808 Slide | **Drill** 808 — portamento **slide**, long **tail**, sub sustain | Port from kick808 pitch envelope + slide on note change; tail release | **Slide**, **Tail**, **Tune**, **Punch**, **Decay**, **Sub**, **Drive**, **Level** | `shipped` |
 
 See **Production briefs** below for agent-ready detail.
 
@@ -43,7 +43,9 @@ New rows land here after each **weekly ideas run** (GitHub issue + optional Korg
 
 | slug | one-line hook | status | source |
 |------|---------------|--------|--------|
-| _(empty until first weekly run)_ | | | |
+| `broken_cassette_trap_fx` | Trap glitch cassette (modfx) | `shipped` | 2026-09-23 |
+| `cardo_got_wings_spring_revfx` | Cardo drum spring rev | `shipped` | 2026-09-23 |
+| `parallel_comp_fx` | Parallel compression modfx | `shipped` | 2026-09-23 |
 
 ---
 
