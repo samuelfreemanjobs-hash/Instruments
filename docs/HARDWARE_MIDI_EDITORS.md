@@ -51,6 +51,27 @@ Pair with **Open-microKORG** for CLI decode of the same SysEx or `.prg` banks. K
 
 ---
 
+## UltraNova Web Editor (Novation UltraNova)
+
+| | |
+|--|--|
+| **Path** | `hardware-lane/editors/ultranova-web` |
+| **License** | MIT (this repo) |
+| **Does** | **Browser** patch editor — Web MIDI **NRPN/CC** live edit, SysEx **`.syx`** import/send, program / edit-buffer **dump requests** |
+
+```bash
+./hardware-lane/scripts/ultranova-web-dev.sh
+# Chrome/Edge → http://127.0.0.1:5174 — connect UltraNova USB, allow MIDI + SysEx
+```
+
+**Synth setup:** SysEx receive on, write protect off (same as Novation Librarian). **Phase 1** covers real-time parameters; full **program binary** edit (every panel field from a `.syx` dump) is planned — use Novation Editor/Librarian for bank backup until then.
+
+**Capture workflow:** design/tweak patch in browser → save on hardware → hardware audio grid → `instrument.map.json` → MPC Live.
+
+MIDI reference: [UltraNova MIDI implementation PDF](https://downloads.novationmusic.com/novation/synthesisers/ultranova).
+
+---
+
 ## Adding the next repo
 
 1. Tell the agent the GitHub URL (you’re collecting these).  

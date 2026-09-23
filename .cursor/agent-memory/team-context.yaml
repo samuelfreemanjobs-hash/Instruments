@@ -50,6 +50,12 @@ hardware_editors:
       license: unspecified_upstream
       device: microKORG
       role: react_sysex_gui
+  in_repo_editors:
+    - name: ultranova-web
+      path: hardware-lane/editors/ultranova-web
+      license: MIT
+      device: Novation UltraNova
+      role: web_midi_nrpn_sysex
 
 lanes:
   gearmulator_track_e:

@@ -31,8 +31,10 @@ Editors run **locally** (USB MIDI to hardware). Cloud Agents use this tree for *
 |------|----------------|
 | `editors/open-microkorg/` | Submodule: CLI decode/encode `.prg`/`.syx` |
 | `editors/alapatch/` | Submodule: [ifacodes/alapatch](https://github.com/ifacodes/alapatch) React GUI (SysEx) |
+| `editors/ultranova-web/` | Team-owned Vite/React **UltraNova** Web MIDI editor |
 | `editors/REGISTRY.md` | Index of editor repos (add more as maintainer provides URLs) |
 | `scripts/microkorg-decode.sh` | Thin CLI wrapper |
+| `scripts/ultranova-web-dev.sh` | Dev server for UltraNova web editor |
 | `manifests/` | Optional patch index JSON (paths local only) |
 
 ## Extension points
