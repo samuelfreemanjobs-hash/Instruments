@@ -79,6 +79,8 @@ Cloud Agents need token access to mpc-agent — `.cursor/environment.json` lists
 
 **JUCE factory elite worker** ([JUCE_FACTORY_AGENT.md](JUCE_FACTORY_AGENT.md)) builds plugins; **mpc-agent** consumes them for sample libraries.
 
+End-to-end **multisample → new instrument**: [MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md](MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md).
+
 ---
 
 ## Policy

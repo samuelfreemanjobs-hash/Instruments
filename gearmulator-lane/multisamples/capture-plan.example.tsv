@@ -1,0 +1,4 @@
+enabled	session_name	instrument_label	source_plugin	plugin_path	program	preset_path	note_start	note_end	note_step	velocity	seconds	sample_rate	block_size
+true	je8086_lead_v100	JP8000_Lead_JE8086	Gearmulator JE-8086	/path/to/JE-8086.vst3	0		48	72	1	100	4.0	48000	512
+true	je8086_lead_v127	JP8000_Lead_JE8086	Gearmulator JE-8086	/path/to/JE-8086.vst3	0		48	72	1	127	4.0	48000	512
+true	wave909_bass_v100	WAVE909_Bass_Ref	WAVE-909	build/Wave909/Wave909_artefacts/Release/VST3/WAVE-909.vst3	0		36	60	3	100	2.5	48000	512

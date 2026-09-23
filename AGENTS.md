@@ -30,7 +30,7 @@ python3 scripts/gearmulator/render_multisample_dawdreamer.py --plugin "/path/to/
 git submodule update --init mpc-agent
 ```
 
-Submodule: [mpc-agent](mpc-agent) (https://github.com/samuelfreemanjobs-hash/mpc-agent). Docs: [docs/MPC_AGENT_DAWDREAMER.md](docs/MPC_AGENT_DAWDREAMER.md).
+Submodule: [mpc-agent](mpc-agent) (https://github.com/samuelfreemanjobs-hash/mpc-agent). Docs: [docs/MPC_AGENT_DAWDREAMER.md](docs/MPC_AGENT_DAWDREAMER.md) · **Workflow:** [docs/MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md](docs/MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md) · `render_capture_plan.py` · `manifest_to_sfz.py`
 
 ## RAG (prompt knowledge)
 
