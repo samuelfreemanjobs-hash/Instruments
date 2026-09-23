@@ -22,7 +22,9 @@ Add to the WO or `disklordz/sound-factory/jobs/*.json`:
 }
 ```
 
-When the MPC-agent repo or skill path is in git, link it here and in [AGENTS.md](../../../AGENTS.md).
+**Origin handoff (DawDreamer + MPC-agent):** `https://origin.cursor.com/git/samuelfreemanjobs/tmp-1e342cd8506744c8.git` — mirror to `disklordz/mpc-agent/` per [docs/MPC_AGENT_ORIGIN_IMPORT.md](../../../docs/MPC_AGENT_ORIGIN_IMPORT.md).
+
+When imported, link `disklordz/mpc-agent/` in [AGENTS.md](../../../AGENTS.md).
 
 ## Handoff contract (orchestrator → MPC-agent)
 

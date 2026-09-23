@@ -52,9 +52,9 @@ python3 disklordz/sound-factory/scripts/run_product_batch.py \
 
 **MPC Keygroup:** your **Cursor MPC-agent** + [MPC-Sample-Toolkit](https://github.com/samuelfreemanjobs-hash/MPC-Sample-Toolkit) on local/Antigravity (skill `cursor-mpc-agent`). Optional: `disklordz/sound-factory/scripts/mpctk_handoff.sh <inst-dir>`.
 
-**DawDreamer VST render:** `disklordz/sound-factory/scripts/DAWDreamer_renderer.py` (+ `requirements-dawdreamer.txt`); batch `--engine dawdreamer --vst-path …`.
+**DawDreamer VST render:** `disklordz/sound-factory/scripts/DAWDreamer_renderer.py` (+ `requirements-dawdreamer.txt`); batch `--engine dawdreamer --vst-path …`. Full MPC-agent copy: [Origin handoff](https://origin.cursor.com/git/samuelfreemanjobs/tmp-1e342cd8506744c8.git) → import into `disklordz/mpc-agent/` ([docs/MPC_AGENT_ORIGIN_IMPORT.md](docs/MPC_AGENT_ORIGIN_IMPORT.md)).
 
-**Register MPC-agent:** add path or repo URL here when exported to git.
+**MPC-agent path (after import):** `disklordz/mpc-agent/` + skill `cursor-mpc-agent`.
 
 **References:** YouTube analysis segments allowed for timbre (gitignored cache; skill `sound-design-reference-match`).
 
