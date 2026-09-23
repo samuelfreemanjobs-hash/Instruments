@@ -116,6 +116,8 @@ Disklordz SaaS deploy: root directory `disklordz/website`, Supabase redirect URL
 
 ## 8. Skills and MCP
 
+**This repo (Cloud VM):** [.cursor/skills/](../.cursor/skills/) — bootstrap, JUCE factory, Gearmulator capture, multisample→instrument. Routing: [CLOUD_AGENT_VM.md](CLOUD_AGENT_VM.md).
+
 Enable marketplace skills for your stack (Vercel, Supabase, env-setup). Use **native MCP** when available; Zapier for cross-app chains.
 
 ---

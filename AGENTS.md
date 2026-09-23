@@ -6,7 +6,17 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 
 - [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts  
 - [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
+- [docs/CLOUD_AGENT_VM.md](docs/CLOUD_AGENT_VM.md) — **Cloud VM skills + subagent routing**  
 - `.cursor/rules/*.mdc` — always-on architecture and security  
+- `.cursor/skills/*/SKILL.md` — bootstrap, JUCE factory, Gearmulator capture, multisample→instrument  
+
+## Cloud VM bootstrap
+
+```bash
+bash .cursor/scripts/cloud-install.sh
+```
+
+Skills (read before task): `instruments-cloud-bootstrap`, `juce-factory-elite`, `gearmulator-multisample-capture`, `multisample-to-instrument`.
 
 ## Disklordz SaaS (web)
 
@@ -25,10 +35,13 @@ Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md
 ## Gearmulator reference (Track E)
 
 ```bash
-git submodule update --init --recursive gearmulator-lane/gearmulator
-cmake --build build -j --target Vst3OfflineRender
-./scripts/gearmulator/render_multisample_grid.sh --plugin "/path/to/Plugin.vst3" --name session1
+git submodule update --init --recursive gearmulator-lane/gearmulator mpc-agent
+pip install -r gearmulator-lane/requirements-dawdreamer.txt
+python3 scripts/gearmulator/render_multisample_dawdreamer.py --plugin "/path/to/Plugin.vst3" --name session1
+# or C++ grid: ./scripts/gearmulator/render_multisample_grid.sh ...
 ```
+
+Workflow: [docs/MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md](docs/MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md) · [docs/MPC_AGENT_DAWDREAMER.md](docs/MPC_AGENT_DAWDREAMER.md)
 
 Copy: submodule [gearmulator-lane/gearmulator](gearmulator-lane/gearmulator) → https://github.com/samuelfreemanjobs-hash/gearmulator.git (sync upstream via [docs/GEARMULATOR_FORK.md](docs/GEARMULATOR_FORK.md)). **Do not commit ROM dumps**; keep GPLv3 tree separate from JD Upgraded `Source/`.
 

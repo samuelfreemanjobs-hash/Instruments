@@ -1,0 +1,46 @@
+name: JUCE factory work order
+description: Spawn the elite JUCE Cloud Agent (Track C) — JD Upgraded / Wave909 / tools
+title: "[JUCE][WO-YYYY-NNN] "
+labels: ["juce-factory"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Launch **Cursor Cloud Agent** with [docs/prompts/juce-factory-worker.cloud.md](../../docs/prompts/juce-factory-worker.cloud.md)
+        or run `./scripts/agents/print-juce-factory-prompt.sh WO-YYYY-NNN`.
+        Spec: [docs/JUCE_FACTORY_AGENT.md](../../docs/JUCE_FACTORY_AGENT.md)
+  - type: input
+    id: work_order_id
+    attributes:
+      label: Work order ID
+      placeholder: WO-2026-042
+    validations:
+      required: true
+  - type: textarea
+    id: mission
+    attributes:
+      label: Mission (one sentence)
+      placeholder: Add MPE per-channel pitch bend depth parameter to JD Upgraded.
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        1. APVTS param with stable ID
+        2. VoicePool respects channel pitch bend when MPE enabled
+        3. run_business.py --profile ci green
+    validations:
+      required: true
+  - type: dropdown
+    id: product
+    attributes:
+      label: Primary product
+      options:
+        - JD Upgraded (Source/)
+        - WAVE-909 (Wave909/)
+        - Offline tools (tools/)
+        - New plugin (MyFirstPlugin scaffold)
+    validations:
+      required: true

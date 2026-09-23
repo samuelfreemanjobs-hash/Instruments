@@ -1,3 +1,6 @@
 [submodule "gearmulator-lane/gearmulator"]
 	path = gearmulator-lane/gearmulator
 	url = https://github.com/samuelfreemanjobs-hash/gearmulator.git
+[submodule "mpc-agent"]
+	path = mpc-agent
+	url = https://github.com/samuelfreemanjobs-hash/mpc-agent.git
