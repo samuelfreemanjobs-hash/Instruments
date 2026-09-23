@@ -73,6 +73,7 @@ Gearmulator plugins follow JUCE realtime rules; emulation threads and DSP56300 J
 
 ## Related docs
 
+- [docs/GEARMULATOR_TO_SYNTH_PATHS.md](../docs/GEARMULATOR_TO_SYNTH_PATHS.md) — rompler vs native synth vs GPLv3 product
 - [docs/GEARMULATOR_LANE.md](../docs/GEARMULATOR_LANE.md) — lane policy vs JD Upgraded
 - [docs/DISKLORDZ_PLUGIN_TRACKS.md](../docs/DISKLORDZ_PLUGIN_TRACKS.md) — Track **E**
 - [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) — JD Upgraded product architecture

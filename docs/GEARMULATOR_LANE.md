@@ -4,7 +4,8 @@
 **Upstream:** https://github.com/dsp56300/gearmulator  
 **Monorepo anchor:** [gearmulator-lane/ARCHITECTURE.md](../gearmulator-lane/ARCHITECTURE.md)  
 **Fork (recommended for multisample / custom tooling):** [GEARMULATOR_FORK.md](GEARMULATOR_FORK.md)  
-**Multisampling in Cloud VM:** [GEARMULATOR_MULTISAMPLING.md](GEARMULATOR_MULTISAMPLING.md)
+**Multisampling in Cloud VM:** [GEARMULATOR_MULTISAMPLING.md](GEARMULATOR_MULTISAMPLING.md)  
+**Turn captures into a synth product:** [GEARMULATOR_TO_SYNTH_PATHS.md](GEARMULATOR_TO_SYNTH_PATHS.md)
 
 ## Why this lane exists
 
