@@ -20,6 +20,8 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 **Stripe MCP (Cursor):** [disklordz/website/docs/STRIPE_MCP.md](disklordz/website/docs/STRIPE_MCP.md) — install Stripe plugin or OAuth **stripe** server; optional `STRIPE_RESTRICTED_KEY` for agents.
 
+**GitHub MCP (Cursor):** [docs/GITHUB_MCP.md](docs/GITHUB_MCP.md) — `.cursor/mcp.json` **github** server; Cloud: set **`GITHUB_TOKEN`** secret and allow `api.githubcopilot.com` egress; Desktop: **Connect** (OAuth) in MCP settings.
+
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
 ## RAG (prompt knowledge)
