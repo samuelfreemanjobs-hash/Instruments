@@ -63,7 +63,7 @@ def manifest_to_map(
         if sp and ("/" in sp or sp.endswith(".vst3")):
             plugin_path = sp
 
-    return {
+    map_data: dict[str, Any] = {
         "map_format_version": MAP_VERSION,
         "instrument_id": iid,
         "instrument_label": label,
@@ -82,6 +82,17 @@ def manifest_to_map(
         "audio": {"sample_rate": sample_rate, "bit_depth": 24},
         "zones": zones,
     }
+
+    fx_plugin_path = (first.get("fx_plugin_path") or "").strip()
+    if fx_plugin_path:
+        map_data["post_fx"] = {
+            "fx_plugin_path": fx_plugin_path,
+            "fx_preset_path": first.get("fx_preset_path") or None,
+            "fx_plugin": _short_plugin_name({"source_plugin": Path(fx_plugin_path).stem}),
+            "always_on_policy": "INSTRUMENTS_ALWAYS_OSIRUS_FX",
+        }
+
+    return map_data
 
 
 def _short_plugin_name(row: dict[str, str]) -> str:

@@ -1,0 +1,40 @@
+name: Workflow automation (Track E smoke)
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+jobs:
+  capture-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq build-essential g++-12 gcc-12 cmake python3-pip \
+            libasound2-dev libfreetype6-dev libx11-dev libxrandr-dev libxcursor-dev \
+            libxinerama-dev libgl1-mesa-dev libxcomposite-dev pkg-config
+          pip install -q -r gearmulator-lane/requirements-dawdreamer.txt
+
+      - name: Build Vst3OfflineRender + Wave909
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+          cmake --build build -j --target Wave909_VST3
+
+      - name: DawDreamer one-note capture + map
+        run: |
+          python3 scripts/gearmulator/render_multisample_dawdreamer.py \
+            --plugin build/Wave909/Wave909_artefacts/Release/VST3/WAVE-909.vst3 \
+            --no-fx \
+            --name ci_track_e_smoke \
+            --note-start 60 --note-end 60 --note-step 1 --seconds 1
+          test -f gearmulator-lane/multisamples/out/ci_track_e_smoke_p0_v100/instrument.map.json
+
+      - name: Validate job manifest
+        run: test -f .cursor/workflow-automation/jobs.yaml && grep -q track-e-capture-smoke .cursor/workflow-automation/jobs.yaml

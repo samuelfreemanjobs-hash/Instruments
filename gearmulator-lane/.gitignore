@@ -1,3 +1,5 @@
 # Local CMake output
 build-*/
 .gearmulator-vsti.env
+.gearmulator-osirus-fx.env
+build-osirus-fx/

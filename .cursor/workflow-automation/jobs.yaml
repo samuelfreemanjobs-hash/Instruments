@@ -1,0 +1,41 @@
+# Workflow Automation Agent — job registry (UTC cron)
+version: 1
+
+jobs:
+  - id: track-e-capture-smoke
+    owner: workflow-automation-agent
+    schedule: "0 9 * * 1"
+    github_workflow: workflow-automation-track-e.yml
+    cursor_timer:
+      cron: "0 9 * * 1"
+    prompt: |
+      Run Track E capture smoke: Wave909 DawDreamer grid (one note), verify instrument.map.json.
+      If INSTRUMENTS_ALWAYS_OSIRUS_FX is set and Osirus FX exists, run one-note test with --no-fx fallback on failure.
+      Report in team-memory-log if scripts break.
+
+  - id: track-e-osirus-fx-reminder
+    owner: workflow-automation-agent
+    schedule: "0 9 * * 3"
+    cursor_timer:
+      cron: "0 9 * * 3"
+    prompt: |
+      Check docs/OSIRUS_FX_LANE.md vs build-gearmulator-osirus-fx.sh and dawdreamer_fx.py.
+      If GEARMULATOR_OSIRUS_FX_VST3 missing, note in TEAM_AGENT_MEMORY; do not commit ROM.
+
+  - id: mpc-agent-submodule-sync
+    owner: workflow-automation-agent
+    schedule: "0 9 * * 5"
+    cursor_timer:
+      cron: "0 9 * * 5"
+    prompt: |
+      Compare mpc-agent submodule HEAD to origin/main. If local commits unpushed, list files changed
+      and remind maintainer to git push mpc-agent then bump Instruments submodule.
+
+  - id: team-memory-review
+    owner: workflow-automation-agent
+    schedule: "0 10 1 * *"
+    cursor_timer:
+      cron: "0 10 1 * *"
+    prompt: |
+      Review docs/TEAM_AGENT_MEMORY.md and .cursor/agent-memory/team-context.yaml for drift.
+      Merge any /cursor/stores/self/team-memory-log.yaml entries worth keeping.

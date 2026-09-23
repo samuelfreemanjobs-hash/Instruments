@@ -1,0 +1,35 @@
+# Machine-readable team memory for Cursor agents (keep in sync with docs/TEAM_AGENT_MEMORY.md)
+version: 1
+updated_at: "2026-09-23"
+
+lanes:
+  gearmulator_track_e:
+    branch: cursor/gearmulator-lane-62b1
+    docs:
+      - docs/GEARMULATOR_LANE.md
+      - docs/MULTISAMPLE_MAP_FORMAT.md
+      - docs/OSIRUS_FX_LANE.md
+    build:
+      je8086_vsti: scripts/gearmulator/build-gearmulator-vsti.sh
+      osirus_fx: scripts/gearmulator/build-gearmulator-osirus-fx.sh
+    capture:
+      dawdreamer: scripts/gearmulator/render_multisample_dawdreamer.py
+      mpc_wrapper: mpc-agent/scripts/capture_and_export.py
+  mpc_agent:
+    submodule: mpc-agent
+    architecture: mpc-agent/ARCHITECTURE.md
+
+env_files:
+  - gearmulator-lane/.gearmulator-vsti.env
+  - gearmulator-lane/.gearmulator-osirus-fx.env
+
+flags:
+  instruments_always_osirus_fx: INSTRUMENTS_ALWAYS_OSIRUS_FX
+  gearmulator_rom_dir: GEARMULATOR_ROM_DIR
+
+multisample_canonical: instrument.map.json
+map_format_version: 1
+
+workflow_automation:
+  manifest: .cursor/workflow-automation/jobs.yaml
+  playbook: docs/WORKFLOW_AUTOMATION_AGENT.md

@@ -43,6 +43,19 @@ gearmulator-lane/multisamples/out/<session_name>/
 }
 ```
 
+### `post_fx` (optional)
+
+When capture runs **synth → Osirus FX** (see [OSIRUS_FX_LANE.md](OSIRUS_FX_LANE.md)):
+
+```json
+{
+  "fx_plugin_path": "/path/to/OsirusFX.vst3",
+  "fx_preset_path": "/path/to/bus.vstpreset",
+  "fx_plugin": "OsirusFX",
+  "always_on_policy": "INSTRUMENTS_ALWAYS_OSIRUS_FX"
+}
+```
+
 ### `zones[]`
 
 ```json

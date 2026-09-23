@@ -41,6 +41,18 @@ def main() -> int:
     parser.add_argument("--block-size", type=int, default=512)
     parser.add_argument("--instrument-id", default=None, help="Override instrument_id in instrument.map.json")
     parser.add_argument("--sfz", action="store_true", help="Also write instrument.sfz from the map")
+    parser.add_argument(
+        "--fx-plugin",
+        type=Path,
+        default=None,
+        help="VST3 FX after synth (default: Osirus FX when INSTRUMENTS_ALWAYS_OSIRUS_FX=1)",
+    )
+    parser.add_argument("--fx-preset", type=Path, default=None, help="FX .vstpreset / .fxp")
+    parser.add_argument(
+        "--no-fx",
+        action="store_true",
+        help="Disable Osirus FX even when INSTRUMENTS_ALWAYS_OSIRUS_FX is set",
+    )
     args = parser.parse_args()
 
     if not args.plugin.exists():
@@ -68,6 +80,8 @@ def main() -> int:
         source_plugin=args.source_plugin or Path(args.plugin).stem,
         instrument_id=args.instrument_id,
         write_sfz=args.sfz,
+        fx_plugin=None if args.no_fx else args.fx_plugin,
+        fx_preset_path=args.fx_preset,
     )
     print(f"Done. Manifest: {manifest}")
     print(f"Map: {dest / 'instrument.map.json'}")

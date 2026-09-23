@@ -59,7 +59,7 @@ DEST="${OUT_DIR}/${SESSION}"
 mkdir -p "${DEST}"
 
 MANIFEST="${DEST}/manifest.tsv"
-echo -e "instrument_label\tsource_plugin\tplugin_path\tprogram\tpreset_path\tnote\tvelocity\tseconds\tsample_rate\tengine\twav" > "${MANIFEST}"
+echo -e "instrument_label\tsource_plugin\tplugin_path\tprogram\tpreset_path\tnote\tvelocity\tseconds\tsample_rate\tengine\tfx_plugin_path\tfx_preset_path\twav" > "${MANIFEST}"
 
 for ((note=NOTE_START; note<=NOTE_END; note+=NOTE_STEP)); do
   wav="${DEST}/note_$(printf '%03d' "${note}")_vel_$(printf '%03d' "${VELOCITY}").wav"
@@ -71,8 +71,17 @@ for ((note=NOTE_START; note<=NOTE_END; note+=NOTE_STEP)); do
     --velocity "${VELOCITY}" \
     --seconds "${SECONDS}" \
     --sampleRate "${SAMPLE_RATE}"
-  echo -e "${INSTRUMENT_LABEL}\t${SOURCE_PLUGIN}\t${PLUGIN}\t${PROGRAM}\t\t${note}\t${VELOCITY}\t${SECONDS}\t${SAMPLE_RATE}\tvst3_offline\t${wav}" >> "${MANIFEST}"
+  FX_POST=""
+  FX_PRESET=""
+  if [[ "${INSTRUMENTS_ALWAYS_OSIRUS_FX:-}" =~ ^(1|true|yes|TRUE|YES)$ ]] && [[ -n "${GEARMULATOR_OSIRUS_FX_VST3:-}" ]]; then
+    FX_POST="${GEARMULATOR_OSIRUS_FX_VST3}"
+  fi
+  echo -e "${INSTRUMENT_LABEL}\t${SOURCE_PLUGIN}\t${PLUGIN}\t${PROGRAM}\t\t${note}\t${VELOCITY}\t${SECONDS}\t${SAMPLE_RATE}\tvst3_offline\t${FX_POST}\t${FX_PRESET}\t${wav}" >> "${MANIFEST}"
 done
+
+if [[ -n "${FX_POST:-}" ]]; then
+  echo "Note: C++ grid wrote dry WAVs; run render_wav_osirus_fx.py on session folder to apply Osirus FX." >&2
+fi
 
 FINALIZE=(python3 "${REPO_ROOT}/scripts/gearmulator/finalize_multisample_session.py" "${DEST}")
 if [[ -n "${INSTRUMENT_ID:-}" ]]; then
