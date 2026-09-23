@@ -29,7 +29,7 @@ git submodule update --init --recursive gearmulator-lane/gearmulator
 ./scripts/gearmulator/build-je8086-console.sh   # JE8086TestConsole smoke build
 ```
 
-Copy: submodule [gearmulator-lane/gearmulator](gearmulator-lane/gearmulator) → https://github.com/dsp56300/gearmulator.git · [gearmulator-lane/README.md](gearmulator-lane/README.md). **Do not commit ROM dumps**; keep GPLv3 tree separate from JD Upgraded `Source/`.
+Copy: submodule [gearmulator-lane/gearmulator](gearmulator-lane/gearmulator) (default upstream dsp56300/gearmulator). **Fork:** [docs/GEARMULATOR_FORK.md](docs/GEARMULATOR_FORK.md) · `./scripts/gearmulator/repoint-submodule-to-fork.sh`. **Do not commit ROM dumps**; keep GPLv3 tree separate from JD Upgraded `Source/`.
 
 ## RAG (prompt knowledge)
 

@@ -1,7 +1,9 @@
 # Gearmulator (submodule copy)
 
-Upstream: https://github.com/dsp56300/gearmulator.git  
+Default upstream: https://github.com/dsp56300/gearmulator.git  
 Pinned path: **`gearmulator-lane/gearmulator/`** (git submodule).
+
+**Your fork:** create on GitHub, then [docs/GEARMULATOR_FORK.md](../docs/GEARMULATOR_FORK.md) and `./scripts/gearmulator/repoint-submodule-to-fork.sh <your-fork-url>`.
 
 ## Get the copy
 
