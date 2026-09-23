@@ -18,7 +18,9 @@ Official server: [github/github-mcp-server](https://github.com/github/github-mcp
 }
 ```
 
-**No secrets in git** — set `GITHUB_TOKEN` in your environment (or use Cursor **Connect** if OAuth is offered for this server in your Cursor version).
+**No secrets in git** — set `GITHUB_TOKEN` in your environment.
+
+> **OAuth vs PAT:** GitHub’s **hosted** server (`https://api.githubcopilot.com/mcp/`) currently expects a **Personal Access Token** in the `Authorization` header ([official Cursor guide](https://github.com/github/github-mcp-server/blob/main/docs/installation-guides/install-cursor.md)). **OAuth browser login** applies to the **local Docker** server (`ghcr.io/github/github-mcp-server`) — see [oauth-login.md](https://github.com/github/github-mcp-server/blob/main/docs/oauth-login.md). Cursor’s **Connect** button may still store a token for you after sign-in; treat it as PAT-backed either way.
 
 ## 2. Personal access token
 
@@ -36,9 +38,23 @@ Restart Cursor so `${env:GITHUB_TOKEN}` resolves in `mcp.json`.
 
 ## 3. Connect in Cursor
 
+**One-click (desktop):** [Install GitHub MCP deeplink](https://cursor.com/en/install-mcp?name=github&config=eyJ1cmwiOiJodHRwczovL2FwaS5naXRodWJjb3BpbG90LmNvbS9tY3AvIiwiaGVhZGVycyI6eyJBdXRob3JpemF0aW9uIjoiQmVhcmVyIFlPVVJfR0lUSFVCX1BBVCJ9fQ%3D%3D) — then paste your PAT when prompted.
+
+**Manual:**
+
 1. **Settings → Tools & MCP** (or **Customize → MCP**).
 2. Find **github** from this repo’s `.cursor/mcp.json`.
-3. If status is **Needs login**, click **Connect** or ensure `GITHUB_TOKEN` is set.
+3. Click **Connect** / edit headers — use a PAT (hosted server) or switch to Docker config for OAuth (local only).
+
+**Verify (green dot):** Settings → MCP shows **github** connected; in chat, ask: “List open PRs on samuelfreemanjobs-hash/Instruments”.
+
+**Verify (script):**
+
+```bash
+bash scripts/verify_github_mcp.sh
+```
+
+On Cloud, `gh auth status` confirms GitHub git/API integration; MCP additionally needs `GITHUB_TOKEN` + `api.githubcopilot.com` egress.
 
 ### Optional: read-only toolsets
 
