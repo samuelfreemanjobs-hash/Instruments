@@ -1,9 +1,9 @@
 # Gearmulator (submodule copy)
 
-Default upstream: https://github.com/dsp56300/gearmulator.git  
-Pinned path: **`gearmulator-lane/gearmulator/`** (git submodule).
+**Submodule (this monorepo):** https://github.com/samuelfreemanjobs-hash/gearmulator.git  
+Path: **`gearmulator-lane/gearmulator/`** · upstream sync from https://github.com/dsp56300/gearmulator  
 
-**Your fork:** create on GitHub, then [docs/GEARMULATOR_FORK.md](../docs/GEARMULATOR_FORK.md) and `./scripts/gearmulator/repoint-submodule-to-fork.sh <your-fork-url>`.
+Fork policy: [docs/GEARMULATOR_FORK.md](../docs/GEARMULATOR_FORK.md)
 
 ## Get the copy
 

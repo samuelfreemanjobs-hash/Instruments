@@ -2,25 +2,20 @@
 
 Use a **fork** when you want your own remote for multisampling experiments, custom scripts, or long-lived pins—without pushing to [dsp56300/gearmulator](https://github.com/dsp56300/gearmulator).
 
-The Instruments monorepo keeps Gearmulator as a **git submodule** at `gearmulator-lane/gearmulator/`. By default it tracks **upstream**. After you fork, repoint the submodule to **your** repository.
+The Instruments monorepo keeps Gearmulator as a **git submodule** at `gearmulator-lane/gearmulator/`.
 
-## 1. Create the fork (GitHub UI)
+**Canonical remote (this repo):** https://github.com/samuelfreemanjobs-hash/gearmulator.git  
 
-1. Open https://github.com/dsp56300/gearmulator  
-2. **Fork** → choose your account or org (e.g. `samuelfreemanjobs-hash`).  
-3. Copy the fork URL, e.g. `https://github.com/samuelfreemanjobs-hash/gearmulator.git`
-
-Cloud Agent tokens often **cannot** create forks via API; use the web UI once.
-
-## 2. Repoint this monorepo submodule
-
-From the **Instruments** repo root (after your fork exists):
+Sync fixes from upstream when needed (section 4). To repoint after a fork rename:
 
 ```bash
-./scripts/gearmulator/repoint-submodule-to-fork.sh https://github.com/YOURUSER/gearmulator.git
-git add .gitmodules gearmulator-lane/gearmulator
-git commit -m "chore: point gearmulator submodule at fork"
-git push
+./scripts/gearmulator/repoint-submodule-to-fork.sh https://github.com/samuelfreemanjobs-hash/gearmulator.git
+```
+
+## 1. Clone with submodule
+
+```bash
+git submodule update --init --recursive gearmulator-lane/gearmulator
 ```
 
 That updates `.gitmodules` and the submodule’s `origin` remote. Nested upstream submodules (dsp56300, JUCE, etc.) still init with:
