@@ -46,7 +46,7 @@ Summary: **MPC Live** (primary kit host), **Maschine+**, **MicroFreak**, **Micro
 
 Hardware → WAV locally; repo holds **maps + mpc-agent**, not samples.
 
-**MIDI editors:** [HARDWARE_MIDI_EDITORS.md](HARDWARE_MIDI_EDITORS.md) · **microKORG:** Open-microKORG (CLI, GPLv3) + **Alapatch** (React GUI, SysEx) under `hardware-lane/editors/`. More repos → [REGISTRY.md](../hardware-lane/editors/REGISTRY.md).
+**MIDI editors:** [HARDWARE_MIDI_EDITORS.md](HARDWARE_MIDI_EDITORS.md) · **microKORG:** Open-microKORG + Alapatch · **UltraNova:** `ultranova-web` · **Minilogue XD:** Korg Sound Librarian (install) + [minilogue-xd-util](https://github.com/isnotinvain/minilogue-xd-util) + optional rvller PD; index `hardware-lane/editors/minilogue-xd/`. Registry → [REGISTRY.md](../hardware-lane/editors/REGISTRY.md).
 
 ---
 

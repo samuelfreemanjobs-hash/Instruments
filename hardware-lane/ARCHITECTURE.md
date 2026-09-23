@@ -23,6 +23,9 @@ Editors run **locally** (USB MIDI to hardware). Cloud Agents use this tree for *
     → Open-microKORG (decode / encode / text dump)
     → optional: capture-plan row (preset name → hardware session)
     → audio grid → instrument.map.json → MPC Live
+
+Minilogue XD: Korg Sound Librarian (.mnlgxdpreset / libraries) + optional minilogue-xd-util;
+live design via CC/NRPN (rvller PD or planned minilogue-xd-vibe) → Write on hardware → capture.
 ```
 
 ## Key modules
@@ -32,6 +35,7 @@ Editors run **locally** (USB MIDI to hardware). Cloud Agents use this tree for *
 | `editors/open-microkorg/` | Submodule: CLI decode/encode `.prg`/`.syx` |
 | `editors/alapatch/` | Submodule: [ifacodes/alapatch](https://github.com/ifacodes/alapatch) React GUI (SysEx) |
 | `editors/ultranova-web/` | Team-owned Vite/React **UltraNova** Web MIDI editor |
+| `editors/minilogue-xd/` | **Minilogue XD** doc index (Korg Librarian, util, rvller; vibe editor planned) |
 | `editors/REGISTRY.md` | Index of editor repos (add more as maintainer provides URLs) |
 | `scripts/microkorg-decode.sh` | Thin CLI wrapper |
 | `scripts/ultranova-web-dev.sh` | Dev server for UltraNova web editor |

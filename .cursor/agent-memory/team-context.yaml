@@ -56,6 +56,12 @@ hardware_editors:
       license: MIT
       device: Novation UltraNova
       role: web_midi_nrpn_sysex
+  minilogue_xd:
+    index: hardware-lane/editors/minilogue-xd/README.md
+    korg_sound_librarian: https://www.korg.com/us/support/download/product/0/811/
+    minilogue_xd_util: https://github.com/isnotinvain/minilogue-xd-util
+    rvller_random_pd: https://github.com/rvller/minilogue-xd-random-patch-generator
+    planned_vibe_editor: hardware-lane/editors/minilogue-xd-vibe
 
 lanes:
   gearmulator_track_e:

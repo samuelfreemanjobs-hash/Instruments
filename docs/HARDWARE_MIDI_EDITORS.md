@@ -72,6 +72,52 @@ MIDI reference: [UltraNova MIDI implementation PDF](https://downloads.novationmu
 
 ---
 
+## Minilogue XD (Korg)
+
+Maintainer index: [hardware-lane/editors/minilogue-xd/README.md](../hardware-lane/editors/minilogue-xd/README.md).
+
+### Korg Sound Librarian (official — install only, not in git)
+
+| | |
+|--|--|
+| **Upstream** | [minilogue xd downloads](https://www.korg.com/us/support/download/product/0/811/) → **Sound Librarian** 1.0.5 (Win/Mac) |
+| **Does** | Reorder/backup **programs**, import **`.mnlgxdpreset`** sound packs, load **user oscillators/effects** (`.mnlgxdunitt`), **microtuning** over USB MIDI |
+| **Does not** | Full live “every knob” patch design (use CC/NRPN tools below for sound design, then **Write** on hardware and manage files here) |
+
+Install **KORG USB-MIDI Driver** from the same product page. Operation manual ships inside the Librarian app.
+
+**Capture workflow:** design patch → **Write** on XD → backup library or single program via Librarian → note program name (and optional local `.mnlgxdlib` / `.mnlgxdprog` path in capture-plan) → audio grid → `instrument.map.json` → MPC Live.
+
+### minilogue-xd-util (CLI libraries)
+
+| | |
+|--|--|
+| **Upstream** | https://github.com/isnotinvain/minilogue-xd-util |
+| **Does** | Pretty-print and manipulate **`.mnlgxdprog`** / **`.mnlgxdlib`** (Python); remap user OSC/FX slots |
+
+Use for scripted library surgery or agent-readable patch dumps — not for live MIDI performance.
+
+### rvller random patch generator (optional explore)
+
+| | |
+|--|--|
+| **Upstream** | https://github.com/rvller/minilogue-xd-random-patch-generator |
+| **License** | Apache 2.0 |
+| **Does** | **Pure Data** — **TAB** sends random **MIDI CC** (toggle LFO/multi/portamento sections) |
+
+Default **MIDI channel 5**; set **MIDI Rx CC = On** on the synth. Reference for CC numbers when building the vibe editor; not a substitute for Korg Librarian or directed presets.
+
+### minilogue-xd-vibe (planned, in-repo)
+
+| | |
+|--|--|
+| **Path** | `hardware-lane/editors/minilogue-xd-vibe/` *(future)* |
+| **Goal** | Browser or Python **Web MIDI** editor: **JSON preset → CC/NRPN** (Korg **CC63 + CC6** order for NRPN data on XD), optional archetypes (“pluck”, “bass”) — same lane as [UltraNova Web Editor](#ultranova-web-editor-novation-ultranova) and **madmidi**-style capture metadata |
+
+**MIDI reference:** [MIDI Implementation](https://www.korg.com/us/support/download/product/0/811/) (TXT on Korg downloads). SysEx program dumps: function `40` / `4C` per Korg spec (see also [minilogue XD JS editor tutorial](https://cycling74.com/tutorials/building-a-synthesizer-editor-with-javascript-part-3)).
+
+---
+
 ## Adding the next repo
 
 1. Tell the agent the GitHub URL (you’re collecting these).  
