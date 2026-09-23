@@ -90,6 +90,10 @@ Inherit the [EPS B checklist](EPS_CLASS_ROMPLER.md#b--engine-specification-behav
 
 68302 boot, Ensoniq OS ROM, `.IMG`/SCSI images, sequencer disk formats, KPC/VFD protocol, built-in **Ensoniq** wave ROM binary redistribution.
 
+## Content stack v0 (locked)
+
+VCSL + VSCO2 CE + Salamander + parametric factory waves: [ASR_CLASS_CONTENT_V0.md](ASR_CLASS_CONTENT_V0.md).
+
 ## Related docs
 
 - [ENSONIQ_SAMPLE_AUTHORING.md](ENSONIQ_SAMPLE_AUTHORING.md) — record, multisample, HISE import
