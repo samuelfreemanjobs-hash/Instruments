@@ -421,7 +421,7 @@ Phase 2c  solina_string_ensemble, prophet6_analog, ob6_analog, korg_dw8000_dig
 Phase 3   wavetable tooling → prophet_vs_wt128 → ppg_microwave_wt → ensoniq_sq80_wt
 Phase 4   acoustic_pm_poly (after CPU baseline from Phase 2)
 Phase 5a  tr808_drumkit_4voice (+ port kick DSP), fm808_cowbell_perc, tr909_drumkit_4voice
-Phase 5b  FX bootstrap → sp1200_fx → dream_reverb_fx → tape_echo_dub_fx → tape_sat_fx → cassette_hiss_fx
+Phase 5b  FX bootstrap → **broken_cassette_trap_fx**, **parallel_comp_fx**, **cardo_got_wings_spring_revfx** (shipped) → sp1200_fx → dream_reverb_fx → tape_echo_dub_fx → tape_sat_fx → cassette_hiss_fx
 Phase 6a  dx7_lately_bass (port), dx7_fm_bass, reese_sub_osc, ms20_sync_osc
 Phase 6b  rhodes_wurli_ep, mellotron_tape_flute, jupiter8_analog
 Phase 6c  plug_nether_pluck, drill_slide_808_tail   ← genre (PM-approved backlog)
