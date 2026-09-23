@@ -8,3 +8,10 @@ MyFirstPlugin/build-ninja/
 *.user
 .vs/
 .idea/
+
+# Sound factory worker artifacts (WAV batches, refs)
+disklordz/sound-factory/out/
+disklordz/sound-factory/refs/
+disklordz/sound-factory/refs/youtube-cache/
+__pycache__/
+*.pyc

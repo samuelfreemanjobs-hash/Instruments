@@ -1,0 +1,182 @@
+{
+  "artist": "Young Jeezy",
+  "note": "Public track titles for catalog indexing only. Sounds are clean-room synthesized, not sampled from masters.",
+  "albums": [
+    {
+      "id": "tm101",
+      "title": "Thuggin Under the Influence (T.U.I.)",
+      "year": 2001,
+      "type": "mixtape",
+      "tracks": ["Intro", "Black Tee", "Get Right", "Let's Get It", "Chu Chu", "Outro"]
+    },
+    {
+      "id": "come_shop_wit_me",
+      "title": "Come Shop wit Me",
+      "year": 2003,
+      "type": "mixtape",
+      "tracks": ["Intro", "Bout Ta Do", "Get Money", "Air Forces", "Outro"]
+    },
+    {
+      "id": "thug_motivation_101",
+      "title": "Let's Get It: Thug Motivation 101",
+      "year": 2005,
+      "type": "album",
+      "tracks": [
+        "Thug Motivation 101",
+        "Go Crazy",
+        "My Hood",
+        "Last of a Dying Breed",
+        "Bottom of the Map",
+        "I Luv It",
+        "Gangsta Music",
+        "Trap or Die",
+        "Standing Ovation",
+        "Soul Survivor",
+        "Keep Grindin",
+        "Get Right",
+        "Trap Star",
+        "That's How",
+        "Talk to Em",
+        "Chuuch",
+        "Outro"
+      ]
+    },
+    {
+      "id": "the_inspiration",
+      "title": "The Inspiration",
+      "year": 2006,
+      "type": "album",
+      "tracks": [
+        "Hypnotize",
+        "What You Talkin Bout",
+        "I Luv It",
+        "Go Getta",
+        "Keep It Gangsta",
+        "Street Niggaz",
+        "J.E.E.Z.Y.",
+        "I Got Money",
+        "Slick Talk",
+        "3 A.M.",
+        "Don't Get It Twisted",
+        "Go All Out",
+        "Ballin",
+        "Dreamin",
+        "I Do",
+        "Keep It Gangsta (Remix)",
+        "Outro"
+      ]
+    },
+    {
+      "id": "recession",
+      "title": "The Recession",
+      "year": 2008,
+      "type": "album",
+      "tracks": [
+        "Welcome Back",
+        "Crazy World",
+        "Who Dat",
+        "Amazing",
+        "Hustlerz Ambition",
+        "Vacation",
+        "Circulate",
+        "Wordy",
+        "Jizzle",
+        "My President",
+        "Out Here Grindin",
+        "Don't Do It",
+        "Put On",
+        "Trap or Die 2",
+        "Outro"
+      ]
+    },
+    {
+      "id": "tm103",
+      "title": "TM:103 Hustlerz Ambition",
+      "year": 2011,
+      "type": "album",
+      "tracks": [
+        "Waiting",
+        "What I Do",
+        "Bravo",
+        "Never Be the Same",
+        "Way Too Gone",
+        "Nothing",
+        "Higher Learning",
+        "Live Fast",
+        "Young Niggas",
+        "Just Win",
+        "Leave You Alone",
+        "R.I.P.",
+        "I Do",
+        "Nothing Like Us",
+        "Outro"
+      ]
+    },
+    {
+      "id": "seen_it_all",
+      "title": "Seen It All: The Autobiography",
+      "year": 2014,
+      "type": "album",
+      "tracks": [
+        "Intro",
+        "What I'm Talkin Bout",
+        "All There",
+        "Lost My",
+        "Me Ok",
+        "Just Some More",
+        "My Nigga",
+        "No Regrets",
+        "Seen It All",
+        "Win",
+        "Beautiful",
+        "Black Unicorn",
+        "Outro"
+      ]
+    },
+    {
+      "id": "church_in_these_streets",
+      "title": "Church in These Streets",
+      "year": 2015,
+      "type": "album",
+      "tracks": [
+        "Holy Water",
+        "In Church",
+        "Scared of the Dark",
+        "What You See",
+        "God",
+        "Young Jesus",
+        "Outro"
+      ]
+    },
+    {
+      "id": "trap_or_die_3",
+      "title": "Trap or Die 3",
+      "year": 2016,
+      "type": "album",
+      "tracks": [
+        "Intro",
+        "In Them Streets",
+        "All There",
+        "Grew Up",
+        "Word of Mouth",
+        "Propagate",
+        "Keep the Door Open",
+        "Outro"
+      ]
+    },
+    {
+      "id": "pressure",
+      "title": "Pressure",
+      "year": 2023,
+      "type": "album",
+      "tracks": [
+        "Intro",
+        "Pressure",
+        "Scarface",
+        "Losses",
+        "No Weakness",
+        "Outro"
+      ]
+    }
+  ]
+}

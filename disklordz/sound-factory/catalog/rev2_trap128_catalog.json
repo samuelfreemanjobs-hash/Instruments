@@ -1,0 +1,1162 @@
+{
+  "format": "DISKLORDZ_FACTORY_CATALOG",
+  "version": 1,
+  "productId": "REV2-TRAP-128",
+  "title": "Prophet Rev2\u2013style trap multisample bank (128)",
+  "vstiRoadmap": "JUCE port referencing clean-room trap_synth + future DSP upgrade",
+  "targetCount": 128,
+  "slots": [
+    {
+      "slotId": "REV2_001",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_001_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 1",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_002",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_002_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 2",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_003",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_003_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 3",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_004",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_004_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 4",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_005",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_005_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 5",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_006",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_006_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 6",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_007",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_007_bell",
+      "name": "Rev2 Trap bell (gucci) 7",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_008",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_008_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 8",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_009",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_009_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 9",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_010",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_010_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 10",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_011",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_011_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 11",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_012",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_012_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 12",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_013",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_013_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 13",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_014",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_014_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 14",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_015",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_015_bell",
+      "name": "Rev2 Trap bell (gucci) 15",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_016",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_016_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 16",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_017",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_017_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 17",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_018",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_018_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 18",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_019",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_019_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 19",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_020",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_020_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 20",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_021",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_021_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 21",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_022",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_022_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 22",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_023",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_023_bell",
+      "name": "Rev2 Trap bell (gucci) 23",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_024",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_024_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 24",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_025",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_025_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 25",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_026",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_026_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 26",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_027",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_027_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 27",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_028",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_028_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 28",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_029",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_029_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 29",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_030",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_030_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 30",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_031",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_031_bell",
+      "name": "Rev2 Trap bell (gucci) 31",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_032",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_032_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 32",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_033",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_033_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 33",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_034",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_034_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 34",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_035",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_035_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 35",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_036",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_036_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 36",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_037",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_037_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 37",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_038",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_038_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 38",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_039",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_039_bell",
+      "name": "Rev2 Trap bell (gucci) 39",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_040",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_040_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 40",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_041",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_041_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 41",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_042",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_042_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 42",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_043",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_043_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 43",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_044",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_044_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 44",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_045",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_045_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 45",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_046",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_046_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 46",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_047",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_047_bell",
+      "name": "Rev2 Trap bell (gucci) 47",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_048",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_048_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 48",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_049",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_049_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 49",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_050",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_050_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 50",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_051",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_051_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 51",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_052",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_052_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 52",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_053",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_053_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 53",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_054",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_054_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 54",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_055",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_055_bell",
+      "name": "Rev2 Trap bell (gucci) 55",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_056",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_056_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 56",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_057",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_057_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 57",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_058",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_058_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 58",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_059",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_059_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 59",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_060",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_060_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 60",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_061",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_061_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 61",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_062",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_062_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 62",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_063",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_063_bell",
+      "name": "Rev2 Trap bell (gucci) 63",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_064",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_064_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 64",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_065",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_065_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 65",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_066",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_066_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 66",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_067",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_067_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 67",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_068",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_068_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 68",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_069",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_069_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 69",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_070",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_070_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 70",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_071",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_071_bell",
+      "name": "Rev2 Trap bell (gucci) 71",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_072",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_072_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 72",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_073",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_073_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 73",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_074",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_074_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 74",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_075",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_075_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 75",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_076",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_076_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 76",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_077",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_077_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 77",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_078",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_078_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 78",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_079",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_079_bell",
+      "name": "Rev2 Trap bell (gucci) 79",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_080",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_080_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 80",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_081",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_081_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 81",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_082",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_082_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 82",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_083",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_083_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 83",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_084",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_084_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 84",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_085",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_085_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 85",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_086",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_086_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 86",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_087",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_087_bell",
+      "name": "Rev2 Trap bell (gucci) 87",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_088",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_088_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 88",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_089",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_089_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 89",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_090",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_090_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 90",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_091",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_091_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 91",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_092",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_092_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 92",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_093",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_093_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 93",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_094",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_094_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 94",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_095",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_095_bell",
+      "name": "Rev2 Trap bell (gucci) 95",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_096",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_096_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 96",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_097",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_097_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 97",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_098",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_098_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 98",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_099",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_099_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 99",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_100",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_100_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 100",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_101",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_101_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 101",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_102",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_102_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 102",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_103",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_103_bell",
+      "name": "Rev2 Trap bell (gucci) 103",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_104",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_104_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 104",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_105",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_105_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 105",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_106",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_106_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 106",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_107",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_107_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 107",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_108",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_108_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 108",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_109",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_109_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 109",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_110",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_110_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 110",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_111",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_111_bell",
+      "name": "Rev2 Trap bell (gucci) 111",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_112",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_112_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 112",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_113",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_113_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 113",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_114",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_114_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 114",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_115",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_115_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 115",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_116",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_116_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 116",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_117",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_117_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 117",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_118",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_118_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 118",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_119",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_119_bell",
+      "name": "Rev2 Trap bell (gucci) 119",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_120",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_120_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 120",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_121",
+      "productId": "REV2-TRAP-128",
+      "category": "trap_lead",
+      "lane": "jeezy",
+      "instrumentId": "REV2_121_trap_lead",
+      "name": "Rev2 Trap trap_lead (jeezy) 121",
+      "referenceQuery": "trap jeezy trap_lead prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_122",
+      "productId": "REV2-TRAP-128",
+      "category": "dark_pad",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_122_dark_pad",
+      "name": "Rev2 Trap dark_pad (shawty_redd) 122",
+      "referenceQuery": "trap shawty_redd dark_pad prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_123",
+      "productId": "REV2-TRAP-128",
+      "category": "brass_stab",
+      "lane": "gucci",
+      "instrumentId": "REV2_123_brass_stab",
+      "name": "Rev2 Trap brass_stab (gucci) 123",
+      "referenceQuery": "trap gucci brass_stab prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_124",
+      "productId": "REV2-TRAP-128",
+      "category": "sub_808",
+      "lane": "neutral",
+      "instrumentId": "REV2_124_sub_808",
+      "name": "Rev2 Trap sub_808 (neutral) 124",
+      "referenceQuery": "trap neutral sub_808 prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_125",
+      "productId": "REV2-TRAP-128",
+      "category": "pluck",
+      "lane": "jeezy",
+      "instrumentId": "REV2_125_pluck",
+      "name": "Rev2 Trap pluck (jeezy) 125",
+      "referenceQuery": "trap jeezy pluck prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_126",
+      "productId": "REV2-TRAP-128",
+      "category": "choir",
+      "lane": "shawty_redd",
+      "instrumentId": "REV2_126_choir",
+      "name": "Rev2 Trap choir (shawty_redd) 126",
+      "referenceQuery": "trap shawty_redd choir prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_127",
+      "productId": "REV2-TRAP-128",
+      "category": "bell",
+      "lane": "gucci",
+      "instrumentId": "REV2_127_bell",
+      "name": "Rev2 Trap bell (gucci) 127",
+      "referenceQuery": "trap gucci bell prophet synth 2000s"
+    },
+    {
+      "slotId": "REV2_128",
+      "productId": "REV2-TRAP-128",
+      "category": "noise_rise",
+      "lane": "neutral",
+      "instrumentId": "REV2_128_noise_rise",
+      "name": "Rev2 Trap noise_rise (neutral) 128",
+      "referenceQuery": "trap neutral noise_rise prophet synth 2000s"
+    }
+  ]
+}

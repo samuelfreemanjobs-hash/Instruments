@@ -1,0 +1,28 @@
+{
+  "workOrderId": "WO-SF-EXAMPLE-KEYGROUP",
+  "mode": "worker",
+  "runtimeHint": "split",
+  "mpcAgent": { "cursorAgentName": "MPC-agent" },
+  "brief": {
+    "prompt": "Dark stack multisample — match reference timbre",
+    "presetId": "DL006",
+    "generationSpec": { "mode": "one_shot", "bpm": 92, "key": "F# minor" }
+  },
+  "reference": {
+    "type": "youtube",
+    "searchQuery": "artist track name official",
+    "segmentSec": 60
+  },
+  "pipeline": [
+    { "step": "reference.youtube" },
+    { "step": "generate.batch", "variations": 1, "multisample": true },
+    { "step": "map.instrument", "format": "instrument-map.json" },
+    { "step": "export.sfz", "required": true },
+    { "step": "qa.factory", "skill": "factory-qa-audio", "required": true },
+    { "step": "export.mpc_keygroup", "delegate": "cursor-mpc-agent", "required": true }
+  ],
+  "acceptance": {
+    "manifestFormat": "DISKLORDZ_PRODUCT_PACK_MANIFEST",
+    "deliverables": ["instrument-map.json", "keygroup.xpj", "reference-report.json"]
+  }
+}

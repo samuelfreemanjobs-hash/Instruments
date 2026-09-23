@@ -180,3 +180,4 @@ target_compile_definitions(SpectralDiff
 )
 
 add_subdirectory(Wave909)
+add_subdirectory(Rev2Trap)

@@ -13,8 +13,11 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Disklordz Drum SaaS** (web) | [disklordz/website/ARCHITECTURE.md](disklordz/website/ARCHITECTURE.md) · [docs/DISKLORDZ_SAAS_V0.md](docs/DISKLORDZ_SAAS_V0.md) · [docs/DISKLORDZ_GO_LIVE.md](docs/DISKLORDZ_GO_LIVE.md) | `npm run build` in `disklordz/website/` |
 | **Disklordz DAW inbox** (WO-016) | [disklordz/daw-inbox/ARCHITECTURE.md](disklordz/daw-inbox/ARCHITECTURE.md) | `npm start` in `disklordz/daw-inbox/` |
 | **Disklordz RAG** (prompt knowledge) | [disklordz/rag/ARCHITECTURE.md](disklordz/rag/ARCHITECTURE.md) · [docs/RAG_AND_INTELLIGENT_AUTOMATION.md](docs/RAG_AND_INTELLIGENT_AUTOMATION.md) | `python3 disklordz/rag/scripts/chunk_corpus.py` |
+| **Instrument Sound Factory** | [disklordz/sound-factory/ARCHITECTURE.md](disklordz/sound-factory/ARCHITECTURE.md) · [docs/FACTORY_AGENTIC_WORKFLOW.md](docs/FACTORY_AGENTIC_WORKFLOW.md) · JZ400 / REV2-TRAP-128 | `python3 disklordz/sound-factory/scripts/run_product_batch.py` |
+| **MPC-agent handoff** (DawDreamer + keygroup `.xpj`) | [disklordz/mpc-agent/README.md](disklordz/mpc-agent/README.md) · [docs/MPC_AGENT_ORIGIN_IMPORT.md](docs/MPC_AGENT_ORIGIN_IMPORT.md) | Import from Origin → `disklordz/mpc-agent/` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-909** (sampleless trap wavetable synth) | [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md) | `Wave909_VST3`, `Wave909_Standalone`, `Wave909Tests` |
+| **Rev2 Trap** (Prophet-vibe trap synth + factory render) | [Rev2Trap/ARCHITECTURE.md](Rev2Trap/ARCHITECTURE.md) | `Rev2Trap_VST3`, `Rev2TrapOfflineRender` |
 
 ## Repository layout
 

@@ -1,0 +1,3 @@
+# Optional: VST-host multisample renders (see scripts/DAWDreamer_renderer.py)
+dawdreamer>=0.8.0
+numpy>=1.24

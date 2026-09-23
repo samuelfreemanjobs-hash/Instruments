@@ -1,0 +1,20 @@
+{
+  "workOrderId": "WO-JZ400-BATCH",
+  "mode": "worker",
+  "runtimeHint": "split",
+  "productId": "JZ400",
+  "brief": {
+    "prompt": "JZ400 catalog chunk render",
+    "catalog": "disklordz/sound-factory/catalog/jz400_catalog.json"
+  },
+  "pipeline": [
+    { "step": "generate.batch", "script": "run_product_batch.py", "limit": 50, "offset": 0 },
+    { "step": "export.sfz", "required": true },
+    { "step": "qa.factory", "skill": "factory-qa-audio", "required": true },
+    { "step": "export.mpc_keygroup", "delegate": "cursor-mpc-agent", "required": true }
+  ],
+  "acceptance": {
+    "qaReport": "batch_report + qa-report.json",
+    "exports": ["instrument-map.json", "sfz", "project.json"]
+  }
+}
