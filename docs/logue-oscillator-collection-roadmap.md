@@ -10,7 +10,7 @@
 | Layer | Path | Notes |
 |-------|------|--------|
 | v1.1 (XD / NTS mkI / Prologue) | `src/oscillators/<folder>/` | 14 musical units + `template` + `wavetable` — **DSP implemented** |
-| mkII (NTS-1 mkII) | `src/mkii/oscillators/<slug>/` | Scaffolds for catalog; **`tr808_kick_phonk` only `PORT_COMPLETE`** |
+| mkII (NTS-1 mkII) | `src/mkii/oscillators/<slug>/` | **16+ units `PORT_COMPLETE`** (supersaw family, drums, analog, Reese, MS-20); FX lane doc only until SDK bootstrap |
 | Golden mkII reference | `tr808_kick_phonk` | Use for porting patterns |
 | Agent workflow | `/logue-mkii-*` | [logue-mkii-workflow.md](logue-mkii-workflow.md) |
 

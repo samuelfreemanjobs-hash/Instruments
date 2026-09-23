@@ -63,7 +63,7 @@ python3 - <<PY
 from pathlib import Path
 p = Path("${DEST}/header.c")
 text = p.read_text(encoding="utf-8")
-text = text.replace('name = "template"', f'name = "{SHORT}"')
+text = text.replace('name = "template"', 'name = "${SHORT}"')
 p.write_text(text, encoding="utf-8")
 PY
 
