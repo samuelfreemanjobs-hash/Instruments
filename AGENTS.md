@@ -8,6 +8,19 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 - [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
 - `.cursor/rules/*.mdc` — always-on architecture and security  
 
+## JUCE factory elite worker (Track C, autonomous)
+
+**Role:** `juce-factory-elite` — senior JUCE/C++20 implementer for `Source/`, `Wave909/`, `tools/`.
+
+| Artifact | Purpose |
+|----------|---------|
+| [docs/JUCE_FACTORY_AGENT.md](docs/JUCE_FACTORY_AGENT.md) | Autonomy loop, definition of done, automation hooks |
+| [docs/prompts/juce-factory-worker.cloud.md](docs/prompts/juce-factory-worker.cloud.md) | Copy-paste **Cursor Cloud Agent** mission |
+| [.cursor/rules/juce-factory-elite.mdc](.cursor/rules/juce-factory-elite.mdc) | Realtime + CI rules (JUCE globs) |
+| `./scripts/agents/print-juce-factory-prompt.sh WO-…` | Print bootstrap prompt in terminal |
+
+Launch: [Cursor Cloud Agents](https://cursor.com/agents) → repo **Instruments** → paste prompt → environment **Disklordz / Instruments**. GitHub: issue template **JUCE factory work order** (`juce-factory` label).
+
 ## Disklordz SaaS (web)
 
 ```bash

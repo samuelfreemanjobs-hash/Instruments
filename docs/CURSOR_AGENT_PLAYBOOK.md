@@ -135,6 +135,7 @@ Enable marketplace skills for your stack (Vercel, Supabase, env-setup). Use **na
 
 | Topic | Doc |
 |--------|-----|
+| **JUCE factory elite worker** | [JUCE_FACTORY_AGENT.md](JUCE_FACTORY_AGENT.md) · [prompts/juce-factory-worker.cloud.md](prompts/juce-factory-worker.cloud.md) |
 | SaaS v0 scope | [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md) |
 | ILLUGEN roadmap | [DISKLORDZ_ILLUGEN_RESEARCH.md](DISKLORDZ_ILLUGEN_RESEARCH.md) |
 | RAG / automation | [RAG_AND_INTELLIGENT_AUTOMATION.md](RAG_AND_INTELLIGENT_AUTOMATION.md) |
