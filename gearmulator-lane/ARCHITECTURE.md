@@ -14,6 +14,8 @@ Not built by root `cmake`. On **Linux** (Cloud Agent / CI-style smoke):
 ./scripts/gearmulator/build-je8086-console.sh
 ```
 
+**Docker (host with Docker Engine):** [docker/Dockerfile](docker/Dockerfile) — reproducible multisample batch; mount plugins + ROM + output volumes. See [docs/GEARMULATOR_MULTISAMPLING.md](../docs/GEARMULATOR_MULTISAMPLING.md).
+
 Get the submodule copy:
 
 ```bash

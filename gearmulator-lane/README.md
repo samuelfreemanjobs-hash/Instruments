@@ -19,6 +19,17 @@ Fresh clone of Instruments with submodules:
 git clone --recurse-submodules https://github.com/samuelfreemanjobs-hash/Instruments.git
 ```
 
+## Docker multisample container
+
+On a machine with Docker (not Cloud Agent pods):
+
+```bash
+./scripts/gearmulator/docker-multisample.sh build
+./scripts/gearmulator/docker-multisample.sh run --plugin /plugins/YourPlugin.vst3 --name session1
+```
+
+See [docker/](docker/) and [docs/GEARMULATOR_MULTISAMPLING.md](../docs/GEARMULATOR_MULTISAMPLING.md).
+
 ## Build smoke test
 
 ```bash

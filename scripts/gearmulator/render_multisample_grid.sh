@@ -3,7 +3,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-RENDER_BIN="${REPO_ROOT}/build/Vst3OfflineRender"
+RENDER_BIN="${VST3_OFFLINE_RENDER_BIN:-${REPO_ROOT}/build/Vst3OfflineRender}"
 PLUGIN=""
 OUT_DIR="${REPO_ROOT}/gearmulator-lane/multisamples/out"
 PROGRAM=0
