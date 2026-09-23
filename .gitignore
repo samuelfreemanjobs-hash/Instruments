@@ -1,3 +1,6 @@
+# Optional local clones — docs/logue-external-reference-repos.md
+reference/logue/*/
+
 node_modules/
 
 build/
