@@ -9,6 +9,8 @@
     "docs/logue-oscillator-ideas-backlog.md",
     "docs/logue-agent-pm-automation.md",
     "docs/logue-mkii-oscillator-agent.md",
-    "src/mkii/fx/ARCHITECTURE.md"
+    "src/mkii/fx/ARCHITECTURE.md",
+    "docs/logue-external-reference-repos.md",
+    "reference/logue/README.md"
   ]
 }

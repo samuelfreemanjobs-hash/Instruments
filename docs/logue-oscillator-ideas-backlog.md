@@ -49,6 +49,21 @@ New rows land here after each **weekly ideas run** (GitHub issue + optional Korg
 
 ---
 
+## External reference repos (not our slugs)
+
+Third-party projects for **study only** — do not implement as collection units without explicit port WO. See [logue-external-reference-repos.md](logue-external-reference-repos.md).
+
+| Repo | Use |
+|------|-----|
+| [junologue-chorus](https://github.com/peterall/junologue-chorus) | Juno chorus reference |
+| [cloudlogue-reverb](https://github.com/peterall/cloudlogue-reverb) | Clouds reverb reference |
+| [Waves2](https://github.com/boochow/Waves2) | Wavetable / mkII WT ideas |
+| [logue-fx](https://github.com/dukesrg/logue-fx) | FX header patterns |
+| [tremoxd](https://github.com/ttaschke/tremoxd) | Tremolo modfx reference |
+| [logue-osc](https://github.com/dukesrg/logue-osc) | WT osc + web inject reference |
+
+---
+
 ## Team-submitted ideas (manual)
 
 Add rows when Slack / Airtable / issue comments propose sounds:

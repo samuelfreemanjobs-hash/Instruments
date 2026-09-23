@@ -22,6 +22,7 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 | [docs/logue-mkii-golden-unit.md](docs/logue-mkii-golden-unit.md) | Golden reference unit for CI/agents |
 | [docs/logue-oscillator-ideas-backlog.md](docs/logue-oscillator-ideas-backlog.md) | Idea list (keep & revisit) |
 | [docs/logue-agent-pm-automation.md](docs/logue-agent-pm-automation.md) | **Korg Logue Agent** weekly PM + team integration |
+| [docs/logue-external-reference-repos.md](docs/logue-external-reference-repos.md) | Third-party logue repos — **reference only** (not `src/mkii/`) |
 
 ```bash
 chmod +x tools/mkii-automate.sh tools/osc-eval-mkii.sh

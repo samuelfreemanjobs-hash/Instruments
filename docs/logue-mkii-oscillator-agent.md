@@ -45,6 +45,7 @@ Exit codes: `0` pass, `1` static failure, `2` build skipped (no SDK), `3` build 
 
 - [logue-agent-pm-automation.md](logue-agent-pm-automation.md) — weekly ideas, Slack, work orders
 - [logue-oscillator-ideas-backlog.md](logue-oscillator-ideas-backlog.md) — keep & revisit idea list
+- [logue-external-reference-repos.md](logue-external-reference-repos.md) — **third-party repos (reference only, not our collection)**
 
 ## Related docs
 
