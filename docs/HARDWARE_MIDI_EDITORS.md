@@ -29,6 +29,26 @@ Rust reimplementations live upstream under `alternatives/rust*` — optional fut
 
 ---
 
+## Alapatch (microKORG GUI)
+
+| | |
+|--|--|
+| **Upstream** | https://github.com/ifacodes/alapatch |
+| **Submodule** | `hardware-lane/editors/alapatch` |
+| **Does** | **React** patch editor — dual timbre UI, drag-and-drop **SysEx** files (`.syx`); live USB MIDI planned v2.0 |
+
+```bash
+git submodule update --init hardware-lane/editors/alapatch
+./hardware-lane/scripts/alapatch-dev.sh
+# Browser → http://localhost:3000 — design patch, export SysEx, load on hardware when file I/O is complete
+```
+
+Pair with **Open-microKORG** for CLI decode of the same SysEx or `.prg` banks. Korg MIDI spec: [microKORG MIDI implementation PDF](http://i.korg.com/uploads/Support/MK1_633652915168960000.pdf) (linked upstream).
+
+**Note:** Upstream README lists file save/load and Web MIDI as incomplete; confirm in UI before relying on round-trip.
+
+---
+
 ## Adding the next repo
 
 1. Tell the agent the GitHub URL (you’re collecting these).  

@@ -43,6 +43,13 @@ hardware_editors:
       url: https://github.com/gabrielmagno/Open-microKORG
       license: GPL-3.0
       device: microKORG
+      role: cli_prg_syx
+    - name: alapatch
+      path: hardware-lane/editors/alapatch
+      url: https://github.com/ifacodes/alapatch
+      license: unspecified_upstream
+      device: microKORG
+      role: react_sysex_gui
 
 lanes:
   gearmulator_track_e:

@@ -29,7 +29,8 @@ Editors run **locally** (USB MIDI to hardware). Cloud Agents use this tree for *
 
 | Path | Responsibility |
 |------|----------------|
-| `editors/open-microkorg/` | Submodule: [gabrielmagno/Open-microKORG](https://github.com/gabrielmagno/Open-microKORG) |
+| `editors/open-microkorg/` | Submodule: CLI decode/encode `.prg`/`.syx` |
+| `editors/alapatch/` | Submodule: [ifacodes/alapatch](https://github.com/ifacodes/alapatch) React GUI (SysEx) |
 | `editors/REGISTRY.md` | Index of editor repos (add more as maintainer provides URLs) |
 | `scripts/microkorg-decode.sh` | Thin CLI wrapper |
 | `manifests/` | Optional patch index JSON (paths local only) |

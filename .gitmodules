@@ -7,3 +7,6 @@
 [submodule "hardware-lane/editors/open-microkorg"]
 	path = hardware-lane/editors/open-microkorg
 	url = https://github.com/gabrielmagno/Open-microKORG.git
+[submodule "hardware-lane/editors/alapatch"]
+	path = hardware-lane/editors/alapatch
+	url = https://github.com/ifacodes/alapatch.git
