@@ -139,6 +139,7 @@ Installed under [`.cursor/skills/`](../.cursor/skills/) — agents **read the SK
 |------|---------|
 | Deploy / env | Vercel, Supabase skills |
 | WO automation | Zapier → Airtable (writes need confirmation) |
+| GitHub repos, issues, PRs, Actions | **GitHub MCP** — [docs/GITHUB_MCP.md](GITHUB_MCP.md) |
 | Timer / PR / CI subscriptions | `cursor-subscriptions` MCP |
 | Web research | `WebSearch`, `WebFetch` (cursor namespace) |
 | Slack ops | Native Slack MCP |

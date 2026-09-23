@@ -20,6 +20,8 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 **Stripe MCP (Cursor):** [disklordz/website/docs/STRIPE_MCP.md](disklordz/website/docs/STRIPE_MCP.md) — install Stripe plugin or OAuth **stripe** server; optional `STRIPE_RESTRICTED_KEY` for agents.
 
+**GitHub MCP (Cursor):** [docs/GITHUB_MCP.md](docs/GITHUB_MCP.md) — `.cursor/mcp.json` **github** server; set `GITHUB_TOKEN` (PAT) or Connect in MCP settings; Cloud secret + `api.githubcopilot.com` egress.
+
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
 ## Instrument & Sound Factory agent
