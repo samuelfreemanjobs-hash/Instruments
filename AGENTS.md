@@ -22,6 +22,16 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
+## mpc-agent + DawDreamer (multisample renders)
+
+```bash
+pip install -r gearmulator-lane/requirements-dawdreamer.txt
+python3 scripts/gearmulator/render_multisample_dawdreamer.py --plugin "/path/to/Plugin.vst3" --name session1
+git submodule update --init mpc-agent
+```
+
+Submodule: [mpc-agent](mpc-agent) (https://github.com/samuelfreemanjobs-hash/mpc-agent). Docs: [docs/MPC_AGENT_DAWDREAMER.md](docs/MPC_AGENT_DAWDREAMER.md) · **Workflow:** [docs/MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md](docs/MULTISAMPLE_TO_INSTRUMENT_WORKFLOW.md) · `render_capture_plan.py` · `manifest_to_sfz.py`
+
 ## RAG (prompt knowledge)
 
 ```bash
