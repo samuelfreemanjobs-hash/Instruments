@@ -1,0 +1,6 @@
+{
+  "slug": "memphis_dust_sub",
+  "current_phase": "eval",
+  "setup_completed": false,
+  "phases_completed": ["brief", "design", "scaffold", "impl"]
+}
