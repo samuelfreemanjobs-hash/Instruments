@@ -30,7 +30,7 @@ cmake --build build -j --target Vst3OfflineRender
 ./scripts/gearmulator/render_multisample_grid.sh --plugin "/path/to/Plugin.vst3" --name session1
 ```
 
-Copy: submodule [gearmulator-lane/gearmulator](gearmulator-lane/gearmulator) (default upstream dsp56300/gearmulator). **Fork:** [docs/GEARMULATOR_FORK.md](docs/GEARMULATOR_FORK.md) · `./scripts/gearmulator/repoint-submodule-to-fork.sh`. **Do not commit ROM dumps**; keep GPLv3 tree separate from JD Upgraded `Source/`.
+Copy: submodule [gearmulator-lane/gearmulator](gearmulator-lane/gearmulator) → https://github.com/samuelfreemanjobs-hash/gearmulator.git (sync upstream via [docs/GEARMULATOR_FORK.md](docs/GEARMULATOR_FORK.md)). **Do not commit ROM dumps**; keep GPLv3 tree separate from JD Upgraded `Source/`.
 
 ## RAG (prompt knowledge)
 
