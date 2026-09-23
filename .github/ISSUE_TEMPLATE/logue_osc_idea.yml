@@ -1,0 +1,60 @@
+name: Korg Logue Agent — oscillator idea
+description: Propose a new NTS-1 mkII custom oscillator or FX for the collection backlog
+title: "[Korg Logue Agent] Idea: "
+labels:
+  - logue-agent
+  - pm-intake
+body:
+  - type: markdown
+    value: |
+      Ideas are tracked in [docs/logue-oscillator-ideas-backlog.md](docs/logue-oscillator-ideas-backlog.md).
+      The **Korg Logue Agent** implements approved slugs on mkII (`src/mkii/oscillators/`).
+  - type: input
+    id: slug
+    attributes:
+      label: Proposed slug (snake_case)
+      placeholder: plug_nether_pluck
+    validations:
+      required: true
+  - type: input
+    id: display
+    attributes:
+      label: Display name (≤15 chars on hardware)
+      placeholder: Plug Pluck
+    validations:
+      required: true
+  - type: textarea
+    id: reference
+    attributes:
+      label: Genre / reference tracks or artists
+      placeholder: UK Plug, Nether-style pluck bass…
+    validations:
+      required: true
+  - type: textarea
+    id: dsp
+    attributes:
+      label: DSP sketch (one paragraph)
+    validations:
+      required: true
+  - type: textarea
+    id: params
+    attributes:
+      label: Parameters (≤10, comma-separated)
+      placeholder: Pluck, Decay, Tone, Sub, Glide, Drive, Level
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P1 — next sprint
+        - P2 — backlog
+        - P3 — someday
+    validations:
+      required: true
+  - type: checkboxes
+    id: implement
+    attributes:
+      label: Implementation
+      options:
+        - label: Request Korg Logue Agent implementation after PM approval (add label `logue-implement`)
+          required: false

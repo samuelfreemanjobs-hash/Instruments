@@ -20,6 +20,9 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 | [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md) | Port v1.1 → mkII, build, load |
 | [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md) | Catalog + presets |
 | [docs/logue-mkii-golden-unit.md](docs/logue-mkii-golden-unit.md) | Golden reference unit for CI/agents |
+| [docs/logue-oscillator-ideas-backlog.md](docs/logue-oscillator-ideas-backlog.md) | Idea list (keep & revisit) |
+| [docs/logue-agent-pm-automation.md](docs/logue-agent-pm-automation.md) | **Korg Logue Agent** weekly PM + team integration |
+| [docs/logue-external-reference-repos.md](docs/logue-external-reference-repos.md) | Third-party logue repos — **reference only** (not `src/mkii/`) |
 
 ```bash
 chmod +x tools/mkii-automate.sh tools/osc-eval-mkii.sh
@@ -27,9 +30,15 @@ chmod +x tools/mkii-automate.sh tools/osc-eval-mkii.sh
 ./tools/mkii-automate.sh scaffold           # refresh mkII trees
 ./tools/osc-eval-mkii.sh tr808_kick_phonk   # build + smoke checks (golden)
 ./tools/build-mkii.sh <slug>                # single unit when bootstrapped
+./tools/fx-eval-mkii.sh <fx-slug> --static-only
+./tools/build-mkii-fx.sh <fx-slug>
 ```
 
-Optional **v1.1** builds (Minilogue XD / NTS-1 mkI / Prologue): `./tools/build.sh oscillators/<name> minilogue-xd` — see [docs/platform-matrix.md](docs/platform-matrix.md).
+**New mkII unit:** `./tools/new-mkii-oscillator.sh <slug> ["Name"]` — see [docs/logue-mkii-boilerplate.md](docs/logue-mkii-boilerplate.md).
+
+Optional **v1.1** builds (legacy): `./tools/build.sh oscillators/<name> minilogue-xd` — new collection is **mkII-only** per [docs/logue-oscillator-collection-roadmap.md](docs/logue-oscillator-collection-roadmap.md).
+
+**Minilogue XD FM + DX7 (separate lane):** [docs/minilogue-xd-fm6osc-pm-plan.md](docs/minilogue-xd-fm6osc-pm-plan.md) (PM) · [docs/minilogue-xd-fm4-dx7-oscillator-plan.md](docs/minilogue-xd-fm4-dx7-oscillator-plan.md) · `fm6op-dx7-xd` (**FM6OSC**)
 
 Legacy **Claude oscillator bundle** (v1 fiction API): quarantined under [docs/archive/quarantined-claude-osc-bundle/](docs/archive/quarantined-claude-osc-bundle/) — do not use for codegen.
 

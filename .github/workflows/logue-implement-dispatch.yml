@@ -1,0 +1,39 @@
+# When PM labels an issue `logue-implement`, post Cloud Agent kickoff instructions.
+
+name: logue implement dispatch
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  issues: write
+
+jobs:
+  dispatch:
+    if: github.event.label.name == 'logue-implement'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = [
+              '## Korg Logue Agent — implementation dispatch',
+              '',
+              'This issue was labeled **`logue-implement`**. Start a **Cursor Cloud Agent** on branch `cursor/logue-agent-interface-7bcd` (or current integration branch) with:',
+              '',
+              '```',
+              'You are the Korg Logue Agent. Implement the slug(s) approved in this issue.',
+              'Read docs/logue-oscillator-ideas-backlog.md first. Follow mkII workflow: brief → design → impl → osc-eval-mkii / fx-eval-mkii.',
+              'Reference issue #' + issue.number + '.',
+              '```',
+              '',
+              'PR title should include `WO-LOGUE-IMPL-<slug>`.',
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body,
+            });

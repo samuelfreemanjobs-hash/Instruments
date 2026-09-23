@@ -1,0 +1,13 @@
+{
+  "build_flavor": "multi",
+  "max_banks": 4,
+  "banks": [
+    { "file": "bank_01.syx", "label": "My bass bank" },
+    { "file": "bank_02.syx", "label": "Keys and bells" },
+    { "file": "bank_03.syx", "label": "Brass / strings" },
+    { "file": "bank_04.syx", "label": "FX / bells" }
+  ],
+  "voice_labels": {
+    "0:0": "Example patch name (bank 0, patch 1)"
+  }
+}

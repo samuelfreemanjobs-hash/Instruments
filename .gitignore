@@ -1,3 +1,10 @@
+# Optional local clones — docs/logue-external-reference-repos.md
+reference/logue/*/
+
+# Owner DX7 syx — docs/minilogue-xd-fm6osc-pm-plan.md
+reference/dx7-banks/*.syx
+reference/dx7-banks/manifest.json
+
 node_modules/
 
 build/

@@ -1,0 +1,68 @@
+# Weekly Korg Logue Agent ideas intake — GitHub issue + optional Slack.
+# Team reviews; Cloud Agent appends to docs/logue-oscillator-ideas-backlog.md via separate automation/PR.
+
+name: logue weekly ideas intake
+
+on:
+  schedule:
+    # Monday 15:00 UTC
+    - cron: "0 15 * * 1"
+  workflow_dispatch:
+  repository_dispatch:
+    types: [logue-weekly-ideas]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  open-intake-issue:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_LOGUE_URL: ${{ secrets.SLACK_WEBHOOK_LOGUE_URL }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ripgrep (optional, for future validation)
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+      - name: Build issue body
+        run: |
+          chmod +x tools/logue/weekly-ideas-intake.sh
+          ./tools/logue/weekly-ideas-intake.sh --print-issue-body > /tmp/logue-intake-body.md
+          echo "INTAKE_TITLE=[Korg Logue Agent] Weekly oscillator ideas — $(date -u +%Y-%m-%d)" >> "$GITHUB_ENV"
+
+      - name: Create intake issue
+        id: issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const title = process.env.INTAKE_TITLE;
+            const body = fs.readFileSync('/tmp/logue-intake-body.md', 'utf8');
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['logue-agent', 'pm-intake'],
+            });
+            core.setOutput('number', issue.data.number);
+            core.setOutput('url', issue.data.html_url);
+
+      - name: Post to Slack
+        env:
+          ISSUE_NUM: ${{ steps.issue.outputs.number }}
+          ISSUE_URL: ${{ steps.issue.outputs.url }}
+        run: |
+          WEBHOOK="${SLACK_WEBHOOK_LOGUE_URL:-}"
+          if [ -z "$WEBHOOK" ]; then
+            WEBHOOK="${SLACK_WEBHOOK_URL:-}"
+          fi
+          if [ -z "$WEBHOOK" ]; then
+            echo "Set SLACK_WEBHOOK_LOGUE_URL or SLACK_WEBHOOK_URL for team notifications."
+            exit 0
+          fi
+          payload=$(jq -n --arg text "Korg Logue Agent: weekly ideas issue #${ISSUE_NUM} — ${ISSUE_URL}" '{text: $text}')
+          curl -sf -X POST -H 'Content-type: application/json' --data "$payload" "$WEBHOOK"

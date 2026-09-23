@@ -30,6 +30,7 @@ MIDI / panel → unit_render (SDK) → Osc::setPitch / setParameter
 | Path | Role |
 |------|------|
 | `src/mkii/oscillators/*/osc.h` | DSP (`Osc` class) |
+| `src/mkii/common/` | Shared headers (e.g. `supersaw_core.h`) |
 | `src/mkii/oscillators/*/unit.cc` | SDK glue |
 | `src/oscillators/*` | v1.1 sources for porting |
 | `tools/mkii/scaffold-mkii.py` | Generate mkII tree |
@@ -50,5 +51,7 @@ Per-unit state: `src/mkii/oscillators/<slug>/.agent/status.json` (example: `temp
 ## Related docs
 
 - [docs/nts1-mkii-porting.md](../docs/nts1-mkii-porting.md)
-- [docs/logue-mkii-oscillator-agent.md](../docs/logue-mkii-oscillator-agent.md)
+- [docs/logue-mkii-oscillator-agent.md](../docs/logue-mkii-oscillator-agent.md) (**Korg Logue Agent**)
+- [docs/logue-oscillator-ideas-backlog.md](../docs/logue-oscillator-ideas-backlog.md)
+- [docs/logue-agent-pm-automation.md](../docs/logue-agent-pm-automation.md)
 - [docs/logue-mkii-golden-unit.md](../docs/logue-mkii-golden-unit.md)

@@ -1,0 +1,33 @@
+{
+  "header": {
+    "platform": "minilogue-xd",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "0.1-0",
+    "name": "FM4 DX7",
+    "num_param": 6,
+    "params": [
+      ["Patch", 0, 100, ""],
+      ["Algo", 0, 100, ""],
+      ["Level", 0, 100, "%"],
+      ["Velo", 0, 100, "%"],
+      ["Bright", 0, 100, ""],
+      ["Detune", 0, 100, ""]
+    ]
+  },
+  "_agent": {
+    "id": "fm4op_dx7_xd",
+    "type": "osc",
+    "targets": ["minilogue-xd", "prologue", "nts-1"],
+    "notes": "DX7 banks via tools/dx7/import_dx7_bank.py (planned). Bind Velo to assignable controller on hardware."
+  },
+  "_agent_presets": [
+    {
+      "name": "DX7 default proxy",
+      "midi_hint": "Bind AC to Velo; Patch low for bass voices",
+      "params": [10, 50, 85, 80, 55, 50]
+    }
+  ]
+}
