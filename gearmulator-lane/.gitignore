@@ -1,0 +1,3 @@
+# Local clone from scripts/gearmulator/build-je8086-console.sh (not vendored in git)
+vendor/
+build-*/

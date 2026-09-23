@@ -22,6 +22,14 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
+## Gearmulator reference (Track E)
+
+```bash
+./scripts/gearmulator/build-je8086-console.sh   # JE8086TestConsole smoke build
+```
+
+Docs: [docs/GEARMULATOR_LANE.md](docs/GEARMULATOR_LANE.md) · upstream https://github.com/dsp56300/gearmulator.git — **do not commit ROM dumps**; separate GPLv3 tree from JD Upgraded `Source/`.
+
 ## RAG (prompt knowledge)
 
 ```bash
