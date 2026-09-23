@@ -8,6 +8,7 @@
 
 | Term | Meaning |
 |------|---------|
+| **Korg Logue Agent** | Team-facing name for this agent |
 | **logue SDK custom oscillator agent** | Umbrella: user-osc slot, Korg toolchain |
 | **mkII standard** | Default deliverable: `src/mkii/oscillators/<slug>/` → `.nts1mkiiunit` |
 | **v1.1 legacy** | `src/oscillators/<name>/` → `.prg` / compatible ELF |
@@ -39,6 +40,11 @@ Sound brief + parameter plan (≤10)
 ```
 
 Exit codes: `0` pass, `1` static failure, `2` build skipped (no SDK), `3` build failed.
+
+## PM & team
+
+- [logue-agent-pm-automation.md](logue-agent-pm-automation.md) — weekly ideas, Slack, work orders
+- [logue-oscillator-ideas-backlog.md](logue-oscillator-ideas-backlog.md) — keep & revisit idea list
 
 ## Related docs
 

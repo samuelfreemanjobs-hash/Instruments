@@ -51,5 +51,7 @@ Per-unit state: `src/mkii/oscillators/<slug>/.agent/status.json` (example: `temp
 ## Related docs
 
 - [docs/nts1-mkii-porting.md](../docs/nts1-mkii-porting.md)
-- [docs/logue-mkii-oscillator-agent.md](../docs/logue-mkii-oscillator-agent.md)
+- [docs/logue-mkii-oscillator-agent.md](../docs/logue-mkii-oscillator-agent.md) (**Korg Logue Agent**)
+- [docs/logue-oscillator-ideas-backlog.md](../docs/logue-oscillator-ideas-backlog.md)
+- [docs/logue-agent-pm-automation.md](../docs/logue-agent-pm-automation.md)
 - [docs/logue-mkii-golden-unit.md](../docs/logue-mkii-golden-unit.md)

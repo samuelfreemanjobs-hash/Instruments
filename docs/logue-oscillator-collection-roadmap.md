@@ -56,6 +56,10 @@
 | 31 | Tape echo / dub delay | `tape_echo_dub_fx` | _(FX)_ | `src/mkii/fx/` | **New custom FX** |
 | 32 | Soft clip / tape saturator | `tape_sat_fx` | _(FX)_ | `src/mkii/fx/` | **New custom FX** |
 | 33 | Cassette tape hiss | `cassette_hiss_fx` | _(FX)_ | `src/mkii/fx/` | **New custom FX** |
+| 34 | Plug / Nether pluck | `plug_nether_pluck` | _(new)_ | _(new)_ | **New** — see [ideas backlog](logue-oscillator-ideas-backlog.md) |
+| 35 | Drill 808 slide + tail | `drill_slide_808_tail` | extend 808 kick | _(new)_ | **New** — drill bass, not kit |
+
+**Idea intake (ongoing):** [logue-oscillator-ideas-backlog.md](logue-oscillator-ideas-backlog.md) · weekly automation [logue-agent-pm-automation.md](logue-agent-pm-automation.md) · **Korg Logue Agent**
 
 **Already close (rename optional, not duplicate work):**
 
@@ -420,6 +424,7 @@ Phase 5a  tr808_drumkit_4voice (+ port kick DSP), fm808_cowbell_perc, tr909_drum
 Phase 5b  FX bootstrap → sp1200_fx → dream_reverb_fx → tape_echo_dub_fx → tape_sat_fx → cassette_hiss_fx
 Phase 6a  dx7_lately_bass (port), dx7_fm_bass, reese_sub_osc, ms20_sync_osc
 Phase 6b  rhodes_wurli_ep, mellotron_tape_flute, jupiter8_analog
+Phase 6c  plug_nether_pluck, drill_slide_808_tail   ← genre (PM-approved backlog)
 ```
 
 Parallel track: **mkII ports** for every v1 unit touched.

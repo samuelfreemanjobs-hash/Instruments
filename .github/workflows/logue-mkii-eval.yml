@@ -20,7 +20,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install ripgrep
         run: sudo apt-get update && sudo apt-get install -y ripgrep
-      - name: Golden unit static eval
+      - name: Static eval (golden + PORT_COMPLETE slugs)
         run: |
-          chmod +x tools/osc-eval-mkii.sh
+          chmod +x tools/osc-eval-mkii.sh tools/logue/list-port-complete-slugs.sh
           ./tools/osc-eval-mkii.sh tr808_kick_phonk --static-only
+          while IFS= read -r slug; do
+            [ -z "$slug" ] && continue
+            [ "$slug" = "tr808_kick_phonk" ] && continue
+            ./tools/osc-eval-mkii.sh "$slug" --static-only
+          done < <(./tools/logue/list-port-complete-slugs.sh)

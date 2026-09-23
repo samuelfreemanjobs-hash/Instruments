@@ -29,6 +29,12 @@ description: Orchestrates logue SDK v2 mkII custom oscillator work — brief thr
 | `/logue-mkii-status [slug]` | `logue-mkii-status.md` | read status only |
 | `/logue-mkii-resume [slug]` | `logue-mkii-resume.md` | continue from status |
 
+## PM / backlog (Korg Logue Agent)
+
+- **Backlog:** `docs/logue-oscillator-ideas-backlog.md`
+- **Weekly intake:** `docs/logue-agent-pm-automation.md` · `tools/logue/weekly-ideas-intake.sh --print-agent-prompt`
+- Do not re-propose slugs already `planned` or `shipped` in the backlog.
+
 ## Slug resolution
 
 - **slug** = mkII folder name under `src/mkii/oscillators/<slug>/`

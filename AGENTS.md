@@ -20,6 +20,8 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 | [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md) | Port v1.1 → mkII, build, load |
 | [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md) | Catalog + presets |
 | [docs/logue-mkii-golden-unit.md](docs/logue-mkii-golden-unit.md) | Golden reference unit for CI/agents |
+| [docs/logue-oscillator-ideas-backlog.md](docs/logue-oscillator-ideas-backlog.md) | Idea list (keep & revisit) |
+| [docs/logue-agent-pm-automation.md](docs/logue-agent-pm-automation.md) | **Korg Logue Agent** weekly PM + team integration |
 
 ```bash
 chmod +x tools/mkii-automate.sh tools/osc-eval-mkii.sh
