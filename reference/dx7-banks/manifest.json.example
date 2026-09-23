@@ -1,0 +1,6 @@
+{
+  "banks": [
+    { "file": "bank_01.syx", "label": "My bass bank" },
+    { "file": "bank_02.syx", "label": "Keys and bells" }
+  ]
+}

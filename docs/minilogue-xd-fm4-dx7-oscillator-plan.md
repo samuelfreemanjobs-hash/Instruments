@@ -130,6 +130,10 @@ Load via **KORG Librarian** / XD multi-engine slot.
 
 ---
 
+## PM (FM6OSC + embed banks)
+
+**Owner PM plan:** [minilogue-xd-fm6osc-pm-plan.md](minilogue-xd-fm6osc-pm-plan.md) — what “embed banks” means, `WO-LOGUE-FM6-*`, autonomous phases.
+
 ## Related
 
 - v1 FM bass: `src/oscillators/dx7-lately/`
