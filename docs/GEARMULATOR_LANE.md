@@ -3,7 +3,8 @@
 **Status:** Parallel R&D — **not** the ship stack for JD Upgraded unless explicitly promoted.  
 **Upstream:** https://github.com/dsp56300/gearmulator  
 **Monorepo anchor:** [gearmulator-lane/ARCHITECTURE.md](../gearmulator-lane/ARCHITECTURE.md)  
-**Fork (recommended for multisample / custom tooling):** [GEARMULATOR_FORK.md](GEARMULATOR_FORK.md)
+**Fork (recommended for multisample / custom tooling):** [GEARMULATOR_FORK.md](GEARMULATOR_FORK.md)  
+**Multisampling in Cloud VM:** [GEARMULATOR_MULTISAMPLING.md](GEARMULATOR_MULTISAMPLING.md)
 
 ## Why this lane exists
 
