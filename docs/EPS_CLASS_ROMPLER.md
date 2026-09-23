@@ -1,6 +1,7 @@
 # EPS-class rompler (B + C) — product architecture
 
 **Status:** planned SKU (not in root CMake yet)  
+**Platform:** shared engine/content strategy with [ASR-class rompler](ASR_CLASS_ROMPLER.md) — see [ENSONIQ_CLASS_SAMPLER_PLATFORM.md](ENSONIQ_CLASS_SAMPLER_PLATFORM.md)  
 **Tracks:** [HISE sketch (C)](HISE_SKETCH_LANE.md) first → optional [JUCE factory port (B)](DISKLORDZ_PLUGIN_TRACKS.md)  
 **Not in scope:** Full OS / ROM emulation ([mardlib/Ensoniq-EPS-16-Plus](https://github.com/mardlib/Ensoniq-EPS-16-Plus) class A)
 
@@ -147,6 +148,7 @@ Same contract as JD Upgraded:
 
 ## Related docs
 
+- [ASR_CLASS_ROMPLER.md](ASR_CLASS_ROMPLER.md) · [ENSONIQ_CLASS_SAMPLER_PLATFORM.md](ENSONIQ_CLASS_SAMPLER_PLATFORM.md)
 - [DISKLORDZ_PLUGIN_TRACKS.md](DISKLORDZ_PLUGIN_TRACKS.md)
 - [HISE_SKETCH_LANE.md](HISE_SKETCH_LANE.md)
 - [hise-sketch/ARCHITECTURE.md](../hise-sketch/ARCHITECTURE.md)

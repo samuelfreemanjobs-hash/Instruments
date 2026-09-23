@@ -4,4 +4,4 @@ Placeholder for **HISE / Antigravity** instrument projects. See [docs/HISE_SKETC
 
 No projects are committed yet. Sketches may stay on a local Windows machine until Business Planner and Marketing approve a SKU and git import.
 
-**Planned first SKU (when approved):** EPS-class rompler — HISE content track (C) then optional JUCE engine port (B). See [docs/EPS_CLASS_ROMPLER.md](../docs/EPS_CLASS_ROMPLER.md).
+**Planned SKUs (when approved):** Ensoniq-class romplers — EPS and/or ASR, HISE (C) then JUCE (B). See [docs/ENSONIQ_CLASS_SAMPLER_PLATFORM.md](../docs/ENSONIQ_CLASS_SAMPLER_PLATFORM.md).
