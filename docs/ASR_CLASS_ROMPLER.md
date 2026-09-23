@@ -92,6 +92,7 @@ Inherit the [EPS B checklist](EPS_CLASS_ROMPLER.md#b--engine-specification-behav
 
 ## Related docs
 
+- [ENSONIQ_SAMPLE_AUTHORING.md](ENSONIQ_SAMPLE_AUTHORING.md) — record, multisample, HISE import
 - [EPS_CLASS_ROMPLER.md](EPS_CLASS_ROMPLER.md)
 - [ENSONIQ_CLASS_SAMPLER_PLATFORM.md](ENSONIQ_CLASS_SAMPLER_PLATFORM.md)
 - [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md)

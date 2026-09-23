@@ -41,6 +41,10 @@ Two customer SKUs share one factory strategy:
 
 Do not merge class A cores into this platform without a separate product line and legal review.
 
+## Content authoring
+
+How to record, edit, zone, and import samples: [ENSONIQ_SAMPLE_AUTHORING.md](ENSONIQ_SAMPLE_AUTHORING.md).
+
 ## Related
 
 - Repo index: [ARCHITECTURE.md](../ARCHITECTURE.md)
