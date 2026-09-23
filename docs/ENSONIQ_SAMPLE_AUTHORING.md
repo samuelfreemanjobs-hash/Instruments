@@ -24,8 +24,58 @@ All material must be **yours, recorded by you, or properly licensed**. Do not ri
 | **Your existing WAVs** | Beats, one-shots, stems | Normalize policy below; strip project watermarks |
 | **Soft synths** | “Factory wave” style short tones | Short releases; multisample every 3–5 semitones |
 | **Disklordz drum factory** | Layered kits under performances | [disklordz/sound-factory/README.md](../disklordz/sound-factory/README.md) — drum-focused; one-shots can sit in a layer, not a full rompler library by themselves |
+| **Cursor / Disklordz factory (agent)** | Chromatic waves, synthetic multis, batch libraries | See [§ Agent as main source](#agent-as-main-source) below |
 
 **ASR lead recommendation:** split library into **(a) short chromatic “waves”** and **(b) longer multisampled instruments** (strings, brass, choirs). EPS-skewed libraries can emphasize (b) and simpler FX.
+
+---
+
+## Agent as main source
+
+You can treat **the agent + repo factories** as the primary sample source instead of recording hardware. That fits the Disklordz direction ([ILLUGEN research](DISKLORDZ_ILLUGEN_RESEARCH.md): orchestration separate from engine).
+
+### Your role vs the agent’s role
+
+| You | Agent / factory |
+|-----|------------------|
+| Briefs (“ASR wave: dark, short, 32 zones”, “brass section M3, 3 velocities”) | Implements or extends **deterministic renderers**, runs batch jobs, writes WAVs + **manifest** (root key, vel, SHA-256) |
+| Picks winners from variations / seeds | Regenerates with new seeds; never ships Ensoniq ROM or scraped libraries |
+| Imports approved folders into HISE | Can scaffold SampleMap XML once HISE project exists |
+
+### Three engine tiers (pick per instrument)
+
+1. **Parametric / code (best v0)** — TypeScript or Python synths (same idea as [factory.ts](../disklordz/website/src/lib/generation/factory.ts) and [generate_stub_kits.py](../disklordz/sound-factory/scripts/generate_stub_kits.py)). **You own the output**; seeds reproduce WAVs. Ideal for **ASR “waves”**, bass stabs, synthetic pads, lo-fi tones.
+2. **Hosted generative model (later)** — Prompt → remote API → candidates (ILLUGEN-shaped WO-SAAS-007+). Use for **organic** timbres; **read provider ToS** for commercial use inside a **paid plugin**. Agent wires gateway; you approve clips and normalize/loudness-match before zoning.
+3. **Hybrid (recommended for “real” brass/strings)** — Model or procedural **body** + agent **post** (loops, crossfade, velocity layers from one good note). You still curate; factory scales spacing across the keyboard.
+
+**Honest limit:** Code-only factories won’t match multi-gig acoustic libraries without tier 2 or recording. For an **ASR-class inspired** SKU, synthetic + curated waves is a valid product identity.
+
+### Target pipeline (not all built yet)
+
+```text
+Prompt / instrument spec (YAML or Airtable WO)
+  → rompler-factory batch (Python/TS) OR Disklordz generate API (new mode)
+  → out/InstrumentName/*.wav + zones.json
+  → you audition → HISE SampleMap → AsrClass preset
+```
+
+Today: drum **`one_shot` / `loop` / `sfx`** modes only. Rompler batch is a **new WO** (extend `sound-factory` or `tools/rompler-factory/`).
+
+### Provenance fields (use on every WAV)
+
+Record in `zones.json` or manifest:
+
+- `source: "factory_parametric_v1"` or `source: "external_model:<provider>"`
+- `seed`, `prompt`, `engine`, `generatedAt`
+- Keeps plugin/store compliance auditable
+
+### How to ask the agent
+
+Example WO text:
+
+> Batch **ASR_Wave_Dark**: 48 kHz mono, notes C1–C6 every minor third, 200 ms decay, seed range 1000–1015, output `SampleRaw/Waves/ASR_Wave_Dark/` + `zones.json` for HISE import.
+
+Open a **`[Plugin][HISE]`** or **`[Plugin][Factory]`** row when you want this in git/CI, not only ad-hoc Cloud runs.
 
 ---
 
