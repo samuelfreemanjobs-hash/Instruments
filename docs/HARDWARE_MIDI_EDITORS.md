@@ -47,6 +47,8 @@ Pair with **Open-microKORG** for CLI decode of the same SysEx or `.prg` banks. K
 
 **Note:** Upstream README lists file save/load and Web MIDI as incomplete; confirm in UI before relying on round-trip.
 
+**Node:** CRA 4 / craco may need **Node 16–18** (`nvm use 18`) if `npm run build` fails on Node 22 with PostCSS export errors.
+
 ---
 
 ## Adding the next repo
