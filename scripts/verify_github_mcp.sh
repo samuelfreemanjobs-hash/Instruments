@@ -14,9 +14,10 @@ fi
 echo ""
 echo "== GitHub MCP (api.githubcopilot.com) =="
 if [[ -z "${GITHUB_TOKEN:-}" ]]; then
-  echo "SKIP: GITHUB_TOKEN unset (hosted MCP requires PAT per GitHub docs; OAuth Connect is for local Docker server)."
-  echo "Set GITHUB_TOKEN or add Cloud environment secret, then re-run."
-  exit 0
+  echo "FAIL: GITHUB_TOKEN unset."
+  echo "Approve Cloud secret GITHUB_TOKEN, Save environment, start a NEW agent run."
+  echo "(Hosted MCP requires PAT; see docs/GITHUB_MCP.md)"
+  exit 1
 fi
 
 code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 25 \

@@ -70,13 +70,16 @@ Add headers in `.cursor/mcp.json` (local only — prefer env-specific global con
 
 See [remote server configuration](https://github.com/github/github-mcp-server/blob/main/docs/remote-server.md).
 
-## 4. Cloud Agents
+## 4. Cloud Agents — approve setup
 
-1. Add **`GITHUB_TOKEN`** as an [environment secret](https://cursor.com/docs/cloud-agent/setup) (fine-grained PAT, repo-scoped).
-2. Allow egress to **`api.githubcopilot.com`** (listed in `.cursor/environment.json` `egressAllowlist`).
-3. Enable the **github** MCP server for the Cloud environment if your dashboard exposes an MCP allowlist.
+1. When the agent requests setup, **Approve**:
+   - Secret **`GITHUB_TOKEN`** (fine-grained PAT for `samuelfreemanjobs-hash/Instruments` — use this exact name, all caps).
+   - Egress **`api.githubcopilot.com`** (MCP host). **`api.github.com`** / **`github.com`** are usually already allowed for REST/`gh`.
+2. Open the [Instruments environment](https://cursor.com/dashboard/cloud-agents/environments/e/85d21659-b124-11f1-a3d8-362438fd9788) and click **Save**.
+3. Start a **new** Cloud Agent run (secrets and egress do not apply to an already-running pod).
+4. Verify: `bash scripts/verify_github_mcp.sh` — expect MCP section to show HTTP response, not `SKIP` or egress `FAIL`.
 
-Cloud agents already have **`gh`** CLI for many read operations; GitHub MCP adds structured tools for issues, PRs, and repo content from agent chat.
+Cloud agents already have **`gh`** CLI for git operations; GitHub MCP adds structured issue/PR/repo tools in chat when MCP is enabled for the run.
 
 ## 5. Without MCP
 
