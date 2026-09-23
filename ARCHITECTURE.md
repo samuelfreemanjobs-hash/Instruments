@@ -18,6 +18,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Gearmulator reference** (LLE VA synths; out-of-tree) | [gearmulator-lane/ARCHITECTURE.md](gearmulator-lane/ARCHITECTURE.md) · [docs/GEARMULATOR_LANE.md](docs/GEARMULATOR_LANE.md) | `./scripts/gearmulator/build-gearmulator-vsti.sh` |
 | **mpc-agent** (MPC multisample orchestration) | [mpc-agent/ARCHITECTURE.md](mpc-agent/ARCHITECTURE.md) · [docs/MPC_AGENT_DAWDREAMER.md](docs/MPC_AGENT_DAWDREAMER.md) | `python3 mpc-agent/scripts/capture_and_export.py --plugin $GEARMULATOR_JE8086_VST3` |
 | **Osirus FX bus** (always-on Virus effect) | [docs/OSIRUS_FX_LANE.md](docs/OSIRUS_FX_LANE.md) · [docs/WORKFLOW_AUTOMATION_AGENT.md](docs/WORKFLOW_AUTOMATION_AGENT.md) | `source gearmulator-lane/.gearmulator-osirus-fx.env` |
+| **Hardware capture rack** (maintainer studio inventory) | [docs/HARDWARE_CAPTURE_RACK.md](docs/HARDWARE_CAPTURE_RACK.md) · [docs/TEAM_AGENT_MEMORY.md](docs/TEAM_AGENT_MEMORY.md) | Local MIDI+audio → `instrument.map.json` → MPC Live |
 
 ## Repository layout
 

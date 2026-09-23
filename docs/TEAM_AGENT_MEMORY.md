@@ -38,6 +38,16 @@ SFZ and `exports/mpc_program.draft.json` are derived.
 
 ---
 
+## Hardware capture rack (maintainer)
+
+Full list and capture flows: **[HARDWARE_CAPTURE_RACK.md](HARDWARE_CAPTURE_RACK.md)**.
+
+Summary: **MPC Live** (primary kit host), **Maschine+**, **MicroFreak**, **MicroKorg**, **Micro-X**, **Ultra Nova**, **Minilogue XD**, **SE-02**, **Volca FM2**, **Volca kick/filter**, **DrumBrute**, **DR-660**, **DR-5**, **SP-808**, **MV-1**, **Liven LoFi 12**, **MPC 500**. No Virus/JP/ASR/SU on rack—Gearmulator ROM lanes are optional add-ons.
+
+Hardware → WAV locally; repo holds **maps + mpc-agent**, not samples.
+
+---
+
 ## Product decisions (remember)
 
 - **88emu** = GM/LA reference (~1987–2000), not trap brass source.
@@ -69,3 +79,4 @@ Then mirror one line into this doc’s **Changelog** if it affects the whole tea
 ### Changelog
 
 - 2026-09-23: Osirus FX always-on lane, DawDreamer serial graph, workflow job manifest, team YAML.
+- 2026-09-23: Maintainer hardware rack documented in HARDWARE_CAPTURE_RACK.md.
