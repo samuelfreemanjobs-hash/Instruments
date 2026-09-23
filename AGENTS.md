@@ -84,7 +84,11 @@ streamlit run vst-testing-ops/app.py                       # operations dashboar
 
 - [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
 
+## Cloud network (Origin / MPC handoff)
+
+- **Origin git:** `.cursor/environment.json` includes `egressAllowlist: ["origin.cursor.com"]` and `repositoryDependencies` for the MPC-agent tmp export. Confirm **Save** on the [Instruments environment](https://cursor.com/dashboard/cloud-agents/environments/e/85d21659-b124-11f1-a3d8-362438fd9788), then re-run the agent to clone the handoff.
+
 ## Git
 
-- Do not force-push or deploy production unless the user asks.  
-- Cloud feature branches: `cursor/<description>-<suffix>` when required by environment.  
+- Do not force-push or deploy production unless the user asks. 
+- Cloud feature branches: `cursor/<description>-<suffix>` when required by environment.

@@ -1,4 +1,10 @@
 {
   "name": "Disklordz / Instruments",
-  "install": "sudo apt-get update -qq && sudo apt-get install -y -qq build-essential g++-12 libstdc++-12-dev libasound2-dev libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev libcurl4-openssl-dev && cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12 && cmake --build build -j$(nproc)"
+  "install": "sudo apt-get update -qq && sudo apt-get install -y -qq build-essential g++-12 libstdc++-12-dev libasound2-dev libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev libcurl4-openssl-dev && cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12 && cmake --build build -j$(nproc)",
+  "egressAllowlist": [
+    "origin.cursor.com"
+  ],
+  "repositoryDependencies": [
+    "https://origin.cursor.com/git/samuelfreemanjobs/tmp-1e342cd8506744c8.git"
+  ]
 }

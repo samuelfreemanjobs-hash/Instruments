@@ -4,7 +4,7 @@ Your full **MPC-agent** and **DawDreamer** tree lives in a Cursor Origin tmp exp
 
 `https://origin.cursor.com/git/samuelfreemanjobs/tmp-1e342cd8506744c8.git`
 
-Cloud Agents on the default Instruments environment **cannot clone Origin** until `origin.cursor.com` is on the environment egress allowlist (or you mirror the repo to GitHub).
+Cloud Agents need **`origin.cursor.com`** on the environment egress allowlist. This is declared in [`.cursor/environment.json`](../.cursor/environment.json) (`egressAllowlist` + `repositoryDependencies` for the tmp handoff). After you **Save** the environment in the [Cloud dashboard](https://cursor.com/dashboard/cloud-agents/environments/e/85d21659-b124-11f1-a3d8-362438fd9788), start a **new** agent run to clone Origin. Until then, mirror the repo to GitHub (below).
 
 ## Recommended: mirror to GitHub (one time)
 
