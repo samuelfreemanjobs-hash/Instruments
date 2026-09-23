@@ -25,7 +25,7 @@ This file is the **living idea list** alongside the locked [collection roadmap](
 | Slug | Platform | Status | Doc |
 |------|----------|--------|-----|
 | `fm4op-dx7-xd` | Minilogue XD | `planned` (v0 scaffold only) | [minilogue-xd-fm4-dx7-oscillator-plan.md](minilogue-xd-fm4-dx7-oscillator-plan.md) |
-| `fm6op-dx7-xd` (**FM6OSC**) | Minilogue XD | `planned` — **blocked: owner syx** | [minilogue-xd-fm6osc-pm-plan.md](minilogue-xd-fm6osc-pm-plan.md) |
+| `fm6op-dx7-xd` (**FM6OSC**) | Minilogue XD | `planned` — **blocked: owner syx**; WO-005 = up to **128** voices (4×32) in one `.prg` | [minilogue-xd-fm6osc-pm-plan.md](minilogue-xd-fm6osc-pm-plan.md) |
 
 ---
 

@@ -77,7 +77,8 @@ Align with [AGENTIC_PROJECT_STANDARDS.md](AGENTIC_PROJECT_STANDARDS.md):
 | `WO-LOGUE-IDEAS-YYYY-Www` | Weekly ideas intake (no code) |
 | `WO-LOGUE-IMPL-<slug>` | Implement one backlog slug |
 | `WO-LOGUE-FX-<slug>` | Custom FX lane |
-| `WO-LOGUE-FM6-001` … `008` | **FM6OSC** Minilogue XD + DX7 embed — [minilogue-xd-fm6osc-pm-plan.md](minilogue-xd-fm6osc-pm-plan.md) |
+| `WO-LOGUE-FM6-001` … `008` | **FM6OSC** Minilogue XD + DX7 embed — [minilogue-xd-fm6osc-pm-plan.md](minilogue-xd-fm6osc-pm-plan.md) (**005** = up to 4×32 voices + flash budget) |
+| `WO-LOGUE-FM6-009` … `012` | FM6OSC optional (best-of compiler, bank SKUs, Dexed workflow, mkII share) — same PM plan, “What else is possible” |
 
 PR titles: `WO-LOGUE-IMPL-plug_nether_pluck: mkII pluck osc`.
 
