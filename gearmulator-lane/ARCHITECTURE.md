@@ -14,10 +14,16 @@ Not built by root `cmake`. On **Linux** (Cloud Agent / CI-style smoke):
 ./scripts/gearmulator/build-je8086-console.sh
 ```
 
-Full plugin build (after clone under `gearmulator-lane/vendor/gearmulator`):
+Get the submodule copy:
 
 ```bash
-cd gearmulator-lane/vendor/gearmulator
+git submodule update --init --recursive gearmulator-lane/gearmulator
+```
+
+Full plugin build:
+
+```bash
+cd gearmulator-lane/gearmulator
 ./linux_dependencies.sh   # once per machine
 ./build_linux.sh
 ```

@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 # Smoke-build Gearmulator JE8086TestConsole (no ROM required to compile).
-# Clones upstream into gearmulator-lane/vendor/gearmulator if missing.
+# Uses git submodule at gearmulator-lane/gearmulator.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-VENDOR_DIR="${REPO_ROOT}/gearmulator-lane/vendor/gearmulator"
+GEARMULATOR_DIR="${REPO_ROOT}/gearmulator-lane/gearmulator"
 BUILD_DIR="${REPO_ROOT}/gearmulator-lane/build-je8086-console"
-UPSTREAM_URL="${GEARMULATOR_REPO_URL:-https://github.com/dsp56300/gearmulator.git}"
 JOBS="${GEARMULATOR_BUILD_JOBS:-$(nproc)}"
 
-if [[ ! -d "${VENDOR_DIR}/.git" ]]; then
-  mkdir -p "$(dirname "${VENDOR_DIR}")"
-  git clone --depth 1 "${UPSTREAM_URL}" "${VENDOR_DIR}"
+if [[ ! -f "${GEARMULATOR_DIR}/CMakeLists.txt" ]]; then
+  echo "Missing ${GEARMULATOR_DIR}. Run from repo root:" >&2
+  echo "  git submodule update --init --recursive gearmulator-lane/gearmulator" >&2
+  exit 1
 fi
 
-git -C "${VENDOR_DIR}" submodule update --init --recursive --depth 1
+git -C "${REPO_ROOT}" submodule update --init --recursive gearmulator-lane/gearmulator
 
 mkdir -p "${BUILD_DIR}"
 
-cmake "${VENDOR_DIR}" -B "${BUILD_DIR}" \
+cmake "${GEARMULATOR_DIR}" -B "${BUILD_DIR}" \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER="${CMAKE_CXX_COMPILER:-g++-12}" \
   -DCMAKE_C_COMPILER="${CMAKE_C_COMPILER:-gcc-12}" \

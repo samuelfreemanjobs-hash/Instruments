@@ -25,10 +25,11 @@ Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md
 ## Gearmulator reference (Track E)
 
 ```bash
+git submodule update --init --recursive gearmulator-lane/gearmulator
 ./scripts/gearmulator/build-je8086-console.sh   # JE8086TestConsole smoke build
 ```
 
-Docs: [docs/GEARMULATOR_LANE.md](docs/GEARMULATOR_LANE.md) · upstream https://github.com/dsp56300/gearmulator.git — **do not commit ROM dumps**; separate GPLv3 tree from JD Upgraded `Source/`.
+Copy: submodule [gearmulator-lane/gearmulator](gearmulator-lane/gearmulator) → https://github.com/dsp56300/gearmulator.git · [gearmulator-lane/README.md](gearmulator-lane/README.md). **Do not commit ROM dumps**; keep GPLv3 tree separate from JD Upgraded `Source/`.
 
 ## RAG (prompt knowledge)
 

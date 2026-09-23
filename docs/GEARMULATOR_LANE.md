@@ -26,7 +26,7 @@ Gearmulator emulates the **original microcontrollers and DSPs** of classic hardw
 
 1. Read root [ARCHITECTURE.md](../ARCHITECTURE.md) and [gearmulator-lane/ARCHITECTURE.md](../gearmulator-lane/ARCHITECTURE.md).
 2. Smoke-build without ROM: `./scripts/gearmulator/build-je8086-console.sh` (compiles `JE8086TestConsole`; runtime still needs user ROM).
-3. Do **not** commit ROM dumps, SysEx banks, or upstream `vendor/` tree.
+3. Do **not** commit ROM dumps or SysEx banks. The upstream tree lives in submodule `gearmulator-lane/gearmulator/` — update the pinned SHA with `git submodule update --remote` only when intentional.
 4. Do **not** copy GPLv3 sources into `Source/` without a license WO.
 
 ## Supported devices (upstream)
