@@ -1,8 +1,0 @@
-{
-  "slug": "template_osc",
-  "current_phase": "brief",
-  "setup_completed": false,
-  "v1_source": "oscillators/template",
-  "phases_completed": [],
-  "eval_passed": false
-}
