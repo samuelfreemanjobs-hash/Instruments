@@ -1,0 +1,11 @@
+.git
+build/
+**/node_modules/
+disklordz/website/.next/
+gearmulator-lane/build-*/
+gearmulator-lane/multisamples/out/
+gearmulator-lane/vendor/
+*.wav
+*.mid
+*.bin
+*.rom

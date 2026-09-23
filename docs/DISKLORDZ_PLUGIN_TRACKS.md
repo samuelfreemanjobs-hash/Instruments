@@ -10,6 +10,7 @@
 |-------|---------|------|-------|----------|
 | **C** | **JD Upgraded** | `Source/` | JUCE VST3 + CLAP | Maintenance + CI |
 | **D** | **HISE sketch** (rompler / sampler SKUs) | [hise-sketch/](../hise-sketch/) | HISE → VST3 (local) | **P3** — Antigravity; does not consume Cursor WIP unless port WO |
+| **E** | **Gearmulator reference** (LLE / firmware ROM) | [gearmulator-lane/](../gearmulator-lane/) | Upstream clone + CMake | **P3** — research; GPLv3; no ROM in git |
 
 Junova-X and NovaDrum (JUCE / iPlug2 factory tracks A–B) are documented on the Junova handoff branch / open PRs — merge those before expecting paths under `Junova-X/` and `vst-tr808/`.
 
