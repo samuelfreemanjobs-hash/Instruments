@@ -1,0 +1,96 @@
+# Machine-readable team memory for Cursor agents (keep in sync with docs/TEAM_AGENT_MEMORY.md)
+version: 1
+updated_at: "2026-09-23"
+
+hardware_capture_rack:
+  doc: docs/HARDWARE_CAPTURE_RACK.md
+  primary_mpc_host: MPC Live
+  synths:
+    - MicroFreak
+    - MicroKorg
+    - Micro-X
+    - Ultra Nova
+    - Minilogue XD
+    - SE-02
+    - Volca FM2
+    - Volca kick/filter
+  samplers:
+    - MPC Live
+    - MPC 500
+    - Maschine+
+    - SP-808
+    - MV-1
+    - Liven Lofi 12
+  drums:
+    - DrumBrute
+    - DR-660
+    - DR-5
+  gearmulator_rom_machines_not_owned:
+    - Virus
+    - JP-8000
+    - ASR-10
+    - ASR-X
+    - SU-700
+  capture_mode: midi_plus_audio_local_export_to_map
+
+hardware_editors:
+  doc: docs/HARDWARE_MIDI_EDITORS.md
+  lane: hardware-lane/ARCHITECTURE.md
+  registry: hardware-lane/editors/REGISTRY.md
+  submodules:
+    - name: open-microkorg
+      path: hardware-lane/editors/open-microkorg
+      url: https://github.com/gabrielmagno/Open-microKORG
+      license: GPL-3.0
+      device: microKORG
+      role: cli_prg_syx
+    - name: alapatch
+      path: hardware-lane/editors/alapatch
+      url: https://github.com/ifacodes/alapatch
+      license: unspecified_upstream
+      device: microKORG
+      role: react_sysex_gui
+  in_repo_editors:
+    - name: ultranova-web
+      path: hardware-lane/editors/ultranova-web
+      license: MIT
+      device: Novation UltraNova
+      role: web_midi_nrpn_sysex
+  minilogue_xd:
+    index: hardware-lane/editors/minilogue-xd/README.md
+    korg_sound_librarian: https://www.korg.com/us/support/download/product/0/811/
+    minilogue_xd_util: https://github.com/isnotinvain/minilogue-xd-util
+    rvller_random_pd: https://github.com/rvller/minilogue-xd-random-patch-generator
+    planned_vibe_editor: hardware-lane/editors/minilogue-xd-vibe
+
+lanes:
+  gearmulator_track_e:
+    branch: cursor/gearmulator-lane-62b1
+    docs:
+      - docs/GEARMULATOR_LANE.md
+      - docs/MULTISAMPLE_MAP_FORMAT.md
+      - docs/OSIRUS_FX_LANE.md
+    build:
+      je8086_vsti: scripts/gearmulator/build-gearmulator-vsti.sh
+      osirus_fx: scripts/gearmulator/build-gearmulator-osirus-fx.sh
+    capture:
+      dawdreamer: scripts/gearmulator/render_multisample_dawdreamer.py
+      mpc_wrapper: mpc-agent/scripts/capture_and_export.py
+  mpc_agent:
+    submodule: mpc-agent
+    architecture: mpc-agent/ARCHITECTURE.md
+
+env_files:
+  - gearmulator-lane/.gearmulator-vsti.env
+  - gearmulator-lane/.gearmulator-osirus-fx.env
+
+flags:
+  instruments_always_osirus_fx: INSTRUMENTS_ALWAYS_OSIRUS_FX
+  gearmulator_rom_dir: GEARMULATOR_ROM_DIR
+
+multisample_canonical: instrument.map.json
+map_format_version: 1
+
+workflow_automation:
+  manifest: .cursor/workflow-automation/jobs.yaml
+  playbook: docs/WORKFLOW_AUTOMATION_AGENT.md

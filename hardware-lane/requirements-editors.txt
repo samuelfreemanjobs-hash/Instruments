@@ -1,0 +1,2 @@
+# Open-microKORG (https://github.com/gabrielmagno/Open-microKORG)
+bitstring>=4.0

@@ -8,3 +8,4 @@ MyFirstPlugin/build-ninja/
 *.user
 .vs/
 .idea/
+scripts/gearmulator/__pycache__/

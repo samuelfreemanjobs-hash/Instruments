@@ -1,0 +1,5 @@
+# Python offline VST rendering for Gearmulator / factory multisample grids.
+# See docs/MPC_AGENT_DAWDREAMER.md and scripts/gearmulator/render_multisample_dawdreamer.py
+dawdreamer==0.9.0
+numpy>=1.26
+scipy>=1.11

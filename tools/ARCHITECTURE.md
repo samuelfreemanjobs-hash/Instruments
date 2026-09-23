@@ -8,6 +8,7 @@ Command-line binaries built from `tools/` and registered in the root `CMakeLists
 |--------|--------|------|
 | `GenerateCleanroomRom` | `GenerateCleanroomRom.cpp` | Synthesize `jdupg_cleanroom.rom` at build time (256 waves, multisample metadata). |
 | `OfflineRender` | `OfflineRender.cpp` | Instantiate `JDUpgradedAudioProcessor`, feed MIDI, write stereo 24-bit WAV. |
+| `Vst3OfflineRender` | `Vst3OfflineRender.cpp` | Load an external **VST3** by path, feed MIDI, write stereo 24-bit WAV (Gearmulator multisample grid, smoke tests). |
 | `SpectralDiff` | `SpectralDiff.cpp`, `WavCompare.h` | Peak-normalized mono comparison; RMS and mean spectral bin error. |
 | `ExportPreset` | `ExportPreset.cpp` | Write `.jdpreset` APVTS XML for a factory program index. |
 
@@ -17,6 +18,13 @@ Command-line binaries built from `tools/` and registered in the root `CMakeLists
 - **Output:** binary ROM consumed by `JDUpgradedRomData` (embedded in plugin).
 - **Logic:** Procedural waveforms only — no external samples. See [docs/ROM.md](../docs/ROM.md).
 - **Build hook:** `add_custom_command` runs before `juce_add_binary_data`.
+
+## Vst3OfflineRender
+
+- **CLI:** `--plugin <vst3-bundle> --out <wav>` plus optional `--program`, `--note`, `--velocity`, `--seconds`, `--sampleRate`, `--blockSize`, `--tailFraction`.
+- **Host flags:** `JUCE_PLUGINHOST_VST3=1` on this target only (Linux x64).
+- **Batch driver:** [scripts/gearmulator/render_multisample_grid.sh](../scripts/gearmulator/render_multisample_grid.sh) → `gearmulator-lane/multisamples/out/` + `manifest.tsv`.
+- **Docs:** [docs/GEARMULATOR_MULTISAMPLING.md](../docs/GEARMULATOR_MULTISAMPLING.md).
 
 ## OfflineRender
 

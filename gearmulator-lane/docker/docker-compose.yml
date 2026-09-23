@@ -1,0 +1,27 @@
+# Run from repo root:
+#   PLUGINS_DIR=$HOME/plugins ROM_DIR=$HOME/rom OUT_DIR=$PWD/out \
+#     docker compose -f gearmulator-lane/docker/docker-compose.yml run --rm multisample \
+#     --plugin /plugins/JE-8086.vst3 --name session1 --program 0
+
+services:
+  multisample:
+    build:
+      context: ../..
+      dockerfile: gearmulator-lane/docker/Dockerfile
+    image: instruments-multisample:latest
+    environment:
+      GEARMULATOR_ROM_DIR: /rom
+      VST3_OFFLINE_RENDER_BIN: /usr/local/bin/Vst3OfflineRender
+    volumes:
+      - type: bind
+        source: ${PLUGINS_DIR:-./gearmulator-lane/docker/volumes/plugins}
+        target: /plugins
+        read_only: true
+      - type: bind
+        source: ${ROM_DIR:-./gearmulator-lane/docker/volumes/rom}
+        target: /rom
+        read_only: true
+      - type: bind
+        source: ${OUT_DIR:-./gearmulator-lane/multisamples/out}
+        target: /out
+    working_dir: /out

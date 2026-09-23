@@ -165,6 +165,22 @@ target_compile_definitions(ExportPreset
 )
 add_dependencies(ExportPreset JDUpgradedRomData)
 
+add_executable(Vst3OfflineRender tools/Vst3OfflineRender.cpp)
+target_link_libraries(Vst3OfflineRender
+    PRIVATE
+        juce::juce_audio_formats
+        juce::juce_audio_processors
+        juce::juce_audio_utils
+        juce::juce_gui_basics
+)
+target_compile_definitions(Vst3OfflineRender
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+        JUCE_PLUGINHOST_VST3=1
+        JUCE_VST3_CAN_REPLACE_VST2=0
+)
+
 add_executable(SpectralDiff tools/SpectralDiff.cpp)
 target_link_libraries(SpectralDiff
     PRIVATE

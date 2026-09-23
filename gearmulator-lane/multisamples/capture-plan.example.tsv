@@ -1,0 +1,2 @@
+enabled	session_name	instrument_label	source_plugin	plugin_path	program	preset_path	note_start	note_end	note_step	velocity	seconds	sample_rate	block_size
+true	je8086_smoke	Disklordz_JE8086_Smoke	JE8086	/path/to/JE8086.vst3	0		60	63	1	100	3.0	48000	512

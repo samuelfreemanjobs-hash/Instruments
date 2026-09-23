@@ -15,6 +15,11 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Disklordz RAG** (prompt knowledge) | [disklordz/rag/ARCHITECTURE.md](disklordz/rag/ARCHITECTURE.md) · [docs/RAG_AND_INTELLIGENT_AUTOMATION.md](docs/RAG_AND_INTELLIGENT_AUTOMATION.md) | `python3 disklordz/rag/scripts/chunk_corpus.py` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-909** (sampleless trap wavetable synth) | [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md) | `Wave909_VST3`, `Wave909_Standalone`, `Wave909Tests` |
+| **Gearmulator reference** (LLE VA synths; out-of-tree) | [gearmulator-lane/ARCHITECTURE.md](gearmulator-lane/ARCHITECTURE.md) · [docs/GEARMULATOR_LANE.md](docs/GEARMULATOR_LANE.md) | `./scripts/gearmulator/build-gearmulator-vsti.sh` |
+| **mpc-agent** (MPC multisample orchestration) | [mpc-agent/ARCHITECTURE.md](mpc-agent/ARCHITECTURE.md) · [docs/MPC_AGENT_DAWDREAMER.md](docs/MPC_AGENT_DAWDREAMER.md) | `python3 mpc-agent/scripts/capture_and_export.py --plugin $GEARMULATOR_JE8086_VST3` |
+| **Osirus FX bus** (always-on Virus effect) | [docs/OSIRUS_FX_LANE.md](docs/OSIRUS_FX_LANE.md) · [docs/WORKFLOW_AUTOMATION_AGENT.md](docs/WORKFLOW_AUTOMATION_AGENT.md) | `source gearmulator-lane/.gearmulator-osirus-fx.env` |
+| **Hardware capture rack** (maintainer studio inventory) | [docs/HARDWARE_CAPTURE_RACK.md](docs/HARDWARE_CAPTURE_RACK.md) · [docs/TEAM_AGENT_MEMORY.md](docs/TEAM_AGENT_MEMORY.md) | Local MIDI+audio → `instrument.map.json` → MPC Live |
+| **Hardware MIDI editors** (microKORG, …) | [hardware-lane/ARCHITECTURE.md](hardware-lane/ARCHITECTURE.md) · [docs/HARDWARE_MIDI_EDITORS.md](docs/HARDWARE_MIDI_EDITORS.md) | `./hardware-lane/scripts/microkorg-decode.sh patch.prg` |
 
 ## Repository layout
 
@@ -41,7 +46,7 @@ cmake --build build -j
 
 Optional Slack: CI ([`ci-slack-notify.yml`](.github/workflows/ci-slack-notify.yml)), Antigravity inbox ([`antigravity-inbox-slack.yml`](.github/workflows/antigravity-inbox-slack.yml)), Airtable handoff ([`airtable-antigravity-handoff.yml`](.github/workflows/airtable-antigravity-handoff.yml)) — configure with [`scripts/setup-disklordz-integrations.sh`](scripts/setup-disklordz-integrations.sh).
 
-**Cursor / agents:** [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) · [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) · SaaS roadmap [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) · optional desktop agent [docs/BYTEBOT_SETUP.md](docs/BYTEBOT_SETUP.md).
+**Cursor / agents:** [docs/CLOUD_AGENT_VM.md](docs/CLOUD_AGENT_VM.md) · [docs/JUCE_FACTORY_AGENT.md](docs/JUCE_FACTORY_AGENT.md) · [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) · [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) · SaaS roadmap [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md).
 
 ## Documentation policy
 
