@@ -17,7 +17,7 @@
 | **Waves2** | [boochow/Waves2](https://github.com/boochow/Waves2) | **Wavetable** synth (logue SDK) | Explicitly includes **NTS-1 mkII** — WT pipeline / UI ideas for `prophet_vs_wt128`, SQ-80, etc. |
 | **logue-fx** | [dukesrg/logue-fx](https://github.com/dukesrg/logue-fx) | Unified **FX** headers across FX types | Scaffold patterns for modfx/revfx/delfx; compare to our `tools/build-mkii-fx.sh` lane |
 | **tremoxd** | [ttaschke/tremoxd](https://github.com/ttaschke/tremoxd) | **Tremolo** modfx | Minilogue XD — simple modfx DSP reference |
-| **logue-osc** | [dukesrg/logue-osc](https://github.com/dukesrg/logue-osc) | **Oscillator API** extensions, WT osc, web wave inject | Wavetable tooling reference; **not** our `osc_process` quarantine fiction |
+| **logue-osc** | [dukesrg/logue-osc](https://github.com/dukesrg/logue-osc) | **Oscillator API** extensions, WT osc, web wave inject | **FM48/FM64** + `FM64.sh` DX7 bank inject — primary reference for [minilogue-xd-fm4-dx7 plan](minilogue-xd-fm4-dx7-oscillator-plan.md) |
 
 ---
 

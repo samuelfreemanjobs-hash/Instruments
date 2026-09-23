@@ -20,6 +20,14 @@ This file is the **living idea list** alongside the locked [collection roadmap](
 
 ---
 
+## Minilogue XD (v1.1 lane — not mkII collection)
+
+| Slug | Platform | Status | Doc |
+|------|----------|--------|-----|
+| `fm4op-dx7-xd` | Minilogue XD | `in-progress` (v0 DSP) | [minilogue-xd-fm4-dx7-oscillator-plan.md](minilogue-xd-fm4-dx7-oscillator-plan.md) |
+
+---
+
 ## PM-approved future production (planned)
 
 | Slug (proposed) | Display | Genre / reference | DSP sketch | Params (≤10) | Status |
