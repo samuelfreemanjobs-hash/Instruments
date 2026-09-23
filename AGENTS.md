@@ -38,7 +38,7 @@ chmod +x tools/mkii-automate.sh tools/osc-eval-mkii.sh
 
 Optional **v1.1** builds (legacy): `./tools/build.sh oscillators/<name> minilogue-xd` — new collection is **mkII-only** per [docs/logue-oscillator-collection-roadmap.md](docs/logue-oscillator-collection-roadmap.md).
 
-**Minilogue XD FM + DX7 (separate lane):** [docs/minilogue-xd-fm4-dx7-oscillator-plan.md](docs/minilogue-xd-fm4-dx7-oscillator-plan.md) · `src/oscillators/fm4op-dx7-xd/`
+**Minilogue XD FM + DX7 (separate lane):** [docs/minilogue-xd-fm4-dx7-oscillator-plan.md](docs/minilogue-xd-fm4-dx7-oscillator-plan.md) · `fm4op-dx7-xd` · **`fm6op-dx7-xd` (FM6OSC)**
 
 Legacy **Claude oscillator bundle** (v1 fiction API): quarantined under [docs/archive/quarantined-claude-osc-bundle/](docs/archive/quarantined-claude-osc-bundle/) — do not use for codegen.
 

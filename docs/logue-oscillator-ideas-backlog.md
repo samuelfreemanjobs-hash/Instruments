@@ -25,6 +25,7 @@ This file is the **living idea list** alongside the locked [collection roadmap](
 | Slug | Platform | Status | Doc |
 |------|----------|--------|-----|
 | `fm4op-dx7-xd` | Minilogue XD | `in-progress` (v0 DSP) | [minilogue-xd-fm4-dx7-oscillator-plan.md](minilogue-xd-fm4-dx7-oscillator-plan.md) |
+| `fm6op-dx7-xd` (**FM6OSC**) | Minilogue XD | `in-progress` (v0 DSP) | same (6-op / DX7 primary) |
 
 ---
 

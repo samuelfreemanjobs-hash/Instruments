@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Parse Yamaha DX7 32-voice bank SysEx into fm4op-dx7-xd voice blobs (stub P1).
+Parse Yamaha DX7 32-voice bank SysEx into fm4op-dx7-xd / fm6op-dx7-xd (FM6OSC) voice blobs (stub P1).
 
 Usage (planned):
   python3 tools/dx7/import_dx7_bank.py --in patches.syx --out src/oscillators/fm4op-dx7-xd/voices.bin

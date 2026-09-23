@@ -1,0 +1,33 @@
+{
+  "header": {
+    "platform": "minilogue-xd",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "0.1-0",
+    "name": "FM6OSC",
+    "num_param": 6,
+    "params": [
+      ["Patch", 0, 100, ""],
+      ["Algo", 0, 100, ""],
+      ["Level", 0, 100, "%"],
+      ["Velo", 0, 100, "%"],
+      ["Bright", 0, 100, ""],
+      ["Detune", 0, 100, ""]
+    ]
+  },
+  "_agent": {
+    "id": "fm6op_dx7_xd",
+    "type": "osc",
+    "targets": ["minilogue-xd", "prologue", "nts-1"],
+    "notes": "FM6OSC — 6-op DX7 bank lane. Prefer FX off when testing CPU. Same import tool as FM4."
+  },
+  "_agent_presets": [
+    {
+      "name": "DX7 algo5 proxy",
+      "midi_hint": "Algo mid; bind AC to Velo",
+      "params": [10, 50, 85, 80, 55, 50]
+    }
+  ]
+}

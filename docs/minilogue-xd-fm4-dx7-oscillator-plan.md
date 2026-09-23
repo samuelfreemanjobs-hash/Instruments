@@ -1,8 +1,35 @@
 # Minilogue XD — 4-op FM oscillator + DX7 patches (plan)
 
-**Slug (v1.1):** `fm4op-dx7-xd`  
+**Slugs (v1.1):**
+
+| Slug | Panel name | Operators |
+|------|------------|-----------|
+| `fm4op-dx7-xd` | FM4 DX7 | 4-op (FM4OSC-style) |
+| **`fm6op-dx7-xd`** | **FM6OSC** | **6-op (full DX7 voice target)** |
+
 **Target:** [Minilogue XD](https://www.korg.com/miniloguexd/) custom oscillator (logue SDK **1.1-0**, Cortex-M4).  
-**Inspiration:** Korg **FM4OSC** (microKORG 2, 4-operator FM) — **not a clone**; we implement our own engine + **Yamaha DX7 voice** import.
+**Inspiration:** Korg **FM4OSC** / extended **6-op** FM — **not clones**; our engine + **Yamaha DX7** import.
+
+---
+
+## FM6OSC (`fm6op-dx7-xd`)
+
+**Yes — we can make FM6OSC.** This is the right choice if your library is **classic DX7 6-operator** patches.
+
+| Topic | FM4 (`fm4op-dx7-xd`) | **FM6OSC** (`fm6op-dx7-xd`) |
+|-------|----------------------|-------------------------------|
+| DX7 patch fit | Subset / folded | **Primary target** |
+| CPU on XD | Lower | **Higher** — use minimal FX; profile polyphony |
+| Code in repo | `src/oscillators/fm4op-dx7-xd/` | `src/oscillators/fm6op-dx7-xd/` |
+| Reference | FM48 | **[FM64](https://github.com/dukesrg/logue-osc)** |
+
+**v0 shipped in repo:** 6-op engine, DX7 **algorithm 5** proxy + fallback; **Patch** bank import same pipeline as FM4 (`tools/dx7/import_dx7_bank.py` → future `Voice6` mapper).
+
+**Build:**
+
+```bash
+./tools/build.sh oscillators/fm6op-dx7-xd minilogue-xd
+```
 
 **Separate from:** mkII collection (`src/mkii/`) and [external reference repos](logue-external-reference-repos.md) (study only unless licensed port).
 
@@ -26,9 +53,9 @@
 
 ```text
 Your DX7 .syx banks
-    → tools/dx7/import_dx7_bank.py (parse 4096-byte voice, map to internal Voice4)
+    → tools/dx7/import_dx7_bank.py (parse 4096-byte voice, map to Voice4 or Voice6)
     → payload.bin / custom_data section in manifest
-    → fm4op-dx7-xd.prg (minilogue-xd)
+    → fm4op-dx7-xd.prg or fm6op-dx7-xd.prg (minilogue-xd)
     → Panel: Patch (1…N), Algorithm, Velocity (AC), Tone, …
 ```
 
