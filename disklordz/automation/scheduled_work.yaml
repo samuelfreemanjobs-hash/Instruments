@@ -1,0 +1,91 @@
+# Machine-readable agent work schedule (UTC). Consumed by scripts/agent-schedule/emit_handoffs.py
+# and agent-scheduled-handoffs.yml. Completion criteria: docs/AUTOMATED_WORK_COMPLETION.md
+#
+# default_branch: work_order.branch for agents (where to open PRs). Inbox HO-*.json commits land on
+# repo default branch (main) via agent-scheduled-handoffs.yml so vst-factory-inbox-slack.yml fires.
+
+default_branch: cursor/prophet-rev2-trap-ddc8
+
+jobs:
+  - id: mon-health-triage
+    cron: "40 9 * * 1"
+    work_order_id: WO-2026-JUCE-HEALTH-RECUR
+    to_agent: cursor-vst-plugin-factory
+    title: "[Plugin][JUCE][Recurring] Monday CI health triage"
+    acceptance_criteria: |
+      After Mon plugin-ci-health artifact: if FAIL, open draft fix WO or minimal PR with WO in title;
+      if PASS, write disklordz/vst-factory/outbox/HO-*-done.json with result pass and no code PR.
+      Do not count toward Factory Manager WIP cap of 2.
+    context_paths:
+      - docs/VST_PLUGIN_FACTORY_AGENT.md
+      - docs/VST_PLUGIN_FACTORY_SCHEDULE.md
+    notes: "Triggered by agent-scheduled-handoffs after Mon 09:00 UTC health job."
+
+  - id: mon-night-circuit-qa-gate1
+    cron: "45 9 * * 1"
+    work_order_id: WO-2026-NC-QA-GATE1-RECUR
+    to_agent: night-circuit-qa
+    title: "[Plugin][JUCE][QA][Recurring] Night Circuit Gate 1"
+    acceptance_criteria: |
+      Run ProphetRev2Trap/docs/BUILD_BASELINE.md through pluginval.
+      Write ProphetRev2Trap/qa/reports/YYYY-MM-DD-bank-integrity.md with PASS/FAIL/NOT TESTED per criterion.
+      Push branch updates if fixes required; draft PR with WO id. Mark NOT TESTED for FL/MPC unless run on host.
+    context_paths:
+      - docs/NIGHT_CIRCUIT_QA_SUBAGENT.md
+      - ProphetRev2Trap/docs/BUILD_BASELINE.md
+    notes: "Gate 1 only — no musical sign-off."
+
+  - id: wed-night-circuit-integrity-followup
+    cron: "45 10 * * 3"
+    work_order_id: WO-2026-NC-QA-WED-RECUR
+    to_agent: night-circuit-qa
+    title: "[Plugin][JUCE][QA][Recurring] Wednesday integrity follow-up"
+    acceptance_criteria: |
+      Download night-circuit-integrity artifact from latest VST Plugin Factory schedule run.
+      If PASS: outbox done note only. If FAIL: fix or file [Plugin][JUCE] WO to cursor-vst-plugin-factory with logs.
+    context_paths:
+      - docs/NIGHT_CIRCUIT_QA_SUBAGENT.md
+      - ProphetRev2Trap/qa/verify_preset_bank.py
+    notes: "Follows Wed 10:00 UTC night-circuit-integrity job."
+
+  - id: thu-sound-design-batch
+    cron: "0 16 * * 4"
+    work_order_id: WO-2026-NC-DESIGN-BIWEEK-RECUR
+    to_agent: night-circuit-sound-design
+    title: "[Plugin][JUCE][Design][Recurring] Preset / GUI batch"
+    acceptance_criteria: |
+      One deliverable: FeaturedPresets update PR, design/reports listening note, or single GUI spec increment
+      per ProphetRev2Trap/design/NIGHT_CIRCUIT_GUI_SPEC.md. Outbox entry with what shipped.
+      Biweekly: skip if ISO week number is even (agent may no-op with done note).
+    context_paths:
+      - docs/NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md
+      - ProphetRev2Trap/design/NIGHT_CIRCUIT_GUI_SPEC.md
+    notes: "Biweekly preference — even ISO weeks optional skip."
+
+  - id: fri-doc-sync
+    cron: "20 17 * * 5"
+    work_order_id: WO-2026-JUCE-DOCSYNC-RECUR
+    to_agent: cursor-vst-plugin-factory
+    title: "[Plugin][JUCE][Recurring] Friday ARCHITECTURE doc sync"
+    acceptance_criteria: |
+      Consume doc-sync artifact from vst-plugin-factory-schedule. If checklist clean, outbox done only.
+      Else docs-only draft PR updating ARCHITECTURE.md paths listed in checklist.
+    context_paths:
+      - docs/VST_PLUGIN_FACTORY_AGENT.md
+      - ARCHITECTURE.md
+    notes: "After Fri 17:00 UTC doc-sync job."
+
+  - id: tue-product-drain
+    cron: "0 15 * * 2"
+    work_order_id: WO-2026-NC-M1-DRAIN-RECUR
+    to_agent: cursor-vst-plugin-factory
+    title: "[Plugin][JUCE][Recurring] Night Circuit M1 — drain open inbox WOs"
+    acceptance_criteria: |
+      Process all open disklordz/vst-factory/inbox/HO-*.json with status open (max 2 concurrent implementations).
+      Each completion: draft PR + outbox done JSON referencing handoff_id and PR URL.
+      Priority: Milestone 1 verification fixes over new features.
+    context_paths:
+      - ProphetRev2Trap/docs/MILESTONE_1.md
+      - docs/VST_PLUGIN_FACTORY_AGENT.md
+      - disklordz/vst-factory/AGENT_INSTRUCTIONS.md
+    notes: "Tuesday product coding window — respects Factory Manager WIP."

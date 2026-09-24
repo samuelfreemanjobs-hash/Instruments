@@ -41,6 +41,12 @@ See [AGENT_TEAM_ROSTER.md](AGENT_TEAM_ROSTER.md). Minimum for Night Circuit ship
 - `night-circuit-qa`, `night-circuit-sound-design`
 - Human: `factory-manager`, optional `business-planner` / `marketing` for SKU
 
+## Automated work completion
+
+GitHub emits **inbox handoffs** on UTC cron → **#disklordz-dev** Slack → Cloud Agent → PR + **outbox** done.
+
+See [AUTOMATED_WORK_COMPLETION.md](AUTOMATED_WORK_COMPLETION.md) and `gh workflow run agent-scheduled-handoffs.yml`.
+
 ## Slack MCP (Cursor)
 
 Use for meeting posts, threads, and search. GitHub webhooks remain source of truth for CI/inbox events.

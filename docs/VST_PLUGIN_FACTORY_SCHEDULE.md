@@ -3,6 +3,8 @@
 **Owner:** **workflow-automation-agent** (GitHub cron, `repository_dispatch`, Cursor Automations, optional `subscribe_timer`).  
 **Implementers:** **cursor-vst-plugin-factory**, **night-circuit-qa**, **night-circuit-sound-design** (see [AGENT_TEAM_ROSTER.md](AGENT_TEAM_ROSTER.md)).
 
+**Work completion (coding + product):** [AUTOMATED_WORK_COMPLETION.md](AUTOMATED_WORK_COMPLETION.md) — [agent-scheduled-handoffs.yml](../.github/workflows/agent-scheduled-handoffs.yml) emits inbox JSON from [scheduled_work.yaml](../disklordz/automation/scheduled_work.yaml).
+
 All cron times **UTC**. Map to local time in Cursor Automations UI; keep GitHub `schedule` in UTC.
 
 ## Architecture (who fires what)
