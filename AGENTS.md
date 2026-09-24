@@ -22,6 +22,8 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
+**VST GUI (repo-wide):** [docs/VST_GUI_DESIGNER_AGENT.md](docs/VST_GUI_DESIGNER_AGENT.md) · agent id **`vst-gui-designer`** · PM prefix **`[Plugin][JUCE][GUI]`**.
+
 ## RAG (prompt knowledge)
 
 ```bash

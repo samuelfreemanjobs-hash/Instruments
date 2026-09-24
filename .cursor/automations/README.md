@@ -13,6 +13,7 @@ Create Automations in the Cursor dashboard (repo **Instruments**, branch from ha
 | `night-circuit-sound-design-batch` | `0 16 * * 4` | night-circuit-sound-design | `WO-2026-NC-DESIGN-BIWEEK-RECUR` (skip even ISO weeks optional) |
 | `vst-factory-friday-doc-sync` | `30 17 * * 5` | cursor-vst-plugin-factory | `WO-2026-JUCE-DOCSYNC-RECUR` |
 | `vst-factory-inbox-consumer` | On push / daily | cursor-vst-plugin-factory | Newest open `inbox/HO-*.json` |
+| `vst-gui-designer-weekly` | `25 17 * * 5` | **vst-gui-designer** | `WO-2026-JUCE-GUI-AUDIT-RECUR` handoff · [VST_GUI_DESIGNER_AGENT.md](../../docs/VST_GUI_DESIGNER_AGENT.md) |
 
 Prompt bodies: [VST_PLUGIN_FACTORY_SCHEDULE.md](../../docs/VST_PLUGIN_FACTORY_SCHEDULE.md) § Cursor Automation catalog.
 

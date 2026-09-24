@@ -81,8 +81,9 @@ Map concept labels to existing APVTS where names differ (e.g. **Shape** ↔ puls
 
 | Role | GUI responsibility |
 |------|---------------------|
-| **Sound-design subagent** | Spec fidelity, copy, featured/favorites UX |
-| **VST Plugin Factory** | JUCE layout migration toward this sheet |
+| **vst-gui-designer** | Repo GUI authority: layout, tokens, resize, accessibility, PR review |
+| **Sound-design subagent** | Preset copy, featured curation, listening-driven requests |
+| **VST Plugin Factory** | JUCE implementation from approved spec |
 | **Night Circuit QA** | Host GUI checklist per [../docs/HOST_COMPATIBILITY.md](../docs/HOST_COMPATIBILITY.md) |
 
 ## Next implementation increment (recommended order)

@@ -1,7 +1,7 @@
 # VST Plugin Factory — automation schedule
 
 **Owner:** **workflow-automation-agent** (GitHub cron, `repository_dispatch`, Cursor Automations, optional `subscribe_timer`).  
-**Implementers:** **cursor-vst-plugin-factory**, **night-circuit-qa**, **night-circuit-sound-design** (see [AGENT_TEAM_ROSTER.md](AGENT_TEAM_ROSTER.md)).
+**Implementers:** **cursor-vst-plugin-factory**, **night-circuit-qa**, **night-circuit-sound-design**, **vst-gui-designer** (see [AGENT_TEAM_ROSTER.md](AGENT_TEAM_ROSTER.md)).
 
 **Work completion (coding + product):** [AUTOMATED_WORK_COMPLETION.md](AUTOMATED_WORK_COMPLETION.md) — [agent-scheduled-handoffs.yml](../.github/workflows/agent-scheduled-handoffs.yml) emits inbox JSON from [scheduled_work.yaml](../disklordz/automation/scheduled_work.yaml).
 
@@ -57,7 +57,8 @@ flowchart LR
 | **Thu 16:00** | Cursor Automation (biweekly) | `night-circuit-sound-design-batch` | night-circuit-sound-design | 1 category listening report template OR featured-list PR (no host = doc-only planning) |
 | **Fri 17:00** | Cron | `doc-sync` job | workflow-automation-agent | ARCHITECTURE / CMake checklist artifact |
 | **Fri 17:30** | Cursor Automation | `vst-factory-friday-doc-sync` | cursor-vst-plugin-factory | If checklist non-empty → docs-only draft PR |
-| **Fri 18:00** | Cursor Automation (optional) | `night-circuit-sound-design-gui` | night-circuit-sound-design | One GUI spec increment vs [NIGHT_CIRCUIT_GUI_SPEC.md](../ProphetRev2Trap/design/NIGHT_CIRCUIT_GUI_SPEC.md) |
+| **Fri 17:25 UTC** | GitHub handoff | `fri-vst-gui-audit` | **vst-gui-designer** | Append [VST_GUI_AUDIT_*.md](reports/VST_GUI_AUDIT_2026-09-24.md) · file Factory WOs for P1 |
+| **Fri 18:00** | Cursor Automation (optional) | `vst-gui-designer-weekly` | **vst-gui-designer** | Spec increment or PR review vs [VST_GUI_SYSTEM.md](VST_GUI_SYSTEM.md) |
 
 **Biweekly:** Sound-design **Thu** automation runs on **odd ISO weeks** only (configure skip in Cursor UI or prompt).
 
@@ -80,6 +81,8 @@ flowchart LR
 | `[Plugin][JUCE]` | cursor-vst-plugin-factory | `disklordz/vst-factory/inbox/` |
 | `[Plugin][JUCE][QA]` | night-circuit-qa | WO body links branch; prompt: [NIGHT_CIRCUIT_QA_SUBAGENT.md](NIGHT_CIRCUIT_QA_SUBAGENT.md) |
 | `[Plugin][JUCE][Design]` | night-circuit-sound-design | Prompt: [NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md](NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md) |
+| `[Plugin][JUCE][GUI]` | **vst-gui-designer** | Prompt: [VST_GUI_DESIGNER_AGENT.md](VST_GUI_DESIGNER_AGENT.md) |
+| `[Plugin][JUCE][GUI][Review]` | **vst-gui-designer** | PR / audit; report in `docs/reports/VST_GUI_AUDIT_*.md` |
 | `[Plugin][HISE]` | antigravity-hise | Antigravity inbox (out of factory schedule) |
 
 QA and Design WOs **do not** count toward the **2× JUCE WIP** cap unless pm-agent explicitly tags them as factory-overlap.

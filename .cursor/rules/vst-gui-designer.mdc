@@ -1,0 +1,15 @@
+---
+description: Senior VST GUI Designer — specs, audits, and PR review for JUCE PluginEditor work repo-wide.
+alwaysApply: false
+---
+
+# VST GUI Designer lane
+
+When editing `PluginEditor.*`, product `design/*GUI*`, or `DESIGN.md`:
+
+1. Read [docs/VST_GUI_DESIGNER_AGENT.md](../docs/VST_GUI_DESIGNER_AGENT.md) and [docs/VST_GUI_SYSTEM.md](../docs/VST_GUI_SYSTEM.md).
+2. Prefer **vst-gui-designer** for spec/authorship; **cursor-vst-plugin-factory** for implementation unless you are explicitly that agent.
+3. GUI PRs: check minimum size, preset browser contract, APVTS-only wiring, audit rubric P0/P1.
+4. Log reviews in `docs/reports/VST_GUI_AUDIT_<date>.md`.
+
+PM routes `[Plugin][JUCE][GUI]` to `vst-gui-designer` per [AGENT_TEAM_ROSTER.md](../docs/AGENT_TEAM_ROSTER.md).

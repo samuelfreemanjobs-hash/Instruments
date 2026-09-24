@@ -18,6 +18,11 @@ Turn approved `[Plugin][JUCE]` work orders into maintainable, real-time-safe JUC
 3. [DISKLORDZ_PLUGIN_TRACKS.md](DISKLORDZ_PLUGIN_TRACKS.md) — tracks and WIP
 4. Inbox handoff JSON under `disklordz/vst-factory/inbox/` when assigned via automation
 
+## GUI lane
+
+- **Authoritative specs & review:** **vst-gui-designer** ([VST_GUI_DESIGNER_AGENT.md](VST_GUI_DESIGNER_AGENT.md))
+- Factory implements approved `*GUI_SPEC.md` / designer PR feedback; do not invent layout standards ad hoc.
+
 ## Out of lane
 
 - `disklordz/website/` SaaS (unless WO explicitly spans both)

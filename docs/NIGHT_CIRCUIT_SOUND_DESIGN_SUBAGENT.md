@@ -41,12 +41,12 @@ For each category (Bass → Synth → Lead → Pad → Pluck/Keys):
 - Add strong variations to FeaturedPresets.cpp (category + exact factory name).
 - Never globally normalize all presets to one LUFS; document intentional level changes.
 
-GUI RESPONSIBILITIES
+GUI RESPONSIBILITIES (CURATION — NOT LAYOUT AUTHORITY)
 
-- Align JUCE UI toward NIGHT_CIRCUIT_GUI_SPEC.md (reference 1280×820; minimum 1120×760).
-- Keep preset panel readable; category accents + role hints match taxonomy.
-- Featured-only toggle lists curated programs; count copy matches spec (e.g. category total · 1,028 total).
-- One feature per QA pass: prev/next, favorites, Modified indicator — see spec implementation table.
+- **vst-gui-designer** owns layout, tokens, resize, accessibility, and repo-wide GUI review ([VST_GUI_DESIGNER_AGENT.md](VST_GUI_DESIGNER_AGENT.md)).
+- You own **copy and curation**: category role hints, featured list, count wording, listening-driven preset requests.
+- Request GUI spec updates via pm-agent `[Plugin][JUCE][GUI]` WOs when browser UX needs architectural change.
+- Do not merge large `PluginEditor.*` refactors without GUI designer sign-off.
 
 DELIVERABLES
 

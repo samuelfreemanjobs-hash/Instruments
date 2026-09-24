@@ -34,6 +34,7 @@ UTC cron (GitHub) → verify/build artifact (optional)
 | Thu 16:00 | `thu-sound-design-batch` | night-circuit-sound-design | Featured/GUI/listening |
 | Fri 17:00 | (doc-sync job) | — | Checklist artifact |
 | Fri 17:20 | `fri-doc-sync` | cursor-vst-plugin-factory | Docs PR if needed |
+| Fri 17:25 | `fri-vst-gui-audit` | vst-gui-designer | GUI audit report + Factory WO suggestions |
 
 Manual emit:
 
@@ -70,6 +71,15 @@ gh workflow run agent-scheduled-handoffs.yml -f cron="0 15 * * 2"
 GitHub handoffs **assign** work; Cursor dashboard **Automations** (same UTC as [VST_PLUGIN_FACTORY_SCHEDULE.md](VST_PLUGIN_FACTORY_SCHEDULE.md)) should run agents that **poll inbox** or **execute the matching WO** without waiting for human. Configure both for redundancy.
 
 See [.cursor/automations/README.md](../.cursor/automations/README.md).
+
+## Branch targeting
+
+| Field | Meaning |
+|-------|---------|
+| `scheduled_work.yaml` → `default_branch` | Written into each handoff as `work_order.branch` (where agents implement / open PRs). |
+| GitHub `agent-scheduled-handoffs.yml` push | Commits new `inbox/HO-*.json` to the **repository default branch** (`main`) so [vst-factory-inbox-slack.yml](../.github/workflows/vst-factory-inbox-slack.yml) runs. |
+
+After Night Circuit M1 merges, set `default_branch` to `main` (or the active release branch).
 
 ## Night Circuit M1 priority
 

@@ -75,6 +75,22 @@ jobs:
       - ARCHITECTURE.md
     notes: "After Fri 17:00 UTC doc-sync job."
 
+  - id: fri-vst-gui-audit
+    cron: "25 17 * * 5"
+    work_order_id: WO-2026-JUCE-GUI-AUDIT-RECUR
+    to_agent: vst-gui-designer
+    title: "[Plugin][JUCE][GUI][Recurring] Repo-wide VST GUI audit"
+    acceptance_criteria: |
+      Review all PluginEditor.* products per docs/VST_GUI_SYSTEM.md rubric.
+      Append docs/reports/VST_GUI_AUDIT_<YYYY-MM-DD>.md with scores and P0/P1/P2.
+      Open or update [Plugin][JUCE] WOs for Factory when P1 implementation needed.
+      Night Circuit host GUI rows stay NOT TESTED unless QA evidence exists.
+    context_paths:
+      - docs/VST_GUI_DESIGNER_AGENT.md
+      - docs/VST_GUI_SYSTEM.md
+      - docs/reports/VST_GUI_AUDIT_2026-09-24.md
+    notes: "After Fri doc-sync; before optional Cursor vst-gui-designer-weekly."
+
   - id: tue-product-drain
     cron: "0 15 * * 2"
     work_order_id: WO-2026-NC-M1-DRAIN-RECUR
