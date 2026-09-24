@@ -1,32 +1,30 @@
-# V Voyager — factory preset bank (24)
+# V Voyager — Moog factory bank (300 programs)
 
-Select in the DAW **program/preset** menu or the **Factory Preset** combo in the plugin UI.
+**300** Voyager / Moog-style factory programs ship with the plugin. Programs **001–024** are hand-curated (Init, G-Funk, pads, FX). **025–300** are deterministic variants built from Moog archetypes (Model D, Mini, Memorymoog, ladder leads, West Coast funk, unison stacks, etc.).
+
+Regenerate the bank:
+
+```bash
+python3 plugin-factory/plugins/moog-voyager/scripts/generate_factory_presets.py
+```
+
+## How to browse
+
+- **DAW:** host program/preset list (300 entries)
+- **UI:** **Factory preset** dropdown (scroll; type first letters on some hosts)
+
+## Curated highlights (001–024)
 
 | # | Name | Role |
 |---|------|------|
-| 01 | Voyager Init | Balanced starting point |
-| 02 | Classic Mono Lead | General Voyager-style lead |
-| 03 | G-Funk Lead | West Coast lead (detune + filter bite) |
-| 04 | Cali Glide Lead | Long glide legato lead |
-| 05 | Bright Reso Lead | High resonance lead |
-| 06 | Square Sizzle | Square-heavy top end |
-| 07 | G-Funk Bass | Classic funk sub line |
-| 08 | Sub Foundation | Deep clean sub |
-| 09 | Funk Pick Bass | Short plucky bass |
-| 10 | Rubber Bass | Soft triangle bass |
-| 11 | Deep Sub Drive | Driven sub |
-| 12 | Silk Pad | Slow filter/amp pads |
-| 13 | Voyager Dream | Wide pad |
-| 14 | Dark Atlas Pad | Dark evolving pad |
-| 15 | Soft Triangle Keys | Gentle keys |
-| 16 | Brass Stab | Punchy brass |
-| 17 | Pulse Stepper | LFO pulse motion |
-| 18 | Filter Sweep FX | FX sweep |
-| 19 | LFO Wobble | Filter wobble |
-| 20 | Noise Rumble | Noise + low filter |
-| 21 | Filter Whistle | High resonance whistle |
-| 22 | West Coast Pluck | Short pluck |
-| 23 | Night Drive | Dark lead/bass hybrid |
-| 24 | Full Stack Unison | Detuned triple stack |
+| 001 | Voyager Init | Balanced starting point |
+| 003 | G-Funk Lead | West Coast lead |
+| 007 | G-Funk Bass | Funk sub line |
+| 012–014 | Silk / Dream / Dark Atlas | Pads |
+| 016 | Brass Stab | Short brass |
+| 018–021 | Sweep / Wobble / Rumble / Whistle | FX |
+| 024 | Full Stack Unison | Detuned triple stack |
 
-User preset save/load uses the host/D AW project state (APVTS + program index in plugin state blob).
+Programs **025+** follow naming like `025 Fat Model D Lead`, `042 Moog Warm Bass`, `128 Vintage Memorymoog Pad`, etc.
+
+User tweaks are stored in the host project via APVTS; factory program index is stored as `factoryProgram` in plugin state.

@@ -2,9 +2,11 @@
 
 Triple oscillator, Moog ladder LPF, dual envelopes, LFO, glide, mixer saturation, PolyBLEP sources.
 
-## Factory preset bank (24)
+## Factory preset bank (300 Moog programs)
 
-Full catalog: [PRESETS.md](PRESETS.md) — leads, basses, pads, keys, brass, FX.
+Full catalog: [PRESETS.md](PRESETS.md) — 24 curated + 276 Moog archetype variants.
+
+Regenerate: `python3 scripts/generate_factory_presets.py`
 
 - DAW: use host **program/preset** (24 programs).
 - UI: **Factory preset** dropdown under the title bar.

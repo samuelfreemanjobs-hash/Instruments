@@ -27,7 +27,7 @@ jobs:
           FACTORY_VST3_INSTALL_DIR: ${{ github.workspace }}/build/factory-shipped-vst3
         run: ./scripts/factory.sh release
 
-      - name: Assert V Voyager VST3 + 24 factory presets
+      - name: Assert V Voyager VST3 + 300 factory presets
         run: |
           test -d "$GITHUB_WORKSPACE/build/factory-shipped-vst3/V Voyager.vst3"
           "$GITHUB_WORKSPACE/plugin-factory/build/plugins/moog-voyager/VoyagerPresetTests"
