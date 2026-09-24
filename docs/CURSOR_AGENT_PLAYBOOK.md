@@ -140,3 +140,4 @@ Enable marketplace skills for your stack (Vercel, Supabase, env-setup). Use **na
 | RAG / automation | [RAG_AND_INTELLIGENT_AUTOMATION.md](RAG_AND_INTELLIGENT_AUTOMATION.md) |
 | Colab smoke tests | [COLAB_ZERO_INSTALL_TESTING.md](COLAB_ZERO_INSTALL_TESTING.md) |
 | Agent lanes | [DISKLORDZ_SAAS_AGENT_LANES.md](DISKLORDZ_SAAS_AGENT_LANES.md) |
+| Team roster / VST factory | [AGENT_TEAM_ROSTER.md](AGENT_TEAM_ROSTER.md) · [VST_PLUGIN_FACTORY_SCHEDULE.md](VST_PLUGIN_FACTORY_SCHEDULE.md) |

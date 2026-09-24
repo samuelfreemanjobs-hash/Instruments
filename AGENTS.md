@@ -22,6 +22,16 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
+**VST subagents (repo-wide JUCE):** [docs/VST_SUBAGENT_SCOPE.md](docs/VST_SUBAGENT_SCOPE.md)
+
+| Agent ID | PM prefix | Prompt |
+|----------|-----------|--------|
+| `night-circuit-qa` | `[Plugin][JUCE][QA]` | [VST_PLUGIN_QA_AGENT.md](docs/VST_PLUGIN_QA_AGENT.md) |
+| `night-circuit-sound-design` | `[Plugin][JUCE][Design]` | [VST_SOUND_DESIGN_AGENT.md](docs/VST_SOUND_DESIGN_AGENT.md) |
+| `vst-gui-designer` | `[Plugin][JUCE][GUI]` | [VST_GUI_DESIGNER_AGENT.md](docs/VST_GUI_DESIGNER_AGENT.md) |
+
+IDs retain `night-circuit-*` for automation; scope is **all** in-repo JUCE plugins unless WO says otherwise.
+
 ## RAG (prompt knowledge)
 
 ```bash
@@ -30,6 +40,12 @@ python3 disklordz/rag/scripts/query_local.py "your query"
 ```
 
 Colab: [docs/COLAB_ZERO_INSTALL_TESTING.md](docs/COLAB_ZERO_INSTALL_TESTING.md).
+
+## VST Plugin Factory (standing agent)
+
+**Agent ID:** `cursor-vst-plugin-factory` · Roster: [docs/AGENT_TEAM_ROSTER.md](docs/AGENT_TEAM_ROSTER.md) · Persona: [docs/VST_PLUGIN_FACTORY_AGENT.md](docs/VST_PLUGIN_FACTORY_AGENT.md) · Schedule: [docs/VST_PLUGIN_FACTORY_SCHEDULE.md](docs/VST_PLUGIN_FACTORY_SCHEDULE.md)
+
+PM routes **`[Plugin][JUCE]`** WOs via [disklordz/automation/VST_PLUGIN_FACTORY.md](disklordz/automation/VST_PLUGIN_FACTORY.md). Inbox: `disklordz/vst-factory/inbox/`.
 
 ## JUCE plugin (default Cloud install)
 

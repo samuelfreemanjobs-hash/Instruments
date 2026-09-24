@@ -1,0 +1,41 @@
+{
+  "base_id_hint": "Recurring Night Circuit + agent completion WOs (pair with scheduled_work.yaml)",
+  "work_orders": [
+    {
+      "work_order_id": "WO-2026-NC-QA-GATE1-RECUR",
+      "project_id": "PRJ-2026-VST-FACTORY",
+      "title": "[Plugin][JUCE][QA][Recurring] Night Circuit Gate 1",
+      "status": "Backlog",
+      "priority": "P2",
+      "owner_agent": "night-circuit-qa",
+      "acceptance_criteria": "ProphetRev2Trap/qa/reports dated integrity markdown; BUILD_BASELINE commands executed; FL/MPC marked NOT TESTED unless host run."
+    },
+    {
+      "work_order_id": "WO-2026-NC-QA-WED-RECUR",
+      "project_id": "PRJ-2026-VST-FACTORY",
+      "title": "[Plugin][JUCE][QA][Recurring] Wednesday integrity follow-up",
+      "status": "Backlog",
+      "priority": "P2",
+      "owner_agent": "night-circuit-qa",
+      "acceptance_criteria": "React to night-circuit-integrity artifact; fix or escalate to factory WO."
+    },
+    {
+      "work_order_id": "WO-2026-NC-DESIGN-BIWEEK-RECUR",
+      "project_id": "PRJ-2026-VST-FACTORY",
+      "title": "[Plugin][JUCE][Design][Recurring] Preset / GUI batch",
+      "status": "Backlog",
+      "priority": "P3",
+      "owner_agent": "night-circuit-sound-design",
+      "acceptance_criteria": "One of: FeaturedPresets PR, design/reports listening file, or GUI spec increment with outbox done."
+    },
+    {
+      "work_order_id": "WO-2026-NC-M1-DRAIN-RECUR",
+      "project_id": "PRJ-2026-VST-FACTORY",
+      "title": "[Plugin][JUCE][Recurring] Night Circuit M1 — drain open inbox",
+      "status": "Backlog",
+      "priority": "P1",
+      "owner_agent": "cursor-vst-plugin-factory",
+      "acceptance_criteria": "Process open inbox handoffs (max 2 WIP); M1 verification priority; PR + outbox per handoff."
+    }
+  ]
+}

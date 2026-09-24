@@ -1,0 +1,77 @@
+# Workflow Automation Agent — emit inbox handoffs so Cloud Agents can complete scheduled work.
+# Pairs with disklordz/automation/scheduled_work.yaml and docs/AUTOMATED_WORK_COMPLETION.md
+name: Agent scheduled handoffs
+
+on:
+  schedule:
+    - cron: "40 9 * * 1"   # Mon — after plugin-ci-health
+    - cron: "45 9 * * 1"
+    - cron: "0 15 * * 2"   # Tue — product drain
+    - cron: "45 10 * * 3"  # Wed — after night-circuit-integrity
+    - cron: "0 16 * * 4"   # Thu — sound design
+    - cron: "20 17 * * 5"  # Fri — after doc-sync
+    - cron: "25 17 * * 5"  # Fri — GUI audit handoff
+  workflow_dispatch:
+    inputs:
+      cron:
+        description: Cron key from scheduled_work.yaml (e.g. "40 9 * * 1")
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  emit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Resolve cron expression
+        id: cron
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "expr=${{ inputs.cron }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "40 9 * * 1" ]; then
+            echo "expr=40 9 * * 1" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "45 9 * * 1" ]; then
+            echo "expr=45 9 * * 1" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "0 15 * * 2" ]; then
+            echo "expr=0 15 * * 2" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "45 10 * * 3" ]; then
+            echo "expr=45 10 * * 3" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "0 16 * * 4" ]; then
+            echo "expr=0 16 * * 4" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "20 17 * * 5" ]; then
+            echo "expr=20 17 * * 5" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "25 17 * * 5" ]; then
+            echo "expr=25 17 * * 5" >> "$GITHUB_OUTPUT"
+          else
+            echo "Unknown schedule: ${{ github.event.schedule }}" >&2
+            exit 1
+          fi
+
+      - name: Emit handoffs
+        id: emit
+        run: |
+          set -euo pipefail
+          python3 scripts/agent-schedule/emit_handoffs.py --cron "${{ steps.cron.outputs.expr }}" | tee emit.log
+          if grep -q "^wrote " emit.log; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push handoffs
+        if: steps.emit.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add disklordz/vst-factory/inbox/
+          git commit -m "chore(agents): scheduled handoffs (${{ steps.cron.outputs.expr }} UTC)"
+          git push

@@ -1,0 +1,22 @@
+---
+description: Night Circuit factory preset genre targets (user memory) — wavephonk, wave, vapor trap, chillwave, hardware, ambient phonk, cloud phonk.
+alwaysApply: false
+---
+
+# Night Circuit — genre preset memory
+
+**User product memory (2026-09-24):** Factory and featured curation should cover these **synthetic** trap-adjacent styles (not acoustic emulations):
+
+| Tag | Count | See |
+|-----|-------|-----|
+| wavephonk | 8 | `AGENT_MEMORY_GENRES.md` |
+| wave | 8 | |
+| vapor trap | 10 | |
+| chillwave | 6 | |
+| hardware | 6 | |
+| ambient phonk | 6 | |
+| cloud phonk | 8 | |
+
+**52** genre foundations + **21** classic anchors = **73** total; full name list in `ProphetRev2Trap/design/AGENT_MEMORY_GENRES.md`.
+
+When adding presets: keep **1,028** factory count; edit `FoundationPresets.cpp` + adjust `kFoundationPresetCount` / `kVariationPresetCount`; register featured names in `FeaturedPresets.cpp`. Details: `ProphetRev2Trap/design/AGENT_MEMORY_GENRES.md`.

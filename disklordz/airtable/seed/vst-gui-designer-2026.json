@@ -1,0 +1,42 @@
+{
+  "base_id_hint": "Senior VST GUI Designer — pm-agent import",
+  "note": "QA and sound-design use same repo-wide policy; see docs/VST_SUBAGENT_SCOPE.md. Agent IDs night-circuit-qa and night-circuit-sound-design unchanged.",
+  "agents": [
+    {
+      "agent_id": "vst-gui-designer",
+      "display_name": "Senior VST GUI Designer",
+      "lane": "[Plugin][JUCE][GUI]",
+      "prompt_doc": "docs/VST_GUI_DESIGNER_AGENT.md",
+      "status": "Active"
+    }
+  ],
+  "work_orders": [
+    {
+      "work_order_id": "WO-2026-JUCE-GUI-AUDIT-RECUR",
+      "project_id": "PRJ-2026-VST-FACTORY",
+      "title": "[Plugin][JUCE][GUI][Recurring] Repo-wide VST GUI audit",
+      "status": "Backlog",
+      "priority": "P2",
+      "owner_agent": "vst-gui-designer",
+      "acceptance_criteria": "Append docs/reports/VST_GUI_AUDIT_<date>.md; rubric P0/P1/P2 per product; Factory WOs for P1 UI debt."
+    },
+    {
+      "work_order_id": "WO-2026-JUCE-GUI-W909-SPEC",
+      "project_id": "PRJ-2026-VST-FACTORY",
+      "title": "[Plugin][JUCE][GUI] WAVE-909 GUI spec & resize target",
+      "status": "Backlog",
+      "priority": "P2",
+      "owner_agent": "vst-gui-designer",
+      "acceptance_criteria": "Wave909/design/WAVE909_GUI_SPEC.md + DESIGN.md; handoff WO to Factory for PluginEditor migration."
+    },
+    {
+      "work_order_id": "WO-2026-NC-GUI-HOST-REVIEW",
+      "project_id": "PRJ-2026-VST-FACTORY",
+      "title": "[Plugin][JUCE][GUI][Review] Night Circuit FL/MPC GUI checklist",
+      "status": "Backlog",
+      "priority": "P1",
+      "owner_agent": "vst-gui-designer",
+      "acceptance_criteria": "Joint template with night-circuit-qa; update HOST_COMPATIBILITY when host evidence exists."
+    }
+  ]
+}

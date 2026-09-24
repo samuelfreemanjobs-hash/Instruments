@@ -1,0 +1,83 @@
+# Posts when "VST Plugin Factory schedule" completes (Mon health, Wed Night Circuit, Fri doc-sync).
+# Setup: ./scripts/setup-disklordz-integrations.sh slack-vst-factory --webhook-url '...'
+name: VST Plugin Factory schedule Slack
+
+on:
+  workflow_run:
+    workflows: [VST Plugin Factory schedule]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      conclusion:
+        description: Simulated conclusion (manual test)
+        required: true
+        default: success
+        type: choice
+        options:
+          - success
+          - failure
+          - cancelled
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_VST_FACTORY_URL || secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - name: Skip when webhook not configured
+        if: env.SLACK_WEBHOOK == ''
+        run: |
+          echo "No Slack webhook; skipping."
+          echo "Run: ./scripts/setup-disklordz-integrations.sh slack-vst-factory"
+
+      - name: Resolve run context
+        id: ctx
+        if: env.SLACK_WEBHOOK != ''
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "conclusion=${{ inputs.conclusion }}" >> "$GITHUB_OUTPUT"
+            echo "run_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
+            echo "branch=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+            echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "conclusion=${{ github.event.workflow_run.conclusion }}" >> "$GITHUB_OUTPUT"
+            echo "run_url=${{ github.event.workflow_run.html_url }}" >> "$GITHUB_OUTPUT"
+            echo "branch=${{ github.event.workflow_run.head_branch }}" >> "$GITHUB_OUTPUT"
+            echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Post to Slack
+        if: env.SLACK_WEBHOOK != ''
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_VST_FACTORY_URL || secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "VST Plugin Factory schedule — ${{ steps.ctx.outputs.conclusion }} (${{ steps.ctx.outputs.branch }})",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "VST Plugin Factory — scheduled run"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Result:*\n`${{ steps.ctx.outputs.conclusion }}`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ steps.ctx.outputs.branch }}`" },
+                    { "type": "mrkdwn", "text": "*Agent:*\n`cursor-vst-plugin-factory` / `night-circuit-qa`" },
+                    { "type": "mrkdwn", "text": "*Jobs:*\nMon CI health · Wed Night Circuit · Fri doc-sync" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ steps.ctx.outputs.run_url }}|View workflow run> · `${{ steps.ctx.outputs.sha }}`\nIf *failure*: Mon triage → `[Plugin][JUCE][HEALTH]` WO · Wed → Night Circuit QA"
+                  }
+                }
+              ]
+            }

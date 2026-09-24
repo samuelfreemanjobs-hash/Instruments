@@ -1,0 +1,64 @@
+# Night Circuit (Rev2-inspired subtractive synth — not a Rev2 clone)
+
+**Purpose:** **Milestone 1 — the playable instrument.** Desktop **VST3** polyphonic **synthetic** trap/vaporwave synth: Prophet-class **workflow** (dual osc → ladder filter → VCA, dual ADSRs, mono/glide), **Night Circuit’s own timbre and preset identity**. Factory content is **Bass, Lead, Pad, Pluck/Keys, Synth** — oscillator synthesis only, **no acoustic-instrument presets**. Hosts: **FL Studio**, **MPC Software** (desktop).
+
+**Users:** Producers who want synthetic Atlanta / Pierre / Mike Dean–adjacent sounds without sample libraries.
+
+Product definition: [docs/MILESTONE_1.md](docs/MILESTONE_1.md).
+
+## Build & run
+
+From repo root (same as JD Upgraded / WAVE-909). **JUCE 8.0.15** is pinned in root `CMakeLists.txt`.
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+cmake --build build -j --target ProphetRev2Trap_VST3 ProphetRev2Trap_Standalone NightCircuitTests
+```
+
+Baseline and Gate 1 checklist: [docs/BUILD_BASELINE.md](docs/BUILD_BASELINE.md).
+
+## Data flow
+
+```
+MIDI → Synthesiser (16 voices)
+         each voice: osc1 (saw) + osc2 (pulse, detuned)
+                   → ladder LPF24 (cutoff + filter envelope)
+                   → amp ADSR → stereo bus → output gain
+APVTS ← factory presets (PresetManager categories)
+UI: category ComboBox → preset ComboBox → applyFactoryPreset
+```
+
+## Threading / realtime
+
+- Parameter reads via `getRawParameterValue` once per block in `refreshRuntimeParams`.
+- Per-voice ADSR and filter; no heap alloc on audio thread.
+
+## Key modules
+
+| Path | Role |
+|------|------|
+| `Source/PluginProcessor.*` | APVTS, voices, preset apply |
+| `Source/Presets/FactoryPresets.*` | Trap synthetic factory programs by category |
+| `Source/Presets/PresetManager.*` | Category ↔ global preset index |
+| `Source/PluginEditor.*` | Preset manager UI + envelope knobs |
+
+## Preset categories
+
+`Bass`, **`Synth`** (poly chords & melodic beds), `Lead`, `Pad`, **`Pluck/Keys`**, plus **User** — all programs use oscillators only.
+
+Taxonomy: [docs/PRESET_CATEGORIES.md](docs/PRESET_CATEGORIES.md) · Roadmap: [docs/NIGHT_CIRCUIT_PLAN.md](docs/NIGHT_CIRCUIT_PLAN.md)
+
+## Factory preset library
+
+**1,028 programs:** 21 foundations + 1,007 deterministic variations — [docs/PRESET_FACTORY.md](docs/PRESET_FACTORY.md).
+
+## Extension points
+
+- Osc waveforms / second oscillator sync (Prophet-style)
+- CLAP target via `clap_juce_extensions` (root pattern)
+- Musical QA on foundations + sampled variations before “ship grade” claims
+
+## Related docs
+
+- [docs/VST_PLUGIN_FACTORY_AGENT.md](../docs/VST_PLUGIN_FACTORY_AGENT.md)
+- Root [ARCHITECTURE.md](../ARCHITECTURE.md)
