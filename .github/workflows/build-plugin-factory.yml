@@ -40,4 +40,5 @@ jobs:
         run: |
           test -d "$GITHUB_WORKSPACE/build/factory-shipped-vst3"
           ls -la "$GITHUB_WORKSPACE/build/factory-shipped-vst3"
-          test "$(find "$GITHUB_WORKSPACE/build/factory-shipped-vst3" -name '*.vst3' -type d | wc -l)" -ge 2
+          test "$(find "$GITHUB_WORKSPACE/build/factory-shipped-vst3" -name '*.vst3' -type d | wc -l)" -ge 3
+          test -d "$GITHUB_WORKSPACE/build/factory-shipped-vst3/V Voyager.vst3"

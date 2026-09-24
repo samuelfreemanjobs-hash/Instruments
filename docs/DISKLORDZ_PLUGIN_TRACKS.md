@@ -1,6 +1,6 @@
 # Disklordz plugin tracks (Plugin Lab)
 
-**PM:** Airtable · **JUCE factory implementer:** Cursor Cloud Agent · **HISE sketch lane (D):** Antigravity (local Windows) · **Advisory:** Grok Plugin team  
+**PM:** Airtable · **JUCE factory implementer:** `cursor-v-voyager` (Cursor Cloud) · **HISE sketch lane (D):** Antigravity (local Windows) · **Advisory:** Grok Plugin team  
 
 **HISE sketch lane:** [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md) (handoff) · [HISE_SKETCH_LANE.md](HISE_SKETCH_LANE.md) (full) — **Business Planner + Marketing** gate every customer-facing SKU.
 
@@ -9,6 +9,7 @@
 | Track | Product | Path | Stack | Priority |
 |-------|---------|------|-------|----------|
 | **C** | **JD Upgraded** | `Source/` | JUCE VST3 + CLAP | Maintenance + CI |
+| **E** | **V Voyager** (Plugin Factory SKU) | [plugin-factory/plugins/moog-voyager/](../plugin-factory/plugins/moog-voyager/) | JUCE VST3 + Standalone | **P2** — `cursor-v-voyager`; [PM doc](V_VOYAGER_PM.md) |
 | **D** | **HISE sketch** (rompler / sampler SKUs) | [hise-sketch/](../hise-sketch/) | HISE → VST3 (local) | **P3** — Antigravity; does not consume Cursor WIP unless port WO |
 
 Junova-X and NovaDrum (JUCE / iPlug2 factory tracks A–B) are documented on the Junova handoff branch / open PRs — merge those before expecting paths under `Junova-X/` and `vst-tr808/`.

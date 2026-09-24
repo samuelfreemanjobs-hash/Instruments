@@ -1,0 +1,90 @@
+{
+  "base_id_hint": "Disklordz OS — import after Product Families; registers V Voyager VST + Cursor Cloud agent",
+  "products": [
+    {
+      "product_id": "DL-PLUGIN-V-VOYAGER",
+      "name": "V Voyager",
+      "division": "Plugin",
+      "status": "Active",
+      "brief": "Monophonic Voyager-style VSTi from Plugin Factory OS: 24 factory presets, Moog ladder DSP, zero-touch ship via factory.sh release. Path: plugin-factory/plugins/moog-voyager/.",
+      "github_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "price_tier": "TBD",
+      "ladder_tier": "factory_sku",
+      "sonic_problem": "West Coast / G-Funk Moog lead and bass in one instrument",
+      "family_id": "DL-FAMILY-ANALOG-MONO",
+      "compile_targets": "[\"vst3\",\"standalone\"]",
+      "vst3_bundle_name": "V Voyager.vst3",
+      "factory_registry": "moog-voyager"
+    }
+  ],
+  "agents": [
+    {
+      "agent_id": "cursor-v-voyager",
+      "display_name": "Cursor Cloud — V Voyager / Plugin Factory",
+      "role": "JUCE factory implementer for Plugin Factory OS and V Voyager SKU",
+      "repo": "samuelfreemanjobs-hash/Instruments",
+      "default_branch": "main",
+      "wip_policy": "Counts toward max 2 Cursor JUCE WOs when owner_agent on implementation WOs",
+      "handoff_inbox": "disklordz/cursor-cloud/inbox/CO-*.json"
+    }
+  ],
+  "projects": [
+    {
+      "project_id": "PRJ-2026-V-VOYAGER",
+      "name": "V Voyager — Plugin Factory SKU",
+      "product_id": "DL-PLUGIN-V-VOYAGER",
+      "phase": "1-Ship",
+      "status": "Active",
+      "owner_agent": "cursor-v-voyager"
+    }
+  ],
+  "work_orders": [
+    {
+      "work_order_id": "WO-2026-VVOY-001",
+      "project_id": "PRJ-2026-V-VOYAGER",
+      "title": "[Plugin][Factory] V Voyager — PM register + ship VST3",
+      "status": "Done",
+      "priority": "P2",
+      "owner_agent": "cursor-v-voyager",
+      "acceptance_criteria": "Product DL-PLUGIN-V-VOYAGER in Airtable. V Voyager.vst3 builds via plugin-factory/scripts/factory.sh release and pluginval. 24 factory presets documented in PRESETS.md. CI: Build Plugin Factory OS + scheduled factory QA green."
+    },
+    {
+      "work_order_id": "WO-2026-VVOY-002",
+      "project_id": "PRJ-2026-V-VOYAGER",
+      "title": "[Plugin][Factory] V Voyager — preset QA + DSP polish",
+      "status": "Backlog",
+      "priority": "P2",
+      "owner_agent": "cursor-v-voyager",
+      "acceptance_criteria": "All 24 factory presets auditioned (offline demo or standalone). No preset leaves filter cutoff at 0 or silent amp env. run_business.py --profile factory green. Optional: user preset save in plugin state beyond factory bank."
+    },
+    {
+      "work_order_id": "WO-2026-VVOY-003",
+      "project_id": "PRJ-2026-V-VOYAGER",
+      "title": "[Plugin][Factory] V Voyager — packaging / installer lane",
+      "status": "Backlog",
+      "priority": "P3",
+      "owner_agent": "cursor-v-voyager",
+      "acceptance_criteria": "Signed VST3 bundle path documented for macOS/Windows factory matrix. Marketing brief + price_tier set in Airtable before store listing."
+    }
+  ],
+  "scheduled_automations": [
+    {
+      "name": "GitHub — Plugin Factory QA (Mon/Wed/Fri UTC)",
+      "trigger": "schedule",
+      "workflow": ".github/workflows/scheduled-plugin-factory-qa.yml",
+      "cron_utc": "0 12 * * 1,3,5"
+    },
+    {
+      "name": "GitHub — Nightly full monorepo QA",
+      "trigger": "schedule",
+      "workflow": ".github/workflows/nightly-qa.yml",
+      "cron_utc": "0 11 * * *"
+    },
+    {
+      "name": "Airtable — Cursor Cloud handoff",
+      "trigger": "When status = Ready for Cursor Cloud",
+      "action": "repository_dispatch event_type airtable-cursor-cloud-handoff",
+      "filter": "owner_agent = cursor-v-voyager OR title contains [Plugin][Factory]"
+    }
+  ]
+}

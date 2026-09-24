@@ -4,7 +4,7 @@ name: CI Slack notify
 
 on:
   workflow_run:
-    workflows: [Build, Build MyFirstPlugin, Build Plugin Factory OS, Nightly QA]
+    workflows: [Build, Build MyFirstPlugin, Build Plugin Factory OS, Scheduled Plugin Factory QA, Nightly QA]
     types: [completed]
   workflow_dispatch:
     inputs:
