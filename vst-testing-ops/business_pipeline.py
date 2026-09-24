@@ -19,6 +19,9 @@ ERROR_LOG = OPS_ROOT / "error_log.txt"
 BUILD_LOG = OPS_ROOT / "last_build.log"
 REPORT_JSON = OPS_ROOT / "last_run_report.json"
 ORCHESTRATOR = REPO_ROOT / "scripts" / "vst" / "run_pluginval.py"
+FACTORY_ROOT = REPO_ROOT / "plugin-factory"
+FACTORY_OPS = FACTORY_ROOT / "scripts" / "factory_ops.py"
+FACTORY_PLUGINVAL = FACTORY_ROOT / "scripts" / "run_pluginval_factory.py"
 
 # Wave909 uses a nested build dir (see Wave909/ARCHITECTURE.md)
 WAVE909_VST3_BUNDLE = (
@@ -36,6 +39,10 @@ class StageId(str, Enum):
     WAVE909_TESTS = "wave909_tests"
     PLUGINVAL = "pluginval"
     DISKLORDZ_WEB = "disklordz_web"
+    FACTORY_BUILD = "factory_build"
+    FACTORY_ARTEFACTS = "factory_artefacts"
+    FACTORY_PLUGINVAL = "factory_pluginval"
+    FACTORY_SHIP = "factory_ship"
 
 
 @dataclass
@@ -61,6 +68,10 @@ class PipelineConfig:
     wave909_tests: bool = True
     pluginval: bool = True
     disklordz_web: bool = False
+    factory_build: bool = False
+    factory_artefacts: bool = False
+    factory_pluginval: bool = False
+    factory_ship: bool = False
     build_jobs: int | None = None
 
 
@@ -213,6 +224,85 @@ def stage_wave909_tests() -> StageResult:
     return StageResult(StageId.WAVE909_TESTS, code == 0, time.time() - t0, out)
 
 
+def stage_factory_build(jobs: int | None) -> StageResult:
+    t0 = time.time()
+    if not FACTORY_ROOT.is_dir():
+        return StageResult(StageId.FACTORY_BUILD, False, time.time() - t0, "plugin-factory/ missing\n")
+    cmd = [
+        "cmake",
+        "-B",
+        "build",
+        "-DCMAKE_BUILD_TYPE=Release",
+    ]
+    if sys.platform != "win32":
+        cmd.extend(["-DCMAKE_CXX_COMPILER=g++-12", "-DCMAKE_C_COMPILER=gcc-12"])
+    code1, out1 = _run(cmd, cwd=FACTORY_ROOT)
+    if code1 != 0:
+        return StageResult(StageId.FACTORY_BUILD, False, time.time() - t0, out1)
+    build_cmd = ["cmake", "--build", "build"]
+    if jobs:
+        build_cmd.extend(["-j", str(jobs)])
+    else:
+        build_cmd.append("-j")
+    if sys.platform == "win32":
+        build_cmd.extend(["--config", "Release"])
+    code2, out2 = _run(build_cmd, cwd=FACTORY_ROOT)
+    out = out1 + out2
+    return StageResult(StageId.FACTORY_BUILD, code2 == 0, time.time() - t0, out)
+
+
+def stage_factory_artefacts() -> StageResult:
+    t0 = time.time()
+    if not FACTORY_OPS.is_file():
+        return StageResult(
+            StageId.FACTORY_ARTEFACTS,
+            False,
+            time.time() - t0,
+            "factory_ops.py missing\n",
+        )
+    code, out = _run([sys.executable, str(FACTORY_OPS), "verify-artefacts"])
+    return StageResult(StageId.FACTORY_ARTEFACTS, code == 0, time.time() - t0, out)
+
+
+def stage_factory_pluginval() -> StageResult:
+    t0 = time.time()
+    if not FACTORY_PLUGINVAL.is_file():
+        return StageResult(
+            StageId.FACTORY_PLUGINVAL,
+            False,
+            time.time() - t0,
+            "run_pluginval_factory.py missing\n",
+        )
+    env = os.environ.copy()
+    bin_pv = OPS_ROOT / "bin" / "pluginval"
+    if bin_pv.is_file():
+        env["PLUGINVAL_BIN"] = str(bin_pv)
+    code, out = _run(
+        [sys.executable, str(FACTORY_PLUGINVAL)],
+        env=env,
+        timeout_s=600,
+    )
+    return StageResult(StageId.FACTORY_PLUGINVAL, code == 0, time.time() - t0, out)
+
+
+def stage_factory_ship() -> StageResult:
+    t0 = time.time()
+    if not FACTORY_OPS.is_file():
+        return StageResult(StageId.FACTORY_SHIP, False, time.time() - t0, "factory_ops.py missing\n")
+    env = os.environ.copy()
+    if "FACTORY_VST3_INSTALL_DIR" not in env:
+        env["FACTORY_VST3_INSTALL_DIR"] = str(REPO_ROOT / "build" / "factory-shipped-vst3")
+    code, out = _run([sys.executable, str(FACTORY_OPS), "ship"], env=env)
+    install = env["FACTORY_VST3_INSTALL_DIR"]
+    verify_lines = [out, f"\nInstall root: {install}\n"]
+    install_path = Path(install)
+    if code == 0 and install_path.is_dir():
+        for vst in sorted(install_path.glob("*.vst3")):
+            verify_lines.append(f"[OK] on disk: {vst}\n")
+    ok = code == 0 and install_path.is_dir() and any(install_path.glob("*.vst3"))
+    return StageResult(StageId.FACTORY_SHIP, ok, time.time() - t0, "".join(verify_lines))
+
+
 def stage_pluginval() -> StageResult:
     t0 = time.time()
     if not ORCHESTRATOR.is_file():
@@ -293,7 +383,13 @@ PROFILES: dict[str, PipelineConfig] = {
         pluginval=True,
         disklordz_web=False,
     ),
-    "full": PipelineConfig(disklordz_web=True),
+    "full": PipelineConfig(
+        disklordz_web=True,
+        factory_build=True,
+        factory_artefacts=True,
+        factory_pluginval=True,
+        factory_ship=True,
+    ),
     "plugin-quick": PipelineConfig(
         configure=False,
         build_all=False,
@@ -312,6 +408,32 @@ PROFILES: dict[str, PipelineConfig] = {
         wave909_tests=False,
         pluginval=False,
         disklordz_web=False,
+    ),
+    "factory": PipelineConfig(
+        configure=False,
+        build_all=False,
+        check_artefacts=False,
+        determinism=False,
+        golden=False,
+        wave909_tests=False,
+        pluginval=False,
+        factory_build=True,
+        factory_artefacts=True,
+        factory_pluginval=True,
+        factory_ship=True,
+    ),
+    "release": PipelineConfig(
+        configure=True,
+        build_all=True,
+        check_artefacts=True,
+        determinism=True,
+        golden=True,
+        wave909_tests=True,
+        pluginval=True,
+        factory_build=True,
+        factory_artefacts=True,
+        factory_pluginval=True,
+        factory_ship=True,
     ),
 }
 
@@ -332,9 +454,21 @@ def resolve_stages(config: PipelineConfig) -> list[tuple[StageId, Callable[[], S
         stages.append((StageId.WAVE909_TESTS, STAGE_RUNNERS[StageId.WAVE909_TESTS]))
     if config.pluginval:
         stages.append((StageId.PLUGINVAL, STAGE_RUNNERS[StageId.PLUGINVAL]))
+    if config.factory_build:
+        stages.append((StageId.FACTORY_BUILD, _build_stage_factory(config.build_jobs)))
+    if config.factory_artefacts:
+        stages.append((StageId.FACTORY_ARTEFACTS, stage_factory_artefacts))
+    if config.factory_pluginval:
+        stages.append((StageId.FACTORY_PLUGINVAL, stage_factory_pluginval))
+    if config.factory_ship:
+        stages.append((StageId.FACTORY_SHIP, stage_factory_ship))
     if config.disklordz_web:
         stages.append((StageId.DISKLORDZ_WEB, STAGE_RUNNERS[StageId.DISKLORDZ_WEB]))
     return stages
+
+
+def _build_stage_factory(jobs: int | None) -> Callable[[], StageResult]:
+    return lambda: stage_factory_build(jobs)
 
 
 def run_pipeline(

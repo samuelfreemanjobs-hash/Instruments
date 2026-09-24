@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Disklordz Cursor Cloud handoff",
+  "type": "object",
+  "required": ["handoff_id", "direction", "from_agent", "to_agent", "created_at", "work_order"],
+  "properties": {
+    "handoff_id": { "type": "string", "pattern": "^CO-[0-9]{8}-[A-Z0-9]{4}$" },
+    "direction": { "enum": ["airtable_to_cursor_cloud", "cursor_cloud_status"] },
+    "from_agent": { "type": "string" },
+    "to_agent": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "work_order": {
+      "type": "object",
+      "required": ["id", "title"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "acceptance_criteria": { "type": "string" },
+        "github_issue": { "type": "integer" },
+        "branch": { "type": "string" }
+      }
+    },
+    "cloud_agent_prompt": { "type": "string" },
+    "context_paths": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "product_id": { "type": "string" },
+    "status": { "enum": ["open", "in_progress", "done", "blocked"] },
+    "notes": { "type": "string" }
+  }
+}

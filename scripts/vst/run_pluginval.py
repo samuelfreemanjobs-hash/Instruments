@@ -234,6 +234,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         action="store_true",
         help="Validate JD Upgraded + Wave909 VST3 under build/*_artefacts/Release/VST3/",
     )
+    parser.add_argument(
+        "--factory-artefacts",
+        action="store_true",
+        help="Discover and validate all Plugin Factory OS VST3 bundles",
+    )
     parser.add_argument("--strictness-level", type=int, default=5)
     parser.add_argument("--timeout-ms", type=int, default=120_000)
     parser.add_argument(
@@ -279,6 +284,9 @@ def main(argv: list[str] | None = None) -> int:
                 root / "MyFirstPlugin" / "build" / "MyFirstPlugin_artefacts" / "Release" / "VST3",
             ]
         )
+    if args.factory_artefacts:
+        factory_build = repo_root() / "plugin-factory" / "build"
+        roots.append(factory_build / "plugins")
     if not roots and not args.plugins:
         roots = [repo_root() / "build" / "JDUpgraded_artefacts" / "Release" / "VST3"]
 

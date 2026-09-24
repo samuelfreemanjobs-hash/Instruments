@@ -10,7 +10,7 @@ Run the whole product QA loop without manual DAW checks — configure/build, art
 
 | Path | Role |
 |------|------|
-| `business_pipeline.py` | Stage runners + profiles (`ci`, `full`, `plugin-quick`, `dsp-only`). |
+| `business_pipeline.py` | Stage runners + profiles (`ci`, `release`, `factory`, `full`, …). |
 | `run_business.py` | CLI: `python3 vst-testing-ops/run_business.py --profile ci` |
 | `app.py` | Streamlit **Operations Command Center** (fleet status + full pipeline). |
 | `test_runner.py` | Single-VST pluginval + `error_log.txt` / `--watch`. |
@@ -30,7 +30,7 @@ Run the whole product QA loop without manual DAW checks — configure/build, art
 6. **wave909_tests** — `Wave909Tests` or `ctest -R Wave909`
 7. **pluginval** — `scripts/vst/run_pluginval.py --default-artefacts`
 
-Profile **`full`** adds **disklordz_web** (`npm ci` / `npm run build` + daw-inbox `node --check`).
+Profile **`release`** = **`ci`** + **factory_build** → **factory_artefacts** → **factory_pluginval** → **factory_ship** (default ship dir: `build/factory-shipped-vst3/`). Profile **`factory`** runs only the factory stages. Profile **`full`** adds **disklordz_web** and the same factory stages as **`release`**.
 
 ## Build & run
 
@@ -38,7 +38,9 @@ Profile **`full`** adds **disklordz_web** (`npm ci` / `npm run build` + daw-inbo
 
 ```bash
 python3 vst-testing-ops/run_business.py --profile ci
-python3 vst-testing-ops/run_business.py --profile full    # + SaaS
+python3 vst-testing-ops/run_business.py --profile release # ci + factory QA + ship
+python3 vst-testing-ops/run_business.py --profile factory # factory only
+python3 vst-testing-ops/run_business.py --profile full    # + SaaS + factory
 python3 vst-testing-ops/run_business.py --profile ci --with-saas
 ```
 

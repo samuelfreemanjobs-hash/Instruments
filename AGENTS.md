@@ -22,6 +22,8 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
+**V Voyager (Plugin Factory SKU):** agent `cursor-v-voyager` · PM import [disklordz/airtable/seed/v-voyager-2026.json](disklordz/airtable/seed/v-voyager-2026.json) · [docs/V_VOYAGER_PM.md](docs/V_VOYAGER_PM.md)
+
 ## RAG (prompt knowledge)
 
 ```bash
@@ -37,7 +39,10 @@ Colab: [docs/COLAB_ZERO_INSTALL_TESTING.md](docs/COLAB_ZERO_INSTALL_TESTING.md).
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
 cmake --build build -j
 python3 vst-testing-ops/run_business.py --profile ci       # full plugin QA (matches build.yml)
+python3 vst-testing-ops/run_business.py --profile release  # ci + Plugin Factory QA + ship
+python3 vst-testing-ops/run_business.py --profile factory  # factory-only build/QA/ship
 python3 vst-testing-ops/run_business.py --profile dsp-only # DSP/golden only (faster)
+cd plugin-factory && ./scripts/factory.sh release          # zero-touch factory product pipeline
 python3 vst-testing-ops/test_runner.py                     # single-VST pluginval
 streamlit run vst-testing-ops/app.py                       # operations dashboard
 ```
