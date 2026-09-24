@@ -1,0 +1,20 @@
+---
+description: Night Circuit factory preset genre targets (user memory) — wavephonk, wave, vapor trap, chillwave, hardware, ambient phonk, cloud phonk.
+alwaysApply: false
+---
+
+# Night Circuit — genre preset memory
+
+**User product memory (2026-09-24):** Factory and featured curation should cover these **synthetic** trap-adjacent styles (not acoustic emulations):
+
+| Tag | Role in bank | Foundation anchors (category · name) |
+|-----|----------------|--------------------------------------|
+| **wavephonk** | Memphis / phonk weight + lead | Bass · Wavephonk Knock · Lead · Wavephonk Bell |
+| **wave** | Dreamy poly beds | Synth · Wave Horizon |
+| **vapor trap** | Vapor + trap hybrid | Synth · Vapor Trap Glass · Pluck/Keys · Vapor Trap Click |
+| **chillwave** | Slow tape haze | Pad · Chillwave Drift |
+| **hardware** | Stack / Juno-mode poly | Synth · Hardware Juno Stack |
+| **ambient phonk** | Dark drifting atmosphere | Pad · Ambient Phonk Void |
+| **cloud phonk** | Soft detuned sub cloud | Bass · Cloud Phonk Mist |
+
+When adding presets: keep **1,028** factory count; edit `FoundationPresets.cpp` + adjust `kFoundationPresetCount` / `kVariationPresetCount`; register featured names in `FeaturedPresets.cpp`. Details: `ProphetRev2Trap/design/AGENT_MEMORY_GENRES.md`.

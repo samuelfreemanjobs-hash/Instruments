@@ -9,8 +9,8 @@ namespace prophetrev2::presets
 {
 
 inline constexpr int kFactoryPresetCount = 1028;
-inline constexpr int kFoundationPresetCount = 21;
-inline constexpr int kVariationPresetCount = 1007;
+inline constexpr int kFoundationPresetCount = 30;
+inline constexpr int kVariationPresetCount = 998;
 
 struct FactoryPreset
 {

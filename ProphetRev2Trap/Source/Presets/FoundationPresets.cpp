@@ -34,6 +34,18 @@ const std::array<FoundationPatch, kFoundationPresetCount>& getFoundationPresets(
               p.circuitDrive = 0.35f; p.filterDrive = 0.3f; p.filterCutoff = 0.22f; p.ampDecay = 0.55f;
               return p;
           }() },
+        { "Wavephonk Knock", "Bass", [] {
+              auto p = base();
+              p.glideMs = 95.0f; p.osc2DetuneCents = -5.0f; p.filterCutoff = 0.24f; p.circuitDrive = 0.48f;
+              p.filterDrive = 0.42f; p.ampAttack = 0.004f; p.ampSustain = 0.94f; p.filtDecay = 0.42f;
+              return p;
+          }() },
+        { "Cloud Phonk Mist", "Bass", [] {
+              auto p = base();
+              p.osc2Level = 0.55f; p.osc2DetuneCents = -19.0f; p.oscMix = 0.35f; p.unisonVoices = 2.0f;
+              p.unisonSpread = 8.0f; p.filterCutoff = 0.26f; p.filterRes = 0.08f; p.ampSustain = 0.9f;
+              return p;
+          }() },
 
         // Synth (6) — poly chords / beds
         { "Night Circuit", "Synth", [] {
@@ -67,6 +79,24 @@ const std::array<FoundationPatch, kFoundationPresetCount>& getFoundationPresets(
               p.osc2DetuneCents = 16.0f; p.filterCutoff = 0.74f; p.filtEnvAmt = 0.58f;
               return p;
           }() },
+        { "Wave Horizon", "Synth", [] {
+              auto p = base();
+              p.unisonVoices = 2.0f; p.unisonSpread = 18.0f; p.osc2DetuneCents = 22.0f; p.ampAttack = 0.18f;
+              p.ampSustain = 0.9f; p.filterCutoff = 0.52f; p.filtEnvAmt = 0.35f;
+              return p;
+          }() },
+        { "Vapor Trap Glass", "Synth", [] {
+              auto p = base();
+              p.unisonVoices = 2.0f; p.filterCutoff = 0.68f; p.filterRes = 0.32f; p.filtEnvAmt = 0.72f;
+              p.filtDecay = 0.22f; p.ampDecay = 0.28f; p.ampSustain = 0.62f;
+              return p;
+          }() },
+        { "Hardware Juno Stack", "Synth", [] {
+              auto p = base();
+              p.unisonVoices = 3.0f; p.unisonSpread = 11.0f; p.osc2DetuneCents = 9.0f; p.filterCutoff = 0.48f;
+              p.keyTrack = 0.62f; p.ampSustain = 0.88f; p.circuitDrive = 0.12f;
+              return p;
+          }() },
 
         // Lead (4)
         { "Pierre Dream Lead", "Lead", [] {
@@ -89,6 +119,12 @@ const std::array<FoundationPatch, kFoundationPresetCount>& getFoundationPresets(
               p.osc2DetuneCents = 33.0f; p.filtEnvAmt = 0.95f; p.filterRes = 0.55f;
               return p;
           }() },
+        { "Wavephonk Bell", "Lead", [] {
+              auto p = base();
+              p.monoMode = 1.0f; p.glideMs = 45.0f; p.osc2DetuneCents = 24.0f; p.filterCutoff = 0.72f;
+              p.filtEnvAmt = 0.88f; p.filterRes = 0.38f; p.ampDecay = 0.24f; p.circuitDrive = 0.22f;
+              return p;
+          }() },
 
         // Pad (3)
         { "Mike Dean Haze", "Pad", [] {
@@ -104,6 +140,18 @@ const std::array<FoundationPatch, kFoundationPresetCount>& getFoundationPresets(
         { "Void Circuit Pad", "Pad", [] {
               auto p = base();
               p.unisonVoices = 2.0f; p.filterCutoff = 0.42f; p.ampAttack = 0.45f; p.circuitDrive = 0.08f;
+              return p;
+          }() },
+        { "Chillwave Drift", "Pad", [] {
+              auto p = base();
+              p.ampAttack = 0.62f; p.ampRelease = 2.1f; p.filtAttack = 0.4f; p.filtRelease = 1.8f;
+              p.filterCutoff = 0.38f; p.filtEnvAmt = 0.22f; p.ampSustain = 0.82f; p.osc2DetuneCents = 14.0f;
+              return p;
+          }() },
+        { "Ambient Phonk Void", "Pad", [] {
+              auto p = base();
+              p.unisonVoices = 2.0f; p.unisonSpread = 16.0f; p.filterCutoff = 0.32f; p.filterRes = 0.18f;
+              p.ampAttack = 0.48f; p.ampRelease = 2.4f; p.circuitDrive = 0.18f; p.ampSustain = 0.78f;
               return p;
           }() },
 
@@ -126,6 +174,12 @@ const std::array<FoundationPatch, kFoundationPresetCount>& getFoundationPresets(
         { "Staccato Click", "Pluck/Keys", [] {
               auto p = base();
               p.ampRelease = 0.12f; p.filtEnvAmt = 0.75f; p.filterCutoff = 0.66f;
+              return p;
+          }() },
+        { "Vapor Trap Click", "Pluck/Keys", [] {
+              auto p = base();
+              p.ampAttack = 0.001f; p.ampDecay = 0.07f; p.ampSustain = 0.0f; p.filtDecay = 0.06f;
+              p.filtEnvAmt = 0.9f; p.filterCutoff = 0.74f; p.osc2DetuneCents = 19.0f;
               return p;
           }() },
     } };
