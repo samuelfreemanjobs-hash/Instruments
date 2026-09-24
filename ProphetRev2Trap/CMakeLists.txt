@@ -21,6 +21,7 @@ target_sources (ProphetRev2Trap
         Source/PluginEditor.cpp
         Source/Presets/FactoryPresets.cpp
         Source/Presets/PresetManager.cpp
+        Source/Presets/UserPresetStore.cpp
 )
 
 target_compile_definitions (ProphetRev2Trap
@@ -42,3 +43,8 @@ target_link_libraries (ProphetRev2Trap
 target_include_directories (ProphetRev2Trap PRIVATE Source)
 
 juce_generate_juce_header (ProphetRev2Trap)
+
+add_executable (NightCircuitTests Tests/AnalogCircuitTests.cpp)
+target_include_directories (NightCircuitTests PRIVATE Source)
+target_compile_features (NightCircuitTests PRIVATE cxx_std_20)
+add_test (NAME NightCircuitAnalog COMMAND NightCircuitTests)

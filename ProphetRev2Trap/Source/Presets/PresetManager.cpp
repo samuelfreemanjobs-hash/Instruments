@@ -1,6 +1,7 @@
 #include "Presets/PresetManager.h"
 
 #include "Presets/FactoryPresets.h"
+#include "Presets/UserPresetStore.h"
 
 namespace prophetrev2::presets
 {
@@ -13,12 +14,14 @@ juce::String toJuce (std::string_view sv)
 }
 } // namespace
 
+bool PresetManager::isUserCategory (const juce::String& category) noexcept
+{
+    return category == kUserPresetCategory;
+}
+
 juce::StringArray PresetManager::getCategoryOrder()
 {
-    // Fixed mix-role order (see docs/PRESET_CATEGORIES.md). Skip empty categories.
-    static const char* kRoleOrder[] = {
-        "Bass", "Synth", "Lead", "Pad", "Pluck", "Keys", "Synth FX",
-    };
+    static const char* kRoleOrder[] = { "Bass", "Synth", "Lead", "Pad", "Pluck", kUserPresetCategory };
 
     juce::StringArray present;
     for (const auto& preset : getFactoryPresets())
@@ -27,6 +30,7 @@ juce::StringArray PresetManager::getCategoryOrder()
         if (! present.contains (cat))
             present.add (cat);
     }
+    present.add (kUserPresetCategory);
 
     juce::StringArray ordered;
     for (const char* role : kRoleOrder)
@@ -35,14 +39,14 @@ juce::StringArray PresetManager::getCategoryOrder()
         if (present.contains (cat))
             ordered.add (cat);
     }
-    for (const auto& cat : present)
-        if (! ordered.contains (cat))
-            ordered.add (cat);
     return ordered;
 }
 
 juce::StringArray PresetManager::getPresetNamesForCategory (const juce::String& category)
 {
+    if (isUserCategory (category))
+        return UserPresetStore::listPresetNames();
+
     juce::StringArray names;
     for (const auto& preset : getFactoryPresets())
         if (category == toJuce (preset.category))
@@ -52,6 +56,9 @@ juce::StringArray PresetManager::getPresetNamesForCategory (const juce::String& 
 
 int PresetManager::getGlobalIndexForCategoryPreset (const juce::String& category, int presetIndexInCategory)
 {
+    if (isUserCategory (category))
+        return -1;
+
     int local = 0;
     for (std::size_t i = 0; i < getFactoryPresets().size(); ++i)
     {
@@ -81,7 +88,7 @@ void PresetManager::getCategoryAndLocalIndex (int globalIndex, juce::String& cat
             ++localIndexOut;
 }
 
-int PresetManager::getNumPresets() noexcept
+int PresetManager::getNumFactoryPresets() noexcept
 {
     return static_cast<int> (getFactoryPresets().size());
 }

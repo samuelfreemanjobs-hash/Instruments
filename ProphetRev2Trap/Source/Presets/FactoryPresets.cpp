@@ -63,6 +63,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
         // --- Synth (poly chords, melodic beds — vaporwave / Jeezy stacks) ---
         { "Night Circuit", "Synth", [] {
               auto p = base();
+              p.unisonVoices = 2.0f;
+              p.unisonSpread = 14.0f;
               p.osc1Level = 0.78f;
               p.osc2Level = 0.82f;
               p.osc2DetuneCents = 11.0f;
@@ -225,8 +227,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               return p;
           }() },
 
-        // --- Keys ---
-        { "Redd Key Stab", "Keys", [] {
+        // --- (Keys merged into Synth for v0.1) ---
+        { "Redd Key Stab", "Synth", [] {
               auto p = base();
               p.osc1Level = 0.82f;
               p.osc2Level = 0.78f;
@@ -239,7 +241,7 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.ampRelease = 0.4f;
               return p;
           }() },
-        { "Bourne Glass Keys", "Keys", [] {
+        { "Bourne Glass Keys", "Synth", [] {
               auto p = base();
               p.osc2DetuneCents = 16.0f;
               p.filterCutoff = 0.74f;
@@ -251,8 +253,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               return p;
           }() },
 
-        // --- Synth FX ---
-        { "Wheezy Siren", "Synth FX", [] {
+        // --- (FX merged into Lead for v0.1) ---
+        { "Wheezy Siren", "Lead", [] {
               auto p = base();
               p.osc2DetuneCents = 33.0f;
               p.filterCutoff = 0.85f;
@@ -265,7 +267,7 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.filtSustain = 0.55f;
               return p;
           }() },
-        { "Wire Sweep", "Synth FX", [] {
+        { "Wire Sweep", "Lead", [] {
               auto p = base();
               p.osc1Level = 0.6f;
               p.osc2Level = 0.95f;

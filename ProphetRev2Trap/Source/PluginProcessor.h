@@ -2,6 +2,8 @@
 
 #include "Presets/FactoryPresets.h"
 
+#include <array>
+
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_dsp/juce_dsp.h>
 
@@ -37,6 +39,10 @@ public:
     juce::AudioProcessorValueTreeState& getApvts() noexcept { return apvts_; }
 
     void applyFactoryPreset (int index);
+    void applySynthParams (const prophetrev2::SynthParams& params);
+    bool applyUserPreset (const juce::String& name);
+    bool saveUserPreset (const juce::String& name);
+    juce::String getActiveUserPresetName() const noexcept { return activeUserPresetName_; }
 
     struct RuntimeParams
     {
@@ -47,6 +53,15 @@ public:
         float filterCutoffNorm = 0.55f;
         float filterRes = 0.22f;
         float filtEnvAmt = 0.5f;
+        float keyTrack = 0.45f;
+        float circuitDrive = 0.15f;
+        float filterDrive = 0.2f;
+        int unisonVoices = 1;
+        float unisonSpreadCents = 12.0f;
+        bool monoMode = false;
+        bool legatoMode = true;
+        float glideMs = 80.0f;
+        float glideCoeff = 0.0f;
         float outputGain = 1.0f;
         juce::ADSR::Parameters ampEnv {};
         juce::ADSR::Parameters filtEnv {};
@@ -57,6 +72,7 @@ public:
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     void refreshRuntimeParams() noexcept;
+    void processMidiMono (juce::MidiBuffer& midi);
 
     class SynthSound : public juce::SynthesiserSound
     {
@@ -76,25 +92,37 @@ private:
         void pitchWheelMoved (int) override {}
         void controllerMoved (int, int) override {}
         void renderNextBlock (juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override;
+
+        void prepareVoice (const juce::dsp::ProcessSpec& spec);
         void setOsc2DetuneRatio (float ratio) noexcept { osc2Ratio_ = ratio; }
-        void prepareOscillators (const juce::dsp::ProcessSpec& spec);
+        void glideToNote (int midiNote, float velocity, bool retriggerEnvelopes);
 
     private:
+        float renderOscMix() noexcept;
+        float computeCutoffHz (float baseNorm, float filtEnv) noexcept;
+
         ProphetRev2TrapAudioProcessor& owner_;
         juce::ADSR ampAdsr_;
         juce::ADSR filtAdsr_;
         juce::dsp::Oscillator<float> osc1_;
         juce::dsp::Oscillator<float> osc2_;
-        juce::dsp::StateVariableTPTFilter<float> filter_;
+        juce::dsp::LadderFilter<float> ladder_;
         double osc2Ratio_ = 1.0;
+        double currentFreq_ = 440.0;
+        double targetFreq_ = 440.0;
+        int midiNote_ = 60;
         float level_ = 0.0f;
-        bool filterReady_ = false;
+        bool active_ = false;
     };
 
     juce::AudioProcessorValueTreeState apvts_;
     juce::Synthesiser synthesiser_;
+    std::array<bool, 128> monoKeysDown_ {};
+    int countMonoKeysDown() const noexcept;
+    int highestMonoKeyDown() const noexcept;
     RuntimeParams runtime_;
     int currentProgram_ = 0;
+    juce::String activeUserPresetName_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ProphetRev2TrapAudioProcessor)
 };

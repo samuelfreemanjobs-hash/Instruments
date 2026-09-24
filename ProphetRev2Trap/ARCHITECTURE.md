@@ -1,6 +1,6 @@
 # Night Circuit (Prophet Rev2–influenced trap / vaporwave poly synth)
 
-**Purpose:** Polyphonic **synthetic** instrument for trap production — dual DCO-style oscillators (saw + pulse), resonant low-pass, separate **amp** and **filter** ADSRs, and a **category + preset** manager. No acoustic samples.
+**Purpose:** **Night Circuit v0.1** — polyphonic **synthetic** trap/vaporwave instrument: dual oscillators, **24 dB ladder filter** with analog-style saturation, **amp + filter ADSRs**, **unison**, **mono legato glide**, key tracking, **five factory categories + User bank**. No acoustic samples.
 
 **Users:** Producers targeting Atlanta / Pierre / Mike Dean–style synthetic timbres (factory presets only in v0).
 

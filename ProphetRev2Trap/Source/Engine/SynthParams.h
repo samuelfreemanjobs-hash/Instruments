@@ -12,6 +12,14 @@ struct SynthParams
     float filterCutoff = 0.55f;
     float filterRes = 0.22f;
     float filtEnvAmt = 0.5f;
+    float keyTrack = 0.45f;
+    float circuitDrive = 0.15f;
+    float filterDrive = 0.2f;
+    float unisonVoices = 1.0f;
+    float unisonSpread = 12.0f;
+    float monoMode = 0.0f;
+    float legatoMode = 1.0f;
+    float glideMs = 80.0f;
 
     float ampAttack = 0.01f;
     float ampDecay = 0.2f;

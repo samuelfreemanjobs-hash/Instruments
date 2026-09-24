@@ -2,12 +2,13 @@
 
 #include "ParameterIds.h"
 #include "Presets/PresetManager.h"
+#include "Presets/UserPresetStore.h"
 
 namespace
 {
 namespace PID = prophetrev2::ParameterIDs;
-constexpr int kWidth = 640;
-constexpr int kHeight = 436;
+constexpr int kWidth = 920;
+constexpr int kHeight = 560;
 
 juce::String categoryRoleHint (const juce::String& category)
 {
@@ -16,8 +17,7 @@ juce::String categoryRoleHint (const juce::String& category)
     if (category == "Lead") return "Hooks · mono / top line";
     if (category == "Pad") return "Atmosphere · slow textures";
     if (category == "Pluck") return "Short rhythmic stabs";
-    if (category == "Keys") return "Keyed stabs & riffs";
-    if (category == "Synth FX") return "Sweeps & transitions";
+    if (category == prophetrev2::presets::kUserPresetCategory) return "Your saved patches";
     return {};
 }
 } // namespace
@@ -25,73 +25,106 @@ juce::String categoryRoleHint (const juce::String& category)
 ProphetRev2TrapAudioProcessorEditor::ProphetRev2TrapAudioProcessorEditor (ProphetRev2TrapAudioProcessor& p)
     : AudioProcessorEditor (&p), processor_ (p)
 {
-    categoryLabel_.setJustificationType (juce::Justification::centredRight);
-    presetLabel_.setJustificationType (juce::Justification::centredRight);
-    addAndMakeVisible (categoryLabel_);
-    addAndMakeVisible (presetLabel_);
-    categoryHintLabel_.setFont (juce::Font (12.0f));
-    categoryHintLabel_.setColour (juce::Label::textColourId, juce::Colour (0xff9090a8));
-    addAndMakeVisible (categoryHintLabel_);
+    for (auto* l : { &categoryLabel_, &presetLabel_, &categoryHintLabel_, &ampEnvLabel_, &filtEnvLabel_, &analogLabel_ })
+        addAndMakeVisible (*l);
+
     addAndMakeVisible (categoryBox_);
     addAndMakeVisible (presetBox_);
-    addAndMakeVisible (ampEnvLabel_);
-    addAndMakeVisible (filtEnvLabel_);
+    userPresetNameEditor_.setText ("My Patch");
+    userPresetNameEditor_.setFont (juce::Font (14.0f));
+    addAndMakeVisible (userPresetNameEditor_);
+    addAndMakeVisible (saveUserButton_);
+    addAndMakeVisible (monoButton_);
+    addAndMakeVisible (legatoButton_);
+    addAndMakeVisible (unisonBox_);
+    addAndMakeVisible (outputSlider_);
+
+    categoryHintLabel_.setFont (juce::Font (12.0f));
+    categoryHintLabel_.setColour (juce::Label::textColourId, juce::Colour (0xff9090a8));
 
     for (const auto& cat : prophetrev2::presets::PresetManager::getCategoryOrder())
         categoryBox_.addItem (cat, categoryBox_.getNumItems() + 1);
 
     categoryBox_.onChange = [this] {
-        const juce::String cat = categoryBox_.getText();
         updateCategoryHint();
-        refreshPresetListForCategory (cat, 0);
-        const int global = prophetrev2::presets::PresetManager::getGlobalIndexForCategoryPreset (cat, 0);
-        processor_.applyFactoryPreset (global);
+        refreshPresetListForCategory (categoryBox_.getText(), 0);
+        if (! prophetrev2::presets::PresetManager::isUserCategory (categoryBox_.getText()))
+        {
+            const int global = prophetrev2::presets::PresetManager::getGlobalIndexForCategoryPreset (categoryBox_.getText(), 0);
+            processor_.applyFactoryPreset (global);
+        }
     };
 
-    presetBox_.onChange = [this] {
-        const juce::String cat = categoryBox_.getText();
-        const int local = presetBox_.getSelectedItemIndex();
-        if (local < 0)
-            return;
-        const int global = prophetrev2::presets::PresetManager::getGlobalIndexForCategoryPreset (cat, local);
-        processor_.applyFactoryPreset (global);
+    presetBox_.onChange = [this] { onPresetSelected(); };
+
+    saveUserButton_.onClick = [this] { promptSaveUserPreset(); };
+
+    auto& apvts = processor_.getApvts();
+    outputAttachment_ = std::make_unique<SliderAttachment> (apvts, PID::outputGain, outputSlider_);
+    monoAttachment_ = std::make_unique<ButtonAttachment> (apvts, PID::monoMode, monoButton_);
+    legatoAttachment_ = std::make_unique<ButtonAttachment> (apvts, PID::legatoMode, legatoButton_);
+    unisonAttachment_ = std::make_unique<ComboAttachment> (apvts, PID::unisonVoices, unisonBox_);
+
+    const struct KnobDef { const char* id; const char* label; } defs[] = {
+        { PID::osc1Level, "Osc 1" }, { PID::osc2Level, "Osc 2" }, { PID::osc2Detune, "Detune" },
+        { PID::oscMix, "Mix" }, { PID::filterCutoff, "Cutoff" }, { PID::filterRes, "Res" },
+        { PID::filtEnvAmt, "F.Env" }, { PID::keyTrack, "Key Trk" }, { PID::filterDrive, "F.Drive" },
+        { PID::circuitDrive, "Circuit" }, { PID::unisonSpread, "Spread" }, { PID::glideMs, "Glide" },
+        { PID::ampAttack, "Amp A" }, { PID::ampDecay, "Amp D" }, { PID::ampSustain, "Amp S" }, { PID::ampRelease, "Amp R" },
+        { PID::filtAttack, "Flt A" }, { PID::filtDecay, "Flt D" }, { PID::filtSustain, "Flt S" }, { PID::filtRelease, "Flt R" },
     };
-
-    outputSlider_.setSliderStyle (juce::Slider::LinearHorizontal);
-    outputSlider_.setTextBoxStyle (juce::Slider::TextBoxRight, false, 56, 18);
-    addAndMakeVisible (outputSlider_);
-    outputAttachment_ = std::make_unique<SliderAttachment> (processor_.getApvts(), PID::outputGain, outputSlider_);
-
-    const char* ampIds[] = { PID::ampAttack, PID::ampDecay, PID::ampSustain, PID::ampRelease };
-    const char* filtIds[] = { PID::filtAttack, PID::filtDecay, PID::filtSustain, PID::filtRelease };
-    const juce::String adsrLabels[] = { "A", "D", "S", "R" };
-
-    for (int i = 0; i < 4; ++i)
-    {
-        addEnvelopeKnob (ampIds[i], "Amp " + adsrLabels[i], {});
-        addEnvelopeKnob (filtIds[i], "Filt " + adsrLabels[i], {});
-    }
+    for (const auto& d : defs)
+        addKnob (d.id, d.label);
 
     syncUiToCurrentProgram();
     updateCategoryHint();
     setSize (kWidth, kHeight);
 }
 
-void ProphetRev2TrapAudioProcessorEditor::updateCategoryHint()
-{
-    categoryHintLabel_.setText (categoryRoleHint (categoryBox_.getText()), juce::dontSendNotification);
-}
-
 ProphetRev2TrapAudioProcessorEditor::~ProphetRev2TrapAudioProcessorEditor() = default;
 
-void ProphetRev2TrapAudioProcessorEditor::addEnvelopeKnob (const char* paramId, juce::String label,
-                                                           juce::Rectangle<int>)
+void ProphetRev2TrapAudioProcessorEditor::addKnob (const char* paramId, const juce::String& label)
 {
     auto slider = std::make_unique<juce::Slider> (juce::Slider::RotaryHorizontalVerticalDrag, juce::Slider::TextBoxBelow);
-    slider->setName (label);
     addAndMakeVisible (*slider);
-    envAttachments_.push_back (std::make_unique<SliderAttachment> (processor_.getApvts(), paramId, *slider));
-    envSliders_.push_back (std::move (slider));
+    knobAttachments_.push_back (std::make_unique<SliderAttachment> (processor_.getApvts(), paramId, *slider));
+    knobs_.push_back (std::move (slider));
+
+    auto lab = std::make_unique<juce::Label> (label, label);
+    lab->setJustificationType (juce::Justification::centred);
+    addAndMakeVisible (*lab);
+    knobLabels_.push_back (std::move (lab));
+}
+
+void ProphetRev2TrapAudioProcessorEditor::onPresetSelected()
+{
+    const juce::String cat = categoryBox_.getText();
+    const int local = presetBox_.getSelectedItemIndex();
+    if (local < 0)
+        return;
+
+    if (prophetrev2::presets::PresetManager::isUserCategory (cat))
+    {
+        processor_.applyUserPreset (presetBox_.getText());
+        return;
+    }
+
+    const int global = prophetrev2::presets::PresetManager::getGlobalIndexForCategoryPreset (cat, local);
+    processor_.applyFactoryPreset (global);
+}
+
+void ProphetRev2TrapAudioProcessorEditor::promptSaveUserPreset()
+{
+    const auto name = userPresetNameEditor_.getText().trim();
+    if (name.isEmpty())
+        return;
+
+    processor_.saveUserPreset (name);
+    categoryBox_.setText (prophetrev2::presets::kUserPresetCategory, juce::dontSendNotification);
+    refreshPresetListForCategory (prophetrev2::presets::kUserPresetCategory, 0);
+    for (int i = 0; i < presetBox_.getNumItems(); ++i)
+        if (presetBox_.getItemText (i) == name)
+            presetBox_.setSelectedItemIndex (i, juce::dontSendNotification);
 }
 
 void ProphetRev2TrapAudioProcessorEditor::refreshPresetListForCategory (const juce::String& category,
@@ -101,69 +134,101 @@ void ProphetRev2TrapAudioProcessorEditor::refreshPresetListForCategory (const ju
     const auto names = prophetrev2::presets::PresetManager::getPresetNamesForCategory (category);
     for (int i = 0; i < names.size(); ++i)
         presetBox_.addItem (names[i], i + 1);
-    presetBox_.setSelectedItemIndex (juce::jlimit (0, names.size() - 1, selectLocalIndex),
+    if (names.isEmpty())
+        presetBox_.addItem ("(empty)", 1);
+    presetBox_.setSelectedItemIndex (juce::jlimit (0, juce::jmax (0, names.size() - 1), selectLocalIndex),
                                      juce::dontSendNotification);
 }
 
 void ProphetRev2TrapAudioProcessorEditor::syncUiToCurrentProgram()
 {
+    if (processor_.getActiveUserPresetName().isNotEmpty())
+    {
+        categoryBox_.setText (prophetrev2::presets::kUserPresetCategory, juce::dontSendNotification);
+        refreshPresetListForCategory (prophetrev2::presets::kUserPresetCategory, 0);
+        for (int i = 0; i < presetBox_.getNumItems(); ++i)
+            if (presetBox_.getItemText (i) == processor_.getActiveUserPresetName())
+                presetBox_.setSelectedItemIndex (i, juce::dontSendNotification);
+        return;
+    }
+
     juce::String cat;
     int local = 0;
     prophetrev2::presets::PresetManager::getCategoryAndLocalIndex (processor_.getCurrentProgram(), cat, local);
 
     for (int i = 0; i < categoryBox_.getNumItems(); ++i)
-    {
         if (categoryBox_.getItemText (i) == cat)
-        {
             categoryBox_.setSelectedItemIndex (i, juce::dontSendNotification);
-            break;
-        }
-    }
+
     refreshPresetListForCategory (cat, local);
+}
+
+void ProphetRev2TrapAudioProcessorEditor::updateCategoryHint()
+{
+    categoryHintLabel_.setText (categoryRoleHint (categoryBox_.getText()), juce::dontSendNotification);
 }
 
 void ProphetRev2TrapAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colour (0xff12121a));
-    g.setColour (juce::Colour (0xff2a2a38));
-    g.fillRoundedRectangle (8.0f, 8.0f, static_cast<float> (getWidth()) - 16.0f, 72.0f, 8.0f);
-
+    g.fillAll (juce::Colour (0xff0e0e14));
+    g.setColour (juce::Colour (0xff252532));
+    g.fillRoundedRectangle (8.0f, 8.0f, static_cast<float> (getWidth()) - 16.0f, 78.0f, 8.0f);
     g.setColour (juce::Colours::white);
-    g.setFont (juce::Font (22.0f, juce::Font::bold));
-    g.drawText ("Night Circuit", 20, 14, 220, 28, juce::Justification::left);
-    g.setFont (14.0f);
-    g.setColour (juce::Colour (0xffb8b8d0));
-    g.drawText ("Synthetic poly · category: Bass / Synth / Lead / Pad / …", 20, 40, 460, 20, juce::Justification::left);
+    g.setFont (juce::Font (24.0f, juce::Font::bold));
+    g.drawText ("Night Circuit", 20, 12, 240, 30, juce::Justification::left);
+    g.setFont (13.0f);
+    g.setColour (juce::Colour (0xffb0b0c8));
+    g.drawText ("v0.1 · analog ladder · 16-voice poly · mono glide", 20, 40, 420, 18, juce::Justification::left);
 }
 
 void ProphetRev2TrapAudioProcessorEditor::resized()
 {
-    auto top = getLocalBounds().reduced (12).removeFromTop (56);
-    categoryLabel_.setBounds (top.removeFromRight (280).removeFromLeft (70));
-    categoryBox_.setBounds (top.removeFromRight (130));
-    top = getLocalBounds().reduced (12).removeFromTop (56).withTrimmedLeft (320);
-    presetLabel_.setBounds (top.removeFromRight (280).removeFromLeft (52));
-    presetBox_.setBounds (getWidth() - 12 - 200, 44, 200, 24);
+    categoryLabel_.setBounds (getWidth() - 420, 18, 70, 22);
+    categoryBox_.setBounds (getWidth() - 340, 16, 150, 24);
+    presetLabel_.setBounds (getWidth() - 420, 46, 52, 22);
+    presetBox_.setBounds (getWidth() - 340, 44, 150, 24);
+    userPresetNameEditor_.setBounds (getWidth() - 180, 16, 160, 24);
+    saveUserButton_.setBounds (getWidth() - 180, 44, 160, 26);
 
-    categoryHintLabel_.setBounds (20, 72, getWidth() - 40, 16);
-    outputSlider_.setBounds (20, 92, getWidth() - 40, 24);
+    categoryHintLabel_.setBounds (20, 62, getWidth() - 40, 16);
+    outputSlider_.setBounds (20, 92, 280, 22);
+    monoButton_.setBounds (320, 88, 70, 28);
+    legatoButton_.setBounds (395, 88, 70, 28);
+    unisonBox_.setBounds (480, 90, 80, 24);
 
-    ampEnvLabel_.setBounds (20, 122, 120, 20);
-    filtEnvLabel_.setBounds (20, 252, 140, 20);
-
-    auto ampRow = getLocalBounds().reduced (20).withTop (144).withHeight (100);
-    auto filtRow = getLocalBounds().reduced (20).withTop (274).withHeight (100);
-    const int kw = ampRow.getWidth() / 4;
-
-    for (int i = 0; i < 4; ++i)
+    analogLabel_.setBounds (20, 118, 200, 18);
+    const int kx = 20, ky = 138, kw = 68, kh = 78, cols = 6;
+    for (std::size_t i = 0; i < knobs_.size() && i < 12; ++i)
     {
-        if (i < static_cast<int> (envSliders_.size()))
-            envSliders_[static_cast<std::size_t> (i)]->setBounds (ampRow.removeFromLeft (kw).reduced (6));
+        const int col = static_cast<int> (i) % cols;
+        const int row = static_cast<int> (i) / cols;
+        knobs_[i]->setBounds (kx + col * (kw + 6), ky + row * (kh + 4), kw, kh);
+        if (i < knobLabels_.size())
+            knobLabels_[i]->setBounds (knobs_[i]->getX(), knobs_[i]->getBottom() - 2, kw, 14);
     }
+
+    ampEnvLabel_.setBounds (20, 300, 120, 18);
+    filtEnvLabel_.setBounds (20, 430, 140, 18);
+
+    for (std::size_t i = 12; i < knobs_.size(); ++i)
+    {
+        const int idx = static_cast<int> (i - 12);
+        const int col = idx % 4;
+        const int row = idx / 4;
+        const int baseY = (i < 16) ? 320 : 450;
+        const int localRow = (i < 16) ? 0 : 1;
+        juce::ignoreUnused (row, baseY);
+        knobs_[i]->setBounds (20 + col * (kw + 8), (i < 16 ? 320 : 450) + localRow * 0, kw, kh);
+        if (i < knobLabels_.size())
+            knobLabels_[i]->setBounds (knobs_[i]->getX(), knobs_[i]->getBottom() - 2, kw, 14);
+    }
+
+    // Fix amp/filter rows layout
     for (int i = 0; i < 4; ++i)
     {
-        const std::size_t idx = static_cast<std::size_t> (4 + i);
-        if (idx < envSliders_.size())
-            envSliders_[idx]->setBounds (filtRow.removeFromLeft (kw).reduced (6));
+        knobs_[static_cast<std::size_t> (12 + i)]->setBounds (20 + i * (kw + 10), 322, kw, kh);
+        knobLabels_[static_cast<std::size_t> (12 + i)]->setBounds (20 + i * (kw + 10), 398, kw, 14);
+        knobs_[static_cast<std::size_t> (16 + i)]->setBounds (20 + i * (kw + 10), 452, kw, kh);
+        knobLabels_[static_cast<std::size_t> (16 + i)]->setBounds (20 + i * (kw + 10), 528, kw, 14);
     }
 }

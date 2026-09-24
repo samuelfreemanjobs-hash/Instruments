@@ -10,6 +10,14 @@ inline constexpr const char* oscMix = "oscMix";
 inline constexpr const char* filterCutoff = "filterCutoff";
 inline constexpr const char* filterRes = "filterRes";
 inline constexpr const char* filtEnvAmt = "filtEnvAmt";
+inline constexpr const char* keyTrack = "keyTrack";
+inline constexpr const char* circuitDrive = "circuitDrive";
+inline constexpr const char* filterDrive = "filterDrive";
+inline constexpr const char* unisonVoices = "unisonVoices";
+inline constexpr const char* unisonSpread = "unisonSpread";
+inline constexpr const char* monoMode = "monoMode";
+inline constexpr const char* legatoMode = "legatoMode";
+inline constexpr const char* glideMs = "glideMs";
 
 inline constexpr const char* ampAttack = "ampAttack";
 inline constexpr const char* ampDecay = "ampDecay";
