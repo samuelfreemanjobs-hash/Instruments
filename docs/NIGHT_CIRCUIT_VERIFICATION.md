@@ -34,7 +34,7 @@ One item per test pass: search/favorites/featured filters, mod wheel / velocity�
 
 ## Phase 5 — Distribution
 
-Supported OS/DAW matrix, installer layout, versioning, licensing, crash policy, signing/notarization, docs, release checklist.
+Supported OS/DAW matrix (**FL Studio**, **MPC Software** primary), installer layout, versioning, licensing, crash policy, signing/notarization, docs, release checklist. See [ProphetRev2Trap/docs/HOST_COMPATIBILITY.md](../ProphetRev2Trap/docs/HOST_COMPATIBILITY.md).
 
 ## Roles
 
@@ -42,4 +42,4 @@ Supported OS/DAW matrix, installer layout, versioning, licensing, crash policy, 
 |------|------|
 | **VST Plugin Factory** | Implementation fixes |
 | **Night Circuit QA** | Independent proof, Gates 1–2 automation |
-| **Preset sound-design lead** | Featured set + category listening sign-off |
+| **Preset sound-design subagent** | Featured set, preset GUI UX, category listening — [NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md](NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md) |

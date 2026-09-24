@@ -74,7 +74,8 @@ Verify:
 - Small, large, and varying buffer sizes.
 - Preset save/load, host state recall, and repeated editor open/close.
 - CPU use and audio-thread allocations or blocking operations.
-- VST3 loading and operation in each available target DAW.
+- VST3 loading and operation in **FL Studio** and **MPC Software** (desktop; record version + OS). MPC standalone hardware is not a VST3 host.
+- Cursor VM: compile, tests, and pluginval only — not DAW or audio-device sign-off.
 
 REPORTING FORMAT
 

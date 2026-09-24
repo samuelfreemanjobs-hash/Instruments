@@ -12,6 +12,7 @@
 | **OS reference** | Ubuntu 24.04 (glibc 2.39), x86_64 |
 | **CMake target** | `ProphetRev2Trap` |
 | **Product / VST3 name** | **Night Circuit** |
+| **Ship format** | **VST3** (desktop). Standalone for dev smoke only. |
 
 Resolved commit for tag **8.0.15** (example from CI): `91ad83ae34a81e0833b1a2b0866f54846370ae53`
 
@@ -55,19 +56,22 @@ xvfb-run -a python3 scripts/vst/run_pluginval.py \
 
 Log results in [../qa/reports/](../qa/reports/).
 
-## First target platform (recommended)
+## Target hosts (product)
+
+**Primary DAW sign-off:** **FL Studio** and **Akai MPC Software** (desktop application — not MPC standalone hardware as a VST3 host).  
+Track exact versions and OS in [HOST_COMPATIBILITY.md](HOST_COMPATIBILITY.md).
 
 | Layer | Choice | Rationale |
 |-------|--------|-----------|
-| **Build truth** | Linux + g++-12 + JUCE 8.0.15 | Matches Cloud/CI agent, pluginval, fastest feedback |
-| **Dev host smoke** | **JUCE Standalone** | Same binary as plugin DSP; no DAW install required |
-| **First DAW matrix** | **REAPER** (Linux or macOS on maintainer machine) | Lightweight, strong VST3, common for indie QA |
-| **Phase 5** | macOS notarization, Windows installer | After Gate 2 DSP/recall green on Linux |
-
-Adjust when the product owner picks a different primary market (e.g. Logic-first → macOS 14+ / Apple Silicon becomes co-primary).
+| **Build truth / Cursor VM** | Linux + g++-12 + JUCE 8.0.15 | Compile, tests, pluginval — **not** FL/MPC compatibility proof |
+| **Dev smoke** | JUCE Standalone (Linux) | Same DSP as VST3; no DAW |
+| **Musical + host QA** | FL Studio & MPC Software on **Windows/macOS** | Real plugin scan, editor, MIDI, project recall |
+| **Phase 5** | Installers, signing/notarization | After Gates 1–2 green |
 
 ## Related
 
 - QA agent: [../../docs/NIGHT_CIRCUIT_QA_SUBAGENT.md](../../docs/NIGHT_CIRCUIT_QA_SUBAGENT.md)
 - Verification roadmap: [../../docs/NIGHT_CIRCUIT_VERIFICATION.md](../../docs/NIGHT_CIRCUIT_VERIFICATION.md)
-- Sound-design ownership: [PRESET_SOUND_DESIGN.md](PRESET_SOUND_DESIGN.md)
+- Sound-design agent: [../../docs/NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md](../../docs/NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md)
+- Host matrix: [HOST_COMPATIBILITY.md](HOST_COMPATIBILITY.md)
+- Preset GUI: [PRESET_BROWSER_GUI.md](PRESET_BROWSER_GUI.md)

@@ -2,6 +2,10 @@
 
 The **1,028** factory bank is **21 authored foundations** plus deterministic variations. QA can prove integrity; **musical quality** needs a sound-design owner alongside QA.
 
+**Agent prompt:** [../../docs/NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md](../../docs/NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md) · **Cursor:** [../../.cursor/agents/night-circuit-sound-design.md](../../.cursor/agents/night-circuit-sound-design.md)
+
+**Product format:** desktop **VST3** for **FL Studio** and **MPC Software** (desktop). Cursor VM builds do not substitute for host testing — see [HOST_COMPATIBILITY.md](HOST_COMPATIBILITY.md).
+
 ## Responsibilities
 
 - Review factory presets **by category** (Bass → Synth → Lead → Pad → Pluck/Keys).
