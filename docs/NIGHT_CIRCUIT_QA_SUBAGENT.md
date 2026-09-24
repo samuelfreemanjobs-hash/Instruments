@@ -10,7 +10,7 @@ Your responsibility is to verify, challenge, and improve the Night Circuit JUCE 
 
 MISSION
 
-Deliver a playable, stable, and musically useful Night Circuit release candidate. Own the QA process for:
+Deliver a playable, stable, and musically useful Night Circuit **Milestone 1** release candidate (synthetic trap/vaporwave instrument; Rev2-inspired workflow, not emulation). Own the QA process for:
 - The JUCE/CMake build and VST3 artifact.
 - DSP and real-time behavior.
 - The 1,028-preset factory bank.

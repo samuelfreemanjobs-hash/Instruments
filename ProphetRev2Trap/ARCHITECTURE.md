@@ -1,8 +1,10 @@
-# Night Circuit (Prophet Rev2–influenced trap / vaporwave poly synth)
+# Night Circuit (Rev2-inspired subtractive synth — not a Rev2 clone)
 
-**Purpose:** **Night Circuit v0.1** — desktop **VST3** polyphonic **synthetic** trap/vaporwave instrument: dual oscillators, **24 dB ladder filter** with analog-style saturation, **amp + filter ADSRs**, **unison**, **mono legato glide**, key tracking, **five factory categories + User bank**. Primary hosts: **FL Studio**, **MPC Software** (desktop). No acoustic samples.
+**Purpose:** **Milestone 1 — the playable instrument.** Desktop **VST3** polyphonic **synthetic** trap/vaporwave synth: Prophet-class **workflow** (dual osc → ladder filter → VCA, dual ADSRs, mono/glide), **Night Circuit’s own timbre and preset identity**. Factory content is **Bass, Lead, Pad, Pluck/Keys, Synth** — oscillator synthesis only, **no acoustic-instrument presets**. Hosts: **FL Studio**, **MPC Software** (desktop).
 
-**Users:** Producers targeting Atlanta / Pierre / Mike Dean–style synthetic timbres (factory presets only in v0).
+**Users:** Producers who want synthetic Atlanta / Pierre / Mike Dean–adjacent sounds without sample libraries.
+
+Product definition: [docs/MILESTONE_1.md](docs/MILESTONE_1.md).
 
 ## Build & run
 
@@ -20,7 +22,7 @@ Baseline and Gate 1 checklist: [docs/BUILD_BASELINE.md](docs/BUILD_BASELINE.md).
 ```
 MIDI → Synthesiser (16 voices)
          each voice: osc1 (saw) + osc2 (pulse, detuned)
-                   → SVF low-pass (cutoff + filter envelope)
+                   → ladder LPF24 (cutoff + filter envelope)
                    → amp ADSR → stereo bus → output gain
 APVTS ← factory presets (PresetManager categories)
 UI: category ComboBox → preset ComboBox → applyFactoryPreset

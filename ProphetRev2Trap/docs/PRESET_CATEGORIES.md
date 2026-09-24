@@ -1,4 +1,6 @@
-# Night Circuit — preset categories (v0.1)
+# Night Circuit — preset categories (Milestone 1)
+
+**Policy:** **Synthetic only.** Categories describe **mix roles** in trap/vaporwave production—not acoustic instrument types. No piano, guitar, orchestra, or sample-based factory programs.
 
 Five **factory** mix roles + **User** bank.
 

@@ -1,6 +1,8 @@
 # Night Circuit — verification roadmap
 
-**Policy:** Verification before features. Gates must pass before the next phase starts.
+**Product frame:** [ProphetRev2Trap/docs/MILESTONE_1.md](../ProphetRev2Trap/docs/MILESTONE_1.md) — playable instrument, Rev2-*inspired* workflow, synthetic trap identity (not Rev2 emulation).
+
+**Policy:** Verification before features. Gates must pass before the next phase starts. **Milestone 1 complete** = Phase 1 + Phase 2 below (+ featured foundations signed by sound-design).
 
 ## Phase 1 — Working baseline (current focus)
 
