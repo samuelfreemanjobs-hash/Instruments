@@ -106,6 +106,9 @@ xvfb-run -a python3 scripts/vst/run_pluginval.py --plugin "build/ProphetRev2Trap
 
 Log results in [ProphetRev2Trap/qa/reports/](ProphetRev2Trap/qa/reports/) (latest dated markdown).
 
+Build baseline (pinned JUCE, compiler, Gate 1): [ProphetRev2Trap/docs/BUILD_BASELINE.md](ProphetRev2Trap/docs/BUILD_BASELINE.md).  
+Verification phases: [NIGHT_CIRCUIT_VERIFICATION.md](NIGHT_CIRCUIT_VERIFICATION.md).
+
 ## Division of responsibility
 
 | Role | Owns |

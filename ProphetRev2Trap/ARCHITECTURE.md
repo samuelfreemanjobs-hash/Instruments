@@ -6,12 +6,14 @@
 
 ## Build & run
 
-From repo root (same as JD Upgraded / WAVE-909):
+From repo root (same as JD Upgraded / WAVE-909). **JUCE 8.0.15** is pinned in root `CMakeLists.txt`.
 
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
-cmake --build build -j --target ProphetRev2Trap_VST3 ProphetRev2Trap_Standalone
+cmake --build build -j --target ProphetRev2Trap_VST3 ProphetRev2Trap_Standalone NightCircuitTests
 ```
+
+Baseline and Gate 1 checklist: [docs/BUILD_BASELINE.md](docs/BUILD_BASELINE.md).
 
 ## Data flow
 
@@ -40,7 +42,7 @@ UI: category ComboBox → preset ComboBox → applyFactoryPreset
 
 ## Preset categories
 
-`Bass`, **`Synth`** (poly chords & melodic beds), `Lead`, `Pad`, `Pluck`, `Keys`, `Synth FX` — all programs use oscillators only.
+`Bass`, **`Synth`** (poly chords & melodic beds), `Lead`, `Pad`, **`Pluck/Keys`**, plus **User** — all programs use oscillators only.
 
 Taxonomy: [docs/PRESET_CATEGORIES.md](docs/PRESET_CATEGORIES.md) · Roadmap: [docs/NIGHT_CIRCUIT_PLAN.md](docs/NIGHT_CIRCUIT_PLAN.md)
 
