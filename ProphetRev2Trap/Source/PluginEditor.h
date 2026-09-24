@@ -18,6 +18,7 @@ private:
 
     void addKnob (const char* paramId, const juce::String& label);
     void refreshPresetListForCategory (const juce::String& category, int selectLocalIndex);
+    void rebuildFilteredPresetList (int selectLocalIndex);
     void syncUiToCurrentProgram();
     void updateCategoryHint();
     void onPresetSelected();
@@ -26,6 +27,10 @@ private:
     ProphetRev2TrapAudioProcessor& processor_;
     juce::ComboBox categoryBox_;
     juce::ComboBox presetBox_;
+    juce::TextEditor presetFilterEditor_;
+    juce::Label presetFilterLabel_ { {}, "Filter" };
+    juce::String activeFactoryCategory_;
+    juce::StringArray filteredPresetGlobals_;
     juce::TextEditor userPresetNameEditor_;
     juce::TextButton saveUserButton_ { "Save to User" };
     juce::Label categoryLabel_ { {}, "Category" };

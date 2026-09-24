@@ -9,7 +9,10 @@ juce::File UserPresetStore::presetsDirectory()
                    .getChildFile ("Instruments")
                    .getChildFile ("NightCircuit")
                    .getChildFile ("Presets");
-    dir.createDirectory();
+    if (dir.createDirectory().failed())
+    {
+        // Return path anyway; savePreset will retry parent creation.
+    }
     return dir;
 }
 
@@ -38,6 +41,8 @@ juce::StringArray UserPresetStore::listPresetNames()
 bool UserPresetStore::savePreset (const juce::String& name, const juce::ValueTree& apvtsState)
 {
     const auto file = fileForName (name);
+    if (file.getParentDirectory().createDirectory().failed())
+        return false;
     if (auto xml = apvtsState.createXml())
         return xml->writeTo (file);
     return false;

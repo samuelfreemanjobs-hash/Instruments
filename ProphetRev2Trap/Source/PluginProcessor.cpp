@@ -264,8 +264,7 @@ const juce::String ProphetRev2TrapAudioProcessor::getProgramName (int index)
     const auto& presets = prophetrev2::presets::getFactoryPresets();
     if (index >= 0 && index < static_cast<int> (presets.size()))
     {
-        const auto& n = presets[static_cast<std::size_t> (index)].name;
-        return juce::String (n.data(), static_cast<int> (n.size()));
+        return juce::String (presets[static_cast<std::size_t> (index)].name);
     }
     return {};
 }

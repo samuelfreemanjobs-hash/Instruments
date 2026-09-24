@@ -2,19 +2,26 @@
 
 #include "Engine/SynthParams.h"
 
-#include <string_view>
+#include <string>
 #include <vector>
 
 namespace prophetrev2::presets
 {
 
+inline constexpr int kFactoryPresetCount = 1028;
+inline constexpr int kFoundationPresetCount = 21;
+inline constexpr int kVariationPresetCount = 1007;
+
 struct FactoryPreset
 {
-    std::string_view name;
-    std::string_view category;
+    std::string name;
+    std::string category;
     SynthParams params;
+    int foundationIndex = -1; // 0..20 for foundations; 0..20 for variation parent
+    bool isFoundation = false;
 };
 
+/** Full factory bank (lazy-built once): 21 foundations + 1,007 deterministic variations. */
 const std::vector<FactoryPreset>& getFactoryPresets() noexcept;
 
 } // namespace prophetrev2::presets

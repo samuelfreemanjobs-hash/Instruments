@@ -3,7 +3,9 @@
 #include <cmath>
 #include <iostream>
 
-int main()
+int runPresetLibraryTests();
+
+int runAnalogCircuitTests()
 {
     const float clipped = prophetrev2::dsp::softClip (2.0f, 0.5f);
     if (std::abs (clipped) > 1.0f)
@@ -19,5 +21,14 @@ int main()
         return 1;
     }
 
+    return 0;
+}
+
+int main()
+{
+    if (runAnalogCircuitTests() != 0)
+        return 1;
+    if (runPresetLibraryTests() != 0)
+        return 1;
     return 0;
 }

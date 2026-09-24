@@ -8,9 +8,9 @@ namespace prophetrev2::presets
 
 namespace
 {
-juce::String toJuce (std::string_view sv)
+juce::String toJuce (const std::string& s)
 {
-    return juce::String (sv.data(), static_cast<int> (sv.size()));
+    return juce::String (s.data(), static_cast<int> (s.size()));
 }
 } // namespace
 
