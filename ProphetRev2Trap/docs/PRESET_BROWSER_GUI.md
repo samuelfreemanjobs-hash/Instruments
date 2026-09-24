@@ -2,7 +2,7 @@
 
 **Owner:** Preset sound-design subagent (UX/copy/curation) · **Implementation:** VST Plugin Factory  
 **Visual target:** [../design/NightCircuit-GUI-Concept.svg](../design/NightCircuit-GUI-Concept.svg) + [../design/NIGHT_CIRCUIT_GUI_SPEC.md](../design/NIGHT_CIRCUIT_GUI_SPEC.md) (design concept — not a host screenshot).  
-**Constraint:** Until migration completes, minimum editor width **960 px**; target spec minimum **1120 × 760**. VST3 must remain usable in FL Studio and MPC Software plugin windows.
+**Constraint:** Editor default **1280 × 820**, minimum **1120 × 760** (resizable). VST3 must remain usable in FL Studio and MPC Software plugin windows.
 
 ## v0.1 (implemented)
 
@@ -12,7 +12,11 @@
 | Role hint label | One-line workflow guidance per category |
 | Search field | Text filter within category |
 | **Featured only** toggle | Limits list to `FeaturedPresets.cpp` |
-| Preset count label | e.g. `8 shown · featured · Synth` |
+| Preset count label | e.g. `245 Synth presets · 1,028 total` |
+| Prev / next | Step within filtered list |
+| Star / Favorites | Disk-backed favorites + filter |
+| Active preset + Modified | Title row + baseline diff badge |
+| Voice mode label | `Poly 16` / `Mono + glide` |
 | Category accent stripe | Color coding in header/preset panel |
 | User save row | Name + Save to User |
 

@@ -232,6 +232,7 @@ ProphetRev2TrapAudioProcessor::ProphetRev2TrapAudioProcessor()
             break;
         }
     applyFactoryPreset (defaultProgram);
+    capturePresetBaseline();
 }
 
 ProphetRev2TrapAudioProcessor::~ProphetRev2TrapAudioProcessor() = default;
@@ -322,6 +323,7 @@ void ProphetRev2TrapAudioProcessor::applyFactoryPreset (int index)
     currentProgram_ = index;
     activeUserPresetName_.clear();
     applySynthParams (presets[static_cast<std::size_t> (index)].params);
+    capturePresetBaseline();
 }
 
 bool ProphetRev2TrapAudioProcessor::applyUserPreset (const juce::String& name)
@@ -336,6 +338,7 @@ bool ProphetRev2TrapAudioProcessor::applyUserPreset (const juce::String& name)
     activeUserPresetName_ = name;
     currentProgram_ = -1;
     refreshRuntimeParams();
+    capturePresetBaseline();
     return true;
 }
 
@@ -343,7 +346,10 @@ bool ProphetRev2TrapAudioProcessor::saveUserPreset (const juce::String& name)
 {
     const bool ok = prophetrev2::presets::UserPresetStore::savePreset (name, apvts_.copyState());
     if (ok)
+    {
         activeUserPresetName_ = name;
+        capturePresetBaseline();
+    }
     return ok;
 }
 
@@ -525,7 +531,20 @@ void ProphetRev2TrapAudioProcessor::setStateInformation (const void* data, int s
         currentProgram_ = static_cast<int> (vt.getProperty ("currentProgram", 0));
         activeUserPresetName_ = vt.getProperty ("userPreset").toString();
         refreshRuntimeParams();
+        capturePresetBaseline();
     }
+}
+
+void ProphetRev2TrapAudioProcessor::capturePresetBaseline() noexcept
+{
+    presetBaseline_ = apvts_.copyState();
+}
+
+bool ProphetRev2TrapAudioProcessor::isPresetModified() noexcept
+{
+    if (! presetBaseline_.isValid())
+        return false;
+    return ! apvts_.copyState().isEquivalentTo (presetBaseline_);
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

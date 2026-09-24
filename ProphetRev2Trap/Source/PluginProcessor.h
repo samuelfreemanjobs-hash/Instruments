@@ -44,6 +44,9 @@ public:
     bool saveUserPreset (const juce::String& name);
     juce::String getActiveUserPresetName() const noexcept { return activeUserPresetName_; }
 
+    void capturePresetBaseline() noexcept;
+    bool isPresetModified() noexcept;
+
     struct RuntimeParams
     {
         float osc1Level = 0.85f;
@@ -123,6 +126,7 @@ private:
     RuntimeParams runtime_;
     int currentProgram_ = 0;
     juce::String activeUserPresetName_;
+    juce::ValueTree presetBaseline_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ProphetRev2TrapAudioProcessor)
 };

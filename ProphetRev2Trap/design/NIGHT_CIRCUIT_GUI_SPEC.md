@@ -18,7 +18,7 @@ Open in a browser, Figma, or Inkscape. The JUCE editor **does not yet match** th
 | Reference size | **1280 × 820** px |
 | Proposed minimum | **1120 × 760** px — verify all controls remain usable at minimum |
 | Resize behavior | Proportional **panel** layout; sections stay readable (avoid uniform shrink of all knobs) |
-| Current JUCE editor (baseline) | Default ~1000 × 600, minimum width **960** — **gap vs spec**; migration tracked in [../docs/PRESET_BROWSER_GUI.md](../docs/PRESET_BROWSER_GUI.md) |
+| Current JUCE editor (baseline) | Default **1280 × 820**, minimum **1120 × 760** — see `PluginEditor.cpp` |
 
 ## Visual language
 
@@ -39,7 +39,7 @@ Category accents in the **shipping** UI may keep role colors (Bass/Synth/…) fr
 | Navigation | Category dropdown, preset dropdown, **previous / next**, search within category |
 | Categories | Bass, Lead, Pad, Pluck/Keys, Synth (+ User bank) |
 | Library | **1,028** factory — quotas 195 / 196 / 196 / 196 / 245 |
-| Featured | Foundation **21** seeded; sound-design agent expands curated set |
+| Featured | All **30** foundations seeded; sound-design agent expands curated set |
 | Favorites | **Persistent per-user** (disk), separate from host project state — *not implemented* |
 | Status line | Active preset name; **Modified** when params diverge from loaded preset — *partial* |
 | Count copy | e.g. `245 Synth presets · 1,028 total` |
@@ -51,11 +51,12 @@ Category accents in the **shipping** UI may keep role colors (Bass/Synth/…) fr
 |-----------|--------|
 | Category + preset + search | Implemented |
 | Featured filter | Implemented |
-| Prev/next preset | Not implemented |
-| Favorites + star | Not implemented |
+| Prev/next preset | Implemented |
+| Favorites + star | Implemented (`FavoritesStore`, disk) |
 | Save / Load user (explicit buttons) | Save via “Save to User”; Load via User category |
-| Full-width browser band | Not implemented (compact header column) |
-| Modified indicator | Not implemented |
+| Full-width browser band | Implemented |
+| Modified indicator | Implemented (APVTS baseline compare) |
+| Stitch MCP + DESIGN.md | [../docs/STITCH_MCP.md](../docs/STITCH_MCP.md) |
 
 ## Synthesis sections (concept)
 

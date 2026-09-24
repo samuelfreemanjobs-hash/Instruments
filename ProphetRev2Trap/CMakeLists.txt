@@ -7,7 +7,7 @@ juce_add_plugin (ProphetRev2Trap
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
-    EDITOR_WANTS_KEYBOARD_FOCUS FALSE
+    EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     COPY_PLUGIN_AFTER_BUILD FALSE
     PLUGIN_MANUFACTURER_CODE Inst
     PLUGIN_CODE Pr2T
@@ -25,6 +25,7 @@ target_sources (ProphetRev2Trap
         Source/Presets/PresetManager.cpp
         Source/Presets/FeaturedPresets.cpp
         Source/Presets/UserPresetStore.cpp
+        Source/Presets/FavoritesStore.cpp
 )
 
 target_compile_definitions (ProphetRev2Trap

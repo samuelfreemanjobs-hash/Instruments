@@ -4,18 +4,25 @@
 #include "Presets/FactoryPresets.h"
 #include "Presets/PresetManager.h"
 #include "Presets/FeaturedPresets.h"
+#include "Presets/FavoritesStore.h"
 #include "Presets/UserPresetStore.h"
 
 namespace
 {
 namespace PID = prophetrev2::ParameterIDs;
-// Right preset column anchors at (width - kRightPanelInset). Left chrome needs ~520px
-// (title, subtitle, output/mono/unison row) — 850px was too narrow and overlapped controls.
-constexpr int kRightPanelInset = 420;
-constexpr int kLeftChromeMinWidth = 540;
-constexpr int kMinWidth = kRightPanelInset + kLeftChromeMinWidth;
-constexpr int kDefaultWidth = kMinWidth + 40;
-constexpr int kHeight = 600;
+
+constexpr int kMinWidth = 1120;
+constexpr int kMinHeight = 760;
+constexpr int kDefaultWidth = 1280;
+constexpr int kDefaultHeight = 820;
+constexpr int kBrowserBandHeight = 118;
+constexpr int kMargin = 12;
+
+juce::Colour colourGraphite() { return juce::Colour (0xff10101a); }
+juce::Colour colourPanel() { return juce::Colour (0xff272236); }
+juce::Colour colourViolet() { return juce::Colour (0xffb77aec); }
+juce::Colour colourTextPrimary() { return juce::Colour (0xfff5effa); }
+juce::Colour colourTextMuted() { return juce::Colour (0xffaa9dbb); }
 
 juce::String categoryRoleHint (const juce::String& category)
 {
@@ -37,37 +44,84 @@ juce::Colour categoryAccentColour (const juce::String& category)
     if (category == "Pluck/Keys") return juce::Colour (0xff5ecf8a);
     return juce::Colour (0xff9090a8);
 }
+
+void styleCombo (juce::ComboBox& box)
+{
+    box.setColour (juce::ComboBox::backgroundColourId, colourPanel().brighter (0.08f));
+    box.setColour (juce::ComboBox::textColourId, colourTextPrimary());
+    box.setColour (juce::ComboBox::outlineColourId, colourViolet().withAlpha (0.35f));
+}
+
+void styleToggle (juce::ToggleButton& t)
+{
+    t.setColour (juce::ToggleButton::textColourId, colourTextMuted());
+    t.setColour (juce::ToggleButton::tickColourId, colourViolet());
+}
+
+void styleLabel (juce::Label& l, bool muted = false)
+{
+    l.setColour (juce::Label::textColourId, muted ? colourTextMuted() : colourTextPrimary());
+}
+
 } // namespace
 
 ProphetRev2TrapAudioProcessorEditor::ProphetRev2TrapAudioProcessorEditor (ProphetRev2TrapAudioProcessor& p)
     : AudioProcessorEditor (&p), processor_ (p)
 {
-    for (auto* l : { &categoryLabel_, &presetLabel_, &categoryHintLabel_, &ampEnvLabel_, &filtEnvLabel_, &analogLabel_, &presetCountLabel_ })
+    for (auto* l : { &categoryLabel_, &presetLabel_, &categoryHintLabel_, &oscSectionLabel_, &ampEnvLabel_,
+                     &filtEnvLabel_, &perfSectionLabel_, &presetCountLabel_, &activePresetNameLabel_,
+                     &voiceModeLabel_ })
+    {
         addAndMakeVisible (*l);
+        styleLabel (*l, l == &presetCountLabel_ || l == &categoryHintLabel_ || l == &voiceModeLabel_);
+    }
 
-    presetCountLabel_.setFont (juce::Font (11.0f));
-    presetCountLabel_.setColour (juce::Label::textColourId, juce::Colour (0xff808098));
+    modifiedBadgeLabel_.setColour (juce::Label::textColourId, colourViolet());
+    modifiedBadgeLabel_.setFont (juce::Font (12.0f, juce::Font::bold));
+    modifiedBadgeLabel_.setVisible (false);
+    addAndMakeVisible (modifiedBadgeLabel_);
+
+    activePresetNameLabel_.setFont (juce::Font (18.0f, juce::Font::bold));
+    presetCountLabel_.setFont (juce::Font (12.0f));
+
     featuredOnlyToggle_.setToggleState (true, juce::dontSendNotification);
     featuredOnlyToggle_.onClick = [this] { rebuildFilteredPresetList (0); };
+    favoritesOnlyToggle_.onClick = [this] { rebuildFilteredPresetList (0); };
+    styleToggle (featuredOnlyToggle_);
+    styleToggle (favoritesOnlyToggle_);
     addAndMakeVisible (featuredOnlyToggle_);
+    addAndMakeVisible (favoritesOnlyToggle_);
 
+    styleCombo (categoryBox_);
+    styleCombo (presetBox_);
     addAndMakeVisible (categoryBox_);
     addAndMakeVisible (presetBox_);
     addAndMakeVisible (presetFilterLabel_);
-    presetFilterEditor_.setTextToShowWhenEmpty ("Search presets…", juce::Colours::grey);
+    presetFilterEditor_.setTextToShowWhenEmpty ("Search presets…", colourTextMuted());
+    presetFilterEditor_.setColour (juce::TextEditor::backgroundColourId, colourPanel().brighter (0.06f));
+    presetFilterEditor_.setColour (juce::TextEditor::textColourId, colourTextPrimary());
     presetFilterEditor_.onTextChange = [this] { rebuildFilteredPresetList (0); };
     addAndMakeVisible (presetFilterEditor_);
+
+    prevPresetButton_.onClick = [this] { stepPreset (-1); };
+    nextPresetButton_.onClick = [this] { stepPreset (1); };
+    favoriteStarButton_.onClick = [this] { toggleFavoriteForCurrent(); };
+    addAndMakeVisible (prevPresetButton_);
+    addAndMakeVisible (nextPresetButton_);
+    addAndMakeVisible (favoriteStarButton_);
+
     userPresetNameEditor_.setText ("My Patch");
     userPresetNameEditor_.setFont (juce::Font (14.0f));
     addAndMakeVisible (userPresetNameEditor_);
     addAndMakeVisible (saveUserButton_);
+    saveUserButton_.onClick = [this] { promptSaveUserPreset(); };
+
     addAndMakeVisible (monoButton_);
     addAndMakeVisible (legatoButton_);
+    styleToggle (monoButton_);
+    styleToggle (legatoButton_);
     addAndMakeVisible (unisonBox_);
     addAndMakeVisible (outputSlider_);
-
-    categoryHintLabel_.setFont (juce::Font (12.0f));
-    categoryHintLabel_.setColour (juce::Label::textColourId, juce::Colour (0xff9090a8));
 
     for (const auto& cat : prophetrev2::presets::PresetManager::getCategoryOrder())
         categoryBox_.addItem (cat, categoryBox_.getNumItems() + 1);
@@ -76,21 +130,20 @@ ProphetRev2TrapAudioProcessorEditor::ProphetRev2TrapAudioProcessorEditor (Prophe
         updateCategoryHint();
         const bool userCat = prophetrev2::presets::PresetManager::isUserCategory (categoryBox_.getText());
         featuredOnlyToggle_.setEnabled (! userCat);
+        favoritesOnlyToggle_.setEnabled (! userCat);
         refreshPresetListForCategory (categoryBox_.getText(), 0);
-        if (! prophetrev2::presets::PresetManager::isUserCategory (categoryBox_.getText())
-            && ! filteredPresetGlobals_.isEmpty())
+        if (! userCat && ! filteredPresetGlobals_.isEmpty())
             processor_.applyFactoryPreset (filteredPresetGlobals_[0].getIntValue());
     };
 
     presetBox_.onChange = [this] { onPresetSelected(); };
-
-    saveUserButton_.onClick = [this] { promptSaveUserPreset(); };
 
     auto& apvts = processor_.getApvts();
     outputAttachment_ = std::make_unique<SliderAttachment> (apvts, PID::outputGain, outputSlider_);
     monoAttachment_ = std::make_unique<ButtonAttachment> (apvts, PID::monoMode, monoButton_);
     legatoAttachment_ = std::make_unique<ButtonAttachment> (apvts, PID::legatoMode, legatoButton_);
     unisonAttachment_ = std::make_unique<ComboAttachment> (apvts, PID::unisonVoices, unisonBox_);
+    monoButton_.onClick = [this] { updateVoiceModeLabel(); };
 
     const struct KnobDef { const char* id; const char* label; } defs[] = {
         { PID::osc1Level, "Osc 1" }, { PID::osc2Level, "Osc 2" }, { PID::osc2Detune, "Detune" },
@@ -103,23 +156,46 @@ ProphetRev2TrapAudioProcessorEditor::ProphetRev2TrapAudioProcessorEditor (Prophe
     for (const auto& d : defs)
         addKnob (d.id, d.label);
 
+    categoryHintLabel_.setFont (juce::Font (12.0f));
+    oscSectionLabel_.setFont (juce::Font (13.0f, juce::Font::bold));
+    ampEnvLabel_.setFont (juce::Font (13.0f, juce::Font::bold));
+    filtEnvLabel_.setFont (juce::Font (13.0f, juce::Font::bold));
+    perfSectionLabel_.setFont (juce::Font (13.0f, juce::Font::bold));
+
     syncUiToCurrentProgram();
     updateCategoryHint();
-    setResizeLimits (kMinWidth, kHeight, 2000, kHeight);
-    setSize (kDefaultWidth, kHeight);
+    updateActivePresetHeader();
+    updateFavoriteStar();
+    updateVoiceModeLabel();
+
+    setResizeLimits (kMinWidth, kMinHeight, 2400, 1200);
+    setSize (kDefaultWidth, kDefaultHeight);
+    startTimerHz (8);
 }
 
 ProphetRev2TrapAudioProcessorEditor::~ProphetRev2TrapAudioProcessorEditor() = default;
 
+void ProphetRev2TrapAudioProcessorEditor::timerCallback()
+{
+    const bool mod = processor_.isPresetModified();
+    if (modifiedBadgeLabel_.isVisible() != mod)
+        modifiedBadgeLabel_.setVisible (mod);
+    updateVoiceModeLabel();
+}
+
 void ProphetRev2TrapAudioProcessorEditor::addKnob (const char* paramId, const juce::String& label)
 {
     auto slider = std::make_unique<juce::Slider> (juce::Slider::RotaryHorizontalVerticalDrag, juce::Slider::TextBoxBelow);
+    slider->setColour (juce::Slider::rotarySliderFillColourId, colourViolet());
+    slider->setColour (juce::Slider::thumbColourId, colourViolet());
+    slider->setColour (juce::Slider::textBoxTextColourId, colourTextPrimary());
     addAndMakeVisible (*slider);
     knobAttachments_.push_back (std::make_unique<SliderAttachment> (processor_.getApvts(), paramId, *slider));
     knobs_.push_back (std::move (slider));
 
     auto lab = std::make_unique<juce::Label> (label, label);
     lab->setJustificationType (juce::Justification::centred);
+    lab->setColour (juce::Label::textColourId, colourTextMuted());
     addAndMakeVisible (*lab);
     knobLabels_.push_back (std::move (lab));
 }
@@ -134,11 +210,51 @@ void ProphetRev2TrapAudioProcessorEditor::onPresetSelected()
     if (prophetrev2::presets::PresetManager::isUserCategory (cat))
     {
         processor_.applyUserPreset (presetBox_.getText());
+        updateActivePresetHeader();
+        updateFavoriteStar();
         return;
     }
 
     if (local >= 0 && local < filteredPresetGlobals_.size())
         processor_.applyFactoryPreset (filteredPresetGlobals_[local].getIntValue());
+
+    updateActivePresetHeader();
+    updateFavoriteStar();
+}
+
+void ProphetRev2TrapAudioProcessorEditor::stepPreset (int delta)
+{
+    if (filteredPresetGlobals_.isEmpty())
+        return;
+
+    int local = presetBox_.getSelectedItemIndex();
+    if (local < 0)
+        local = 0;
+    local = juce::jlimit (0, filteredPresetGlobals_.size() - 1, local + delta);
+    presetBox_.setSelectedItemIndex (local, juce::sendNotificationSync);
+}
+
+void ProphetRev2TrapAudioProcessorEditor::toggleFavoriteForCurrent()
+{
+    const juce::String cat = categoryBox_.getText();
+    if (prophetrev2::presets::PresetManager::isUserCategory (cat))
+    {
+        const auto name = presetBox_.getText();
+        const bool next = ! prophetrev2::presets::FavoritesStore::isUserFavorite (name);
+        prophetrev2::presets::FavoritesStore::setUserFavorite (name, next);
+    }
+    else
+    {
+        const int local = presetBox_.getSelectedItemIndex();
+        if (local < 0 || local >= filteredPresetGlobals_.size())
+            return;
+        const int global = filteredPresetGlobals_[local].getIntValue();
+        const bool next = ! prophetrev2::presets::FavoritesStore::isFactoryFavorite (global);
+        prophetrev2::presets::FavoritesStore::setFactoryFavorite (global, next);
+    }
+    updateFavoriteStar();
+    if (favoritesOnlyToggle_.getToggleState())
+        rebuildFilteredPresetList (presetBox_.getSelectedItemIndex());
 }
 
 void ProphetRev2TrapAudioProcessorEditor::rebuildFilteredPresetList (int selectLocalIndex)
@@ -151,12 +267,19 @@ void ProphetRev2TrapAudioProcessorEditor::rebuildFilteredPresetList (int selectL
     {
         const auto names = prophetrev2::presets::PresetManager::getPresetNamesForCategory (cat);
         for (int i = 0; i < names.size(); ++i)
-            presetBox_.addItem (names[i], i + 1);
-        if (names.isEmpty())
+        {
+            if (favoritesOnlyToggle_.getToggleState()
+                && ! prophetrev2::presets::FavoritesStore::isUserFavorite (names[i]))
+                continue;
+            presetBox_.addItem (names[i], presetBox_.getNumItems() + 1);
+        }
+        if (presetBox_.getNumItems() == 0)
             presetBox_.addItem ("(empty)", 1);
-        presetBox_.setSelectedItemIndex (juce::jlimit (0, juce::jmax (0, names.size() - 1), selectLocalIndex),
+        presetBox_.setSelectedItemIndex (juce::jlimit (0, juce::jmax (0, presetBox_.getNumItems() - 1), selectLocalIndex),
                                          juce::dontSendNotification);
         updatePresetBrowserSummary();
+        updateActivePresetHeader();
+        updateFavoriteStar();
         return;
     }
 
@@ -172,6 +295,9 @@ void ProphetRev2TrapAudioProcessorEditor::rebuildFilteredPresetList (int selectL
         if (featuredOnlyToggle_.getToggleState()
             && ! prophetrev2::presets::isFeaturedFactoryPreset (cat.toStdString(), name.toStdString()))
             continue;
+        if (favoritesOnlyToggle_.getToggleState()
+            && ! prophetrev2::presets::FavoritesStore::isFactoryFavorite (i))
+            continue;
         if (filter.isNotEmpty() && ! name.toLowerCase().contains (filter))
             continue;
         filteredPresetGlobals_.add (juce::String (i));
@@ -184,6 +310,8 @@ void ProphetRev2TrapAudioProcessorEditor::rebuildFilteredPresetList (int selectL
     presetBox_.setSelectedItemIndex (juce::jlimit (0, juce::jmax (0, filteredPresetGlobals_.size() - 1), selectLocalIndex),
                                      juce::dontSendNotification);
     updatePresetBrowserSummary();
+    updateActivePresetHeader();
+    updateFavoriteStar();
 }
 
 void ProphetRev2TrapAudioProcessorEditor::updatePresetBrowserSummary()
@@ -191,7 +319,7 @@ void ProphetRev2TrapAudioProcessorEditor::updatePresetBrowserSummary()
     const juce::String cat = categoryBox_.getText();
     if (prophetrev2::presets::PresetManager::isUserCategory (cat))
     {
-        presetCountLabel_.setText ("User bank", juce::dontSendNotification);
+        presetCountLabel_.setText ("User bank · saved on disk", juce::dontSendNotification);
         return;
     }
 
@@ -200,13 +328,46 @@ void ProphetRev2TrapAudioProcessorEditor::updatePresetBrowserSummary()
         if (p.category == cat.toStdString())
             ++totalInCategory;
 
-    juce::String summary = juce::String (filteredPresetGlobals_.size()) + " shown";
-    if (totalInCategory > 0)
-        summary += " of " + juce::String (totalInCategory);
-    if (featuredOnlyToggle_.getToggleState())
-        summary += " · featured";
-    summary += " · " + cat;
+    juce::String summary = juce::String (totalInCategory) + " " + cat + " presets · "
+                           + juce::String (prophetrev2::presets::kFactoryPresetCount) + " total";
+    if (featuredOnlyToggle_.getToggleState() || favoritesOnlyToggle_.getToggleState())
+        summary += " · " + juce::String (filteredPresetGlobals_.size()) + " shown";
     presetCountLabel_.setText (summary, juce::dontSendNotification);
+}
+
+void ProphetRev2TrapAudioProcessorEditor::updateActivePresetHeader()
+{
+    juce::String name;
+    if (processor_.getActiveUserPresetName().isNotEmpty())
+        name = processor_.getActiveUserPresetName();
+    else if (presetBox_.getSelectedItemIndex() >= 0)
+        name = presetBox_.getText();
+    else
+        name = processor_.getProgramName (processor_.getCurrentProgram());
+
+    activePresetNameLabel_.setText (name, juce::dontSendNotification);
+}
+
+void ProphetRev2TrapAudioProcessorEditor::updateFavoriteStar()
+{
+    const juce::String cat = categoryBox_.getText();
+    bool fav = false;
+    if (prophetrev2::presets::PresetManager::isUserCategory (cat))
+        fav = prophetrev2::presets::FavoritesStore::isUserFavorite (presetBox_.getText());
+    else
+    {
+        const int local = presetBox_.getSelectedItemIndex();
+        if (local >= 0 && local < filteredPresetGlobals_.size())
+            fav = prophetrev2::presets::FavoritesStore::isFactoryFavorite (filteredPresetGlobals_[local].getIntValue());
+    }
+    favoriteStarButton_.setButtonText (fav ? "★ Fav" : "☆ Star");
+    favoriteStarButton_.setToggleState (fav, juce::dontSendNotification);
+}
+
+void ProphetRev2TrapAudioProcessorEditor::updateVoiceModeLabel()
+{
+    voiceModeLabel_.setText (monoButton_.getToggleState() ? "Mono + glide" : "Poly 16",
+                             juce::dontSendNotification);
 }
 
 juce::Colour ProphetRev2TrapAudioProcessorEditor::categoryAccentColour (const juce::String& category) const
@@ -221,11 +382,13 @@ void ProphetRev2TrapAudioProcessorEditor::promptSaveUserPreset()
         return;
 
     processor_.saveUserPreset (name);
+    processor_.capturePresetBaseline();
     categoryBox_.setText (prophetrev2::presets::kUserPresetCategory, juce::dontSendNotification);
     refreshPresetListForCategory (prophetrev2::presets::kUserPresetCategory, 0);
     for (int i = 0; i < presetBox_.getNumItems(); ++i)
         if (presetBox_.getItemText (i) == name)
             presetBox_.setSelectedItemIndex (i, juce::dontSendNotification);
+    updateActivePresetHeader();
 }
 
 void ProphetRev2TrapAudioProcessorEditor::refreshPresetListForCategory (const juce::String& category,
@@ -266,85 +429,120 @@ void ProphetRev2TrapAudioProcessorEditor::updateCategoryHint()
     categoryHintLabel_.setText (categoryRoleHint (categoryBox_.getText()), juce::dontSendNotification);
 }
 
+void ProphetRev2TrapAudioProcessorEditor::layoutKnobGrid (juce::Rectangle<int> area,
+                                                          std::size_t startIndex,
+                                                          int count,
+                                                          int columns)
+{
+    const int kw = juce::jmax (56, area.getWidth() / columns - 8);
+    const int kh = juce::jmin (88, area.getHeight() - 4);
+    for (int i = 0; i < count; ++i)
+    {
+        const auto idx = startIndex + static_cast<std::size_t> (i);
+        if (idx >= knobs_.size())
+            break;
+        const int col = i % columns;
+        const int row = i / columns;
+        const int x = area.getX() + col * (kw + 8);
+        const int y = area.getY() + row * (kh + 18);
+        knobs_[idx]->setBounds (x, y, kw, kh);
+        if (idx < knobLabels_.size())
+            knobLabels_[idx]->setBounds (x, y + kh - 4, kw, 14);
+    }
+}
+
 void ProphetRev2TrapAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colour (0xff0e0e14));
-
-    const float headerW = static_cast<float> (getWidth()) - 16.0f;
-    g.setColour (juce::Colour (0xff252532));
-    g.fillRoundedRectangle (8.0f, 8.0f, headerW, 96.0f, 8.0f);
+    g.fillAll (colourGraphite());
 
     const auto accent = categoryAccentColour (categoryBox_.getText());
+    const float w = static_cast<float> (getWidth());
+    g.setColour (colourPanel());
+    g.fillRoundedRectangle (kMargin, kMargin, w - 2.0f * kMargin, static_cast<float> (kBrowserBandHeight), 10.0f);
     g.setColour (accent);
-    g.fillRoundedRectangle (8.0f, 8.0f, 5.0f, 96.0f, 2.0f);
+    g.fillRoundedRectangle (kMargin, kMargin, 6.0f, static_cast<float> (kBrowserBandHeight), 3.0f);
 
-    const int panelX = getWidth() - kRightPanelInset + 70;
-    g.setColour (juce::Colour (0xff1a1a24));
-    g.fillRoundedRectangle (static_cast<float> (panelX), 12.0f,
-                            static_cast<float> (getWidth() - panelX - 12), 82.0f, 6.0f);
-    g.setColour (accent.withAlpha (0.85f));
-    g.fillRect (static_cast<float> (panelX), 12.0f, 3.0f, 82.0f);
-    g.setColour (juce::Colours::white);
-    g.setFont (juce::Font (24.0f, juce::Font::bold));
-    g.drawText ("Night Circuit", 20, 12, 240, 30, juce::Justification::left);
-    g.setFont (13.0f);
-    g.setColour (juce::Colour (0xffb0b0c8));
-    g.drawText ("v0.1 · 1,028 factory programs · analog ladder · 16-voice poly", 20, 40, 480, 18, juce::Justification::left);
+    const int contentTop = kMargin + kBrowserBandHeight + 8;
+    const int contentH = getHeight() - contentTop - kMargin;
+    const int leftW = juce::roundToInt ((getWidth() - 2 * kMargin) * 0.58f);
+    const int rightW = getWidth() - 2 * kMargin - leftW - 8;
+
+    auto drawCard = [&] (int x, int y, int cw, int ch) {
+        g.setColour (colourPanel().darker (0.12f));
+        g.fillRoundedRectangle (static_cast<float> (x), static_cast<float> (y),
+                                static_cast<float> (cw), static_cast<float> (ch), 8.0f);
+        g.setColour (colourViolet().withAlpha (0.25f));
+        g.drawRoundedRectangle (static_cast<float> (x), static_cast<float> (y),
+                                static_cast<float> (cw), static_cast<float> (ch), 8.0f, 1.0f);
+    };
+
+    drawCard (kMargin, contentTop, leftW, juce::roundToInt (contentH * 0.52f));
+    drawCard (kMargin, contentTop + juce::roundToInt (contentH * 0.54f), leftW, juce::roundToInt (contentH * 0.22f));
+    drawCard (kMargin, contentTop + juce::roundToInt (contentH * 0.78f), leftW, contentH - juce::roundToInt (contentH * 0.78f));
+    drawCard (kMargin + leftW + 8, contentTop, rightW, contentH);
+
+    g.setColour (colourTextPrimary());
+    g.setFont (juce::Font (22.0f, juce::Font::bold));
+    g.drawText ("Night Circuit", kMargin + 16, kMargin + 8, 220, 28, juce::Justification::left);
+    g.setFont (12.5f);
+    g.setColour (colourTextMuted());
+    g.drawText ("VST3 · analog ladder · 1,028 factory programs", kMargin + 16, kMargin + 34, 420, 18,
+                juce::Justification::left);
 }
 
 void ProphetRev2TrapAudioProcessorEditor::resized()
 {
     const int w = getWidth();
-    categoryLabel_.setBounds (w - kRightPanelInset, 18, 70, 22);
-    categoryBox_.setBounds (w - kRightPanelInset + 80, 16, 150, 24);
-    presetLabel_.setBounds (w - kRightPanelInset, 46, 52, 22);
-    presetFilterLabel_.setBounds (w - kRightPanelInset + 80, 44, 44, 22);
-    presetFilterEditor_.setBounds (w - kRightPanelInset + 130, 44, 100, 22);
-    presetBox_.setBounds (w - kRightPanelInset + 80, 68, 150, 24);
-    featuredOnlyToggle_.setBounds (w - kRightPanelInset + 80, 94, 150, 22);
-    presetCountLabel_.setBounds (w - kRightPanelInset, 94, 230, 22);
-    userPresetNameEditor_.setBounds (w - 180, 16, 160, 24);
-    saveUserButton_.setBounds (w - 180, 44, 160, 26);
+    const int bandY = kMargin + 52;
+    const int row2 = bandY + 28;
 
-    categoryHintLabel_.setBounds (20, 72, getWidth() - 40, 16);
-    outputSlider_.setBounds (20, 108, 280, 22);
-    monoButton_.setBounds (320, 104, 70, 28);
-    legatoButton_.setBounds (395, 104, 70, 28);
-    unisonBox_.setBounds (480, 106, 80, 24);
+    categoryLabel_.setBounds (kMargin + 14, bandY, 64, 20);
+    categoryBox_.setBounds (kMargin + 78, bandY - 2, 130, 26);
+    presetLabel_.setBounds (kMargin + 220, bandY, 48, 20);
+    presetBox_.setBounds (kMargin + 270, bandY - 2, juce::jmin (280, w / 3), 26);
 
-    analogLabel_.setBounds (20, 134, 200, 18);
-    const int kx = 20, ky = 154, kw = 68, kh = 78, cols = 6;
-    for (std::size_t i = 0; i < knobs_.size() && i < 12; ++i)
-    {
-        const int col = static_cast<int> (i) % cols;
-        const int row = static_cast<int> (i) / cols;
-        knobs_[i]->setBounds (kx + col * (kw + 6), ky + row * (kh + 4), kw, kh);
-        if (i < knobLabels_.size())
-            knobLabels_[i]->setBounds (knobs_[i]->getX(), knobs_[i]->getBottom() - 2, kw, 14);
-    }
+    presetFilterLabel_.setBounds (kMargin + 560, bandY, 52, 20);
+    presetFilterEditor_.setBounds (kMargin + 612, bandY - 2, 140, 26);
 
-    ampEnvLabel_.setBounds (20, 316, 120, 18);
-    filtEnvLabel_.setBounds (20, 446, 140, 18);
+    prevPresetButton_.setBounds (w - kMargin - 380, bandY - 2, 32, 26);
+    nextPresetButton_.setBounds (w - kMargin - 344, bandY - 2, 32, 26);
+    favoriteStarButton_.setBounds (w - kMargin - 306, bandY - 2, 72, 26);
+    featuredOnlyToggle_.setBounds (w - kMargin - 228, bandY - 2, 88, 26);
+    favoritesOnlyToggle_.setBounds (w - kMargin - 134, bandY - 2, 88, 26);
 
-    for (std::size_t i = 12; i < knobs_.size(); ++i)
-    {
-        const int idx = static_cast<int> (i - 12);
-        const int col = idx % 4;
-        const int row = idx / 4;
-        const int baseY = (i < 16) ? 320 : 450;
-        const int localRow = (i < 16) ? 0 : 1;
-        juce::ignoreUnused (row, baseY);
-        knobs_[i]->setBounds (20 + col * (kw + 8), (i < 16 ? 320 : 450) + localRow * 0, kw, kh);
-        if (i < knobLabels_.size())
-            knobLabels_[i]->setBounds (knobs_[i]->getX(), knobs_[i]->getBottom() - 2, kw, 14);
-    }
+    saveUserButton_.setBounds (w - kMargin - 130, row2, 118, 26);
+    userPresetNameEditor_.setBounds (w - kMargin - 280, row2, 142, 26);
 
-    // Fix amp/filter rows layout
-    for (int i = 0; i < 4; ++i)
-    {
-        knobs_[static_cast<std::size_t> (12 + i)]->setBounds (20 + i * (kw + 10), 338, kw, kh);
-        knobLabels_[static_cast<std::size_t> (12 + i)]->setBounds (20 + i * (kw + 10), 414, kw, 14);
-        knobs_[static_cast<std::size_t> (16 + i)]->setBounds (20 + i * (kw + 10), 468, kw, kh);
-        knobLabels_[static_cast<std::size_t> (16 + i)]->setBounds (20 + i * (kw + 10), 544, kw, 14);
-    }
+    activePresetNameLabel_.setBounds (kMargin + 14, row2, juce::jmin (420, w / 2), 24);
+    modifiedBadgeLabel_.setBounds (kMargin + 14 + juce::jmin (420, w / 2) + 8, row2 + 2, 80, 20);
+    presetCountLabel_.setBounds (kMargin + 270, row2 + 2, w - kMargin - 290, 20);
+    categoryHintLabel_.setBounds (kMargin + 14, row2 + 26, w - 2 * kMargin, 16);
+
+    const int contentTop = kMargin + kBrowserBandHeight + 8;
+    const int contentH = getHeight() - contentTop - kMargin;
+    const int leftW = juce::roundToInt ((w - 2 * kMargin) * 0.58f);
+    const int rightW = w - 2 * kMargin - leftW - 8;
+
+    oscSectionLabel_.setBounds (kMargin + 16, contentTop + 8, 200, 18);
+    const auto oscArea = juce::Rectangle<int> (kMargin + 12, contentTop + 28, leftW - 24,
+                                               juce::roundToInt (contentH * 0.52f) - 36);
+    layoutKnobGrid (oscArea, 0, 8, 4);
+
+    ampEnvLabel_.setBounds (kMargin + 16, contentTop + juce::roundToInt (contentH * 0.54f) + 6, 120, 18);
+    const int ampY = contentTop + juce::roundToInt (contentH * 0.54f) + 26;
+    layoutKnobGrid ({ kMargin + 12, ampY, leftW - 24, juce::roundToInt (contentH * 0.22f) - 30 }, 12, 4, 4);
+
+    filtEnvLabel_.setBounds (kMargin + 16, contentTop + juce::roundToInt (contentH * 0.78f) + 6, 140, 18);
+    const int filtY = contentTop + juce::roundToInt (contentH * 0.78f) + 26;
+    layoutKnobGrid ({ kMargin + 12, filtY, leftW - 24, contentH - juce::roundToInt (contentH * 0.78f) - 32 }, 16, 4, 4);
+
+    perfSectionLabel_.setBounds (kMargin + leftW + 20, contentTop + 8, 220, 18);
+    voiceModeLabel_.setBounds (kMargin + leftW + 20, contentTop + 30, 120, 20);
+    outputSlider_.setBounds (kMargin + leftW + 20, contentTop + 56, rightW - 32, 22);
+    monoButton_.setBounds (kMargin + leftW + 20, contentTop + 88, 72, 26);
+    legatoButton_.setBounds (kMargin + leftW + 98, contentTop + 88, 72, 26);
+    unisonBox_.setBounds (kMargin + leftW + 178, contentTop + 88, 88, 26);
+
+    const int perfKnobY = contentTop + 130;
+    layoutKnobGrid ({ kMargin + leftW + 16, perfKnobY, rightW - 24, contentH - 140 }, 8, 4, 2);
 }
