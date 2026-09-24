@@ -1,0 +1,192 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="820"
+     viewBox="0 0 1280 820" role="img">
+  <title>Night Circuit VST3 synthesizer GUI concept</title>
+  <desc>Dark violet synthesizer interface with a searchable preset browser,
+  five categories, featured and favorites filters, and grouped synthesis controls.</desc>
+
+  <defs>
+    <linearGradient id="background" x2="1" y2="1">
+      <stop stop-color="#10101a"/>
+      <stop offset="1" stop-color="#191322"/>
+    </linearGradient>
+    <linearGradient id="card" x2="0" y2="1">
+      <stop stop-color="#272236"/>
+      <stop offset="1" stop-color="#1e1b2b"/>
+    </linearGradient>
+    <linearGradient id="accent" x2="0" y2="1">
+      <stop stop-color="#d9a4ff"/>
+      <stop offset="1" stop-color="#9558dc"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+
+    <g id="dial">
+      <circle r="33" fill="#171522" stroke="#514363" stroke-width="2"/>
+      <path d="M-23 23 A32 32 0 1 1 23 23"
+            fill="none" stroke="#484057" stroke-width="5"
+            stroke-linecap="round"/>
+      <path d="M-23 23 A32 32 0 0 1 22 -24"
+            fill="none" stroke="#b77aec" stroke-width="5"
+            stroke-linecap="round"/>
+      <circle r="23" fill="#292437" stroke="#6b547e" stroke-width="1.5"/>
+      <path d="M0-19 V-10" stroke="#f0d6ff" stroke-width="3"
+            stroke-linecap="round"/>
+    </g>
+
+    <style>
+      text { font-family: Inter, Arial, sans-serif; }
+      .muted { fill:#aa9dbb; font-size:13px; }
+      .label { fill:#ded3ea; font-size:13px; font-weight:600; }
+      .value { fill:#d2a4ff; font-size:13px; font-weight:600; }
+      .section { fill:#b98bde; font-size:12px; font-weight:700;
+                 letter-spacing:2px; }
+      .buttonText { fill:#e8ddf1; font-size:13px; font-weight:600; }
+      .field { fill:#292438; stroke:#584a6c; stroke-width:1; }
+    </style>
+  </defs>
+
+  <!-- Shell -->
+  <rect width="1280" height="820" rx="17" fill="url(#background)"/>
+  <rect x="1" y="1" width="1278" height="818" rx="16"
+        fill="none" stroke="#594269" stroke-width="2"/>
+  <ellipse cx="1060" cy="10" rx="190" ry="55" fill="#8c40dc"
+           opacity=".10" filter="url(#glow)"/>
+
+  <!-- Header -->
+  <rect x="27" y="23" width="48" height="48" rx="11" fill="url(#accent)"/>
+  <text x="51" y="54" text-anchor="middle" fill="#190e26"
+        font-size="19" font-weight="800">NC</text>
+  <text x="89" y="47" fill="#f5effa" font-size="26"
+        font-weight="800" letter-spacing="3">NIGHT CIRCUIT</text>
+  <text x="90" y="66" class="muted">ANALOG-INSPIRED SYNTHESIZER · VST3</text>
+
+  <rect x="841" y="30" width="410" height="39" rx="8"
+        fill="#241e32" stroke="#534366"/>
+  <circle cx="860" cy="49" r="4" fill="#cf8dff"/>
+  <text x="875" y="54" fill="#e5d5f2" font-size="14">
+    Midnight Chords
+  </text>
+  <text x="1218" y="54" text-anchor="end" fill="#a991c3" font-size="12">
+    FACTORY · FEATURED
+  </text>
+
+  <!-- Preset browser -->
+  <rect x="27" y="87" width="1226" height="117" rx="12"
+        fill="#211d2e" stroke="#453851"/>
+  <text x="44" y="108" class="section">PRESET BROWSER</text>
+
+  <rect x="44" y="119" width="150" height="35" rx="6" class="field"/>
+  <text x="58" y="142" class="buttonText">Synth</text>
+  <text x="177" y="141" fill="#c6a1e6"></text>
+
+  <rect x="202" y="119" width="277" height="35" rx="6" class="field"/>
+  <text x="216" y="142" class="buttonText">Midnight Chords</text>
+  <text x="459" y="141" fill="#c6a1e6"></text>
+
+  <rect x="487" y="119" width="37" height="35" rx="6" class="field"/>
+  <text x="505" y="143" text-anchor="middle" class="buttonText">9</text>
+  <rect x="530" y="119" width="37" height="35" rx="6" class="field"/>
+  <text x="548" y="143" text-anchor="middle" class="buttonText">:</text>
+
+  <rect x="575" y="119" width="480" height="35" rx="6" class="field"/>
+  <text x="591" y="142" fill="#a99ab7" font-size="13">
+    Search this category&
+  </text>
+
+  <rect x="1063" y="119" width="172" height="35" rx="6" class="field"/>
+  <text x="1077" y="142" class="buttonText">Poly 16</text>
+  <text x="1217" y="141" fill="#c6a1e6"></text>
+
+  <rect x="44" y="164" width="106" height="27" rx="6"
+        fill="#49305d" stroke="#a16bc8"/>
+  <text x="97" y="182" text-anchor="middle" class="buttonText">Featured</text>
+
+  <rect x="158" y="164" width="105" height="27" rx="6" class="field"/>
+  <text x="211" y="182" text-anchor="middle" class="buttonText">Favorites</text>
+
+  <rect x="271" y="164" width="117" height="27" rx="6" class="field"/>
+  <text x="330" y="182" text-anchor="middle" class="buttonText"> Favorite</text>
+
+  <text x="411" y="182" class="muted">245 Synth presets · 1,028 total</text>
+
+  <rect x="1061" y="164" width="83" height="27" rx="6" class="field"/>
+  <text x="1102" y="182" text-anchor="middle" class="buttonText">Save</text>
+  <rect x="1152" y="164" width="83" height="27" rx="6" class="field"/>
+  <text x="1194" y="182" text-anchor="middle" class="buttonText">Load</text>
+
+  <!-- Oscillator/filter card -->
+  <rect x="27" y="216" width="1226" height="171" rx="11"
+        fill="url(#card)" stroke="#42354f"/>
+  <text x="45" y="240" class="section">OSCILLATORS + FILTER</text>
+  <text x="1228" y="240" text-anchor="end" class="muted">
+    2 OSC · SUB · RESONANT LOW-PASS
+  </text>
+
+  <!-- Seven dials -->
+  <use href="#dial" transform="translate(119 302)"/>
+  <use href="#dial" transform="translate(290 302)"/>
+  <use href="#dial" transform="translate(461 302)"/>
+  <use href="#dial" transform="translate(632 302)"/>
+  <use href="#dial" transform="translate(803 302)"/>
+  <use href="#dial" transform="translate(974 302)"/>
+  <use href="#dial" transform="translate(1145 302)"/>
+
+  <text x="119" y="358" text-anchor="middle" class="label">OSC MIX</text>
+  <text x="119" y="377" text-anchor="middle" class="value">45%</text>
+  <text x="290" y="358" text-anchor="middle" class="label">DETUNE</text>
+  <text x="290" y="377" text-anchor="middle" class="value">12 ct</text>
+  <text x="461" y="358" text-anchor="middle" class="label">SHAPE</text>
+  <text x="461" y="377" text-anchor="middle" class="value">35%</text>
+  <text x="632" y="358" text-anchor="middle" class="label">SUB</text>
+  <text x="632" y="377" text-anchor="middle" class="value">18%</text>
+  <text x="803" y="358" text-anchor="middle" class="label">CUTOFF</text>
+  <text x="803" y="377" text-anchor="middle" class="value">2.40 kHz</text>
+  <text x="974" y="358" text-anchor="middle" class="label">RESONANCE</text>
+  <text x="974" y="377" text-anchor="middle" class="value">22%</text>
+  <text x="1145" y="358" text-anchor="middle" class="label">FILTER ENV</text>
+  <text x="1145" y="377" text-anchor="middle" class="value">+38%</text>
+
+  <!-- Amp envelope -->
+  <rect x="27" y="397" width="1226" height="127" rx="11"
+        fill="url(#card)" stroke="#42354f"/>
+  <text x="45" y="420" class="section">AMP ENVELOPE</text>
+  <use href="#dial" transform="translate(185 462) scale(.77)"/>
+  <use href="#dial" transform="translate(485 462) scale(.77)"/>
+  <use href="#dial" transform="translate(785 462) scale(.77)"/>
+  <use href="#dial" transform="translate(1085 462) scale(.77)"/>
+  <text x="185" y="504" text-anchor="middle" class="label">ATTACK · 40 ms</text>
+  <text x="485" y="504" text-anchor="middle" class="label">DECAY · 200 ms</text>
+  <text x="785" y="504" text-anchor="middle" class="label">SUSTAIN · 80%</text>
+  <text x="1085" y="504" text-anchor="middle" class="label">RELEASE · 700 ms</text>
+
+  <!-- Filter envelope -->
+  <rect x="27" y="534" width="1226" height="127" rx="11"
+        fill="url(#card)" stroke="#42354f"/>
+  <text x="45" y="557" class="section">FILTER ENVELOPE</text>
+  <use href="#dial" transform="translate(185 599) scale(.77)"/>
+  <use href="#dial" transform="translate(485 599) scale(.77)"/>
+  <use href="#dial" transform="translate(785 599) scale(.77)"/>
+  <use href="#dial" transform="translate(1085 599) scale(.77)"/>
+  <text x="185" y="641" text-anchor="middle" class="label">ATTACK · 10 ms</text>
+  <text x="485" y="641" text-anchor="middle" class="label">DECAY · 220 ms</text>
+  <text x="785" y="641" text-anchor="middle" class="label">SUSTAIN · 0%</text>
+  <text x="1085" y="641" text-anchor="middle" class="label">RELEASE · 250 ms</text>
+
+  <!-- Performance/circuit -->
+  <rect x="27" y="671" width="1226" height="115" rx="11"
+        fill="url(#card)" stroke="#42354f"/>
+  <text x="45" y="694" class="section">PERFORMANCE + CIRCUIT</text>
+  <use href="#dial" transform="translate(295 738) scale(.72)"/>
+  <use href="#dial" transform="translate(665 738) scale(.72)"/>
+  <text x="355" y="743" class="label">MONO GLIDE</text>
+  <text x="355" y="762" class="value">0 ms · inactive in Poly</text>
+  <text x="725" y="743" class="label">CIRCUIT DRIVE</text>
+  <text x="725" y="762" class="value">18%</text>
+  <text x="1214" y="759" text-anchor="end" class="muted">NIGHT CIRCUIT · v0.1</text>
+
+  <!-- Concept watermark -->
+  <text x="1244" y="812" text-anchor="end" fill="#81738d" font-size="10">
+    DESIGN CONCEPT · NOT A HOST SCREENSHOT
+  </text>
+</svg>

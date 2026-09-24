@@ -1,7 +1,8 @@
 # Night Circuit — preset browser GUI (sound-design + Factory)
 
 **Owner:** Preset sound-design subagent (UX/copy/curation) · **Implementation:** VST Plugin Factory  
-**Constraint:** Minimum editor width **960 px**; VST3 must remain usable in FL Studio and MPC Software plugin windows.
+**Visual target:** [../design/NightCircuit-GUI-Concept.svg](../design/NightCircuit-GUI-Concept.svg) + [../design/NIGHT_CIRCUIT_GUI_SPEC.md](../design/NIGHT_CIRCUIT_GUI_SPEC.md) (design concept — not a host screenshot).  
+**Constraint:** Until migration completes, minimum editor width **960 px**; target spec minimum **1120 × 760**. VST3 must remain usable in FL Studio and MPC Software plugin windows.
 
 ## v0.1 (implemented)
 
@@ -27,6 +28,8 @@
 | User | Neutral | `#9090a8` |
 
 ## Roadmap (one item per test pass)
+
+Align with [NIGHT_CIRCUIT_GUI_SPEC.md](../design/NIGHT_CIRCUIT_GUI_SPEC.md) increment list (full-width browser, prev/next, panel layout, palette).
 
 1. **Favorites** — user-local star list (does not mutate factory bank).
 2. **Featured default** — first open shows featured filter on for Synth/Bass.

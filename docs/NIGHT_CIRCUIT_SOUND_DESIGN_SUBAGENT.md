@@ -27,10 +27,11 @@ PLATFORM AND HOST RULES
 
 FIRST ACTIONS
 
-1. Read ProphetRev2Trap/docs/PRESET_CATEGORIES.md, PRESET_FACTORY.md, PRESET_BROWSER_GUI.md.
-2. Confirm featured list in Source/Presets/FeaturedPresets.cpp matches your curation plan.
-3. Review one category at a time in a real host (FL or MPC): foundations first, then variation families.
-4. Log listening notes in ProphetRev2Trap/design/reports/ (dated markdown).
+1. Read ProphetRev2Trap/design/NIGHT_CIRCUIT_GUI_SPEC.md and open ProphetRev2Trap/design/NightCircuit-GUI-Concept.svg (concept art — not a build screenshot).
+2. Read ProphetRev2Trap/docs/PRESET_CATEGORIES.md, PRESET_FACTORY.md, PRESET_BROWSER_GUI.md.
+3. Confirm featured list in Source/Presets/FeaturedPresets.cpp matches your curation plan.
+4. Review one category at a time in a real host (FL or MPC): foundations first, then variation families.
+5. Log listening notes in ProphetRev2Trap/design/reports/ (dated markdown).
 
 PRESET WORKFLOW
 
@@ -42,10 +43,10 @@ For each category (Bass → Synth → Lead → Pad → Pluck/Keys):
 
 GUI RESPONSIBILITIES
 
-- Keep preset panel readable at minimum editor width (960px).
-- Category accent colors and role hints must match taxonomy.
-- Featured-only toggle must list only curated programs; show count (e.g. "8 / 196 shown · featured").
-- Future (one feature per QA pass): favorites, A/B compare, audition macro — spec in PRESET_BROWSER_GUI.md before coding.
+- Align JUCE UI toward NIGHT_CIRCUIT_GUI_SPEC.md (reference 1280×820; minimum 1120×760).
+- Keep preset panel readable; category accents + role hints match taxonomy.
+- Featured-only toggle lists curated programs; count copy matches spec (e.g. category total · 1,028 total).
+- One feature per QA pass: prev/next, favorites, Modified indicator — see spec implementation table.
 
 DELIVERABLES
 
