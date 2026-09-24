@@ -56,6 +56,11 @@ Full calendar and Cursor Automation prompt templates: [VST_PLUGIN_FACTORY_SCHEDU
 
 **cursor-vst-plugin-factory** is a **regular** factory implementer (not ad-hoc). Default persona and prompt shell: [VST_PLUGIN_FACTORY_AGENT.md](VST_PLUGIN_FACTORY_AGENT.md). Cursor rule (plugin paths): [`.cursor/rules/vst-plugin-factory.mdc`](../.cursor/rules/vst-plugin-factory.mdc).
 
+## Slack
+
+- **#agent-team** (`C0C3M2NDK7Z`) — meetings, roster, automation decisions — [SLACK_AGENT_TEAM.md](SLACK_AGENT_TEAM.md)
+- **#disklordz-dev** — factory inbox + schedule webhooks — [VST_PLUGIN_FACTORY_SLACK.md](VST_PLUGIN_FACTORY_SLACK.md)
+
 ## Related docs
 
 - [CURSOR_AGENT_PLAYBOOK.md](CURSOR_AGENT_PLAYBOOK.md)

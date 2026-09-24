@@ -279,6 +279,8 @@ cmd_slack_vst_factory() {
 
   echo ""
   echo "Workflows: vst-factory-inbox-slack.yml, vst-factory-schedule-slack.yml"
+  echo "Recommended webhook channel: #disklordz-dev (C0C1X6S61B9)"
+  echo "Agent sync / roster: #agent-team (C0C3M2NDK7Z) — docs/SLACK_AGENT_TEAM.md"
   echo "Docs: docs/VST_PLUGIN_FACTORY_SLACK.md"
   echo "Manual test: gh workflow run vst-factory-schedule-slack.yml --repo $repo -f conclusion=success"
 }

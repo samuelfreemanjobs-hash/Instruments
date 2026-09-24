@@ -2,9 +2,15 @@
 
 Slack is the **human notification layer** for the Plugin Factory agent (`cursor-vst-plugin-factory`). It does not run the agent; it tells you when to start a Cloud Agent or triage CI.
 
-## Recommended channel
+## Channels
 
-Create or use a team channel (e.g. **#disklordz-dev** or **#vst-plugin-factory**). Add an **Incoming Webhook** scoped to that channel only.
+| Channel | Slack ID | Purpose |
+|---------|----------|---------|
+| **#agent-team** | `C0C3M2NDK7Z` | Roster, sync meetings, workflow decisions — [SLACK_AGENT_TEAM.md](SLACK_AGENT_TEAM.md) |
+| **#disklordz-dev** | `C0C1X6S61B9` | **Webhook target** for factory inbox + schedule (engineering noise) |
+| **#disklordz-ci** | `C0C1X6RMGTZ` | General CI (`slack-ci`) |
+
+Point **Incoming Webhooks** for factory automation at **#disklordz-dev**; use **#agent-team** for human coordination.
 
 ## One-time setup
 
