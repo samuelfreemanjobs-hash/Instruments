@@ -1,4 +1,5 @@
 #include "SynthEditor.h"
+#include "VoyagerPresetBank.h"
 
 namespace
 {
@@ -66,6 +67,19 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     titleLabel.setColour(juce::Label::textColourId, kAccent);
     titleLabel.setFont(juce::FontOptions(26.0f, juce::Font::bold));
     addAndMakeVisible(titleLabel);
+
+    presetLabel.setText("Factory preset", juce::dontSendNotification);
+    presetLabel.setColour(juce::Label::textColourId, kSectionText);
+    presetLabel.setJustificationType(juce::Justification::centredRight);
+    addAndMakeVisible(presetLabel);
+
+    for (int i = 0; i < voyager::getFactoryPresetCount(); ++i)
+        presetBox.addItem(juce::String(voyager::getFactoryPresetName(i).data()), i + 1);
+    presetBox.setSelectedItemIndex(processorRef.getCurrentProgram(), juce::dontSendNotification);
+    presetBox.onChange = [this]() {
+        processorRef.setCurrentProgram(presetBox.getSelectedItemIndex());
+    };
+    addAndMakeVisible(presetBox);
 
     for (auto* lab : { &oscSectionLabel, &filterSectionLabel, &envSectionLabel, &modSectionLabel })
     {
@@ -175,8 +189,8 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     lfoFilterAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::lfoToFilter), lfoFilter);
     glideAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::glideTime), glide);
 
-    setResizeLimits(900, 480, 1400, 800);
-    setSize(1040, 580);
+    setResizeLimits(900, 520, 1400, 820);
+    setSize(1040, 610);
 }
 
 MoogVoyagerAudioProcessorEditor::~MoogVoyagerAudioProcessorEditor() = default;
@@ -189,7 +203,7 @@ void MoogVoyagerAudioProcessorEditor::paint(juce::Graphics& g)
     g.setColour(kAccent.withAlpha(0.35f));
     g.fillRect(0, 52, getWidth(), 2);
 
-    auto bounds = getLocalBounds().reduced(12).withTrimmedTop(58);
+    auto bounds = getLocalBounds().reduced(12).withTrimmedTop(88);
     auto oscBox = bounds.removeFromTop(175);
     auto filterBox = bounds.removeFromTop(115);
     auto envBox = bounds.removeFromTop(115);
@@ -205,8 +219,11 @@ void MoogVoyagerAudioProcessorEditor::paint(juce::Graphics& g)
 void MoogVoyagerAudioProcessorEditor::resized()
 {
     titleLabel.setBounds(0, 8, getWidth(), 36);
+    auto presetRow = getLocalBounds().reduced(12).withTrimmedTop(48).removeFromTop(28);
+    presetLabel.setBounds(presetRow.removeFromLeft(120));
+    presetBox.setBounds(presetRow.removeFromLeft(juce::jmin(420, presetRow.getWidth())));
 
-    auto bounds = getLocalBounds().reduced(12).withTrimmedTop(58);
+    auto bounds = getLocalBounds().reduced(12).withTrimmedTop(88);
     auto oscBox = bounds.removeFromTop(175);
     oscSectionLabel.setBounds(oscBox.removeFromTop(20));
     auto oscInner = oscBox.reduced(10, 4);

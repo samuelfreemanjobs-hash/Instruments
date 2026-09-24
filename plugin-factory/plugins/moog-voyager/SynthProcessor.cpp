@@ -1,6 +1,6 @@
 #include "SynthProcessor.h"
 #include "SynthEditor.h"
-#include "GfunkPresets.h"
+#include "VoyagerPresetBank.h"
 
 namespace
 {
@@ -367,7 +367,7 @@ MoogVoyagerAudioProcessor::MoogVoyagerAudioProcessor()
         synthesiser.addVoice(new SynthVoice(*this));
     synthesiser.addSound(new SynthSound());
     synthesiser.setNoteStealingEnabled(false);
-    gfunk::applyPreset(*this, gfunk::PresetId::gFunkLead);
+    voyager::applyFactoryPreset(*this, 0);
 }
 
 MoogVoyagerAudioProcessor::~MoogVoyagerAudioProcessor() = default;
@@ -382,21 +382,17 @@ bool MoogVoyagerAudioProcessor::producesMidi() const { return false; }
 bool MoogVoyagerAudioProcessor::isMidiEffect() const { return false; }
 double MoogVoyagerAudioProcessor::getTailLengthSeconds() const { return 3.0; }
 
-int MoogVoyagerAudioProcessor::getNumPrograms() { return 2; }
+int MoogVoyagerAudioProcessor::getNumPrograms() { return voyager::getFactoryPresetCount(); }
 int MoogVoyagerAudioProcessor::getCurrentProgram() { return currentProgramIndex; }
 void MoogVoyagerAudioProcessor::setCurrentProgram(int index)
 {
     currentProgramIndex = juce::jlimit(0, getNumPrograms() - 1, index);
-    gfunk::applyPreset(*this,
-                       currentProgramIndex == 0 ? gfunk::PresetId::gFunkLead : gfunk::PresetId::gFunkBass);
+    voyager::applyFactoryPreset(*this, currentProgramIndex);
 }
 const juce::String MoogVoyagerAudioProcessor::getProgramName(int index)
 {
-    if (index == 0)
-        return "G-Funk Lead";
-    if (index == 1)
-        return "G-Funk Bass";
-    return {};
+    const auto name = voyager::getFactoryPresetName(index);
+    return name.empty() ? juce::String() : juce::String(name.data());
 }
 void MoogVoyagerAudioProcessor::changeProgramName(int index, const juce::String& newName)
 {
@@ -452,6 +448,7 @@ juce::AudioProcessorEditor* MoogVoyagerAudioProcessor::createEditor()
 void MoogVoyagerAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
     auto state = apvts.copyState();
+    state.setProperty("factoryProgram", currentProgramIndex, nullptr);
     std::unique_ptr<juce::XmlElement> xml(state.createXml());
     copyXmlToBinary(*xml, destData);
 }
@@ -460,7 +457,12 @@ void MoogVoyagerAudioProcessor::setStateInformation(const void* data, int sizeIn
 {
     std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
     if (xml != nullptr && xml->hasTagName(apvts.state.getType()))
-        apvts.replaceState(juce::ValueTree::fromXml(*xml));
+    {
+        auto state = juce::ValueTree::fromXml(*xml);
+        apvts.replaceState(state);
+        const int prog = static_cast<int>(state.getProperty("factoryProgram", 0));
+        currentProgramIndex = juce::jlimit(0, getNumPrograms() - 1, prog);
+    }
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

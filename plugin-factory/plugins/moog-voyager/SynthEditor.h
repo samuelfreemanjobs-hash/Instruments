@@ -24,6 +24,8 @@ private:
     MoogVoyagerAudioProcessor& processorRef;
 
     juce::Label titleLabel;
+    juce::Label presetLabel;
+    juce::ComboBox presetBox;
     juce::Label oscSectionLabel, filterSectionLabel, envSectionLabel, modSectionLabel;
 
     juce::Slider masterSlider;

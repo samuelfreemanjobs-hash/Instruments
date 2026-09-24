@@ -1,4 +1,4 @@
-#include "GfunkPresets.h"
+#include "VoyagerPresetBank.h"
 #include "SynthProcessor.h"
 #include <JuceHeader.h>
 
@@ -21,7 +21,7 @@ void renderLead(MoogVoyagerAudioProcessor& processor, const juce::File& outFile)
     const double totalBeats = 16.0;
     const int totalSamples = static_cast<int>(sampleRate * totalBeats / beatsPerSecond);
 
-    gfunk::applyPreset(processor, gfunk::PresetId::gFunkLead);
+    voyager::applyFactoryPreset(processor, 2); // 03 G-Funk Lead
     processor.prepareToPlay(sampleRate, blockSize);
 
     const NoteEvent line[] = {

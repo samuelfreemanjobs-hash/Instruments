@@ -11,8 +11,8 @@ pf_add_juce_plugin(
         SynthProcessor.cpp
         SynthEditor.h
         SynthEditor.cpp
-        GfunkPresets.h
-        GfunkPresets.cpp
+        VoyagerPresetBank.h
+        VoyagerPresetBank.cpp
 )
 
 add_executable(VoyagerBassDemo VoyagerBassDemo.cpp)
@@ -28,3 +28,7 @@ target_compile_definitions(VoyagerLeadDemo PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_C
 target_include_directories(VoyagerLeadDemo PRIVATE
     "${CMAKE_BINARY_DIR}/plugins/moog-voyager/MoogVoyager_artefacts/JuceLibraryCode")
 add_dependencies(VoyagerLeadDemo MoogVoyager)
+
+add_executable(VoyagerPresetTests VoyagerPresetTests.cpp)
+target_link_libraries(VoyagerPresetTests PRIVATE MoogVoyager)
+add_test(NAME VoyagerPresetBank COMMAND VoyagerPresetTests)

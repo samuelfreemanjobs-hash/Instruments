@@ -1,21 +1,25 @@
 # V Voyager (Voyager-style monophonic VSTi)
 
-Inspired by the **Minimoog Voyager** signal path: three oscillators, noise, 24 dB Moog ladder low-pass, separate filter and amp envelopes, LFO, glide.
+Triple oscillator, Moog ladder LPF, dual envelopes, LFO, glide, mixer saturation, PolyBLEP sources.
 
-**Factory programs:** `G-Funk Lead` (default) and `G-Funk Bass` — switch via the DAW program/preset menu or `setCurrentProgram(0|1)`.
+## Factory preset bank (24)
 
-Built with the Plugin Factory OS. Ship with:
+Full catalog: [PRESETS.md](PRESETS.md) — leads, basses, pads, keys, brass, FX.
+
+- DAW: use host **program/preset** (24 programs).
+- UI: **Factory preset** dropdown under the title bar.
+
+Default program: **01 Voyager Init**.
+
+## Build & ship
 
 ```bash
 cd plugin-factory && ./scripts/factory.sh release
 ```
 
-Install location: `build/factory-shipped-vst3/V Voyager.vst3` (or `FACTORY_VST3_INSTALL_DIR` / `~/.vst3`).
-
-**Open the UI (no DAW required):**
+## Demos
 
 ```bash
-plugin-factory/build/plugins/moog-voyager/MoogVoyager_artefacts/Release/Standalone/V\ Voyager
+cmake --build build --target VoyagerLeadDemo VoyagerBassDemo VoyagerPresetTests
+./build/plugins/moog-voyager/VoyagerPresetTests
 ```
-
-In a DAW: rescan VST3, insert **V Voyager**, open the plugin editor window (the synth exposes `hasEditor()` / VST3 GUI).

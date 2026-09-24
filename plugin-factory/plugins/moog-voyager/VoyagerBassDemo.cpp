@@ -1,5 +1,5 @@
 // Offline G-funk style bass render for V Voyager (used with UI screen capture).
-#include "GfunkPresets.h"
+#include "VoyagerPresetBank.h"
 #include "SynthProcessor.h"
 #include <JuceHeader.h>
 
@@ -45,7 +45,7 @@ void fillSnoopBassPattern(juce::MidiBuffer& midi, double sampleRate, int totalSa
 int main()
 {
     MoogVoyagerAudioProcessor processor;
-    gfunk::applyPreset(processor, gfunk::PresetId::gFunkBass);
+    voyager::applyFactoryPreset(processor, 6); // 07 G-Funk Bass
 
     const double sampleRate = 44100.0;
     const int blockSize = 512;
