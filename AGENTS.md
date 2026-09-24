@@ -22,6 +22,8 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
+**V Voyager (Plugin Factory SKU):** agent `cursor-v-voyager` · PM import [disklordz/airtable/seed/v-voyager-2026.json](disklordz/airtable/seed/v-voyager-2026.json) · [docs/V_VOYAGER_PM.md](docs/V_VOYAGER_PM.md)
+
 ## RAG (prompt knowledge)
 
 ```bash
