@@ -4,7 +4,7 @@ Triple oscillator, Moog ladder LPF, dual envelopes, LFO, glide, mixer saturation
 
 ## Factory preset bank (300 Moog programs)
 
-Full catalog: [PRESETS.md](PRESETS.md) — 24 curated + 276 Moog archetype variants.
+Full catalog: [PRESETS.md](PRESETS.md) — 32 curated (incl. P-Funk, 80s boogie/R&B, DJ Screw, Troutman) + 268 variants.
 
 Regenerate: `python3 scripts/generate_factory_presets.py`
 
