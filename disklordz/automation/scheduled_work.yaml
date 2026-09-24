@@ -25,7 +25,7 @@ jobs:
     cron: "45 9 * * 1"
     work_order_id: WO-2026-NC-QA-GATE1-RECUR
     to_agent: night-circuit-qa
-    title: "[Plugin][JUCE][QA][Recurring] Night Circuit Gate 1"
+    title: "[Plugin][JUCE][QA][Recurring] Night Circuit Gate 1 (VST Plugin QA — repo worker)"
     acceptance_criteria: |
       Run ProphetRev2Trap/docs/BUILD_BASELINE.md through pluginval.
       Write ProphetRev2Trap/qa/reports/YYYY-MM-DD-bank-integrity.md with PASS/FAIL/NOT TESTED per criterion.
@@ -52,7 +52,7 @@ jobs:
     cron: "0 16 * * 4"
     work_order_id: WO-2026-NC-DESIGN-BIWEEK-RECUR
     to_agent: night-circuit-sound-design
-    title: "[Plugin][JUCE][Design][Recurring] Preset / GUI batch"
+    title: "[Plugin][JUCE][Design][Recurring] Preset batch (VST Sound Design — repo worker; NC default)"
     acceptance_criteria: |
       One deliverable: FeaturedPresets update PR, design/reports listening note, or single GUI spec increment
       per ProphetRev2Trap/design/NIGHT_CIRCUIT_GUI_SPEC.md. Outbox entry with what shipped.

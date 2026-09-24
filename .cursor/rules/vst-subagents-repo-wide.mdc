@@ -1,0 +1,14 @@
+---
+description: VST QA, sound design, and GUI subagents are repo-wide JUCE workers (agent IDs night-circuit-*).
+alwaysApply: false
+---
+
+# VST subagents — repo-wide
+
+When running **`night-circuit-qa`**, **`night-circuit-sound-design`**, or **`vst-gui-designer`**:
+
+1. Read [docs/VST_SUBAGENT_SCOPE.md](../docs/VST_SUBAGENT_SCOPE.md) and identify **product** from WO paths/title.
+2. Use canonical prompts: [VST_PLUGIN_QA_AGENT.md](../docs/VST_PLUGIN_QA_AGENT.md), [VST_SOUND_DESIGN_AGENT.md](../docs/VST_SOUND_DESIGN_AGENT.md), [VST_GUI_DESIGNER_AGENT.md](../docs/VST_GUI_DESIGNER_AGENT.md).
+3. Night Circuit–only depth: [NIGHT_CIRCUIT_QA_SUBAGENT.md](../docs/NIGHT_CIRCUIT_QA_SUBAGENT.md), [NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md](../docs/NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md).
+
+PM prefixes: `[Plugin][JUCE][QA]`, `[Plugin][JUCE][Design]`, `[Plugin][JUCE][GUI]` — not limited to `ProphetRev2Trap/`.

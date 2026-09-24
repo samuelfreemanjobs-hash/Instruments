@@ -7,8 +7,8 @@ Canonical names, owners, and handoff paths for humans and automations. **PM Agen
 | **pm-agent** | Product & work orders | Airtable Disklordz OS | Opens WOs, GitHub issues, sets `owner_agent` |
 | **workflow-automation-agent** | Schedules & integrations | GitHub Actions, Zapier, Cursor Automations | Cron, `repository_dispatch`, subscription timers |
 | **cursor-vst-plugin-factory** | JUCE / VST3 / CLAP factory | `Source/`, `Wave909/`, `ProphetRev2Trap/`, root CMake | `[Plugin][JUCE]` WOs → [VST factory inbox](../disklordz/vst-factory/inbox/) |
-| **night-circuit-qa** | Night Circuit verification | `ProphetRev2Trap/`, `vst-testing-ops/` | `[Plugin][JUCE][QA]` · schedule: [VST_PLUGIN_FACTORY_SCHEDULE.md](VST_PLUGIN_FACTORY_SCHEDULE.md) |
-| **night-circuit-sound-design** | Presets + browser copy/curation | `ProphetRev2Trap/design/reports/`, `FeaturedPresets.cpp` | `[Plugin][JUCE][Design]` · biweekly Thu automation |
+| **night-circuit-qa** | **VST Plugin QA** (repo-wide; Night Circuit lead) | All JUCE products — [VST_SUBAGENT_SCOPE.md](VST_SUBAGENT_SCOPE.md) | `[Plugin][JUCE][QA]` · [VST_PLUGIN_QA_AGENT.md](VST_PLUGIN_QA_AGENT.md) |
+| **night-circuit-sound-design** | **VST Sound Design** (repo-wide; Night Circuit lead) | Presets/curation per product — [VST_SOUND_DESIGN_AGENT.md](VST_SOUND_DESIGN_AGENT.md) | `[Plugin][JUCE][Design]` · Thu automation |
 | **vst-gui-designer** | **Senior VST GUI** (repo-wide specs & review) | All `PluginEditor.*`, `*/design/*GUI*`, [VST_GUI_SYSTEM.md](VST_GUI_SYSTEM.md) | **`[Plugin][JUCE][GUI]`** · Fri audit · PR review gate |
 | **cursor-cloud** (generic) | SaaS & cross-cutting | `disklordz/website/` | `[SaaS]` WOs — see [DISKLORDZ_SAAS_AGENT_LANES.md](DISKLORDZ_SAAS_AGENT_LANES.md) |
 | **antigravity-hise** | HISE sketch lane (Windows) | `hise-sketch/` | `[Plugin][HISE]` → [Antigravity inbox](../disklordz/antigravity/inbox/) |
@@ -21,6 +21,8 @@ Canonical names, owners, and handoff paths for humans and automations. **PM Agen
 1. Every implementation task gets an **Agent Work Order** with `work_order_id` (`WO-…`).
 2. Title prefix sets the lane:
    - **`[Plugin][JUCE]`** → `owner_agent: cursor-vst-plugin-factory`
+   - **`[Plugin][JUCE][QA]`** → `owner_agent: night-circuit-qa` (any product; name product in title e.g. `[Wave909]`)
+   - **`[Plugin][JUCE][Design]`** → `owner_agent: night-circuit-sound-design` (any product)
    - **`[Plugin][JUCE][GUI]`** → `owner_agent: vst-gui-designer` (spec, audit, review; Factory implements)
    - **`[Plugin][JUCE][GUI][Review]`** → `owner_agent: vst-gui-designer` (PR review-only, docs/report)
    - **`[Plugin][HISE]`** → `owner_agent: antigravity-hise`

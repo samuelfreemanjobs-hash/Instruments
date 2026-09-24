@@ -4,7 +4,7 @@
 **Tier:** Senior / production — **repo-wide** JUCE and plugin UI architecture (all `[Plugin][JUCE]` products).  
 **PM:** **pm-agent** assigns `[Plugin][JUCE][GUI]` work orders.  
 **Implements:** none (design authority); **cursor-vst-plugin-factory** ships code from your approved specs.  
-**Partners:** **night-circuit-sound-design** (preset copy, featured curation), **night-circuit-qa** (host GUI checklist), **workflow-automation-agent** (scheduled audits).
+**Partners:** **night-circuit-sound-design** (preset copy, repo-wide), **night-circuit-qa** (verification, repo-wide), **workflow-automation-agent** (scheduled audits). Scope: [VST_SUBAGENT_SCOPE.md](VST_SUBAGENT_SCOPE.md).
 
 Cursor agent entry: [`.cursor/agents/vst-gui-designer.md`](../.cursor/agents/vst-gui-designer.md)  
 Design system: [VST_GUI_SYSTEM.md](VST_GUI_SYSTEM.md)  

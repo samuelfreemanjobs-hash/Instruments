@@ -79,8 +79,8 @@ flowchart LR
 | Title prefix | `owner_agent` | Inbox / prompt |
 |--------------|---------------|----------------|
 | `[Plugin][JUCE]` | cursor-vst-plugin-factory | `disklordz/vst-factory/inbox/` |
-| `[Plugin][JUCE][QA]` | night-circuit-qa | WO body links branch; prompt: [NIGHT_CIRCUIT_QA_SUBAGENT.md](NIGHT_CIRCUIT_QA_SUBAGENT.md) |
-| `[Plugin][JUCE][Design]` | night-circuit-sound-design | Prompt: [NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md](NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md) |
+| `[Plugin][JUCE][QA]` | night-circuit-qa | [VST_PLUGIN_QA_AGENT.md](VST_PLUGIN_QA_AGENT.md) · NC annex: [NIGHT_CIRCUIT_QA_SUBAGENT.md](NIGHT_CIRCUIT_QA_SUBAGENT.md) |
+| `[Plugin][JUCE][Design]` | night-circuit-sound-design | [VST_SOUND_DESIGN_AGENT.md](VST_SOUND_DESIGN_AGENT.md) · NC annex: [NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md](NIGHT_CIRCUIT_SOUND_DESIGN_SUBAGENT.md) |
 | `[Plugin][JUCE][GUI]` | **vst-gui-designer** | Prompt: [VST_GUI_DESIGNER_AGENT.md](VST_GUI_DESIGNER_AGENT.md) |
 | `[Plugin][JUCE][GUI][Review]` | **vst-gui-designer** | PR / audit; report in `docs/reports/VST_GUI_AUDIT_*.md` |
 | `[Plugin][HISE]` | antigravity-hise | Antigravity inbox (out of factory schedule) |

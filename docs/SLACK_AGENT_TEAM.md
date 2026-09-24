@@ -38,7 +38,7 @@ Agenda template:
 See [AGENT_TEAM_ROSTER.md](AGENT_TEAM_ROSTER.md). Minimum for Night Circuit ship:
 
 - `pm-agent`, `workflow-automation-agent`, `cursor-vst-plugin-factory`
-- `night-circuit-qa`, `night-circuit-sound-design`, **`vst-gui-designer`**
+- `night-circuit-qa` (**VST Plugin QA**, repo-wide), `night-circuit-sound-design` (**VST Sound Design**, repo-wide), `vst-gui-designer`
 - Human: `factory-manager`, optional `business-planner` / `marketing` for SKU
 
 ## Automated work completion

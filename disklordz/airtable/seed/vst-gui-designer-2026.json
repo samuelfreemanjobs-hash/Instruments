@@ -1,5 +1,6 @@
 {
   "base_id_hint": "Senior VST GUI Designer — pm-agent import",
+  "note": "QA and sound-design use same repo-wide policy; see docs/VST_SUBAGENT_SCOPE.md. Agent IDs night-circuit-qa and night-circuit-sound-design unchanged.",
   "agents": [
     {
       "agent_id": "vst-gui-designer",

@@ -22,7 +22,15 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
-**VST GUI (repo-wide):** [docs/VST_GUI_DESIGNER_AGENT.md](docs/VST_GUI_DESIGNER_AGENT.md) · agent id **`vst-gui-designer`** · PM prefix **`[Plugin][JUCE][GUI]`**.
+**VST subagents (repo-wide JUCE):** [docs/VST_SUBAGENT_SCOPE.md](docs/VST_SUBAGENT_SCOPE.md)
+
+| Agent ID | PM prefix | Prompt |
+|----------|-----------|--------|
+| `night-circuit-qa` | `[Plugin][JUCE][QA]` | [VST_PLUGIN_QA_AGENT.md](docs/VST_PLUGIN_QA_AGENT.md) |
+| `night-circuit-sound-design` | `[Plugin][JUCE][Design]` | [VST_SOUND_DESIGN_AGENT.md](docs/VST_SOUND_DESIGN_AGENT.md) |
+| `vst-gui-designer` | `[Plugin][JUCE][GUI]` | [VST_GUI_DESIGNER_AGENT.md](docs/VST_GUI_DESIGNER_AGENT.md) |
+
+IDs retain `night-circuit-*` for automation; scope is **all** in-repo JUCE plugins unless WO says otherwise.
 
 ## RAG (prompt knowledge)
 
