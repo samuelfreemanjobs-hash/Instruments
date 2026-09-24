@@ -44,6 +44,14 @@ Configure the repo secret (admin):
 
 Without `SLACK_WEBHOOK_URL`, the workflow skips quietly.
 
+## VST Plugin Factory Slack
+
+Inbox handoffs and weekly factory schedule posts: [VST_PLUGIN_FACTORY_SLACK.md](VST_PLUGIN_FACTORY_SLACK.md)
+
+```bash
+./scripts/setup-disklordz-integrations.sh slack-vst-factory --webhook-url 'https://hooks.slack.com/services/...'
+```
+
 ## Golden WAV policy
 
 When DSP output changes **on purpose**, refresh committed references before merge:

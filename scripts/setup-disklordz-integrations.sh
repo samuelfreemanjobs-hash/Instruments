@@ -15,6 +15,7 @@ Usage: setup-disklordz-integrations.sh <command> [options]
 Commands:
   slack-ci          Configure GitHub secret SLACK_WEBHOOK_URL and test notifications
   slack-antigravity Configure SLACK_WEBHOOK_ANTIGRAVITY_URL + optional SLACK_MENTION_USER_ID (#disklordz-dev)
+  slack-vst-factory Configure SLACK_WEBHOOK_VST_FACTORY_URL + optional SLACK_MENTION_VST_FACTORY_USER_ID
   cursor-cloud      Verify repo-managed Cursor Cloud Agent config (environment.json)
   all               Run cursor-cloud, then slack-ci (if webhook provided)
 
@@ -32,6 +33,7 @@ Examples:
   ./scripts/setup-disklordz-integrations.sh cursor-cloud
   ./scripts/setup-disklordz-integrations.sh slack-ci --webhook-url 'https://hooks.slack.com/services/...'
   ./scripts/setup-disklordz-integrations.sh slack-antigravity --webhook-url 'https://hooks.slack.com/services/...'
+  ./scripts/setup-disklordz-integrations.sh slack-vst-factory --webhook-url 'https://hooks.slack.com/services/...'
   SLACK_WEBHOOK_URL='https://hooks.slack.com/...' ./scripts/setup-disklordz-integrations.sh all
 
 Slack webhook (one-time, in browser):
@@ -206,6 +208,81 @@ cmd_slack_antigravity() {
   echo "Manual test: gh workflow run antigravity-inbox-slack.yml --repo $repo -f handoff_path=disklordz/antigravity/inbox/<file>.json"
 }
 
+cmd_slack_vst_factory() {
+  local webhook_url="${SLACK_WEBHOOK_VST_FACTORY_URL:-}"
+  local mention_user_id="${SLACK_MENTION_VST_FACTORY_USER_ID:-}"
+  local repo="$REPO_DEFAULT"
+  local skip_secret=0
+  local skip_test=0
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --webhook-url)
+        webhook_url="$2"
+        shift 2
+        ;;
+      --mention-user-id)
+        mention_user_id="$2"
+        shift 2
+        ;;
+      --repo)
+        repo="$2"
+        shift 2
+        ;;
+      --skip-secret)
+        skip_secret=1
+        shift
+        ;;
+      --skip-test)
+        skip_test=1
+        shift
+        ;;
+      *)
+        die "unknown slack-vst-factory option: $1"
+        ;;
+    esac
+  done
+
+  [[ -n "$webhook_url" ]] || die "set --webhook-url or SLACK_WEBHOOK_VST_FACTORY_URL"
+
+  if [[ "$skip_secret" -eq 0 ]]; then
+    need_cmd gh
+    gh auth status >/dev/null 2>&1 || die "run: gh auth login"
+    echo "Setting GitHub secret SLACK_WEBHOOK_VST_FACTORY_URL on $repo ..."
+    printf '%s' "$webhook_url" | gh secret set SLACK_WEBHOOK_VST_FACTORY_URL --repo "$repo"
+    echo "Secret SLACK_WEBHOOK_VST_FACTORY_URL updated."
+    if [[ -n "$mention_user_id" ]]; then
+      printf '%s' "$mention_user_id" | gh secret set SLACK_MENTION_VST_FACTORY_USER_ID --repo "$repo"
+      echo "Secret SLACK_MENTION_VST_FACTORY_USER_ID updated."
+    fi
+  fi
+
+  if [[ "$skip_test" -eq 0 ]]; then
+    need_cmd curl
+    need_cmd jq
+    echo "Sending VST Plugin Factory Slack test message ..."
+    curl -fsS -X POST "$webhook_url" \
+      -H 'Content-type: application/json' \
+      --data "$(jq -n \
+        --arg repo "$repo" \
+        --arg mention "$mention_user_id" \
+        '{
+          text: (if $mention != "" then ("<@" + $mention + "> VST Plugin Factory Slack connected") else "VST Plugin Factory Slack connected" end),
+          blocks: [
+            { type: "section", text: { type: "mrkdwn", text: ("*VST Plugin Factory agent — Slack connected*\nRepo: `" + $repo + "`\nAgent: `cursor-vst-plugin-factory`\nInbox: `disklordz/vst-factory/inbox/HO-*.json` on `main`") } },
+            { type: "context", elements: [ { type: "mrkdwn", text: "Schedule: Mon CI · Wed Night Circuit · Fri doc-sync · setup-disklordz-integrations.sh slack-vst-factory" } ] }
+          ]
+        }')" \
+      >/dev/null
+    echo "Test message sent."
+  fi
+
+  echo ""
+  echo "Workflows: vst-factory-inbox-slack.yml, vst-factory-schedule-slack.yml"
+  echo "Docs: docs/VST_PLUGIN_FACTORY_SLACK.md"
+  echo "Manual test: gh workflow run vst-factory-schedule-slack.yml --repo $repo -f conclusion=success"
+}
+
 cmd_cursor_cloud() {
   local repo="$REPO_DEFAULT"
   local trigger_build=0
@@ -283,6 +360,9 @@ main() {
       ;;
     slack-antigravity)
       cmd_slack_antigravity "$@"
+      ;;
+    slack-vst-factory)
+      cmd_slack_vst_factory "$@"
       ;;
     cursor-cloud)
       cmd_cursor_cloud "$@"

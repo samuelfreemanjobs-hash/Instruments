@@ -39,12 +39,16 @@ Or Airtable button → GitHub `repository_dispatch` event `airtable-vst-factory-
 
 | Cadence | Automation | Outcome |
 |---------|------------|---------|
-| **Mon 09:00 UTC** | [vst-plugin-factory-schedule.yml](../.github/workflows/vst-plugin-factory-schedule.yml) `health` job | Plugin CI health artifact; optional Slack |
-| **Daily 11:00 UTC** | [nightly-qa.yml](../.github/workflows/nightly-qa.yml) | Full monorepo QA (existing) |
-| **Mon 09:30 UTC** | Cursor Automation (recommended) | Cloud Agent: triage health + open fix WO if red |
-| **Fri 17:00 UTC** | Schedule workflow `doc-sync` job | Reminder issue / checklist for ARCHITECTURE drift |
+| **Mon 09:00 UTC** | [vst-plugin-factory-schedule.yml](../.github/workflows/vst-plugin-factory-schedule.yml) `plugin-ci-health` | Monorepo plugin CI artifact |
+| **Mon 09:30 / 10:00 UTC** | Cursor Automations | Factory health triage · **night-circuit-qa** Gate 1 |
+| **Wed 10:00 UTC** | `night-circuit-integrity` job | Night Circuit build, bank tests, pluginval artifact |
+| **Daily 11:00 UTC** | [nightly-qa.yml](../.github/workflows/nightly-qa.yml) | Full monorepo QA |
+| **Fri 17:00 / 17:30 UTC** | `doc-sync` + Cursor | ARCHITECTURE checklist · factory doc PR |
+| **Thu 16:00 UTC (biweekly)** | Cursor Automation | **night-circuit-sound-design** batch |
 | **On WO assign** | `airtable-vst-factory-handoff` | Inbox JSON + commit on branch |
-| **On plugin PR push** | GitHub CI `cmake` | Required check (existing) |
+| **Inbox on main** | [vst-factory-inbox-slack.yml](../.github/workflows/vst-factory-inbox-slack.yml) | Slack → start **cursor-vst-plugin-factory** |
+| **Schedule complete** | [vst-factory-schedule-slack.yml](../.github/workflows/vst-factory-schedule-slack.yml) | Slack health / Night Circuit result |
+| **On plugin PR push** | GitHub CI `cmake` | Required check |
 
 Full calendar and Cursor Automation prompt templates: [VST_PLUGIN_FACTORY_SCHEDULE.md](VST_PLUGIN_FACTORY_SCHEDULE.md).
 

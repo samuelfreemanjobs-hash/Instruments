@@ -187,7 +187,9 @@ Use Cursor **subscribe** MCP (`cursor-subscriptions`) when dashboard cron is una
 | Secret | Use |
 |--------|-----|
 | `AIRTABLE_API_KEY`, `AIRTABLE_BASE_ID` | Handoff script |
-| `SLACK_WEBHOOK_URL` | Optional: post Mon health + Wed Night Circuit summary |
+| `SLACK_WEBHOOK_VST_FACTORY_URL` | Factory inbox + schedule posts ([VST_PLUGIN_FACTORY_SLACK.md](VST_PLUGIN_FACTORY_SLACK.md)) |
+| `SLACK_MENTION_VST_FACTORY_USER_ID` | Optional @ on new `[Plugin][JUCE]` handoffs |
+| `SLACK_WEBHOOK_URL` | Fallback if factory webhook unset |
 | Cursor Cloud API / Automations | Dashboard only — not in git |
 
 Setup: [disklordz/automation/VST_PLUGIN_FACTORY.md](../disklordz/automation/VST_PLUGIN_FACTORY.md).

@@ -46,6 +46,16 @@ Workflow: [`.github/workflows/vst-plugin-factory-schedule.yml`](../../.github/wo
 
 Manual re-run: Actions → **VST Plugin Factory schedule** → `workflow_dispatch` → pick job.
 
+## Slack (Plugin Factory agent)
+
+```bash
+./scripts/setup-disklordz-integrations.sh slack-vst-factory \
+  --webhook-url 'https://hooks.slack.com/services/...' \
+  --mention-user-id U0XXXXXXXX
+```
+
+Posts: new **inbox** handoffs on `main`, **schedule** workflow results. Full guide: [docs/VST_PLUGIN_FACTORY_SLACK.md](../../docs/VST_PLUGIN_FACTORY_SLACK.md).
+
 ## Manual bridge (no Airtable)
 
 ```bash

@@ -5,6 +5,8 @@
 **PM:** Airtable **pm-agent** / Disklordz OS  
 **Schedule owner:** **workflow-automation-agent** ([VST_PLUGIN_FACTORY_SCHEDULE.md](VST_PLUGIN_FACTORY_SCHEDULE.md)) — Mon CI health, Wed Night Circuit integrity, Fri doc-sync, inbox dispatch. QA/sound-design cadence in same doc.
 
+**Slack:** [VST_PLUGIN_FACTORY_SLACK.md](VST_PLUGIN_FACTORY_SLACK.md) — inbox + schedule notifications; setup via `setup-disklordz-integrations.sh slack-vst-factory`.
+
 ## Purpose
 
 Turn approved `[Plugin][JUCE]` work orders into maintainable, real-time-safe JUCE/VST3 (and CLAP when in scope) implementations: DSP, parameters, state, UI, CMake, tests, and CI evidence.

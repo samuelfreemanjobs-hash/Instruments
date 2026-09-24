@@ -11,3 +11,5 @@
 6. Optional: write completion summary to `outbox/HO-<same-id>-done.json` (mirror schema, `"status": "done"`).
 
 Bridge CLI: [scripts/vst-factory-bridge/vst-factory-bridge.sh](../../scripts/vst-factory-bridge/vst-factory-bridge.sh)
+
+When a handoff lands on `main`, Slack may notify the team ([docs/VST_PLUGIN_FACTORY_SLACK.md](../../docs/VST_PLUGIN_FACTORY_SLACK.md)) — start **cursor-vst-plugin-factory** on the handoff branch.
