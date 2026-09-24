@@ -17,7 +17,7 @@ juce::String categoryRoleHint (const juce::String& category)
     if (category == "Synth") return "Poly chords & melodic beds";
     if (category == "Lead") return "Hooks · mono / top line";
     if (category == "Pad") return "Atmosphere · slow textures";
-    if (category == "Pluck") return "Short rhythmic stabs";
+    if (category == "Pluck/Keys") return "Short rhythmic stabs · keys";
     if (category == prophetrev2::presets::kUserPresetCategory) return "Your saved patches";
     return {};
 }

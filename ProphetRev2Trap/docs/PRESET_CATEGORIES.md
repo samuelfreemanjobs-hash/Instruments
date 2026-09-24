@@ -8,7 +8,7 @@ Five **factory** mix roles + **User** bank.
 | **Synth** | **Poly chords & melodic beds** (vaporwave, Jeezy stacks) |
 | **Lead** | Hooks, mono-forward lines, FX-ish sweeps |
 | **Pad** | Slow atmosphere |
-| **Pluck** | Short rhythmic stabs |
+| **Pluck/Keys** | Short rhythmic stabs & key lines |
 | **User** | Saved patches (disk) |
 
 Keys and Synth FX factory tags were merged into **Synth** / **Lead** for v0.1 clarity.

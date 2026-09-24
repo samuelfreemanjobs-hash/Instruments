@@ -107,23 +107,23 @@ const std::array<FoundationPatch, kFoundationPresetCount>& getFoundationPresets(
               return p;
           }() },
 
-        // Pluck (4)
-        { "Mike Will Pluck", "Pluck", [] {
+        // Pluck/Keys (4)
+        { "Mike Will Pluck", "Pluck/Keys", [] {
               auto p = base();
               p.ampAttack = 0.001f; p.ampDecay = 0.11f; p.ampSustain = 0.0f; p.filtEnvAmt = 0.82f;
               return p;
           }() },
-        { "Wheezy Short Pluck", "Pluck", [] {
+        { "Wheezy Short Pluck", "Pluck/Keys", [] {
               auto p = base();
               p.ampDecay = 0.08f; p.filtDecay = 0.09f; p.osc2DetuneCents = 23.0f;
               return p;
           }() },
-        { "Trap Wire Pluck", "Pluck", [] {
+        { "Trap Wire Pluck", "Pluck/Keys", [] {
               auto p = base();
               p.filterCutoff = 0.7f; p.filterRes = 0.4f; p.circuitDrive = 0.25f;
               return p;
           }() },
-        { "Staccato Click", "Pluck", [] {
+        { "Staccato Click", "Pluck/Keys", [] {
               auto p = base();
               p.ampRelease = 0.12f; p.filtEnvAmt = 0.75f; p.filterCutoff = 0.66f;
               return p;

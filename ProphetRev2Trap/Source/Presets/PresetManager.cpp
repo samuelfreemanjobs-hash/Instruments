@@ -21,7 +21,7 @@ bool PresetManager::isUserCategory (const juce::String& category) noexcept
 
 juce::StringArray PresetManager::getCategoryOrder()
 {
-    static const char* kRoleOrder[] = { "Bass", "Synth", "Lead", "Pad", "Pluck", kUserPresetCategory };
+    static const char* kRoleOrder[] = { "Bass", "Synth", "Lead", "Pad", "Pluck/Keys", kUserPresetCategory };
 
     juce::StringArray present;
     for (const auto& preset : getFactoryPresets())
