@@ -1,4 +1,4 @@
-# Rev2 Trap — Prophet Rev2–inspired trap synth (JUCE subdirectory)
+# Night Circuit — Prophet Rev2–inspired trap / vaporwave poly synth (JUCE subdirectory)
 
 juce_add_plugin (ProphetRev2Trap
     COMPANY_NAME "Instruments"
@@ -12,7 +12,7 @@ juce_add_plugin (ProphetRev2Trap
     PLUGIN_MANUFACTURER_CODE Inst
     PLUGIN_CODE Pr2T
     FORMATS VST3 Standalone
-    PRODUCT_NAME "Rev2 Trap"
+    PRODUCT_NAME "Night Circuit"
 )
 
 target_sources (ProphetRev2Trap

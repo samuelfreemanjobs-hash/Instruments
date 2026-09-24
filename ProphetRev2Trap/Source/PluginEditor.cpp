@@ -7,7 +7,19 @@ namespace
 {
 namespace PID = prophetrev2::ParameterIDs;
 constexpr int kWidth = 640;
-constexpr int kHeight = 420;
+constexpr int kHeight = 436;
+
+juce::String categoryRoleHint (const juce::String& category)
+{
+    if (category == "Bass") return "Sub weight · single notes";
+    if (category == "Synth") return "Poly chords & melodic beds";
+    if (category == "Lead") return "Hooks · mono / top line";
+    if (category == "Pad") return "Atmosphere · slow textures";
+    if (category == "Pluck") return "Short rhythmic stabs";
+    if (category == "Keys") return "Keyed stabs & riffs";
+    if (category == "Synth FX") return "Sweeps & transitions";
+    return {};
+}
 } // namespace
 
 ProphetRev2TrapAudioProcessorEditor::ProphetRev2TrapAudioProcessorEditor (ProphetRev2TrapAudioProcessor& p)
@@ -17,6 +29,9 @@ ProphetRev2TrapAudioProcessorEditor::ProphetRev2TrapAudioProcessorEditor (Prophe
     presetLabel_.setJustificationType (juce::Justification::centredRight);
     addAndMakeVisible (categoryLabel_);
     addAndMakeVisible (presetLabel_);
+    categoryHintLabel_.setFont (juce::Font (12.0f));
+    categoryHintLabel_.setColour (juce::Label::textColourId, juce::Colour (0xff9090a8));
+    addAndMakeVisible (categoryHintLabel_);
     addAndMakeVisible (categoryBox_);
     addAndMakeVisible (presetBox_);
     addAndMakeVisible (ampEnvLabel_);
@@ -27,6 +42,7 @@ ProphetRev2TrapAudioProcessorEditor::ProphetRev2TrapAudioProcessorEditor (Prophe
 
     categoryBox_.onChange = [this] {
         const juce::String cat = categoryBox_.getText();
+        updateCategoryHint();
         refreshPresetListForCategory (cat, 0);
         const int global = prophetrev2::presets::PresetManager::getGlobalIndexForCategoryPreset (cat, 0);
         processor_.applyFactoryPreset (global);
@@ -57,7 +73,13 @@ ProphetRev2TrapAudioProcessorEditor::ProphetRev2TrapAudioProcessorEditor (Prophe
     }
 
     syncUiToCurrentProgram();
+    updateCategoryHint();
     setSize (kWidth, kHeight);
+}
+
+void ProphetRev2TrapAudioProcessorEditor::updateCategoryHint()
+{
+    categoryHintLabel_.setText (categoryRoleHint (categoryBox_.getText()), juce::dontSendNotification);
 }
 
 ProphetRev2TrapAudioProcessorEditor::~ProphetRev2TrapAudioProcessorEditor() = default;
@@ -108,10 +130,10 @@ void ProphetRev2TrapAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (juce::Font (22.0f, juce::Font::bold));
-    g.drawText ("Rev2 Trap", 20, 14, 200, 28, juce::Justification::left);
+    g.drawText ("Night Circuit", 20, 14, 220, 28, juce::Justification::left);
     g.setFont (14.0f);
     g.setColour (juce::Colour (0xffb8b8d0));
-    g.drawText ("Prophet-style poly · synthetic trap factory presets", 20, 40, 400, 20, juce::Justification::left);
+    g.drawText ("Synthetic poly · category: Bass / Synth / Lead / Pad / …", 20, 40, 460, 20, juce::Justification::left);
 }
 
 void ProphetRev2TrapAudioProcessorEditor::resized()
@@ -123,13 +145,14 @@ void ProphetRev2TrapAudioProcessorEditor::resized()
     presetLabel_.setBounds (top.removeFromRight (280).removeFromLeft (52));
     presetBox_.setBounds (getWidth() - 12 - 200, 44, 200, 24);
 
-    outputSlider_.setBounds (20, 88, getWidth() - 40, 24);
+    categoryHintLabel_.setBounds (20, 72, getWidth() - 40, 16);
+    outputSlider_.setBounds (20, 92, getWidth() - 40, 24);
 
-    ampEnvLabel_.setBounds (20, 118, 120, 20);
-    filtEnvLabel_.setBounds (20, 248, 140, 20);
+    ampEnvLabel_.setBounds (20, 122, 120, 20);
+    filtEnvLabel_.setBounds (20, 252, 140, 20);
 
-    auto ampRow = getLocalBounds().reduced (20).withTop (140).withHeight (100);
-    auto filtRow = getLocalBounds().reduced (20).withTop (270).withHeight (100);
+    auto ampRow = getLocalBounds().reduced (20).withTop (144).withHeight (100);
+    auto filtRow = getLocalBounds().reduced (20).withTop (274).withHeight (100);
     const int kw = ampRow.getWidth() / 4;
 
     for (int i = 0; i < 4; ++i)

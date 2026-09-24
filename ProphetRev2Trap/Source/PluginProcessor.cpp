@@ -169,7 +169,14 @@ ProphetRev2TrapAudioProcessor::ProphetRev2TrapAudioProcessor()
         synthesiser_.addVoice (new SynthVoice (*this));
     synthesiser_.addSound (new SynthSound());
 
-    applyFactoryPreset (0);
+    int defaultProgram = 0;
+    for (int i = 0; i < getNumPrograms(); ++i)
+        if (getProgramName (i) == "Night Circuit")
+        {
+            defaultProgram = i;
+            break;
+        }
+    applyFactoryPreset (defaultProgram);
 }
 
 ProphetRev2TrapAudioProcessor::~ProphetRev2TrapAudioProcessor() = default;

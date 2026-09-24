@@ -60,6 +60,73 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               return p;
           }() },
 
+        // --- Synth (poly chords, melodic beds — vaporwave / Jeezy stacks) ---
+        { "Night Circuit", "Synth", [] {
+              auto p = base();
+              p.osc1Level = 0.78f;
+              p.osc2Level = 0.82f;
+              p.osc2DetuneCents = 11.0f;
+              p.oscMix = 0.52f;
+              p.filterCutoff = 0.58f;
+              p.filterRes = 0.24f;
+              p.filtEnvAmt = 0.38f;
+              p.ampAttack = 0.045f;
+              p.ampDecay = 0.55f;
+              p.ampSustain = 0.82f;
+              p.ampRelease = 0.65f;
+              p.filtAttack = 0.03f;
+              p.filtDecay = 0.48f;
+              p.filtSustain = 0.55f;
+              p.filtRelease = 0.55f;
+              return p;
+          }() },
+        { "Vaporwave Cruise", "Synth", [] {
+              auto p = base();
+              p.osc1Level = 0.72f;
+              p.osc2Level = 0.88f;
+              p.osc2DetuneCents = 18.0f;
+              p.oscMix = 0.58f;
+              p.filterCutoff = 0.52f;
+              p.filterRes = 0.18f;
+              p.filtEnvAmt = 0.32f;
+              p.ampAttack = 0.12f;
+              p.ampDecay = 0.65f;
+              p.ampSustain = 0.88f;
+              p.ampRelease = 0.95f;
+              p.filtAttack = 0.08f;
+              p.filtSustain = 0.62f;
+              return p;
+          }() },
+        { "Jeezy Stack Choir", "Synth", [] {
+              auto p = base();
+              p.osc1Level = 0.9f;
+              p.osc2Level = 0.7f;
+              p.osc2DetuneCents = 7.0f;
+              p.oscMix = 0.4f;
+              p.filterCutoff = 0.5f;
+              p.filterRes = 0.26f;
+              p.filtEnvAmt = 0.45f;
+              p.ampAttack = 0.035f;
+              p.ampDecay = 0.5f;
+              p.ampSustain = 0.86f;
+              p.ampRelease = 0.5f;
+              return p;
+          }() },
+        { "Neon Hall Chords", "Synth", [] {
+              auto p = base();
+              p.osc1Level = 0.68f;
+              p.osc2Level = 0.92f;
+              p.osc2DetuneCents = 14.0f;
+              p.oscMix = 0.6f;
+              p.filterCutoff = 0.62f;
+              p.filterRes = 0.2f;
+              p.filtEnvAmt = 0.42f;
+              p.ampAttack = 0.055f;
+              p.ampSustain = 0.84f;
+              p.ampRelease = 0.72f;
+              return p;
+          }() },
+
         // --- Lead ---
         { "Pierre Dream Lead", "Lead", [] {
               auto p = base();

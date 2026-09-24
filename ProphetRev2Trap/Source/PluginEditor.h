@@ -23,8 +23,11 @@ private:
     juce::ComboBox presetBox_;
     juce::Label categoryLabel_ { {}, "Category" };
     juce::Label presetLabel_ { {}, "Preset" };
+    juce::Label categoryHintLabel_;
     juce::Label ampEnvLabel_ { {}, "Amp envelope" };
     juce::Label filtEnvLabel_ { {}, "Filter envelope" };
+
+    void updateCategoryHint();
 
     juce::Slider outputSlider_;
     std::unique_ptr<SliderAttachment> outputAttachment_;

@@ -1,4 +1,4 @@
-# Rev2 Trap (Prophet Rev2–influenced trap synth)
+# Night Circuit (Prophet Rev2–influenced trap / vaporwave poly synth)
 
 **Purpose:** Polyphonic **synthetic** instrument for trap production — dual DCO-style oscillators (saw + pulse), resonant low-pass, separate **amp** and **filter** ADSRs, and a **category + preset** manager. No acoustic samples.
 
@@ -40,7 +40,9 @@ UI: category ComboBox → preset ComboBox → applyFactoryPreset
 
 ## Preset categories
 
-`Bass`, `Lead`, `Pad`, `Pluck`, `Keys`, `Synth FX` — all programs use oscillators only.
+`Bass`, **`Synth`** (poly chords & melodic beds), `Lead`, `Pad`, `Pluck`, `Keys`, `Synth FX` — all programs use oscillators only.
+
+Taxonomy: [docs/PRESET_CATEGORIES.md](docs/PRESET_CATEGORIES.md) · Roadmap: [docs/NIGHT_CIRCUIT_PLAN.md](docs/NIGHT_CIRCUIT_PLAN.md)
 
 ## Extension points
 

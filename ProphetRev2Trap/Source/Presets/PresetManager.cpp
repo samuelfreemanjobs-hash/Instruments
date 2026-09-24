@@ -15,13 +15,29 @@ juce::String toJuce (std::string_view sv)
 
 juce::StringArray PresetManager::getCategoryOrder()
 {
-    juce::StringArray ordered;
+    // Fixed mix-role order (see docs/PRESET_CATEGORIES.md). Skip empty categories.
+    static const char* kRoleOrder[] = {
+        "Bass", "Synth", "Lead", "Pad", "Pluck", "Keys", "Synth FX",
+    };
+
+    juce::StringArray present;
     for (const auto& preset : getFactoryPresets())
     {
         const juce::String cat = toJuce (preset.category);
-        if (! ordered.contains (cat))
+        if (! present.contains (cat))
+            present.add (cat);
+    }
+
+    juce::StringArray ordered;
+    for (const char* role : kRoleOrder)
+    {
+        const juce::String cat (role);
+        if (present.contains (cat))
             ordered.add (cat);
     }
+    for (const auto& cat : present)
+        if (! ordered.contains (cat))
+            ordered.add (cat);
     return ordered;
 }
 
