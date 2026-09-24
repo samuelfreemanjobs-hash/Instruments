@@ -1,67 +1,42 @@
 # Agent memory — Night Circuit genre foundations
 
-Installed **2026-09-24** from product direction: expand the factory **foundation** set with recognizable **wavephonk**, **wave**, **vapor trap**, **chillwave**, **hardware**, **ambient phonk**, and **cloud phonk** anchors (synthetic only; trap/vaporwave workflow, not Prophet cloning).
+**73 foundations** total: **21** classic trap/vapor anchors + **52** genre presets (**955** variations → **1,028** factory bank).
 
-**47 foundations** total (**981** variations + foundations = **1,028** factory programs).
+## Genre totals
 
-## Foundation map by genre
+| Genre | Count |
+|-------|------:|
+| wavephonk | 8 |
+| wave | 8 |
+| vapor trap | 10 |
+| chillwave | 6 |
+| hardware | 6 |
+| ambient phonk | 6 |
+| cloud phonk | 8 |
+
+## Full genre list
 
 ### wavephonk
-| Preset | Category |
-|--------|----------|
-| Wavephonk Knock | Bass |
-| Wavephonk Slump | Bass |
-| Wavephonk Bell | Lead |
-| Wavephonk Memphis | Lead |
+Wavephonk Knock · Slump · Grave · Stomp (Bass) · Bell · Memphis · Chain · Ring (Lead)
 
 ### wave
-| Preset | Category |
-|--------|----------|
-| Wave Horizon | Synth |
-| Wave Midnight | Synth |
-| Wave Tape Keys | Pluck/Keys |
+Wave Horizon · Midnight · Dawn · Shimmer (Synth) · Deep (Pad) · Glide (Lead) · Tape Keys · Echo Keys (Pluck/Keys)
 
 ### vapor trap
-| Preset | Category |
-|--------|----------|
-| Vapor Trap Glass | Synth |
-| Vapor Trap Stack | Synth |
-| Vapor Trap Sub | Bass |
-| Vapor Trap Hook | Lead |
-| Vapor Trap Click | Pluck/Keys |
+Vapor Trap Glass · Stack · Pulse · Mist (Synth) · Sub (Bass) · Hook · Rise (Lead) · Fade (Pad) · Click · Rim (Pluck/Keys)
 
 ### chillwave
-| Preset | Category |
-|--------|----------|
-| Chillwave Drift | Pad |
-| Chillwave Sunset | Pad |
-| Chillwave VHS | Synth |
+Chillwave Drift · Sunset · Dust (Pad) · VHS · Pool · Dim (Synth)
 
 ### hardware
-| Preset | Category |
-|--------|----------|
-| Hardware Juno Stack | Synth |
-| Hardware Poly Drive | Synth |
-| Hardware Solo Lead | Lead |
+Hardware Juno Stack · Poly Drive · Brass Stack (Synth) · Solo Lead (Lead) · Sub Drive (Bass) · Keys Pluck (Pluck/Keys)
 
 ### ambient phonk
-| Preset | Category |
-|--------|----------|
-| Ambient Phonk Void | Pad |
-| Ambient Phonk Smoke | Pad |
-| Ambient Phonk Layer | Synth |
+Ambient Phonk Void · Smoke · Night (Pad) · Layer · Choir (Synth) · Crawl (Bass)
 
 ### cloud phonk
-| Preset | Category |
-|--------|----------|
-| Cloud Phonk Mist | Bass |
-| Cloud Phonk Low | Bass |
-| Cloud Phonk Haze | Pad |
-| Cloud Phonk Air | Lead |
-| Cloud Phonk Bell | Pluck/Keys |
+Cloud Phonk Mist · Low · Pulse (Bass) · Haze · Float (Pad) · Air · Wire (Lead) · Bell (Pluck/Keys)
 
-Variations inherit from all category foundations via `PresetFactory.cpp` (quotas unchanged: 195 / 245 / 196 / 196 / 196).
+Classic anchors (non-genre): Traproom Sub, Gucci Glide Bass, Shawty Dark Bass, Low Circuit, Night Circuit, Vaporwave Cruise, Jeezy Stack Choir, Neon Hall Chords, Redd Key Stab, Bourne Glass Keys, Pierre Dream Lead, Jeezy Square Lead, London Bright Lead, Wheezy Siren, Mike Dean Haze, Dean Analog Pad, Void Circuit Pad, Mike Will Pluck, Wheezy Short Pluck, Trap Wire Pluck, Staccato Click.
 
-## Cursor rule
-
-`.cursor/rules/night-circuit-genre-memory.mdc` — attach when sound-design or preset work is in scope.
+Variations: `PresetFactory.cpp` (category quotas unchanged).

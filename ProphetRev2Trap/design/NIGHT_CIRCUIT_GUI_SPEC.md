@@ -39,7 +39,7 @@ Category accents in the **shipping** UI may keep role colors (Bass/Synth/…) fr
 | Navigation | Category dropdown, preset dropdown, **previous / next**, search within category |
 | Categories | Bass, Lead, Pad, Pluck/Keys, Synth (+ User bank) |
 | Library | **1,028** factory — quotas 195 / 196 / 196 / 196 / 245 |
-| Featured | All **47** foundations seeded; sound-design agent expands curated set |
+| Featured | All **73** foundations seeded; sound-design agent expands curated set |
 | Favorites | **Persistent per-user** (disk), separate from host project state — *not implemented* |
 | Status line | Active preset name; **Modified** when params diverge from loaded preset — *partial* |
 | Count copy | e.g. `245 Synth presets · 1,028 total` |

@@ -9,14 +9,14 @@ alwaysApply: false
 
 | Tag | Count | See |
 |-----|-------|-----|
-| wavephonk | 4 | `AGENT_MEMORY_GENRES.md` |
-| wave | 3 | |
-| vapor trap | 5 | |
-| chillwave | 3 | |
-| hardware | 3 | |
-| ambient phonk | 3 | |
-| cloud phonk | 5 | |
+| wavephonk | 8 | `AGENT_MEMORY_GENRES.md` |
+| wave | 8 | |
+| vapor trap | 10 | |
+| chillwave | 6 | |
+| hardware | 6 | |
+| ambient phonk | 6 | |
+| cloud phonk | 8 | |
 
-**47** genre-tagged foundations (plus classic trap/vapor anchors); full name list in `ProphetRev2Trap/design/AGENT_MEMORY_GENRES.md`.
+**52** genre foundations + **21** classic anchors = **73** total; full name list in `ProphetRev2Trap/design/AGENT_MEMORY_GENRES.md`.
 
 When adding presets: keep **1,028** factory count; edit `FoundationPresets.cpp` + adjust `kFoundationPresetCount` / `kVariationPresetCount`; register featured names in `FeaturedPresets.cpp`. Details: `ProphetRev2Trap/design/AGENT_MEMORY_GENRES.md`.

@@ -284,6 +284,168 @@ const std::array<FoundationPatch, kFoundationPresetCount>& getFoundationPresets(
               p.osc2DetuneCents = 27.0f; p.filterRes = 0.35f;
               return p;
           }() },
+
+        // Genre expansion batch 2 (26) — doubles genre foundation set
+        { "Wavephonk Grave", "Bass", [] {
+              auto p = base();
+              p.filterCutoff = 0.19f; p.circuitDrive = 0.52f; p.glideMs = 110.0f; p.ampSustain = 0.97f;
+              p.osc2DetuneCents = -6.0f; p.filtDecay = 0.48f;
+              return p;
+          }() },
+        { "Wavephonk Stomp", "Bass", [] {
+              auto p = base();
+              p.ampAttack = 0.003f; p.filterDrive = 0.45f; p.filterCutoff = 0.27f; p.filtEnvAmt = 0.48f;
+              p.circuitDrive = 0.44f;
+              return p;
+          }() },
+        { "Ambient Phonk Crawl", "Bass", [] {
+              auto p = base();
+              p.glideMs = 85.0f; p.filterCutoff = 0.21f; p.ampDecay = 0.62f; p.circuitDrive = 0.3f;
+              p.osc2Level = 0.5f; p.osc2DetuneCents = -16.0f;
+              return p;
+          }() },
+        { "Cloud Phonk Pulse", "Bass", [] {
+              auto p = base();
+              p.unisonVoices = 2.0f; p.filterCutoff = 0.25f; p.filtEnvAmt = 0.42f; p.filtDecay = 0.38f;
+              p.ampAttack = 0.005f; p.oscMix = 0.32f;
+              return p;
+          }() },
+        { "Hardware Sub Drive", "Bass", [] {
+              auto p = base();
+              p.circuitDrive = 0.28f; p.keyTrack = 0.52f; p.filterCutoff = 0.29f; p.ampSustain = 0.91f;
+              p.filterDrive = 0.22f;
+              return p;
+          }() },
+
+        { "Wave Dawn", "Synth", [] {
+              auto p = base();
+              p.ampAttack = 0.25f; p.unisonSpread = 17.0f; p.osc2DetuneCents = 20.0f; p.filterCutoff = 0.5f;
+              p.ampSustain = 0.87f; p.unisonVoices = 2.0f;
+              return p;
+          }() },
+        { "Wave Shimmer", "Synth", [] {
+              auto p = base();
+              p.filterCutoff = 0.66f; p.filtEnvAmt = 0.55f; p.osc2DetuneCents = 25.0f; p.ampAttack = 0.14f;
+              p.unisonVoices = 2.0f; p.unisonSpread = 19.0f;
+              return p;
+          }() },
+        { "Vapor Trap Pulse", "Synth", [] {
+              auto p = base();
+              p.filtDecay = 0.18f; p.ampDecay = 0.25f; p.filterRes = 0.36f; p.filtEnvAmt = 0.78f;
+              p.filterCutoff = 0.7f;
+              return p;
+          }() },
+        { "Vapor Trap Mist", "Synth", [] {
+              auto p = base();
+              p.unisonVoices = 2.0f; p.ampAttack = 0.08f; p.filterCutoff = 0.56f; p.osc2DetuneCents = 18.0f;
+              p.ampSustain = 0.75f; p.filtEnvAmt = 0.45f;
+              return p;
+          }() },
+        { "Chillwave Pool", "Synth", [] {
+              auto p = base();
+              p.ampAttack = 0.32f; p.filterCutoff = 0.42f; p.filterRes = 0.12f; p.ampRelease = 1.4f;
+              p.osc2DetuneCents = 13.0f;
+              return p;
+          }() },
+        { "Chillwave Dim", "Synth", [] {
+              auto p = base();
+              p.filterCutoff = 0.37f; p.ampAttack = 0.38f; p.circuitDrive = 0.09f; p.filtSustain = 0.35f;
+              p.ampSustain = 0.83f;
+              return p;
+          }() },
+        { "Hardware Brass Stack", "Synth", [] {
+              auto p = base();
+              p.unisonVoices = 3.0f; p.filterCutoff = 0.6f; p.filtEnvAmt = 0.62f; p.keyTrack = 0.65f;
+              p.ampDecay = 0.28f; p.unisonSpread = 9.0f;
+              return p;
+          }() },
+        { "Ambient Phonk Choir", "Synth", [] {
+              auto p = base();
+              p.unisonVoices = 3.0f; p.unisonSpread = 15.0f; p.filterCutoff = 0.34f; p.ampAttack = 0.28f;
+              p.circuitDrive = 0.2f; p.ampRelease = 1.5f;
+              return p;
+          }() },
+
+        { "Wavephonk Chain", "Lead", [] {
+              auto p = base();
+              p.monoMode = 1.0f; p.circuitDrive = 0.42f; p.filterCutoff = 0.64f; p.glideMs = 50.0f;
+              p.filtEnvAmt = 0.7f; p.ampDecay = 0.22f;
+              return p;
+          }() },
+        { "Wavephonk Ring", "Lead", [] {
+              auto p = base();
+              p.monoMode = 1.0f; p.osc2DetuneCents = 28.0f; p.filterRes = 0.45f; p.filterCutoff = 0.74f;
+              p.filtEnvAmt = 0.92f; p.ampAttack = 0.004f;
+              return p;
+          }() },
+        { "Vapor Trap Rise", "Lead", [] {
+              auto p = base();
+              p.monoMode = 1.0f; p.filtAttack = 0.02f; p.filtEnvAmt = 0.95f; p.filterCutoff = 0.8f;
+              p.glideMs = 42.0f; p.ampSustain = 0.65f;
+              return p;
+          }() },
+        { "Wave Glide", "Lead", [] {
+              auto p = base();
+              p.monoMode = 1.0f; p.glideMs = 90.0f; p.osc2DetuneCents = 16.0f; p.filterCutoff = 0.6f;
+              p.legatoMode = 1.0f; p.ampAttack = 0.012f;
+              return p;
+          }() },
+        { "Cloud Phonk Wire", "Lead", [] {
+              auto p = base();
+              p.monoMode = 1.0f; p.unisonSpread = 7.0f; p.filterCutoff = 0.55f; p.osc2DetuneCents = 22.0f;
+              p.ampRelease = 0.48f; p.unisonVoices = 2.0f;
+              return p;
+          }() },
+
+        { "Wave Deep", "Pad", [] {
+              auto p = base();
+              p.ampAttack = 0.58f; p.ampRelease = 2.3f; p.filterCutoff = 0.33f; p.unisonVoices = 2.0f;
+              p.osc2DetuneCents = 12.0f; p.filtAttack = 0.35f;
+              return p;
+          }() },
+        { "Cloud Phonk Float", "Pad", [] {
+              auto p = base();
+              p.ampAttack = 0.68f; p.filterCutoff = 0.29f; p.unisonSpread = 12.0f; p.ampRelease = 2.5f;
+              p.osc2DetuneCents = -9.0f; p.unisonVoices = 2.0f;
+              return p;
+          }() },
+        { "Chillwave Dust", "Pad", [] {
+              auto p = base();
+              p.filterCutoff = 0.36f; p.ampAttack = 0.78f; p.filtEnvAmt = 0.2f; p.ampRelease = 2.7f;
+              p.circuitDrive = 0.07f;
+              return p;
+          }() },
+        { "Ambient Phonk Night", "Pad", [] {
+              auto p = base();
+              p.filterCutoff = 0.26f; p.ampAttack = 0.72f; p.circuitDrive = 0.22f; p.filtRelease = 2.0f;
+              p.unisonVoices = 2.0f; p.filterRes = 0.2f;
+              return p;
+          }() },
+        { "Vapor Trap Fade", "Pad", [] {
+              auto p = base();
+              p.ampAttack = 0.42f; p.ampRelease = 1.9f; p.filterCutoff = 0.46f; p.filtEnvAmt = 0.38f;
+              p.osc2DetuneCents = 20.0f; p.ampSustain = 0.76f;
+              return p;
+          }() },
+
+        { "Wave Echo Keys", "Pluck/Keys", [] {
+              auto p = base();
+              p.ampDecay = 0.12f; p.filtDecay = 0.11f; p.filterCutoff = 0.64f; p.osc2DetuneCents = 17.0f;
+              p.filtEnvAmt = 0.68f;
+              return p;
+          }() },
+        { "Hardware Keys Pluck", "Pluck/Keys", [] {
+              auto p = base();
+              p.ampAttack = 0.001f; p.ampDecay = 0.1f; p.keyTrack = 0.55f; p.filterCutoff = 0.68f;
+              p.circuitDrive = 0.15f;
+              return p;
+          }() },
+        { "Vapor Trap Rim", "Pluck/Keys", [] {
+              auto p = base();
+              p.ampDecay = 0.05f; p.ampRelease = 0.08f; p.filterRes = 0.48f; p.filtEnvAmt = 0.88f;
+              p.filterCutoff = 0.72f;
+              return p;
+          }() },
     } };
 
     return kFoundations;
