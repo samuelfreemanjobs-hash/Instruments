@@ -2,21 +2,65 @@
 
 Installed **2026-09-24** from product direction: expand the factory **foundation** set with recognizable **wavephonk**, **wave**, **vapor trap**, **chillwave**, **hardware**, **ambient phonk**, and **cloud phonk** anchors (synthetic only; trap/vaporwave workflow, not Prophet cloning).
 
-## Foundation map
+**47 foundations** total (**981** variations + foundations = **1,028** factory programs).
 
-| Genre | Preset | Category | Intent |
-|-------|--------|----------|--------|
-| wavephonk | Wavephonk Knock | Bass | Heavy sub, drive, slow glide |
-| wavephonk | Wavephonk Bell | Lead | Mono bell-ish lead, filter sweep |
-| wave | Wave Horizon | Synth | Wide detuned poly, slow attack |
-| vapor trap | Vapor Trap Glass | Synth | Bright stack, short filter decay |
-| vapor trap | Vapor Trap Click | Pluck/Keys | Tight pluck, trap rhythm |
-| chillwave | Chillwave Drift | Pad | Long attack/release, dark filter |
-| hardware | Hardware Juno Stack | Synth | 2–3 voice unison “stack” |
-| ambient phonk | Ambient Phonk Void | Pad | Low cutoff haze, long tail |
-| cloud phonk | Cloud Phonk Mist | Bass | Detuned soft sub, low resonance |
+## Foundation map by genre
 
-Variations inherit from these foundations via `PresetFactory.cpp` (same category quotas: 1,028 total).
+### wavephonk
+| Preset | Category |
+|--------|----------|
+| Wavephonk Knock | Bass |
+| Wavephonk Slump | Bass |
+| Wavephonk Bell | Lead |
+| Wavephonk Memphis | Lead |
+
+### wave
+| Preset | Category |
+|--------|----------|
+| Wave Horizon | Synth |
+| Wave Midnight | Synth |
+| Wave Tape Keys | Pluck/Keys |
+
+### vapor trap
+| Preset | Category |
+|--------|----------|
+| Vapor Trap Glass | Synth |
+| Vapor Trap Stack | Synth |
+| Vapor Trap Sub | Bass |
+| Vapor Trap Hook | Lead |
+| Vapor Trap Click | Pluck/Keys |
+
+### chillwave
+| Preset | Category |
+|--------|----------|
+| Chillwave Drift | Pad |
+| Chillwave Sunset | Pad |
+| Chillwave VHS | Synth |
+
+### hardware
+| Preset | Category |
+|--------|----------|
+| Hardware Juno Stack | Synth |
+| Hardware Poly Drive | Synth |
+| Hardware Solo Lead | Lead |
+
+### ambient phonk
+| Preset | Category |
+|--------|----------|
+| Ambient Phonk Void | Pad |
+| Ambient Phonk Smoke | Pad |
+| Ambient Phonk Layer | Synth |
+
+### cloud phonk
+| Preset | Category |
+|--------|----------|
+| Cloud Phonk Mist | Bass |
+| Cloud Phonk Low | Bass |
+| Cloud Phonk Haze | Pad |
+| Cloud Phonk Air | Lead |
+| Cloud Phonk Bell | Pluck/Keys |
+
+Variations inherit from all category foundations via `PresetFactory.cpp` (quotas unchanged: 195 / 245 / 196 / 196 / 196).
 
 ## Cursor rule
 

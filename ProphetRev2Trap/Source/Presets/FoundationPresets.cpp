@@ -46,6 +46,24 @@ const std::array<FoundationPatch, kFoundationPresetCount>& getFoundationPresets(
               p.unisonSpread = 8.0f; p.filterCutoff = 0.26f; p.filterRes = 0.08f; p.ampSustain = 0.9f;
               return p;
           }() },
+        { "Wavephonk Slump", "Bass", [] {
+              auto p = base();
+              p.glideMs = 140.0f; p.filterCutoff = 0.2f; p.circuitDrive = 0.55f; p.filterDrive = 0.38f;
+              p.ampAttack = 0.006f; p.ampSustain = 0.96f; p.osc2DetuneCents = -8.0f;
+              return p;
+          }() },
+        { "Vapor Trap Sub", "Bass", [] {
+              auto p = base();
+              p.osc2Level = 0.45f; p.filterCutoff = 0.3f; p.filtEnvAmt = 0.65f; p.filtDecay = 0.35f;
+              p.ampDecay = 0.4f; p.circuitDrive = 0.28f;
+              return p;
+          }() },
+        { "Cloud Phonk Low", "Bass", [] {
+              auto p = base();
+              p.unisonVoices = 2.0f; p.unisonSpread = 6.0f; p.glideMs = 70.0f; p.filterCutoff = 0.23f;
+              p.osc2DetuneCents = -14.0f; p.ampSustain = 0.93f;
+              return p;
+          }() },
 
         // Synth (6) — poly chords / beds
         { "Night Circuit", "Synth", [] {
@@ -97,6 +115,36 @@ const std::array<FoundationPatch, kFoundationPresetCount>& getFoundationPresets(
               p.keyTrack = 0.62f; p.ampSustain = 0.88f; p.circuitDrive = 0.12f;
               return p;
           }() },
+        { "Wave Midnight", "Synth", [] {
+              auto p = base();
+              p.unisonVoices = 2.0f; p.unisonSpread = 20.0f; p.ampAttack = 0.22f; p.filterCutoff = 0.44f;
+              p.osc2DetuneCents = 26.0f; p.filtEnvAmt = 0.4f; p.ampSustain = 0.86f;
+              return p;
+          }() },
+        { "Chillwave VHS", "Synth", [] {
+              auto p = base();
+              p.ampAttack = 0.28f; p.ampRelease = 1.6f; p.filterCutoff = 0.4f; p.filterRes = 0.15f;
+              p.osc2DetuneCents = 17.0f; p.circuitDrive = 0.1f; p.ampSustain = 0.84f;
+              return p;
+          }() },
+        { "Ambient Phonk Layer", "Synth", [] {
+              auto p = base();
+              p.unisonVoices = 2.0f; p.unisonSpread = 14.0f; p.filterCutoff = 0.36f; p.ampAttack = 0.32f;
+              p.circuitDrive = 0.22f; p.filtRelease = 1.2f; p.ampSustain = 0.8f;
+              return p;
+          }() },
+        { "Hardware Poly Drive", "Synth", [] {
+              auto p = base();
+              p.unisonVoices = 3.0f; p.circuitDrive = 0.32f; p.filterDrive = 0.25f; p.filterCutoff = 0.54f;
+              p.keyTrack = 0.58f; p.ampDecay = 0.32f;
+              return p;
+          }() },
+        { "Vapor Trap Stack", "Synth", [] {
+              auto p = base();
+              p.unisonVoices = 2.0f; p.filterCutoff = 0.64f; p.filtEnvAmt = 0.8f; p.osc2DetuneCents = 21.0f;
+              p.ampAttack = 0.02f; p.ampSustain = 0.7f;
+              return p;
+          }() },
 
         // Lead (4)
         { "Pierre Dream Lead", "Lead", [] {
@@ -123,6 +171,30 @@ const std::array<FoundationPatch, kFoundationPresetCount>& getFoundationPresets(
               auto p = base();
               p.monoMode = 1.0f; p.glideMs = 45.0f; p.osc2DetuneCents = 24.0f; p.filterCutoff = 0.72f;
               p.filtEnvAmt = 0.88f; p.filterRes = 0.38f; p.ampDecay = 0.24f; p.circuitDrive = 0.22f;
+              return p;
+          }() },
+        { "Wavephonk Memphis", "Lead", [] {
+              auto p = base();
+              p.monoMode = 1.0f; p.glideMs = 55.0f; p.filterCutoff = 0.62f; p.circuitDrive = 0.38f;
+              p.filtEnvAmt = 0.75f; p.ampSustain = 0.72f; p.osc2DetuneCents = 11.0f;
+              return p;
+          }() },
+        { "Vapor Trap Hook", "Lead", [] {
+              auto p = base();
+              p.monoMode = 1.0f; p.glideMs = 38.0f; p.filterCutoff = 0.76f; p.filtEnvAmt = 0.82f;
+              p.ampDecay = 0.2f; p.filterRes = 0.42f;
+              return p;
+          }() },
+        { "Hardware Solo Lead", "Lead", [] {
+              auto p = base();
+              p.monoMode = 1.0f; p.legatoMode = 1.0f; p.filterCutoff = 0.66f; p.keyTrack = 0.7f;
+              p.ampAttack = 0.008f; p.osc2DetuneCents = 8.0f;
+              return p;
+          }() },
+        { "Cloud Phonk Air", "Lead", [] {
+              auto p = base();
+              p.monoMode = 1.0f; p.unisonVoices = 2.0f; p.unisonSpread = 9.0f; p.filterCutoff = 0.58f;
+              p.ampAttack = 0.015f; p.osc2DetuneCents = 20.0f; p.ampRelease = 0.55f;
               return p;
           }() },
 
@@ -154,6 +226,24 @@ const std::array<FoundationPatch, kFoundationPresetCount>& getFoundationPresets(
               p.ampAttack = 0.48f; p.ampRelease = 2.4f; p.circuitDrive = 0.18f; p.ampSustain = 0.78f;
               return p;
           }() },
+        { "Chillwave Sunset", "Pad", [] {
+              auto p = base();
+              p.ampAttack = 0.72f; p.ampRelease = 2.6f; p.filterCutoff = 0.35f; p.filtAttack = 0.5f;
+              p.osc2DetuneCents = 19.0f; p.ampSustain = 0.8f;
+              return p;
+          }() },
+        { "Cloud Phonk Haze", "Pad", [] {
+              auto p = base();
+              p.unisonVoices = 2.0f; p.filterCutoff = 0.3f; p.ampAttack = 0.55f; p.ampRelease = 2.2f;
+              p.osc2DetuneCents = -11.0f; p.circuitDrive = 0.14f;
+              return p;
+          }() },
+        { "Ambient Phonk Smoke", "Pad", [] {
+              auto p = base();
+              p.filterCutoff = 0.28f; p.filterRes = 0.22f; p.ampAttack = 0.65f; p.filtEnvAmt = 0.18f;
+              p.circuitDrive = 0.25f; p.ampRelease = 2.8f;
+              return p;
+          }() },
 
         // Pluck/Keys (4)
         { "Mike Will Pluck", "Pluck/Keys", [] {
@@ -180,6 +270,18 @@ const std::array<FoundationPatch, kFoundationPresetCount>& getFoundationPresets(
               auto p = base();
               p.ampAttack = 0.001f; p.ampDecay = 0.07f; p.ampSustain = 0.0f; p.filtDecay = 0.06f;
               p.filtEnvAmt = 0.9f; p.filterCutoff = 0.74f; p.osc2DetuneCents = 19.0f;
+              return p;
+          }() },
+        { "Wave Tape Keys", "Pluck/Keys", [] {
+              auto p = base();
+              p.ampAttack = 0.002f; p.ampDecay = 0.14f; p.ampSustain = 0.05f; p.filterCutoff = 0.62f;
+              p.osc2DetuneCents = 15.0f; p.circuitDrive = 0.12f;
+              return p;
+          }() },
+        { "Cloud Phonk Bell", "Pluck/Keys", [] {
+              auto p = base();
+              p.ampDecay = 0.09f; p.filtDecay = 0.08f; p.filterCutoff = 0.78f; p.filtEnvAmt = 0.85f;
+              p.osc2DetuneCents = 27.0f; p.filterRes = 0.35f;
               return p;
           }() },
     } };
