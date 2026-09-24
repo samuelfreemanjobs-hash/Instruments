@@ -44,12 +44,15 @@ UI: category ComboBox → preset ComboBox → applyFactoryPreset
 
 Taxonomy: [docs/PRESET_CATEGORIES.md](docs/PRESET_CATEGORIES.md) · Roadmap: [docs/NIGHT_CIRCUIT_PLAN.md](docs/NIGHT_CIRCUIT_PLAN.md)
 
+## Factory preset library
+
+**1,028 programs:** 21 foundations + 1,007 deterministic variations — [docs/PRESET_FACTORY.md](docs/PRESET_FACTORY.md).
+
 ## Extension points
 
 - Osc waveforms / second oscillator sync (Prophet-style)
-- User preset save/load (JSON or host programs)
 - CLAP target via `clap_juce_extensions` (root pattern)
-- FX: drive, chorus, unison (post-MVP)
+- Musical QA on foundations + sampled variations before “ship grade” claims
 
 ## Related docs
 
