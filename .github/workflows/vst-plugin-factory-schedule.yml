@@ -4,6 +4,7 @@ name: VST Plugin Factory schedule
 on:
   schedule:
     - cron: "0 9 * * 1"   # Mon 09:00 UTC — plugin CI health
+    - cron: "0 10 * * 3"  # Wed 10:00 UTC — Night Circuit bank + VST3 integrity
     - cron: "0 17 * * 5"  # Fri 17:00 UTC — ARCHITECTURE doc-sync reminder
   workflow_dispatch:
     inputs:
@@ -13,6 +14,7 @@ on:
         type: choice
         options:
           - plugin-ci-health
+          - night-circuit-integrity
           - doc-sync
 
 jobs:
@@ -66,6 +68,70 @@ jobs:
             vst-testing-ops/error_log.txt
           if-no-files-found: ignore
 
+  night-circuit-integrity:
+    if: >-
+      github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'night-circuit-integrity'
+      || github.event_name == 'schedule' && github.event.schedule == '0 10 * * 3'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential g++-12 libstdc++-12-dev \
+            libasound2-dev libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev \
+            libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev \
+            libcurl4-openssl-dev unzip xvfb
+
+      - name: Configure and build Night Circuit
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+          cmake --build build -j --target ProphetRev2Trap_VST3 NightCircuitTests
+
+      - name: Bank integrity tests
+        id: bank
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          ./build/ProphetRev2Trap/NightCircuitTests 2>&1 | tee night-circuit-tests.log
+          python3 ProphetRev2Trap/qa/verify_preset_bank.py 2>&1 | tee -a night-circuit-tests.log
+
+      - name: pluginval VST3 smoke
+        id: pluginval
+        continue-on-error: true
+        run: |
+          xvfb-run -a python3 scripts/vst/run_pluginval.py \
+            --plugin "build/ProphetRev2Trap/ProphetRev2Trap_artefacts/Release/VST3/Night Circuit.vst3" \
+            2>&1 | tee night-circuit-pluginval.log
+
+      - name: Write summary
+        run: |
+          {
+            echo "# Night Circuit — automated integrity"
+            echo ""
+            echo "- Run: ${{ github.run_id }}"
+            echo "- Commit: ${{ github.sha }}"
+            echo "- Agent follow-up: **night-circuit-qa** (Mon/Wed Cursor Automation)"
+            echo "- **Not tested here:** FL Studio, MPC Software, audio devices"
+            echo ""
+            echo "| Step | Result |"
+            echo "|------|--------|"
+            echo "| NightCircuitTests + verify_preset_bank.py | ${{ steps.bank.outcome }} |"
+            echo "| pluginval | ${{ steps.pluginval.outcome }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: night-circuit-integrity-${{ github.run_id }}
+          path: |
+            night-circuit-tests.log
+            night-circuit-pluginval.log
+            ProphetRev2Trap/qa/reports/
+          if-no-files-found: ignore
+
   doc-sync:
     if: >-
       github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'doc-sync'
@@ -82,7 +148,13 @@ jobs:
           arch = (root / "ARCHITECTURE.md").read_text(encoding="utf-8")
           cmake = (root / "CMakeLists.txt").read_text(encoding="utf-8")
           items = []
-          for name in ("docs/ARCHITECTURE.md", "Wave909/ARCHITECTURE.md", "vst-testing-ops/ARCHITECTURE.md"):
+          for name in (
+              "docs/ARCHITECTURE.md",
+              "Wave909/ARCHITECTURE.md",
+              "ProphetRev2Trap/ARCHITECTURE.md",
+              "vst-testing-ops/ARCHITECTURE.md",
+              "ProphetRev2Trap/design/NIGHT_CIRCUIT_GUI_SPEC.md",
+          ):
               p = root / name
               if not p.is_file():
                   items.append(f"- [ ] Missing {name}")

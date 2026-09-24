@@ -32,14 +32,19 @@ Accept: application/vnd.github+json
 
 Workflow: [`.github/workflows/airtable-vst-factory-handoff.yml`](../../.github/workflows/airtable-vst-factory-handoff.yml)
 
-## Scheduled health (Workflow Automation Agent)
+## Scheduled automation (Workflow Automation Agent)
 
 Workflow: [`.github/workflows/vst-plugin-factory-schedule.yml`](../../.github/workflows/vst-plugin-factory-schedule.yml)
 
-- **Mon 09:00 UTC** — `plugin-ci-health` (ci profile)
-- **Fri 17:00 UTC** — `doc-sync` checklist artifact
+| UTC | Job | Purpose |
+|-----|-----|---------|
+| Mon 09:00 | `plugin-ci-health` | `run_business.py --profile ci` |
+| Wed 10:00 | `night-circuit-integrity` | Night Circuit VST3 + `NightCircuitTests` + pluginval (VM — not FL/MPC) |
+| Fri 17:00 | `doc-sync` | ARCHITECTURE / GUI spec checklist |
 
-Schedule design: [docs/VST_PLUGIN_FACTORY_SCHEDULE.md](../../docs/VST_PLUGIN_FACTORY_SCHEDULE.md)
+**Cursor Automations** (Mon triage, QA Gate 1, Fri docs, biweekly sound-design): full calendar in [docs/VST_PLUGIN_FACTORY_SCHEDULE.md](../../docs/VST_PLUGIN_FACTORY_SCHEDULE.md).
+
+Manual re-run: Actions → **VST Plugin Factory schedule** → `workflow_dispatch` → pick job.
 
 ## Manual bridge (no Airtable)
 

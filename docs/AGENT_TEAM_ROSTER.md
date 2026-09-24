@@ -6,7 +6,9 @@ Canonical names, owners, and handoff paths for humans and automations. **PM Agen
 |----------|------|---------------|-------------------|
 | **pm-agent** | Product & work orders | Airtable Disklordz OS | Opens WOs, GitHub issues, sets `owner_agent` |
 | **workflow-automation-agent** | Schedules & integrations | GitHub Actions, Zapier, Cursor Automations | Cron, `repository_dispatch`, subscription timers |
-| **cursor-vst-plugin-factory** | JUCE / VST3 / CLAP factory | `Source/`, `Wave909/`, `MyFirstPlugin/`, root CMake | `[Plugin][JUCE]` WOs → [VST factory inbox](../disklordz/vst-factory/inbox/) |
+| **cursor-vst-plugin-factory** | JUCE / VST3 / CLAP factory | `Source/`, `Wave909/`, `ProphetRev2Trap/`, root CMake | `[Plugin][JUCE]` WOs → [VST factory inbox](../disklordz/vst-factory/inbox/) |
+| **night-circuit-qa** | Night Circuit verification | `ProphetRev2Trap/`, `vst-testing-ops/` | `[Plugin][JUCE][QA]` · schedule: [VST_PLUGIN_FACTORY_SCHEDULE.md](VST_PLUGIN_FACTORY_SCHEDULE.md) |
+| **night-circuit-sound-design** | Presets + GUI curation | `ProphetRev2Trap/design/`, `FeaturedPresets.cpp` | `[Plugin][JUCE][Design]` · biweekly Thu automation |
 | **cursor-cloud** (generic) | SaaS & cross-cutting | `disklordz/website/` | `[SaaS]` WOs — see [DISKLORDZ_SAAS_AGENT_LANES.md](DISKLORDZ_SAAS_AGENT_LANES.md) |
 | **antigravity-hise** | HISE sketch lane (Windows) | `hise-sketch/` | `[Plugin][HISE]` → [Antigravity inbox](../disklordz/antigravity/inbox/) |
 | **factory-manager** | WIP & capacity (human + Airtable) | Policy | Max **2** active Cursor JUCE WOs |

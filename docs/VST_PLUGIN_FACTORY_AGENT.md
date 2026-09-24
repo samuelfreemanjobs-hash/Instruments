@@ -3,7 +3,7 @@
 **Agent ID:** `cursor-vst-plugin-factory`  
 **Status:** Standing team member (JUCE plugin lane)  
 **PM:** Airtable **pm-agent** / Disklordz OS  
-**Schedule owner:** **workflow-automation-agent** ([VST_PLUGIN_FACTORY_SCHEDULE.md](VST_PLUGIN_FACTORY_SCHEDULE.md))
+**Schedule owner:** **workflow-automation-agent** ([VST_PLUGIN_FACTORY_SCHEDULE.md](VST_PLUGIN_FACTORY_SCHEDULE.md)) — Mon CI health, Wed Night Circuit integrity, Fri doc-sync, inbox dispatch. QA/sound-design cadence in same doc.
 
 ## Purpose
 
