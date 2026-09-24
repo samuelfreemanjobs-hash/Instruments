@@ -21,8 +21,10 @@ private:
     void rebuildFilteredPresetList (int selectLocalIndex);
     void syncUiToCurrentProgram();
     void updateCategoryHint();
+    void updatePresetBrowserSummary();
     void onPresetSelected();
     void promptSaveUserPreset();
+    juce::Colour categoryAccentColour (const juce::String& category) const;
 
     ProphetRev2TrapAudioProcessor& processor_;
     juce::ComboBox categoryBox_;
@@ -35,6 +37,8 @@ private:
     juce::TextButton saveUserButton_ { "Save to User" };
     juce::Label categoryLabel_ { {}, "Category" };
     juce::Label presetLabel_ { {}, "Preset" };
+    juce::ToggleButton featuredOnlyToggle_ { "Featured only" };
+    juce::Label presetCountLabel_;
     juce::Label categoryHintLabel_;
     juce::Label ampEnvLabel_ { {}, "Amp envelope" };
     juce::Label filtEnvLabel_ { {}, "Filter envelope" };

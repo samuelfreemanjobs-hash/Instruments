@@ -1,4 +1,5 @@
 #include "Presets/FactoryPresets.h"
+#include "Presets/FeaturedPresets.h"
 #include "Presets/PresetFactory.h"
 
 #include <cmath>
@@ -109,6 +110,13 @@ int runPresetLibraryTests()
         std::cerr << "Unexpected factory categories present\n";
         for (const auto& [cat, n] : byCategory)
             std::cerr << "  " << cat << ": " << n << "\n";
+        return 1;
+    }
+
+    const int featured = prophetrev2::presets::countFeaturedInBank();
+    if (featured < prophetrev2::presets::kFoundationPresetCount)
+    {
+        std::cerr << "Featured preset entries missing from bank (got " << featured << ")\n";
         return 1;
     }
 

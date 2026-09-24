@@ -23,6 +23,7 @@ target_sources (ProphetRev2Trap
         Source/Presets/FoundationPresets.cpp
         Source/Presets/PresetFactory.cpp
         Source/Presets/PresetManager.cpp
+        Source/Presets/FeaturedPresets.cpp
         Source/Presets/UserPresetStore.cpp
 )
 
