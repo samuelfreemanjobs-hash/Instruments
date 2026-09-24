@@ -31,6 +31,12 @@ python3 disklordz/rag/scripts/query_local.py "your query"
 
 Colab: [docs/COLAB_ZERO_INSTALL_TESTING.md](docs/COLAB_ZERO_INSTALL_TESTING.md).
 
+## VST Plugin Factory (standing agent)
+
+**Agent ID:** `cursor-vst-plugin-factory` · Roster: [docs/AGENT_TEAM_ROSTER.md](docs/AGENT_TEAM_ROSTER.md) · Persona: [docs/VST_PLUGIN_FACTORY_AGENT.md](docs/VST_PLUGIN_FACTORY_AGENT.md) · Schedule: [docs/VST_PLUGIN_FACTORY_SCHEDULE.md](docs/VST_PLUGIN_FACTORY_SCHEDULE.md)
+
+PM routes **`[Plugin][JUCE]`** WOs via [disklordz/automation/VST_PLUGIN_FACTORY.md](disklordz/automation/VST_PLUGIN_FACTORY.md). Inbox: `disklordz/vst-factory/inbox/`.
+
 ## JUCE plugin (default Cloud install)
 
 ```bash

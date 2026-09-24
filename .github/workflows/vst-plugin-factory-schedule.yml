@@ -1,0 +1,105 @@
+# Workflow Automation Agent — recurring VST Plugin Factory signals (health + doc sync)
+name: VST Plugin Factory schedule
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"   # Mon 09:00 UTC — plugin CI health
+    - cron: "0 17 * * 5"  # Fri 17:00 UTC — ARCHITECTURE doc-sync reminder
+  workflow_dispatch:
+    inputs:
+      job:
+        description: Which job to run
+        required: true
+        type: choice
+        options:
+          - plugin-ci-health
+          - doc-sync
+
+jobs:
+  plugin-ci-health:
+    if: >-
+      github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'plugin-ci-health'
+      || github.event_name == 'schedule' && github.event.schedule == '0 9 * * 1'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential g++-12 libstdc++-12-dev \
+            libasound2-dev libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev \
+            libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev \
+            libcurl4-openssl-dev unzip
+
+      - name: Plugin CI health (vst-testing-ops ci profile)
+        id: ci
+        continue-on-error: true
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: |
+          set -o pipefail
+          python3 -u vst-testing-ops/run_business.py --profile ci 2>&1 | tee vst-factory-health.log
+          echo "exit=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Write summary
+        run: |
+          {
+            echo "# VST Plugin Factory — CI health"
+            echo ""
+            echo "- Run: ${{ github.run_id }}"
+            echo "- Commit: ${{ github.sha }}"
+            echo "- Profile: ci"
+            if [ "${{ steps.ci.outcome }}" = "success" ]; then
+              echo "- **Result: PASS**"
+            else
+              echo "- **Result: FAIL** — see artifact log and vst-testing-ops/error_log.txt"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vst-factory-health-${{ github.run_id }}
+          path: |
+            vst-factory-health.log
+            vst-testing-ops/error_log.txt
+          if-no-files-found: ignore
+
+  doc-sync:
+    if: >-
+      github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'doc-sync'
+      || github.event_name == 'schedule' && github.event.schedule == '0 17 * * 5'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate doc-sync checklist
+        run: |
+          python3 <<'PY' | tee doc-sync-checklist.md
+          from pathlib import Path
+          root = Path(".")
+          arch = (root / "ARCHITECTURE.md").read_text(encoding="utf-8")
+          cmake = (root / "CMakeLists.txt").read_text(encoding="utf-8")
+          items = []
+          for name in ("docs/ARCHITECTURE.md", "Wave909/ARCHITECTURE.md", "vst-testing-ops/ARCHITECTURE.md"):
+              p = root / name
+              if not p.is_file():
+                  items.append(f"- [ ] Missing {name}")
+          if "Wave909" in cmake and "Wave909/ARCHITECTURE.md" not in arch:
+              items.append("- [ ] Root ARCHITECTURE.md may not index Wave909")
+          if "JD Upgraded" in arch and "docs/ARCHITECTURE.md" not in str(items):
+              pass
+          if not items:
+              items.append("- [x] No obvious ARCHITECTURE path gaps detected (manual review still recommended).")
+          print("# VST Plugin Factory — Friday doc sync\n")
+          print("Agent: **cursor-vst-plugin-factory** · Owner: **workflow-automation-agent**\n")
+          for line in items:
+              print(line)
+          PY
+          cat doc-sync-checklist.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vst-factory-doc-sync-${{ github.run_id }}
+          path: doc-sync-checklist.md
