@@ -4,6 +4,7 @@
 #include <iostream>
 
 int runPresetLibraryTests();
+int runProcessorSmokeTests();
 
 int runAnalogCircuitTests()
 {
@@ -29,6 +30,8 @@ int main()
     if (runAnalogCircuitTests() != 0)
         return 1;
     if (runPresetLibraryTests() != 0)
+        return 1;
+    if (runProcessorSmokeTests() != 0)
         return 1;
     return 0;
 }

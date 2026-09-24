@@ -8,7 +8,12 @@
 namespace
 {
 namespace PID = prophetrev2::ParameterIDs;
-constexpr int kWidth = 920;
+// Right preset column anchors at (width - kRightPanelInset). Left chrome needs ~520px
+// (title, subtitle, output/mono/unison row) — 850px was too narrow and overlapped controls.
+constexpr int kRightPanelInset = 420;
+constexpr int kLeftChromeMinWidth = 540;
+constexpr int kMinWidth = kRightPanelInset + kLeftChromeMinWidth;
+constexpr int kDefaultWidth = kMinWidth + 40;
 constexpr int kHeight = 580;
 
 juce::String categoryRoleHint (const juce::String& category)
@@ -81,7 +86,8 @@ ProphetRev2TrapAudioProcessorEditor::ProphetRev2TrapAudioProcessorEditor (Prophe
 
     syncUiToCurrentProgram();
     updateCategoryHint();
-    setSize (kWidth, kHeight);
+    setResizeLimits (kMinWidth, kHeight, 2000, kHeight);
+    setSize (kDefaultWidth, kHeight);
 }
 
 ProphetRev2TrapAudioProcessorEditor::~ProphetRev2TrapAudioProcessorEditor() = default;
@@ -223,14 +229,15 @@ void ProphetRev2TrapAudioProcessorEditor::paint (juce::Graphics& g)
 
 void ProphetRev2TrapAudioProcessorEditor::resized()
 {
-    categoryLabel_.setBounds (getWidth() - 420, 18, 70, 22);
-    categoryBox_.setBounds (getWidth() - 340, 16, 150, 24);
-    presetLabel_.setBounds (getWidth() - 420, 46, 52, 22);
-    presetFilterLabel_.setBounds (getWidth() - 340, 44, 44, 22);
-    presetFilterEditor_.setBounds (getWidth() - 290, 44, 100, 22);
-    presetBox_.setBounds (getWidth() - 340, 68, 150, 24);
-    userPresetNameEditor_.setBounds (getWidth() - 180, 16, 160, 24);
-    saveUserButton_.setBounds (getWidth() - 180, 44, 160, 26);
+    const int w = getWidth();
+    categoryLabel_.setBounds (w - kRightPanelInset, 18, 70, 22);
+    categoryBox_.setBounds (w - kRightPanelInset + 80, 16, 150, 24);
+    presetLabel_.setBounds (w - kRightPanelInset, 46, 52, 22);
+    presetFilterLabel_.setBounds (w - kRightPanelInset + 80, 44, 44, 22);
+    presetFilterEditor_.setBounds (w - kRightPanelInset + 130, 44, 100, 22);
+    presetBox_.setBounds (w - kRightPanelInset + 80, 68, 150, 24);
+    userPresetNameEditor_.setBounds (w - 180, 16, 160, 24);
+    saveUserButton_.setBounds (w - 180, 44, 160, 26);
 
     categoryHintLabel_.setBounds (20, 62, getWidth() - 40, 16);
     outputSlider_.setBounds (20, 92, 280, 22);

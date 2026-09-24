@@ -49,10 +49,24 @@ juce_generate_juce_header (ProphetRev2Trap)
 add_executable (NightCircuitTests
     Tests/AnalogCircuitTests.cpp
     Tests/PresetLibraryTests.cpp
-    Source/Presets/FactoryPresets.cpp
-    Source/Presets/FoundationPresets.cpp
-    Source/Presets/PresetFactory.cpp
+    Tests/ProcessorSmokeTests.cpp
 )
-target_include_directories (NightCircuitTests PRIVATE Source)
+target_include_directories (NightCircuitTests
+    PRIVATE
+        Source
+        "${CMAKE_BINARY_DIR}/ProphetRev2Trap/ProphetRev2Trap_artefacts/JuceLibraryCode"
+)
 target_compile_features (NightCircuitTests PRIVATE cxx_std_20)
+target_compile_definitions (NightCircuitTests
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+        JUCE_VST3_CAN_REPLACE_VST2=0
+)
+target_link_libraries (NightCircuitTests
+    PRIVATE
+        ProphetRev2Trap
+        juce::juce_audio_utils
+        juce::juce_dsp
+)
 add_test (NAME NightCircuitAnalog COMMAND NightCircuitTests)
