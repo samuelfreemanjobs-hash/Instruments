@@ -5,6 +5,8 @@ export type SampleProvenance =
   | "factory_parametric_v1"
   | "factory_studio_v1"
   | "factory_creative_v1"
+  | "factory_studio_v2"
+  | "factory_creative_v2"
   | "factory_product_pack_v1";
 
 export type SampleAsset = {
