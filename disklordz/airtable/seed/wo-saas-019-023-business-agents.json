@@ -1,0 +1,35 @@
+{
+  "workOrders": [
+    {
+      "workOrderId": "WO-SAAS-019",
+      "title": "SaaS Ops & Go-Live Guardian",
+      "recurrence": "daily",
+      "workflow": "disklordz-saas-ops-daily.yml"
+    },
+    {
+      "workOrderId": "WO-SAAS-020",
+      "title": "Billing Integrity Agent",
+      "recurrence": "weekly_monday",
+      "workflow": "disklordz-billing-weekly.yml"
+    },
+    {
+      "workOrderId": "WO-SAAS-021",
+      "title": "Growth & Lane Marketing Agent",
+      "recurrence": "weekly_wednesday",
+      "workflow": "disklordz-growth-weekly.yml"
+    },
+    {
+      "workOrderId": "WO-SAAS-022",
+      "title": "PM / WO Router Agent",
+      "recurrence": "on_dispatch",
+      "workflow": "disklordz-pm-router.yml"
+    },
+    {
+      "workOrderId": "WO-SAAS-023",
+      "title": "Preset & Lane Curator",
+      "recurrence": "weekly_friday",
+      "workflow": "disklordz-preset-curator-weekly.yml"
+    }
+  ],
+  "indexDoc": "docs/DISKLORDZ_BUSINESS_AGENTS.md"
+}

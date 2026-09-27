@@ -61,6 +61,17 @@ bash scripts/trigger_cursor_factory_daily_agent.sh --dry-run
 
 PM + persona: [docs/DISKLORDZ_FACTORY_DAILY_AGENT.md](../../docs/DISKLORDZ_FACTORY_DAILY_AGENT.md).
 
+## Business agents (WO-SAAS-019–023)
+
+Full catalog: [docs/DISKLORDZ_BUSINESS_AGENTS.md](../../docs/DISKLORDZ_BUSINESS_AGENTS.md).
+
+```bash
+./scripts/disklordz-business-agents.sh check
+bash scripts/run-saas-ops-daily.sh --skip-agent
+bash scripts/check-billing-integrity.sh
+echo "stripe webhook" | node scripts/pm-router-classify.mjs
+```
+
 ## Slack on new inbox files
 
 When `disklordz/antigravity/inbox/HO-*.json` is pushed to **`main`**, workflow posts to **#disklordz-dev** (via your webhook).

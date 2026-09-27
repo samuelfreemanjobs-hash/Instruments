@@ -10,6 +10,7 @@
     "factory:dsp-regression": "tsx scripts/factory-dsp-regression.ts",
     "factory:daily": "bash ../automation/scripts/run-factory-daily.sh",
     "factory:daily:check": "bash ../automation/scripts/check-factory-daily-setup.sh",
+    "saas:ops:check": "bash ../automation/scripts/run-saas-ops-daily.sh --skip-live --skip-agent",
     "verify:go-live": "bash scripts/verify-go-live.sh",
     "go-live": "bash scripts/go-live.sh --sync-vercel"
   },

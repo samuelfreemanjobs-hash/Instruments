@@ -22,7 +22,7 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
-**Factory daily agent (WO-SAAS-018):** [docs/DISKLORDZ_FACTORY_DAILY_AGENT.md](docs/DISKLORDZ_FACTORY_DAILY_AGENT.md) — `./scripts/disklordz-factory-daily.sh` or `npm run factory:daily` in `disklordz/website`; regression `npm run factory:dsp-regression`.
+**Business agents (WO-SAAS-018–023):** [docs/DISKLORDZ_BUSINESS_AGENTS.md](docs/DISKLORDZ_BUSINESS_AGENTS.md) — `./scripts/disklordz-business-agents.sh check`; factory `./scripts/disklordz-factory-daily.sh`; `npm run factory:dsp-regression`.
 
 ## RAG (prompt knowledge)
 

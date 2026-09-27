@@ -1,0 +1,14 @@
+---
+description: Disklordz business agent lanes WO-SAAS-018–023
+globs: disklordz/website/**,disklordz/automation/**,docs/DISKLORDZ_BUSINESS*.md
+---
+
+# Business agents
+
+For ops, billing, growth, presets, or PM routing work, read [docs/DISKLORDZ_BUSINESS_AGENTS.md](../../docs/DISKLORDZ_BUSINESS_AGENTS.md) and the matching `.cursor/agents/disklordz-*.md` charter.
+
+- Factory DSP: do not duplicate — use WO-SAAS-018 path.
+- Billing: no Stripe writes without explicit user confirmation.
+- Growth: drafts go to `disklordz/marketing/inbox/` only.
+
+Before push: `./scripts/disklordz-business-agents.sh check` when touching website or generation.

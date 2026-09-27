@@ -33,6 +33,7 @@ Browser (KitGenerator)
        → manifest with /api/samples/<kitId>/<path>.wav URLs
   → POST /api/factory/batch → `DISKLORDZ_PRODUCT_PACK_MANIFEST` (01_KICKS … 04_PERC)
   → POST /api/factory/download { productPack } → storefront ZIP
+  → GET /api/health  (readiness for ops agents, WO-SAAS-019)
   → GET /api/samples/...  (preview audio)
   → POST /api/download { manifest }
        → ZIP(manifest.json, README.txt, WAVs) with SHA-256 provenance check

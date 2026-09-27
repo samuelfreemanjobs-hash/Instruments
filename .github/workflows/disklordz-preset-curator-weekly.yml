@@ -1,0 +1,24 @@
+name: Disklordz preset curator weekly
+
+on:
+  schedule:
+    - cron: "0 14 * * 5"
+  repository_dispatch:
+    types: [disklordz-preset-curator-weekly]
+  workflow_dispatch:
+
+jobs:
+  presets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/checkout@v4
+      - name: Preset lane check
+        run: node disklordz/automation/scripts/check-preset-lanes.mjs
+      - name: Launch preset curator agent
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          DISKLORDZ_AGENT_REF: ${{ github.event.client_payload.ref || 'main' }}
+        run: bash disklordz/automation/scripts/trigger_preset_curator_agent.sh
