@@ -48,4 +48,12 @@ Copy the printed `whsec_...` into GitHub secret `STRIPE_WEBHOOK_SECRET` and Verc
 
 **Actions → Disklordz go-live → Run workflow**
 
-Local equivalent: `cd disklordz/website && bash scripts/go-live.sh`
+Local equivalent:
+
+```bash
+cd disklordz/website
+cp .env.go-live.example .env.go-live   # fill once, gitignored
+npm run saas -- go-live --sync-vercel --configure-auth --stripe-webhook
+```
+
+CLI reference: [`DISKLORDZ_SAAS_FINISH.md`](DISKLORDZ_SAAS_FINISH.md).

@@ -84,7 +84,9 @@ Signed-in users auto-save each generated kit to `public.saved_kits` (RLS). `/acc
 
 ## Go live
 
-- [docs/DISKLORDZ_GO_LIVE.md](../../docs/DISKLORDZ_GO_LIVE.md) — Vercel, Supabase migrations, Stripe, `npm run verify:go-live`.
+- [docs/DISKLORDZ_SAAS_FINISH.md](../../docs/DISKLORDZ_SAAS_FINISH.md) — **`npm run saas -- help`** / `./scripts/disklordz-saas.sh`
+- [docs/DISKLORDZ_GO_LIVE.md](../../docs/DISKLORDZ_GO_LIVE.md) — manual checklist
+- `npm run smoke:local` · `npm run verify:go-live` · GitHub **Disklordz go-live** workflow
 
 ## Related docs
 

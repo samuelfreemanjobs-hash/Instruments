@@ -1,119 +1,153 @@
 # Finish Disklordz Drum SaaS (ship checklist)
 
-**Code status:** Feature-complete on `main` (WO-SAAS-001–016). **Remaining work is operational** — Vercel, Supabase prod, Stripe live/test, secrets, smoke.
+**Code:** complete on `main` (WO-SAAS-001–016). **Finish** = run the automation below with your secrets.
 
-Market positioning: [`DISKLORDZ_MARKET_INTELLIGENCE.md`](DISKLORDZ_MARKET_INTELLIGENCE.md) (if merged) · Product definition: [`DISKLORDZ_SAAS_V0.md`](DISKLORDZ_SAAS_V0.md).
-
----
-
-## What “finished” means
-
-| Layer | Done when |
-|-------|-----------|
-| **Product** | Guest can generate → preview → ZIP; signed-in saves kits; product pack export; Pro checkout works |
-| **Ops** | HTTPS production URL, migrations applied, auth redirect URLs, webhook delivering |
-| **Business** | Planner approved price tier; Marketing has hero pack + tutorial thread |
-
----
-
-## Step 1 — Verify code locally (5 min)
+**CLI (all commands):**
 
 ```bash
-cd disklordz/website
-npm ci && npm run build
-npm run start &
-sleep 3
-DISKLORDZ_URL=http://127.0.0.1:3000 npm run verify:go-live
-curl -s http://127.0.0.1:3000/api/health | python3 -m json.tool
+# From repo root
+./scripts/disklordz-saas.sh help
+
+# Or from website
+cd disklordz/website && npm run saas -- help
 ```
 
-Expect `verify:go-live` **All automated checks passed** and `/api/health` `status: ok` (billing flags `false` until Stripe env is set locally).
+---
+
+## Quick paths
+
+| Goal | Command |
+|------|---------|
+| First local dev | `npm run saas -- dev-setup` then `npm run dev` |
+| Prove app works (no cloud) | `npm run smoke:local` |
+| Check you have secrets | `npm run saas -- preflight` |
+| List GitHub secret names | `npm run saas -- gh-secrets` |
+| Print `gh secret set` commands | `npm run saas -- gh-secret-cmds` |
+| **Full production go-live** | See §Full go-live |
 
 ---
 
-## Step 2 — One-time GitHub secrets
-
-Follow [`DISKLORDZ_GO_LIVE_SECRETS.md`](DISKLORDZ_GO_LIVE_SECRETS.md):
-
-- `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`
-- `DISKLORDZ_URL` (production URL, no trailing slash)
-- `VERCEL_DEPLOY_HOOK_URL`
-- Optional sync: `VERCEL_TOKEN`, `VERCEL_PROJECT_ID`, all env vars listed there
-
----
-
-## Step 3 — Vercel project
-
-1. [vercel.com](https://vercel.com) → Import **Instruments** → **Root Directory** = `disklordz/website`
-2. Set Production env vars ([`DEPLOY.md`](../disklordz/website/DEPLOY.md))
-3. Create **Deploy Hook** → save URL as `VERCEL_DEPLOY_HOOK_URL`
-
----
-
-## Step 4 — Supabase
-
-1. **Authentication → URL configuration:** Site URL + `https://YOUR_DOMAIN/auth/callback`
-2. Run migrations (order in [`DISKLORDZ_GO_LIVE.md`](DISKLORDZ_GO_LIVE.md) §4)  
-   - **GitHub:** Actions → **Disklordz Supabase migrations** → Run workflow  
-   - **Local:** `bash disklordz/website/scripts/apply-supabase-migrations.sh`
-
----
-
-## Step 5 — Stripe Pro
-
-1. Create recurring **Pro** price → `STRIPE_PRO_PRICE_ID`
-2. Webhook → `https://YOUR_DOMAIN/api/stripe/webhook`  
-   Events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`  
-   Details: [`disklordz/website/docs/STRIPE.md`](../disklordz/website/docs/STRIPE.md)
-3. `bash disklordz/website/scripts/setup-stripe-webhook.sh` (optional) → copy `whsec_` to Vercel + GitHub
-
----
-
-## Step 6 — Automated go-live (recommended)
-
-**GitHub → Actions → Disklordz go-live → Run workflow**
-
-- Enable **Sync Vercel env** if secrets are in GitHub
-- Enable **Register Stripe webhook** on first run if needed
-- Workflow runs migrations → deploy hook → `verify:go-live` against `DISKLORDZ_URL`
-
-Local mirror:
+## One-time: env file (local automation)
 
 ```bash
 cd disklordz/website
+cp .env.go-live.example .env.go-live
+# Edit .env.go-live — never commit
+```
+
+Scripts auto-load `.env.go-live` via `load-go-live-env.sh`.
+
+---
+
+## One-time: GitHub Actions secrets
+
+```bash
+cd disklordz/website
+npm run saas -- gh-secret-cmds   # paste values when prompted
+npm run saas -- gh-secrets       # verify names exist
+```
+
+Table: [`DISKLORDZ_GO_LIVE_SECRETS.md`](DISKLORDZ_GO_LIVE_SECRETS.md).
+
+---
+
+## One-time: Vercel
+
+1. Import **Instruments** → **Root Directory** `disklordz/website`
+2. Create **Production Deploy Hook** → `VERCEL_DEPLOY_HOOK_URL`
+3. Either:
+   - **GitHub Actions** sync: `VERCEL_TOKEN` + `VERCEL_PROJECT_ID` + env secrets, or
+   - **Interactive:** `npm run saas -- vercel-env-interactive` (requires `vercel link`)
+
+---
+
+## One-time: Stripe Pro (scripted)
+
+With `STRIPE_SECRET_KEY` in `.env.go-live`:
+
+```bash
+npm run saas -- stripe-price    # prints STRIPE_PRO_PRICE_ID
+# Add price id to .env.go-live + GitHub + Vercel
+npm run saas -- stripe-webhook  # prints STRIPE_WEBHOOK_SECRET once
+```
+
+Details: [`disklordz/website/docs/STRIPE.md`](../disklordz/website/docs/STRIPE.md).
+
+---
+
+## Full go-live (local)
+
+```bash
+cd disklordz/website
+npm run saas -- go-live --sync-vercel --configure-auth --stripe-webhook
+```
+
+Flags: `npm run saas -- go-live --help`
+
+Steps executed:
+
+1. `preflight-go-live.sh` (production)
+2. Optional `--stripe-price`
+3. `apply-supabase-migrations.sh`
+4. Optional `--configure-auth` (Management API)
+5. Optional `--stripe-webhook`
+6. Optional `--sync-vercel`
+7. Deploy hook POST
+8. `verify-go-live.sh` (+ `--require-accounts` / billing when Stripe set)
+
+---
+
+## Full go-live (GitHub Actions)
+
+**Actions → Disklordz go-live → Run workflow**
+
+- Enable **Configure Supabase auth URLs**
+- Enable **Sync Vercel env**
+- Enable **Register Stripe webhook** on first run
+
+Same as local; secrets live in GitHub.
+
+---
+
+## Verify production
+
+```bash
 export DISKLORDZ_URL=https://your-app.vercel.app
-export VERCEL_DEPLOY_HOOK_URL=...
-bash scripts/go-live.sh --sync-vercel --stripe-webhook
+npm run verify:go-live -- --require-accounts --require-billing
+curl -s "$DISKLORDZ_URL/api/health" | python3 -m json.tool
 ```
 
----
-
-## Step 7 — Manual smoke (you, 10 min)
-
-On production URL ([`DISKLORDZ_GO_LIVE.md`](DISKLORDZ_GO_LIVE.md) §6):
-
-1. Guest one-shot + ZIP  
-2. Loop mode in spec  
-3. Magic-link sign-in → `/account` credits  
-4. Product factory pack ZIP (`01_KICKS` …)  
-5. Stripe test checkout → Pro → unlimited gens  
+Manual: [`DISKLORDZ_GO_LIVE.md`](DISKLORDZ_GO_LIVE.md) §6 (sign-in, Stripe test checkout).
 
 ---
 
-## Step 8 — Post-ship
+## Script reference
 
-- Airtable WOs **007–016** → Done  
-- Marketing: launch thread + MPC handoff ([`DISKLORDZ_SAAS_AGENT_LANES.md`](DISKLORDZ_SAAS_AGENT_LANES.md))  
-- Monitor `/api/health` (`billingReady: true` when fully wired)
+| Script | Purpose |
+|--------|---------|
+| `scripts/saas.sh` | Master CLI |
+| `scripts/dev-setup.sh` | Local deps + `.env.local` |
+| `scripts/smoke-local.sh` | Build + smoke (CI uses this) |
+| `scripts/preflight-go-live.sh` | Tooling + env validation |
+| `scripts/apply-supabase-migrations.sh` | `supabase db push` |
+| `scripts/configure-supabase-auth.sh` | Auth site URL + callback |
+| `scripts/setup-stripe-pro-price.sh` | Create Pro price |
+| `scripts/setup-stripe-webhook.sh` | Register webhook |
+| `scripts/sync-vercel-env.sh` | Vercel REST env upsert |
+| `scripts/push-vercel-env.sh` | Interactive `vercel env add` |
+| `scripts/verify-go-live.sh` | HTTP smoke + ZIP download |
+| `scripts/go-live.sh` | Orchestrator |
+| `scripts/check-github-secrets.sh` | `gh secret list` diff |
+| `scripts/print-secret-set-commands.sh` | `gh secret set` template |
+
+Repo root: [`scripts/disklordz-saas.sh`](../scripts/disklordz-saas.sh).
 
 ---
 
-## What agents should / should not do
+## Post-ship
 
-| Agent | Role |
-|-------|------|
-| **Cursor Cloud** | Code fixes only if smoke fails — not production deploy unless you ask |
-| **You / THOR** | Secrets, Vercel, Stripe live toggle |
-| **Business Planner** | Approve go-live + Pro price ($12.99–19.99/mo band per market brief) |
+- Airtable WOs 007–016 → Done  
+- Marketing launch ([`DISKLORDZ_SAAS_AGENT_LANES.md`](DISKLORDZ_SAAS_AGENT_LANES.md))  
+- Market intel refresh: [`DISKLORDZ_MARKET_INTELLIGENCE.md`](DISKLORDZ_MARKET_INTELLIGENCE.md) (if merged)
 
-**Do not** force-push production or enable live Stripe without explicit approval ([`AGENTS.md`](../AGENTS.md)).
+Agents: **do not** deploy production or enable live Stripe without explicit user request.

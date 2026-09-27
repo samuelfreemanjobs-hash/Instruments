@@ -26,16 +26,8 @@ jobs:
           cache-dependency-path: disklordz/website/package-lock.json
       - run: npm ci
       - run: npm run build
-      - name: Smoke (guest generate + factory)
-        run: |
-          npm run start -- -p 3000 &
-          pid=$!
-          for i in $(seq 1 30); do
-            curl -sf http://127.0.0.1:3000/api/health >/dev/null && break
-            sleep 1
-          done
-          DISKLORDZ_URL=http://127.0.0.1:3000 npm run verify:go-live
-          kill "$pid" || true
+      - name: Smoke (guest generate + factory + ZIP)
+        run: npm run smoke:local
       - run: npm ci
         working-directory: disklordz/daw-inbox
       - run: node --check bin/watch.mjs

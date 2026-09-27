@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "verify:go-live": "bash scripts/verify-go-live.sh",
-    "go-live": "bash scripts/go-live.sh --sync-vercel"
+    "smoke:local": "bash scripts/smoke-local.sh",
+    "preflight": "bash scripts/preflight-go-live.sh production",
+    "saas": "bash scripts/saas.sh",
+    "go-live": "bash scripts/go-live.sh --sync-vercel --configure-auth --stripe-webhook"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
