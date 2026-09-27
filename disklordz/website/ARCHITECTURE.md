@@ -23,7 +23,9 @@ python3 ../sound-factory/scripts/generate_stub_kits.py
 
 ```text
 Browser (KitGenerator)
-  → POST /api/generate { prompt, presetId, spec? }
+  → POST /api/generate { prompt, presetId, spec?, async? }
+       → sync one_shot OR async job for loop/SFX (WO-SAAS-026) → GET /api/jobs/:id
+       → analytics events (WO-SAAS-025)
        → rate limit (IP, in-memory v0)
        → buildVariationBatch(): 2 (studio) or 3 (creative) kits per request
        → buildFactoryKit(): one_shot (6 hits), loop (`loop_main.wav`), or sfx (`sfx.wav`)

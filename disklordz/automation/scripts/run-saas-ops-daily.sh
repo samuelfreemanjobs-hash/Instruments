@@ -22,6 +22,7 @@ npm run build
 npm run lint
 node "$ROOT/disklordz/automation/scripts/check-preset-lanes.mjs"
 bash "$ROOT/disklordz/automation/scripts/check-billing-integrity.sh"
+bash "$ROOT/disklordz/automation/scripts/check-trust-licensing.sh"
 
 if [[ "$SKIP_LIVE" -eq 0 && -n "${DISKLORDZ_URL:-}" ]]; then
   npm run verify:go-live

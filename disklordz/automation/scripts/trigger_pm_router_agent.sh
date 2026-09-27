@@ -38,5 +38,10 @@ case "$LANE" in
   billing) exec bash "$DIR/trigger_billing_agent.sh" ;;
   growth) exec bash "$DIR/trigger_growth_agent.sh" ;;
   preset_curator) exec bash "$DIR/trigger_preset_curator_agent.sh" ;;
+  customer_success) exec bash "$DIR/trigger_customer_success.sh" ;;
+  analytics) exec bash "$DIR/trigger_analytics_funnel.sh" ;;
+  async_jobs) exec bash "$DIR/trigger_async_jobs.sh" ;;
+  audio_qa) exec bash "$DIR/trigger_audio_qa.sh" ;;
+  competitive_intel) exec bash "$DIR/trigger_competitive_intel.sh" ;;
   saas_ops | *) exec bash "$DIR/trigger_saas_ops_agent.sh" ;;
 esac

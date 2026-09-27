@@ -131,6 +131,11 @@ Example structured conditioning (fed to factory + RAG prompt assistant):
 | **021** | Growth / lane marketing | ✅ Weekly copy + prompt drafts |
 | **022** | PM / WO router | ✅ `repository_dispatch` classify → lane agent |
 | **023** | Preset lane curator | ✅ Weekly preset ↔ param alignment |
+| **024** | Customer success agent | ✅ Runbook + weekly agent + trust checks |
+| **025** | Analytics funnel | ✅ `generation_events` + ops summary API |
+| **026** | Async generation jobs | ✅ Jobs table + poll API + UI for loop/SFX |
+| **027** | Audio QA / golden lanes | ✅ Golden presets in `factory:dsp-regression` |
+| **028** | Competitive intel | ✅ Monthly agent + marketing inbox |
 
 Each WO: Airtable → GitHub issue → PR title `WO-SAAS-00N` → merge → Done.
 

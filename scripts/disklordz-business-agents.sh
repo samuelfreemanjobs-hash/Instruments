@@ -11,6 +11,7 @@ case "$cmd" in
     cd "$WEB" && npm ci && npm run factory:dsp-regression && npm run build && npm run lint
     node "$AUTO/check-preset-lanes.mjs"
     bash "$AUTO/check-billing-integrity.sh"
+    bash "$AUTO/check-trust-licensing.sh"
     echo "All business-agent static checks passed."
     ;;
   classify)

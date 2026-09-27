@@ -70,9 +70,31 @@ if (loopMono.length < 44100 * 4) {
 const loopStats = stats(loopMono);
 if (loopStats.peak < 0.04) throw new Error(`loop peak too low: ${loopStats.peak}`);
 
+type GoldenLane = { presetId: string; prompt: string; engine: "creative" | "studio" };
+const golden = JSON.parse(
+  readFileSync(join(__dir, "factory-golden-lanes.json"), "utf8"),
+) as GoldenLane[];
+
+for (const lane of golden) {
+  const laneSpec = {
+    ...defaultGenerationSpec(lane.presetId),
+    mode: "one_shot" as const,
+    engine: lane.engine,
+  };
+  const laneParams = resolveDrumParams(lane.prompt, lane.presetId, laneSpec);
+  const laneGrit = gritFromParams(laneParams, lane.prompt);
+  const kickRaw = renderSampleForEngine("kick", laneParams, lane.engine);
+  const { mono: kickMono } = masterSample(kickRaw, laneParams, laneSpec, lane.engine, laneGrit);
+  const kickStats = stats(kickMono);
+  if (kickStats.peak < 0.06) {
+    throw new Error(`golden kick too quiet: ${lane.presetId} peak=${kickStats.peak}`);
+  }
+}
+
 console.log("factory:dsp-regression OK", {
   presetId,
   samples: SAMPLE_NAMES.length,
   loopFrames: loopMono.length,
   loopPeak: loopStats.peak,
+  goldenLanes: golden.length,
 });
