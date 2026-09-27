@@ -1,0 +1,99 @@
+"""Render Memphis phonk loops from groove patterns + phonk_synth one-shots."""
+
+from __future__ import annotations
+
+from phonk_groove import (
+    STEPS_PER_BAR,
+    build_loop_pattern,
+    effective_groove_bpm,
+    validate_bpm,
+)
+from phonk_synth import PhonkParams, render_slot, resolve_phonk_params
+
+SRC_RATE = 44100
+
+SAMPLE_KEY: dict[str, str] = {
+    "kick": "kick_808",
+    "kick_dist": "kick_dist",
+    "snare": "snare_memphis",
+    "clap": "clap",
+    "hat": "hat_closed",
+    "hat_open": "hat_open",
+    "cowbell": "cowbell_low",
+    "rim": "snare_rim",
+}
+
+
+def _mix_at(buf: list[float], offset: int, sample: list[float], gain: float = 1.0) -> None:
+    for i, s in enumerate(sample):
+        idx = offset + i
+        if idx >= len(buf):
+            break
+        buf[idx] += s * gain
+
+
+def _duck_buffer(buf: list[float], offset: int, length: int, amount: float = 0.35) -> None:
+    end = min(len(buf), offset + length)
+    for i in range(offset, end):
+        buf[i] *= 1.0 - amount
+
+
+def render_phonk_loop(
+    *,
+    prompt: str,
+    bpm: float,
+    bars: int = 2,
+    variation: int = 0,
+    seed_override: int | None = None,
+) -> tuple[list[float], dict]:
+    bpm = validate_bpm(bpm)
+    params = resolve_phonk_params(prompt, variation)
+    if seed_override is not None:
+        params.seed = seed_override
+
+    patterns = build_loop_pattern(bpm=bpm, bars=bars, seed=params.seed, variation=variation)
+    step_samples = int((60.0 / bpm) / 4 * SRC_RATE)
+    total_steps = bars * STEPS_PER_BAR
+    n = step_samples * total_steps
+    out = [0.0] * n
+
+    sample_cache: dict[str, list[float]] = {}
+
+    def get_sample(key: str) -> list[float]:
+        if key not in sample_cache:
+            sample_cache[key] = render_slot(SAMPLE_KEY[key], params)
+        return sample_cache[key]
+
+    meta_hits = 0
+    for bar_i, bar in enumerate(patterns):
+        for hit in bar.hits:
+            meta_hits += 1
+            step_global = bar_i * STEPS_PER_BAR + hit.step
+            offset = int(step_global * step_samples + hit.micro_delay * SRC_RATE)
+            pcm = get_sample(hit.instrument)
+            _mix_at(out, offset, pcm, hit.velocity)
+            if hit.instrument in ("kick", "kick_dist"):
+                _duck_buffer(out, offset, min(len(pcm), step_samples * 2), 0.25)
+
+    peak = max(abs(s) for s in out) or 1.0
+    scale = 0.89 / peak
+    out = [s * scale for s in out]
+
+    duration = n / SRC_RATE
+    meta = {
+        "bpm": bpm,
+        "bars": bars,
+        "durationSec": round(duration, 4),
+        "sampleRate": SRC_RATE,
+        "hitCount": meta_hits,
+        "effectiveGrooveBpm": round(effective_groove_bpm(bpm), 2),
+        "prompt": prompt,
+        "variation": variation,
+        "seed": params.seed,
+    }
+    return out, meta
+
+
+def bars_that_fit_lofi12(bpm: float, rate: int, max_sec: float) -> int:
+    bar_sec = (60.0 / bpm) * 4
+    return max(1, min(4, int(max_sec / bar_sec)))

@@ -45,11 +45,21 @@ N/A — offline Python CLI only.
 | `scripts/phonk_factory.py` | CLI: generate, batch, import Disklordz |
 | `docs/PATTERN_GUIDE.md` | Sound-lock drum pattern on hardware |
 
+## Loop factory
+
+```bash
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
+  --prompt "1990s memphis phonk 82 bpm" --batch 4 --out ~/Music/Lofi12/PhonkLoops
+```
+
+`phonk_groove.py` enforces Memphis density (half-time at high BPM, 8th hats max). See [docs/PHONK_PROGRAMMING_PLAYBOOK.md](docs/PHONK_PROGRAMMING_PLAYBOOK.md).
+
 ## Extension points
 
 - WAV → Lofi-12 `.syx` encoder + USB-MIDI send (see repo `docs/SYSEX.md` patterns)
 - Hook `disklordz/daw-inbox` post-extract to run `--from-disklordz`
 - Preset packs aligned with `midnight-circuit` / phonk prompts in SaaS RAG
+- Reference loop corpus for automated quality scoring
 
 ## Related docs
 

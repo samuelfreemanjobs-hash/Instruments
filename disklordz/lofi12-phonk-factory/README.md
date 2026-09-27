@@ -32,6 +32,24 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_factory.py \
   --out ~/Music/Lofi12/PhonkFactory/bank_a
 ```
 
+## Memphis phonk **loops** (60–190 BPM)
+
+Unique **1990s Memphis–style** loops: half-time feel when BPM is high, 8th-note hats with shuffle, no trap hat rolls.
+
+```bash
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
+  --prompt "1990s memphis phonk dirty 808 cowbell 86 bpm" \
+  --batch 8 \
+  --out ~/Music/Lofi12/PhonkLoops
+
+# Drift tempo (sparse programming at 155 BPM)
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
+  --bpm 155 --bars 2 --batch 4 --lofi12 \
+  --out ~/Music/Lofi12/PhonkLoops/drift
+```
+
+Programming rules for agents: [docs/PHONK_PROGRAMMING_PLAYBOOK.md](docs/PHONK_PROGRAMMING_PLAYBOOK.md).
+
 ## Tests
 
 ```bash
