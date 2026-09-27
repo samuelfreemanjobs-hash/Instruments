@@ -32,6 +32,15 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_factory.py \
   --out ~/Music/Lofi12/PhonkFactory/bank_a
 ```
 
+## Drum machine sound engine
+
+Loops and one-shot banks use **`phonk_machine_engine.py`**: TR-808, TR-909, Boss DR-660, Alesis SR-16, Roland R-8 MKII, **DJ Screw tape**, and **`mr_tape`** (lo-fi tape pack *style* — good starting point for Splice-like warmth). See [docs/DRUM_MACHINE_ENGINES.md](docs/DRUM_MACHINE_ENGINES.md).
+
+```bash
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
+  --engine mr_tape --prompt "memphis phonk splice dj paul 84" --out ~/Music/Lofi12/PhonkLoops
+```
+
 ## Memphis phonk **loops** (60–190 BPM)
 
 Unique **1990s Memphis–style** loops: half-time feel when BPM is high, 8th-note hats with shuffle, no trap hat rolls.

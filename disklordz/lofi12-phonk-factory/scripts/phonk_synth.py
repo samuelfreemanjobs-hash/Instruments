@@ -255,7 +255,11 @@ RENDERERS: dict[str, Callable[[PhonkParams], list[float]]] = {
 }
 
 
-def render_slot(key: str, params: PhonkParams) -> list[float]:
+def render_slot(key: str, params: PhonkParams, engine_id: str | None = None) -> list[float]:
+    if engine_id and engine_id != "classic":
+        from phonk_machine_engine import render_machine_voice
+
+        return render_machine_voice(engine_id, key, params)  # type: ignore[arg-type]
     fn = RENDERERS.get(key)
     if fn is None:
         raise KeyError(key)

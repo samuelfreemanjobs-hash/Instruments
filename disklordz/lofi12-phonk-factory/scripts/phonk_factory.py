@@ -20,7 +20,8 @@ from lofi12_prepare import (  # noqa: E402
     read_wav_mono,
     write_wav_mono,
 )
-from phonk_synth import RENDERERS, resolve_phonk_params, render_slot  # noqa: E402
+from phonk_machine_engine import PROFILES, list_engines, resolve_engine_id  # noqa: E402
+from phonk_synth import resolve_phonk_params, render_slot  # noqa: E402
 
 DISKLORDZ_MAP = {
     "kick": "kick_808",
@@ -63,12 +64,14 @@ def generate_bank(
     out_dir: Path,
     variation: int = 0,
     dst_rate: int = LOFI_RATE_24K,
+    engine_id: str | None = None,
 ) -> dict:
+    engine = resolve_engine_id(prompt, engine_id)
     params = resolve_phonk_params(prompt, variation)
     out_dir.mkdir(parents=True, exist_ok=True)
     entries: list[dict] = []
     for spec in PHONK_BANK_A:
-        raw = render_slot(spec.key, params)
+        raw = render_slot(spec.key, params, engine)
         entries.append(
             _write_slot_wav(out_dir, spec.key, raw, grit=params.grit, dst_rate=dst_rate)
         )
@@ -83,6 +86,8 @@ def generate_bank(
         "prompt": prompt,
         "variation": variation,
         "params": {k: (round(v, 4) if isinstance(v, float) else v) for k, v in asdict(params).items()},
+        "drumEngine": engine,
+        "drumEngineLabel": PROFILES.get(engine, PROFILES["mr_tape"]).label,
         "device": {
             "model": "LIVEN Lofi-12",
             "targetBank": "A",
@@ -95,12 +100,15 @@ def generate_bank(
     return manifest
 
 
-def import_disklordz_kit(kit_dir: Path, out_dir: Path, *, prompt: str, dst_rate: int) -> dict:
+def import_disklordz_kit(
+    kit_dir: Path, out_dir: Path, *, prompt: str, dst_rate: int, engine_id: str | None = None
+) -> dict:
     manifest_path = kit_dir / "manifest.json"
     if not manifest_path.is_file():
         raise SystemExit(f"Missing manifest.json in {kit_dir}")
 
     kit_manifest = json.loads(manifest_path.read_text())
+    engine = resolve_engine_id(prompt or kit_manifest.get("prompt", "phonk"), engine_id)
     params = resolve_phonk_params(prompt or kit_manifest.get("prompt", "phonk"))
     imported: dict[str, list[float]] = {}
 
@@ -125,7 +133,7 @@ def import_disklordz_kit(kit_dir: Path, out_dir: Path, *, prompt: str, dst_rate:
         if spec.key in imported:
             raw = imported[spec.key]
         else:
-            raw = render_slot(spec.key, params)
+            raw = render_slot(spec.key, params, engine)
         entries.append(
             _write_slot_wav(out_dir, spec.key, raw, grit=params.grit, dst_rate=dst_rate)
         )
@@ -137,6 +145,8 @@ def import_disklordz_kit(kit_dir: Path, out_dir: Path, *, prompt: str, dst_rate:
         "sourceKit": str(kit_dir),
         "disklordzPreset": kit_manifest.get("presetId"),
         "params": asdict(params),
+        "drumEngine": engine,
+        "drumEngineLabel": PROFILES.get(engine, PROFILES["mr_tape"]).label,
         "device": {"model": "LIVEN Lofi-12", "targetBank": "A", "sampleRateHz": dst_rate},
         "slots": entries,
     }
@@ -157,6 +167,7 @@ def main() -> None:
         default=None,
         help="Folder with Disklordz manifest.json + WAVs; fills mapped slots, synths the rest",
     )
+    p.add_argument("--engine", default=None, help="Drum machine engine (see phonk_machine_engine.py)")
     args = p.parse_args()
 
     if args.batch > 0:
@@ -167,13 +178,18 @@ def main() -> None:
                 out_dir=sub,
                 variation=i,
                 dst_rate=args.rate,
+                engine_id=args.engine,
             )
             print(f"Wrote {sub}")
         return
 
     if args.from_disklordz:
         manifest = import_disklordz_kit(
-            args.from_disklordz, args.out, prompt=args.prompt, dst_rate=args.rate
+            args.from_disklordz,
+            args.out,
+            prompt=args.prompt,
+            dst_rate=args.rate,
+            engine_id=args.engine,
         )
     else:
         manifest = generate_bank(
@@ -181,6 +197,7 @@ def main() -> None:
             out_dir=args.out,
             variation=args.variation,
             dst_rate=args.rate,
+            engine_id=args.engine,
         )
     print(json.dumps({"out": str(args.out), "slots": len(manifest["slots"])}, indent=2))
 

@@ -9,6 +9,7 @@ from phonk_groove import (
     validate_bpm,
 )
 from phonk_memphis_lanes import resolve_memphis_lane
+from phonk_machine_engine import PROFILES, resolve_engine_id
 from phonk_synth import render_slot, resolve_phonk_params
 
 SRC_RATE = 44100
@@ -49,9 +50,11 @@ def render_phonk_loop(
     lane_id: str | None = None,
     with_vocals: bool = False,
     vocal_gain: float = 0.32,
+    engine_id: str | None = None,
 ) -> tuple[list[float], dict]:
     bpm = validate_bpm(bpm)
     lane = resolve_memphis_lane(prompt, lane_id)
+    engine = resolve_engine_id(prompt, engine_id)
     params = resolve_phonk_params(prompt, variation, lane)
     if seed_override is not None:
         params.seed = seed_override
@@ -68,7 +71,7 @@ def render_phonk_loop(
 
     def get_sample(key: str) -> list[float]:
         if key not in sample_cache:
-            sample_cache[key] = render_slot(SAMPLE_KEY[key], params)
+            sample_cache[key] = render_slot(SAMPLE_KEY[key], params, engine)
         return sample_cache[key]
 
     meta_hits = 0
@@ -110,6 +113,8 @@ def render_phonk_loop(
         "memphisLane": lane.lane_id if lane else None,
         "memphisLaneName": lane.display_name if lane else None,
         "withVocals": with_vocals,
+        "drumEngine": engine,
+        "drumEngineLabel": PROFILES.get(engine, PROFILES["mr_tape"]).label,
     }
     return out, meta
 

@@ -21,6 +21,7 @@ from lofi12_prepare import (  # noqa: E402
 )
 from phonk_groove import validate_bpm  # noqa: E402
 from phonk_loop_render import bars_that_fit_lofi12, render_phonk_loop  # noqa: E402
+from phonk_machine_engine import PROFILES, list_engines, resolve_engine_id  # noqa: E402
 from phonk_memphis_lanes import list_lane_ids, resolve_memphis_lane  # noqa: E402
 
 
@@ -63,9 +64,16 @@ def main() -> None:
         action="store_true",
         help="Mix synthetic Memphis vocal texture under drums (formant synth, not a voice clone)",
     )
+    engine_help = ", ".join(e[0] for e in list_engines())
+    p.add_argument(
+        "--engine",
+        default=None,
+        help=f"Drum machine engine ({engine_help}, classic)",
+    )
     args = p.parse_args()
 
     lane = resolve_memphis_lane(args.prompt, args.lane)
+    engine = resolve_engine_id(args.prompt, args.engine)
     bpm = (
         validate_bpm(args.bpm)
         if args.bpm > 0
@@ -87,9 +95,10 @@ def main() -> None:
             variation=variation,
             lane_id=args.lane,
             with_vocals=args.with_vocals,
+            engine_id=args.engine,
         )
         lane_tag = meta["memphisLane"] or "memphis"
-        stem = f"{lane_tag}_{bpm:.0f}bpm_v{variation:02d}"
+        stem = f"{lane_tag}_{engine}_{bpm:.0f}bpm_v{variation:02d}"
         wav_path = args.out / f"{stem}.wav"
         write_wav_mono(wav_path, pcm, meta["sampleRate"])
         entry = {"file": wav_path.name, **meta}
@@ -104,6 +113,7 @@ def main() -> None:
                     variation=variation,
                     lane_id=args.lane,
                     with_vocals=args.with_vocals,
+                    engine_id=args.engine,
                 )
             else:
                 pcm_lo, meta_lo = pcm, meta
@@ -125,6 +135,8 @@ def main() -> None:
         "bpm": bpm,
         "memphisLane": lane.lane_id if lane else None,
         "memphisLaneName": lane.display_name if lane else None,
+        "drumEngine": engine,
+        "drumEngineLabel": PROFILES.get(engine, PROFILES["mr_tape"]).label,
         "loops": index,
     }
     (args.out / "loop_manifest.json").write_text(json.dumps(manifest, indent=2))

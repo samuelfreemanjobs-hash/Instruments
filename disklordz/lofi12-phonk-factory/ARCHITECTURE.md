@@ -40,6 +40,7 @@ N/A — offline Python CLI only.
 | Path | Role |
 |------|------|
 | `scripts/phonk_synth.py` | Procedural phonk drum renderers |
+| `scripts/phonk_machine_engine.py` | TR-808/909, DR-660, SR-16, R-8, Screw, Mr Tape engines |
 | `scripts/lofi12_prepare.py` | Lofi-12 sample rate, length, level |
 | `scripts/bank_layout.py` | 16-slot phonk bank naming |
 | `scripts/phonk_factory.py` | CLI: generate, batch, import Disklordz |

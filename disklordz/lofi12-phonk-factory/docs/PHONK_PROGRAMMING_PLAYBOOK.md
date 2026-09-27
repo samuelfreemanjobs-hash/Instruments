@@ -75,6 +75,17 @@ Drop labeled reference WAVs under `references/` (see `references/README.md`) to 
 - Good: `1990s memphis phonk dirty 808 cowbell 82 bpm`, `slow screw memphis snare`, `drift phonk 148 half time`
 - Weak: `fast trap roll hi hat`, `double time`, `EDM phonk`
 
+## Drum machine sound engine
+
+Loops and banks use `phonk_machine_engine.py` — **TR-808, TR-909, Boss DR-660, Alesis SR-16, Roland R-8 MKII, DJ Screw tape, Mr Tape (lo-fi pack style)**. Default for `memphis` / `phonk` prompts: **`mr_tape`**.
+
+```bash
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
+  --engine dj_screw --prompt "memphis screw 78" --out ~/Music/Lofi12/Loops
+```
+
+Details: [DRUM_MACHINE_ENGINES.md](DRUM_MACHINE_ENGINES.md).
+
 ## Vocals (phonk / Memphis)
 
 Real phonk often uses **chopped, pitched-down rap samples**. This repo supports two paths:
