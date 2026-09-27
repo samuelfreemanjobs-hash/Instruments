@@ -7,6 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "factory:dsp-regression": "tsx scripts/factory-dsp-regression.ts",
     "verify:go-live": "bash scripts/verify-go-live.sh",
     "go-live": "bash scripts/go-live.sh --sync-vercel"
   },
@@ -28,6 +29,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.25",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

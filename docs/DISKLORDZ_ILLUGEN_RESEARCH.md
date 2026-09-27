@@ -124,6 +124,8 @@ Example structured conditioning (fed to factory + RAG prompt assistant):
 | **014** | Loop + SFX modes | ✅ `loop_main.wav` / `sfx.wav`; `creditCostForSpec` + variable RPC migration |
 | **015** | Product factory batch | ✅ `buildProductPack`, `POST /api/factory/batch`, pack ZIP download |
 | **016** | Desktop / watch folder | ✅ `disklordz/daw-inbox` watcher + browser “Save WAVs to folder” |
+| **017** | Factory v2 DSP | ✅ Procedural v2 voices + master bus + stereo ([DISKLORDZ_FACTORY_V2.md](DISKLORDZ_FACTORY_V2.md)) |
+| **018** | Daily Factory DSP agent | ✅ Scheduled regression + Cursor Cloud Agent launch ([DISKLORDZ_FACTORY_DAILY_AGENT.md](DISKLORDZ_FACTORY_DAILY_AGENT.md)) |
 
 Each WO: Airtable → GitHub issue → PR title `WO-SAAS-00N` → merge → Done.
 

@@ -35,6 +35,10 @@ DISKLORDZ_URL=http://127.0.0.1:3000 npm run verify:go-live
 - **Loops:** velocity humanization, creative swing, wildness-driven trap rolls + open hat
 - **Master:** light parallel punch before RMS normalize
 
+## Continuous improvement (WO-SAAS-018)
+
+Daily scheduled regression and optional Cursor Cloud Agent: [DISKLORDZ_FACTORY_DAILY_AGENT.md](DISKLORDZ_FACTORY_DAILY_AGENT.md). Local check: `npm run factory:dsp-regression`.
+
 ## Not in scope (future WOs)
 
 - Async Stable Audio / GPU worker (`disklordz/sound-factory/`)

@@ -1,0 +1,69 @@
+# WO-SAAS-018: Daily Factory DSP regression + optional Cursor Cloud Agent improvement run.
+name: Disklordz Factory daily
+
+on:
+  schedule:
+    - cron: "30 12 * * *" # 12:30 UTC daily (after nightly-qa)
+  workflow_dispatch:
+    inputs:
+      theme:
+        description: "FACTORY_DAILY_THEME override (see FACTORY_IMPROVEMENT_BACKLOG.md)"
+        required: false
+        type: choice
+        options:
+          - kick_808_sub_click
+          - snare_clap_snap
+          - hats_metallic_motion
+          - master_bus_lanes
+          - loops_patterns
+          - product_pack_consistency
+          - prompt_params_rag
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: disklordz/website
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: disklordz/website/package-lock.json
+
+      - name: Install and regression
+        run: |
+          npm ci
+          npm run factory:dsp-regression
+          npm run build
+          npm run lint
+
+      - name: Slack summary (regression green)
+        if: success()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [[ -z "${SLACK_WEBHOOK_URL:-}" ]]; then exit 0; fi
+          theme="${{ github.event.inputs.theme }}"
+          if [[ -z "$theme" ]]; then theme="(weekday rotation)"; fi
+          curl -fsS -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-type: application/json' \
+            --data "{\"text\":\"✅ Disklordz Factory daily regression passed (WO-SAAS-018). Theme: ${theme}. Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
+
+  launch-factory-agent:
+    needs: regression
+    runs-on: ubuntu-latest
+    if: needs.regression.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Launch Cursor Cloud Agent (optional)
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          FACTORY_DAILY_THEME: ${{ github.event.inputs.theme }}
+        run: |
+          chmod +x disklordz/automation/scripts/trigger_cursor_factory_daily_agent.sh
+          bash disklordz/automation/scripts/trigger_cursor_factory_daily_agent.sh
