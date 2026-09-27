@@ -71,13 +71,25 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
   --prompt "dj paul phonk 84" --with-vocals --out ~/Music/Lofi12/PhonkLoops
 ```
 
-## Step sequencer (computer → Lofi-12 MIDI)
+## Loop FX (generator + Lofi CC)
 
-Browser **4×16** grid with Web MIDI + optional Python player:
+Mix-bus filter, reverb, tape, and drive on rendered loops. Prompt words (`dirty`, `dark`, `wet`) set defaults; override with CLI or the sequencer sliders (MIDI CC 38 / 36 when connected).
+
+```bash
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
+  --prompt "juicy j dirty memphis 86" --filter 0.45 --reverb 0.35 --tape 0.3 \
+  --out ~/Music/Lofi12/PhonkLoops
+```
+
+Roadmap for **cloud / ambient one-shots** (separate from phonk drums): [docs/PRODUCT_ROADMAP.md](docs/PRODUCT_ROADMAP.md).
+
+## Step sequencer (beat over loops → Lofi-12 MIDI)
+
+Browser **6×16** grid: Web Audio preview, factory backing loops, groove import, step editor (slot + velocity). Tracks 1–4 match Lofi hardware; **Perc** / **OpenHat** are extra MIDI lanes.
 
 ```bash
 python3 disklordz/lofi12-phonk-factory/sequencer/serve.py
-# http://127.0.0.1:8765 — pick MIDI OUT, connect to Lofi-12 MIDI IN
+# http://127.0.0.1:8765 — Generate backing loop → Play (restarts loop + grid) → edit steps → MIDI OUT
 
 python3 disklordz/lofi12-phonk-factory/sequencer/scripts/pattern_from_groove.py \
   --prompt "dj paul memphis 84" --out ~/Music/Lofi12/pattern.json

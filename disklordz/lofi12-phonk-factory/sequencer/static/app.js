@@ -1,10 +1,19 @@
 /**
- * Lofi-12 4×16 step sequencer — Web MIDI output.
+ * Lofi-12 step sequencer — 6 tracks, Web Audio preview, Web MIDI, backing loop API.
  */
 
+import {
+  previewNote,
+  resumeAudio,
+  playBackingArrayBuffer,
+  stopBacking,
+  restartBacking,
+  hasBacking,
+} from "./audio_engine.js";
+
 const STEPS = 16;
-const TRACK_NAMES = ["Kick", "Snare", "Hat", "Cowbell"];
-const DEFAULT_NOTES = [36, 39, 42, 45]; // slots 1,4,7,10
+const TRACK_NAMES = ["Kick", "Snare", "Hat", "Cowbell", "Perc", "OpenHat"];
+const DEFAULT_NOTES = [36, 39, 42, 45, 48, 46]; // slots 1,4,7,10,13,8
 const SLOT_BASE = 36;
 
 /** @type {{ on: boolean, note: number, velocity: number }[][]} */
@@ -22,18 +31,37 @@ let timerId = null;
 /** @type {MIDIOutput | null} */
 let midiOut = null;
 let clockTimer = null;
+let selected = { ti: 0, si: 0 };
 
 const gridEl = document.getElementById("grid");
 const statusEl = document.getElementById("status");
 const bpmEl = document.getElementById("bpm");
 const midiSelect = document.getElementById("midiOut");
+const editNoteEl = document.getElementById("editNote");
+const editVelEl = document.getElementById("editVel");
 
 function slotToNote(slot) {
   return SLOT_BASE + slot - 1;
 }
-
 function noteToSlot(note) {
   return note - SLOT_BASE + 1;
+}
+
+function fxValues() {
+  return {
+    filter: Number(document.getElementById("fxFilter").value),
+    reverb: Number(document.getElementById("fxReverb").value),
+    tape: Number(document.getElementById("fxTape").value),
+    drive: Number(document.getElementById("fxDrive").value),
+  };
+}
+
+function sendFxCc() {
+  if (!midiOut) return;
+  const fx = fxValues();
+  const ch = 0;
+  midiOut.send([0xb0 + ch, 38, Math.floor(fx.filter * 127)]);
+  midiOut.send([0xb0 + ch, 36, Math.floor(fx.reverb * 127)]);
 }
 
 function buildGrid() {
@@ -51,6 +79,16 @@ function buildGrid() {
     const label = document.createElement("span");
     label.className = "row-label";
     label.textContent = name;
+    label.title = "Double-click row label: set default slot";
+    label.addEventListener("dblclick", () => {
+      const slot = prompt(`Default slot 1–16 for ${name}:`, String(noteToSlot(DEFAULT_NOTES[ti])));
+      if (slot) {
+        const n = Math.min(16, Math.max(1, parseInt(slot, 10) || 1));
+        DEFAULT_NOTES[ti] = slotToNote(n);
+        pattern[ti].forEach((c) => (c.note = slotToNote(n)));
+        syncGridUi();
+      }
+    });
     row.appendChild(label);
 
     for (let si = 0; si < STEPS; si++) {
@@ -59,7 +97,7 @@ function buildGrid() {
       btn.className = "step";
       btn.dataset.track = String(ti);
       btn.dataset.step = String(si);
-      btn.title = "Click toggle · Shift+click sound lock (slot)";
+      btn.title = "Click: toggle · Shift: slot · Alt: velocity · Click selects for editor";
       btn.addEventListener("click", (ev) => onStepClick(ti, si, ev));
       row.appendChild(btn);
     }
@@ -76,30 +114,41 @@ function syncGridUi() {
     const cell = pattern[ti][si];
     el.classList.toggle("on", cell.on);
     el.classList.toggle("playhead", playing && si === currentStep);
+    el.classList.toggle("selected", ti === selected.ti && si === selected.si);
     let tag = el.querySelector(".slot-tag");
-    if (ti === 0 && cell.on && cell.note !== DEFAULT_NOTES[0]) {
+    if (cell.on) {
       if (!tag) {
         tag = document.createElement("span");
         tag.className = "slot-tag";
         el.appendChild(tag);
       }
-      tag.textContent = String(noteToSlot(cell.note));
+      tag.textContent = `${noteToSlot(cell.note)}·${cell.velocity}`;
     } else if (tag) tag.remove();
   });
+  const c = pattern[selected.ti][selected.si];
+  editNoteEl.value = c.note;
+  editVelEl.value = c.velocity;
 }
 
 function onStepClick(ti, si, ev) {
+  selected = { ti, si };
   const cell = pattern[ti][si];
-  if (ev.shiftKey && ti === 0) {
-    const slot = prompt("Sample slot 1–16 on Lofi-12 bank:", String(noteToSlot(cell.note)));
+  if (ev.altKey) {
+    const v = prompt("Velocity 1–127:", String(cell.velocity));
+    if (v) {
+      cell.velocity = Math.min(127, Math.max(1, parseInt(v, 10) || 100));
+      cell.on = true;
+    }
+  } else if (ev.shiftKey) {
+    const slot = prompt("Sample slot 1–16:", String(noteToSlot(cell.note)));
     if (slot) {
-      const n = Math.min(16, Math.max(1, parseInt(slot, 10) || 1));
-      cell.note = slotToNote(n);
+      cell.note = slotToNote(Math.min(16, Math.max(1, parseInt(slot, 10) || 1)));
       cell.on = true;
     }
   } else {
     cell.on = !cell.on;
-    if (cell.on && cell.note < SLOT_BASE) cell.note = DEFAULT_NOTES[ti];
+    if (cell.on) cell.note = cell.note || DEFAULT_NOTES[ti];
+    if (cell.on) previewNote(cell.note, cell.velocity);
   }
   syncGridUi();
 }
@@ -110,7 +159,7 @@ function setStatus(msg) {
 
 async function refreshMidi() {
   if (!navigator.requestMIDIAccess) {
-    setStatus("Web MIDI not supported — use Chrome/Edge or midi_play.py");
+    setStatus("Web MIDI optional — Web Audio preview always works");
     return;
   }
   const access = await navigator.requestMIDIAccess({ sysex: false });
@@ -122,59 +171,41 @@ async function refreshMidi() {
     midiSelect.appendChild(opt);
   }
   midiSelect.onchange = () => {
-    const id = midiSelect.value;
-    midiOut = id ? access.outputs.get(id) : null;
-    setStatus(midiOut ? `MIDI: ${midiOut.name}` : "No MIDI port selected");
+    midiOut = midiSelect.value ? access.outputs.get(midiSelect.value) : null;
+    setStatus(midiOut ? `MIDI: ${midiOut.name}` : "MIDI off — preview only");
+    sendFxCc();
   };
-  setStatus(`Found ${access.outputs.size} MIDI output(s)`);
 }
 
 function sendNote(channel, note, velocity, durationMs) {
-  if (!midiOut) return;
-  midiOut.send([0x90 + channel, note, velocity]);
-  setTimeout(() => midiOut.send([0x80 + channel, note, 0]), durationMs);
-}
-
-function sendClockStart() {
-  if (!midiOut) return;
-  midiOut.send([0xfa]);
-}
-
-function sendClockStop() {
-  if (!midiOut) return;
-  midiOut.send([0xfc]);
-}
-
-function sendClockTick() {
-  if (!midiOut) return;
-  midiOut.send([0xf8]);
+  if (midiOut) {
+    midiOut.send([0x90 + channel, note, velocity]);
+    setTimeout(() => midiOut.send([0x80 + channel, note, 0]), durationMs);
+  }
+  previewNote(note, velocity, durationMs / 1000);
 }
 
 function stepDurationMs() {
-  const bpm = Number(bpmEl.value) || 84;
-  return (60000 / bpm / 4);
+  return (60000 / (Number(bpmEl.value) || 84)) / 4;
 }
 
 function playStep(si) {
   pattern.forEach((track, ti) => {
     const cell = track[si];
     if (!cell.on) return;
-    const ch = ti; // channels 0–3; map to Lofi track auto-channel if configured
-    sendNote(ch, cell.note, cell.velocity, Math.min(120, stepDurationMs() * 0.8));
+    sendNote(Math.min(ti, 15), cell.note, cell.velocity, Math.min(120, stepDurationMs() * 0.85));
   });
 }
 
-function startTransport() {
+async function startTransport() {
+  await resumeAudio();
   if (playing) return;
+  if (document.getElementById("backingOn").checked && hasBacking()) {
+    restartBacking(true);
+  }
   playing = true;
   currentStep = -1;
-  const sendClock = document.getElementById("sendClock").checked;
-  if (sendClock && midiOut) {
-    sendClockStart();
-    const bpm = Number(bpmEl.value) || 84;
-    const tickMs = 60000 / bpm / 24;
-    clockTimer = setInterval(sendClockTick, tickMs);
-  }
+  sendFxCc();
   const tick = () => {
     currentStep = (currentStep + 1) % STEPS;
     playStep(currentStep);
@@ -182,7 +213,7 @@ function startTransport() {
   };
   tick();
   timerId = setInterval(tick, stepDurationMs());
-  setStatus("Playing…");
+  setStatus(document.getElementById("backingOn").checked ? "Playing pattern + backing" : "Playing…");
 }
 
 function stopTransport() {
@@ -190,8 +221,6 @@ function stopTransport() {
   if (timerId) clearInterval(timerId);
   timerId = null;
   if (clockTimer) clearInterval(clockTimer);
-  clockTimer = null;
-  sendClockStop();
   currentStep = -1;
   syncGridUi();
   setStatus("Stopped");
@@ -200,10 +229,10 @@ function stopTransport() {
 function patternToJson() {
   return {
     format: "LOFI12_STEP_PATTERN",
-    version: 1,
+    version: 2,
     bpm: Number(bpmEl.value) || 84,
     steps: STEPS,
-    sendClock: document.getElementById("sendClock").checked,
+    fx: fxValues(),
     tracks: TRACK_NAMES.map((name, ti) => ({
       name,
       midiChannel: ti + 1,
@@ -216,9 +245,15 @@ function patternToJson() {
 function loadFromJson(obj) {
   if (!obj.tracks) return;
   bpmEl.value = obj.bpm || 84;
-  document.getElementById("sendClock").checked = !!obj.sendClock;
+  if (obj.fx) {
+    document.getElementById("fxFilter").value = obj.fx.filter ?? 0.65;
+    document.getElementById("fxReverb").value = obj.fx.reverb ?? 0.25;
+    document.getElementById("fxTape").value = obj.fx.tape ?? 0.2;
+    document.getElementById("fxDrive").value = obj.fx.drive ?? 0.15;
+  }
   obj.tracks.forEach((tr, ti) => {
     if (ti >= TRACK_NAMES.length) return;
+    if (tr.defaultNote) DEFAULT_NOTES[ti] = tr.defaultNote;
     tr.steps.forEach((s, si) => {
       if (si >= STEPS) return;
       pattern[ti][si] = {
@@ -231,34 +266,48 @@ function loadFromJson(obj) {
   syncGridUi();
 }
 
-/** Demo phonk groove (matches factory kick/snare/hat/cowbell steps). */
-function loadPhonkDemo() {
-  bpmEl.value = 84;
-  pattern = TRACK_NAMES.map((_, ti) =>
-    Array.from({ length: STEPS }, () => ({
-      on: false,
-      note: DEFAULT_NOTES[ti],
-      velocity: 100,
-    }))
-  );
-  const on = (ti, steps, note, vel = 100) => {
-    steps.forEach((s) => {
-      pattern[ti][s].on = true;
-      if (note) pattern[ti][s].note = note;
-      pattern[ti][s].velocity = vel;
-    });
-  };
-  on(0, [0, 6, 8], slotToNote(1));
-  on(0, [6], slotToNote(2), 70);
-  on(1, [4, 12], slotToNote(4), 110);
-  on(2, [0, 2, 4, 6, 8, 10, 12, 14], slotToNote(7), 75);
-  on(3, [2, 9], slotToNote(10), 90);
-  syncGridUi();
-  setStatus("Loaded DJ Paul–style demo pattern");
+async function loadGrooveFromApi() {
+  const prompt = document.getElementById("groovePrompt").value || "dj paul memphis 84";
+  const res = await fetch("/api/groove_pattern", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, bpm: Number(bpmEl.value) || 84 }),
+  });
+  const data = await res.json();
+  loadFromJson(data);
+  setStatus("Loaded groove from factory");
 }
 
-document.getElementById("play").onclick = startTransport;
-document.getElementById("stop").onclick = stopTransport;
+async function generateBacking() {
+  const prompt = document.getElementById("groovePrompt").value || "juicy j memphis phonk 84";
+  setStatus("Rendering backing loop…");
+  const res = await fetch("/api/render_loop", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      prompt,
+      bpm: Number(bpmEl.value) || 84,
+      bars: 2,
+      fx: fxValues(),
+    }),
+  });
+  const buf = await res.arrayBuffer();
+  if (document.getElementById("backingOn").checked) {
+    await playBackingArrayBuffer(buf, true);
+  }
+  const blob = new Blob([buf], { type: "audio/wav" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "backing_loop.wav";
+  a.click();
+  setStatus("Backing loop ready (download + optional playback)");
+}
+
+document.getElementById("play").onclick = () => startTransport();
+document.getElementById("stop").onclick = () => {
+  stopTransport();
+  stopBacking();
+};
 document.getElementById("refreshMidi").onclick = () => refreshMidi();
 document.getElementById("clear").onclick = () => {
   pattern.forEach((t, ti) =>
@@ -269,13 +318,21 @@ document.getElementById("clear").onclick = () => {
     })
   );
   syncGridUi();
-  setStatus("Cleared");
 };
-document.getElementById("loadPhonk").onclick = loadPhonkDemo;
+document.getElementById("loadGroove").onclick = () => loadGrooveFromApi();
+document.getElementById("genBacking").onclick = () => generateBacking();
+document.getElementById("applyEdit").onclick = () => {
+  const c = pattern[selected.ti][selected.si];
+  c.note = Math.min(127, Math.max(0, parseInt(editNoteEl.value, 10) || c.note));
+  c.velocity = Math.min(127, Math.max(1, parseInt(editVelEl.value, 10) || c.velocity));
+  c.on = true;
+  syncGridUi();
+};
+["fxFilter", "fxReverb", "fxTape", "fxDrive"].forEach((id) => {
+  document.getElementById(id).addEventListener("input", () => sendFxCc());
+});
 document.getElementById("saveJson").onclick = () => {
-  const blob = new Blob([JSON.stringify(patternToJson(), null, 2)], {
-    type: "application/json",
-  });
+  const blob = new Blob([JSON.stringify(patternToJson(), null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "lofi12_pattern.json";
@@ -284,9 +341,14 @@ document.getElementById("saveJson").onclick = () => {
 document.getElementById("loadJson").onchange = async (ev) => {
   const file = ev.target.files?.[0];
   if (!file) return;
-  const text = await file.text();
-  loadFromJson(JSON.parse(text));
+  loadFromJson(JSON.parse(await file.text()));
   setStatus(`Loaded ${file.name}`);
+};
+document.getElementById("loadBackingFile").onchange = async (ev) => {
+  const file = ev.target.files?.[0];
+  if (!file) return;
+  await playBackingArrayBuffer(await file.arrayBuffer(), true);
+  setStatus(`Backing: ${file.name}`);
 };
 
 buildGrid();

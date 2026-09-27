@@ -9,57 +9,52 @@
   <body>
     <header>
       <h1>Lofi-12 step sequencer</h1>
-      <p class="sub">
-        4×16 · Web MIDI → Lofi-12 ·
-        <a href="https://midi.guide/d/sonicware/liven-lofi-12/" target="_blank" rel="noopener"
-          >CC map</a
-        >
-      </p>
+      <p class="sub">6×16 · Web Audio beat preview · Web MIDI · factory backing loops</p>
     </header>
 
     <section class="transport">
-      <label
-        >BPM
-        <input type="number" id="bpm" min="60" max="190" value="84" />
-      </label>
+      <label>BPM <input type="number" id="bpm" min="60" max="190" value="84" /></label>
       <button type="button" id="play" class="primary">Play</button>
       <button type="button" id="stop">Stop</button>
-      <label class="check"
-        ><input type="checkbox" id="sendClock" /> MIDI clock</label
-      >
-      <label
-        >MIDI out
-        <select id="midiOut"><option value="">— Web MIDI —</option></select>
-      </label>
-      <button type="button" id="refreshMidi">Refresh ports</button>
+      <label class="check"><input type="checkbox" id="backingOn" checked /> Loop backing with transport (Play restarts loop + grid)</label>
+      <label>MIDI out <select id="midiOut"><option value="">— optional —</option></select></label>
+      <button type="button" id="refreshMidi">Refresh MIDI</button>
     </section>
 
-    <section class="tools">
-      <button type="button" id="loadPhonk">Load phonk groove (demo)</button>
-      <button type="button" id="clear">Clear</button>
-      <button type="button" id="saveJson">Download JSON</button>
-      <label class="file-btn"
-        >Load JSON<input type="file" id="loadJson" accept="application/json" hidden
-      /></label>
+    <section class="fx panel">
+      <h2>Loop / Lofi FX</h2>
+      <label>Filter <input type="range" id="fxFilter" min="0" max="1" step="0.01" value="0.55" /></label>
+      <label>Reverb <input type="range" id="fxReverb" min="0" max="1" step="0.01" value="0.28" /></label>
+      <label>Tape <input type="range" id="fxTape" min="0" max="1" step="0.01" value="0.22" /></label>
+      <label>Drive <input type="range" id="fxDrive" min="0" max="1" step="0.01" value="0.2" /></label>
+      <p class="hint">Sliders affect API loop render + MIDI CC 38/36 to Lofi-12 when connected.</p>
     </section>
 
-    <p id="status" class="status">Connect MIDI OUT to Lofi-12 MIDI IN.</p>
+    <section class="tools panel">
+      <input type="text" id="groovePrompt" placeholder="Groove prompt e.g. dj paul memphis 84" style="flex:1;min-width:12rem" />
+      <button type="button" id="loadGroove">Load groove → grid</button>
+      <button type="button" id="genBacking">Generate backing loop</button>
+      <label class="file-btn">Load backing WAV<input type="file" id="loadBackingFile" accept="audio/wav" hidden /></label>
+      <button type="button" id="clear">Clear grid</button>
+      <button type="button" id="saveJson">Save pattern</button>
+      <label class="file-btn">Load pattern<input type="file" id="loadJson" accept="application/json" hidden /></label>
+    </section>
 
-    <div id="grid" class="grid" aria-label="Step grid"></div>
+    <section class="edit panel">
+      <h2>Step editor</h2>
+      <label>MIDI note <input type="number" id="editNote" min="24" max="127" /></label>
+      <label>Velocity <input type="number" id="editVel" min="1" max="127" /></label>
+      <button type="button" id="applyEdit">Apply to selected step</button>
+      <p class="hint">Shift+click step = slot 1–16 · Alt+click = velocity · Double-click track name = default slot</p>
+    </section>
+
+    <p id="status" class="status">Web Audio preview enabled — no hardware required to practice.</p>
+    <div id="grid" class="grid"></div>
 
     <section class="help">
-      <h2>Setup</h2>
-      <ol>
-        <li>USB-MIDI interface: computer OUT → Lofi-12 <strong>MIDI IN</strong>.</li>
-        <li>On Lofi-12: enable MIDI receive; load phonk bank on slots 1–16.</li>
-        <li>
-          Track 1 supports <strong>sound lock</strong>: shift+click a step to pick sample slot
-          1–16.
-        </li>
-        <li>Match slot notes: slot N → MIDI note 35+N (default 36–51).</li>
-      </ol>
+      <p>Tracks 1–4 map to Lofi-12 hardware tracks; <strong>Perc</strong> and <strong>OpenHat</strong> are extra MIDI lanes for computer / second bank.</p>
     </section>
 
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
   </body>
 </html>
