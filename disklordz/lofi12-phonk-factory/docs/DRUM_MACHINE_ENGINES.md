@@ -33,7 +33,9 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_factory.py \
   --engine roland_r8mk2 --prompt "memphis r8 snare" --out ~/Music/Lofi12/bank_r8
 ```
 
-Implementation: `scripts/phonk_machine_engine.py`.
+Implementation: `scripts/phonk_machine_engine.py` + **`scripts/phonk_fm.py`** (2-operator FM for cowbells, rim, clave-style perc). No external FM plugin required.
+
+Cowbells/rim use **FM** when `fm_perc ≥ 0.5` (default on). `juicy_j` / tape engines use a darker Memphis FM bell; `tr808`-style engines use dual FM burst cowbell.
 
 ## Honest limits
 

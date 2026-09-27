@@ -66,6 +66,7 @@ class MachineProfile:
     dirt: float = 0.0  # parallel crunch bus
     kick_sub_blend: float = 0.0  # 808 sub folded into kick
     snare_crunch: float = 1.0
+    fm_perc: float = 1.0  # 0 = sine stacks, 1 = FM cowbell/rim/clave
 
 
 PROFILES: dict[str, MachineProfile] = {
@@ -89,6 +90,7 @@ PROFILES: dict[str, MachineProfile] = {
         dirt=0.52,
         kick_sub_blend=0.42,
         snare_crunch=1.35,
+        fm_perc=1.0,
     ),
     "tr808": MachineProfile(
         "tr808",
@@ -403,6 +405,11 @@ def _snare(prof: MachineProfile, params: PhonkParams) -> list[float]:
 
 
 def _rim(prof: MachineProfile, params: PhonkParams) -> list[float]:
+    if prof.fm_perc >= 0.5:
+        from phonk_fm import fm_rim_shot, normalize_peak
+
+        out = normalize_peak(fm_rim_shot(params.seed + 4))
+        return _finish(out, prof, params.seed + 4)
     n = int(SRC_RATE * 0.07)
     out: list[float] = []
     for i in range(n):
@@ -440,6 +447,15 @@ def _hat(prof: MachineProfile, params: PhonkParams, decay: float, bright: float,
 
 
 def _cowbell(prof: MachineProfile, params: PhonkParams, freq: float) -> list[float]:
+    if prof.fm_perc >= 0.5:
+        from phonk_fm import fm_cowbell_808, fm_cowbell_memphis, normalize_peak
+
+        grit = params.grit * prof.dirt
+        if prof.engine_id in ("juicy_j", "dj_screw", "mr_tape"):
+            out = normalize_peak(fm_cowbell_memphis(freq, params.seed + 8, grit))
+        else:
+            out = normalize_peak(fm_cowbell_808(freq, params.seed + 8, grit))
+        return _finish(out, prof, params.seed + 8)
     n = int(SRC_RATE * 0.22)
     out: list[float] = []
     for i in range(n):
@@ -497,6 +513,11 @@ def render_machine_voice(engine_id: str, key: VoiceKey, params: PhonkParams) -> 
     if key == "tom_hi":
         return _tom(prof, params, 160, 0.11)
     if key == "perc_snap":
+        if prof.fm_perc >= 0.75:
+            from phonk_fm import fm_clave, normalize_peak
+
+            out = normalize_peak(fm_clave(params.seed + 99))
+            return _finish(out, prof, params.seed + 10)
         n = int(SRC_RATE * 0.05)
         out = [noise(i / SRC_RATE, params.seed + 99) * math.exp(-(i / SRC_RATE) / 0.012) * 0.75 for i in range(n)]
         return _finish(out, prof, params.seed + 10)
