@@ -6,6 +6,7 @@ import {
   mulberry32,
   onePoleHighpass,
   onePoleLowpass,
+  parallelPunch,
   softClip,
 } from "@/lib/generation/dsp-core";
 import { analyzeQuality, ensureAudible } from "@/lib/generation/quality-gate";
@@ -89,6 +90,8 @@ export function masterSample(
     prevIn = input;
   }
   s = filtered;
+
+  s = parallelPunch(s, engine === "studio" ? 0.12 : 0.18 + grit * 0.08);
 
   s = targetRmsNormalize(s, engine === "studio" ? 0.11 : 0.13);
   s = ensureAudible(s);

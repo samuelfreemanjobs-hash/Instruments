@@ -2,6 +2,7 @@ import type { DrumParams } from "@/lib/generation/prompt-params";
 import {
   SAMPLE_RATE,
   expEnv,
+  glidePitchHz,
   mulberry32,
   noiseSample,
   onePoleHighpass,
@@ -11,83 +12,119 @@ import {
 } from "@/lib/generation/dsp-core";
 
 function kick808(pitch: number, decay: number, seed: number): Float32Array {
-  const n = Math.floor(SAMPLE_RATE * 0.55);
+  const n = Math.floor(SAMPLE_RATE * 0.62);
   const out = new Float32Array(n);
   const rng = mulberry32(seed);
+  const startHz = pitch * 3.2;
+  const endHz = pitch;
+  let clickLp = 0;
   for (let i = 0; i < n; i++) {
     const t = i / SAMPLE_RATE;
     const env = expEnv(t, decay);
-    const pitchEnv = pitch * (1 + 3.5 * expEnv(t, 0.04));
-    const body = sine(pitchEnv, t) * env;
-    const click = (i < 80 ? noiseSample(rng) * expEnv(t, 0.003) * 0.35 : 0);
-    out[i] = softClip(body + click, 1.2);
+    const pitchHz = glidePitchHz(t, startHz, endHz, 0.042);
+    const body = sine(pitchHz, t) * env;
+    const sub =
+      sine(pitchHz * 0.5, t) * expEnv(t, decay * 1.4) * (pitch < 42 ? 0.62 : 0.48);
+    const clickRaw = i < 140 ? noiseSample(rng) : 0;
+    clickLp = onePoleLowpass(clickLp, clickRaw, 2800);
+    const click = clickLp * expEnv(t, 0.0022) * 0.42;
+    out[i] = softClip((body + sub + click) * 1.02, 1.28);
   }
   return out;
 }
 
 function snare(body: number, snap: number, seed: number): Float32Array {
-  const n = Math.floor(SAMPLE_RATE * 0.32);
+  const n = Math.floor(SAMPLE_RATE * 0.38);
   const out = new Float32Array(n);
   const rng = mulberry32(seed);
   let lp = 0;
-  let hp = 0;
   let hpIn = 0;
+  let hpOut = 0;
+  const toneHz = 185 + body * 55;
   for (let i = 0; i < n; i++) {
     const t = i / SAMPLE_RATE;
-    const env = expEnv(t, 0.11);
-    const tone = sine(185, t) * body * expEnv(t, 0.06);
+    const ampEnv = expEnv(t, 0.13);
+    const toneEnv = expEnv(t, 0.05);
+    const tone =
+      sine(toneHz, t) * body * toneEnv +
+      sine(toneHz * 2.05, t) * body * 0.22 * toneEnv;
     const raw = noiseSample(rng);
-    lp = onePoleLowpass(lp, raw, 2800);
+    lp = onePoleLowpass(lp, raw, 3400);
+    hpOut = onePoleHighpass(hpIn, hpOut, lp, 520);
     hpIn = lp;
-    hp = onePoleHighpass(hpIn, hp, hp, 600);
-    const nse = hp * snap * expEnv(t, 0.035);
-    out[i] = (tone + nse) * env;
+    const snapEnv = expEnv(t, 0.026);
+    const nse = hpOut * snap * snapEnv * 1.15;
+    out[i] = softClip((tone + nse) * ampEnv, 1.18);
   }
   return out;
 }
 
+function metallicPartial(t: number, freq: number, phase: number): number {
+  return softClip(sine(freq, t, phase) * 2.4, 1.35);
+}
+
 function hat(decay: number, bright: number, seed: number, open: boolean): Float32Array {
-  const dur = open ? 0.22 : 0.09;
+  const dur = open ? 0.28 : 0.1;
   const n = Math.floor(SAMPLE_RATE * dur);
   const out = new Float32Array(n);
   const rng = mulberry32(seed);
-  let hp = 0;
   let hpIn = 0;
-  const cutoff = 5000 + bright * 6000;
+  let hpOut = 0;
+  const scale = 0.92 + bright * 0.14;
+  const freqs = [3177, 4821, 6532, 8911, 11200].map((f) => f * scale);
+  const cutoff = 4200 + bright * 7500;
   for (let i = 0; i < n; i++) {
     const t = i / SAMPLE_RATE;
-    const env = expEnv(t, decay * (open ? 2.2 : 1));
-    hpIn = noiseSample(rng);
-    hp = onePoleHighpass(hpIn, hp, hp, cutoff);
-    const ring = sine(8000 + bright * 2000, t) * 0.04 * env;
-    out[i] = (hp * bright + ring) * env;
+    const env = expEnv(t, decay * (open ? 2.4 : 1));
+    const raw = noiseSample(rng);
+    hpOut = onePoleHighpass(hpIn, hpOut, raw, cutoff);
+    hpIn = raw;
+    let metal = 0;
+    for (let p = 0; p < freqs.length; p++) {
+      metal += metallicPartial(t, freqs[p], seed * 0.001 + p) * 0.09;
+    }
+    const mix = open ? 0.55 : 0.72;
+    const s = hpOut * bright * mix + metal * bright * (open ? 0.35 : 0.22);
+    out[i] = s * env;
   }
   return out;
 }
 
 function rim(metal: number, seed: number): Float32Array {
-  const n = Math.floor(SAMPLE_RATE * 0.07);
+  const n = Math.floor(SAMPLE_RATE * 0.085);
   const out = new Float32Array(n);
+  const rng = mulberry32(seed);
+  let lp = 0;
   for (let i = 0; i < n; i++) {
     const t = i / SAMPLE_RATE;
-    const env = expEnv(t, 0.018);
-    out[i] = (sine(420, t) + sine(840, t) * 0.55 + sine(1260, t, seed * 0.01) * 0.2) * metal * env;
+    const env = expEnv(t, 0.022);
+    lp = onePoleLowpass(lp, noiseSample(rng), 2400);
+    const tone =
+      sine(420, t) * 0.55 +
+      sine(840, t) * 0.45 +
+      sine(1260, t, seed * 0.01) * 0.18;
+    out[i] = softClip((tone + lp * 0.35) * metal * env, 1.12);
   }
   return out;
 }
 
 function clap(wide: number, seed: number): Float32Array {
-  const n = Math.floor(SAMPLE_RATE * 0.2);
+  const n = Math.floor(SAMPLE_RATE * 0.22);
   const out = new Float32Array(n);
   const rng = mulberry32(seed);
+  let lp = 0;
+  const offsets = [0, 0.007, 0.014, 0.021, 0.029];
   for (let i = 0; i < n; i++) {
     const t = i / SAMPLE_RATE;
-    const env = expEnv(t, 0.08);
+    const env = expEnv(t, 0.085);
     let burst = 0;
-    for (const off of [0, 0.008, 0.016, 0.024]) {
-      if (t >= off) burst += noiseSample(rng) * expEnv(t - off, 0.015);
+    for (const off of offsets) {
+      if (t >= off) {
+        burst += noiseSample(rng) * expEnv(t - off, 0.012);
+      }
     }
-    out[i] = burst * wide * env;
+    lp = onePoleLowpass(lp, burst, 1800 + wide * 2200);
+    out[i] = lp * wide * env * 1.05;
   }
   return out;
 }

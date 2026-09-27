@@ -49,6 +49,24 @@ export function expEnv(t: number, decay: number): number {
   return Math.exp(-t / decay);
 }
 
+/** Exponential pitch glide (Hz) — classic 808-style drop. */
+export function glidePitchHz(t: number, startHz: number, endHz: number, timeConst: number): number {
+  const k = Math.exp(-t / Math.max(timeConst, 0.001));
+  return endHz + (startHz - endHz) * k;
+}
+
+/** Soft parallel blend for transient punch on the master bus. */
+export function parallelPunch(samples: Float32Array, mix: number): Float32Array {
+  if (mix <= 0) return samples;
+  const out = new Float32Array(samples.length);
+  for (let i = 0; i < samples.length; i++) {
+    const dry = samples[i];
+    const wet = softClip(dry * 2.8, 1.45);
+    out[i] = dry * (1 - mix) + wet * mix;
+  }
+  return out;
+}
+
 export function applyBitcrushBlock(
   samples: Float32Array,
   bits: number,

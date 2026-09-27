@@ -29,16 +29,19 @@ export function renderSfx(
   const out = new Float32Array(n);
 
   const kick = renderSampleForEngine("kick", params, engine);
+  const snare = renderSampleForEngine("snare", params, engine);
   const rim = renderSampleForEngine("rim", params, engine);
   const clap = renderSampleForEngine("clap", params, engine);
 
   for (let i = 0; i < n; i++) {
     const t = i / SAMPLE_RATE;
     const env = Math.exp(-t / (seconds * 0.55));
+    const transient = Math.exp(-t / 0.08);
     let s = 0;
-    if (i < kick.length) s += kick[i] * 0.7;
-    if (i < rim.length) s += rim[i] * 0.5;
-    if (i < clap.length) s += clap[i] * 0.35;
+    if (i < kick.length) s += kick[i] * 0.72;
+    if (i < snare.length) s += snare[i] * 0.38 * transient;
+    if (i < rim.length) s += rim[i] * 0.48;
+    if (i < clap.length) s += clap[i] * 0.34;
     out[i] = s * env;
   }
 

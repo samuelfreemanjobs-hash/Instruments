@@ -27,6 +27,14 @@ npm run start &
 DISKLORDZ_URL=http://127.0.0.1:3000 npm run verify:go-live
 ```
 
+## v2.1 engine pass (same provenance)
+
+- **Kick:** exponential pitch glide, sub harmonic, filtered click transient
+- **Snare:** fixed HPF state, dual-tone body + bandpassed snap
+- **Hats:** metallic partial stack + HP noise (open/closed)
+- **Loops:** velocity humanization, creative swing, wildness-driven trap rolls + open hat
+- **Master:** light parallel punch before RMS normalize
+
 ## Not in scope (future WOs)
 
 - Async Stable Audio / GPU worker (`disklordz/sound-factory/`)
