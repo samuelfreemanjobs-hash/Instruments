@@ -8,7 +8,8 @@ from phonk_groove import (
     effective_groove_bpm,
     validate_bpm,
 )
-from phonk_synth import PhonkParams, render_slot, resolve_phonk_params
+from phonk_memphis_lanes import resolve_memphis_lane
+from phonk_synth import render_slot, resolve_phonk_params
 
 SRC_RATE = 44100
 
@@ -45,13 +46,17 @@ def render_phonk_loop(
     bars: int = 2,
     variation: int = 0,
     seed_override: int | None = None,
+    lane_id: str | None = None,
 ) -> tuple[list[float], dict]:
     bpm = validate_bpm(bpm)
-    params = resolve_phonk_params(prompt, variation)
+    lane = resolve_memphis_lane(prompt, lane_id)
+    params = resolve_phonk_params(prompt, variation, lane)
     if seed_override is not None:
         params.seed = seed_override
 
-    patterns = build_loop_pattern(bpm=bpm, bars=bars, seed=params.seed, variation=variation)
+    patterns = build_loop_pattern(
+        bpm=bpm, bars=bars, seed=params.seed, variation=variation, lane=lane
+    )
     step_samples = int((60.0 / bpm) / 4 * SRC_RATE)
     total_steps = bars * STEPS_PER_BAR
     n = step_samples * total_steps
@@ -90,6 +95,8 @@ def render_phonk_loop(
         "prompt": prompt,
         "variation": variation,
         "seed": params.seed,
+        "memphisLane": lane.lane_id if lane else None,
+        "memphisLaneName": lane.display_name if lane else None,
     }
     return out, meta
 

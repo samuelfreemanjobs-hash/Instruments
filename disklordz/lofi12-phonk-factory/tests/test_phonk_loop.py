@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from phonk_groove import build_bar, max_hats_per_bar, validate_bpm  # noqa: E402
 from phonk_loop_render import render_phonk_loop  # noqa: E402
 from phonk_loop_factory import parse_bpm_from_prompt  # noqa: E402
+from phonk_memphis_lanes import resolve_memphis_lane  # noqa: E402
 
 
 class PhonkLoopTests(unittest.TestCase):
@@ -42,6 +43,19 @@ class PhonkLoopTests(unittest.TestCase):
 
     def test_prompt_bpm_parse(self) -> None:
         self.assertEqual(parse_bpm_from_prompt("memphis 92 bpm"), 92.0)
+
+    def test_artist_lane_detection(self) -> None:
+        lane = resolve_memphis_lane("dirty 808 dj paul memphis")
+        self.assertIsNotNone(lane)
+        assert lane is not None
+        self.assertEqual(lane.lane_id, "dj_paul")
+        self.assertEqual(parse_bpm_from_prompt("dj paul style"), 84.0)
+
+    def test_lane_in_loop_meta(self) -> None:
+        _, meta = render_phonk_loop(
+            prompt="juicy j phonk memphis", bpm=86, bars=2, variation=0
+        )
+        self.assertEqual(meta["memphisLane"], "juicy_j")
 
 
 if __name__ == "__main__":

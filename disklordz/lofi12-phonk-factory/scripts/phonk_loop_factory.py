@@ -21,12 +21,18 @@ from lofi12_prepare import (  # noqa: E402
 )
 from phonk_groove import validate_bpm  # noqa: E402
 from phonk_loop_render import bars_that_fit_lofi12, render_phonk_loop  # noqa: E402
+from phonk_memphis_lanes import list_lane_ids, resolve_memphis_lane  # noqa: E402
 
 
-def parse_bpm_from_prompt(prompt: str, default: float = 140.0) -> float:
+def parse_bpm_from_prompt(
+    prompt: str, default: float = 140.0, lane_id: str | None = None
+) -> float:
     m = re.search(r"\b(\d{2,3})\s*bpm\b", prompt.lower())
     if m:
         return validate_bpm(float(m.group(1)))
+    lane = resolve_memphis_lane(prompt, lane_id)
+    if lane:
+        return validate_bpm(lane.default_bpm)
     if re.search(r"\b(screw|slow|memphis|90s)\b", prompt.lower()):
         return 78.0
     if re.search(r"\b(drift|phonk)\b", prompt.lower()):
@@ -47,9 +53,19 @@ def main() -> None:
         action="store_true",
         help="Also write 12 kHz mono version trimmed to Lofi-12 max length",
     )
+    p.add_argument(
+        "--lane",
+        default=None,
+        help=f"Memphis lane override: {', '.join(list_lane_ids())}",
+    )
     args = p.parse_args()
 
-    bpm = validate_bpm(args.bpm) if args.bpm > 0 else parse_bpm_from_prompt(args.prompt)
+    lane = resolve_memphis_lane(args.prompt, args.lane)
+    bpm = (
+        validate_bpm(args.bpm)
+        if args.bpm > 0
+        else parse_bpm_from_prompt(args.prompt, lane_id=args.lane)
+    )
     args.out.mkdir(parents=True, exist_ok=True)
 
     index: list[dict] = []
@@ -64,8 +80,10 @@ def main() -> None:
             bpm=bpm,
             bars=bars,
             variation=variation,
+            lane_id=args.lane,
         )
-        stem = f"memphis_loop_{bpm:.0f}bpm_v{variation:02d}"
+        lane_tag = meta["memphisLane"] or "memphis"
+        stem = f"{lane_tag}_{bpm:.0f}bpm_v{variation:02d}"
         wav_path = args.out / f"{stem}.wav"
         write_wav_mono(wav_path, pcm, meta["sampleRate"])
         entry = {"file": wav_path.name, **meta}
@@ -78,6 +96,7 @@ def main() -> None:
                     bpm=bpm,
                     bars=fit_bars,
                     variation=variation,
+                    lane_id=args.lane,
                 )
             else:
                 pcm_lo, meta_lo = pcm, meta
@@ -97,6 +116,8 @@ def main() -> None:
         "version": 1,
         "prompt": args.prompt,
         "bpm": bpm,
+        "memphisLane": lane.lane_id if lane else None,
+        "memphisLaneName": lane.display_name if lane else None,
         "loops": index,
     }
     (args.out / "loop_manifest.json").write_text(json.dumps(manifest, indent=2))

@@ -11,6 +11,34 @@ Agent and human reference for **1990s Memphis rap** and modern **drift phonk** l
 
 **Avoid:** 32nd-note hat rolls, constant triplet fills, EDM build-ups, “extra fast” double-time grids when BPM is already high.
 
+## Memphis reference lanes (your list)
+
+Mention an artist in the **prompt** (or pass `--lane`) and `phonk_memphis_lanes.py` biases kicks, hat density, cowbell, swing, and tone.
+
+| Lane ID | Names in prompt | Default BPM | Programming bias |
+|---------|-----------------|-------------|------------------|
+| `dj_paul` | dj paul, three 6, triple 6 | 84 | Bounce kicks, extra cowbell, clap-heavy snare |
+| `juicy_j` | juicy j, juicy | 86 | Paul-adjacent; slightly brighter snare/clap |
+| `dj_zirk` | dj zirk, zirk | 80 | Simpler drum-machine grid, sparse hats |
+| `shawty_pimp` | shawty pimp, shawty | 74 | Slow, minimal hats, long 808 decay |
+| `kingpin_skinny_pimp` | kingpin, skinny pimp, short pimp | 76 | Lean patterns, laid-back swing |
+| `blackout` | blackout | 88 | Harder snare, more distorted kick layer |
+| `toy_wright_iii` | toy wright, wright iii | 72 | Very slow, low hat count |
+| `apoc_crisis` | apoc, apocalypse, crisis, apoc crisis | 79 | Dark, gritty, sparse bells |
+
+Example:
+
+```bash
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
+  --prompt "dj paul style memphis 808 cowbell dirty" \
+  --batch 4 --out ~/Music/Lofi12/PhonkLoops/paul
+
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
+  --lane shawty_pimp --batch 2 --out ~/Music/Lofi12/PhonkLoops/shawty
+```
+
+Drop labeled reference WAVs under `references/` (see `references/README.md`) to tune weights later.
+
 ## BPM policy (60–190)
 
 - **60–95:** Full 4-bar loops, 8th hats with shuffle, 1–2 cowbell hits per bar.

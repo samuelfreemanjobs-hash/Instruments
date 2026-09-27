@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
+
+if TYPE_CHECKING:
+    from phonk_memphis_lanes import MemphisLane
 
 Instrument = Literal["kick", "kick_dist", "snare", "clap", "hat", "hat_open", "cowbell", "rim"]
 
@@ -52,22 +55,38 @@ def effective_groove_bpm(bpm: float) -> float:
     return bpm * 0.55
 
 
-def max_hats_per_bar(bpm: float) -> int:
+def max_hats_per_bar(bpm: float, density_mult: float = 1.0) -> int:
     eg = effective_groove_bpm(bpm)
     if eg <= 75:
-        return 10
-    if eg <= 95:
-        return 8
-    if eg <= 110:
-        return 6
-    return 4  # drift BPM metadata high; keep hats sparse
+        base = 10
+    elif eg <= 95:
+        base = 8
+    elif eg <= 110:
+        base = 6
+    else:
+        base = 4
+    return max(2, min(12, int(base * density_mult)))
 
 
-def swing_ratio(bpm: float, seed: int) -> float:
+def swing_ratio(bpm: float, seed: int, bias: float = 0.0) -> float:
     """Memphis shuffle: ~57–62% on 8ths (not straight trap)."""
     base = 0.58 if bpm < 100 else 0.55
     jitter = ((seed >> 4) & 0xF) / 0xF * 0.06
-    return min(0.64, max(0.52, base + jitter))
+    return min(0.64, max(0.52, base + jitter + bias))
+
+
+def _pick_kick_template(seed: int, bar_index: int, weights: tuple[float, ...]) -> tuple[int, ...]:
+    s = seed_int(str(seed), str(bar_index), "kick")
+    total = sum(weights) or 1.0
+    r = _rng(s, 0) * total
+    acc = 0.0
+    idx = 0
+    for i, w in enumerate(weights):
+        acc += w
+        if r <= acc:
+            idx = i
+            break
+    return KICK_TEMPLATES[idx % len(KICK_TEMPLATES)]
 
 
 def _rng(seed: int, i: int) -> float:
@@ -80,28 +99,32 @@ def build_bar(
     bpm: float,
     seed: int,
     variation: int,
+    lane: MemphisLane | None = None,
 ) -> BarPattern:
     s = seed_int(str(seed), str(variation), str(bar_index))
-    kick_idx = (s + bar_index) % len(KICK_TEMPLATES)
-    kick_steps = KICK_TEMPLATES[kick_idx]
+    weights = lane.kick_weights if lane else tuple(1.0 for _ in KICK_TEMPLATES)
+    kick_steps = _pick_kick_template(seed, bar_index, weights)
     hits: list[Hit] = []
+    dist_thresh = lane.kick_dist_threshold if lane else 0.72
+    clap_thresh = lane.clap_threshold if lane else 0.35
 
     for st in kick_steps:
         vel = 0.88 + _rng(s, st) * 0.1
         hits.append(Hit(st, "kick", vel))
-        if _rng(s, st + 3) > 0.72:
+        if _rng(s, st + 3) > dist_thresh:
             hits.append(Hit(st, "kick_dist", vel * 0.35, micro_delay=0.004))
 
     for st in SNARE_BACKBEAT:
         if bar_index == 1 and st == 12 and _rng(s, 99) > 0.5:
             continue  # occasional bar-2 fill drop
         hits.append(Hit(st, "snare", 0.78 + _rng(s, st + 1) * 0.15))
-        if _rng(s, st + 7) > 0.35:
+        if _rng(s, st + 7) > clap_thresh:
             hits.append(Hit(st, "clap", 0.42, micro_delay=0.006))
         if bar_index == 1 and st == 12 and _rng(s, 50) > 0.6:
             hits.append(Hit(14, "rim", 0.55))
 
-    hat_cap = max_hats_per_bar(bpm)
+    hat_mult = lane.hat_density if lane else 1.0
+    hat_cap = max_hats_per_bar(bpm, hat_mult)
     hat_steps: list[int] = []
     for st in range(0, STEPS_PER_BAR, 2):  # 8th-note grid base
         if len(hat_steps) >= hat_cap:
@@ -114,7 +137,8 @@ def build_bar(
         if extra not in hat_steps:
             hat_steps.append(extra)
 
-    sw = swing_ratio(bpm, s)
+    sw_bias = lane.swing_bias if lane else 0.0
+    sw = swing_ratio(bpm, s, sw_bias)
     step_sec = (60.0 / bpm) / 4  # 16th duration
     for i, st in enumerate(sorted(hat_steps)):
         vel = 0.28 + _rng(s, 30 + i) * 0.22
@@ -124,6 +148,8 @@ def build_bar(
             hits.append(Hit(st, "hat_open", 0.32, micro_delay=delay))
 
     bell_count = 1 if effective_groove_bpm(bpm) > 100 else 2
+    if lane:
+        bell_count = max(0, min(3, bell_count + lane.cowbell_extra))
     bells = sorted(COWBELL_CANDIDATES, key=lambda c: _rng(s, c))[:bell_count]
     for st in bells:
         if st not in kick_steps:
@@ -138,12 +164,13 @@ def build_loop_pattern(
     bars: int,
     seed: int,
     variation: int,
+    lane: MemphisLane | None = None,
 ) -> list[BarPattern]:
     if bars not in (1, 2, 4):
         bars = 2 if bpm >= 100 else 4
     out: list[BarPattern] = []
     for b in range(bars):
-        out.append(build_bar(b, bpm=bpm, seed=seed, variation=variation))
+        out.append(build_bar(b, bpm=bpm, seed=seed, variation=variation, lane=lane))
     return out
 
 

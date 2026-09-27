@@ -36,7 +36,22 @@ def seed_from_prompt(prompt: str, variation: int = 0) -> int:
     return int(h[:8], 16)
 
 
-def resolve_phonk_params(prompt: str, variation: int = 0) -> PhonkParams:
+def apply_lane_to_params(params: PhonkParams, lane: object | None) -> PhonkParams:
+    if lane is None:
+        return params
+    return replace(
+        params,
+        kick_pitch=params.kick_pitch + getattr(lane, "kick_pitch_delta", 0.0),
+        kick_decay=max(0.12, params.kick_decay * getattr(lane, "kick_decay_mult", 1.0)),
+        snare_snap=min(
+            0.82,
+            params.snare_snap * getattr(lane, "snare_snap_mult", 1.0),
+        ),
+        grit=min(0.9, max(0.1, params.grit + getattr(lane, "grit_delta", 0.0))),
+    )
+
+
+def resolve_phonk_params(prompt: str, variation: int = 0, lane: object | None = None) -> PhonkParams:
     p = prompt.lower()
     seed = seed_from_prompt(prompt, variation)
     kick_pitch = 38.0
@@ -65,7 +80,7 @@ def resolve_phonk_params(prompt: str, variation: int = 0) -> PhonkParams:
         cowbell_tone *= 1.12
 
     jitter = lambda i: (((seed >> (i * 4)) & 0xF) / 0xF - 0.5) * 0.08
-    return PhonkParams(
+    params = PhonkParams(
         kick_pitch=kick_pitch + jitter(0) * 6,
         kick_decay=max(0.15, kick_decay * (1 + jitter(1))),
         snare_snap=min(0.78, snare_snap * (1 + jitter(2))),
@@ -75,6 +90,7 @@ def resolve_phonk_params(prompt: str, variation: int = 0) -> PhonkParams:
         grit=grit,
         seed=seed,
     )
+    return apply_lane_to_params(params, lane)
 
 
 def kick_808(params: PhonkParams) -> list[float]:
