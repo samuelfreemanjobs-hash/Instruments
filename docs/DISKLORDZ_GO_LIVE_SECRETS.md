@@ -30,6 +30,8 @@ Add these under **GitHub → Settings → Secrets and variables → Actions → 
 |--------|---------|
 | `SAAS_DAILY_GEN_LIMIT` | `20` |
 | `VERCEL_TEAM_ID` | Only if project is under a team |
+| `CURSOR_API_KEY` | Enables [business agents WO-SAAS-018–028](DISKLORDZ_BUSINESS_AGENTS.md) |
+| `OPS_API_KEY` | Protects `GET /api/ops/analytics-summary` (WO-SAAS-025) |
 
 ## Stripe webhook secret (first time)
 

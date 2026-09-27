@@ -1,0 +1,23 @@
+name: Disklordz billing weekly
+
+on:
+  schedule:
+    - cron: "0 14 * * 1"
+  repository_dispatch:
+    types: [disklordz-billing-weekly]
+  workflow_dispatch:
+
+jobs:
+  billing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Billing static checks
+        run: |
+          chmod +x disklordz/automation/scripts/check-billing-integrity.sh
+          bash disklordz/automation/scripts/check-billing-integrity.sh
+      - name: Launch billing agent
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          DISKLORDZ_AGENT_REF: ${{ github.event.client_payload.ref || 'main' }}
+        run: bash disklordz/automation/scripts/trigger_billing_agent.sh

@@ -1,0 +1,14 @@
+---
+description: Factory DSP daily-improvement agent — drum synthesis, master bus, loops
+globs: disklordz/website/src/lib/generation/**,disklordz/website/scripts/factory-*,docs/DISKLORDZ_FACTORY*.md
+---
+
+# Factory DSP engineer lane
+
+When editing procedural drum generation or factory scripts:
+
+1. Read `.cursor/agents/disklordz-factory-dsp-engineer.md` and `docs/DISKLORDZ_FACTORY_DAILY_AGENT.md`.
+2. Prefer **small, audible** improvements over refactors; match existing TypeScript style in `generation/`.
+3. Run `npm run factory:dsp-regression` and `npm run build` from `disklordz/website` before pushing.
+4. Do not change provenance strings without updating docs and regression expectations.
+5. Master bus changes must go through `masterSample()` / `finalizeForWav()` in `factory.ts`, not ad-hoc peak normalize in renderers.

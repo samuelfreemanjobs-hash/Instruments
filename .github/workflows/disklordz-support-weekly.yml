@@ -1,0 +1,17 @@
+name: Disklordz support weekly
+
+on:
+  schedule:
+    - cron: "0 15 * * 2"
+  workflow_dispatch:
+
+jobs:
+  support:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash disklordz/automation/scripts/check-trust-licensing.sh
+      - name: Launch support agent
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+        run: bash disklordz/automation/scripts/trigger_customer_success.sh

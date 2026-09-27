@@ -124,6 +124,18 @@ Example structured conditioning (fed to factory + RAG prompt assistant):
 | **014** | Loop + SFX modes | ✅ `loop_main.wav` / `sfx.wav`; `creditCostForSpec` + variable RPC migration |
 | **015** | Product factory batch | ✅ `buildProductPack`, `POST /api/factory/batch`, pack ZIP download |
 | **016** | Desktop / watch folder | ✅ `disklordz/daw-inbox` watcher + browser “Save WAVs to folder” |
+| **017** | Factory v2 DSP | ✅ Procedural v2 voices + master bus + stereo ([DISKLORDZ_FACTORY_V2.md](DISKLORDZ_FACTORY_V2.md)) |
+| **018** | Daily Factory DSP agent | ✅ Scheduled regression + Cursor Cloud Agent launch ([DISKLORDZ_FACTORY_DAILY_AGENT.md](DISKLORDZ_FACTORY_DAILY_AGENT.md)) |
+| **019** | SaaS ops / go-live guardian | ✅ Daily health + smoke + agent ([DISKLORDZ_BUSINESS_AGENTS.md](DISKLORDZ_BUSINESS_AGENTS.md)) |
+| **020** | Billing integrity | ✅ Weekly Stripe/credits static audit + agent |
+| **021** | Growth / lane marketing | ✅ Weekly copy + prompt drafts |
+| **022** | PM / WO router | ✅ `repository_dispatch` classify → lane agent |
+| **023** | Preset lane curator | ✅ Weekly preset ↔ param alignment |
+| **024** | Customer success agent | ✅ Runbook + weekly agent + trust checks |
+| **025** | Analytics funnel | ✅ `generation_events` + ops summary API |
+| **026** | Async generation jobs | ✅ Jobs table + poll API + UI for loop/SFX |
+| **027** | Audio QA / golden lanes | ✅ Golden presets in `factory:dsp-regression` |
+| **028** | Competitive intel | ✅ Monthly agent + marketing inbox |
 
 Each WO: Airtable → GitHub issue → PR title `WO-SAAS-00N` → merge → Done.
 

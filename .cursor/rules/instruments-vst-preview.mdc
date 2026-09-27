@@ -1,0 +1,18 @@
+---
+description: Local VST preview agent — build plugins and write listenable WAVs after JUCE edits
+globs: Source/**,Wave909/**,tools/OfflineRender.cpp,tests/golden/**,vst-testing-ops/preview_agent.py
+---
+
+# VST preview lane (local VS Code / Cursor)
+
+When editing JUCE plugin code (`Source/`, `Wave909/`, offline tools):
+
+1. Read `.cursor/agents/instruments-vst-preview-agent.md` and `docs/INSTRUMENTS_VST_PREVIEW_AGENT.md`.
+2. After substantive DSP/UI changes, run locally:
+   - **Cursor/VS Code task:** `Instruments: VST preview WAVs` or `Instruments: VST preview (git-scoped)`
+   - **CLI:** `python3 vst-testing-ops/preview_agent.py --from-git`
+3. Tell the user to open `vst-testing-ops/previews/latest/*.wav` (Audio Preview extension in VS Code).
+4. For live knobs/MIDI, use task **Instruments: Launch JD Standalone** or paths in `previews/preview-manifest.json`.
+5. Full CI parity remains `python3 vst-testing-ops/run_business.py --profile ci` before merge.
+
+First-time on a new machine: run task **Instruments: VST preview — local setup** or `./scripts/vscode-vst-preview-setup.sh`.

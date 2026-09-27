@@ -1,0 +1,21 @@
+{
+  "workOrderId": "WO-SAAS-018",
+  "title": "Daily Factory DSP Cloud Agent (continuous drum engine improvement)",
+  "lane": "SaaS / Drum Factory",
+  "priority": "P1",
+  "recurrence": "daily",
+  "owner": "Product",
+  "implementer": "Cursor Cloud Agent — Disklordz Factory DSP Engineer",
+  "acceptanceCriteria": [
+    "GitHub Action disklordz-factory-daily.yml runs 12:30 UTC",
+    "factory:dsp-regression passes on main",
+    "CURSOR_API_KEY launches agent with theme rotation",
+    "Draft PR WO-SAAS-018 with Listen-for notes",
+    "FACTORY_IMPROVEMENT_LOG.md updated"
+  ],
+  "links": {
+    "pmDoc": "docs/DISKLORDZ_FACTORY_DAILY_AGENT.md",
+    "persona": ".cursor/agents/disklordz-factory-dsp-engineer.md",
+    "workflow": ".github/workflows/disklordz-factory-daily.yml"
+  }
+}

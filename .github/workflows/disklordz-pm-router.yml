@@ -1,0 +1,40 @@
+name: Disklordz PM router
+
+on:
+  repository_dispatch:
+    types: [disklordz-pm-router]
+  workflow_dispatch:
+    inputs:
+      intake:
+        description: "Free-text intake for classification"
+        required: true
+        type: string
+      mode:
+        description: "auto (launch lane agent) or agent (PM Cloud Agent)"
+        required: false
+        default: auto
+        type: choice
+        options:
+          - auto
+          - agent
+
+jobs:
+  route:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Classify and dispatch
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          PM_ROUTER_INTAKE: ${{ github.event.client_payload.intake || github.event.inputs.intake }}
+          DISKLORDZ_AGENT_REF: ${{ github.event.client_payload.ref || 'main' }}
+        run: |
+          chmod +x disklordz/automation/scripts/*.sh
+          if [[ "${{ github.event.inputs.mode || github.event.client_payload.mode || 'auto' }}" == "agent" ]]; then
+            bash disklordz/automation/scripts/trigger_pm_router_agent.sh --agent <<< "$PM_ROUTER_INTAKE"
+          else
+            bash disklordz/automation/scripts/trigger_pm_router_agent.sh <<< "$PM_ROUTER_INTAKE"
+          fi
