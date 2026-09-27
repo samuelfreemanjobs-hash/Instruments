@@ -8,6 +8,14 @@ PRESET="${DISKLORDZ_GO_LIVE_PRESET:-boulevard-86}"
 
 echo "Disklordz go-live verify → ${BASE_URL}"
 
+health_body=$(curl -s "${BASE_URL}/api/health")
+if ! echo "$health_body" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d.get('status') in ('ok','degraded'); assert d.get('features',{}).get('guestGenerate')"; then
+  echo "FAIL: GET /api/health"
+  echo "$health_body" | head -c 400
+  exit 1
+fi
+echo "OK: GET /api/health"
+
 code_home=$(curl -s -o /dev/null -w "%{http_code}" "${BASE_URL}/")
 if [[ "$code_home" != "200" ]]; then
   echo "FAIL: GET / returned ${code_home}"

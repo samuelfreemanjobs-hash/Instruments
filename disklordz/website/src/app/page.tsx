@@ -7,7 +7,10 @@ export default function Home() {
       <AuthNav />
       <KitGenerator />
       <footer className="mx-auto mt-16 max-w-3xl border-t border-zinc-800 pt-6 text-center text-xs text-zinc-600">
-        v0 MVP · parametric factory · deploy via DEPLOY.md
+        Disklordz Drum Factory · prompt → preview → pack ·{" "}
+        <a href="/account" className="text-zinc-500 underline-offset-2 hover:text-emerald-500 hover:underline">
+          account &amp; Pro
+        </a>
       </footer>
     </div>
   );
