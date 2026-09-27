@@ -1,6 +1,6 @@
 # SP-1200 Drumulator — architecture
 
-Standalone **12-bit / 26.040 kHz** sampler inspired by the E-mu SP-1200 workflow. Product spec: [docs/SP1200_STANDALONE_SPEC.md](../docs/SP1200_STANDALONE_SPEC.md).
+Standalone **12-bit / 26.040 kHz** sampler inspired by the E-mu SP-1200 workflow. **Spec + code are one product** on `main` ([docs/SP1200_STANDALONE_SPEC.md](../docs/SP1200_STANDALONE_SPEC.md) = acceptance; this tree = implementation).
 
 ## Purpose
 
