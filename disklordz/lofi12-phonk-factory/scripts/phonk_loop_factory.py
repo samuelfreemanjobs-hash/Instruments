@@ -20,6 +20,7 @@ from lofi12_prepare import (  # noqa: E402
     write_wav_mono,
 )
 from phonk_groove import validate_bpm  # noqa: E402
+from phonk_loop_fx import LoopFxParams, fx_dict, fx_from_prompt  # noqa: E402
 from phonk_loop_render import bars_that_fit_lofi12, render_phonk_loop  # noqa: E402
 from phonk_machine_engine import PROFILES, list_engines, resolve_engine_id  # noqa: E402
 from phonk_memphis_lanes import list_lane_ids, resolve_memphis_lane  # noqa: E402
@@ -70,7 +71,21 @@ def main() -> None:
         default=None,
         help=f"Drum machine engine ({engine_help}, classic)",
     )
+    p.add_argument("--filter", type=float, default=-1, help="Mix filter 0–1 (-1 = from prompt)")
+    p.add_argument("--reverb", type=float, default=-1, help="Reverb send 0–1 (-1 = from prompt)")
+    p.add_argument("--tape", type=float, default=-1, help="Tape wobble/noise 0–1")
+    p.add_argument("--drive", type=float, default=-1, help="Saturation 0–1")
     args = p.parse_args()
+
+    fx = fx_from_prompt(args.prompt)
+    if args.filter >= 0:
+        fx.filter_cutoff = min(1.0, max(0.0, args.filter))
+    if args.reverb >= 0:
+        fx.reverb_send = min(1.0, max(0.0, args.reverb))
+    if args.tape >= 0:
+        fx.tape = min(1.0, max(0.0, args.tape))
+    if args.drive >= 0:
+        fx.drive = min(1.0, max(0.0, args.drive))
 
     lane = resolve_memphis_lane(args.prompt, args.lane)
     engine = resolve_engine_id(args.prompt, args.engine)
@@ -96,6 +111,7 @@ def main() -> None:
             lane_id=args.lane,
             with_vocals=args.with_vocals,
             engine_id=args.engine,
+            fx=fx,
         )
         lane_tag = meta["memphisLane"] or "memphis"
         stem = f"{lane_tag}_{engine}_{bpm:.0f}bpm_v{variation:02d}"
@@ -114,6 +130,7 @@ def main() -> None:
                     lane_id=args.lane,
                     with_vocals=args.with_vocals,
                     engine_id=args.engine,
+                    fx=fx,
                 )
             else:
                 pcm_lo, meta_lo = pcm, meta
@@ -137,6 +154,7 @@ def main() -> None:
         "memphisLaneName": lane.display_name if lane else None,
         "drumEngine": engine,
         "drumEngineLabel": PROFILES.get(engine, PROFILES["mr_tape"]).label,
+        "fx": fx_dict(fx),
         "loops": index,
     }
     (args.out / "loop_manifest.json").write_text(json.dumps(manifest, indent=2))

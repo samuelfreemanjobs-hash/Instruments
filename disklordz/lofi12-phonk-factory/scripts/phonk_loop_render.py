@@ -10,6 +10,7 @@ from phonk_groove import (
 )
 from phonk_memphis_lanes import resolve_memphis_lane
 from phonk_machine_engine import PROFILES, resolve_engine_id
+from phonk_loop_fx import LoopFxParams, apply_loop_fx, fx_dict, fx_from_prompt
 from phonk_synth import render_slot, resolve_phonk_params
 
 SRC_RATE = 44100
@@ -51,6 +52,7 @@ def render_phonk_loop(
     with_vocals: bool = False,
     vocal_gain: float = 0.32,
     engine_id: str | None = None,
+    fx: LoopFxParams | None = None,
 ) -> tuple[list[float], dict]:
     bpm = validate_bpm(bpm)
     lane = resolve_memphis_lane(prompt, lane_id)
@@ -95,9 +97,8 @@ def render_phonk_loop(
             if i < len(out):
                 out[i] += s * vocal_gain
 
-    peak = max(abs(s) for s in out) or 1.0
-    scale = 0.89 / peak
-    out = [s * scale for s in out]
+    fx_params = fx if fx is not None else fx_from_prompt(prompt)
+    out = apply_loop_fx(out, fx_params, seed=params.seed)
 
     duration = n / SRC_RATE
     meta = {
@@ -115,6 +116,7 @@ def render_phonk_loop(
         "withVocals": with_vocals,
         "drumEngine": engine,
         "drumEngineLabel": PROFILES.get(engine, PROFILES["mr_tape"]).label,
+        "fx": fx_dict(fx_params),
     }
     return out, meta
 
