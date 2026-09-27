@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Instruments: VST preview WAVs",
+      "type": "shell",
+      "command": "python3 vst-testing-ops/preview_agent.py",
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": { "kind": "test", "isDefault": false },
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Instruments: VST preview (git-scoped)",
+      "type": "shell",
+      "command": "python3 vst-testing-ops/preview_agent.py --from-git",
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Instruments: Launch JD Standalone",
+      "type": "shell",
+      "command": "python3 vst-testing-ops/preview_agent.py --skip-build --launch-standalone jd",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    }
+  ]
+}

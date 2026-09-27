@@ -8,6 +8,11 @@ import { readFileSync } from "fs";
 const text = (readFileSync(0, "utf8") + process.argv.slice(2).join(" ")).toLowerCase();
 
 const rules = [
+  {
+    lane: "vst_preview",
+    wo: "PLUGIN-001",
+    re: /\b(vst preview|preview wav|offline render|listen in vscode|plugin preview)\b/,
+  },
   { lane: "factory_dsp", wo: "018", re: /\b(kick|snare|hat|dsp|factory|808|phonk|audio|wav|synth)\b/ },
   { lane: "saas_ops", wo: "019", re: /\b(health|go-live|vercel|deploy|uptime|503|generate api)\b/ },
   { lane: "billing", wo: "020", re: /\b(stripe|webhook|checkout|subscription|credits|billing|pro plan)\b/ },
@@ -35,6 +40,7 @@ const out = {
     billing: "disklordz-billing-weekly",
     growth: "disklordz-growth-weekly",
     preset_curator: "disklordz-preset-curator-weekly",
+    vst_preview: "instruments-vst-preview",
     plugin_juce: "build-plugin",
     hise_antigravity: "airtable-antigravity-handoff",
     customer_success: "disklordz-support-weekly",

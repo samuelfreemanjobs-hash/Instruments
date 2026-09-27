@@ -13,6 +13,7 @@ Run the whole product QA loop without manual DAW checks — configure/build, art
 | `business_pipeline.py` | Stage runners + profiles (`ci`, `full`, `plugin-quick`, `dsp-only`). |
 | `run_business.py` | CLI: `python3 vst-testing-ops/run_business.py --profile ci` |
 | `app.py` | Streamlit **Operations Command Center** (fleet status + full pipeline). |
+| `preview_agent.py` | **VST preview agent** — build + `OfflineRender` WAVs → `previews/latest/` ([docs/INSTRUMENTS_VST_PREVIEW_AGENT.md](../docs/INSTRUMENTS_VST_PREVIEW_AGENT.md)). |
 | `test_runner.py` | Single-VST pluginval + `error_log.txt` / `--watch`. |
 | `my_plugins/` | Drop `.vst3` bundles (gitignored). |
 | `bin/` | Optional local `pluginval` binary. |

@@ -1,0 +1,48 @@
+name: Instruments VST preview
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: jd | wave909 | all
+        required: false
+        default: all
+  push:
+    branches:
+      - "cursor/**"
+    paths:
+      - "Source/**"
+      - "Wave909/**"
+      - "tools/OfflineRender.cpp"
+      - "vst-testing-ops/preview_agent.py"
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++-12 gcc-12 cmake sox
+
+      - name: Preview agent
+        run: |
+          python3 vst-testing-ops/preview_agent.py --scope "${{ github.event.inputs.scope || 'all' }}"
+
+      - name: Upload preview WAVs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vst-preview-wavs
+          path: |
+            vst-testing-ops/previews/latest/*.wav
+            vst-testing-ops/previews/preview-manifest.json
+          if-no-files-found: ignore
+
+      - name: Launch Cloud preview agent
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+        run: bash scripts/trigger_vst_preview_agent.sh

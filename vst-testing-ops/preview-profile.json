@@ -1,0 +1,34 @@
+{
+  "jd_upgraded": [
+    {
+      "id": "ep-c4",
+      "label": "Factory EP (program 0)",
+      "program": 0,
+      "midiNote": 60,
+      "velocity": 100,
+      "seconds": 2.0,
+      "sampleRate": 44100
+    },
+    {
+      "id": "pad-c4",
+      "label": "Pad (program 24)",
+      "program": 24,
+      "midiNote": 60,
+      "velocity": 100,
+      "seconds": 2.0,
+      "sampleRate": 44100
+    },
+    {
+      "id": "bass-e2",
+      "label": "Bass (program 48)",
+      "program": 48,
+      "midiNote": 40,
+      "velocity": 100,
+      "seconds": 2.0,
+      "sampleRate": 44100
+    }
+  ],
+  "wave909": {
+    "note": "Headless WAV preview is JD Upgraded only (OfflineRender). For Wave909, launch Standalone or load VST3 in a DAW."
+  }
+}

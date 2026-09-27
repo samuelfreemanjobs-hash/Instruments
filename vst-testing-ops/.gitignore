@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+previews/
+reports/
+error_log.txt
+last_run_report.json
+last_build.log

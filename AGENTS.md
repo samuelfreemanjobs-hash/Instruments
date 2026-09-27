@@ -42,7 +42,10 @@ python3 vst-testing-ops/run_business.py --profile ci       # full plugin QA (mat
 python3 vst-testing-ops/run_business.py --profile dsp-only # DSP/golden only (faster)
 python3 vst-testing-ops/test_runner.py                     # single-VST pluginval
 streamlit run vst-testing-ops/app.py                       # operations dashboard
+python3 vst-testing-ops/preview_agent.py                   # VS Code–friendly preview WAVs (WO-PLUGIN-001)
 ```
+
+VST preview agent: [docs/INSTRUMENTS_VST_PREVIEW_AGENT.md](docs/INSTRUMENTS_VST_PREVIEW_AGENT.md) · persona [.cursor/agents/instruments-vst-preview-agent.md](.cursor/agents/instruments-vst-preview-agent.md)
 
 **After editing plugin C++ (`Source/`, `Wave909/`, etc.):** run `run_business.py --profile ci` before pushing; on failure read `vst-testing-ops/error_log.txt` and fix until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit updated WAVs.
 
