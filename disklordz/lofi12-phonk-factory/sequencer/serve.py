@@ -69,7 +69,7 @@ class Handler(BaseHTTPRequestHandler):
             from phonk_loop_fx import LoopFxParams
             from phonk_loop_render import render_phonk_loop
 
-            prompt = str(payload.get("prompt", "juicy j memphis phonk 84"))
+            prompt = str(payload.get("prompt", "juicy j dj paul dirty memphis 86"))
             bpm = float(payload.get("bpm", 84))
             bars = int(payload.get("bars", 2))
             variation = int(payload.get("variation", 0))
@@ -101,7 +101,7 @@ class Handler(BaseHTTPRequestHandler):
             from pattern_from_groove import groove_to_pattern
             from pattern_schema import Pattern
 
-            prompt = str(payload.get("prompt", "dj paul memphis 84"))
+            prompt = str(payload.get("prompt", "juicy j dj paul dirty memphis 86"))
             bpm = float(payload.get("bpm", 84))
             pat: Pattern = groove_to_pattern(prompt, bpm, int(payload.get("variation", 0)))
             data = json.dumps(pat.to_dict()).encode("utf-8")

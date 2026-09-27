@@ -59,6 +59,8 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
 
 Programming rules for agents: [docs/PHONK_PROGRAMMING_PLAYBOOK.md](docs/PHONK_PROGRAMMING_PLAYBOOK.md).
 
+**Juicy J / DJ Paul / DJ Toomp:** [docs/MEMPHIS_TRINITY_STYLE.md](docs/MEMPHIS_TRINITY_STYLE.md) and `--preset memphis_trinity`.
+
 ## Vocal textures (phonk)
 
 Synthetic Memphis-style chops/loops (formant synth — **not** artist voice clones) plus optional processing of **your** acapella:

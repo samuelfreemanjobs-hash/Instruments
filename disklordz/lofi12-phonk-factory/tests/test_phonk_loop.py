@@ -57,6 +57,16 @@ class PhonkLoopTests(unittest.TestCase):
         )
         self.assertEqual(meta["memphisLane"], "juicy_j")
 
+    def test_toomp_lane_and_engine(self) -> None:
+        lane = resolve_memphis_lane("dj toomp atlanta trap 808")
+        self.assertIsNotNone(lane)
+        assert lane is not None
+        self.assertEqual(lane.lane_id, "dj_toomp")
+        _, meta = render_phonk_loop(
+            prompt="dj toomp memphis", bpm=78, bars=2, variation=0, engine_id="dj_toomp"
+        )
+        self.assertEqual(meta["drumEngine"], "dj_toomp")
+
 
 if __name__ == "__main__":
     unittest.main()

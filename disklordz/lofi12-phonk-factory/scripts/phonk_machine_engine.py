@@ -34,6 +34,7 @@ VoiceKey = Literal[
 
 ENGINE_IDS = (
     "juicy_j",
+    "dj_toomp",
     "tr808",
     "tr909",
     "boss_dr660",
@@ -91,6 +92,28 @@ PROFILES: dict[str, MachineProfile] = {
         kick_sub_blend=0.42,
         snare_crunch=1.35,
         fm_perc=1.0,
+    ),
+    "dj_toomp": MachineProfile(
+        "dj_toomp",
+        "DJ Toomp (SP-1200 grit + trap 808)",
+        0.26,
+        4.9,
+        1.08,
+        198,
+        0.24,
+        1.22,
+        0.92,
+        0.28,
+        12,
+        0.22,
+        0.012,
+        1.0,
+        1.38,
+        0.038,
+        dirt=0.36,
+        kick_sub_blend=0.58,
+        snare_crunch=1.28,
+        fm_perc=0.85,
     ),
     "tr808": MachineProfile(
         "tr808",
@@ -249,8 +272,10 @@ def resolve_engine_id(prompt: str, override: str | None = None) -> str:
                 return eid
     p = prompt.lower()
     rules: list[tuple[str, str]] = [
+        (r"\b(toomp|dj\s*toomp)\b", "dj_toomp"),
         (r"\bjuicy\s*j\b|\bjuicy\b", "juicy_j"),
         (r"\b(dirty\s*memphis|memphis\s*dirty)\b", "juicy_j"),
+        (r"\bdj\s*paul\b|\bthree\s*6\b", "juicy_j"),
         (r"\b(mr\s*tape|splice|tape\s*pack)\b", "mr_tape"),
         (r"\b(screw|dj\s*screw|slowed)\b", "dj_screw"),
         (r"\b(909|tr\s*909)\b", "tr909"),
@@ -451,7 +476,7 @@ def _cowbell(prof: MachineProfile, params: PhonkParams, freq: float) -> list[flo
         from phonk_fm import fm_cowbell_808, fm_cowbell_memphis, normalize_peak
 
         grit = params.grit * prof.dirt
-        if prof.engine_id in ("juicy_j", "dj_screw", "mr_tape"):
+        if prof.engine_id in ("juicy_j", "dj_toomp", "dj_screw", "mr_tape"):
             out = normalize_peak(fm_cowbell_memphis(freq, params.seed + 8, grit))
         else:
             out = normalize_peak(fm_cowbell_808(freq, params.seed + 8, grit))

@@ -7,6 +7,7 @@ Agent and human reference for **1990s Memphis rap** and modern **drift phonk** l
 | Era | Feel | Reference vibe |
 |-----|------|----------------|
 | **1990s Memphis** | Slow–mid (70–95 BPM), dirty 808, simple repeating patterns, cowbell accents | Three 6 Mafia, DJ Paul / Juicy J early |
+| **Southern trap roots** | Hard 808 stack, SP-1200-style loops → later trap | DJ Toomp (Memphis-adjacent Atlanta) |
 | **Drift phonk** | 130–170 BPM *metadata*, **half-time feel**, sparse hats, hard snare/clap | YouTube drift edits — not festival trap |
 
 **Avoid:** 32nd-note hat rolls, constant triplet fills, EDM build-ups, “extra fast” double-time grids when BPM is already high.
@@ -19,6 +20,7 @@ Mention an artist in the **prompt** (or pass `--lane`) and `phonk_memphis_lanes.
 |---------|-----------------|-------------|------------------|
 | `dj_paul` | dj paul, three 6, triple 6 | 84 | Bounce kicks, extra cowbell, clap-heavy snare |
 | `juicy_j` | juicy j, juicy | 86 | Paul-adjacent; slightly brighter snare/clap |
+| `dj_toomp` | toomp, dj toomp, atlanta trap | 78 | Harder kicks, less cowbell, trap-weight sub |
 | `dj_zirk` | dj zirk, zirk | 80 | Simpler drum-machine grid, sparse hats |
 | `shawty_pimp` | shawty pimp, shawty | 74 | Slow, minimal hats, long 808 decay |
 | `kingpin_skinny_pimp` | kingpin, skinny pimp, short pimp | 76 | Lean patterns, laid-back swing |

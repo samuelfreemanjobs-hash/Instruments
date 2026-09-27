@@ -7,6 +7,7 @@ Procedural **original** drum voices modeled after machines common in **1990s Mem
 | ID | Machine / vibe | Character |
 |----|----------------|-----------|
 | **`juicy_j`** | Dirty Memphis / Juicy J | **Default for memphis/phonk** — 808+sub, parallel dirt, 10-bit, tape hiss, crunchy snare |
+| **`dj_toomp`** | DJ Toomp | SP-1200-style 12-bit + trap 808 click/sub; use with `--lane dj_toomp` or `--preset dj_toomp` |
 | `tr808` | Roland TR-808 | Long sine kick, noisy snare, short hats |
 | `tr909` | Roland TR-909 | Tighter kick click, brighter snare, sharper hats |
 | `boss_dr660` | Boss DR-660 | 12-bit lean, boxy transients |

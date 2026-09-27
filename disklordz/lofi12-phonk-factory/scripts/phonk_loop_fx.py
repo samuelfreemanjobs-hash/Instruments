@@ -32,6 +32,10 @@ def fx_from_prompt(prompt: str) -> LoopFxParams:
     if "dirty" in p or "phonk" in p or "memphis" in p:
         fx.drive = 0.28
         fx.tape = max(fx.tape, 0.22)
+    if "toomp" in p or "sp1200" in p or "sp-1200" in p:
+        fx.filter_cutoff = min(fx.filter_cutoff, 0.5)
+        fx.tape = max(fx.tape, 0.26)
+        fx.drive = max(fx.drive, 0.3)
     if "drift" in p:
         fx.reverb_send = 0.32
     return fx

@@ -24,6 +24,9 @@ from phonk_loop_fx import LoopFxParams, fx_dict, fx_from_prompt  # noqa: E402
 from phonk_loop_render import bars_that_fit_lofi12, render_phonk_loop  # noqa: E402
 from phonk_machine_engine import PROFILES, list_engines, resolve_engine_id  # noqa: E402
 from phonk_memphis_lanes import list_lane_ids, resolve_memphis_lane  # noqa: E402
+from phonk_style_presets import get_preset, list_preset_ids  # noqa: E402
+
+DEFAULT_PROMPT = "1990s memphis phonk dirty 808 cowbell"
 
 
 def parse_bpm_from_prompt(
@@ -35,6 +38,8 @@ def parse_bpm_from_prompt(
     lane = resolve_memphis_lane(prompt, lane_id)
     if lane:
         return validate_bpm(lane.default_bpm)
+    if re.search(r"\b(toomp|dj\s*toomp)\b", prompt.lower()):
+        return 78.0
     if re.search(r"\b(screw|slow|memphis|90s)\b", prompt.lower()):
         return 78.0
     if re.search(r"\b(drift|phonk)\b", prompt.lower()):
@@ -44,7 +49,7 @@ def parse_bpm_from_prompt(
 
 def main() -> None:
     p = argparse.ArgumentParser(description="Memphis phonk drum loop factory")
-    p.add_argument("--prompt", default="1990s memphis phonk dirty 808 cowbell")
+    p.add_argument("--prompt", default=DEFAULT_PROMPT)
     p.add_argument("--bpm", type=float, default=0, help="60–190; 0 = infer from prompt")
     p.add_argument("--bars", type=int, default=0, help="1, 2, or 4; 0 = auto")
     p.add_argument("--variation", type=int, default=0)
@@ -75,9 +80,29 @@ def main() -> None:
     p.add_argument("--reverb", type=float, default=-1, help="Reverb send 0–1 (-1 = from prompt)")
     p.add_argument("--tape", type=float, default=-1, help="Tape wobble/noise 0–1")
     p.add_argument("--drive", type=float, default=-1, help="Saturation 0–1")
+    preset_help = ", ".join(list_preset_ids())
+    p.add_argument(
+        "--preset",
+        default=None,
+        help=f"Juicy J / DJ Paul / Toomp stack ({preset_help})",
+    )
     args = p.parse_args()
 
+    prompt_was_default = args.prompt == DEFAULT_PROMPT
+    preset = get_preset(args.preset) if args.preset else None
+    if preset:
+        if prompt_was_default:
+            args.prompt = preset.prompt
+        if args.lane is None and preset.lane:
+            args.lane = preset.lane
+        if args.engine is None and preset.engine:
+            args.engine = preset.engine
+        if args.bpm <= 0 and preset.bpm:
+            args.bpm = preset.bpm
+
     fx = fx_from_prompt(args.prompt)
+    if preset and args.filter < 0 and args.reverb < 0 and args.tape < 0 and args.drive < 0:
+        fx = preset.fx
     if args.filter >= 0:
         fx.filter_cutoff = min(1.0, max(0.0, args.filter))
     if args.reverb >= 0:
