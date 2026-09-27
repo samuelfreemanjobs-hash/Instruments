@@ -75,6 +75,32 @@ Drop labeled reference WAVs under `references/` (see `references/README.md`) to 
 - Good: `1990s memphis phonk dirty 808 cowbell 82 bpm`, `slow screw memphis snare`, `drift phonk 148 half time`
 - Weak: `fast trap roll hi hat`, `double time`, `EDM phonk`
 
+## Vocals (phonk / Memphis)
+
+Real phonk often uses **chopped, pitched-down rap samples**. This repo supports two paths:
+
+| Path | Command | Notes |
+|------|---------|--------|
+| **Synthetic texture** | `phonk_vocal_factory.py` | Formant “uh/ah/oh” chops + loops — **not** a real voice or artist clone; good for sketches and Lofi-12 slots |
+| **Your acapella** | `--acapella your.wav` | You must **own or license** the recording; we screw/slice/process only |
+| **Drums + vox** | `phonk_loop_factory.py --with-vocals` | Quiet synthetic layer under the drum loop |
+
+```bash
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_vocal_factory.py \
+  --prompt "dj paul memphis screw dark vocal chop" \
+  --chops-only --batch 4 --lofi12 \
+  --out ~/Music/Lofi12/PhonkVocals
+
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_vocal_factory.py \
+  --prompt "shawty pimp slow" --bars 2 --bpm 74 \
+  --out ~/Music/Lofi12/PhonkVocals/loops
+
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
+  --prompt "dj paul phonk 84" --with-vocals --batch 2 --out ~/Music/Lofi12/PhonkLoops
+```
+
+For release-quality phonk vocals, record yourself or use **cleared** acapellas; synthetic output is a **stand-in** until SysEx/sample workflow is wired.
+
 ## CLI
 
 ```bash

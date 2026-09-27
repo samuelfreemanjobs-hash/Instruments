@@ -50,6 +50,18 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
 
 Programming rules for agents: [docs/PHONK_PROGRAMMING_PLAYBOOK.md](docs/PHONK_PROGRAMMING_PLAYBOOK.md).
 
+## Vocal textures (phonk)
+
+Synthetic Memphis-style chops/loops (formant synth — **not** artist voice clones) plus optional processing of **your** acapella:
+
+```bash
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_vocal_factory.py \
+  --prompt "memphis screw dark vocal" --chops-only --batch 4 --out ~/Music/Lofi12/PhonkVocals
+
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
+  --prompt "dj paul phonk 84" --with-vocals --out ~/Music/Lofi12/PhonkLoops
+```
+
 ## Tests
 
 ```bash

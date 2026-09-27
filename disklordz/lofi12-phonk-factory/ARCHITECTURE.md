@@ -54,6 +54,15 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
 
 `phonk_groove.py` enforces Memphis density (half-time at high BPM, 8th hats max). See [docs/PHONK_PROGRAMMING_PLAYBOOK.md](docs/PHONK_PROGRAMMING_PLAYBOOK.md).
 
+## Vocal factory
+
+```bash
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_vocal_factory.py \
+  --chops-only --out ~/Music/Lofi12/PhonkVocals
+```
+
+`phonk_vocal_synth.py` — formant chops + screw/telephone/grit; `--acapella` for user-owned WAV slices. `--with-vocals` on loop factory mixes under drums.
+
 ## Extension points
 
 - WAV → Lofi-12 `.syx` encoder + USB-MIDI send (see repo `docs/SYSEX.md` patterns)

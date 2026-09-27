@@ -58,6 +58,11 @@ def main() -> None:
         default=None,
         help=f"Memphis lane override: {', '.join(list_lane_ids())}",
     )
+    p.add_argument(
+        "--with-vocals",
+        action="store_true",
+        help="Mix synthetic Memphis vocal texture under drums (formant synth, not a voice clone)",
+    )
     args = p.parse_args()
 
     lane = resolve_memphis_lane(args.prompt, args.lane)
@@ -81,6 +86,7 @@ def main() -> None:
             bars=bars,
             variation=variation,
             lane_id=args.lane,
+            with_vocals=args.with_vocals,
         )
         lane_tag = meta["memphisLane"] or "memphis"
         stem = f"{lane_tag}_{bpm:.0f}bpm_v{variation:02d}"
@@ -97,6 +103,7 @@ def main() -> None:
                     bars=fit_bars,
                     variation=variation,
                     lane_id=args.lane,
+                    with_vocals=args.with_vocals,
                 )
             else:
                 pcm_lo, meta_lo = pcm, meta

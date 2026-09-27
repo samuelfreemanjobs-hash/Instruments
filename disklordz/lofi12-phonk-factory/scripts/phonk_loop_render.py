@@ -47,6 +47,8 @@ def render_phonk_loop(
     variation: int = 0,
     seed_override: int | None = None,
     lane_id: str | None = None,
+    with_vocals: bool = False,
+    vocal_gain: float = 0.32,
 ) -> tuple[list[float], dict]:
     bpm = validate_bpm(bpm)
     lane = resolve_memphis_lane(prompt, lane_id)
@@ -80,6 +82,16 @@ def render_phonk_loop(
             if hit.instrument in ("kick", "kick_dist"):
                 _duck_buffer(out, offset, min(len(pcm), step_samples * 2), 0.25)
 
+    if with_vocals:
+        from phonk_vocal_synth import render_vocal_loop
+
+        vox, vox_meta = render_vocal_loop(
+            prompt=prompt, bpm=bpm, bars=bars, variation=variation, lane=lane
+        )
+        for i, s in enumerate(vox):
+            if i < len(out):
+                out[i] += s * vocal_gain
+
     peak = max(abs(s) for s in out) or 1.0
     scale = 0.89 / peak
     out = [s * scale for s in out]
@@ -97,6 +109,7 @@ def render_phonk_loop(
         "seed": params.seed,
         "memphisLane": lane.lane_id if lane else None,
         "memphisLaneName": lane.display_name if lane else None,
+        "withVocals": with_vocals,
     }
     return out, meta
 
