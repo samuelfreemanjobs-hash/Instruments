@@ -42,11 +42,18 @@ See [AIRTABLE_ANTIGRAVITY.md](AIRTABLE_ANTIGRAVITY.md).
 2. If `CURSOR_API_KEY` is set, launches a Cursor Cloud Agent with the prompt in [`prompts/factory-daily-improvement.md`](prompts/factory-daily-improvement.md).
 
 ```bash
-# Manual trigger
+# Full local pipeline (same as CI + optional agent)
+bash scripts/run-factory-daily.sh
+# or from repo root: ./scripts/disklordz-factory-daily.sh
+
+# Diagnostics
+bash scripts/check-factory-daily-setup.sh
+
+# Manual GitHub trigger
 gh workflow run disklordz-factory-daily.yml
 gh workflow run disklordz-factory-daily.yml -f theme=loops_patterns
 
-# Dry-run prompt text
+# Dry-run agent prompt
 bash scripts/trigger_cursor_factory_daily_agent.sh --dry-run
 ```
 

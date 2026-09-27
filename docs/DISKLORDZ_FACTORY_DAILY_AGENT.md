@@ -67,19 +67,41 @@ Backlog detail: [`disklordz/website/docs/FACTORY_IMPROVEMENT_BACKLOG.md`](../dis
 - [ ] Draft PR with **Listen for** notes
 - [ ] Line added to `FACTORY_IMPROVEMENT_LOG.md`
 
-## Manual trigger
+## One command (local — complete script)
+
+From repo root:
+
+```bash
+chmod +x scripts/disklordz-factory-daily.sh
+./scripts/disklordz-factory-daily.sh
+```
+
+From `disklordz/website`:
+
+```bash
+npm run factory:daily              # regression + build + lint + agent (if CURSOR_API_KEY)
+npm run factory:daily:check        # verify tools, files, secrets
+npm run factory:daily -- --regression-only
+npm run factory:daily -- --dry-run --theme snare_clap_snap
+```
+
+## Manual trigger (GitHub)
 
 ```bash
 gh workflow run disklordz-factory-daily.yml
-# optional theme override:
 gh workflow run disklordz-factory-daily.yml -f theme=loops_patterns
 ```
 
-Local agent dry-run (same prompt body as automation):
+**Airtable / Zapier** → GitHub `repository_dispatch`:
 
-```bash
-THEME=snare_clap_snap bash disklordz/automation/scripts/trigger_cursor_factory_daily_agent.sh --dry-run
+```json
+{
+  "event_type": "disklordz-factory-daily",
+  "client_payload": { "theme": "loops_patterns", "ref": "main" }
+}
 ```
+
+Until Factory v2 is on `main`, set `"ref": "cursor/factory-daily-agent-4170"` or GitHub secret env `DISKLORDZ_FACTORY_AGENT_REF` in the launch job.
 
 ## PM / Airtable
 

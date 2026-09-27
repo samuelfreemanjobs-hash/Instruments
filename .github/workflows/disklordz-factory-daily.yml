@@ -4,6 +4,8 @@ name: Disklordz Factory daily
 on:
   schedule:
     - cron: "30 12 * * *" # 12:30 UTC daily (after nightly-qa)
+  repository_dispatch:
+    types: [disklordz-factory-daily]
   workflow_dispatch:
     inputs:
       theme:
@@ -34,12 +36,10 @@ jobs:
           cache: npm
           cache-dependency-path: disklordz/website/package-lock.json
 
-      - name: Install and regression
+      - name: Factory daily pipeline (regression + build + lint)
         run: |
-          npm ci
-          npm run factory:dsp-regression
-          npm run build
-          npm run lint
+          chmod +x disklordz/automation/scripts/run-factory-daily.sh
+          bash disklordz/automation/scripts/run-factory-daily.sh --skip-agent
 
       - name: Slack summary (regression green)
         if: success()
@@ -63,7 +63,10 @@ jobs:
       - name: Launch Cursor Cloud Agent (optional)
         env:
           CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
-          FACTORY_DAILY_THEME: ${{ github.event.inputs.theme }}
+          FACTORY_DAILY_THEME: ${{ github.event.inputs.theme || github.event.client_payload.theme || '' }}
+          DISKLORDZ_FACTORY_AGENT_REF: ${{ github.event.client_payload.ref || 'main' }}
         run: |
           chmod +x disklordz/automation/scripts/trigger_cursor_factory_daily_agent.sh
-          bash disklordz/automation/scripts/trigger_cursor_factory_daily_agent.sh
+          args=()
+          if [[ -n "${FACTORY_DAILY_THEME:-}" ]]; then args+=(--theme "$FACTORY_DAILY_THEME"); fi
+          bash disklordz/automation/scripts/trigger_cursor_factory_daily_agent.sh "${args[@]}"

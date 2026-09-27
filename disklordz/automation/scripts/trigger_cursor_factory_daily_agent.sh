@@ -4,17 +4,29 @@
 set -euo pipefail
 
 REPO_URL="${DISKLORDZ_GITHUB_REPO_URL:-https://github.com/samuelfreemanjobs-hash/Instruments}"
+# Use main after Factory v2 merges; override while shipping: cursor/factory-daily-agent-4170
 START_REF="${DISKLORDZ_FACTORY_AGENT_REF:-main}"
 PROMPT_FILE="$(cd "$(dirname "$0")/.." && pwd)/prompts/factory-daily-improvement.md"
 DRY_RUN=0
+REGRESSION_ONLY=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --dry-run) DRY_RUN=1; shift ;;
+    --regression-only) REGRESSION_ONLY=1; shift ;;
+    --ref) START_REF="$2"; shift 2 ;;
     --theme) export FACTORY_DAILY_THEME="$2"; shift 2 ;;
+    -h | --help)
+      grep '^#' "$0" | head -8
+      exit 0
+      ;;
     *) echo "unknown arg: $1" >&2; exit 1 ;;
   esac
 done
+
+if [[ "$REGRESSION_ONLY" -eq 1 ]]; then
+  exec bash "$(cd "$(dirname "$0")" && pwd)/run-factory-daily.sh" --regression-only ${FACTORY_DAILY_THEME:+--theme "$FACTORY_DAILY_THEME"}
+fi
 
 if [[ -z "${FACTORY_DAILY_THEME:-}" ]]; then
   case "$(date -u +%u)" in
@@ -58,16 +70,18 @@ payload="$(jq -n \
   --arg theme "$FACTORY_DAILY_THEME" \
   '{
     prompt: { text: $text },
-    model: { id: "composer-2.5" },
     mode: "agent",
     repos: [{ url: $url, startingRef: $ref }],
     autoCreatePR: true,
+    envVars: {
+      FACTORY_DAILY_THEME: $theme,
+      WO_SAAS: "018"
+    },
     customSubagents: [{
       name: "factory-dsp-engineer",
       description: "DSP + drum sound design for disklordz/website/src/lib/generation",
       prompt: "You specialize in 808 kicks, phonk/snare snap, hat metal, master bus, and loop patterns. Read .cursor/agents/disklordz-factory-dsp-engineer.md first."
-    }],
-    metadata: { workOrder: "WO-SAAS-018", theme: $theme }
+    }]
   }')"
 
 echo "Launching Cursor Cloud Agent (theme=${FACTORY_DAILY_THEME})..."
