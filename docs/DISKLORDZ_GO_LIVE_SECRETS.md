@@ -30,6 +30,7 @@ Add these under **GitHub → Settings → Secrets and variables → Actions → 
 |--------|---------|
 | `SAAS_DAILY_GEN_LIMIT` | `20` |
 | `VERCEL_TEAM_ID` | Only if project is under a team |
+| `CURSOR_API_KEY` | Enables [WO-SAAS-018 daily Factory DSP agent](DISKLORDZ_FACTORY_DAILY_AGENT.md) (`disklordz-factory-daily.yml`) |
 
 ## Stripe webhook secret (first time)
 
