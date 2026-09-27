@@ -63,6 +63,10 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_vocal_factory.py \
 
 `phonk_vocal_synth.py` — formant chops + screw/telephone/grit; `--acapella` for user-owned WAV slices. `--with-vocals` on loop factory mixes under drums.
 
+## Step sequencer
+
+[sequencer/ARCHITECTURE.md](sequencer/ARCHITECTURE.md) — Web UI + `pattern_from_groove.py` + optional `midi_play.py`.
+
 ## Extension points
 
 - WAV → Lofi-12 `.syx` encoder + USB-MIDI send (see repo `docs/SYSEX.md` patterns)

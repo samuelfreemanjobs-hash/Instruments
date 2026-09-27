@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lofi-12 Phonk Step Sequencer</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Lofi-12 step sequencer</h1>
+      <p class="sub">
+        4×16 · Web MIDI → Lofi-12 ·
+        <a href="https://midi.guide/d/sonicware/liven-lofi-12/" target="_blank" rel="noopener"
+          >CC map</a
+        >
+      </p>
+    </header>
+
+    <section class="transport">
+      <label
+        >BPM
+        <input type="number" id="bpm" min="60" max="190" value="84" />
+      </label>
+      <button type="button" id="play" class="primary">Play</button>
+      <button type="button" id="stop">Stop</button>
+      <label class="check"
+        ><input type="checkbox" id="sendClock" /> MIDI clock</label
+      >
+      <label
+        >MIDI out
+        <select id="midiOut"><option value="">— Web MIDI —</option></select>
+      </label>
+      <button type="button" id="refreshMidi">Refresh ports</button>
+    </section>
+
+    <section class="tools">
+      <button type="button" id="loadPhonk">Load phonk groove (demo)</button>
+      <button type="button" id="clear">Clear</button>
+      <button type="button" id="saveJson">Download JSON</button>
+      <label class="file-btn"
+        >Load JSON<input type="file" id="loadJson" accept="application/json" hidden
+      /></label>
+    </section>
+
+    <p id="status" class="status">Connect MIDI OUT to Lofi-12 MIDI IN.</p>
+
+    <div id="grid" class="grid" aria-label="Step grid"></div>
+
+    <section class="help">
+      <h2>Setup</h2>
+      <ol>
+        <li>USB-MIDI interface: computer OUT → Lofi-12 <strong>MIDI IN</strong>.</li>
+        <li>On Lofi-12: enable MIDI receive; load phonk bank on slots 1–16.</li>
+        <li>
+          Track 1 supports <strong>sound lock</strong>: shift+click a step to pick sample slot
+          1–16.
+        </li>
+        <li>Match slot notes: slot N → MIDI note 35+N (default 36–51).</li>
+      </ol>
+    </section>
+
+    <script src="app.js"></script>
+  </body>
+</html>

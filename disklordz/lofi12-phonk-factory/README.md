@@ -62,6 +62,20 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
   --prompt "dj paul phonk 84" --with-vocals --out ~/Music/Lofi12/PhonkLoops
 ```
 
+## Step sequencer (computer → Lofi-12 MIDI)
+
+Browser **4×16** grid with Web MIDI + optional Python player:
+
+```bash
+python3 disklordz/lofi12-phonk-factory/sequencer/serve.py
+# http://127.0.0.1:8765 — pick MIDI OUT, connect to Lofi-12 MIDI IN
+
+python3 disklordz/lofi12-phonk-factory/sequencer/scripts/pattern_from_groove.py \
+  --prompt "dj paul memphis 84" --out ~/Music/Lofi12/pattern.json
+```
+
+See [sequencer/ARCHITECTURE.md](sequencer/ARCHITECTURE.md).
+
 ## Tests
 
 ```bash
