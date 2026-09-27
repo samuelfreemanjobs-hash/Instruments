@@ -1,0 +1,18 @@
+name: Disklordz competitive intel monthly
+
+on:
+  schedule:
+    - cron: "0 15 1 * *"
+  workflow_dispatch:
+
+jobs:
+  intel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Launch competitive intel agent
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          GROWTH_LANE_THEME: market
+        run: |
+          bash disklordz/automation/scripts/trigger_competitive_intel.sh --theme market

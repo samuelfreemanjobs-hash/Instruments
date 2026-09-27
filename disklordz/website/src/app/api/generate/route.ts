@@ -1,29 +1,72 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 
-import {
-  getBillingSnapshot,
-  newBatchId,
-  refundGenerationCredit,
-  spendGenerationCredit,
-} from "@/lib/credits";
+import { logGenerationEvent } from "@/lib/analytics/generation-events";
+import { refundGenerationCredit, newBatchId } from "@/lib/credits";
 import { parseGenerationSpec } from "@/lib/generation/generation-spec";
 import { creditCostForSpec } from "@/lib/generation/mode-utils";
-import { buildVariationBatch } from "@/lib/generation/variations";
-import { activeKitStorageBackend, ensureKitStorageReady } from "@/lib/kit-storage";
-import { saveKitForUser } from "@/lib/kits/persist";
-import { getPreset, STYLE_PRESETS } from "@/lib/presets";
-import { checkRateLimit } from "@/lib/rate-limit";
-import { getSupabaseAdmin } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import {
+  buildGenerationManifests,
+  prepareGenerationAccess,
+  runGenerateBatch,
+  STYLE_PRESETS,
+  validateGenerateInput,
+} from "@/lib/generation/run-batch";
+import {
+  asyncJobsEnabled,
+  createGenerationJob,
+  executeGenerationJob,
+} from "@/lib/jobs/generation-jobs";
+import { activeKitStorageBackend } from "@/lib/kit-storage";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { createClient } from "@/lib/supabase/server";
+
+function jsonFromBatchResult(
+  batchId: string,
+  result: Extract<Awaited<ReturnType<typeof runGenerateBatch>>, { ok: true }>,
+) {
+  const variations = result.manifests.map((manifest) => ({
+    label: manifest.variationLabel ?? "A",
+    manifest,
+  }));
+
+  return {
+    batchId,
+    creditCost: result.creditCost,
+    variationCount: variations.length,
+    storageBackend: activeKitStorageBackend(),
+    variations,
+    manifest: result.manifests[0],
+    savedToAccount: result.savedToAccount,
+    rateLimit: result.rateLimit,
+    billing: result.billing
+      ? {
+          plan: result.billing.plan,
+          creditsBalance: result.billing.creditsBalance,
+          generationCreditCost: result.creditCost,
+          unlimited: result.billing.plan === "pro",
+        }
+      : undefined,
+    presets: STYLE_PRESETS.map(({ id, label, description }) => ({
+      id,
+      label,
+      description,
+    })),
+  };
+}
 
 export async function POST(req: NextRequest) {
+  const started = Date.now();
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     req.headers.get("x-real-ip") ??
     "anonymous";
 
-  let body: { prompt?: string; presetId?: string; spec?: Record<string, unknown> };
+  let body: {
+    prompt?: string;
+    presetId?: string;
+    spec?: Record<string, unknown>;
+    async?: boolean;
+  };
   try {
     body = await req.json();
   } catch {
@@ -32,16 +75,11 @@ export async function POST(req: NextRequest) {
 
   const prompt = (body.prompt ?? "").trim();
   const presetId = body.presetId ?? STYLE_PRESETS[0].id;
+  const wantAsync = body.async === true;
 
-  if (!prompt || prompt.length < 3) {
-    return NextResponse.json(
-      { error: "prompt_required", message: "Describe your vibe (at least 3 characters)." },
-      { status: 400 },
-    );
-  }
-
-  if (!getPreset(presetId)) {
-    return NextResponse.json({ error: "invalid_preset" }, { status: 400 });
+  const valid = validateGenerateInput(prompt, presetId);
+  if (!valid.ok) {
+    return NextResponse.json(valid.body, { status: valid.status });
   }
 
   const parsed = parseGenerationSpec(body.spec, presetId);
@@ -63,118 +101,110 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const billingActive = Boolean(userId && getSupabaseAdmin());
+  logGenerationEvent({
+    event: "generate_start",
+    userId,
+    presetId,
+    spec: parsed.spec,
+    ip,
+  });
+
   const batchId = newBatchId();
-  const creditCost = creditCostForSpec(parsed.spec);
-  let rateLimit: { remaining: number; limit: number } | undefined;
-
-  if (billingActive && userId) {
-    const spent = await spendGenerationCredit(userId, batchId, creditCost);
-    if (!spent) {
-      const billing = await getBillingSnapshot(userId);
-      return NextResponse.json(
-        {
-          error: "insufficient_credits",
-          message: "Not enough credits for this batch. Upgrade to Pro or try a lighter mode.",
-          creditsBalance: billing?.creditsBalance ?? 0,
-          generationCreditCost: creditCost,
-          plan: billing?.plan ?? "free",
-        },
-        { status: 402 },
-      );
-    }
-  } else {
-    const limited = checkRateLimit(ip);
-    if (!limited.ok) {
-      return NextResponse.json(
-        {
-          error: "daily_limit",
-          message: `Guest tier allows ${limited.limit} batches per day per IP. Sign in for credit wallet.`,
-          retryAfterSec: limited.retryAfterSec,
-          limit: limited.limit,
-        },
-        { status: 429 },
-      );
-    }
-    rateLimit = { remaining: limited.remaining, limit: limited.limit };
-  }
-
-  if (activeKitStorageBackend() === "supabase") {
-    try {
-      await ensureKitStorageReady();
-    } catch (err) {
-      if (billingActive && userId) {
-        await refundGenerationCredit(userId, batchId, creditCost);
-      }
-      const message = err instanceof Error ? err.message : "storage_unavailable";
-      return NextResponse.json(
-        { error: "storage_setup_failed", message },
-        { status: 503 },
-      );
-    }
-  }
-
   const baseUrl = req.nextUrl.origin;
-  let manifests;
-  try {
-    const result = await buildVariationBatch(
+  const creditCost = creditCostForSpec(parsed.spec);
+  const useAsync =
+    wantAsync &&
+    asyncJobsEnabled() &&
+    (parsed.spec.mode === "loop" || parsed.spec.mode === "sfx");
+
+  if (useAsync) {
+    const access = await prepareGenerationAccess({
+      userId,
+      ip,
+      spec: parsed.spec,
+      batchId,
+    });
+    if (access.ok === false) {
+      logGenerationEvent({
+        event: "generate_fail",
+        userId,
+        presetId,
+        spec: parsed.spec,
+        ok: false,
+        errorCode: String(access.body.error),
+        durationMs: Date.now() - started,
+        ip,
+      });
+      return NextResponse.json(access.body, { status: access.status });
+    }
+
+    const jobId = await createGenerationJob({
+      userId,
       prompt,
       presetId,
-      baseUrl,
-      parsed.spec,
+      spec: parsed.spec,
       batchId,
-    );
-    manifests = result.manifests;
-  } catch (err) {
-    if (billingActive && userId) {
-      await refundGenerationCredit(userId, batchId, creditCost);
-    }
-    const message = err instanceof Error ? err.message : "generation_failed";
-    return NextResponse.json({ error: "generation_failed", message }, { status: 500 });
-  }
+      creditCost: access.creditCost,
+    });
 
-  let savedToAccount = false;
-  if (userId && isSupabaseConfigured()) {
-    const supabase = await createClient();
-    if (supabase) {
-      for (const manifest of manifests) {
-        const saved = await saveKitForUser(supabase, userId, manifest);
-        if (saved.ok) savedToAccount = true;
+    if (!jobId) {
+      if (userId) {
+        await refundGenerationCredit(userId, batchId, access.creditCost);
       }
+      return NextResponse.json({ error: "async_job_create_failed" }, { status: 503 });
     }
+
+    after(async () => {
+      await executeGenerationJob(jobId, baseUrl);
+    });
+
+    return NextResponse.json(
+      {
+        async: true,
+        jobId,
+        pollUrl: `/api/jobs/${jobId}`,
+        batchId,
+        creditCost: access.creditCost,
+        rateLimit: access.rateLimit,
+      },
+      { status: 202 },
+    );
   }
 
-  const variations = manifests.map((manifest) => ({
-    label: manifest.variationLabel ?? "A",
-    manifest,
-  }));
-
-  let creditsAfter: Awaited<ReturnType<typeof getBillingSnapshot>> | null = null;
-  if (billingActive && userId) {
-    creditsAfter = await getBillingSnapshot(userId);
-  }
-
-  return NextResponse.json({
+  const result = await runGenerateBatch({
+    prompt,
+    presetId,
+    spec: parsed.spec,
+    baseUrl,
+    ip,
     batchId,
-    creditCost,
-    variationCount: variations.length,
-    storageBackend: activeKitStorageBackend(),
-    variations,
-    manifest: manifests[0],
-    savedToAccount,
-    rateLimit,
-    billing: creditsAfter
-      ? {
-          plan: creditsAfter.plan,
-          creditsBalance: creditsAfter.creditsBalance,
-          generationCreditCost: creditCost,
-          unlimited: creditsAfter.plan === "pro",
-        }
-      : undefined,
-    presets: STYLE_PRESETS.map(({ id, label, description }) => ({
-      id,
-      label,
-      description,
-    })),
+    userId,
   });
+
+  if (result.ok === false) {
+    logGenerationEvent({
+      event: "generate_fail",
+      userId,
+      presetId,
+      spec: parsed.spec,
+      ok: false,
+      errorCode: String(result.body.error),
+      durationMs: Date.now() - started,
+      ip,
+    });
+    return NextResponse.json(result.body, { status: result.status });
+  }
+
+  logGenerationEvent({
+    event: "generate_success",
+    userId,
+    presetId,
+    spec: parsed.spec,
+    ok: true,
+    durationMs: Date.now() - started,
+    ip,
+    meta: { variationCount: result.manifests.length },
+  });
+
+  return NextResponse.json(jsonFromBatchResult(batchId, result));
 }

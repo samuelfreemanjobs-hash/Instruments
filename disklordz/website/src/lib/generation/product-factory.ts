@@ -80,7 +80,8 @@ export async function buildProductPack(
           filename,
           folder.id,
           params,
-          generationSpec.engine,
+          generationSpec,
+          prompt,
           presetId,
           i + 1,
         );

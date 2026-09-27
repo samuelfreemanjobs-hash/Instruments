@@ -1,0 +1,16 @@
+name: Disklordz analytics weekly
+
+on:
+  schedule:
+    - cron: "0 15 * * 4"
+  workflow_dispatch:
+
+jobs:
+  analytics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Launch analytics agent
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+        run: bash disklordz/automation/scripts/trigger_analytics_funnel.sh

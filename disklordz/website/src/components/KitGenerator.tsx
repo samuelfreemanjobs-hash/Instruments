@@ -144,6 +144,61 @@ export function KitGenerator() {
     [prompt, presetId],
   );
 
+  const applyGeneratePayload = useCallback((payload: GenerateResponse, request: FrozenRequest) => {
+    const manifests =
+      payload.variations?.map((v) => v.manifest) ??
+      (payload.manifest ? [payload.manifest] : []);
+    if (!manifests.length) {
+      setError("No variations returned.");
+      return;
+    }
+    setVariations(manifests);
+    setBatchId(payload.batchId ?? null);
+    setStorageBackend(payload.storageBackend ?? manifests[0]?.storageBackend ?? "local");
+    setFrozen(request);
+    setSavedToAccount(Boolean(payload.savedToAccount));
+    if (payload.rateLimit) {
+      setRemaining(payload.rateLimit.remaining);
+      setDailyLimit(payload.rateLimit.limit);
+    }
+    if (payload.billing) {
+      setBilling({
+        plan: payload.billing.plan,
+        creditsBalance: payload.billing.creditsBalance,
+        unlimited: payload.billing.unlimited,
+      });
+    }
+  }, []);
+
+  const pollJob = useCallback(
+    async (jobId: string, request: FrozenRequest): Promise<boolean> => {
+      for (let i = 0; i < 120; i++) {
+        const res = await fetch(`/api/jobs/${jobId}`);
+        const data = await res.json();
+        if (data.status === "completed" && data.variations?.length) {
+          applyGeneratePayload(
+            {
+              batchId: data.batchId ?? jobId,
+              variationCount: data.variations.length,
+              variations: data.variations,
+              savedToAccount: true,
+            },
+            request,
+          );
+          return true;
+        }
+        if (data.status === "failed") {
+          setError(data.error?.message ?? "Async generation failed");
+          return false;
+        }
+        await new Promise((r) => setTimeout(r, 1000));
+      }
+      setError("Generation timed out — check your account history.");
+      return false;
+    },
+    [applyGeneratePayload],
+  );
+
   const runGenerate = useCallback(async (request: FrozenRequest) => {
     setLoading(true);
     setError(null);
@@ -152,6 +207,7 @@ export function KitGenerator() {
     setSelectedVariation(0);
     setSavedToAccount(false);
     try {
+      const useAsync = request.spec.mode === "loop" || request.spec.mode === "sfx";
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -159,9 +215,14 @@ export function KitGenerator() {
           prompt: request.prompt,
           presetId: request.presetId,
           spec: request.spec,
+          async: useAsync,
         }),
       });
       const data = await res.json();
+      if (res.status === 202 && data.jobId) {
+        await pollJob(data.jobId as string, request);
+        return;
+      }
       if (!res.ok) {
         if (res.status === 402) {
           setError(
@@ -180,36 +241,13 @@ export function KitGenerator() {
         setError(data.message ?? data.error ?? "Generation failed");
         return;
       }
-      const payload = data as GenerateResponse;
-      const manifests =
-        payload.variations?.map((v) => v.manifest) ??
-        (payload.manifest ? [payload.manifest] : []);
-      if (!manifests.length) {
-        setError("No variations returned.");
-        return;
-      }
-      setVariations(manifests);
-      setBatchId(payload.batchId ?? null);
-      setStorageBackend(payload.storageBackend ?? manifests[0]?.storageBackend ?? "local");
-      setFrozen(request);
-      setSavedToAccount(Boolean(payload.savedToAccount));
-      if (payload.rateLimit) {
-        setRemaining(payload.rateLimit.remaining);
-        setDailyLimit(payload.rateLimit.limit);
-      }
-      if (payload.billing) {
-        setBilling({
-          plan: payload.billing.plan,
-          creditsBalance: payload.billing.creditsBalance,
-          unlimited: payload.billing.unlimited,
-        });
-      }
+      applyGeneratePayload(data as GenerateResponse, request);
     } catch {
       setError("Network error — try again.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [applyGeneratePayload, pollJob]);
 
   const generate = useCallback(() => {
     runGenerate({ prompt, presetId, spec });

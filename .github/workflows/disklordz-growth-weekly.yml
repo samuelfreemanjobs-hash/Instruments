@@ -1,0 +1,25 @@
+name: Disklordz growth weekly
+
+on:
+  schedule:
+    - cron: "0 14 * * 3"
+  repository_dispatch:
+    types: [disklordz-growth-weekly]
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "GROWTH_LANE_THEME (DL001, DL002, DL004, DL006, MPC)"
+        required: false
+        type: string
+
+jobs:
+  growth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Launch growth agent
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          GROWTH_LANE_THEME: ${{ github.event.inputs.lane || github.event.client_payload.lane || '' }}
+          DISKLORDZ_AGENT_REF: ${{ github.event.client_payload.ref || 'main' }}
+        run: bash disklordz/automation/scripts/trigger_growth_agent.sh

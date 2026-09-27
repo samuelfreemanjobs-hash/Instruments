@@ -1,0 +1,34 @@
+name: Disklordz SaaS ops daily
+
+on:
+  schedule:
+    - cron: "0 13 * * *"
+  repository_dispatch:
+    types: [disklordz-saas-ops-daily]
+  workflow_dispatch:
+
+jobs:
+  ops:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: disklordz/website/package-lock.json
+      - name: SaaS ops checks
+        env:
+          DISKLORDZ_URL: ${{ secrets.DISKORDZ_URL }}
+        run: |
+          chmod +x disklordz/automation/scripts/*.sh
+          if [[ -z "${DISKLORDZ_URL:-}" ]]; then
+            bash disklordz/automation/scripts/run-saas-ops-daily.sh --skip-live --skip-agent
+          else
+            bash disklordz/automation/scripts/run-saas-ops-daily.sh --skip-agent
+          fi
+      - name: Launch SaaS ops agent
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          DISKLORDZ_AGENT_REF: ${{ github.event.client_payload.ref || 'main' }}
+        run: bash disklordz/automation/scripts/trigger_saas_ops_agent.sh

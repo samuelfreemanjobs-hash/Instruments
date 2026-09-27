@@ -23,16 +23,19 @@ python3 ../sound-factory/scripts/generate_stub_kits.py
 
 ```text
 Browser (KitGenerator)
-  → POST /api/generate { prompt, presetId, spec? }
+  → POST /api/generate { prompt, presetId, spec?, async? }
+       → sync one_shot OR async job for loop/SFX (WO-SAAS-026) → GET /api/jobs/:id
+       → analytics events (WO-SAAS-025)
        → rate limit (IP, in-memory v0)
        → buildVariationBatch(): 2 (studio) or 3 (creative) kits per request
        → buildFactoryKit(): one_shot (6 hits), loop (`loop_main.wav`), or sfx (`sfx.wav`)
-       → engine: studio vs creative render paths (WO-SAAS-013)
+       → engine: studio vs creative + Factory v2 master bus (WO-SAAS-013, WO-SAAS-017)
        → credit wallet: `creditCostForSpec` per batch (WO-SAAS-014)
        → WAVs → local temp + Supabase Storage `disklordz-kits` when service role set
        → manifest with /api/samples/<kitId>/<path>.wav URLs
   → POST /api/factory/batch → `DISKLORDZ_PRODUCT_PACK_MANIFEST` (01_KICKS … 04_PERC)
   → POST /api/factory/download { productPack } → storefront ZIP
+  → GET /api/health  (readiness for ops agents, WO-SAAS-019)
   → GET /api/samples/...  (preview audio)
   → POST /api/download { manifest }
        → ZIP(manifest.json, README.txt, WAVs) with SHA-256 provenance check
@@ -50,6 +53,7 @@ Generation is **sync stub** in v0 (no WebSocket). Future factory jobs will be as
 | `src/lib/presets.ts` | Five presets (4 artist lanes + MPC neutral) |
 | `src/lib/generation/generation-spec.ts` | WO-SAAS-007 spec parse + preset defaults |
 | `src/lib/generation/engine-render.ts` | WO-SAAS-013 studio vs creative render + provenance |
+| `src/lib/generation/dsp-core.ts`, `post-process.ts`, `quality-gate.ts` | WO-SAAS-017 Factory v2 DSP + master bus ([docs/DISKLORDZ_FACTORY_V2.md](../../docs/DISKLORDZ_FACTORY_V2.md)) |
 | `src/lib/generation/loop-render.ts`, `sfx-render.ts`, `mode-utils.ts` | WO-SAAS-014 loop/SFX + credit tiers |
 | `src/lib/generation/product-factory.ts` | WO-SAAS-015 storefront folder pack |
 | `src/lib/generation/factory.ts` | Prompt-driven kit build + kit store |

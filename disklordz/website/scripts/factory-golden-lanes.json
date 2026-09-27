@@ -1,0 +1,5 @@
+[
+  { "presetId": "midnight-circuit", "prompt": "memphis phonk 808 cowbell", "engine": "creative" },
+  { "presetId": "disklordz-screw", "prompt": "slow screw tape dusty", "engine": "creative" },
+  { "presetId": "boulevard-86", "prompt": "french touch filter house punch", "engine": "studio" }
+]
