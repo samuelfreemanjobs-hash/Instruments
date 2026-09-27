@@ -2,6 +2,15 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Instruments: VST preview — local setup",
+      "type": "shell",
+      "command": "./scripts/vscode-vst-preview-setup.sh",
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
       "label": "Instruments: VST preview WAVs",
       "type": "shell",
       "command": "python3 vst-testing-ops/preview_agent.py",
@@ -25,6 +34,23 @@
       "command": "python3 vst-testing-ops/preview_agent.py --skip-build --launch-standalone jd",
       "options": { "cwd": "${workspaceFolder}" },
       "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Instruments: Open preview folder",
+      "type": "shell",
+      "command": "mkdir -p vst-testing-ops/previews/latest",
+      "options": { "cwd": "${workspaceFolder}" },
+      "linux": {
+        "command": "mkdir -p vst-testing-ops/previews/latest && xdg-open vst-testing-ops/previews/latest"
+      },
+      "osx": {
+        "command": "mkdir -p vst-testing-ops/previews/latest && open vst-testing-ops/previews/latest"
+      },
+      "windows": {
+        "command": "if not exist vst-testing-ops\\previews\\latest mkdir vst-testing-ops\\previews\\latest && explorer vst-testing-ops\\previews\\latest"
+      },
+      "presentation": { "reveal": "never" },
       "problemMatcher": []
     }
   ]

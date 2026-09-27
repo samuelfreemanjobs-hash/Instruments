@@ -2,7 +2,19 @@
 
 VS Code does not host VSTs. This agent **automates the listen loop**: build → headless WAV clips (JD Upgraded) → files you can play in the editor, plus paths to **Standalone** for live UI.
 
-## Quick start
+## Local VS Code / Cursor (build on your machine)
+
+1. **Clone / pull** this repo and open the **root folder** in Cursor or VS Code.
+2. Read **[.vscode/README.md](../.vscode/README.md)** (tasks + extensions).
+3. **Run Task** → **Instruments: VST preview — local setup** (once per machine).
+4. After editing `Source/` or `Wave909/`, **Run Task** → **Instruments: VST preview (git-scoped)**.
+5. Open **`vst-testing-ops/previews/latest/*.wav`** (install **Audio Preview** when VS Code suggests it).
+
+**Cursor IDE Agent (local, not Cloud):** start Agent chat with `@instruments-vst-preview-agent` or paste [.vscode/cursor-vst-preview-local.prompt.md](../.vscode/cursor-vst-preview-local.prompt.md).
+
+The rule [`.cursor/rules/instruments-vst-preview.mdc`](../.cursor/rules/instruments-vst-preview.mdc) auto-applies when you edit plugin paths so the agent knows to run previews.
+
+## Quick start (CLI)
 
 ```bash
 # From repo root (first run configures CMake + builds targets)
