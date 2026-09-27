@@ -33,6 +33,7 @@ VoiceKey = Literal[
 ]
 
 ENGINE_IDS = (
+    "juicy_j",
     "tr808",
     "tr909",
     "boss_dr660",
@@ -62,9 +63,33 @@ class MachineProfile:
     screw_rate: float  # playback stretch >1 = slower/darker
     drive: float
     hiss: float
+    dirt: float = 0.0  # parallel crunch bus
+    kick_sub_blend: float = 0.0  # 808 sub folded into kick
+    snare_crunch: float = 1.0
 
 
 PROFILES: dict[str, MachineProfile] = {
+    "juicy_j": MachineProfile(
+        "juicy_j",
+        "Dirty Memphis / Juicy J (808 + tape)",
+        0.14,
+        5.6,
+        1.22,
+        172,
+        0.26,
+        1.38,
+        0.98,
+        0.42,
+        10,
+        0.34,
+        0.018,
+        1.0,
+        1.52,
+        0.048,
+        dirt=0.52,
+        kick_sub_blend=0.42,
+        snare_crunch=1.35,
+    ),
     "tr808": MachineProfile(
         "tr808",
         "Roland TR-808",
@@ -222,6 +247,8 @@ def resolve_engine_id(prompt: str, override: str | None = None) -> str:
                 return eid
     p = prompt.lower()
     rules: list[tuple[str, str]] = [
+        (r"\bjuicy\s*j\b|\bjuicy\b", "juicy_j"),
+        (r"\b(dirty\s*memphis|memphis\s*dirty)\b", "juicy_j"),
         (r"\b(mr\s*tape|splice|tape\s*pack)\b", "mr_tape"),
         (r"\b(screw|dj\s*screw|slowed)\b", "dj_screw"),
         (r"\b(909|tr\s*909)\b", "tr909"),
@@ -229,12 +256,12 @@ def resolve_engine_id(prompt: str, override: str | None = None) -> str:
         (r"\b(dr\s*660|dr660|boss)\b", "boss_dr660"),
         (r"\b(sr\s*16|sr16|alesis)\b", "alesis_sr16"),
         (r"\b(r\s*8|r8mk2|r8\s*mk)\b", "roland_r8mk2"),
-        (r"\b(memphis|phonk|90s)\b", "mr_tape"),
+        (r"\b(memphis|phonk|90s)\b", "juicy_j"),
     ]
     for pat, eid in rules:
         if re.search(pat, p):
             return eid
-    return "mr_tape"
+    return "juicy_j"
 
 
 def _bitcrush(samples: list[float], bits: int) -> list[float]:
@@ -276,9 +303,33 @@ def _tape_chain(samples: list[float], prof: MachineProfile, seed: int) -> list[f
     return out if out else samples
 
 
+def _dirt_bus(samples: list[float], amount: float) -> list[float]:
+    if amount <= 0:
+        return samples
+    out: list[float] = []
+    for s in samples:
+        crushed = math.tanh(s * (3.5 + amount * 3)) / math.tanh(3.5 + amount * 3)
+        out.append(s * (1.0 - amount) + crushed * amount)
+    return out
+
+
+def _sample_hold_crush(samples: list[float], hold: int) -> list[float]:
+    if hold <= 1:
+        return samples
+    out = list(samples)
+    for i in range(0, len(out), hold):
+        block = out[i]
+        for j in range(i, min(i + hold, len(out))):
+            out[j] = block
+    return out
+
+
 def _finish(samples: list[float], prof: MachineProfile, seed: int) -> list[float]:
     if prof.hat_dull > 0:
         samples = _lowpass(samples, prof.hat_dull * 0.85)
+    samples = _dirt_bus(samples, prof.dirt)
+    if prof.bits <= 11:
+        samples = _sample_hold_crush(samples, 2)
     samples = _bitcrush(samples, prof.bits)
     samples = _tape_chain(samples, prof, seed)
     peak = max(abs(x) for x in samples) or 1.0
@@ -294,14 +345,26 @@ def _kick(prof: MachineProfile, params: PhonkParams) -> list[float]:
         env = math.exp(-t / decay)
         f = params.kick_pitch * (1.0 + prof.kick_sweep * math.exp(-t * 30))
         click = prof.kick_click * math.exp(-t / 0.004) * noise(t, params.seed)
-        out.append((sine(f, t) * env * 1.05 + click) * env)
+        sub_f = max(30.0, params.kick_pitch - 11)
+        sub = sine(sub_f, t) * env * prof.kick_sub_blend
+        body = sine(f, t) * env * 1.05 + click + sub
+        out.append(body * env)
     return _finish(out, prof, params.seed)
 
 
 def _kick_dist(prof: MachineProfile, params: PhonkParams) -> list[float]:
-    base = _kick(prof, params)
-    drive = 2.2 + params.grit * 2.0 + prof.drive * 0.3
-    return _finish([math.tanh(s * drive) / math.tanh(drive) for s in base], prof, params.seed + 1)
+    # Re-synthesize with extra drive (avoid double tape on _kick output)
+    decay = params.kick_decay * prof.kick_decay_mult
+    n = int(SRC_RATE * 0.55 * prof.screw_rate)
+    raw: list[float] = []
+    for i in range(n):
+        t = i / SRC_RATE
+        env = math.exp(-t / decay)
+        f = params.kick_pitch * (1.0 + prof.kick_sweep * math.exp(-t * 30))
+        raw.append(sine(f, t) * env)
+    drive = 2.8 + params.grit * 2.5 + prof.drive * 0.45 + prof.dirt * 2
+    crushed = [math.tanh(s * drive) / math.tanh(drive) for s in raw]
+    return _finish(crushed, prof, params.seed + 1)
 
 
 def _kick_sub(prof: MachineProfile, params: PhonkParams) -> list[float]:
@@ -328,9 +391,14 @@ def _snare(prof: MachineProfile, params: PhonkParams) -> list[float]:
             noise(t, params.seed)
             * params.snare_snap
             * prof.snare_noise_mult
+            * prof.snare_crunch
             * math.exp(-t / 0.035)
         )
-        out.append((tone + nse) * env)
+        ring = sine(310, t) * 0.1 * prof.snare_crunch * math.exp(-t / 0.045)
+        s = (tone + nse + ring) * env
+        if prof.snare_crunch > 1.1:
+            s = math.tanh(s * 1.8) / math.tanh(1.8)
+        out.append(s)
     return _finish(out, prof, params.seed + 3)
 
 
