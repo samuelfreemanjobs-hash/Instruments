@@ -1,0 +1,8 @@
+{
+  "kick": { "minFrames": 24000, "maxFrames": 32000, "minPeak": 0.08, "minRms": 0.03 },
+  "snare": { "minFrames": 14000, "maxFrames": 20000, "minPeak": 0.06, "minRms": 0.02 },
+  "hat_closed": { "minFrames": 3500, "maxFrames": 5500, "minPeak": 0.02, "minRms": 0.004 },
+  "hat_open": { "minFrames": 11000, "maxFrames": 15000, "minPeak": 0.02, "minRms": 0.004 },
+  "rim": { "minFrames": 2500, "maxFrames": 4500, "minPeak": 0.03, "minRms": 0.008 },
+  "clap": { "minFrames": 8500, "maxFrames": 11000, "minPeak": 0.04, "minRms": 0.01 }
+}

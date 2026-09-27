@@ -107,6 +107,7 @@ export function resolveDrumParams(
   let kickDecay = base.kickDecay ?? 0.28;
   let snareSnap = base.snareSnap ?? 0.35;
   let hatBright = base.hatBright ?? 0.4;
+  let hatDecay = base.hatDecay ?? 0.025;
   let clapWide = base.clapWide ?? 0.4;
 
   if (/\b(808|sub|deep|low)\b/.test(p)) kickPitch -= 6;
@@ -122,6 +123,10 @@ export function resolveDrumParams(
     hatBright *= 1.1;
   }
   if (/\b(bright|open|air)\b/.test(p)) hatBright *= 1.15;
+  if (/\b(trap|roll|hihat|808)\b/.test(p)) {
+    kickPitch -= 2;
+    hatDecay *= 0.92;
+  }
 
   const preset = getPreset(presetId);
   if (preset?.artistLane === "DL002") snareSnap *= 1.05;
@@ -144,7 +149,7 @@ export function resolveDrumParams(
     kickDecay: clamp(kickDecay * (1 + jitter(1) * 0.08), 0.12, 0.7),
     snareBody: clamp((base.snareBody ?? 0.3) * (1 + jitter(2) * 0.1), 0.1, 0.7),
     snareSnap: clamp(snareSnap * (1 + jitter(3) * 0.1), 0.08, 0.75),
-    hatDecay: clamp((base.hatDecay ?? 0.025) * (1 + jitter(4) * 0.1), 0.01, 0.1),
+    hatDecay: clamp(hatDecay * (1 + jitter(4) * 0.1), 0.01, 0.1),
     hatBright: clamp(hatBright * (1 + jitter(5) * 0.1), 0.1, 0.75),
     rimMetal: clamp((base.rimMetal ?? 0.5) * (1 + jitter(6) * 0.1), 0.2, 0.85),
     clapWide: clamp(clapWide * (1 + jitter(7) * 0.1), 0.15, 0.65),
