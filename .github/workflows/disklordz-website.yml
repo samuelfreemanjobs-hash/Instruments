@@ -26,6 +26,8 @@ jobs:
           cache-dependency-path: disklordz/website/package-lock.json
       - run: npm ci
       - run: npm run build
+      - name: Smoke (guest generate + factory + ZIP)
+        run: npm run smoke:local
       - run: npm ci
         working-directory: disklordz/daw-inbox
       - run: node --check bin/watch.mjs

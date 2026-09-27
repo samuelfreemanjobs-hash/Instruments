@@ -11,7 +11,8 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 ## Disklordz SaaS (web)
 
 ```bash
-cd disklordz/website && npm ci && npm run build && npm test  # if tests exist
+cd disklordz/website && npm ci && npm run build && npm run smoke:local
+./scripts/disklordz-saas.sh preflight   # go-live env check
 ```
 
 Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_PUBLIC_SUPABASE_*`, `SUPABASE_SERVICE_ROLE_KEY` (prod kits), optional `SAAS_DAILY_GEN_LIMIT`.

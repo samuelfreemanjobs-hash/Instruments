@@ -15,7 +15,7 @@
    - `supabase/migrations/20260917230000_saved_kits_history.sql`
    - `supabase/migrations/20260917240000_credits_variable_amount.sql`
 5. Stripe: see [docs/STRIPE.md](docs/STRIPE.md).
-6. Deploy. Full checklist: [docs/DISKLORDZ_GO_LIVE.md](../../docs/DISKLORDZ_GO_LIVE.md).
+6. Deploy. **Finish checklist:** [docs/DISKLORDZ_SAAS_FINISH.md](../../docs/DISKLORDZ_SAAS_FINISH.md) · Details: [docs/DISKLORDZ_GO_LIVE.md](../../docs/DISKLORDZ_GO_LIVE.md).
 7. Automated smoke: `DISKLORDZ_URL=https://YOUR_DOMAIN npm run verify:go-live`
 
 ## Kit storage (WO-SAAS-009)
