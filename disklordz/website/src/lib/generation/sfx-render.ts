@@ -42,10 +42,5 @@ export function renderSfx(
     out[i] = s * env;
   }
 
-  let peak = 0;
-  for (const v of out) peak = Math.max(peak, Math.abs(v));
-  const scale = peak > 0 ? 0.89 / peak : 1;
-  for (let i = 0; i < out.length; i++) out[i] *= scale;
-
   return out;
 }
