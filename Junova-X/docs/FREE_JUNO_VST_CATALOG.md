@@ -39,8 +39,8 @@ Render Junova **dry** (`ab01-dry-saw`), bus through reference chorus plugin in D
 
 ## 32-bit legacy plugins (Yonu60, RJU-60, Sixth Month June)
 
-- Need **32-bit host** or bridge (jBridge, Reaper bridge, etc.) on 64-bit Windows.
-- Cloud/Linux CI **does not** load these; captures are **manual on Windows**.
+- **Windows:** 32-bit host or bridge (jBridge, Reaper bridge, etc.) on 64-bit DAWs.
+- **Linux / Cloud Agent:** use the in-repo **Wine win32 sandbox** — [`Junova-X/sandbox/win32-vst-host/`](../sandbox/win32-vst-host/README.md) (`setup.sh`, `run_sandbox.sh`, drop DLL + VSTHost.exe). Not in CI by default.
 
 ## TAL-U-NO-LX vs “free”
 

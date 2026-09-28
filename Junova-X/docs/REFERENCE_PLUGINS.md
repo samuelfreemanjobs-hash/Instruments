@@ -88,7 +88,17 @@ Or use the wrapper:
 
 **Fairness:** `render_midi` starts from KR-106 **init** unless the MIDI file contains Juno SysEx. Large spectral gaps vs Junova `GoldenScenarios` are expected until we add SysEx/MIDI fixture files (future WO). Use this script to track **convergence** after DSP edits, not as a merge gate.
 
-### 4. Store optional reference WAVs
+### 4. Win32 VST sandbox (Yonu60, RJU-60, …)
+
+```bash
+cd Junova-X/sandbox/win32-vst-host && ./setup.sh
+# host/VSTHost.exe + plugins/*.dll (supplied by you)
+./run_sandbox.sh ./run_vsthost.sh
+```
+
+See [sandbox/win32-vst-host/README.md](../sandbox/win32-vst-host/README.md).
+
+### 5. Store optional reference WAVs
 
 Place third-party renders under `tests/golden/junova/reference/` (see README there). **Do not commit** vendor plugin binaries.
 

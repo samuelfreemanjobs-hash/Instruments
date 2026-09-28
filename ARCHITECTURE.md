@@ -28,6 +28,7 @@ Junova-X/        Junova-X synth (JUCE) — see REPO_HANDOFF.md
 hise-sketch/     HISE / Antigravity projects (optional imports)
 disklordz/       Drum SaaS (`website/`) and sound-factory scripts
 vst-juno106/     Deprecated iPlug2 path pointer; reference during port
+Junova-X/sandbox/win32-vst-host/  Wine win32 VST2 sandbox for legacy reference DLLs (optional)
 vst-tr808/       NovaDrum / 808-class spec (iPlug2, future)
 tools/           CLI binaries (link JUCE / plugin static lib)
 docs/            User and agent docs (SYSEX, ROM, phases, handoff)
