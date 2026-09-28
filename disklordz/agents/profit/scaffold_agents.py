@@ -356,7 +356,8 @@ def check_trees() -> int:
 
 
 def publish_github_skills(spec: dict) -> None:
-    repo_root = ROOT.parents[1]
+    # profit/ → agents/ → disklordz/ → repo root
+    repo_root = ROOT.parents[2]
     dest_dir = repo_root / ".github" / "skills" / f"disklordz-{spec['id']}"
     dest_dir.mkdir(parents=True, exist_ok=True)
     content = (ROOT / spec["id"] / "skill.md").read_text(encoding="utf-8")

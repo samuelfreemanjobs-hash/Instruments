@@ -3,6 +3,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 echo "== Disklordz open-source integrations setup =="
+bash "$ROOT/scripts/sync-meta-llm-charter.sh" || true
 
 python3 "$ROOT/disklordz/rag/scripts/chunk_corpus.py"
 
