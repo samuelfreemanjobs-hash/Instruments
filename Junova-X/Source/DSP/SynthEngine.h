@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BbdChorus.h"
 #include "DiagTone.h"
 
 #include <JuceHeader.h>
@@ -89,7 +90,6 @@ private:
     float cutoffHzForVoice (const Voice& v, float filtEnvLevel, float lfo) const noexcept;
     float renderVoiceSample (Voice& v, float lfo) noexcept;
     float advanceLfo() noexcept;
-    void applyChorus (float& l, float& r) noexcept;
 
     RuntimeParams params_{};
     DiagTone diagTone_;
@@ -107,9 +107,6 @@ private:
     juce::dsp::IIR::Filter<float> hpfR_;
     juce::dsp::ProcessSpec spec_{};
 
-    std::array<float, 4096> delayL_{};
-    std::array<float, 4096> delayR_{};
-    int delayWrite_ = 0;
-    float chorusPhase_ = 0.0f;
+    BbdChorus chorus_;
 };
 } // namespace junovax::dsp

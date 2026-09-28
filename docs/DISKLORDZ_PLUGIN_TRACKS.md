@@ -10,7 +10,7 @@
 
 | Track | Product | Path | Stack | Priority |
 |-------|---------|------|-------|----------|
-| **A** | **Junova-X** | [Junova-X/](../Junova-X/REPO_HANDOFF.md) | **JUCE** VST3 + CLAP | **P0** — JUCE port + host smoke (WO 001–003) |
+| **A** | **Junova-X** | [Junova-X/](../Junova-X/REPO_HANDOFF.md) | **JUCE** VST3 + CLAP | **P0** — MVP shipped; **Phase 2** DSP/arp (WO 004+) |
 | **B** | **NovaDrum** (TR-808 class) | [vst-tr808/](../vst-tr808/) | iPlug2 + VST3 | **P1** — Spec/DSP parallel; code after A |
 | **C** | **JD Upgraded** | `Source/` | JUCE VST3 + CLAP | Maintenance + CI |
 | **D** | **HISE sketch** (rompler / sampler SKUs) | [hise-sketch/](../hise-sketch/) | HISE → VST3 (local) | **P3** — Antigravity; does not consume Cursor WIP unless port WO |

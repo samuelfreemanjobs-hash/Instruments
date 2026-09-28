@@ -46,7 +46,7 @@ void SynthEngine::prepare (double sampleRate, int maxBlockSize) noexcept
 
     hpfL_.prepare (spec_);
     hpfR_.prepare (spec_);
-    delayWrite_ = 0;
+    chorus_.prepare (sampleRate);
     reset();
 }
 
@@ -64,7 +64,7 @@ void SynthEngine::reset() noexcept
     }
     lfoPhase_ = 0.0f;
     lfoDelaySamples_ = params_.lfoDelay * static_cast<float> (sampleRate_);
-    chorusPhase_ = 0.0f;
+    chorus_.reset();
 }
 
 void SynthEngine::panic() noexcept
@@ -298,32 +298,6 @@ float SynthEngine::renderVoiceSample (Voice& v, float lfo) noexcept
     return raw * v.ampEnv.getNextSample() * 0.12f;
 }
 
-void SynthEngine::applyChorus (float& l, float& r) noexcept
-{
-    const int mode = params_.chorusMode;
-    if (mode <= 0)
-        return;
-
-    const float depth = (mode >= 2 ? 0.0035f : 0.0025f) * static_cast<float> (sampleRate_);
-    chorusPhase_ += (mode >= 3 ? 0.9f : 0.55f) / static_cast<float> (sampleRate_);
-    if (chorusPhase_ > 1.0f)
-        chorusPhase_ -= 1.0f;
-    const float mod = std::sin (chorusPhase_ * juce::MathConstants<float>::twoPi);
-
-    const int dL = static_cast<int> (depth * (1.0f + mod));
-    const int dR = static_cast<int> (depth * (1.0f - mod));
-    const int readL = (delayWrite_ - dL + static_cast<int> (delayL_.size())) % static_cast<int> (delayL_.size());
-    const int readR = (delayWrite_ - dR + static_cast<int> (delayR_.size())) % static_cast<int> (delayR_.size());
-
-    delayL_[static_cast<std::size_t> (delayWrite_)] = l;
-    delayR_[static_cast<std::size_t> (delayWrite_)] = r;
-    delayWrite_ = (delayWrite_ + 1) % static_cast<int> (delayL_.size());
-
-    const float wet = 0.35f;
-    l = l * (1.0f - wet) + delayL_[static_cast<std::size_t> (readL)] * wet;
-    r = r * (1.0f - wet) + delayR_[static_cast<std::size_t> (readR)] * wet;
-}
-
 void SynthEngine::render (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi) noexcept
 {
     handleMidi (midi);
@@ -362,7 +336,7 @@ void SynthEngine::render (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& mi
         const float width = juce::jlimit (0.0f, 2.0f, params_.width * 0.01f);
         float l = mix * (1.0f - 0.15f * width);
         float r = mix * (1.0f + 0.15f * width);
-        applyChorus (l, r);
+        chorus_.process (l, r, params_.chorusMode);
 
         if (params_.hpfEnabled)
         {

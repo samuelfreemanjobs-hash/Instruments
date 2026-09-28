@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DSP/Arpeggiator.h"
 #include "DSP/ScopeFifo.h"
 #include "DSP/SynthEngine.h"
 #include "Parameters/ParameterIds.h"
@@ -52,6 +53,7 @@ private:
     junovax::dsp::RuntimeParams readParamsFromApvts() const noexcept;
 
     juce::AudioProcessorValueTreeState apvts_;
+    junovax::dsp::Arpeggiator arpeggiator_;
     junovax::dsp::SynthEngine engine_;
     junovax::dsp::ScopeFifo scopeFifo_;
     int currentProgram_ = 0;

@@ -203,19 +203,35 @@ def stage_golden() -> StageResult:
 
 def stage_wave909_tests() -> StageResult:
     t0 = time.time()
+    chunks: list[str] = []
+    ok = True
+
     tests_bin = REPO_ROOT / "build/Wave909Tests"
     if tests_bin.is_file() and os.access(tests_bin, os.X_OK):
         code, out = _run([str(tests_bin)])
-        return StageResult(StageId.WAVE909_TESTS, code == 0, time.time() - t0, out)
-    code, out = _run(["ctest", "--test-dir", "build", "-R", "Wave909", "--output-on-failure"])
-    if code != 0 and "No tests were found" in out:
-        return StageResult(
-            StageId.WAVE909_TESTS,
-            False,
-            time.time() - t0,
-            "Wave909 tests not registered — run a full build (cmake --build build -j).\n" + out,
-        )
-    return StageResult(StageId.WAVE909_TESTS, code == 0, time.time() - t0, out)
+        chunks.append(out)
+        ok = ok and code == 0
+    else:
+        code, out = _run(["ctest", "--test-dir", "build", "-R", "Wave909", "--output-on-failure"])
+        chunks.append(out)
+        if code != 0 and "No tests were found" in out:
+            return StageResult(
+                StageId.WAVE909_TESTS,
+                False,
+                time.time() - t0,
+                "Wave909 tests not registered — run a full build (cmake --build build -j).\n" + out,
+            )
+        ok = ok and code == 0
+
+    junova_bin = REPO_ROOT / "build/Junova-X/JunovaXTests"
+    if junova_bin.is_file() and os.access(junova_bin, os.X_OK):
+        code, out = _run([str(junova_bin)])
+        chunks.append(f"=== JunovaXTests ===\n{out}")
+        ok = ok and code == 0
+    else:
+        chunks.append("[skip] JunovaXTests binary missing\n")
+
+    return StageResult(StageId.WAVE909_TESTS, ok, time.time() - t0, "".join(chunks))
 
 
 def stage_pluginval() -> StageResult:

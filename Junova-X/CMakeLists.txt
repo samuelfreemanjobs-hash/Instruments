@@ -24,8 +24,28 @@ target_sources (JunovaX
         Source/UI/Celestial/OscMonitorComponent.cpp
         Source/DSP/SynthEngine.cpp
         Source/DSP/DiagTone.cpp
+        Source/DSP/Arpeggiator.cpp
+        Source/DSP/BbdChorus.cpp
         Source/Presets/FactoryPresets.cpp
 )
+
+add_executable (JunovaXTests
+    Tests/DSP/ArpeggiatorTests.cpp
+    Source/DSP/Arpeggiator.cpp
+)
+
+target_include_directories (JunovaXTests PRIVATE Source)
+target_compile_features (JunovaXTests PRIVATE cxx_std_20)
+target_compile_definitions (JunovaXTests PRIVATE JUCE_USE_CURL=0 JUCE_WEB_BROWSER=0)
+target_link_libraries (JunovaXTests
+    PRIVATE
+        juce::juce_core
+        juce::juce_audio_basics
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_warning_flags
+)
+
+add_test (NAME JunovaXArpeggiator COMMAND JunovaXTests)
 
 target_compile_definitions (JunovaX
     PUBLIC

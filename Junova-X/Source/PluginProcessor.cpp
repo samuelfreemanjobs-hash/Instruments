@@ -181,6 +181,7 @@ void JunovaXAudioProcessor::applyFactoryPreset (int index)
 
 void JunovaXAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    arpeggiator_.prepare (sampleRate);
     engine_.prepare (sampleRate, samplesPerBlock);
     pushParamsToEngine();
 }
@@ -199,7 +200,16 @@ void JunovaXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 {
     juce::ScopedNoDenormals noDenormals;
     pushParamsToEngine();
-    engine_.render (buffer, midi);
+
+    double bpm = 120.0;
+    if (auto* head = getPlayHead())
+        if (auto pos = head->getPosition())
+            bpm = pos->getBpm().orFallback (120.0);
+
+    const auto params = readParamsFromApvts();
+    juce::MidiBuffer arpMidi;
+    arpeggiator_.process (midi, arpMidi, params.arpRate, params.arpRange, bpm, buffer.getNumSamples());
+    engine_.render (buffer, arpMidi);
 
     if (buffer.getNumChannels() > 0)
     {
@@ -211,6 +221,7 @@ void JunovaXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 
 void JunovaXAudioProcessor::panicAllNotes()
 {
+    arpeggiator_.reset();
     engine_.panic();
     if (auto* tone = apvts_.getParameter (PID::diagTestTone))
         tone->setValueNotifyingHost (0.0f);

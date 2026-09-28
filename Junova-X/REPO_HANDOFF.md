@@ -19,7 +19,8 @@
 
 - **JUCE:** VST3 + CLAP + Standalone; Celestial Main + Diag; poly synth DSP (DCO/VCF/chorus stub); **48 factory presets** (WO-2026-003).
 - **QA:** pluginval on VST3 via `vst-testing-ops`; host smoke checklist in [docs/QA_HOST_SMOKE.md](docs/QA_HOST_SMOKE.md).
-- **Not in MVP:** iPlug2 bit-perfect parity, Windows demo installer, `junova-x-landing` repo.
+- **Phase 2 (WO-2026-004+):** `Arpeggiator`, `BbdChorus`, [docs/ARCHITECTURE_DSP.md](docs/ARCHITECTURE_DSP.md), `JunovaXTests`.
+- **Not yet:** iPlug2 bit-perfect parity, Windows demo installer, `junova-x-landing` repo.
 - GTM: **$29 → $49** at launch.
 
 ## Target layout
