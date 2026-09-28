@@ -1,13 +1,11 @@
-# Hermes seat definitions
+# Hermes — default agent dev team
 
-Use with Cursor **Task** subagents. Prefix task description: `hermes-<seat>:`.
+This folder defines the **seat team** used to develop and code projects in the Instruments monorepo.
 
-| File | Seat |
-|------|------|
-| [seats/lead.md](seats/lead.md) | Orchestrator |
-| [seats/architect.md](seats/architect.md) | Plugin architect |
-| [seats/dsp-engineer.md](seats/dsp-engineer.md) | DSP |
-| [seats/gui-engineer.md](seats/gui-engineer.md) | GUI / JUCE editor |
-| [seats/qa-engineer.md](seats/qa-engineer.md) | pluginval / host QA |
+| Doc | Purpose |
+|-----|---------|
+| [docs/HERMES_QUICKSTART.md](../../docs/HERMES_QUICKSTART.md) | Start here |
+| [docs/HERMES_AGENT_FRAMEWORK.md](../../docs/HERMES_AGENT_FRAMEWORK.md) | Full framework |
+| [SKILLS_REGISTRY.md](SKILLS_REGISTRY.md) | Installed elite skills |
 
-Framework: [docs/HERMES_AGENT_FRAMEWORK.md](../../docs/HERMES_AGENT_FRAMEWORK.md)
+**Seats:** `seats/*.md` · **Skills:** `../skills/hermes-elite-*/SKILL.md` · **Always-on rule:** `../rules/hermes-default.mdc`

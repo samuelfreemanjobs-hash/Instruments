@@ -5,7 +5,7 @@ description: Hermes lead orchestrator for Disklordz audio products. Route WOs to
 
 # Hermes elite lead
 
-1. Read `docs/HERMES_AGENT_FRAMEWORK.md`, `.cursor/hermes/SKILLS_REGISTRY.md`, product `ARCHITECTURE.md`.
+1. Read `docs/HERMES_QUICKSTART.md`, `docs/HERMES_AGENT_FRAMEWORK.md`, `.cursor/hermes/SKILLS_REGISTRY.md`, product `ARCHITECTURE.md`.
 2. Split work by seat; one WO id per PR title (`WO-2026-NNN`).
 3. Dispatch order: architect (structure) → dsp + gui parallel → qa before ready.
 4. Require walkthrough artifacts per `/home/ubuntu/.cursor/skills-cursor/walkthrough-artifacts/SKILL.md`.

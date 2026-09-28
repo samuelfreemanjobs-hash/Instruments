@@ -56,6 +56,10 @@ globs: "**/*.{ts,tsx}"
 
 ---
 
+## Hermes dev team (default)
+
+Implementation uses the **Hermes seat team** in Cursor — see [HERMES_QUICKSTART.md](HERMES_QUICKSTART.md) and [HERMES_AGENT_FRAMEWORK.md](HERMES_AGENT_FRAMEWORK.md). Grok Bot supplies closed-loop WOs; Hermes lead + seats ship code with evidence.
+
 ## Work order discipline (Disklordz OS)
 
 1. Airtable **Agent Work Order** with `work_order_id`  
