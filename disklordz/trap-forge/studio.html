@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#061329" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>MPC TRAP-FORGE // Elite Drum Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              950: '#020712', 900: '#061329', 850: '#0b1d3d', 800: '#102751',
+              700: '#17366d', 600: '#1d4ed8', 500: '#2563eb', 400: '#38bdf8',
+            },
+            cyanAccent: '#38bdf8',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      background-color: #040e22;
+      background-image:
+        radial-gradient(ellipse at 50% 0%, #0c2554 0%, transparent 65%),
+        linear-gradient(180deg, #040e22 0%, #020712 100%);
+    }
+    .glass-panel {
+      background: rgba(11, 29, 61, 0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+    .dnd-shelf { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .dnd-chip {
+      cursor: grab; padding: 0.35rem 0.65rem; border-radius: 0.375rem;
+      background: #1e3a5f; color: #e2e8f0; font-size: 0.7rem; border: 1px solid #334155;
+    }
+    .dnd-chip:hover { background: #2563eb; }
+    .meter { height: 6px; background: #0f172a; border-radius: 3px; overflow: hidden; }
+    .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #22c55e, #eab308, #ef4444); transition: width 0.05s; }
+    .meter-fill.clip { background: #ef4444; }
+  </style>
+</head>
+<body class="min-h-full text-white font-sans p-3 sm:p-6">
+  <header class="glass-panel max-w-7xl mx-auto rounded-2xl px-4 py-3 mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-extrabold tracking-tight text-white uppercase">MPC TRAP-FORGE <span class="text-cyanAccent font-mono text-base font-normal tracking-widest">// ELITE DRUM GEN</span></h1>
+      <p class="text-xs text-brand-400 mt-1">Procedural Web Audio · MPC pads · AI Vibe Forge · 16/24/32-bit WAV</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button type="button" id="btn-master-randomize" class="px-3 py-2 rounded-lg bg-brand-800 border border-brand-500 text-xs font-semibold">MUTATE SOUND</button>
+      <button type="button" id="btn-trigger" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-sm font-medium">Trigger [Space]</button>
+      <button type="button" id="btn-download" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm">Export WAV</button>
+      <button type="button" id="btn-export-all" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm">Export Full Kit</button>
+      <button type="button" id="btn-export-vel" class="px-3 py-2 rounded-lg bg-blue-700 hover:bg-blue-600 text-sm">Export 3-Velocity Pack</button>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto flex flex-col lg:flex-row min-h-[calc(100vh-6rem)] gap-4">
+    <nav id="drum-tabs" class="lg:w-44 shrink-0 border-b lg:border-b-0 lg:border-r border-slate-800 p-2 flex lg:flex-col gap-1 overflow-x-auto" aria-label="Drum types"></nav>
+
+    <main class="flex-1 p-4 overflow-y-auto max-w-3xl">
+      <section data-drum-panel="kick" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Punch Kick</h2>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <label>Root Hz <input data-param="rootHz" type="range" min="35" max="80" step="1" value="50" class="w-full" /><span data-val>50</span></label>
+          <label>Pitch mod <input data-param="pitchMod" type="range" min="0" max="60" step="1" value="38" class="w-full" /><span data-val>38</span></label>
+          <label>Pitch decay <input data-param="pitchDecay" type="range" min="0.008" max="0.05" step="0.001" value="0.02" class="w-full" /><span data-val>0.02</span></label>
+        </div>
+      </section>
+
+      <section data-drum-panel="sub808" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800 hidden">
+        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Trap 808 Sub</h2>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <label>Root note
+            <select data-param="rootNote" class="w-full bg-slate-950 border border-slate-700 rounded px-1 py-1">
+              <option value="C">C</option><option value="C#">C#</option><option value="D">D</option>
+              <option value="D#">D#</option><option value="E">E</option><option value="F">F</option>
+              <option value="F#">F#</option><option value="G" selected>G</option><option value="G#">G#</option>
+              <option value="A">A</option><option value="A#">A#</option><option value="B">B</option>
+            </select>
+          </label>
+          <label>Root Hz <input data-param="rootHz" type="range" min="30" max="90" step="1" value="55" class="w-full" /><span data-val>55</span></label>
+          <label>2nd harmonic <input data-param="harm2" type="range" min="0" max="0.8" step="0.01" value="0.38" class="w-full" /><span data-val>0.38</span></label>
+          <label>3rd harmonic <input data-param="harm3" type="range" min="0" max="0.6" step="0.01" value="0.24" class="w-full" /><span data-val>0.24</span></label>
+        </div>
+        <div id="dynamic-controls"></div>
+      </section>
+
+      <section data-drum-panel="snare" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800 hidden">
+        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Crack Snare + Cardo</h2>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <label>Pitch semi <input data-param="pitchSemi" type="range" min="-12" max="12" step="1" value="0" class="w-full" /><span data-val>0</span></label>
+          <label>Snap <input data-param="snap" type="range" min="0" max="1" step="0.01" value="0.68" class="w-full" /><span data-val>0.68</span></label>
+          <label>Snap bite <input data-param="snapBite" type="range" min="0" max="1" step="0.01" value="0.55" class="w-full" /><span data-val>0.55</span></label>
+          <label>Reverb mix <input data-param="reverbMix" type="range" min="0" max="0.7" step="0.01" value="0.28" class="w-full" /><span data-val>0.28</span></label>
+          <label>Reverb decay <input data-param="reverbDecay" type="range" min="0.2" max="0.95" step="0.01" value="0.58" class="w-full" /><span data-val>0.58</span></label>
+          <label>Pre-delay ms <input data-param="reverbPre" type="range" min="0" max="80" step="1" value="14" class="w-full" /><span data-val>14</span></label>
+        </div>
+      </section>
+
+      <section data-drum-panel="clap" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800 hidden">
+        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Dirty Clap</h2>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <label>Flam ms <input data-param="flamMs" type="range" min="0.01" max="0.04" step="0.001" value="0.022" class="w-full" /><span data-val>0.022</span></label>
+          <label>Reverb mix <input data-param="reverbMix" type="range" min="0" max="0.7" step="0.01" value="0.24" class="w-full" /><span data-val>0.24</span></label>
+        </div>
+      </section>
+
+      <section data-drum-panel="closedhat" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800 hidden">
+        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Closed Hat</h2>
+        <div class="grid grid-cols-2 gap-3 text-xs mb-4">
+          <label>Dispersion <input data-param="dispersion" type="range" min="0" max="0.03" step="0.001" value="0.01" class="w-full" /><span data-val>0.01</span></label>
+          <label>Filter cutoff <input data-param="fCut" type="range" min="3000" max="12000" step="50" value="7800" class="w-full" /><span data-val>7800</span></label>
+        </div>
+        <div class="p-3 rounded-lg border border-slate-700 bg-slate-950/50">
+          <h3 class="text-xs font-semibold text-yellow-400 mb-2">Phase 5 — Hat roll</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+            <label>Division
+              <select id="hat-roll-div" class="w-full bg-slate-900 border border-slate-700 rounded px-1">
+                <option value="8">1/8</option><option value="16" selected>1/16</option><option value="32">1/32</option><option value="64">1/64</option>
+                <option value="12T">1/8T</option><option value="24T">1/16T</option>
+              </select>
+            </label>
+            <label>Ramp
+              <select id="hat-roll-ramp" class="w-full bg-slate-900 border border-slate-700 rounded px-1">
+                <option value="flat">Flat</option><option value="crescendo">Crescendo</option><option value="decrescendo">Decrescendo</option><option value="jitter">Humanize</option>
+              </select>
+            </label>
+            <label>Hits <input id="hat-roll-count" type="number" min="4" max="32" value="8" class="w-full bg-slate-900 border border-slate-700 rounded px-1" /></label>
+            <label>Pitch drift <input id="hat-roll-drift" type="range" min="0" max="0.02" step="0.001" value="0.006" class="w-full" /></label>
+            <label>Timing jitter <input id="hat-roll-jitter" type="range" min="0" max="0.04" step="0.001" value="0.018" class="w-full" /></label>
+            <label>Pitch slide <input id="hat-roll-slide" type="range" min="0" max="0.015" step="0.001" value="0" class="w-full" /></label>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <button type="button" id="btn-hat-roll" class="px-3 py-1.5 rounded bg-emerald-700 text-xs">Render &amp; Audition Roll</button>
+            <button type="button" id="btn-hat-roll-export" class="px-3 py-1.5 rounded bg-slate-700 text-xs">Export Roll WAV</button>
+          </div>
+        </div>
+      </section>
+
+      <section data-drum-panel="openhat" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800 hidden">
+        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Open Hat</h2>
+        <label class="text-xs">Filter cutoff <input data-param="fCut" type="range" min="2500" max="10000" step="50" value="5200" class="w-full" /><span data-val>5200</span></label>
+      </section>
+
+      <section data-drum-panel="perc" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800 hidden">
+        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Perc / Cowbell</h2>
+        <label class="text-xs">Tone Hz <input data-param="rootHz" type="range" min="400" max="900" step="5" value="540" class="w-full" /><span data-val>540</span></label>
+      </section>
+
+      <section class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <h2 class="text-sm font-semibold text-slate-300 mb-3">Amp &amp; filter ADSR</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+          <label>A attack <input id="param-amp-a" data-param="aA" type="range" min="0" max="0.05" step="0.0005" value="0.001" class="w-full" /></label>
+          <label>A decay <input data-param="aD" type="range" min="0.01" max="0.8" step="0.005" value="0.1" class="w-full" /></label>
+          <label>A sustain <input data-param="aS" type="range" min="0" max="1" step="0.01" value="0" class="w-full" /></label>
+          <label>A release <input data-param="aR" type="range" min="0.01" max="0.5" step="0.005" value="0.05" class="w-full" /></label>
+          <label>F attack <input data-param="fA" type="range" min="0" max="0.05" step="0.0005" value="0.002" class="w-full" /></label>
+          <label>F decay <input data-param="fD" type="range" min="0.01" max="0.5" step="0.005" value="0.08" class="w-full" /></label>
+          <label>F sustain <input data-param="fS" type="range" min="0" max="1" step="0.01" value="0.15" class="w-full" /></label>
+          <label>F release <input data-param="fR" type="range" min="0.01" max="0.4" step="0.005" value="0.06" class="w-full" /></label>
+          <label>Filter Hz <input data-param="fCut" type="range" min="80" max="14000" step="20" value="7500" class="w-full" /></label>
+          <label>F env <input data-param="fEnvAmt" type="range" min="0" max="48" step="1" value="18" class="w-full" /></label>
+          <label>Filter Q <input data-param="fQ" type="range" min="0.3" max="2" step="0.05" value="0.85" class="w-full" /></label>
+          <label>Filter
+            <select data-param="filterMode" class="w-full bg-slate-950 border border-slate-700 rounded px-1">
+              <option value="lp12">12dB LP</option><option value="lp24">24dB LP</option><option value="svf">SVF LP</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <h2 class="text-sm font-semibold text-slate-300 mb-3">Lo-Fi &amp; drive</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+          <label>Bit depth <input data-param="bits" type="range" min="6" max="16" step="1" value="12" class="w-full" /></label>
+          <label>Sample rate <input data-param="lofiSr" type="range" min="8000" max="44100" step="500" value="26040" class="w-full" /></label>
+          <label>Drive <input data-param="drive" type="range" min="0" max="1.2" step="0.02" value="0.42" class="w-full" /></label>
+          <label>Distortion (TX)
+            <select data-param="distType" class="w-full bg-slate-950 border border-slate-700 rounded px-1">
+              <option value="triode">Tube</option>
+              <option value="tape">Tape</option>
+              <option value="foldback">Foldback</option>
+              <option value="spinz">Spinz Hard-Clip</option>
+              <option value="fl_clip">FL Soft-Clip</option>
+            </select>
+          </label>
+          <label>Export bits
+            <select id="export-bits" class="w-full bg-slate-950 border border-slate-700 rounded px-1">
+              <option value="24" selected>24-bit (MPC/DAW)</option>
+              <option value="16">16-bit</option>
+              <option value="32">32-bit float</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <h2 class="text-sm font-semibold text-slate-300 mb-3">Transient shaper (first 15 ms)</h2>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <label>Attack ±12 dB <input data-param="transAttackDb" type="range" min="-12" max="12" step="0.5" value="0" class="w-full" /><span data-val>0</span></label>
+          <label>Sustain ±12 dB <input data-param="transSustainDb" type="range" min="-12" max="12" step="0.5" value="0" class="w-full" /><span data-val>0</span></label>
+        </div>
+      </section>
+
+      <section class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <h2 class="text-sm font-semibold text-cyanAccent mb-3">AI Vibe Forge</h2>
+        <p class="text-[10px] text-slate-500 mb-2">Gemini maps prompts to DSP (run <code class="text-cyanAccent">python serve.py</code> + GEMINI_API_KEY, or paste key below).</p>
+        <textarea id="ai-vibe-prompt" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-xs mb-2" placeholder="Pierre Bourne bouncy perc, Spinz 808 with gritty clip…"></textarea>
+        <div class="grid grid-cols-2 gap-2 text-xs mb-2">
+          <label>Model
+            <select id="ai-gemini-model" class="w-full bg-slate-950 border border-slate-700 rounded px-1">
+              <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+              <option value="gemini-2.0-flash-exp">gemini-2.0-flash-exp</option>
+              <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
+            </select>
+          </label>
+          <label>API key (local only)
+            <input id="ai-gemini-key" type="password" placeholder="optional" class="w-full bg-slate-950 border border-slate-700 rounded px-1" autocomplete="off" />
+          </label>
+        </div>
+        <button type="button" id="btn-ai-vibe" class="w-full py-2 rounded bg-cyanAccent text-brand-950 font-bold text-xs">FORGE VIBE</button>
+      </section>
+
+      <section class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <h2 class="text-sm font-semibold text-slate-300 mb-2">Producer presets</h2>
+        <select id="preset-selector" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-2 text-sm">
+          <option value="">— Load preset —</option>
+        </select>
+      </section>
+    </main>
+
+    <aside class="lg:w-[22rem] shrink-0 border-t lg:border-t-0 lg:border-l border-slate-800 p-4 space-y-4 overflow-y-auto">
+      <div class="rounded-lg overflow-hidden border border-slate-800 bg-slate-900">
+        <canvas id="canvas-visualizer" width="600" height="90" class="w-full h-[90px]" aria-label="Waveform"></canvas>
+      </div>
+      <div class="rounded-lg overflow-hidden border border-slate-800 bg-slate-900">
+        <canvas id="canvas-fft" width="600" height="90" class="w-full h-[90px]" aria-label="Spectrum"></canvas>
+      </div>
+      <p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">MPC 4×4 audition</p>
+      <div id="pads" class="mb-2"></div>
+
+      <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+        <h2 class="text-xs font-semibold mb-2">Step sequencer</h2>
+        <div class="flex items-center gap-2 text-xs mb-2">
+          <label>TEMPO (50–185) <input id="param-seq-tempo" type="range" min="50" max="185" value="140" class="flex-1" /> <span id="param-seq-tempo-val">140</span> BPM</label>
+          <button type="button" id="btn-seq-play" class="px-2 py-1 rounded bg-cyanAccent text-brand-950 text-xs font-bold">▶</button>
+          <button type="button" id="btn-seq-clear" class="px-2 py-1 rounded bg-slate-800 text-xs">Clear</button>
+        </div>
+        <div id="chase-leds-bar" class="grid grid-cols-16 gap-1 mb-2 h-2"></div>
+        <div id="sequencer-rows"></div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-2">
+        <h2 class="font-semibold">Master bus</h2>
+        <label>Ceiling dBFS <input id="master-ceiling" type="range" min="-1.2" max="0" step="0.1" value="-0.3" class="w-full" /></label>
+        <label>Drive <input id="master-drive" type="range" min="0" max="0.5" step="0.02" value="0.15" class="w-full" /></label>
+        <label>Trunk smash <input id="master-trunk" type="range" min="0" max="0.85" step="0.02" value="0.38" class="w-full" /></label>
+        <div class="meter"><div class="meter-fill" id="peak-meter"></div></div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+        <h2 class="text-xs font-semibold mb-2">Drag into your DAW</h2>
+        <p class="text-[10px] text-slate-500 mb-2">Drag chips into FL Studio, Ableton, Logic, or Reaper.</p>
+        <div id="dnd-shelf" class="dnd-shelf"></div>
+      </div>
+    </aside>
+  </div>
+
+  <div id="toast" class="fixed bottom-6 right-6 bg-brand-800 border-2 border-cyanAccent text-white px-5 py-3 rounded-xl shadow-2xl transition transform translate-y-32 opacity-0 flex items-center gap-3 text-xs z-50">
+    <span>⚡</span><span id="toast-msg">Ready</span>
+  </div>
+
+  <script type="module" src="js/studio-app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+    }
+  </script>
+</body>
+</html>
