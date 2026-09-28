@@ -1,7 +1,11 @@
 synth_memory.db
+synth_memory.db-*
 *.db
 .venv/
 __pycache__/
 .pytest_cache/
 synth_forge/previews/
 *.wav
+*.egg-info/
+build/
+dist/
