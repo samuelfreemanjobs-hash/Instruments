@@ -46,6 +46,14 @@ streamlit run vst-testing-ops/app.py                       # operations dashboar
 
 - [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
 
+## Hermes multi-agent seats (Junova-X / plugins)
+
+Framework: [docs/HERMES_AGENT_FRAMEWORK.md](docs/HERMES_AGENT_FRAMEWORK.md) · seat charters: `.cursor/hermes/seats/`
+
+```bash
+cmake --build build -j --target JunovaX_Standalone JunovaX_VST3 JunovaX_CLAP
+```
+
 ## Git
 
 - Do not force-push or deploy production unless the user asks.  
