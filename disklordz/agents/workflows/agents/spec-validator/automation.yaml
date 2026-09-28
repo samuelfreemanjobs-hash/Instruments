@@ -1,0 +1,15 @@
+# Automation — Spec Validator (`spec-validator`)
+
+platform: api
+trigger: pre-generate
+primary: disklordz/integrations/agents/pydantic_spec_agent.py
+
+## Steps
+1. parseGenerationSpec
+2. 402/400 on invalid
+
+## Invoke agent
+Read: disklordz/agents/profit/spec-validator/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#spec-validator

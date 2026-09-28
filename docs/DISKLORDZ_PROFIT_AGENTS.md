@@ -1,4 +1,6 @@
-# Profit agents (29 implemented)
+# Profit agents (31 implemented)
+
+**Repo-wide index:** [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) · **PM ADD:** [disklordz/agents/workflows/PM_ADD.md](../disklordz/agents/workflows/PM_ADD.md)
 
 Elite agent file trees: **`disklordz/agents/profit/<id>/`** (8 files each). Bound by **[META v3.1 charter](../CLAUDE.md)** — sync via `./scripts/sync-meta-llm-charter.sh`.
 
@@ -19,10 +21,16 @@ Copilot skills: `.github/skills/disklordz-<id>/SKILL.md`
 ## Regenerate
 
 ```bash
-./scripts/sync-meta-llm-charter.sh   # optional: refresh META core + /weave skills
-python3 disklordz/agents/profit/scaffold_agents.py --publish-skills
-python3 disklordz/agents/profit/scaffold_agents.py --check
+./scripts/sync-disklordz-agent-fleet.sh   # fleet entrypoints + PM ADD + skills
+./scripts/sync-meta-llm-charter.sh        # optional: refresh META core + /weave skills
 ```
+
+## Orchestration
+
+| ID | Title |
+|----|-------|
+| workflow-automation | Workflow Automation |
+| pm-agent | PM Agent (Fleet ADD) |
 
 ## Fleet (1–15)
 

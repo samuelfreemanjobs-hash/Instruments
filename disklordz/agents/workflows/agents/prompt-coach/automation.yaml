@@ -1,0 +1,15 @@
+# Automation — Prompt Coach (`prompt-coach`)
+
+platform: github
+trigger: push docs/**
+primary: .github/workflows/rag-reindex.yml
+
+## Steps
+1. chunk_corpus
+2. embed_and_upsert optional
+
+## Invoke agent
+Read: disklordz/agents/profit/prompt-coach/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#prompt-coach

@@ -1,0 +1,15 @@
+# Automation — Churn Win-back (`churn-winback`)
+
+platform: n8n
+trigger: weekly
+primary: disklordz/agents/workflows/n8n/churn-winback-stub.json
+
+## Steps
+1. Query lapsed Pro
+2. Opt-in email + credit
+
+## Invoke agent
+Read: disklordz/agents/profit/churn-winback/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#churn-winback

@@ -1,0 +1,15 @@
+# Automation — Referral & Affiliate (`referral-affiliate`)
+
+platform: stripe
+trigger: checkout
+primary: STRIPE_PRO_PRICE_ID + coupon
+
+## Steps
+1. Referral code in manifest
+2. Webhook ledger
+
+## Invoke agent
+Read: disklordz/agents/profit/referral-affiliate/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#referral-affiliate

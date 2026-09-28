@@ -1,0 +1,15 @@
+# Automation — Fraud & Abuse (`fraud-abuse`)
+
+platform: api
+trigger: every POST /api/generate
+primary: disklordz/website/src/lib/rate-limit.ts
+
+## Steps
+1. IP cap
+2. 429 guest tier
+
+## Invoke agent
+Read: disklordz/agents/profit/fraud-abuse/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#fraud-abuse

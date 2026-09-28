@@ -1,0 +1,15 @@
+# Automation — Ship Velocity (`ship-velocity`)
+
+platform: github
+trigger: repository_dispatch
+primary: .github/workflows/airtable-antigravity-handoff.yml
+
+## Steps
+1. Airtable WO
+2. Issue + inbox JSON
+
+## Invoke agent
+Read: disklordz/agents/profit/ship-velocity/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#ship-velocity

@@ -1,0 +1,15 @@
+# Automation — Ops Schema (`ops-schema`)
+
+platform: github
+trigger: workflow_dispatch
+primary: .github/workflows/activate-integrations.yml
+
+## Steps
+1. supabase db push
+2. migration list in DEPLOY.md
+
+## Invoke agent
+Read: disklordz/agents/profit/ops-schema/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#ops-schema

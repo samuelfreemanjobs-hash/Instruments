@@ -1,0 +1,16 @@
+# Automation — PM Agent (Fleet ADD) (`pm-agent`)
+
+platform: github
+trigger: daily + push fleet docs
+primary: .github/workflows/agent-fleet-governance.yml
+
+## Steps
+1. sync-disklordz-agent-fleet.sh
+2. scaffold_agents.py --check
+3. Fail if DISKLORDZ_AGENTS.md drift
+
+## Invoke agent
+Read: disklordz/agents/profit/pm-agent/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#pm-agent
