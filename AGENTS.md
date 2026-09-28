@@ -42,7 +42,8 @@ Integrations hub: [disklordz/integrations/ARCHITECTURE.md](disklordz/integration
 
 Profit agents (31): [DISKLORDZ_AGENTS.md](DISKLORDZ_AGENTS.md) · [docs/DISKLORDZ_PROFIT_AGENTS.md](docs/DISKLORDZ_PROFIT_AGENTS.md) · `disklordz/agents/profit/<id>/agent.md`
 
-**Roadmap & progress:** [docs/ROADMAP.md](docs/ROADMAP.md)
+**Roadmap & progress:** [docs/ROADMAP.md](docs/ROADMAP.md)  
+**SOPs & templates:** [docs/disklordz/README.md](docs/disklordz/README.md)
 
 META charter (all agents): [CLAUDE.md](CLAUDE.md) · sync: `./scripts/sync-meta-llm-charter.sh` · skills `/zero-pause` `/weave` `/premortem`
 

@@ -13,4 +13,6 @@ Before adding or changing Disklordz agents, workflows, or integrations:
 
 Regenerate after spec changes: `./scripts/sync-disklordz-agent-fleet.sh`
 
+SOPs & prompt templates: [docs/disklordz/README.md](../../docs/disklordz/README.md)
+
 New agents must appear in `_specs.json`, Copilot skills, PM ADD, and fleet entrypoints in the same change.

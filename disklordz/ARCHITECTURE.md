@@ -27,5 +27,6 @@ Prompt / WO → website API → sound-factory WAVs → ZIP / Supabase kits
 
 ## Related docs
 
+- [docs/disklordz/README.md](../docs/disklordz/README.md) — SOPs & Cursor templates  
 - [docs/ROADMAP.md](../docs/ROADMAP.md) — progress dashboard  
 - [docs/DISKLORDZ_SAAS_V0.md](../docs/DISKLORDZ_SAAS_V0.md) · [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](../docs/DISKLORDZ_ILLUGEN_RESEARCH.md)

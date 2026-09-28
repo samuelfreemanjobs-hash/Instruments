@@ -2,7 +2,7 @@
 
 Single place to see **where we are going** and **what is done**. PM Agent refreshes the progress block; human owners edit phase tables below.
 
-**Related:** [DISKLORDZ_ILLUGEN_RESEARCH.md](DISKLORDZ_ILLUGEN_RESEARCH.md) (SaaS 007+) · [PHASE5.md](PHASE5.md) (JD Upgraded plugin) · [HANDOFF.md](HANDOFF.md) (last agent handoff)
+**Related:** [disklordz/README.md](disklordz/README.md) (SOPs & templates) · [DISKLORDZ_ILLUGEN_RESEARCH.md](DISKLORDZ_ILLUGEN_RESEARCH.md) (SaaS 007+) · [PHASE5.md](PHASE5.md) (JD Upgraded plugin) · [HANDOFF.md](HANDOFF.md) (last agent handoff)
 
 ---
 
@@ -54,6 +54,7 @@ Every product must have `ARCHITECTURE.md` ([policy](../.cursor/rules/architectur
 | DAW inbox | [disklordz/daw-inbox/ARCHITECTURE.md](../disklordz/daw-inbox/ARCHITECTURE.md) | Yes | WO-016 |
 | Antigravity | [disklordz/antigravity/ARCHITECTURE.md](../disklordz/antigravity/ARCHITECTURE.md) | Yes | Cursor bridge |
 | META charter | [disklordz/agents/charter/ARCHITECTURE.md](../disklordz/agents/charter/ARCHITECTURE.md) | Yes | CLAUDE.md sync |
+| Disklordz SOPs & templates | [docs/disklordz/ARCHITECTURE.md](disklordz/ARCHITECTURE.md) | Yes | Cursor/PM playbooks |
 
 ---
 
