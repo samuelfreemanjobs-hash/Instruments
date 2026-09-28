@@ -2,7 +2,7 @@
 
 ## Purpose
 
-**4-track × 16-step** editor in the browser with **Web MIDI** output to the **LIVEN Lofi-12**, plus Python playback/export for hosts without Web MIDI.
+**6-track × 16-step** editor in the browser with **Web Audio** preview, **live pads**, **factory backing loops**, and **Web MIDI** to the **LIVEN Lofi-12** (tracks 1–4 = hardware; Perc/OpenHat = extra lanes).
 
 ## Build & run
 

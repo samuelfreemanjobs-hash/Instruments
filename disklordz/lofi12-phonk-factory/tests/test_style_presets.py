@@ -9,7 +9,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from phonk_style_presets import get_preset, list_preset_ids  # noqa: E402
+from phonk_style_presets import (  # noqa: E402
+    all_presets_api,
+    get_preset,
+    list_preset_ids,
+    merge_render_payload,
+)
 
 
 class StylePresetTests(unittest.TestCase):
@@ -20,6 +25,14 @@ class StylePresetTests(unittest.TestCase):
         assert ps is not None
         self.assertEqual(ps.lane, "juicy_j")
         self.assertEqual(ps.engine, "juicy_j")
+
+    def test_merge_render_payload(self) -> None:
+        merged = merge_render_payload({"preset": "dj_toomp"})
+        self.assertIn("dj toomp", merged["prompt"].lower())
+        self.assertEqual(merged["engine"], "dj_toomp")
+
+    def test_api_preset_list(self) -> None:
+        self.assertGreaterEqual(len(all_presets_api()), 4)
 
 
 if __name__ == "__main__":

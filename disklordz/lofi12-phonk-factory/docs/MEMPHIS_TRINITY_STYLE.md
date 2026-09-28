@@ -29,11 +29,20 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
   --preset dj_toomp --out ~/Music/Lofi12/Toomp
 ```
 
+## One-shot bank (same presets)
+
+```bash
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_factory.py \
+  --preset memphis_trinity --out ~/Music/Lofi12/Trinity/bank_a
+```
+
 ## Sequencer workflow
 
 ```bash
 python3 disklordz/lofi12-phonk-factory/sequencer/serve.py
 ```
+
+Use the **Style** dropdown (Juicy J / Paul / Toomp / Trinity) → **Apply preset** → **Load groove → grid** (6 tracks) → **Generate backing loop** → **Play**. Live **pads** or keys **1–6** for practice over the loop.
 
 Groove prompt examples:
 

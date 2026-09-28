@@ -21,7 +21,10 @@ from lofi12_prepare import (  # noqa: E402
     write_wav_mono,
 )
 from phonk_machine_engine import PROFILES, list_engines, resolve_engine_id  # noqa: E402
+from phonk_style_presets import get_preset, list_preset_ids  # noqa: E402
 from phonk_synth import resolve_phonk_params, render_slot  # noqa: E402
+
+DEFAULT_BANK_PROMPT = "dirty memphis phonk 808 cowbell 140"
 
 DISKLORDZ_MAP = {
     "kick": "kick_808",
@@ -156,7 +159,7 @@ def import_disklordz_kit(
 
 def main() -> None:
     p = argparse.ArgumentParser(description="Lofi-12 phonk drum bank factory")
-    p.add_argument("--prompt", default="dirty memphis phonk 808 cowbell 140")
+    p.add_argument("--prompt", default=DEFAULT_BANK_PROMPT)
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--variation", type=int, default=0)
     p.add_argument("--rate", type=int, choices=(12000, 24000), default=24000)
@@ -168,7 +171,21 @@ def main() -> None:
         help="Folder with Disklordz manifest.json + WAVs; fills mapped slots, synths the rest",
     )
     p.add_argument("--engine", default=None, help="Drum machine engine (see phonk_machine_engine.py)")
+    preset_help = ", ".join(list_preset_ids())
+    p.add_argument(
+        "--preset",
+        default=None,
+        help=f"Memphis style preset for bank tone ({preset_help})",
+    )
     args = p.parse_args()
+
+    prompt_was_default = args.prompt == DEFAULT_BANK_PROMPT
+    preset = get_preset(args.preset) if args.preset else None
+    if preset:
+        if prompt_was_default:
+            args.prompt = preset.prompt
+        if args.engine is None and preset.engine:
+            args.engine = preset.engine
 
     if args.batch > 0:
         for i in range(args.batch):

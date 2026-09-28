@@ -191,3 +191,34 @@ button:hover,
   font-size: 1rem;
   color: var(--text);
 }
+
+.pad-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pad-btn {
+  flex: 1;
+  min-width: 4.5rem;
+  padding: 0.65rem 0.5rem;
+  border: 1px solid var(--accent-dim);
+  border-radius: 6px;
+  background: var(--step);
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.pad-btn:active {
+  background: var(--step-on);
+  border-color: var(--accent);
+}
+
+kbd {
+  font-size: 0.8em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: var(--step);
+  border: 1px solid var(--accent-dim);
+}

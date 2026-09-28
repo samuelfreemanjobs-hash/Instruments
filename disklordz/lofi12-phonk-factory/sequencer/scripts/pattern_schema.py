@@ -1,4 +1,4 @@
-"""Lofi-12 sequencer pattern schema (4 tracks × 16 steps)."""
+"""Lofi-12 sequencer pattern schema (4 or 6 tracks × 16 steps)."""
 
 from __future__ import annotations
 
@@ -11,9 +11,26 @@ STEPS = 16
 TRACKS = 4
 FORMAT = "LOFI12_STEP_PATTERN"
 VERSION = 1
+VERSION_SIX = 2
+
+SIX_TRACK_LAYOUT = (
+    ("Kick", 1, 1),
+    ("Snare", 2, 4),
+    ("Hat", 3, 7),
+    ("Cowbell", 4, 10),
+    ("Perc", 5, 13),
+    ("OpenHat", 6, 8),
+)
 
 # Slot 1–16 → MIDI note (chromatic from C2). Adjust in UI if your bank root differs.
 SLOT_TO_NOTE = {i: 35 + i for i in range(1, 17)}
+
+
+def default_six_track_pattern() -> list[TrackPattern]:
+    return [
+        TrackPattern(name, midi_channel=ch, default_note=SLOT_TO_NOTE[slot])
+        for name, ch, slot in SIX_TRACK_LAYOUT
+    ]
 
 
 @dataclass
@@ -41,6 +58,8 @@ class Pattern:
     steps: int = STEPS
     tracks: list[TrackPattern] = field(default_factory=list)
     send_clock: bool = False
+    version: int = VERSION
+    fx: dict[str, float] | None = None
 
     def __post_init__(self) -> None:
         if not self.tracks:
@@ -52,9 +71,10 @@ class Pattern:
             ]
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        ver = VERSION_SIX if len(self.tracks) >= 6 else self.version
+        out: dict[str, Any] = {
             "format": FORMAT,
-            "version": VERSION,
+            "version": ver,
             "bpm": self.bpm,
             "steps": self.steps,
             "sendClock": self.send_clock,
@@ -70,6 +90,9 @@ class Pattern:
                 for t in self.tracks
             ],
         }
+        if self.fx:
+            out["fx"] = self.fx
+        return out
 
     @staticmethod
     def from_dict(data: dict[str, Any]) -> Pattern:
@@ -98,6 +121,8 @@ class Pattern:
             steps=int(data.get("steps", STEPS)),
             send_clock=bool(data.get("sendClock", False)),
             tracks=tracks or Pattern().tracks,
+            version=int(data.get("version", VERSION)),
+            fx=data.get("fx"),
         )
 
 

@@ -31,9 +31,17 @@
     </section>
 
     <section class="tools panel">
+      <label>Style
+        <select id="stylePreset">
+          <option value="">— loading presets —</option>
+        </select>
+      </label>
+      <button type="button" id="applyPreset">Apply preset</button>
       <input type="text" id="groovePrompt" value="juicy j dj paul dirty memphis 86" style="flex:1;min-width:12rem" />
       <button type="button" id="loadGroove">Load groove → grid</button>
       <button type="button" id="genBacking">Generate backing loop</button>
+      <button type="button" id="downloadBacking">Download last loop</button>
+      <label class="check"><input type="checkbox" id="autoDownloadWav" /> Auto-download WAV on generate</label>
       <label class="file-btn">Load backing WAV<input type="file" id="loadBackingFile" accept="audio/wav" hidden /></label>
       <button type="button" id="clear">Clear grid</button>
       <button type="button" id="saveJson">Save pattern</button>
@@ -46,6 +54,12 @@
       <label>Velocity <input type="number" id="editVel" min="1" max="127" /></label>
       <button type="button" id="applyEdit">Apply to selected step</button>
       <p class="hint">Shift+click step = slot 1–16 · Alt+click = velocity · Double-click track name = default slot</p>
+    </section>
+
+    <section class="pads panel">
+      <h2>Live pads</h2>
+      <div id="padRow" class="pad-row"></div>
+      <p class="hint">Keys <kbd>1</kbd>–<kbd>6</kbd> trigger tracks while practicing over the loop.</p>
     </section>
 
     <p id="status" class="status">Web Audio preview enabled — no hardware required to practice.</p>

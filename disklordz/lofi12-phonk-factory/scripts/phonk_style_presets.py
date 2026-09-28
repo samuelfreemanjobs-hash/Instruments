@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from phonk_loop_fx import LoopFxParams
+from phonk_loop_fx import LoopFxParams, fx_dict
 
 
 @dataclass(frozen=True)
@@ -65,3 +65,40 @@ def list_preset_ids() -> list[str]:
 def get_preset(preset_id: str) -> StylePreset | None:
     key = preset_id.strip().lower().replace("-", "_").replace(" ", "_")
     return PRESETS.get(key)
+
+
+def preset_to_api_dict(ps: StylePreset) -> dict:
+    return {
+        "id": ps.preset_id,
+        "label": ps.label,
+        "prompt": ps.prompt,
+        "lane": ps.lane,
+        "engine": ps.engine,
+        "bpm": ps.bpm,
+        "fx": fx_dict(ps.fx),
+    }
+
+
+def all_presets_api() -> list[dict]:
+    return [preset_to_api_dict(ps) for ps in PRESETS.values()]
+
+
+def merge_render_payload(payload: dict) -> dict:
+    """Apply preset fields when ``preset`` id is set; explicit payload keys win."""
+    preset_id = payload.get("preset")
+    if not preset_id:
+        return payload
+    ps = get_preset(str(preset_id))
+    if not ps:
+        return payload
+    out = dict(payload)
+    out.setdefault("prompt", ps.prompt)
+    if ps.lane and "lane" not in payload:
+        out["lane"] = ps.lane
+    if ps.engine and "engine" not in payload:
+        out["engine"] = ps.engine
+    if ps.bpm is not None and "bpm" not in payload:
+        out["bpm"] = ps.bpm
+    if ps.fx and not payload.get("fx"):
+        out["fx"] = fx_dict(ps.fx)
+    return out

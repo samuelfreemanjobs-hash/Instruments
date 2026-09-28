@@ -32,8 +32,13 @@ let timerId = null;
 let midiOut = null;
 let clockTimer = null;
 let selected = { ti: 0, si: 0 };
+/** @type {object[]} */
+let presetCache = [];
+/** @type {ArrayBuffer | null} */
+let lastBackingBuffer = null;
 
 const gridEl = document.getElementById("grid");
+const padRowEl = document.getElementById("padRow");
 const statusEl = document.getElementById("status");
 const bpmEl = document.getElementById("bpm");
 const midiSelect = document.getElementById("midiOut");
@@ -45,6 +50,10 @@ function slotToNote(slot) {
 }
 function noteToSlot(note) {
   return note - SLOT_BASE + 1;
+}
+
+function selectedPresetId() {
+  return document.getElementById("stylePreset").value || null;
 }
 
 function fxValues() {
@@ -268,40 +277,129 @@ function loadFromJson(obj) {
 
 async function loadGrooveFromApi() {
   const prompt = document.getElementById("groovePrompt").value || "dj paul memphis 84";
+  const body = { prompt, bpm: Number(bpmEl.value) || 84 };
+  const preset = selectedPresetId();
+  if (preset) body.preset = preset;
   const res = await fetch("/api/groove_pattern", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt, bpm: Number(bpmEl.value) || 84 }),
+    body: JSON.stringify(body),
   });
   const data = await res.json();
   loadFromJson(data);
-  setStatus("Loaded groove from factory");
+  setStatus("Loaded groove from factory (6 tracks)");
 }
 
-async function generateBacking() {
-  const prompt = document.getElementById("groovePrompt").value || "juicy j memphis phonk 84";
-  setStatus("Rendering backing loop…");
-  const res = await fetch("/api/render_loop", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      prompt,
-      bpm: Number(bpmEl.value) || 84,
-      bars: 2,
-      fx: fxValues(),
-    }),
-  });
-  const buf = await res.arrayBuffer();
-  if (document.getElementById("backingOn").checked) {
-    await playBackingArrayBuffer(buf, true);
-  }
+function downloadBackingBuffer(buf) {
   const blob = new Blob([buf], { type: "audio/wav" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "backing_loop.wav";
   a.click();
-  setStatus("Backing loop ready (download + optional playback)");
 }
+
+async function generateBacking() {
+  const prompt = document.getElementById("groovePrompt").value || "juicy j memphis phonk 84";
+  setStatus("Rendering backing loop…");
+  const body = {
+    prompt,
+    bpm: Number(bpmEl.value) || 84,
+    bars: 2,
+    fx: fxValues(),
+  };
+  const preset = selectedPresetId();
+  if (preset) body.preset = preset;
+  const res = await fetch("/api/render_loop", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const metaRaw = res.headers.get("X-Loop-Meta");
+  const buf = await res.arrayBuffer();
+  lastBackingBuffer = buf;
+  if (metaRaw) {
+    try {
+      const meta = JSON.parse(metaRaw);
+      if (meta.bpm) bpmEl.value = meta.bpm;
+      if (meta.memphisLaneName) {
+        setStatus(`Backing: ${meta.memphisLaneName} · ${meta.drumEngine} · ${meta.bpm} BPM`);
+      }
+    } catch (_) {}
+  }
+  if (document.getElementById("backingOn").checked) {
+    await playBackingArrayBuffer(buf, true);
+  }
+  if (document.getElementById("autoDownloadWav").checked) {
+    downloadBackingBuffer(buf);
+  }
+  if (!metaRaw) setStatus("Backing loop ready — hit Play to practice");
+}
+
+function applyPresetFromUi() {
+  const id = selectedPresetId();
+  const p = presetCache.find((x) => x.id === id);
+  if (!p) {
+    setStatus("Select a style preset first");
+    return;
+  }
+  document.getElementById("groovePrompt").value = p.prompt;
+  if (p.bpm) bpmEl.value = p.bpm;
+  if (p.fx) {
+    document.getElementById("fxFilter").value = p.fx.filter;
+    document.getElementById("fxReverb").value = p.fx.reverb;
+    document.getElementById("fxTape").value = p.fx.tape;
+    document.getElementById("fxDrive").value = p.fx.drive;
+    sendFxCc();
+  }
+  setStatus(`Preset: ${p.label}`);
+}
+
+async function loadPresets() {
+  const sel = document.getElementById("stylePreset");
+  try {
+    const res = await fetch("/api/presets");
+    presetCache = await res.json();
+    sel.innerHTML = '<option value="">— custom prompt —</option>';
+    presetCache.forEach((p) => {
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = p.label;
+      sel.appendChild(opt);
+    });
+    sel.value = "memphis_trinity";
+    applyPresetFromUi();
+  } catch (_) {
+    sel.innerHTML = '<option value="">— presets unavailable —</option>';
+  }
+}
+
+function padHit(ti) {
+  resumeAudio();
+  const note = DEFAULT_NOTES[ti];
+  sendNote(ti, note, 110, 160);
+}
+
+function buildPads() {
+  padRowEl.innerHTML = "";
+  TRACK_NAMES.forEach((name, ti) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "pad-btn";
+    btn.textContent = name;
+    btn.title = `Pad · key ${ti + 1}`;
+    btn.addEventListener("mousedown", () => padHit(ti));
+    padRowEl.appendChild(btn);
+  });
+}
+
+document.addEventListener("keydown", (ev) => {
+  if (ev.target instanceof HTMLInputElement || ev.target instanceof HTMLTextAreaElement) return;
+  const idx = "123456".indexOf(ev.key);
+  if (idx >= 0) {
+    padHit(idx);
+    ev.preventDefault();
+  }
+});
 
 document.getElementById("play").onclick = () => startTransport();
 document.getElementById("stop").onclick = () => {
@@ -321,6 +419,11 @@ document.getElementById("clear").onclick = () => {
 };
 document.getElementById("loadGroove").onclick = () => loadGrooveFromApi();
 document.getElementById("genBacking").onclick = () => generateBacking();
+document.getElementById("applyPreset").onclick = () => applyPresetFromUi();
+document.getElementById("downloadBacking").onclick = () => {
+  if (lastBackingBuffer) downloadBackingBuffer(lastBackingBuffer);
+  else setStatus("Generate a backing loop first");
+};
 document.getElementById("applyEdit").onclick = () => {
   const c = pattern[selected.ti][selected.si];
   c.note = Math.min(127, Math.max(0, parseInt(editNoteEl.value, 10) || c.note));
@@ -352,4 +455,6 @@ document.getElementById("loadBackingFile").onchange = async (ev) => {
 };
 
 buildGrid();
+buildPads();
+loadPresets();
 refreshMidi();

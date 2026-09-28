@@ -39,6 +39,16 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         path = urlparse(self.path).path
+        if path == "/api/presets":
+            from phonk_style_presets import all_presets_api
+
+            data = json.dumps(all_presets_api()).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
         if path in ("", "/"):
             path = "/index.html"
         file_path = STATIC / path.lstrip("/")
@@ -68,7 +78,9 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/render_loop":
             from phonk_loop_fx import LoopFxParams
             from phonk_loop_render import render_phonk_loop
+            from phonk_style_presets import merge_render_payload
 
+            payload = merge_render_payload(payload)
             prompt = str(payload.get("prompt", "juicy j dj paul dirty memphis 86"))
             bpm = float(payload.get("bpm", 84))
             bars = int(payload.get("bars", 2))
@@ -85,6 +97,7 @@ class Handler(BaseHTTPRequestHandler):
                 bpm=bpm,
                 bars=bars,
                 variation=variation,
+                lane_id=payload.get("lane"),
                 engine_id=payload.get("engine"),
                 fx=fx,
             )
@@ -100,10 +113,22 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/groove_pattern":
             from pattern_from_groove import groove_to_pattern
             from pattern_schema import Pattern
+            from phonk_style_presets import get_preset, merge_render_payload
 
+            payload = merge_render_payload(payload)
             prompt = str(payload.get("prompt", "juicy j dj paul dirty memphis 86"))
             bpm = float(payload.get("bpm", 84))
             pat: Pattern = groove_to_pattern(prompt, bpm, int(payload.get("variation", 0)))
+            preset_id = payload.get("preset")
+            if preset_id:
+                ps = get_preset(str(preset_id))
+                if ps:
+                    pat.fx = {
+                        "filter": ps.fx.filter_cutoff,
+                        "reverb": ps.fx.reverb_send,
+                        "tape": ps.fx.tape,
+                        "drive": ps.fx.drive,
+                    }
             data = json.dumps(pat.to_dict()).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "application/json")

@@ -29,10 +29,13 @@ class SequencerPatternTests(unittest.TestCase):
 
     def test_groove_import_has_hits(self) -> None:
         pat = groove_to_pattern("dj paul memphis phonk", 84.0, 0)
+        self.assertEqual(len(pat.tracks), 6)
         kicks = sum(1 for s in pat.tracks[0].steps if s.on)
         snares = sum(1 for s in pat.tracks[1].steps if s.on)
         self.assertGreater(kicks, 0)
         self.assertGreaterEqual(snares, 2)
+        exported = pat.to_dict()
+        self.assertEqual(exported["version"], 2)
 
 
 if __name__ == "__main__":

@@ -7,6 +7,8 @@
 | **FX controlled by loop generator** | Core | Done: `phonk_loop_fx.py`, CLI `--filter/--reverb/--tape/--drive`, sequencer sliders + API |
 | **Play loop & beat on it** | Core | Done: backing WAV upload + `/api/render_loop`, Web Audio step preview |
 | **Edit step sequencer** | Core | Done: 6 tracks, slot/velocity edit, step inspector, groove import |
+| **Style presets in UI** | Core | Done: `/api/presets`, sequencer dropdown + live pads |
+| **One-shot bank presets** | Core | Done: `phonk_factory.py --preset` |
 | **More tracks** | 6 UI lanes (4 = Lofi hardware + 2 extra MIDI) | Done in UI; native Lofi stays 4 |
 | **Cloud / ambient one-shot generator** | **Separate product lane** | Phase 2 — not mixed into phonk engine yet (see below) |
 | **Full FM plugin / external DAW** | Not needed | In-repo FM + Web Audio sufficient |
