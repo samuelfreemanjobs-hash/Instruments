@@ -1,0 +1,105 @@
+# Label `cursor-agent` on an issue → compose handoff prompt → optional Cursor Cloud Agent API launch
+name: Claude → Cursor agent handoff
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  handoff:
+    if: github.event.label.name == 'cursor-agent'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compose agent prompt
+        id: prompt
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          template="docs/templates/TEMPLATE-claude-to-cursor-handoff.md"
+          {
+            echo "prompt<<EOF"
+            echo "## GitHub issue #${ISSUE_NUMBER} — ${ISSUE_TITLE}"
+            echo
+            echo "${ISSUE_BODY}"
+            echo
+            echo "---"
+            echo "Repository: https://github.com/${REPO}"
+            echo "Issue: https://github.com/${REPO}/issues/${ISSUE_NUMBER}"
+            if [ -f "$template" ]; then
+              echo
+              echo "### Repo handoff template (reference)"
+              sed -n '1,40p' "$template"
+            fi
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Launch agent or post manual instructions
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          PROMPT: ${{ steps.prompt.outputs.prompt }}
+          REPO_URL: https://github.com/${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prompt = process.env.PROMPT || '';
+            const apiKey = process.env.CURSOR_API_KEY || '';
+            const repoUrl = process.env.REPO_URL;
+            let body = '';
+
+            if (apiKey) {
+              const payload = {
+                prompt: { text: prompt },
+                repos: [{ url: repoUrl, startingRef: 'main' }],
+                autoCreatePR: true
+              };
+              const auth = Buffer.from(`${apiKey}:`).toString('base64');
+              const res = await fetch('https://api.cursor.com/v1/agents', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Basic ${auth}`
+                },
+                body: JSON.stringify(payload)
+              });
+              const text = await res.text();
+              if (!res.ok) {
+                body = `Cursor API error (${res.status}): \`${text.slice(0, 500)}\``;
+              } else {
+                let agentUrl = '';
+                try {
+                  const json = JSON.parse(text);
+                  agentUrl = json.agent?.url || json.url || '';
+                } catch (e) { /* ignore */ }
+                body = agentUrl
+                  ? `Cursor Cloud Agent started from label \`cursor-agent\`.\n\nRun: ${agentUrl}`
+                  : `Cursor Cloud Agent enqueued.\n\n\`\`\`json\n${text.slice(0, 2000)}\n\`\`\``;
+              }
+            } else {
+              body = [
+                'Label `cursor-agent` received. Set repo secret **CURSOR_API_KEY** to auto-launch a Cloud Agent.',
+                '',
+                'Or paste this prompt into [Cursor Cloud Agent](https://cursor.com/agents):',
+                '',
+                '```',
+                prompt.slice(0, 12000),
+                '```'
+              ].join('\n');
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(process.env.ISSUE_NUMBER),
+              body
+            });

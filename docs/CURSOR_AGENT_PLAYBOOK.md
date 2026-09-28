@@ -64,6 +64,8 @@ Copy into every Cloud Agent or IDE Agent task:
 
 Cloud agents use **pushed commits**; commit `.cursor/environment.json` for reproducible installs.
 
+**Claude → Cursor:** label GitHub issues with `cursor-agent` and optional `CURSOR_API_KEY` — see [CURSOR_CLAUDE_AUTOMATION.md](CURSOR_CLAUDE_AUTOMATION.md).
+
 ---
 
 ## 4. `.cursor/environment.json`

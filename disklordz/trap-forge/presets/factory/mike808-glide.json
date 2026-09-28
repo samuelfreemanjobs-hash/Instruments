@@ -1,0 +1,12 @@
+{
+  "name": "MIKE808_GLIDE",
+  "cat": "808",
+  "desc": "Mike Will trunk glide +7 st",
+  "rootHz": 47,
+  "glideMs": 120,
+  "glideSemi": 7,
+  "glideInterval": 7,
+  "glideExponent": 2.2,
+  "amp": { "attack": 0.003, "decay": 0.8, "sustain": 0.85, "release": 1.2 },
+  "tx": { "drive": 68, "type": "tube", "subHarm": 40, "noise": 2, "ceiling": -0.1 }
+}
