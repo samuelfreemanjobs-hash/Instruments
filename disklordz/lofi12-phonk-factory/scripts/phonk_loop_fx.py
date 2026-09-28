@@ -12,8 +12,10 @@ from phonk_synth import SRC_RATE, noise
 class LoopFxParams:
     filter_cutoff: float = 0.65  # 0 dark – 1 bright (maps to Lofi CC 38 idea)
     reverb_send: float = 0.25  # 0–1 wet (CC 36)
-    tape: float = 0.2
+    tape: float = 0.2  # wobble + light hiss
     drive: float = 0.15
+    cassette: float = 0.0  # wow/flutter + muffled cassette band + hiss
+    bitcrush: float = 0.0  # 0–1 SP-1200-style crush
     laid_back_ms: float = 0.0  # global micro delay (CC 31 vibe)
 
 
@@ -36,6 +38,11 @@ def fx_from_prompt(prompt: str) -> LoopFxParams:
         fx.filter_cutoff = min(fx.filter_cutoff, 0.5)
         fx.tape = max(fx.tape, 0.26)
         fx.drive = max(fx.drive, 0.3)
+        fx.bitcrush = max(fx.bitcrush, 0.35)
+    if "cassette" in p or "tape deck" in p:
+        fx.cassette = max(fx.cassette, 0.4)
+    if "bit crush" in p or "bitcrush" in p or "12 bit" in p or "12-bit" in p:
+        fx.bitcrush = max(fx.bitcrush, 0.45)
     if "drift" in p:
         fx.reverb_send = 0.32
     return fx
@@ -49,6 +56,41 @@ def _lowpass(samples: list[float], cutoff: float) -> list[float]:
     for s in samples:
         state = a * state + (1 - a) * s
         out.append(state)
+    return out
+
+
+def _bitcrush(samples: list[float], amount: float) -> list[float]:
+    if amount <= 0.001:
+        return samples
+    bits = max(4, int(16 - amount * 11))
+    levels = 2**bits
+    hold = max(1, int(1 + amount * 14))
+    out: list[float] = []
+    for i, s in enumerate(samples):
+        if i % hold != 0 and out:
+            out.append(out[-1])
+            continue
+        crushed = round(s * levels) / levels
+        out.append(crushed)
+    return out
+
+
+def _cassette(samples: list[float], amount: float, seed: int = 0) -> list[float]:
+    if amount <= 0.001:
+        return samples
+    out: list[float] = []
+    read_pos = 0.0
+    for i, _ in enumerate(samples):
+        t = i / SRC_RATE
+        flutter = 1.0 + amount * 0.035 * math.sin(t * 6.3 + seed)
+        flutter += amount * 0.012 * math.sin(t * 13.7)
+        read_pos += flutter
+        idx = int(read_pos)
+        read_pos -= idx
+        s = samples[min(idx, len(samples) - 1)]
+        s = s * (1.0 - amount * 0.08) + noise(t, seed + i) * amount * 0.025
+        out.append(s)
+    out = _lowpass(out, max(0.15, 0.55 - amount * 0.35))
     return out
 
 
@@ -83,6 +125,10 @@ def apply_loop_fx(samples: list[float], fx: LoopFxParams, *, seed: int = 0) -> l
             wobble = 1.0 + fx.tape * 0.02 * math.sin(t * 4.1 + seed)
             out[i] *= wobble
             out[i] += noise(t, seed + i) * fx.tape * 0.012
+    if fx.bitcrush > 0:
+        out = _bitcrush(out, fx.bitcrush)
+    if fx.cassette > 0:
+        out = _cassette(out, fx.cassette, seed + 17)
     wet = fx.reverb_send
     out = _simple_reverb(out, wet, seed)
     peak = max(abs(x) for x in out) or 1.0

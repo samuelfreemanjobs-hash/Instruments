@@ -3,71 +3,81 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Lofi-12 Phonk Step Sequencer</title>
+    <title>Lofi-12 Phonk Factory + Sequencer</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <header>
-      <h1>Lofi-12 step sequencer</h1>
-      <p class="sub">6×16 · Web Audio beat preview · Web MIDI · factory backing loops</p>
+      <h1>Phonk factory + step sequencers</h1>
+      <p class="sub">One 16-step sequencer per track · stem export · cassette / bit crush · sample pack ZIP</p>
     </header>
 
     <section class="transport">
-      <label>BPM <input type="number" id="bpm" min="60" max="190" value="84" /></label>
+      <label>BPM <input type="number" id="bpm" min="60" max="190" value="86" /></label>
       <button type="button" id="play" class="primary">Play</button>
       <button type="button" id="stop">Stop</button>
-      <label class="check"><input type="checkbox" id="backingOn" checked /> Loop backing with transport (Play restarts loop + grid)</label>
+      <label class="check"><input type="checkbox" id="backingOn" checked /> Loop backing with transport</label>
       <label>MIDI out <select id="midiOut"><option value="">— optional —</option></select></label>
       <button type="button" id="refreshMidi">Refresh MIDI</button>
     </section>
 
-    <section class="fx panel">
-      <h2>Loop / Lofi FX</h2>
-      <label>Filter <input type="range" id="fxFilter" min="0" max="1" step="0.01" value="0.55" /></label>
-      <label>Reverb <input type="range" id="fxReverb" min="0" max="1" step="0.01" value="0.28" /></label>
-      <label>Tape <input type="range" id="fxTape" min="0" max="1" step="0.01" value="0.22" /></label>
-      <label>Drive <input type="range" id="fxDrive" min="0" max="1" step="0.01" value="0.2" /></label>
-      <p class="hint">Sliders affect API loop render + MIDI CC 38/36 to Lofi-12 when connected.</p>
-    </section>
-
-    <section class="tools panel">
+    <section class="factory panel">
+      <h2>Factory</h2>
       <label>Style
         <select id="stylePreset">
-          <option value="">— loading presets —</option>
+          <option value="">— loading —</option>
         </select>
       </label>
       <button type="button" id="applyPreset">Apply preset</button>
       <input type="text" id="groovePrompt" value="juicy j dj paul dirty memphis 86" style="flex:1;min-width:12rem" />
-      <button type="button" id="loadGroove">Load groove → grid</button>
-      <button type="button" id="genBacking">Generate backing loop</button>
-      <button type="button" id="downloadBacking">Download last loop</button>
-      <label class="check"><input type="checkbox" id="autoDownloadWav" /> Auto-download WAV on generate</label>
+      <button type="button" id="genNewLoop" class="primary">Generate new drum loop</button>
+      <button type="button" id="genSamplePack">Generate sample pack (ZIP)</button>
+      <button type="button" id="loadGroove">Load groove → all tracks</button>
+      <label class="check"><input type="checkbox" id="autoDownloadWav" /> Auto-download full loop WAV</label>
+      <button type="button" id="downloadBacking">Download last full loop</button>
       <label class="file-btn">Load backing WAV<input type="file" id="loadBackingFile" accept="audio/wav" hidden /></label>
-      <button type="button" id="clear">Clear grid</button>
-      <button type="button" id="saveJson">Save pattern</button>
-      <label class="file-btn">Load pattern<input type="file" id="loadJson" accept="application/json" hidden /></label>
     </section>
 
-    <section class="edit panel">
-      <h2>Step editor</h2>
-      <label>MIDI note <input type="number" id="editNote" min="24" max="127" /></label>
-      <label>Velocity <input type="number" id="editVel" min="1" max="127" /></label>
-      <button type="button" id="applyEdit">Apply to selected step</button>
-      <p class="hint">Shift+click step = slot 1–16 · Alt+click = velocity · Double-click track name = default slot</p>
+    <section class="fx panel">
+      <h2>Loop FX</h2>
+      <label>Filter <input type="range" id="fxFilter" min="0" max="1" step="0.01" value="0.5" /></label>
+      <label>Reverb <input type="range" id="fxReverb" min="0" max="1" step="0.01" value="0.22" /></label>
+      <label>Wobble <input type="range" id="fxTape" min="0" max="1" step="0.01" value="0.22" /></label>
+      <label>Drive <input type="range" id="fxDrive" min="0" max="1" step="0.01" value="0.28" /></label>
+      <label>Cassette <input type="range" id="fxCassette" min="0" max="1" step="0.01" value="0.18" /></label>
+      <label>Bit crush <input type="range" id="fxBitcrush" min="0" max="1" step="0.01" value="0.25" /></label>
+    </section>
+
+    <section class="sequencer panel">
+      <h2>Per-track step sequencer</h2>
+      <nav id="trackTabBar" class="track-tab-bar" aria-label="Track tabs"></nav>
+      <div id="singleTrackPanel" class="single-track-panel">
+        <div id="singleTrackGrid" class="single-track-grid"></div>
+        <div class="track-actions">
+          <label>MIDI note <input type="number" id="editNote" min="24" max="127" /></label>
+          <label>Velocity <input type="number" id="editVel" min="1" max="127" /></label>
+          <button type="button" id="applyEdit">Apply to step</button>
+          <button type="button" id="clearTrack">Clear track</button>
+          <button type="button" id="exportTrackGrid">Export loop (this grid)</button>
+          <button type="button" id="exportTrackFactory">Export loop (factory groove)</button>
+        </div>
+        <p class="hint">Click step toggle · Shift slot · Alt velocity · Keys 1–6 = live pad for focused track</p>
+      </div>
+      <details class="master-grid-wrap">
+        <summary>All tracks (6×16 overview)</summary>
+        <div id="grid" class="grid"></div>
+        <button type="button" id="clear">Clear all</button>
+        <button type="button" id="saveJson">Save pattern JSON</button>
+        <label class="file-btn">Load pattern<input type="file" id="loadJson" accept="application/json" hidden /></label>
+      </details>
     </section>
 
     <section class="pads panel">
-      <h2>Live pads</h2>
-      <div id="padRow" class="pad-row"></div>
-      <p class="hint">Keys <kbd>1</kbd>–<kbd>6</kbd> trigger tracks while practicing over the loop.</p>
+      <h2>Live pad</h2>
+      <button type="button" id="focusPad" class="pad-btn wide">Hit focused track</button>
     </section>
 
-    <p id="status" class="status">Web Audio preview enabled — no hardware required to practice.</p>
-    <div id="grid" class="grid"></div>
-
-    <section class="help">
-      <p>Tracks 1–4 map to Lofi-12 hardware tracks; <strong>Perc</strong> and <strong>OpenHat</strong> are extra MIDI lanes for computer / second bank.</p>
-    </section>
+    <p id="status" class="status">Ready — GUI mockup spec: docs/GUI_MOCKUP_SPEC.md</p>
 
     <script type="module" src="app.js"></script>
   </body>

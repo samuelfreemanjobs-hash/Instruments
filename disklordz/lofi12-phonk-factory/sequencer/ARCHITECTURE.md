@@ -29,7 +29,8 @@ python3 disklordz/lofi12-phonk-factory/sequencer/scripts/pattern_from_groove.py 
 Browser grid → pattern JSON (save/load)
   → Web MIDI note on/off + optional clock → Lofi-12 MIDI IN
 Python midi_play.py → same JSON → mido port
-phonk_groove.build_bar → pattern_from_groove → JSON → sequencer UI
+phonk_groove.build_bar → pattern_from_groove (6 tracks) → JSON → sequencer UI
+GET /api/presets · POST /api/render_loop · POST /api/groove_pattern
 ```
 
 ## Threading / realtime

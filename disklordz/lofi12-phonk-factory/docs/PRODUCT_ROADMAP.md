@@ -10,6 +10,9 @@
 | **Style presets in UI** | Core | Done: `/api/presets`, sequencer dropdown + live pads |
 | **One-shot bank presets** | Core | Done: `phonk_factory.py --preset` |
 | **More tracks** | 6 UI lanes (4 = Lofi hardware + 2 extra MIDI) | Done in UI; native Lofi stays 4 |
+| **Per-track step sequencer + stem export** | Core | Done: track tabs, pattern/factory stem WAV |
+| **Generate loop + sample pack in UI** | Core | Done: New drum loop + ZIP bank API |
+| **Cassette + bit crusher FX** | Core | Done: mix bus + UI sliders |
 | **Cloud / ambient one-shot generator** | **Separate product lane** | Phase 2 — not mixed into phonk engine yet (see below) |
 | **Full FM plugin / external DAW** | Not needed | In-repo FM + Web Audio sufficient |
 

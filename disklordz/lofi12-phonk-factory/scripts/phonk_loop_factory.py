@@ -80,6 +80,8 @@ def main() -> None:
     p.add_argument("--reverb", type=float, default=-1, help="Reverb send 0–1 (-1 = from prompt)")
     p.add_argument("--tape", type=float, default=-1, help="Tape wobble/noise 0–1")
     p.add_argument("--drive", type=float, default=-1, help="Saturation 0–1")
+    p.add_argument("--cassette", type=float, default=-1, help="Cassette wow/muff/hiss 0–1")
+    p.add_argument("--bitcrush", type=float, default=-1, help="Bit crusher 0–1")
     preset_help = ", ".join(list_preset_ids())
     p.add_argument(
         "--preset",
@@ -111,6 +113,10 @@ def main() -> None:
         fx.tape = min(1.0, max(0.0, args.tape))
     if args.drive >= 0:
         fx.drive = min(1.0, max(0.0, args.drive))
+    if args.cassette >= 0:
+        fx.cassette = min(1.0, max(0.0, args.cassette))
+    if args.bitcrush >= 0:
+        fx.bitcrush = min(1.0, max(0.0, args.bitcrush))
 
     lane = resolve_memphis_lane(args.prompt, args.lane)
     engine = resolve_engine_id(args.prompt, args.engine)

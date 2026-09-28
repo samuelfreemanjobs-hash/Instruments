@@ -87,7 +87,7 @@ Roadmap for **cloud / ambient one-shots** (separate from phonk drums): [docs/PRO
 
 ## Step sequencer (beat over loops → Lofi-12 MIDI)
 
-Browser **6×16** grid: Web Audio preview, factory backing loops, groove import, step editor (slot + velocity). Tracks 1–4 match Lofi hardware; **Perc** / **OpenHat** are extra MIDI lanes.
+Browser **one 16-step sequencer per track** (tabs) plus 6×16 overview: Web Audio, **Generate new drum loop**, **sample pack ZIP**, **per-instrument loop export**, cassette + bit crush FX. Tracks 1–4 match Lofi hardware; **Perc** / **OpenHat** are extra MIDI lanes. GUI mockup guide: [docs/GUI_MOCKUP_SPEC.md](docs/GUI_MOCKUP_SPEC.md).
 
 ```bash
 python3 disklordz/lofi12-phonk-factory/sequencer/serve.py

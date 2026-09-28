@@ -4,11 +4,13 @@
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import struct
 import sys
+import tempfile
 import wave
-import io
+import zipfile
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
@@ -18,6 +20,29 @@ SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
 SEQ_SCRIPTS = Path(__file__).resolve().parent / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 sys.path.insert(0, str(SEQ_SCRIPTS))
+
+
+def _fx_from_payload(fx_raw: dict) -> "LoopFxParams":
+    from phonk_loop_fx import LoopFxParams
+
+    return LoopFxParams(
+        filter_cutoff=float(fx_raw.get("filter", 0.65)),
+        reverb_send=float(fx_raw.get("reverb", 0.25)),
+        tape=float(fx_raw.get("tape", 0.2)),
+        drive=float(fx_raw.get("drive", 0.15)),
+        cassette=float(fx_raw.get("cassette", 0.0)),
+        bitcrush=float(fx_raw.get("bitcrush", 0.0)),
+    )
+
+
+def _send_wav(handler: BaseHTTPRequestHandler, pcm: list[float], meta: dict) -> None:
+    wav = _pcm_to_wav_bytes(pcm)
+    handler.send_response(200)
+    handler.send_header("Content-Type", "audio/wav")
+    handler.send_header("X-Loop-Meta", json.dumps(meta))
+    handler.send_header("Content-Length", str(len(wav)))
+    handler.end_headers()
+    handler.wfile.write(wav)
 
 
 def _pcm_to_wav_bytes(pcm: list[float], rate: int = 44100) -> bytes:
@@ -85,13 +110,7 @@ class Handler(BaseHTTPRequestHandler):
             bpm = float(payload.get("bpm", 84))
             bars = int(payload.get("bars", 2))
             variation = int(payload.get("variation", 0))
-            fx_raw = payload.get("fx") or {}
-            fx = LoopFxParams(
-                filter_cutoff=float(fx_raw.get("filter", 0.65)),
-                reverb_send=float(fx_raw.get("reverb", 0.25)),
-                tape=float(fx_raw.get("tape", 0.2)),
-                drive=float(fx_raw.get("drive", 0.15)),
-            )
+            fx = _fx_from_payload(payload.get("fx") or {})
             pcm, meta = render_phonk_loop(
                 prompt=prompt,
                 bpm=bpm,
@@ -100,14 +119,62 @@ class Handler(BaseHTTPRequestHandler):
                 lane_id=payload.get("lane"),
                 engine_id=payload.get("engine"),
                 fx=fx,
+                stem=payload.get("stem"),
             )
-            wav = _pcm_to_wav_bytes(pcm)
+            _send_wav(self, pcm, meta)
+            return
+
+        if path == "/api/render_pattern_stem":
+            from phonk_pattern_render import render_pattern_stem
+
+            pattern = payload.get("pattern")
+            if not isinstance(pattern, dict):
+                self.send_error(400, "pattern required")
+                return
+            track_index = int(payload.get("trackIndex", 0))
+            prompt = str(payload.get("prompt", pattern.get("prompt", "memphis phonk")))
+            fx = _fx_from_payload(payload.get("fx") or {})
+            pcm, meta = render_pattern_stem(
+                pattern,
+                track_index,
+                prompt=prompt,
+                engine_id=payload.get("engine"),
+                fx=fx,
+                variation=int(payload.get("variation", 0)),
+            )
+            _send_wav(self, pcm, meta)
+            return
+
+        if path == "/api/generate_bank":
+            from phonk_factory import generate_bank
+            from phonk_style_presets import merge_render_payload
+
+            payload = merge_render_payload(payload)
+            prompt = str(payload.get("prompt", "juicy j dirty memphis phonk"))
+            variation = int(payload.get("variation", 0))
+            with tempfile.TemporaryDirectory() as tmp:
+                out = Path(tmp) / "bank_a"
+                generate_bank(
+                    prompt=prompt,
+                    out_dir=out,
+                    variation=variation,
+                    engine_id=payload.get("engine"),
+                )
+                zbuf = io.BytesIO()
+                with zipfile.ZipFile(zbuf, "w", zipfile.ZIP_DEFLATED) as zf:
+                    for f in out.rglob("*"):
+                        if f.is_file():
+                            zf.write(f, f.relative_to(out).as_posix())
+                data = zbuf.getvalue()
             self.send_response(200)
-            self.send_header("Content-Type", "audio/wav")
-            self.send_header("X-Loop-Meta", json.dumps(meta))
-            self.send_header("Content-Length", str(len(wav)))
+            self.send_header("Content-Type", "application/zip")
+            self.send_header(
+                "Content-Disposition",
+                f'attachment; filename="lofi12_phonk_bank_v{variation:02d}.zip"',
+            )
+            self.send_header("Content-Length", str(len(data)))
             self.end_headers()
-            self.wfile.write(wav)
+            self.wfile.write(data)
             return
 
         if path == "/api/groove_pattern":
@@ -128,6 +195,8 @@ class Handler(BaseHTTPRequestHandler):
                         "reverb": ps.fx.reverb_send,
                         "tape": ps.fx.tape,
                         "drive": ps.fx.drive,
+                        "cassette": ps.fx.cassette,
+                        "bitcrush": ps.fx.bitcrush,
                     }
             data = json.dumps(pat.to_dict()).encode("utf-8")
             self.send_response(200)

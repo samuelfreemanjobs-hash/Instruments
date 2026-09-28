@@ -22,6 +22,15 @@ class LoopFxTests(unittest.TestCase):
         cc = fx_to_lofi12_cc(LoopFxParams(filter_cutoff=0.5, reverb_send=0.5))
         self.assertEqual(cc["filterCutoff"], 63)
 
+    def test_bitcrush_and_cassette(self) -> None:
+        dry = [0.4 * (1 if i % 50 == 0 else 0) for i in range(4000)]
+        wet = apply_loop_fx(
+            dry,
+            LoopFxParams(bitcrush=0.5, cassette=0.4, filter_cutoff=0.6),
+            seed=2,
+        )
+        self.assertNotEqual(dry, wet)
+
 
 if __name__ == "__main__":
     unittest.main()

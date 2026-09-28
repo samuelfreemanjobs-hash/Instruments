@@ -26,7 +26,14 @@ PRESETS: dict[str, StylePreset] = {
         "juicy_j",
         "juicy_j",
         86.0,
-        LoopFxParams(filter_cutoff=0.52, reverb_send=0.24, tape=0.3, drive=0.3),
+        LoopFxParams(
+            filter_cutoff=0.52,
+            reverb_send=0.24,
+            tape=0.3,
+            drive=0.3,
+            cassette=0.15,
+            bitcrush=0.22,
+        ),
     ),
     "dj_paul": StylePreset(
         "dj_paul",
@@ -53,7 +60,14 @@ PRESETS: dict[str, StylePreset] = {
         "juicy_j",
         "juicy_j",
         86.0,
-        LoopFxParams(filter_cutoff=0.5, reverb_send=0.22, tape=0.29, drive=0.31),
+        LoopFxParams(
+            filter_cutoff=0.5,
+            reverb_send=0.22,
+            tape=0.29,
+            drive=0.31,
+            cassette=0.18,
+            bitcrush=0.28,
+        ),
     ),
 }
 

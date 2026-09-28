@@ -192,6 +192,53 @@ button:hover,
   color: var(--text);
 }
 
+.track-tab-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.track-tab {
+  padding: 0.45rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--accent-dim);
+  background: var(--step);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.track-tab.active {
+  background: var(--step-on);
+  border-color: var(--accent);
+}
+
+.single-track-grid {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.single-step {
+  min-height: 3rem;
+  font-size: 0.75rem;
+}
+
+.track-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.master-grid-wrap {
+  margin-top: 1rem;
+  color: var(--muted);
+}
+
 .pad-row {
   display: flex;
   flex-wrap: wrap;
@@ -213,6 +260,11 @@ button:hover,
 .pad-btn:active {
   background: var(--step-on);
   border-color: var(--accent);
+}
+
+.pad-btn.wide {
+  width: 100%;
+  max-width: 16rem;
 }
 
 kbd {

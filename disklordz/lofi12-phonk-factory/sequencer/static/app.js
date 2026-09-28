@@ -13,6 +13,7 @@ import {
 
 const STEPS = 16;
 const TRACK_NAMES = ["Kick", "Snare", "Hat", "Cowbell", "Perc", "OpenHat"];
+const STEM_IDS = ["kick", "snare", "hat", "cowbell", "perc", "openhat"];
 const DEFAULT_NOTES = [36, 39, 42, 45, 48, 46]; // slots 1,4,7,10,13,8
 const SLOT_BASE = 36;
 
@@ -36,9 +37,12 @@ let selected = { ti: 0, si: 0 };
 let presetCache = [];
 /** @type {ArrayBuffer | null} */
 let lastBackingBuffer = null;
+let loopVariation = 0;
+let focusedTrack = 0;
 
 const gridEl = document.getElementById("grid");
-const padRowEl = document.getElementById("padRow");
+const trackTabBar = document.getElementById("trackTabBar");
+const singleTrackGrid = document.getElementById("singleTrackGrid");
 const statusEl = document.getElementById("status");
 const bpmEl = document.getElementById("bpm");
 const midiSelect = document.getElementById("midiOut");
@@ -62,6 +66,8 @@ function fxValues() {
     reverb: Number(document.getElementById("fxReverb").value),
     tape: Number(document.getElementById("fxTape").value),
     drive: Number(document.getElementById("fxDrive").value),
+    cassette: Number(document.getElementById("fxCassette").value),
+    bitcrush: Number(document.getElementById("fxBitcrush").value),
   };
 }
 
@@ -71,6 +77,38 @@ function sendFxCc() {
   const ch = 0;
   midiOut.send([0xb0 + ch, 38, Math.floor(fx.filter * 127)]);
   midiOut.send([0xb0 + ch, 36, Math.floor(fx.reverb * 127)]);
+}
+
+function buildTrackTabs() {
+  trackTabBar.innerHTML = "";
+  TRACK_NAMES.forEach((name, ti) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "track-tab" + (ti === focusedTrack ? " active" : "");
+    btn.textContent = name;
+    btn.addEventListener("click", () => {
+      focusedTrack = ti;
+      selected = { ti, si: selected.si };
+      buildTrackTabs();
+      buildSingleTrackGrid();
+      syncGridUi();
+    });
+    trackTabBar.appendChild(btn);
+  });
+}
+
+function buildSingleTrackGrid() {
+  singleTrackGrid.innerHTML = "";
+  const ti = focusedTrack;
+  for (let si = 0; si < STEPS; si++) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "step single-step";
+    btn.dataset.track = String(ti);
+    btn.dataset.step = String(si);
+    btn.addEventListener("click", (ev) => onStepClick(ti, si, ev));
+    singleTrackGrid.appendChild(btn);
+  }
 }
 
 function buildGrid() {
@@ -116,7 +154,7 @@ function buildGrid() {
 }
 
 function syncGridUi() {
-  document.querySelectorAll(".step").forEach((el) => {
+  document.querySelectorAll(".step, .single-step").forEach((el) => {
     const ti = Number(el.dataset.track);
     const si = Number(el.dataset.step);
     if (Number.isNaN(ti)) return;
@@ -140,6 +178,11 @@ function syncGridUi() {
 }
 
 function onStepClick(ti, si, ev) {
+  if (ti !== focusedTrack) {
+    focusedTrack = ti;
+    buildTrackTabs();
+    buildSingleTrackGrid();
+  }
   selected = { ti, si };
   const cell = pattern[ti][si];
   if (ev.altKey) {
@@ -259,6 +302,8 @@ function loadFromJson(obj) {
     document.getElementById("fxReverb").value = obj.fx.reverb ?? 0.25;
     document.getElementById("fxTape").value = obj.fx.tape ?? 0.2;
     document.getElementById("fxDrive").value = obj.fx.drive ?? 0.15;
+    document.getElementById("fxCassette").value = obj.fx.cassette ?? 0.18;
+    document.getElementById("fxBitcrush").value = obj.fx.bitcrush ?? 0.25;
   }
   obj.tracks.forEach((tr, ti) => {
     if (ti >= TRACK_NAMES.length) return;
@@ -298,13 +343,16 @@ function downloadBackingBuffer(buf) {
   a.click();
 }
 
-async function generateBacking() {
+async function generateBacking(variationOverride) {
   const prompt = document.getElementById("groovePrompt").value || "juicy j memphis phonk 84";
   setStatus("Rendering backing loop…");
+  const variation =
+    typeof variationOverride === "number" ? variationOverride : loopVariation;
   const body = {
     prompt,
     bpm: Number(bpmEl.value) || 84,
     bars: 2,
+    variation,
     fx: fxValues(),
   };
   const preset = selectedPresetId();
@@ -333,6 +381,78 @@ async function generateBacking() {
     downloadBackingBuffer(buf);
   }
   if (!metaRaw) setStatus("Backing loop ready — hit Play to practice");
+  return variation;
+}
+
+async function generateNewDrumLoop() {
+  loopVariation += 1;
+  await generateBacking(loopVariation);
+  setStatus(`New drum loop variation v${loopVariation}`);
+}
+
+function downloadBlob(blob, filename) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+
+async function generateSamplePack() {
+  setStatus("Generating 16-slot sample pack…");
+  const body = {
+    prompt: document.getElementById("groovePrompt").value,
+    variation: loopVariation,
+    fx: fxValues(),
+  };
+  const preset = selectedPresetId();
+  if (preset) body.preset = preset;
+  const res = await fetch("/api/generate_bank", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const buf = await res.arrayBuffer();
+  downloadBlob(new Blob([buf], { type: "application/zip" }), `lofi12_phonk_bank_v${loopVariation}.zip`);
+  setStatus("Sample pack ZIP downloaded");
+}
+
+async function exportStemFromGrid(ti) {
+  setStatus(`Exporting ${TRACK_NAMES[ti]} from grid…`);
+  const res = await fetch("/api/render_pattern_stem", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      pattern: patternToJson(),
+      trackIndex: ti,
+      prompt: document.getElementById("groovePrompt").value,
+      fx: fxValues(),
+    }),
+  });
+  const buf = await res.arrayBuffer();
+  downloadBlob(new Blob([buf], { type: "audio/wav" }), `${STEM_IDS[ti]}_grid_loop.wav`);
+  setStatus(`Exported ${TRACK_NAMES[ti]} (sequencer pattern)`);
+}
+
+async function exportStemFromFactory(ti) {
+  setStatus(`Exporting ${TRACK_NAMES[ti]} from factory groove…`);
+  const body = {
+    prompt: document.getElementById("groovePrompt").value,
+    bpm: Number(bpmEl.value) || 84,
+    bars: 2,
+    variation: loopVariation,
+    stem: STEM_IDS[ti],
+    fx: fxValues(),
+  };
+  const preset = selectedPresetId();
+  if (preset) body.preset = preset;
+  const res = await fetch("/api/render_loop", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const buf = await res.arrayBuffer();
+  downloadBlob(new Blob([buf], { type: "audio/wav" }), `${STEM_IDS[ti]}_factory_loop.wav`);
+  setStatus(`Exported ${TRACK_NAMES[ti]} (factory stem)`);
 }
 
 function applyPresetFromUi() {
@@ -349,6 +469,8 @@ function applyPresetFromUi() {
     document.getElementById("fxReverb").value = p.fx.reverb;
     document.getElementById("fxTape").value = p.fx.tape;
     document.getElementById("fxDrive").value = p.fx.drive;
+    if (p.fx.cassette != null) document.getElementById("fxCassette").value = p.fx.cassette;
+    if (p.fx.bitcrush != null) document.getElementById("fxBitcrush").value = p.fx.bitcrush;
     sendFxCc();
   }
   setStatus(`Preset: ${p.label}`);
@@ -379,24 +501,13 @@ function padHit(ti) {
   sendNote(ti, note, 110, 160);
 }
 
-function buildPads() {
-  padRowEl.innerHTML = "";
-  TRACK_NAMES.forEach((name, ti) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "pad-btn";
-    btn.textContent = name;
-    btn.title = `Pad · key ${ti + 1}`;
-    btn.addEventListener("mousedown", () => padHit(ti));
-    padRowEl.appendChild(btn);
-  });
-}
+document.getElementById("focusPad").addEventListener("mousedown", () => padHit(focusedTrack));
 
 document.addEventListener("keydown", (ev) => {
   if (ev.target instanceof HTMLInputElement || ev.target instanceof HTMLTextAreaElement) return;
   const idx = "123456".indexOf(ev.key);
   if (idx >= 0) {
-    padHit(idx);
+    padHit(focusedTrack);
     ev.preventDefault();
   }
 });
@@ -418,8 +529,20 @@ document.getElementById("clear").onclick = () => {
   syncGridUi();
 };
 document.getElementById("loadGroove").onclick = () => loadGrooveFromApi();
-document.getElementById("genBacking").onclick = () => generateBacking();
+document.getElementById("genNewLoop").onclick = () => generateNewDrumLoop();
+document.getElementById("genSamplePack").onclick = () => generateSamplePack();
 document.getElementById("applyPreset").onclick = () => applyPresetFromUi();
+document.getElementById("exportTrackGrid").onclick = () => exportStemFromGrid(focusedTrack);
+document.getElementById("exportTrackFactory").onclick = () => exportStemFromFactory(focusedTrack);
+document.getElementById("clearTrack").onclick = () => {
+  const ti = focusedTrack;
+  pattern[ti].forEach((c) => {
+    c.on = false;
+    c.note = DEFAULT_NOTES[ti];
+    c.velocity = 100;
+  });
+  syncGridUi();
+};
 document.getElementById("downloadBacking").onclick = () => {
   if (lastBackingBuffer) downloadBackingBuffer(lastBackingBuffer);
   else setStatus("Generate a backing loop first");
@@ -431,7 +554,7 @@ document.getElementById("applyEdit").onclick = () => {
   c.on = true;
   syncGridUi();
 };
-["fxFilter", "fxReverb", "fxTape", "fxDrive"].forEach((id) => {
+["fxFilter", "fxReverb", "fxTape", "fxDrive", "fxCassette", "fxBitcrush"].forEach((id) => {
   document.getElementById(id).addEventListener("input", () => sendFxCc());
 });
 document.getElementById("saveJson").onclick = () => {
@@ -454,7 +577,8 @@ document.getElementById("loadBackingFile").onchange = async (ev) => {
   setStatus(`Backing: ${file.name}`);
 };
 
+buildTrackTabs();
+buildSingleTrackGrid();
 buildGrid();
-buildPads();
 loadPresets();
 refreshMidi();

@@ -26,6 +26,29 @@ SAMPLE_KEY: dict[str, str] = {
     "rim": "snare_rim",
 }
 
+STEM_INSTRUMENTS: dict[str, frozenset[str]] = {
+    "kick": frozenset({"kick", "kick_dist"}),
+    "snare": frozenset({"snare", "clap"}),
+    "hat": frozenset({"hat"}),
+    "cowbell": frozenset({"cowbell"}),
+    "perc": frozenset({"rim"}),
+    "openhat": frozenset({"hat_open"}),
+}
+
+
+def normalize_stem(stem: str | None) -> str | None:
+    if not stem:
+        return None
+    key = stem.strip().lower().replace(" ", "").replace("_", "")
+    aliases = {
+        "openhat": "openhat",
+        "open_hat": "openhat",
+        "hhat": "hat",
+        "hh": "hat",
+    }
+    key = aliases.get(key, key)
+    return key if key in STEM_INSTRUMENTS else None
+
 
 def _mix_at(buf: list[float], offset: int, sample: list[float], gain: float = 1.0) -> None:
     for i, s in enumerate(sample):
@@ -53,6 +76,7 @@ def render_phonk_loop(
     vocal_gain: float = 0.32,
     engine_id: str | None = None,
     fx: LoopFxParams | None = None,
+    stem: str | None = None,
 ) -> tuple[list[float], dict]:
     bpm = validate_bpm(bpm)
     lane = resolve_memphis_lane(prompt, lane_id)
@@ -76,9 +100,14 @@ def render_phonk_loop(
             sample_cache[key] = render_slot(SAMPLE_KEY[key], params, engine)
         return sample_cache[key]
 
+    stem_key = normalize_stem(stem)
+    allowed = STEM_INSTRUMENTS.get(stem_key) if stem_key else None
+
     meta_hits = 0
     for bar_i, bar in enumerate(patterns):
         for hit in bar.hits:
+            if allowed is not None and hit.instrument not in allowed:
+                continue
             meta_hits += 1
             step_global = bar_i * STEPS_PER_BAR + hit.step
             offset = int(step_global * step_samples + hit.micro_delay * SRC_RATE)
@@ -117,6 +146,7 @@ def render_phonk_loop(
         "drumEngine": engine,
         "drumEngineLabel": PROFILES.get(engine, PROFILES["mr_tape"]).label,
         "fx": fx_dict(fx_params),
+        "stem": stem_key,
     }
     return out, meta
 
