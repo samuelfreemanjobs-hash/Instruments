@@ -1,4 +1,16 @@
-import { SR, adsr, decimate, onePoleLP, biquadLP, normalizePeak, triode, softClipFl, applySaturationBuffer, attackTransientGain, sustainBodyGain } from "./dsp-core.js";
+import {
+  SR,
+  adsr,
+  decimate,
+  onePoleLP,
+  biquadLP,
+  normalizePeak,
+  applyDrive,
+  applySaturationBuffer,
+  attackTransientGain,
+  sustainBodyGain,
+  svfLowPass,
+} from "./dsp-core.js";
 import { cardoReverb } from "./reverb-cardo.js";
 
 const HAT808 = [263, 400, 421, 474, 587, 845];
@@ -17,6 +29,7 @@ function processChain(mono, p, stereoFn) {
   let x = decimate(mono, p.lofiSr ?? 26040, p.bits ?? 12);
   let lp = 0;
   const st = { x1: 0, x2: 0, y1: 0, y2: 0 };
+  const svf = { ic1eq: 0, ic2eq: 0 };
   const gate = p.duration ?? 0.2;
   const n = x.length;
   const out = new Float32Array(n);
@@ -29,6 +42,7 @@ function processChain(mono, p, stereoFn) {
     const cut = applyFilterEnv(t, p, gate);
     let s = x[i];
     if (p.filterMode === "lp24") s = biquadLP(s, st, cut, p.fQ ?? 0.8);
+    else if (p.filterMode === "svf") s = svfLowPass(s, svf, cut, p.fQ ?? 0.85);
     else {
       lp = onePoleLP(s, lp, cut);
       s = lp;
@@ -38,10 +52,11 @@ function processChain(mono, p, stereoFn) {
     out[i] = s;
   }
   let shaped = out;
-  if (p.oversample !== false) shaped = applySaturationBuffer(out, 1 + (p.drive ?? 0.4));
+  const dist = p.distType ?? "triode";
+  if (p.oversample !== false && dist !== "fl_clip") shaped = applySaturationBuffer(out, 1 + (p.drive ?? 0.4));
   else {
     shaped = new Float32Array(n);
-    for (let i = 0; i < n; i++) shaped[i] = softClipFl(triode(out[i], 1 + (p.drive ?? 0.4)), p.ceiling ?? 0.92);
+    for (let i = 0; i < n; i++) shaped[i] = applyDrive(out[i], p.drive ?? 0.4, dist);
   }
   const sustainBoost = 1 + (p.transSustain ?? 0) * 0.35;
   if (sustainBoost !== 1 && p.transSustainDb == null) {
@@ -88,9 +103,13 @@ export function synth808(p) {
     const t = i / SR;
     const ae = adsr(t, p.aA ?? 0.002, p.aD ?? 0.4, p.aS ?? 0.85, p.aR ?? 0.35, dur * 0.95);
     let freq = f0;
-    if (glideT > 0 && p.glideTarget != null) {
+    const glideTarget =
+      p.glideTargetHz ??
+      p.glideTarget ??
+      (p.glideSemi ? f0 * Math.pow(2, p.glideSemi / 12) : f0);
+    if (glideT > 0 && glideTarget !== f0) {
       const u = Math.min(1, t / glideT);
-      freq = f0 + (p.glideTarget - f0) * Math.pow(u, glideExp);
+      freq = f0 + (glideTarget - f0) * Math.pow(u, glideExp);
     }
     phase += (2 * Math.PI * freq) / SR;
     const fund = Math.sin(phase);
@@ -221,6 +240,8 @@ export const SYNTHS = {
   sub808: synth808,
   snare: synthSnare,
   clap: synthClap,
+  closedhat: synthHatClosed,
+  openhat: synthHatOpen,
   hatClosed: synthHatClosed,
   hatOpen: synthHatOpen,
   perc: synthPerc,

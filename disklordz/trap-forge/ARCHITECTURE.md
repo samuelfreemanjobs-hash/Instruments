@@ -20,8 +20,8 @@ ES modules require HTTP (not `file://`).
 
 ## Data flow
 
-1. UI (`js/app.js`) holds `kitState` (params per drum, pattern, BPM, master bus).
-2. `selectAndAuditionDrum()` keeps the active tab, scope, and audition in sync (no kick/snare desync).
+1. Primary UI: `index.html` + `js/studio-app.js` (`kitState.drums`, pattern, BPM, master bus). Legacy path: `js/app.js`.
+2. `selectAndAuditionDrum()` keeps tabs, `#canvas-visualizer`, and audition in sync.
 3. `synth-trap.js` renders each drum to stereo buffers (44100 Hz float → master soft-clip → Web Audio or WAV encoder).
 4. Sequencer triggers cached renders polyphonically (`activeSources` set).
 
@@ -29,10 +29,12 @@ ES modules require HTTP (not `file://`).
 
 | Path | Role |
 |------|------|
-| `index.html` | Layout, per-drum panels, sequencer, export |
-| `css/trap-forge.css` | Royal blue / white theme |
-| `js/app.js` | State, UI, sequencer, scope/FFT, export |
-| `js/synth-trap.js` | Kick, 808, snare, clap, hats, perc + presets |
+| `index.html` | Tailwind layout, per-drum panels, sequencer, DnD shelf |
+| `js/studio-app.js` | State, `renderDrumSample`, sequencer, export, visualizer |
+| `js/trap-presets.js` | `DRUM_DEFAULTS`, `NOTE_FREQS`, `PRODUCER_PRESETS` |
+| `css/trap-forge.css` | Legacy theme (used by `app.js` path) |
+| `js/app.js` | Legacy state/UI (unchanged modules) |
+| `js/synth-trap.js` | Kick, 808, snare, clap, hats, perc; SVF + `fl_clip` drive |
 | `js/dsp-core.js` | ADSR, filters, lo-fi, saturation, trunk master bus, WAV |
 | `js/reverb-cardo.js` | Stereo comb reverb for snare/clap |
 | `js/hat-roll.js` | Phase 5 ratchet rolls (32nd/triplet, jitter, drift) + composite buffer |
@@ -43,7 +45,8 @@ ES modules require HTTP (not `file://`).
 ## Extension points
 
 - Add drums: implement `synth*` in `synth-trap.js`, register in `SYNTHS`, extend `DRUM_ORDER` and HTML panel.
-- New presets: extend `PRESETS` and `<select id="preset-select">`.
+- New presets: extend `PRODUCER_PRESETS` in `trap-presets.js` and `#preset-selector`.
+- Smoke: `node scripts/smoke.mjs` from `trap-forge/`.
 - Heavier anti-aliasing: extend `applySaturationBuffer` / hat `softSquare` in `dsp-core.js`.
 
 ## Related docs

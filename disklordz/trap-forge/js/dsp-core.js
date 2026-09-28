@@ -40,6 +40,28 @@ export function softClipFl(x, threshold = 0.9) {
   return x;
 }
 
+/** Per-sample drive: `triode` (default) or FL Studio–style `fl_clip`. */
+export function applyDrive(sample, drive = 1, distType = "triode") {
+  const d = 1 + (drive ?? 0);
+  if (distType === "fl_clip") return softClipFl(sample * d, 0.9);
+  return softClipFl(triode(sample, d), 0.92);
+}
+
+/** Chamberlin SVF low-pass (12 dB). */
+export function svfLowPass(input, state, cutoff, q = 0.707) {
+  const g = Math.tan((Math.PI * Math.max(80, Math.min(cutoff, 16000))) / SR);
+  const k = 1 / Math.max(0.1, q);
+  const a1 = 1 / (1 + g * (g + k));
+  const a2 = g * a1;
+  const a3 = g * a2;
+  const v3 = input - state.ic2eq;
+  const v1 = a1 * state.ic1eq + a2 * v3;
+  const v2 = state.ic2eq + a2 * state.ic1eq + a3 * v3;
+  state.ic1eq = 2 * v1 - state.ic1eq;
+  state.ic2eq = 2 * v2 - state.ic2eq;
+  return v2;
+}
+
 export function decimate(signal, lofiSr, bits) {
   const step = SR / lofiSr;
   const levels = Math.pow(2, bits - 1);

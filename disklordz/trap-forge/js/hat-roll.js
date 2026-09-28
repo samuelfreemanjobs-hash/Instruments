@@ -24,10 +24,9 @@ export function velocityForRamp(i, count, ramp) {
 }
 
 /**
- * Phase 5 hat ratchet: micro-timing jitter, per-hit envelope retrigger,
- * velocity ramp, and pitch drift on dispersion.
+ * Phase 5 hat ratchet: each hit via `renderHit(params, velocityScale)` (e.g. renderDrumSample('closedhat')).
  */
-export function renderHatRoll(synthHatClosed, baseParams, opts) {
+export function renderHatRoll(renderHit, baseParams, opts) {
   const {
     bpm = 140,
     division = "16",
@@ -54,8 +53,8 @@ export function renderHatRoll(synthHatClosed, baseParams, opts) {
       aA: 0.0004,
       aD: (baseParams.aD ?? 0.022) * (0.85 + Math.random() * 0.2),
     };
-    const hit = synthHatClosed(p);
-    hits.push({ left: hit.left, right: hit.right, offset: Math.floor(timeSec * SR), vel });
+    const hit = renderHit(p, vel);
+    hits.push({ left: hit.left, right: hit.right, offset: Math.floor(timeSec * SR) });
   }
 
   let total = 0;
@@ -70,8 +69,8 @@ export function renderHatRoll(synthHatClosed, baseParams, opts) {
     for (let i = 0; i < h.left.length; i++) {
       const idx = h.offset + i;
       if (idx >= total) break;
-      left[idx] += h.left[i] * h.vel;
-      right[idx] += h.right[i] * h.vel;
+      left[idx] += h.left[i];
+      right[idx] += h.right[i];
     }
   });
 
