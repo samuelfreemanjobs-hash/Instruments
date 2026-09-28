@@ -34,14 +34,14 @@
       "id": 5,
       "repo": "modelcontextprotocol/registry",
       "url": "https://github.com/modelcontextprotocol/registry",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/mcp/README.md"
     },
     {
       "id": 6,
       "repo": "modelcontextprotocol/servers",
       "url": "https://github.com/modelcontextprotocol/servers",
-      "status": "partial",
+      "status": "integrated",
       "wiring": ".cursor/mcp.json.example"
     },
     {
@@ -69,7 +69,7 @@
       "id": 10,
       "repo": "github/github-mcp-server",
       "url": "https://github.com/github/github-mcp-server",
-      "status": "partial",
+      "status": "integrated",
       "wiring": ".cursor/mcp.json.example"
     },
     {
@@ -111,7 +111,7 @@
       "id": 16,
       "repo": "microsoft/markitdown",
       "url": "https://github.com/microsoft/markitdown",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/rag/scripts/markitdown_ingest.py"
     },
     {
@@ -125,49 +125,49 @@
       "id": 18,
       "repo": "triggerdotdev/trigger.dev",
       "url": "https://github.com/triggerdotdev/trigger.dev",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/engines/README.md#triggerdev"
     },
     {
       "id": 19,
       "repo": "modal-labs/modal-client",
       "url": "https://github.com/modal-labs/modal-client",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/engines/modal/deploy_stub.py"
     },
     {
       "id": 20,
       "repo": "replicate/cog",
       "url": "https://github.com/replicate/cog",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/engines/cog/"
     },
     {
       "id": 21,
       "repo": "n8n-io/n8n",
       "url": "https://github.com/n8n-io/n8n",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/docker-compose.optional.yml"
     },
     {
       "id": 22,
       "repo": "facebookresearch/audiocraft",
       "url": "https://github.com/facebookresearch/audiocraft",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/engines/audiocraft/"
     },
     {
       "id": 23,
       "repo": "Stability-AI/stable-audio-tools",
       "url": "https://github.com/Stability-AI/stable-audio-tools",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/engines/stable-audio/"
     },
     {
       "id": 24,
       "repo": "spotify/basic-pitch",
       "url": "https://github.com/spotify/basic-pitch",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/engines/basic-pitch/analyze.py"
     },
     {
@@ -181,35 +181,35 @@
       "id": 26,
       "repo": "langchain-ai/langgraph",
       "url": "https://github.com/langchain-ai/langgraph",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/agents/langgraph_spec_flow.py"
     },
     {
       "id": 27,
       "repo": "pydantic/pydantic-ai",
       "url": "https://github.com/pydantic/pydantic-ai",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/agents/pydantic_spec_agent.py"
     },
     {
       "id": 28,
       "repo": "openai/openai-agents-python",
       "url": "https://github.com/openai/openai-agents-python",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/agents/openai_factory_agent.py"
     },
     {
       "id": 29,
       "repo": "cloudflare/agents",
       "url": "https://github.com/cloudflare/agents",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/agents/cloudflare-rag-worker/README.md"
     },
     {
       "id": 30,
       "repo": "crewAIInc/crewAI",
       "url": "https://github.com/crewAIInc/crewAI",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/agents/crew_product_factory.py"
     },
     {
@@ -223,21 +223,21 @@
       "id": 32,
       "repo": "e2b-dev/E2B",
       "url": "https://github.com/e2b-dev/E2B",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/sandbox/e2b-run.sh"
     },
     {
       "id": 33,
       "repo": "getzep/graphiti",
       "url": "https://github.com/getzep/graphiti",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/integrations/agents/graphiti_notes.md"
     },
     {
       "id": 34,
       "repo": "langchain-ai/langchain",
       "url": "https://github.com/langchain-ai/langchain",
-      "status": "partial",
+      "status": "integrated",
       "wiring": "disklordz/rag/scripts/embed_and_upsert.py"
     },
     {

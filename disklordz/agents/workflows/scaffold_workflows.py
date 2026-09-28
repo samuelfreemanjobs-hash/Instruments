@@ -217,7 +217,7 @@ WORKFLOWS: dict[str, dict] = {
     "billing-ops": {
         "platform": "manual",
         "trigger": "weekly + stripe webhook",
-        "workflow_file": "disklordz/automation/n8n/billing-ops-stub.json",
+        "workflow_file": "disklordz/agents/workflows/n8n/billing-ops-stub.json",
         "steps": ["Stripe MCP read", "Human approve writes"],
     },
     "ship-velocity": {

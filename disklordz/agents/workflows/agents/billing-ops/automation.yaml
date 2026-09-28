@@ -2,7 +2,7 @@
 
 platform: manual
 trigger: weekly + stripe webhook
-primary: disklordz/automation/n8n/billing-ops-stub.json
+primary: disklordz/agents/workflows/n8n/billing-ops-stub.json
 
 ## Steps
 1. Stripe MCP read

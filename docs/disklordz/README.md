@@ -20,6 +20,7 @@ Operational playbooks for **Cursor Cloud**, **IDE Agent**, and **profit-agent fl
 | Roadmap / progress update | [sops/SOP-008-roadmap-and-progress.md](sops/SOP-008-roadmap-and-progress.md) |
 | Make fleet repo-wide | [sops/SOP-009-repo-wide-fleet-governance.md](sops/SOP-009-repo-wide-fleet-governance.md) |
 | Open-source batch (35 refs) | [sops/SOP-010-open-source-integration-batch.md](sops/SOP-010-open-source-integration-batch.md) |
+| Roadmap backlog automation | [sops/SOP-011-roadmap-automation.md](sops/SOP-011-roadmap-automation.md) · `./scripts/complete-roadmap-automation.sh` |
 
 ---
 

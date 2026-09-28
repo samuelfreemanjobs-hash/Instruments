@@ -38,7 +38,7 @@ I'm **Conversion QA** — I run go-live smoke and Playwright checks so generate 
 
 I'm **Billing Ops** — I watch Stripe credits, failed payments, and Pro status so revenue leaks get flagged before users churn.
 
-- **Automation:** `disklordz/automation/n8n/billing-ops-stub.json` (manual, weekly + stripe webhook)
+- **Automation:** `disklordz/agents/workflows/n8n/billing-ops-stub.json` (manual, weekly + stripe webhook)
 - **Agent docs:** [`profit/billing-ops/agent.md`](../profit/billing-ops/agent.md)
 - **Workflow file:** [`agents/billing-ops/automation.yaml`](agents/billing-ops/automation.yaml)
 

@@ -7,7 +7,7 @@ Repo-wide companion to [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) and [PM ADD
 | `workflow-automation` | Workflow Automation | `ci_on_push` | `.github/workflows/scaffold-agent-workflows.yml` | `.github/skills/disklordz-workflow-automation/SKILL.md` |
 | `pm-agent` | PM Agent (Fleet ADD) | `ci_scheduled` | `.github/workflows/agent-fleet-governance.yml` | `.github/skills/disklordz-pm-agent/SKILL.md` |
 | `conversion-qa` | Conversion QA | `ci_manual` | `.github/workflows/disklordz-go-live.yml` | `.github/skills/disklordz-conversion-qa/SKILL.md` |
-| `billing-ops` | Billing Ops | `manual_stub` | `disklordz/automation/n8n/billing-ops-stub.json` | `.github/skills/disklordz-billing-ops/SKILL.md` |
+| `billing-ops` | Billing Ops | `manual_stub` | `disklordz/agents/workflows/n8n/billing-ops-stub.json` | `.github/skills/disklordz-billing-ops/SKILL.md` |
 | `ship-velocity` | Ship Velocity | `ci_event` | `.github/workflows/airtable-antigravity-handoff.yml` | `.github/skills/disklordz-ship-velocity/SKILL.md` |
 | `async-generation` | Async Generation | `runtime_inngest` | `disklordz/website/src/inngest/functions.ts` | `.github/skills/disklordz-async-generation/SKILL.md` |
 | `prompt-coach` | Prompt Coach | `ci_on_push` | `.github/workflows/rag-reindex.yml` | `.github/skills/disklordz-prompt-coach/SKILL.md` |

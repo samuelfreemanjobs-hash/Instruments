@@ -68,6 +68,19 @@ def supabase_upsert(rows: list[dict], url: str, service_key: str) -> None:
 
 
 def main() -> None:
+    if "--dry-run" in sys.argv:
+        chunks = load_chunks() if CHUNKS.is_file() else []
+        print(
+            json.dumps(
+                {
+                    "dry_run": True,
+                    "chunk_count": len(chunks),
+                    "needs": ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "OPENAI_API_KEY"],
+                }
+            )
+        )
+        return
+
     supabase_url = os.environ.get("NEXT_PUBLIC_SUPABASE_URL") or os.environ.get("SUPABASE_URL")
     service_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
     api_key = os.environ.get("OPENAI_API_KEY")

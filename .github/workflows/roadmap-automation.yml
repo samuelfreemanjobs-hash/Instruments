@@ -1,0 +1,40 @@
+name: Roadmap automation
+
+on:
+  schedule:
+    - cron: "0 12 * * 1"
+  workflow_dispatch:
+
+jobs:
+  automate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Integrations promote + fleet sync (no secrets)
+        run: |
+          python3 disklordz/integrations/scripts/promote-integrations.py --write
+          python3 disklordz/agents/profit/scaffold_agents.py --check
+          python3 disklordz/agents/workflows/scaffold_workflows.py
+          bash disklordz/agents/workflows/scripts/stub-agent-env-check.sh
+          python3 scripts/update-roadmap-progress.py
+
+      - name: Fail on uncommitted generated docs
+        run: |
+          git diff --exit-code disklordz/integrations/manifest.json \
+            disklordz/integrations/WIRING_REPORT.md \
+            disklordz/agents/workflows/STUB_AGENT_BLOCKERS.md \
+            docs/ROADMAP.md \
+            disklordz/agents/workflows/PM_ADD.md \
+            .github/agents/fleet.json || {
+            echo "::error::Run ./scripts/complete-roadmap-automation.sh and commit"
+            exit 1
+          }

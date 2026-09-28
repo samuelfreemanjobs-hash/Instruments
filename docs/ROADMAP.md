@@ -7,13 +7,13 @@ Single place to see **where we are going** and **what is done**. PM Agent refres
 ---
 
 <!-- ROADMAP_PROGRESS_BEGIN -->
-*Last updated:* 2026-09-28 12:09 UTC · regenerate: `python3 scripts/update-roadmap-progress.py`
+*Last updated:* 2026-09-28 12:13 UTC · regenerate: `python3 scripts/update-roadmap-progress.py`
 
 | Metric | Value |
 |--------|------:|
 | **Profit agents (documented)** | 31 |
 | **Agents with CI or runtime activation** | 17 / 31 |
-| **OSS integrations (manifest)** | 35 total · 15 integrated · 19 partial · 1 external |
+| **OSS integrations (manifest)** | 35 total · 34 integrated · 0 partial · 1 external |
 | **Fleet autopilot** | `agent-fleet-governance.yml` · `agent-fleet-execute.yml` · `agent-fleet-health.yml` (on `main` after merge) |
 
 **Agent activation breakdown:** `ci_event` ×2, `ci_manual` ×2, `ci_on_pr` ×1, `ci_on_push` ×2, `ci_scheduled` ×2, `ci_script` ×1, `cli` ×1, `cli_local` ×1, `cli_script` ×1, `manual_doc` ×1, `manual_external` ×2, `manual_gate` ×1, `manual_skill` ×1, `manual_stub` ×4, `runtime_api` ×4, `runtime_build` ×1, `runtime_env` ×1, `runtime_inngest` ×2, `runtime_stripe` ×1
@@ -28,7 +28,7 @@ Single place to see **where we are going** and **what is done**. PM Agent refres
 | **Disklordz SaaS v0** | Auth, generate, ZIP, deploy | **Shipped** — see [DISKLORDZ_GO_LIVE.md](DISKLORDZ_GO_LIVE.md) |
 | **SaaS 007+ (ILLUGEN-shaped)** | Spec, variations, async, credits, RAG | **In progress** — partial API + integrations hub |
 | **Agent fleet (31)** | Repo-wide docs + autopilot CI | **Shipped** — scheduled CI on `main` |
-| **OSS integrations (35)** | manifest + website wiring | **15 integrated**, 19 partial |
+| **OSS integrations (35)** | manifest + website wiring | **34 integrated**, 1 external (Bytebot) — run `promote-integrations.py` after new stubs |
 | **JD Upgraded plugin** | Phase 5 | See [PHASE5.md](PHASE5.md) |
 | **WAVE-9090** | Trap wavetable synth | Active product — [Wave9090/ARCHITECTURE.md](../Wave9090/ARCHITECTURE.md) |
 
@@ -108,6 +108,19 @@ Detail mapping to ILLUGEN systems: [DISKLORDZ_ILLUGEN_RESEARCH.md](DISKLORDZ_ILL
 | Repo automation | [REPO_AUTOMATION.md](REPO_AUTOMATION.md) |
 
 ---
+
+## Automation vs blocked
+
+| Category | Automate now | Blocked on secrets |
+|----------|--------------|-------------------|
+| OSS partial → integrated | `./scripts/complete-roadmap-automation.sh` | GPU/Modal live deploy |
+| Agent stub roster | `stub-agent-env-check.sh` → [STUB_AGENT_BLOCKERS.md](../disklordz/agents/workflows/STUB_AGENT_BLOCKERS.md) | n8n OAuth, Bytebot |
+| SaaS 007 variations | `saas-007-smoke.sh` (code already ships 2/3 variations) | — |
+| Async Inngest | smoke returns `inngest_not_configured` until keys set | `INNGEST_*` on Vercel |
+| Credits / Stripe | credit fields in API when configured | `STRIPE_*` prod |
+| pgvector embed | `--dry-run` chunk count | `OPENAI_API_KEY` + Supabase service role |
+
+See [docs/disklordz/sops/SOP-011-roadmap-automation.md](disklordz/sops/SOP-011-roadmap-automation.md).
 
 ## How to update this doc
 
