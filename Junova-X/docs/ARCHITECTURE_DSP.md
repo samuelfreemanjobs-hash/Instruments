@@ -42,8 +42,8 @@ flowchart LR
 | Subsystem | MVP | Next |
 |-----------|-----|------|
 | DCO waveforms | saw/pwm/sub | full Juno wave blend |
-| VCF | SVF + **OTA tanh** saturation | IR3109-style nonlinear (WO-009) |
-| Chorus | Hermite delay; LFO **0.393 / 0.797 / 8 Hz** (triangle/sine); IC6 dry/wet | KR-106 parity pass — [REFERENCE_PLUGINS.md](REFERENCE_PLUGINS.md) |
+| VCF | SVF + **OTA tanh** saturation (WO-009) | IR3109-style nonlinear (future) |
+| Chorus | Hermite delay; LFO **0.393 / 0.797 / 8 Hz**; KR-106 smoke fixtures (WO-012) | Tighter spectral match — future DSP WO |
 | Env | dual ADSR | cross-mod, velocity |
 | Arp | up, BPM | host sync PPQ, latch |
 | Voices | 8 poly / unison / mono; **Juno 6** caps poly at 6 | SysEx subset (WO-010) |

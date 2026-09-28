@@ -15,7 +15,7 @@ Windows/macOS installers are **Tier D** ([docs/FINISH_LINE.md](../docs/FINISH_LI
 
 ## Landing / store
 
-Target: separate **`junova-x-landing`** Next.js site (Vercel) — not in this monorepo yet. Copy stub: [LANDING_COPY.md](LANDING_COPY.md).
+**Landing site:** [disklordz/junova-x-landing/](../../disklordz/junova-x-landing/ARCHITECTURE.md) (Next.js, Vercel-ready). Copy source: [LANDING_COPY.md](LANDING_COPY.md).
 
 ## Channels
 

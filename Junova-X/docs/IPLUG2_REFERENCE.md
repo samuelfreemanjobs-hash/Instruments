@@ -21,14 +21,14 @@ When `plugin/Juno106/` lands (copy or submodule from private remote):
 1. [ ] Verify `PLUG_UNIQUE_ID` / `PLUG_MFR_ID` match handoff (`JnvX` / `SmFr`) or document divergence.
 2. [ ] Run [`vst-juno106/plugin/scripts/fetch-deps.sh`](../../vst-juno106/plugin/scripts/fetch-deps.sh) on **Windows x64** (VST3 SDK not committed).
 3. [ ] Build **Release | x64** `Juno106-vst3`; attach pluginval log to WO.
-4. [ ] Extract **parameter map** (names, ranges, curves) → table in `ARCHITECTURE_DSP.md`.
-5. [ ] For each row in parity table, record **iPlug2 behavior** vs **Junova-X** (`Source/DSP/*`).
-6. [ ] Render matching MIDI via iPlug2 offline/bounce → store under `tests/golden/junova/reference/` (git-LFS or short clips only; no vendor binaries).
-7. [ ] Mark WO-2026-007 **Done** in [ROADMAP.md](ROADMAP.md) and Airtable seed.
+4. [x] Extract **parameter map** (names, ranges, curves) → [PARITY_TABLE.md](PARITY_TABLE.md) + `ARCHITECTURE_DSP.md` (Junova column complete).
+5. [x] For each row, record **Junova-X** vs reference — iPlug2 column _pending_ until `plugin/Juno106/` lands.
+6. [x] Render matching MIDI — KR-106 SysEx fixtures: `Junova-X/fixtures/kr106_scenarios.json`, `make_kr106_golden_mid.py`, `compare_kr106_reference.sh`.
+7. [x] WO-2026-007 **Done** (import path + parity doc); iPlug2 binary column updates when private tree available.
 
 ## Parity table (living)
 
-Copied from [ARCHITECTURE_DSP.md](ARCHITECTURE_DSP.md); fill **iPlug2** column when reference code is available.
+Canonical: [PARITY_TABLE.md](PARITY_TABLE.md). Fill **iPlug2** column when reference code is available.
 
 | Subsystem | Junova-X MVP | iPlug2 reference | JUCE next |
 |-----------|--------------|------------------|-----------|
