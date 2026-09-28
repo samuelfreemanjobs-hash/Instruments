@@ -1,46 +1,55 @@
-# 15 AI agents for Disklordz profit (automatable)
+# 15 profit agents (implemented fleet)
 
-These are **not** bundled as 15 folders inside Instruments today. They are **roles** you can automate with GitHub-hosted tools + this repo’s scripts, MCP servers, and workflows. Machine-readable list: [`disklordz/integrations/agents/profit-agents.json`](../disklordz/integrations/agents/profit-agents.json).
+Elite agent file trees live under **`disklordz/agents/profit/<id>/`** — each folder includes:
 
-| # | Agent role | Primary GitHub / tool | Profit lever | Automate with |
-|---|------------|----------------------|--------------|---------------|
-| 1 | **Conversion QA agent** | [microsoft/playwright-mcp](https://github.com/microsoft/playwright-mcp) | Fewer broken checkouts → more Pro | Cursor MCP + scheduled workflow hitting `/api/generate` |
-| 2 | **Billing ops agent** | [stripe/agent-toolkit](https://github.com/stripe/agent-toolkit) | Recover failed payments, fix prices | `.cursor/mcp.json` Stripe MCP + human-approved writes |
-| 3 | **Ship velocity agent** | [github/github-mcp-server](https://github.com/github/github-mcp-server) | Faster WO → issue → PR → deploy | Cloud Agent + Airtable handoff workflows |
-| 4 | **Async generation agent** | [inngest/inngest](https://github.com/inngest/inngest) | Long jobs finish → higher credit burn / satisfaction | `/api/generate/async` + `activate-integrations.sh` |
-| 5 | **Prompt coach agent** | [vercel/ai](https://github.com/vercel/ai) + pgvector | Better free-tier kits → sign-up | `/api/rag/suggest` + `embed_and_upsert.py` |
-| 6 | **Product factory agent** | [crewAIInc/crewAI](https://github.com/crewAIInc/crewAI) | Storefront packs SKUs → higher AOV | `integrations/agents/crew_product_factory.py` + `/api/factory/batch` |
-| 7 | **Spec validator agent** | [pydantic/pydantic-ai](https://github.com/pydantic/pydantic-ai) | Fewer bad gens → fewer refunds | `integrations/agents/pydantic_spec_agent.py` |
-| 8 | **Lane workflow agent** | [langchain-ai/langgraph](https://github.com/langchain-ai/langgraph) | prompt → spec → variations pipeline | `integrations/agents/langgraph_spec_flow.py` |
-| 9 | **Ops / schema agent** | [supabase/mcp](https://github.com/supabase/mcp) | Safe migrations, no prod outages | `apply-supabase-migrations.sh` + read-only MCP |
-| 10 | **Marketing glue agent** | [n8n-io/n8n](https://github.com/n8n-io/n8n) | Leads → email → return visits | `docker-compose.optional.yml --profile n8n` |
-| 11 | **Support macro agent** | RAG corpus + Cloud Agent | Less manual support | `.github/skills/disklordz-rag` + `/api/rag/suggest` |
-| 12 | **Desktop ops agent** | [bytebot-ai/bytebot](https://github.com/bytebot-ai/bytebot) | Vendor portals, bulk downloads | [docs/BYTEBOT_SETUP.md](BYTEBOT_SETUP.md) (local Docker) |
-| 13 | **Factory batch GPU agent** | [triggerdotdev/trigger.dev](https://github.com/triggerdotdev/trigger.dev) | Large pack runs without timeout | Documented in `integrations/engines/README.md` |
-| 14 | **Engine swap agent** | [facebookresearch/audiocraft](https://github.com/facebookresearch/audiocraft) / [Stability-AI/stable-audio-tools](https://github.com/Stability-AI/stable-audio-tools) | Premium sound → Pro retention | `DISKLORDZ_ENGINE=remote` + engine stubs |
-| 15 | **Integration health agent** | This repo | Catch misconfig before revenue leak | `GET /api/integrations/status` + `verify-integrations.sh` |
+| File | Role |
+|------|------|
+| `agent.md` | Frontmatter + system prompt (Claude Code agent definition) |
+| `skill.md` | Two-phase skill (when_to_use, paths) |
+| `subagents.md` | Coordinator / explore / verify / implement |
+| `soul.md` | Non-negotiable principles |
+| `hooks.md` | PreToolUse, Stop, SessionStart |
+| `memory.md` | File-tier MEMORY layout |
+| `tools.md` | Allowlist + MCP + concurrency |
+| `loop.md` | AsyncGenerator query() SOP |
 
-## One command (local or CI)
+Registry: [`disklordz/agents/profit/registry.json`](../disklordz/agents/profit/registry.json)
+
+Copilot/Cursor skills (published from skill.md): `.github/skills/disklordz-<id>/SKILL.md`
+
+## Regenerate
 
 ```bash
-# All automated steps that your env secrets allow:
-bash disklordz/integrations/scripts/activate-integrations.sh --all
-
-# GitHub Actions:
-# Actions → Activate Disklordz integrations → Run workflow
+python3 disklordz/agents/profit/scaffold_agents.py --publish-skills
+python3 disklordz/agents/profit/scaffold_agents.py --check
 ```
 
-## Secrets to add (GitHub Actions)
+## The 15 agents
 
-| Secret | Enables |
-|--------|---------|
-| `OPENAI_API_KEY` | RAG embed + AI prompt polish |
-| `INNGEST_EVENT_KEY` / `INNGEST_SIGNING_KEY` | Async generate |
-| Existing go-live secrets | Migrations, Vercel, smoke |
+| # | ID | Title | Entry |
+|---|-----|-------|-------|
+| 1 | conversion-qa | Conversion QA | [agent.md](../disklordz/agents/profit/conversion-qa/agent.md) |
+| 2 | billing-ops | Billing Ops | [agent.md](../disklordz/agents/profit/billing-ops/agent.md) |
+| 3 | ship-velocity | Ship Velocity | [agent.md](../disklordz/agents/profit/ship-velocity/agent.md) |
+| 4 | async-generation | Async Generation | [agent.md](../disklordz/agents/profit/async-generation/agent.md) |
+| 5 | prompt-coach | Prompt Coach | [agent.md](../disklordz/agents/profit/prompt-coach/agent.md) |
+| 6 | product-factory | Product Factory | [agent.md](../disklordz/agents/profit/product-factory/agent.md) |
+| 7 | spec-validator | Spec Validator | [agent.md](../disklordz/agents/profit/spec-validator/agent.md) |
+| 8 | lane-workflow | Lane Workflow | [agent.md](../disklordz/agents/profit/lane-workflow/agent.md) |
+| 9 | ops-schema | Ops Schema | [agent.md](../disklordz/agents/profit/ops-schema/agent.md) |
+| 10 | marketing-glue | Marketing Glue | [agent.md](../disklordz/agents/profit/marketing-glue/agent.md) |
+| 11 | support-macro | Support Macro | [agent.md](../disklordz/agents/profit/support-macro/agent.md) |
+| 12 | desktop-ops | Desktop Ops | [agent.md](../disklordz/agents/profit/desktop-ops/agent.md) |
+| 13 | factory-batch-gpu | Factory Batch GPU | [agent.md](../disklordz/agents/profit/factory-batch-gpu/agent.md) |
+| 14 | engine-swap | Engine Swap | [agent.md](../disklordz/agents/profit/engine-swap/agent.md) |
+| 15 | integration-health | Integration Health | [agent.md](../disklordz/agents/profit/integration-health/agent.md) |
 
-See [DISKLORDZ_GO_LIVE_SECRETS.md](DISKLORDZ_GO_LIVE_SECRETS.md).
+**Phase 2 (15 more ideas):** [DISKLORDZ_PROFIT_AGENTS_EXTENDED.md](DISKLORDZ_PROFIT_AGENTS_EXTENDED.md)
 
-## Related
+## Automation (infra)
 
-- [DISKLORDZ_OPEN_SOURCE_REFERENCES.md](DISKLORDZ_OPEN_SOURCE_REFERENCES.md)
-- [disklordz/integrations/ARCHITECTURE.md](../disklordz/integrations/ARCHITECTURE.md)
+```bash
+bash disklordz/integrations/scripts/activate-integrations.sh --all
+```
+
+Blueprint SOP: Claude Code architecture (async generator loop, hooks, memory files, MCP boundaries) — encoded in each agent's `loop.md` and `hooks.md`.
