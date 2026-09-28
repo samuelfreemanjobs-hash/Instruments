@@ -33,8 +33,12 @@ ES modules require HTTP (not `file://`).
 | `css/trap-forge.css` | Royal blue / white theme |
 | `js/app.js` | State, UI, sequencer, scope/FFT, export |
 | `js/synth-trap.js` | Kick, 808, snare, clap, hats, perc + presets |
-| `js/dsp-core.js` | ADSR, filters, lo-fi, saturation, WAV |
+| `js/dsp-core.js` | ADSR, filters, lo-fi, saturation, trunk master bus, WAV |
 | `js/reverb-cardo.js` | Stereo comb reverb for snare/clap |
+| `js/hat-roll.js` | Phase 5 ratchet rolls (32nd/triplet, jitter, drift) + composite buffer |
+| `js/export-dnd.js` | Drag-and-drop WAV chips for DAW import |
+
+808 glide: `f = f_root + (f_target - f_root) * (t/T)^2.2`. Transient shaper: ±12 dB in the first 15 ms before saturation. Master: parallel trunk smash + FL soft-clip (`applyTrunkMasterBus`).
 
 ## Extension points
 

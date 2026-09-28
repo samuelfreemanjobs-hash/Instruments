@@ -51,7 +51,7 @@
           <label>Glide ms <input type="range" data-param="glideMs" min="0" max="450" step="5" value="0" /><span class="val">0</span></label>
           <label>Glide interval (semi)
             <select data-param="glideInterval">
-              <option value="0">None</option><option value="7">+7th</option><option value="12">Octave</option><option value="-12">Drop octave</option>
+              <option value="0">None</option><option value="5">+5th</option><option value="7">+7th</option><option value="12">Octave</option><option value="-12">Drop octave</option>
             </select>
           </label>
         </div>
@@ -87,11 +87,12 @@
           <label>Filter cutoff <input type="range" data-param="fCut" min="3000" max="12000" step="50" value="7800" /><span class="val">7800</span></label>
         </div>
         <div class="panel" style="margin-top:0.75rem">
-          <h2>Hat roll generator</h2>
+          <h2>Phase 5 — Hi-hat roll engine</h2>
           <div class="grid-4">
             <label>Division
               <select id="hat-roll-div">
                 <option value="8">1/8</option><option value="16" selected>1/16</option><option value="32">1/32</option><option value="64">1/64</option>
+                <option value="12T">1/8 Triplet</option><option value="24T">1/16 Triplet</option>
               </select>
             </label>
             <label>Ramp
@@ -100,7 +101,13 @@
               </select>
             </label>
             <label>Hits <input type="number" id="hat-roll-count" min="4" max="32" value="8" /></label>
-            <button type="button" class="btn" id="btn-hat-roll">Audition Roll</button>
+            <label>Pitch drift <input type="range" id="hat-roll-drift" min="0" max="0.02" step="0.001" value="0.006" /></label>
+            <label>Timing jitter <input type="range" id="hat-roll-jitter" min="0" max="0.04" step="0.001" value="0.018" /></label>
+            <label>Roll pitch slide <input type="range" id="hat-roll-slide" min="0" max="0.015" step="0.001" value="0" /></label>
+          </div>
+          <div class="actions">
+            <button type="button" class="btn" id="btn-hat-roll">Render &amp; Audition Roll</button>
+            <button type="button" class="btn btn-ghost" id="btn-hat-roll-export">Export Roll WAV</button>
           </div>
         </div>
       </section>
@@ -141,8 +148,8 @@
           <label>Bit depth <input type="range" data-param="bits" min="6" max="16" step="1" value="12" /></label>
           <label>Sample rate <input type="range" data-param="lofiSr" min="8000" max="44100" step="500" value="26040" /></label>
           <label>Drive <input type="range" data-param="drive" min="0" max="1.2" step="0.02" value="0.42" /></label>
-          <label>Attack punch <input type="range" data-param="transAttack" min="0" max="1" step="0.02" value="0" /></label>
-          <label>Body sustain <input type="range" data-param="transSustain" min="0" max="1" step="0.02" value="0" /></label>
+          <label>Attack punch (±12 dB) <input type="range" data-param="transAttackDb" min="-12" max="12" step="0.5" value="0" /><span class="val">0</span></label>
+          <label>Body sustain (±12 dB) <input type="range" data-param="transSustainDb" min="-12" max="12" step="0.5" value="0" /><span class="val">0</span></label>
         </div>
       </section>
 
@@ -188,10 +195,17 @@
       </div>
 
       <div class="panel">
-        <h2>Master bus</h2>
+        <h2>Master bus (trunk / FL clip)</h2>
         <label>Ceiling dBFS <input type="range" id="master-ceiling" min="-1.2" max="0" step="0.1" value="-0.3" /></label>
         <label>Soft-clip drive <input type="range" id="master-drive" min="0" max="0.5" step="0.02" value="0.15" /></label>
+        <label>Trunk parallel smash <input type="range" id="master-trunk" min="0" max="0.85" step="0.02" value="0.38" /></label>
         <div class="meter"><div class="meter-fill" id="peak-meter"></div></div>
+      </div>
+
+      <div class="panel">
+        <h2>Drag into your DAW</h2>
+        <p class="subtitle">Drag a chip into FL Studio, Ableton, Logic, or Reaper. Click to download.</p>
+        <div id="dnd-shelf" class="dnd-shelf"></div>
       </div>
     </aside>
   </div>

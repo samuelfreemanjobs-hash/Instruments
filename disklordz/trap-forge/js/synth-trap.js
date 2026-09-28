@@ -1,4 +1,4 @@
-import { SR, adsr, decimate, onePoleLP, biquadLP, normalizePeak, triode, softClipFl, applySaturationBuffer } from "./dsp-core.js";
+import { SR, adsr, decimate, onePoleLP, biquadLP, normalizePeak, triode, softClipFl, applySaturationBuffer, attackTransientGain, sustainBodyGain } from "./dsp-core.js";
 import { cardoReverb } from "./reverb-cardo.js";
 
 const HAT808 = [263, 400, 421, 474, 587, 845];
@@ -20,6 +20,10 @@ function processChain(mono, p, stereoFn) {
   const gate = p.duration ?? 0.2;
   const n = x.length;
   const out = new Float32Array(n);
+  const attackDb =
+    p.transAttackDb ??
+    (p.transAttack != null ? (p.transAttack - 0.5) * 24 : 0);
+  const sustainDb = p.transSustainDb ?? (p.transSustain != null ? (p.transSustain - 0.5) * 24 : 0);
   for (let i = 0; i < n; i++) {
     const t = i / SR;
     const cut = applyFilterEnv(t, p, gate);
@@ -29,7 +33,9 @@ function processChain(mono, p, stereoFn) {
       lp = onePoleLP(s, lp, cut);
       s = lp;
     }
-    out[i] = s * (1 + (p.transAttack ?? 0) * Math.exp(-t / 0.015));
+    s *= attackTransientGain(t, attackDb, 0.015);
+    s *= sustainBodyGain(t, sustainDb, 0.015);
+    out[i] = s;
   }
   let shaped = out;
   if (p.oversample !== false) shaped = applySaturationBuffer(out, 1 + (p.drive ?? 0.4));
@@ -38,7 +44,7 @@ function processChain(mono, p, stereoFn) {
     for (let i = 0; i < n; i++) shaped[i] = softClipFl(triode(out[i], 1 + (p.drive ?? 0.4)), p.ceiling ?? 0.92);
   }
   const sustainBoost = 1 + (p.transSustain ?? 0) * 0.35;
-  if (sustainBoost !== 1) {
+  if (sustainBoost !== 1 && p.transSustainDb == null) {
     for (let i = 0; i < n; i++) {
       const t = i / SR;
       if (t > 0.02) shaped[i] *= sustainBoost;
@@ -75,15 +81,16 @@ export function synth808(p) {
   const n = Math.floor(SR * dur);
   const mono = new Float32Array(n);
   const f0 = p.rootHz ?? 55;
+  const glideT = (p.glideMs ?? 0) / 1000;
+  const glideExp = p.glideExponent ?? 2.2;
   let phase = 0;
   for (let i = 0; i < n; i++) {
     const t = i / SR;
     const ae = adsr(t, p.aA ?? 0.002, p.aD ?? 0.4, p.aS ?? 0.85, p.aR ?? 0.35, dur * 0.95);
     let freq = f0;
-    if (p.glideMs > 0 && p.glideTarget) {
-      const g = Math.min(1, t / (p.glideMs / 1000));
-      const curve = Math.pow(g, 2.2);
-      freq = f0 + (p.glideTarget - f0) * curve;
+    if (glideT > 0 && p.glideTarget != null) {
+      const u = Math.min(1, t / glideT);
+      freq = f0 + (p.glideTarget - f0) * Math.pow(u, glideExp);
     }
     phase += (2 * Math.PI * freq) / SR;
     const fund = Math.sin(phase);
@@ -221,7 +228,7 @@ export const SYNTHS = {
 
 export const PRESETS = {
   jeezyKick: { rootHz: 50, pitchMod: 40, pitchDecay: 0.018, drive: 0.55, label: "Jeezy Snowman Kick" },
-  drummaKick: { rootHz: 52, pitchMod: 48, pitchDecay: 0.015, transAttack: 0.35, label: "Drumma Boy Punch" },
+  drummaKick: { rootHz: 52, pitchMod: 48, pitchDecay: 0.015, transAttackDb: 6, label: "Drumma Boy Punch" },
   shawty808: { rootHz: 42, harm2: 0.45, harm3: 0.3, aS: 0.9, duration: 2.2, label: "Shawty Redd 808" },
   mike808: { rootHz: 47, glideMs: 120, glideTarget: 62, label: "Mike Will Trunk Glide" },
   gucciSnare: { pitchSemi: 2, snap: 0.75, fCut: 6500, label: "Gucci So Icy Snap" },

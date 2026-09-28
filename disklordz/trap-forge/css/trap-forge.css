@@ -303,6 +303,29 @@ canvas {
   display: none !important;
 }
 
+.dnd-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.dnd-chip {
+  cursor: grab;
+  background: #1a3566;
+  border: 1px dashed rgba(125, 255, 154, 0.45);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.dnd-chip:active {
+  cursor: grabbing;
+  background: var(--accent);
+}
+
 @media (max-width: 1100px) {
   .layout {
     grid-template-columns: 1fr;

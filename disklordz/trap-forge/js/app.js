@@ -1,5 +1,7 @@
-import { SR, encodeStereoWav24, encodeMonoWav24, downloadBuffer, softClipFl, noteHz } from "./dsp-core.js";
-import { SYNTHS, PRESETS } from "./synth-trap.js";
+import { SR, encodeStereoWav24, encodeMonoWav24, downloadBuffer, noteHz, normalizePeak, applyTrunkMasterBus } from "./dsp-core.js";
+import { SYNTHS, PRESETS, synthHatClosed } from "./synth-trap.js";
+import { renderHatRoll } from "./hat-roll.js";
+import { refreshDndShelf } from "./export-dnd.js";
 
 export const DRUM_ORDER = [
   { id: "kick", label: "Punch Kick", short: "KICK" },
@@ -31,6 +33,8 @@ function baseEnvelopeParams() {
     ceiling: 0.92,
     transAttack: 0,
     transSustain: 0,
+    transAttackDb: 0,
+    transSustainDb: 0,
     oversample: true,
     peakDb: -0.3,
   };
@@ -76,8 +80,9 @@ export const kitState = {
   pattern: Object.fromEntries(DRUM_ORDER.map((d) => [d.id, new Array(16).fill(false)])),
   mutes: Object.fromEntries(DRUM_ORDER.map((d) => [d.id, false])),
   params: Object.fromEntries(DRUM_ORDER.map((d) => [d.id, defaultParamsFor(d.id)])),
-  master: { ceilingDb: -0.3, drive: 0.15 },
+  master: { ceilingDb: -0.3, drive: 0.15, trunkAmount: 0.38 },
   renderCache: {},
+  hatRollCache: null,
 };
 
 let audioCtx = null;
@@ -109,16 +114,7 @@ export function renderDrum(id, paramOverride = null) {
 }
 
 function applyMasterStereo(left, right) {
-  const ceil = Math.pow(10, (kitState.master.ceilingDb ?? -0.3) / 20);
-  const drive = 1 + (kitState.master.drive ?? 0);
-  const n = Math.min(left.length, right.length);
-  const L = new Float32Array(n);
-  const R = new Float32Array(n);
-  for (let i = 0; i < n; i++) {
-    L[i] = softClipFl(left[i] * drive, ceil);
-    R[i] = softClipFl(right[i] * drive, ceil);
-  }
-  return { left: L, right: R };
+  return applyTrunkMasterBus(left, right, kitState.master);
 }
 
 export function playStereo(buffer, velocity = 1) {
@@ -172,6 +168,7 @@ export function updateAndRenderCurrent(play = false) {
   kitState.renderCache[id] = buf;
   lastWaveform = buf.mono || buf.left;
   drawVisualizer(lastWaveform);
+  refreshExportShelfUI();
   if (play) playStereo(buf);
 }
 
@@ -205,12 +202,14 @@ function bindParam(el) {
     if (key === "glideInterval") {
       const semi = parseInt(el.value, 10);
       const root = kitState.params[id].rootHz ?? 55;
-      kitState.params[id].glideTarget = root * Math.pow(2, semi / 12);
+      kitState.params[id].glideTarget = semi === 0 ? root : root * Math.pow(2, semi / 12);
       kitState.renderCache = {};
+      updateAndRenderCurrent(false);
       return;
     }
     kitState.params[id][key] = val;
     kitState.renderCache = {};
+    kitState.hatRollCache = null;
     const label = el.parentElement.querySelector(".val");
     if (label) label.textContent = el.value;
     updateAndRenderCurrent(false);
@@ -395,35 +394,99 @@ function exportFullKit() {
   DRUM_ORDER.forEach((d) => exportDrumWav(d.id));
 }
 
+function getHatRollOptions() {
+  const divEl = document.getElementById("hat-roll-div");
+  const div = divEl?.value || "16";
+  return {
+    bpm: kitState.bpm,
+    division: div,
+    count: parseInt(document.getElementById("hat-roll-count")?.value || "8", 10),
+    ramp: document.getElementById("hat-roll-ramp")?.value || "crescendo",
+    pitchDrift: parseFloat(document.getElementById("hat-roll-drift")?.value || "0.006"),
+    timingJitter: parseFloat(document.getElementById("hat-roll-jitter")?.value || "0.018"),
+    pitchSlide: parseFloat(document.getElementById("hat-roll-slide")?.value || "0"),
+  };
+}
+
+function buildHatRollBuffer() {
+  const opts = getHatRollOptions();
+  const p = kitState.params.hatClosed;
+  let roll = renderHatRoll(synthHatClosed, p, opts);
+  roll.left = normalizePeak(roll.left, -0.3);
+  roll.right = normalizePeak(roll.right, -0.3);
+  roll.mono = normalizePeak(roll.mono, -0.3);
+  roll = applyMasterStereo(roll.left, roll.right);
+  roll.mono = roll.left;
+  kitState.hatRollCache = roll;
+  return roll;
+}
+
+function wavForDrum(id) {
+  let buf = kitState.renderCache[id];
+  if (!buf) {
+    const raw = renderDrum(id);
+    buf = applyMasterStereo(raw.left, raw.right);
+  }
+  if (id === "kick" || id === "sub808") return encodeMonoWav24(buf.mono || buf.left);
+  return encodeStereoWav24(buf.left, buf.right);
+}
+
+function refreshExportShelfUI() {
+  const shelf = document.getElementById("dnd-shelf");
+  if (!shelf) return;
+  const items = DRUM_ORDER.map((d) => ({
+    id: d.id,
+    label: d.short,
+    getBuffer: () => wavForDrum(d.id),
+    filename: () => `trap-forge_${d.id}.wav`,
+  }));
+  items.push({
+    id: "hatRoll",
+    label: "HAT ROLL",
+    getBuffer: () => {
+      const roll = kitState.hatRollCache || buildHatRollBuffer();
+      return encodeStereoWav24(roll.left, roll.right);
+    },
+    filename: () => `trap-forge_hat_roll_${document.getElementById("hat-roll-div")?.value || "16"}.wav`,
+  });
+  refreshDndShelf(shelf, items);
+}
+
+function auditionHatRoll() {
+  selectAndAuditionDrum("hatClosed", { play: false });
+  const roll = buildHatRollBuffer();
+  lastWaveform = roll.mono;
+  drawVisualizer(lastWaveform);
+  playStereo(roll);
+  refreshExportShelfUI();
+}
+
+function exportHatRollWav() {
+  const roll = buildHatRollBuffer();
+  downloadBuffer(encodeStereoWav24(roll.left, roll.right), `trap-forge_hat_roll_${getHatRollOptions().division}.wav`);
+}
+
 function applyPreset(key) {
   const preset = PRESETS[key];
   if (!preset) return;
-  const id = kitState.currentDrum;
+  const map = {
+    jeezyKick: "kick",
+    drummaKick: "kick",
+    shawty808: "sub808",
+    mike808: "sub808",
+    gucciSnare: "snare",
+    cardoSnare: "snare",
+    drummaClap: "clap",
+    cardoHat: "hatClosed",
+    sledgrenHat: "hatClosed",
+    estPerc: "perc",
+  };
+  const id = map[key] || kitState.currentDrum;
+  selectAndAuditionDrum(id, { play: false });
   Object.assign(kitState.params[id], preset);
   kitState.renderCache = {};
   syncUIFromState();
   updateAndRenderCurrent(true);
-}
-
-function auditionHatRoll() {
-  const id = "hatClosed";
-  selectAndAuditionDrum(id, { play: false });
-  const div = document.getElementById("hat-roll-div")?.value || "16";
-  const ramp = document.getElementById("hat-roll-ramp")?.value || "crescendo";
-  const bpm = kitState.bpm;
-  const base = (60 / bpm) / (parseInt(div, 10) / 4);
-  const count = parseInt(document.getElementById("hat-roll-count")?.value || "8", 10);
-  ensureAudio();
-  for (let i = 0; i < count; i++) {
-    setTimeout(() => {
-      let vel = 0.5;
-      if (ramp === "crescendo") vel = 0.35 + (i / count) * 0.65;
-      if (ramp === "decrescendo") vel = 1 - (i / count) * 0.55;
-      if (ramp === "jitter") vel = 0.55 + Math.random() * 0.45;
-      const buf = applyMasterStereo(renderDrum(id).left, renderDrum(id).right);
-      playStereo(buf, vel);
-    }, i * base * 1000);
-  }
 }
 
 function initUI() {
@@ -473,11 +536,18 @@ function initUI() {
     if (e.target.value) applyPreset(e.target.value);
   });
   document.getElementById("btn-hat-roll")?.addEventListener("click", auditionHatRoll);
+  document.getElementById("btn-hat-roll-export")?.addEventListener("click", exportHatRollWav);
   document.getElementById("master-ceiling")?.addEventListener("input", (e) => {
     kitState.master.ceilingDb = parseFloat(e.target.value);
+    kitState.renderCache = {};
   });
   document.getElementById("master-drive")?.addEventListener("input", (e) => {
     kitState.master.drive = parseFloat(e.target.value);
+    kitState.renderCache = {};
+  });
+  document.getElementById("master-trunk")?.addEventListener("input", (e) => {
+    kitState.master.trunkAmount = parseFloat(e.target.value);
+    kitState.renderCache = {};
   });
 
   window.addEventListener("keydown", (e) => {
@@ -501,6 +571,7 @@ function initUI() {
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
   selectAndAuditionDrum("kick", { play: false });
+  refreshExportShelfUI();
 }
 
 initUI();

@@ -81,6 +81,44 @@ export function normalizePeak(mono, db = -0.3) {
   return out;
 }
 
+/** Studio transient shaper: ±dB boost/cut in the first `windowSec` (default 15 ms). */
+export function attackTransientGain(t, attackDb, windowSec = 0.015) {
+  if (!attackDb || t >= windowSec) return 1;
+  const env = Math.exp(-t / (windowSec * 0.28));
+  return Math.pow(10, (attackDb * env) / 20);
+}
+
+export function sustainBodyGain(t, sustainDb, onsetSec = 0.015) {
+  if (!sustainDb || t < onsetSec) return 1;
+  return Math.pow(10, sustainDb / 20);
+}
+
+/** Phase 3/4 parallel trunk bus: FL soft-clip + envelope-aware smash (no digital overs). */
+export function applyTrunkMasterBus(left, right, opts = {}) {
+  const n = Math.min(left.length, right.length);
+  const ceil = Math.pow(10, (opts.ceilingDb ?? -0.3) / 20);
+  const drive = 1 + (opts.drive ?? 0.15);
+  const trunk = opts.trunkAmount ?? 0.38;
+  const L = new Float32Array(n);
+  const R = new Float32Array(n);
+  let env = 0;
+  const att = Math.exp(-1 / (SR * 0.0015));
+  const rel = Math.exp(-1 / (SR * 0.06));
+  for (let i = 0; i < n; i++) {
+    const mid = (left[i] + right[i]) * 0.5;
+    const pk = Math.abs(mid);
+    env = pk > env ? att * env + (1 - att) * pk : rel * env + (1 - rel) * pk;
+    const smash = Math.tanh(mid * drive * (1.2 + env * 3.5));
+    const dryL = left[i] * drive;
+    const dryR = right[i] * drive;
+    const wetL = dryL * (1 - trunk) + smash * trunk * 1.15;
+    const wetR = dryR * (1 - trunk) + smash * trunk * 1.12;
+    L[i] = softClipFl(wetL, ceil);
+    R[i] = softClipFl(wetR, ceil);
+  }
+  return { left: L, right: R };
+}
+
 export function encodeStereoWav24(left, right) {
   const n = Math.min(left.length, right.length);
   const dataSize = n * 6;
