@@ -75,6 +75,7 @@ private:
     juce::TextButton voicePoly2_ { "POLY 2" };
     juce::TextButton voiceUnison_ { "UNISON" };
     juce::TextButton voiceMono_ { "MONO" };
+    juce::TextButton voiceJuno6_ { "JUNO 6" };
 
     juce::TextButton chorusOff_ { "OFF" };
     juce::TextButton chorusI_ { "CHORUS I" };

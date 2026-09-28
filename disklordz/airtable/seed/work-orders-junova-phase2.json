@@ -26,7 +26,19 @@
   {
     "id": "WO-2026-008",
     "title": "[Plugin][Junova-X] Jun-6 V competitive A/B matrix",
-    "status": "Planned",
-    "acceptance": "COMPETITIVE_JUN6.md; AB-01..07 golden expansion plan executed or scheduled"
+    "status": "Done",
+    "acceptance": "GoldenScenarios + manifest AB rows + QA_AB_JUN6.md + refresh/verify scripts"
+  },
+  {
+    "id": "WO-2026-009",
+    "title": "[Plugin][Junova-X] VCF/chorus timbre pass",
+    "status": "In progress",
+    "acceptance": "OTA VCF saturation + BBD chorus mode rates; golden refresh green"
+  },
+  {
+    "id": "WO-2026-010",
+    "title": "[Plugin][Junova-X] Juno 6-voice poly mode",
+    "status": "Done",
+    "acceptance": "Voice mode Juno 6 limits poly to 6; Celestial button; golden ab-juno6-poly"
   }
 ]

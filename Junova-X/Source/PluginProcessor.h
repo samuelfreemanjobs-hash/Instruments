@@ -42,6 +42,9 @@ public:
 
     void panicAllNotes();
     void applyFactoryPreset (int index);
+    /** Competitive golden / A/B patches — see GoldenScenarios.h */
+    bool applyGoldenScenario (const char* scenarioId) noexcept;
+    void pushParamsToEngine() noexcept;
 
     void copyScopeSamples (float* dest, int numSamples) const noexcept
     {
@@ -54,7 +57,6 @@ public:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 private:
-    void pushParamsToEngine() noexcept;
     junovax::dsp::RuntimeParams readParamsFromApvts() const noexcept;
 
     juce::AudioProcessorValueTreeState apvts_;

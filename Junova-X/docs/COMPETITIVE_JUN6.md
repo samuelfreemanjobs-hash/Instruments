@@ -93,9 +93,9 @@ See also [docs/AB_HARNESS.md](../../docs/AB_HARNESS.md) and [HARDWARE_REFERENCE.
 | WO | Title | Depends on |
 |----|-------|------------|
 | **007** | iPlug2 / reference import checklist | `vst-juno106/third_party/iPlug2` (**in repo**); Disklordz `plugin/Juno106/` (**still external**) — [IPLUG2_REFERENCE.md](IPLUG2_REFERENCE.md) |
-| **008** | Competitive golden expansion + Jun-6 V A/B protocol | This doc + AB-01…07 |
-| **009** | IR3109-style VCF + chorus BBD v2 | KR-106 notes + golden failures |
-| **010** | 6-voice Juno mode + SysEx subset (optional) | Product call |
+| **008** | Competitive golden expansion + Jun-6 V A/B protocol | **Done** — [QA_AB_JUN6.md](QA_AB_JUN6.md), `GoldenScenarios`, manifest |
+| **009** | IR3109-style VCF + chorus BBD v2 | **Partial** — OTA VCF + chorus LFO pass (see ARCHITECTURE_DSP) |
+| **010** | 6-voice Juno mode | **Done** — voice mode + golden `ab-juno6-poly`; SysEx still optional |
 
 ## Positioning statement (GTM)
 

@@ -1,0 +1,50 @@
+# Jun-6 V A/B QA protocol (WO-2026-008)
+
+Automated **in-repo** captures: `tests/golden/junova/manifest.tsv` + `JunovaOfflineRender --scenario …`.
+
+Manual **cross-plugin** comparison against Arturia Jun-6 V (or a bounce from [COMPETITIVE_JUN6.md](COMPETITIVE_JUN6.md) references):
+
+## 1. Match scenario in DAW
+
+| Scenario ID | Starting patch intent |
+|-------------|------------------------|
+| `ab01-dry-saw` | Chorus off, open filter, full sustain |
+| `ab02-fat-pad` | Chorus I, pad filter/env |
+| `ab03-chorus-*` | Modes I, II, I+II on held A3 |
+| `ab04-filter-sweep` | Resonant filter + envelope |
+| `ab05-arp-sync` | Host 120 BPM, 1/16 arp, triad (manual — not in CI golden) |
+| `ab06-noise-hpf` | HPF on + noise |
+| `ab07-unison-lead` | Unison + chorus II |
+| `ab-juno6-poly` | 6-voice poly limit |
+
+Render Junova headlessly:
+
+```bash
+cmake --build build -j --target JunovaOfflineRender
+./build/Junova-X/JunovaOfflineRender /tmp/junova.wav --scenario ab02-fat-pad 48 100 4.0 44100
+```
+
+## 2. Export reference from Jun-6 V
+
+Same MIDI note, velocity, length, **no extra FX**. Peak-normalize both files in the DAW if levels differ.
+
+## 3. Spectral diff (optional)
+
+```bash
+./tests/golden/junova/compare_jun6_reference.sh /path/to/jun6v.wav ab02-fat-pad 48 4.0
+```
+
+Thresholds are intentionally loose; **solo + in-mix** listening wins disputes (see Bass Valley / Luke Million methodology in COMPETITIVE_JUN6.md).
+
+## 4. CI
+
+```bash
+./tests/golden/verify_junova_golden.sh
+```
+
+After intentional DSP changes:
+
+```bash
+./tests/golden/refresh_junova_golden.sh
+git add tests/golden/junova/*.wav
+```

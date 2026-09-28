@@ -49,15 +49,17 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
     presetLabel_.setColour (juce::Label::textColourId, Theme::glowCyan());
     presetLabel_.setFont (juce::FontOptions (13.0f).withStyle ("Bold"));
 
-    for (auto* b : { &voicePoly1_, &voicePoly2_, &voiceUnison_, &voiceMono_ })
+    for (auto* b : { &voicePoly1_, &voicePoly2_, &voiceUnison_, &voiceMono_, &voiceJuno6_ })
     {
         b->setClickingTogglesState (false);
         addAndMakeVisible (*b);
     }
+    constexpr float kVoiceSteps = 4.0f;
     voicePoly1_.onClick = [this] { if (auto* p = processor_.getApvts().getParameter (junovax::ParameterIDs::voiceMode)) p->setValueNotifyingHost (0.0f); };
-    voicePoly2_.onClick = [this] { if (auto* p = processor_.getApvts().getParameter (junovax::ParameterIDs::voiceMode)) p->setValueNotifyingHost (1.0f / 3.0f); };
-    voiceUnison_.onClick = [this] { if (auto* p = processor_.getApvts().getParameter (junovax::ParameterIDs::voiceMode)) p->setValueNotifyingHost (2.0f / 3.0f); };
-    voiceMono_.onClick = [this] { if (auto* p = processor_.getApvts().getParameter (junovax::ParameterIDs::voiceMode)) p->setValueNotifyingHost (1.0f); };
+    voicePoly2_.onClick = [this] { if (auto* p = processor_.getApvts().getParameter (junovax::ParameterIDs::voiceMode)) p->setValueNotifyingHost (1.0f / kVoiceSteps); };
+    voiceUnison_.onClick = [this] { if (auto* p = processor_.getApvts().getParameter (junovax::ParameterIDs::voiceMode)) p->setValueNotifyingHost (2.0f / kVoiceSteps); };
+    voiceMono_.onClick = [this] { if (auto* p = processor_.getApvts().getParameter (junovax::ParameterIDs::voiceMode)) p->setValueNotifyingHost (3.0f / kVoiceSteps); };
+    voiceJuno6_.onClick = [this] { if (auto* p = processor_.getApvts().getParameter (junovax::ParameterIDs::voiceMode)) p->setValueNotifyingHost (1.0f); };
 
     addAndMakeVisible (brand_);
     addAndMakeVisible (tagline_);
@@ -243,6 +245,7 @@ void CelestialMainPanel::resized()
     voicePoly2_.setBounds (voiceX + 52, 38, 48, 22);
     voiceUnison_.setBounds (voiceX + 104, 38, 56, 22);
     voiceMono_.setBounds (voiceX + 164, 38, 48, 22);
+    voiceJuno6_.setBounds (voiceX + 104, 62, 56, 22);
 
     const int rowY = 160;
     const int rowH = 200;

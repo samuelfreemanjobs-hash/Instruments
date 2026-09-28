@@ -91,6 +91,7 @@ private:
     float cutoffHzForVoice (const Voice& v, float filtEnvLevel, float lfo) const noexcept;
     float renderVoiceSample (Voice& v, float lfo) noexcept;
     float advanceLfo() noexcept;
+    int maxPolyVoices() const noexcept;
 
     RuntimeParams params_{};
     DiagTone diagTone_;

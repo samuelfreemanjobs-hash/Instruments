@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "Golden/GoldenScenarios.h"
 #include "Presets/PresetParams.h"
 
 namespace
@@ -42,7 +43,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JunovaXAudioProcessor::creat
                                                               0));
     layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID { PID::voiceMode, 1 },
                                                               "Voice",
-                                                              juce::StringArray { "Poly 1", "Poly 2", "Unison", "Mono" },
+                                                              juce::StringArray { "Poly 1", "Poly 2", "Unison", "Mono", "Juno 6" },
                                                               0));
 
     addFloat (layout, PID::lfoRate, "LFO Rate", { 0.01f, 20.0f, 0.001f, 0.4f }, 4.2f);
@@ -121,6 +122,14 @@ void JunovaXAudioProcessor::changeProgramName (int index, const juce::String& ne
     juce::ignoreUnused (index, newName);
 }
 
+bool JunovaXAudioProcessor::applyGoldenScenario (const char* scenarioId) noexcept
+{
+    if (! junovax::golden::applyScenario (*this, scenarioId))
+        return false;
+    pushParamsToEngine();
+    return true;
+}
+
 void JunovaXAudioProcessor::applyFactoryPreset (int index)
 {
     const auto& presets = junovax::presets::getFactoryPresets();
@@ -160,7 +169,7 @@ void JunovaXAudioProcessor::applyFactoryPreset (int index)
     setB (PID::hpfEnabled, p.hpfEnabled);
     setF (PID::hpfCutoff, p.hpfCutoff);
     setC (PID::chorusMode, p.chorusMode, 4);
-    setC (PID::voiceMode, p.voiceMode, 4);
+    setC (PID::voiceMode, p.voiceMode, 5);
     setF (PID::lfoRate, p.lfoRate);
     setF (PID::lfoDelay, p.lfoDelay);
     setF (PID::glide, p.glide);

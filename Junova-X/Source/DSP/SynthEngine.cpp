@@ -105,9 +105,17 @@ void SynthEngine::updateEnvelopes() noexcept
     }
 }
 
+int SynthEngine::maxPolyVoices() const noexcept
+{
+    if (params_.voiceMode == 4)
+        return 6;
+    return kMaxVoices;
+}
+
 int SynthEngine::findFreeVoice() noexcept
 {
-    for (int i = 0; i < kMaxVoices; ++i)
+    const int limit = maxPolyVoices();
+    for (int i = 0; i < limit; ++i)
         if (voices_[static_cast<std::size_t> (i)].note < 0 && ! voices_[static_cast<std::size_t> (i)].ampEnv.isActive())
             return i;
     return 0;
@@ -115,7 +123,8 @@ int SynthEngine::findFreeVoice() noexcept
 
 int SynthEngine::findVoiceForNote (int note) noexcept
 {
-    for (int i = 0; i < kMaxVoices; ++i)
+    const int limit = maxPolyVoices();
+    for (int i = 0; i < limit; ++i)
         if (voices_[static_cast<std::size_t> (i)].note == note)
             return i;
     return -1;
@@ -295,6 +304,9 @@ float SynthEngine::renderVoiceSample (Voice& v, float lfo) noexcept
     v.filter.setCutoffFrequency (cutoff);
     v.filter.setResonance (0.707f + params_.filterRes * 3.5f);
     raw = v.filter.processSample (0, raw);
+
+    const float otaDrive = 1.0f + params_.filterRes * 2.2f;
+    raw = std::tanh (raw * otaDrive) / std::tanh (otaDrive);
 
     return raw * v.ampEnv.getNextSample() * 0.12f;
 }

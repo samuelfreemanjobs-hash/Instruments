@@ -14,10 +14,12 @@
 
 ## Import checklist (WO-2026-007)
 
+Import slot: [`vst-juno106/plugin/Juno106/README.md`](../../vst-juno106/plugin/Juno106/README.md).
+
 When `plugin/Juno106/` lands (copy or submodule from private remote):
 
 1. [ ] Verify `PLUG_UNIQUE_ID` / `PLUG_MFR_ID` match handoff (`JnvX` / `SmFr`) or document divergence.
-2. [ ] Run `plugin/scripts/fetch-deps.sh` on **Windows x64** (VST3 SDK not committed).
+2. [ ] Run [`vst-juno106/plugin/scripts/fetch-deps.sh`](../../vst-juno106/plugin/scripts/fetch-deps.sh) on **Windows x64** (VST3 SDK not committed).
 3. [ ] Build **Release | x64** `Juno106-vst3`; attach pluginval log to WO.
 4. [ ] Extract **parameter map** (names, ranges, curves) → table in `ARCHITECTURE_DSP.md`.
 5. [ ] For each row in parity table, record **iPlug2 behavior** vs **Junova-X** (`Source/DSP/*`).

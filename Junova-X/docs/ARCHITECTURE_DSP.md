@@ -42,10 +42,13 @@ flowchart LR
 | Subsystem | MVP | Next |
 |-----------|-----|------|
 | DCO waveforms | saw/pwm/sub | full Juno wave blend |
-| VCF | SVF ladder-ish | IR3109-style nonlinear |
-| Chorus | dual delay BBD | clock-noise + stereo spread |
+| VCF | SVF + **OTA tanh** saturation | IR3109-style nonlinear (WO-009) |
+| Chorus | dual delay, mode LFO rates ~0.42/0.82/0.65+1.05 Hz, wet LP | clock-noise + stereo spread |
 | Env | dual ADSR | cross-mod, velocity |
 | Arp | up, BPM | host sync PPQ, latch |
+| Voices | 8 poly / unison / mono; **Juno 6** caps poly at 6 | SysEx subset (WO-010) |
+
+Competitive golden scenarios: `Source/Golden/GoldenScenarios.cpp` · manifest `tests/golden/junova/manifest.tsv` · [QA_AB_JUN6.md](QA_AB_JUN6.md).
 
 ## Tests
 

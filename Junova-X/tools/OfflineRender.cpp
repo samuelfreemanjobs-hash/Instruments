@@ -1,4 +1,5 @@
 #include "PluginProcessor.h"
+#include "Golden/GoldenScenarios.h"
 
 #include <juce_audio_formats/juce_audio_formats.h>
 #include <juce_audio_processors/juce_audio_processors.h>
@@ -7,14 +8,99 @@
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <string>
 
 namespace
 {
+class OfflinePlayHead final : public juce::AudioPlayHead
+{
+public:
+    void set (double bpmIn, double ppqIn) noexcept
+    {
+        bpm = bpmIn;
+        ppq = ppqIn;
+    }
+
+    void advance (int numSamples, double sampleRate) noexcept
+    {
+        ppq += (static_cast<double> (numSamples) / sampleRate) * (bpm / 60.0);
+    }
+
+    Optional<PositionInfo> getPosition() const override
+    {
+        PositionInfo info;
+        info.setBpm (bpm);
+        info.setPpqPosition (ppq);
+        info.setIsPlaying (true);
+        return info;
+    }
+
+private:
+    double bpm = 120.0;
+    double ppq = 0.0;
+};
+
 void printUsage()
 {
-    std::cerr << "Usage: JunovaOfflineRender <output.wav> [program] [midiNote] [velocity] [seconds] [sampleRate]\n"
+    std::cerr << "Usage:\n"
+              << "  JunovaOfflineRender <output.wav> [program] [midiNote] [velocity] [seconds] [sampleRate]\n"
+              << "  JunovaOfflineRender <output.wav> --scenario <id> [midiNote] [velocity] [seconds] [sampleRate]\n"
+              << "  Scenarios: " << junovax::golden::listScenarioIds() << "\n"
               << "  Defaults: program=0 note=60 velocity=100 seconds=0.5 sampleRate=44100\n"
-              << "  Forces arpRate=0 for deterministic golden renders.\n";
+              << "  Golden renders force arpRate=0 except ab05-arp-sync (uses host PPQ).\n";
+}
+
+struct RenderConfig
+{
+    int program = 0;
+    const char* scenario = nullptr;
+    int midiNote = 60;
+    int velocity = 100;
+    double seconds = 0.5;
+    double sampleRate = 44100.0;
+    bool arpHostSync = false;
+};
+
+bool parseArgs (int argc, char** argv, RenderConfig& cfg)
+{
+    if (argc < 2)
+        return false;
+
+    if (argc >= 4 && juce::String (argv[2]) == "--scenario")
+    {
+        cfg.scenario = argv[3];
+        cfg.midiNote = argc > 4 ? std::atoi (argv[4]) : 60;
+        cfg.velocity = argc > 5 ? std::atoi (argv[5]) : 100;
+        cfg.seconds = argc > 6 ? std::atof (argv[6]) : 0.5;
+        cfg.sampleRate = argc > 7 ? std::atof (argv[7]) : 44100.0;
+        cfg.arpHostSync = juce::String (cfg.scenario) == "ab05-arp-sync";
+        if (juce::String (cfg.scenario) == "ab04-filter-sweep" && argc <= 6)
+            cfg.seconds = 2.0;
+        return true;
+    }
+
+    cfg.program = argc > 2 ? std::atoi (argv[2]) : 0;
+    cfg.midiNote = argc > 3 ? std::atoi (argv[3]) : 60;
+    cfg.velocity = argc > 4 ? std::atoi (argv[4]) : 100;
+    cfg.seconds = argc > 5 ? std::atof (argv[5]) : 0.5;
+    cfg.sampleRate = argc > 6 ? std::atof (argv[6]) : 44100.0;
+    return true;
+}
+
+void applyDeterministicOverrides (JunovaXAudioProcessor& junova, const RenderConfig& cfg)
+{
+    auto& apvts = junova.getApvts();
+    if (cfg.arpHostSync)
+        return;
+
+    auto zero = [&apvts] (const char* id)
+    {
+        if (auto* p = apvts.getParameter (id))
+            p->setValueNotifyingHost (0.0f);
+    };
+    zero (junovax::ParameterIDs::arpRate);
+    zero (junovax::ParameterIDs::drift);
+    zero (junovax::ParameterIDs::dcoNoise);
 }
 } // namespace
 
@@ -22,24 +108,20 @@ int main (int argc, char** argv)
 {
     juce::ScopedJuceInitialiser_GUI juceInit;
 
-    if (argc < 2)
+    RenderConfig cfg;
+    if (! parseArgs (argc, argv, cfg))
     {
         printUsage();
         return 1;
     }
 
-    const juce::File outFile (argv[1]);
-    const int program = argc > 2 ? std::atoi (argv[2]) : 0;
-    const int midiNote = argc > 3 ? std::atoi (argv[3]) : 60;
-    const int velocity = argc > 4 ? std::atoi (argv[4]) : 100;
-    const double seconds = argc > 5 ? std::atof (argv[5]) : 0.5;
-    const double sampleRate = argc > 6 ? std::atof (argv[6]) : 44100.0;
-
-    if (seconds <= 0.0 || sampleRate <= 0.0)
+    if (cfg.seconds <= 0.0 || cfg.sampleRate <= 0.0)
     {
         std::cerr << "Invalid duration or sample rate\n";
         return 1;
     }
+
+    const juce::File outFile (argv[1]);
 
     std::unique_ptr<juce::AudioProcessor> processor (createPluginFilter());
     if (processor == nullptr)
@@ -48,24 +130,36 @@ int main (int argc, char** argv)
         return 1;
     }
 
-    constexpr int blockSize = 512;
-    processor->prepareToPlay (sampleRate, blockSize);
-    processor->setCurrentProgram (program);
-
-    if (auto* junova = dynamic_cast<JunovaXAudioProcessor*> (processor.get()))
+    auto* junova = dynamic_cast<JunovaXAudioProcessor*> (processor.get());
+    if (junova == nullptr)
     {
-        auto& apvts = junova->getApvts();
-        auto zero = [&apvts] (const char* id)
-        {
-            if (auto* p = apvts.getParameter (id))
-                p->setValueNotifyingHost (0.0f);
-        };
-        zero (junovax::ParameterIDs::arpRate);
-        zero (junovax::ParameterIDs::drift);
-        zero (junovax::ParameterIDs::dcoNoise);
+        std::cerr << "Processor type mismatch\n";
+        return 1;
     }
 
-    const int totalSamples = static_cast<int> (std::ceil (seconds * sampleRate));
+    OfflinePlayHead playHead;
+    playHead.set (120.0, 0.0);
+    processor->setPlayHead (&playHead);
+
+    constexpr int blockSize = 512;
+    processor->prepareToPlay (cfg.sampleRate, blockSize);
+
+    if (cfg.scenario != nullptr)
+    {
+        if (! junova->applyGoldenScenario (cfg.scenario))
+        {
+            std::cerr << "Unknown scenario: " << cfg.scenario << "\n";
+            return 1;
+        }
+    }
+    else
+    {
+        processor->setCurrentProgram (cfg.program);
+    }
+
+    applyDeterministicOverrides (*junova, cfg);
+
+    const int totalSamples = static_cast<int> (std::ceil (cfg.seconds * cfg.sampleRate));
     const int noteOffSample = std::max (1, static_cast<int> (0.85 * static_cast<double> (totalSamples)));
 
     juce::AudioBuffer<float> buffer (2, blockSize);
@@ -81,11 +175,28 @@ int main (int argc, char** argv)
         midi.clear();
 
         if (offset == 0)
-            midi.addEvent (juce::MidiMessage::noteOn (1, midiNote, static_cast<juce::uint8> (velocity)), 0);
+            midi.addEvent (juce::MidiMessage::noteOn (1, cfg.midiNote, static_cast<juce::uint8> (cfg.velocity)), 0);
+
+        if (cfg.arpHostSync && offset == 0)
+        {
+            midi.addEvent (juce::MidiMessage::noteOn (1, 60, static_cast<juce::uint8> (cfg.velocity)), 0);
+            midi.addEvent (juce::MidiMessage::noteOn (1, 64, static_cast<juce::uint8> (cfg.velocity)), 0);
+            midi.addEvent (juce::MidiMessage::noteOn (1, 67, static_cast<juce::uint8> (cfg.velocity)), 0);
+        }
+
         if (offset <= noteOffSample && noteOffSample < offset + numThisBlock)
-            midi.addEvent (juce::MidiMessage::noteOff (1, midiNote), noteOffSample - offset);
+        {
+            midi.addEvent (juce::MidiMessage::noteOff (1, cfg.midiNote), noteOffSample - offset);
+            if (cfg.arpHostSync)
+            {
+                midi.addEvent (juce::MidiMessage::noteOff (1, 60), noteOffSample - offset);
+                midi.addEvent (juce::MidiMessage::noteOff (1, 64), noteOffSample - offset);
+                midi.addEvent (juce::MidiMessage::noteOff (1, 67), noteOffSample - offset);
+            }
+        }
 
         processor->processBlock (buffer, midi);
+        playHead.advance (numThisBlock, cfg.sampleRate);
 
         for (int ch = 0; ch < 2; ++ch)
             capture.copyFrom (ch, offset, buffer, ch, 0, numThisBlock);
@@ -104,7 +215,7 @@ int main (int argc, char** argv)
     }
 
     std::unique_ptr<juce::AudioFormatWriter> writer (
-        wav.createWriterFor (stream.get(), sampleRate, static_cast<unsigned int> (capture.getNumChannels()),
+        wav.createWriterFor (stream.get(), cfg.sampleRate, static_cast<unsigned int> (capture.getNumChannels()),
                              24, {}, 0));
 
     if (writer == nullptr)

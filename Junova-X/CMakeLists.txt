@@ -26,6 +26,7 @@ target_sources (JunovaX
         Source/DSP/DiagTone.cpp
         Source/DSP/Arpeggiator.cpp
         Source/DSP/BbdChorus.cpp
+        Source/Golden/GoldenScenarios.cpp
         Source/Presets/FactoryPresets.cpp
 )
 

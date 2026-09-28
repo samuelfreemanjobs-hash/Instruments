@@ -17,15 +17,21 @@ fi
 while IFS= read -r line || [[ -n "$line" ]]; do
   [[ "$line" =~ ^# ]] && continue
   [[ -z "${line// }" ]] && continue
-  read -r filename program note velocity seconds sample_rate <<<"$line"
+  read -r filename program note velocity seconds sample_rate scenario <<<"$line"
+  scenario="${scenario:--}"
   golden="${ROOT}/tests/golden/junova/${filename}"
   if [[ ! -f "$golden" ]]; then
     echo "Missing golden file: $golden" >&2
     exit 1
   fi
   tmp="$(mktemp /tmp/junova-golden-XXXXXX.wav)"
-  "$RENDER" "$tmp" "$program" "$note" "$velocity" "$seconds" "$sample_rate"
-  echo "== junova ${filename} (program ${program}, note ${note}) =="
+  if [[ "$scenario" != "-" ]]; then
+    "$RENDER" "$tmp" --scenario "$scenario" "$note" "$velocity" "$seconds" "$sample_rate"
+    echo "== junova ${filename} (scenario ${scenario}, note ${note}) =="
+  else
+    "$RENDER" "$tmp" "$program" "$note" "$velocity" "$seconds" "$sample_rate"
+    echo "== junova ${filename} (program ${program}, note ${note}) =="
+  fi
   "$DIFF" "$golden" "$tmp" --max-rms-db "$MAX_RMS_DB" --max-spectral-db "$MAX_SPECTRAL_DB"
   rm -f "$tmp"
 done <"$MANIFEST"
