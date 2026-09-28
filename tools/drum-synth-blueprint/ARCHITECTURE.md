@@ -51,6 +51,8 @@ See [`docs/juce_onnx_pipeline_guide.txt`](docs/juce_onnx_pipeline_guide.txt).
 
 Agent prompts: [`docs/DDSP_TRAP_PHONK_AGENT_PROMPTS.md`](../../docs/DDSP_TRAP_PHONK_AGENT_PROMPTS.md).
 
+Memphis kit program (Phase 0 fingerprint + sellable kits): [`docs/products/MEMPHIS_PHONK_DRUM_KIT_ML.md`](../../docs/products/MEMPHIS_PHONK_DRUM_KIT_ML.md) · [`docs/memphis_phonk_fingerprint.md`](docs/memphis_phonk_fingerprint.md).
+
 ## Data flow
 
 ```text

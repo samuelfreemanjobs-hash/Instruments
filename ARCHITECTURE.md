@@ -12,7 +12,8 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Serum Forge** (symbolic Serum preset pipeline) | [tools/serum-forge/ARCHITECTURE.md](tools/serum-forge/ARCHITECTURE.md) | `pytest` · `uvicorn serum_forge.main:app --port 8010` in `tools/serum-forge/` |
 | **Drum synth blueprint** (NumPy Trap kick/808) | [tools/drum-synth-blueprint/ARCHITECTURE.md](tools/drum-synth-blueprint/ARCHITECTURE.md) | `pytest` in `tools/drum-synth-blueprint/` |
 | **TRAP-FORGE** (MPC PWA + studio JS) | [disklordz/trap-forge/ARCHITECTURE.md](disklordz/trap-forge/ARCHITECTURE.md) | `npm test` (Vitest) in `disklordz/trap-forge/` |
-| **V-Voyager VST** (explorer rompler program) | [docs/products/VOYAGER_VST.md](docs/products/VOYAGER_VST.md) | PRD-gated; JUCE target TBD |
+| **V-Voyager VST** | [docs/products/VOYAGER_VST.md](docs/products/VOYAGER_VST.md) | PRD-gated; JUCE target TBD |
+| **Memphis Phonk Drum Kit ML** | [docs/products/MEMPHIS_PHONK_DRUM_KIT_ML.md](docs/products/MEMPHIS_PHONK_DRUM_KIT_ML.md) | Phase 0 · DDSP + kit pipeline |
 | **VST testing ops** (pluginval command center) | [vst-testing-ops/ARCHITECTURE.md](vst-testing-ops/ARCHITECTURE.md) | `python3 vst-testing-ops/run_business.py --profile ci` · `streamlit run vst-testing-ops/app.py` |
 | **HISE sketch lane** (rompler / sampler R&D) | [docs/HISE_ANTIGRAVITY_LANE.md](docs/HISE_ANTIGRAVITY_LANE.md) · [hise-sketch/ARCHITECTURE.md](hise-sketch/ARCHITECTURE.md) | HISE local export (Antigravity); not in root CMake |
 | **Disklordz** (package index) | [disklordz/ARCHITECTURE.md](disklordz/ARCHITECTURE.md) · [docs/ROADMAP.md](docs/ROADMAP.md) | `./scripts/run-agent-fleet-now.sh` |
