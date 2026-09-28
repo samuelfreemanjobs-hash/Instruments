@@ -1,0 +1,16 @@
+---
+description: Require a PRD (Code Project Planner) before greenfield product or new CMake target work.
+alwaysApply: true
+---
+
+# Product PRD gate
+
+Before **greenfield** features, new **CMake plugin targets**, or new top-level product folders:
+
+1. Read [`docs/COMPANY_MEMORY_INDEX.md`](../../docs/COMPANY_MEMORY_INDEX.md) and the product `ARCHITECTURE.md`.
+2. Ensure a PRD exists using [`docs/templates/PRD_TEMPLATE.md`](../../docs/templates/PRD_TEMPLATE.md) (agent: **code-project-planner**).
+3. PRD must list **success criteria** with verifiable commands; implementation PRs link the PRD path.
+
+Exceptions: one-line bugfixes, docs-only, or user explicitly waives PRD (`OVERRIDE(R4): …`).
+
+Every product `ARCHITECTURE.md` should link its PRD or `docs/products/<id>.md`.

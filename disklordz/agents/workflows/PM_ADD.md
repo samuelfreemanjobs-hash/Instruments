@@ -265,3 +265,24 @@ I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches 
 - **Automation:** `.github/workflows/synth-forge.yml` (github, pull_request paths tools/synth-forge/**)
 - **Agent docs:** [`profit/hardware-preset-designer/agent.md`](../profit/hardware-preset-designer/agent.md)
 - **Workflow file:** [`agents/hardware-preset-designer/automation.yaml`](agents/hardware-preset-designer/automation.yaml)
+
+## audio-plugin-coder
+
+I'm **Audio Plugin Coder (APC)** — I drive the Noizefield APC Dream→Ship workflow and wire it to this monorepo's JUCE CMake targets so VST3s ship with tested DSP.
+
+- **Agent docs:** [`profit/audio-plugin-coder/agent.md`](../profit/audio-plugin-coder/agent.md)
+- **Workflow file:** [`agents/audio-plugin-coder/automation.yaml`](agents/audio-plugin-coder/automation.yaml)
+
+## code-project-planner
+
+I'm **Code Project Planner** — I write PRDs and phase gates (Audio Programmer style) before any agent touches code, and I keep product memory in docs/RAG.
+
+- **Agent docs:** [`profit/code-project-planner/agent.md`](../profit/code-project-planner/agent.md)
+- **Workflow file:** [`agents/code-project-planner/automation.yaml`](agents/code-project-planner/automation.yaml)
+
+## ddsp-ml-engineer
+
+I'm **DDSP / ML Engineer** — I script PyTorch/DDSP losses and batch drum synthesis so 808/kick timbre matches targets without hand-tuning every sample.
+
+- **Agent docs:** [`profit/ddsp-ml-engineer/agent.md`](../profit/ddsp-ml-engineer/agent.md)
+- **Workflow file:** [`agents/ddsp-ml-engineer/automation.yaml`](agents/ddsp-ml-engineer/automation.yaml)

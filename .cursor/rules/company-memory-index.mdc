@@ -1,0 +1,14 @@
+---
+description: Load company-wide product and agent memory index before cross-product work.
+alwaysApply: true
+---
+
+# Company memory
+
+For tasks touching **more than one product**, fleet agents, or “what happened to X project?”:
+
+1. Open [`docs/COMPANY_MEMORY_INDEX.md`](../../docs/COMPANY_MEMORY_INDEX.md) first.
+2. Open root [`ARCHITECTURE.md`](../../ARCHITECTURE.md) and the specific product doc.
+3. For V-Voyager / rompler VST context: [`docs/products/VOYAGER_VST.md`](../../docs/products/VOYAGER_VST.md).
+
+Do not assume prior chat sessions retained business context — persist decisions in docs and RAG corpus.

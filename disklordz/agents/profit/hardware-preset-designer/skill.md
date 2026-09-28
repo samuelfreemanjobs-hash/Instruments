@@ -1,45 +1,34 @@
 ---
 name: disklordz-hardware-preset-designer
-description: SynthForge workstation — batch hardware presets, prompt-to-patch, cloning, safety-clamped export.
-when_to_use: User asks for hardware synth presets, SysEx/program batches, Minilogue/DX7/UltraNova patches, or SynthForge work.
+description: SynthForge workstation: batch preset generation, prompt-to-patch, WAV cloning, SQLite lineage, safety-clamped SysEx/binary export for supported hardware synths.
+when_to_use: Profit lever — Hardware preset velocity — cross-sell Instruments + producer kits. Invoke for Disklordz Hardware Preset Designer tasks.
 disable-model-invocation: false
 context: fork
 paths:
-  - "tools/synth-forge/**"
-  - "disklordz/integrations/agents/hardware_preset_designer.py"
-  - "disklordz/agents/profit/hardware-preset-designer/**"
+  - "disklordz/**"
   - "docs/DISKLORDZ*.md"
-  - ".github/workflows/synth-forge.yml"
+  - ".github/workflows/**"
 ---
 
 # Skill — Hardware Preset Designer
 
 ## When to use
 
-- Batch preset generation, morphing, or lineage for **hardware synths**
-- Natural-language **prompt-to-patch** (Cardo pad, phonk Reese, DX7 EP, etc.)
-- WAV **sound cloning** into preset variations
-- Librarian export staging / adapter hardening in SynthForge
+SynthForge workstation: batch preset generation, prompt-to-patch, WAV cloning, SQLite lineage, safety-clamped SysEx/binary export for supported hardware synths.
 
 ## Prerequisites
 
-- Read [tools/synth-forge/ARCHITECTURE.md](../../../../tools/synth-forge/ARCHITECTURE.md) and [agent.md](agent.md)
-- Run verification:
-
-```bash
-cd tools/synth-forge && python3 -m pytest tests -v
-python3 disklordz/integrations/agents/hardware_preset_designer.py --self-test
-```
+- Read `AGENTS.md`, `disklordz/website/ARCHITECTURE.md`, and `disklordz/agents/profit/hardware-preset-designer/agent.md`.
+- Run automation: python3 disklordz/integrations/agents/hardware_preset_designer.py, tools/synth-forge pytest, synth-forge.yml CI
 
 ## Success criteria
 
-- [ ] `clamp_for_hardware` applied on all generated/exported params
-- [ ] pytest or `--self-test` output attached
-- [ ] Stub synths (`minifreak`, `zenology`) labeled if used
+- [ ] Evidence attached (logs, curl, CI link)
 - [ ] No secrets in git
+- [ ] `npm run build` in `disklordz/website` when SaaS touched
 
 ## Anti-patterns
 
-- Bypassing safety clamps for “louder” patches
-- Claiming bit-accurate librarian compatibility on stub adapters
-- Editing SaaS Stripe/Supabase paths when task is hardware-only (stay in `tools/synth-forge/`)
+- Skipping ARCHITECTURE.md
+- Stripe/Supabase writes without confirmation
+- Unbounded sub-agent fan-out

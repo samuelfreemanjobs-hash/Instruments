@@ -1,4 +1,4 @@
-# Loop SOP — Hardware Preset Designer
+# Loop SOP — Audio Plugin Coder (APC)
 
 AsyncGenerator control plane for this agent (pseudocode).
 

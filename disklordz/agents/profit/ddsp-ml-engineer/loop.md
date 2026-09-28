@@ -1,4 +1,4 @@
-# Loop SOP — Hardware Preset Designer
+# Loop SOP — DDSP / ML Engineer (PyTorch)
 
 AsyncGenerator control plane for this agent (pseudocode).
 

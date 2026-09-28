@@ -10,7 +10,7 @@
     "workflow-automation",
     "pm-agent"
   ],
-  "agent_count": 32,
+  "agent_count": 35,
   "agents": [
     {
       "id": "workflow-automation",
@@ -587,6 +587,36 @@
       "profit_entry": "disklordz/agents/profit/hardware-preset-designer/agent.md",
       "copilot_skill": ".github/skills/disklordz-hardware-preset-designer/SKILL.md",
       "automation_path": "disklordz/agents/workflows/agents/hardware-preset-designer/automation.yaml"
+    },
+    {
+      "id": "audio-plugin-coder",
+      "title": "Audio Plugin Coder (APC)",
+      "activation": "manual_doc",
+      "announcement": "I'm **Audio Plugin Coder (APC)** \u2014 I drive the Noizefield APC Dream\u2192Ship workflow and wire it to this monorepo's JUCE CMake targets so VST3s ship with tested DSP.",
+      "automation": {},
+      "profit_entry": "disklordz/agents/profit/audio-plugin-coder/agent.md",
+      "copilot_skill": ".github/skills/disklordz-audio-plugin-coder/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/audio-plugin-coder/automation.yaml"
+    },
+    {
+      "id": "code-project-planner",
+      "title": "Code Project Planner (PRD)",
+      "activation": "manual_doc",
+      "announcement": "I'm **Code Project Planner** \u2014 I write PRDs and phase gates (Audio Programmer style) before any agent touches code, and I keep product memory in docs/RAG.",
+      "automation": {},
+      "profit_entry": "disklordz/agents/profit/code-project-planner/agent.md",
+      "copilot_skill": ".github/skills/disklordz-code-project-planner/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/code-project-planner/automation.yaml"
+    },
+    {
+      "id": "ddsp-ml-engineer",
+      "title": "DDSP / ML Engineer (PyTorch)",
+      "activation": "ci_on_pr",
+      "announcement": "I'm **DDSP / ML Engineer** \u2014 I script PyTorch/DDSP losses and batch drum synthesis so 808/kick timbre matches targets without hand-tuning every sample.",
+      "automation": {},
+      "profit_entry": "disklordz/agents/profit/ddsp-ml-engineer/agent.md",
+      "copilot_skill": ".github/skills/disklordz-ddsp-ml-engineer/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/ddsp-ml-engineer/automation.yaml"
     }
   ],
   "ci_workflows": [
@@ -629,6 +659,14 @@
     {
       "path": ".github/workflows/synth-forge.yml",
       "serves": "hardware-preset-designer"
+    },
+    {
+      "path": ".github/workflows/serum-forge.yml",
+      "serves": "hardware-preset-designer, ddsp-ml-engineer"
+    },
+    {
+      "path": ".github/workflows/drum-synth-blueprint.yml",
+      "serves": "ddsp-ml-engineer"
     }
   ]
 }

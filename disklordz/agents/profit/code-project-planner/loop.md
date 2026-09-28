@@ -1,4 +1,4 @@
-# Loop SOP — Hardware Preset Designer
+# Loop SOP — Code Project Planner (PRD)
 
 AsyncGenerator control plane for this agent (pseudocode).
 
