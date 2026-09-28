@@ -21,6 +21,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **META LLM charter** | [disklordz/agents/charter/ARCHITECTURE.md](disklordz/agents/charter/ARCHITECTURE.md) · [CLAUDE.md](CLAUDE.md) | `./scripts/sync-meta-llm-charter.sh` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-9090** (sampleless trap wavetable synth) | [Wave9090/ARCHITECTURE.md](Wave9090/ARCHITECTURE.md) | `Wave9090_VST3`, `Wave9090_Standalone`, `Wave9090Tests` |
+| **TRAP-FORGE** (procedural trap drums VST3) | [disklordz/trap-forge/ARCHITECTURE.md](disklordz/trap-forge/ARCHITECTURE.md) | `TrapForge_VST3`, `TrapForge_Standalone` |
 
 ## Repository layout
 
@@ -40,6 +41,7 @@ tests/golden/    manifest.tsv + golden WAVs; verify_golden.sh / refresh_golden.s
 cmake -B build -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
 cmake --build build -j
+./scripts/sync-compile-commands.sh   # optional: clangd → compile_commands.json at repo root
 ```
 
 ## CI

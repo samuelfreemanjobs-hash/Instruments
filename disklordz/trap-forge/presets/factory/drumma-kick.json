@@ -1,0 +1,10 @@
+{
+  "name": "METRO_THUMP_KICK",
+  "cat": "KICK",
+  "desc": "Deep sub punch with click transient",
+  "rootHz": 52,
+  "pitchMod": 48,
+  "pitchDecay": 0.035,
+  "amp": { "attack": 0.001, "decay": 0.28, "sustain": 0, "release": 0.3 },
+  "tx": { "drive": 40, "type": "tube", "subHarm": 20, "noise": 12, "ceiling": -0.1 }
+}

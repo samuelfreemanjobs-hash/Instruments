@@ -6,6 +6,7 @@ enable_testing()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(FetchContent)
 
@@ -180,3 +181,4 @@ target_compile_definitions(SpectralDiff
 )
 
 add_subdirectory(Wave9090)
+add_subdirectory(disklordz/trap-forge/plugin)

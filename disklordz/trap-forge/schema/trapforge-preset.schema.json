@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.dev/schema/trapforge-preset.schema.json",
+  "title": "TRAP-FORGE Drum Preset",
+  "description": "Shared preset contract for browser TRAP-FORGE (JS) and native TRAP-FORGE (JUCE VST3).",
+  "type": "object",
+  "required": ["name", "cat"],
+  "properties": {
+    "name": { "type": "string", "maxLength": 64, "pattern": "^[A-Z0-9_]+$" },
+    "cat": { "enum": ["808", "KICK", "SNARE", "CLAP", "HIHAT", "PERC"] },
+    "desc": { "type": "string", "maxLength": 256 },
+    "rootHz": { "type": "number", "minimum": 20, "maximum": 500 },
+    "pitchMod": { "type": "number", "minimum": 0, "maximum": 96 },
+    "pitchDecay": { "type": "number", "minimum": 0.005, "maximum": 0.5 },
+    "glideMs": { "type": "number", "minimum": 0, "maximum": 800 },
+    "glideSemi": { "type": "number", "minimum": -24, "maximum": 24 },
+    "glideInterval": { "type": "number", "minimum": -24, "maximum": 24 },
+    "glideExponent": { "type": "number", "minimum": 0.5, "maximum": 4 },
+    "amp": {
+      "type": "object",
+      "properties": {
+        "attack": { "type": "number", "minimum": 0.0001, "maximum": 1 },
+        "decay": { "type": "number", "minimum": 0.01, "maximum": 3 },
+        "sustain": { "type": "number", "minimum": 0, "maximum": 1 },
+        "release": { "type": "number", "minimum": 0.01, "maximum": 5 }
+      }
+    },
+    "filter": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["lowpass", "highpass", "bandpass", "notch"] },
+        "cutoff": { "type": "number", "minimum": 40, "maximum": 20000 },
+        "reso": { "type": "number", "minimum": 0.1, "maximum": 18 },
+        "env": { "type": "number", "minimum": -1, "maximum": 1 },
+        "decay": { "type": "number", "minimum": 0.01, "maximum": 2 }
+      }
+    },
+    "transient": {
+      "type": "object",
+      "properties": {
+        "attack": { "type": "number", "minimum": -18, "maximum": 18 },
+        "sustain": { "type": "number", "minimum": -18, "maximum": 12 },
+        "pitchStart": { "type": "number", "minimum": 30, "maximum": 800 },
+        "pitchDecay": { "type": "number", "minimum": 0.005, "maximum": 0.5 },
+        "baseFreq": { "type": "number", "minimum": 20, "maximum": 500 }
+      }
+    },
+    "tx": {
+      "type": "object",
+      "properties": {
+        "drive": { "type": "number", "minimum": 0, "maximum": 100 },
+        "type": { "enum": ["hard", "tape", "tube", "fold"] },
+        "subHarm": { "type": "number", "minimum": 0, "maximum": 100 },
+        "noise": { "type": "number", "minimum": 0, "maximum": 100 },
+        "ceiling": { "type": "number", "minimum": -6, "maximum": 0 }
+      }
+    },
+    "studio": {
+      "type": "object",
+      "description": "Extended fields for modular studio-app (optional in VST3)",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

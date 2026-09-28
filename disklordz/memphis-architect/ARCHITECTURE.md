@@ -39,6 +39,8 @@ Legacy modular `js/` split removed in favor of this Gemini reference build.
 ## Extension points
 
 - Extract `synthesizeKick` / `synthesizeSnare` to shared module for unit tests.
+- **Python kick twin:** `scripts/generate_kick.py` + `scripts/smoke.py` (layered kick parity smoke).
+- Snare layering notes: [docs/SNARE_RESEARCH_PLAN.md](../../docs/SNARE_RESEARCH_PLAN.md) (808 clap pitched **+2–4 semitones** on snare body).
 - Host under `disklordz/website/public/memphis-architect/` for production.
 - Engine A patch sheets remain a separate Gemini Gem workflow.
 
