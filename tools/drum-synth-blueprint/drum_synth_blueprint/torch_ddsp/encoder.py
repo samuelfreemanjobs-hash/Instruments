@@ -1,66 +1,82 @@
-"""Waveform encoder → [pitch_decay, amp_decay, drive] for ONNX/JUCE."""
+"""Mel encoder → four normalized synth controls; full trainable DDSP stack."""
 
 from __future__ import annotations
 
 import torch
 import torch.nn as nn
+import torchaudio.transforms as T
 
 from drum_synth_blueprint.torch_ddsp.synth_torch import Differentiable808Synth
 
 
 class DDSP808Encoder(nn.Module):
     """
-    Maps acoustic drum hit (mono waveform) to synth parameters.
+    Mel-spectrogram → bounded synthesis parameters.
 
-    ONNX input: ``waveform`` float tensor [batch, num_samples]
-    ONNX output: ``params`` float tensor [batch, 3]
+    ONNX input: ``mel_input`` float tensor ``[batch, 1, n_mels, time_frames]``
+    ONNX output: ``synth_parameters`` float tensor ``[batch, 4]`` in ``[0, 1]``
     """
 
-    def __init__(self, num_samples: int = 8192) -> None:
+    def __init__(self, n_mels: int = 128) -> None:
         super().__init__()
-        self.num_samples = num_samples
-        self.features = nn.Sequential(
-            nn.Conv1d(1, 32, kernel_size=7, stride=2, padding=3),
+        self.n_mels = n_mels
+        self.conv_stack = nn.Sequential(
+            nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(16),
             nn.ReLU(),
-            nn.Conv1d(32, 64, kernel_size=7, stride=2, padding=3),
+            nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(32),
             nn.ReLU(),
-            nn.Conv1d(64, 128, kernel_size=7, stride=2, padding=3),
+            nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.Conv1d(128, 128, kernel_size=7, stride=2, padding=3),
-            nn.ReLU(),
-            nn.AdaptiveAvgPool1d(32),
+            nn.AdaptiveAvgPool2d((4, 4)),
         )
-        self.head = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(128 * 32, 64),
+        self.fc_out = nn.Sequential(
+            nn.Linear(64 * 4 * 4, 128),
             nn.ReLU(),
-            nn.Linear(64, 3),
+            nn.Linear(128, 4),
+            nn.Sigmoid(),
         )
 
-    def forward(self, waveform: torch.Tensor) -> torch.Tensor:
-        if waveform.dim() == 1:
-            waveform = waveform.unsqueeze(0)
-        if waveform.dim() == 2:
-            waveform = waveform.unsqueeze(1)
-        x = waveform[..., : self.num_samples]
-        if x.shape[-1] < self.num_samples:
-            x = nn.functional.pad(x, (0, self.num_samples - x.shape[-1]))
-        raw = self.head(self.features(x))
-        pitch_decay = nn.functional.softplus(raw[:, 0:1]) * 0.02 + 0.02
-        amp_decay = nn.functional.softplus(raw[:, 1:2]) * 0.3 + 0.2
-        drive = nn.functional.softplus(raw[:, 2:3]) * 0.5 + 0.9
-        return torch.cat([pitch_decay, amp_decay, drive], dim=1)
+    def forward(self, mel: torch.Tensor) -> torch.Tensor:
+        if mel.dim() == 3:
+            mel = mel.unsqueeze(1)
+        x = self.conv_stack(mel)
+        x = x.view(x.size(0), -1)
+        return self.fc_out(x)
 
 
 class DDSP808TrainableSystem(nn.Module):
-    """Encoder + differentiable synth for end-to-end spectral training."""
+    """Mel front-end + encoder + differentiable synth (end-to-end training)."""
 
-    def __init__(self, num_samples: int = 8192) -> None:
+    def __init__(
+        self,
+        *,
+        sample_rate: float = 44100.0,
+        duration_sec: float = 2.0,
+        n_mels: int = 128,
+    ) -> None:
         super().__init__()
-        self.encoder = DDSP808Encoder(num_samples=num_samples)
-        self.synth = Differentiable808Synth()
+        self.sample_rate = sample_rate
+        self.mel_transform = T.MelSpectrogram(
+            sample_rate=int(sample_rate),
+            n_fft=2048,
+            n_mels=n_mels,
+        )
+        self.encoder = DDSP808Encoder(n_mels=n_mels)
+        self.synth = Differentiable808Synth(sample_rate=sample_rate, duration_sec=duration_sec)
 
     def forward(self, target_waveform: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        params = self.encoder(target_waveform)
+        if target_waveform.dim() == 1:
+            target_waveform = target_waveform.unsqueeze(0)
+        mel = self.mel_transform(target_waveform).unsqueeze(1)
+        params = self.encoder(mel)
         synth_wav = self.synth(params)
-        return synth_wav, params
+        n = min(target_waveform.shape[-1], synth_wav.shape[-1])
+        return synth_wav[..., :n], params
+
+    def mel_features(self, waveform: torch.Tensor) -> torch.Tensor:
+        if waveform.dim() == 1:
+            waveform = waveform.unsqueeze(0)
+        return self.mel_transform(waveform).unsqueeze(1)

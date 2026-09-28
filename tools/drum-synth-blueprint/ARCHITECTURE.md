@@ -37,10 +37,10 @@ python scripts/train_ddsp_808.py --steps 60
 
 | Module | Role |
 |--------|------|
-| `torch_ddsp/spectral_loss.py` | Mel STFT at FFT **512 / 1024 / 2048**; linear + log-mel MSE |
-| `torch_ddsp/synth_torch.py` | Fully differentiable 808 (exp pitch, integrated phase, tanh) |
-| `torch_ddsp/encoder.py` | `DDSP808Encoder` + `DDSP808TrainableSystem` |
-| `torch_ddsp/pipeline.py` | Smoke training loop + ONNX export |
+| `torch_ddsp/spectral_loss.py` | torchaudio STFT **512 / 1024 / 2048**; normalized linear + log Frobenius |
+| `torch_ddsp/synth_torch.py` | **4** bounded controls → exp pitch sweep + tanh (matches training blueprint) |
+| `torch_ddsp/encoder.py` | Mel Conv2d `DDSP808Encoder`; ONNX **`mel_input` → `synth_parameters`** |
+| `torch_ddsp/pipeline.py` | Adam loop + export `ddsp_808_encoder.onnx` |
 
 ## DDSP → ONNX → JUCE
 
@@ -51,9 +51,9 @@ Agent prompts: [`docs/DDSP_TRAP_PHONK_AGENT_PROMPTS.md`](../../docs/DDSP_TRAP_PH
 ## Data flow
 
 ```text
-acoustic WAV → encoder_stub → synth params
-            → synthesize_808 → mel_loss vs target
-            → (export) ddsp_808_encoder.onnx + C++ oscillator in JUCE
+acoustic WAV → MelSpectrogram → DDSP808Encoder → 4× [0,1] params
+            → Differentiable808Synth → SpectralDistanceLoss vs target
+            → (export) ddsp_808_encoder.onnx + C++ synth in JUCE
 ```
 
 ## Related

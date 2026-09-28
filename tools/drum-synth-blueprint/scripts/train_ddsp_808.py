@@ -16,6 +16,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="DDSP 808 PyTorch train + ONNX export")
     parser.add_argument("--steps", type=int, default=60)
     parser.add_argument(
+        "--duration-sec",
+        type=float,
+        default=2.0,
+        help="Teacher/synth clip length for training smoke",
+    )
+    parser.add_argument(
         "--export",
         type=Path,
         default=Path("artifacts/ddsp_808_encoder.onnx"),
@@ -32,7 +38,7 @@ def main() -> int:
 
     from drum_synth_blueprint.torch_ddsp.pipeline import export_ddsp_808_encoder_onnx, train_ddsp_808_smoke
 
-    metrics = train_ddsp_808_smoke(steps=args.steps)
+    metrics = train_ddsp_808_smoke(steps=args.steps, duration_sec=args.duration_sec)
     if not args.smoke_only:
         out = export_ddsp_808_encoder_onnx(args.export)
         metrics["onnx_path"] = str(out.resolve())

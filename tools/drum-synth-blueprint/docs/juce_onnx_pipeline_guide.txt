@@ -83,22 +83,26 @@ CLI smoke:
 3. ONNX EXPORT (encoder head only in v1)
 --------------------------------------------------------------------------------
 
-Export the conv encoder that maps mono waveform → 3 floats (repo default):
+Export the conv encoder that maps mel spectrogram → 4 normalized floats (repo default):
 
   cd tools/drum-synth-blueprint
   python scripts/train_ddsp_808.py --export artifacts/ddsp_808_encoder.onnx
 
   torch.onnx.export(
       encoder,
-      dummy_waveform,                      # [batch, num_samples]
+      dummy_mel,                             # [batch, 1, 128, time_frames]
       "ddsp_808_encoder.onnx",
-      input_names=["waveform"],
-      output_names=["params"],
-      dynamic_axes={"waveform": {0: "batch", 1: "samples"}, "params": {0: "batch"}},
+      input_names=["mel_input"],
+      output_names=["synth_parameters"],
+      dynamic_axes={"mel_input": {0: "batch", 3: "time_frames"}, "synth_parameters": {0: "batch"}},
   )
 
-Legacy mel-flat MLP sketch (encoder_stub) may use separate filenames; ship
-**ddsp_808_encoder.onnx** for the waveform→params head in this pipeline.
+Denormalize in C++ (matches `Differentiable808Synth`):
+
+  pitch_decay = 10 + p0 * 90
+  amp_decay   = 1 + p1 * 9
+  drive       = 0.1 + p2 * 4.9
+  base_freq   = 40 + p3 * 25
 
 Keep the oscillator + tanh in C++ (deterministic, low CPU) and only run ONNX
 for parameter inference — smaller graph, easier realtime bounds.
@@ -118,8 +122,9 @@ Threading model (required):
 
   [Background / FIFO thread]
     - On new reference sample or UI "analyze":
-        params = onnxSession.Run(waveform);   // ddsp_808_encoder.onnx
-        paramsLatest.store(params);  // lock-free atomic struct
+        mel = computeMel(inputWav);          // 128 bands, same n_fft as training
+        params = onnxSession.Run(mel_input);
+        paramsLatest.store(denormalize808(params));
 
 Memory:
 
