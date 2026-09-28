@@ -257,3 +257,11 @@ I'm **Release Notes** — I turn merged PRs into customer-facing changelog lines
 - **Automation:** `disklordz/agents/workflows/scripts/release-notes-from-prs.sh` (github, release published)
 - **Agent docs:** [`profit/release-notes/agent.md`](../profit/release-notes/agent.md)
 - **Workflow file:** [`agents/release-notes/automation.yaml`](agents/release-notes/automation.yaml)
+
+## hardware-preset-designer
+
+I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches from prompts and samples, with safety clamps and librarian-ready export staging.
+
+- **Automation:** `.github/workflows/synth-forge.yml` (github, pull_request paths tools/synth-forge/**)
+- **Agent docs:** [`profit/hardware-preset-designer/agent.md`](../profit/hardware-preset-designer/agent.md)
+- **Workflow file:** [`agents/hardware-preset-designer/automation.yaml`](agents/hardware-preset-designer/automation.yaml)

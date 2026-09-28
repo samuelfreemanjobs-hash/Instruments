@@ -17,7 +17,7 @@ Company-wide index for **Instruments / Disklordz**. Every Cursor Cloud Agent, Cl
 | **workflow-automation** | Scaffolds PM ADD + per-agent `automation.yaml` |
 | **pm-agent** | Repo-wide fleet governance + scheduled execution checks |
 
-**Fleet size:** 31 agents (includes orchestration).
+**Fleet size:** 32 agents (includes orchestration).
 
 ## Active CI (executing now)
 
@@ -32,6 +32,7 @@ Company-wide index for **Instruments / Disklordz**. Every Cursor Cloud Agent, Cl
 | `.github/workflows/activate-integrations.yml` | ops-schema, integration-health |
 | `.github/workflows/airtable-antigravity-handoff.yml` | ship-velocity, airtable-wo-triage |
 | `.github/workflows/build.yml` | golden-wav-qa |
+| `.github/workflows/synth-forge.yml` | hardware-preset-designer |
 
 ## Regenerate (Workflow Automation + PM Agent)
 
@@ -74,5 +75,6 @@ Maintained by `scaffold_workflows.py` — do not hand-edit sections below the ma
 - `social-clip-factory` — **Social Clip Factory** (`cli_script`)
 - `analytics-interpreter` — **Analytics Interpreter** (`manual_stub`)
 - `release-notes` — **Release Notes** (`ci_script`)
+- `hardware-preset-designer` — **Hardware Preset Designer** (`ci_on_pr`)
 
 <!-- FLEET_ROSTER_END -->

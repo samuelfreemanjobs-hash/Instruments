@@ -14,7 +14,7 @@ jobs:
 
       - name: Repo-wide fleet smoke
         run: |
-          python3 -c "import json; f=json.load(open('.github/agents/fleet.json')); assert f['agent_count'] >= 31, f"
+          python3 -c "import json; f=json.load(open('.github/agents/fleet.json')); assert f['agent_count'] >= 32, f"
           test -f DISKLORDZ_AGENTS.md
 
       - name: Remote integration verify

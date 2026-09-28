@@ -1,0 +1,33 @@
+[project]
+name = "synth-forge"
+version = "0.1.0"
+description = "Hardware preset engineering workstation (batch gen, MIDI, cloning)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.32.0",
+  "pydantic>=2.0",
+  "numpy>=1.26.0",
+  "scipy>=1.11.0",
+  "mido>=1.3.0",
+  "httpx>=0.27.0",
+  "python-multipart>=0.0.9",
+]
+
+[project.optional-dependencies]
+audio = ["sounddevice>=0.5.0", "python-rtmidi>=1.5.0"]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.24.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["synth_forge*"]

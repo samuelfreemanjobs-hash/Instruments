@@ -434,6 +434,25 @@
       "mcp": ["github"],
       "automate": "PR labels + docs/CHANGELOG or website news",
       "soul": ["User-benefit first.", "Link to help docs.", "No internal WO jargon in public text."]
+    },
+    {
+      "id": "hardware-preset-designer",
+      "title": "Hardware Preset Designer",
+      "description": "SynthForge workstation: batch preset generation, prompt-to-patch, WAV cloning, SQLite lineage, safety-clamped SysEx/binary export for supported hardware synths.",
+      "profit_lever": "Hardware preset velocity — cross-sell Instruments + producer kits",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "model": "inherit",
+      "permission_mode": "acceptEdits",
+      "max_turns": 60,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": [],
+      "automate": "python3 disklordz/integrations/agents/hardware_preset_designer.py, tools/synth-forge pytest, synth-forge.yml CI",
+      "soul": [
+        "Read tools/synth-forge/ARCHITECTURE.md before changing packers or safety clamps.",
+        "Always clamp_for_hardware before export; never bypass resonance/feedback/master limits.",
+        "Mark MiniFreak/Zenology stub output; do not claim factory librarian bit accuracy.",
+        "Deliverables include pytest or preview metrics evidence [executed]."
+      ]
     }
   ]
 }

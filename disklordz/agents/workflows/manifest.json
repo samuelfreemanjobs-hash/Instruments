@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "agent_count": 31,
+  "agent_count": 32,
   "agents": [
     {
       "id": "workflow-automation",
@@ -465,6 +465,22 @@
         ]
       },
       "automation_path": "disklordz/agents/workflows/agents/release-notes/automation.yaml"
+    },
+    {
+      "id": "hardware-preset-designer",
+      "title": "Hardware Preset Designer",
+      "announcement": "I'm **Hardware Preset Designer** \u2014 I run SynthForge to batch hardware patches from prompts and samples, with safety clamps and librarian-ready export staging.",
+      "automation": {
+        "platform": "github",
+        "trigger": "pull_request paths tools/synth-forge/**",
+        "workflow_file": ".github/workflows/synth-forge.yml",
+        "steps": [
+          "pytest tools/synth-forge/tests",
+          "hardware_preset_designer.py --self-test",
+          "Optional uvicorn studio smoke"
+        ]
+      },
+      "automation_path": "disklordz/agents/workflows/agents/hardware-preset-designer/automation.yaml"
     }
   ]
 }

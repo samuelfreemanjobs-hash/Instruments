@@ -7,16 +7,16 @@ Single place to see **where we are going** and **what is done**. PM Agent refres
 ---
 
 <!-- ROADMAP_PROGRESS_BEGIN -->
-*Last updated:* 2026-09-28 12:13 UTC · regenerate: `python3 scripts/update-roadmap-progress.py`
+*Last updated:* 2026-09-28 18:07 UTC · regenerate: `python3 scripts/update-roadmap-progress.py`
 
 | Metric | Value |
 |--------|------:|
-| **Profit agents (documented)** | 31 |
-| **Agents with CI or runtime activation** | 17 / 31 |
+| **Profit agents (documented)** | 32 |
+| **Agents with CI or runtime activation** | 18 / 32 |
 | **OSS integrations (manifest)** | 35 total · 34 integrated · 0 partial · 1 external |
 | **Fleet autopilot** | `agent-fleet-governance.yml` · `agent-fleet-execute.yml` · `agent-fleet-health.yml` (on `main` after merge) |
 
-**Agent activation breakdown:** `ci_event` ×2, `ci_manual` ×2, `ci_on_pr` ×1, `ci_on_push` ×2, `ci_scheduled` ×2, `ci_script` ×1, `cli` ×1, `cli_local` ×1, `cli_script` ×1, `manual_doc` ×1, `manual_external` ×2, `manual_gate` ×1, `manual_skill` ×1, `manual_stub` ×4, `runtime_api` ×4, `runtime_build` ×1, `runtime_env` ×1, `runtime_inngest` ×2, `runtime_stripe` ×1
+**Agent activation breakdown:** `ci_event` ×2, `ci_manual` ×2, `ci_on_pr` ×2, `ci_on_push` ×2, `ci_scheduled` ×2, `ci_script` ×1, `cli` ×1, `cli_local` ×1, `cli_script` ×1, `manual_doc` ×1, `manual_external` ×2, `manual_gate` ×1, `manual_skill` ×1, `manual_stub` ×4, `runtime_api` ×4, `runtime_build` ×1, `runtime_env` ×1, `runtime_inngest` ×2, `runtime_stripe` ×1
 <!-- ROADMAP_PROGRESS_END -->
 
 ---

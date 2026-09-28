@@ -35,6 +35,7 @@ Repo-wide companion to [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) and [PM ADD
 | `social-clip-factory` | Social Clip Factory | `cli_script` | `disklordz/agents/workflows/scripts/social-clip-stub.sh` | `.github/skills/disklordz-social-clip-factory/SKILL.md` |
 | `analytics-interpreter` | Analytics Interpreter | `manual_stub` | `disklordz/agents/workflows/n8n/analytics-weekly-stub.json` | `.github/skills/disklordz-analytics-interpreter/SKILL.md` |
 | `release-notes` | Release Notes | `ci_script` | `disklordz/agents/workflows/scripts/release-notes-from-prs.sh` | `.github/skills/disklordz-release-notes/SKILL.md` |
+| `hardware-preset-designer` | Hardware Preset Designer | `ci_on_pr` | `.github/workflows/synth-forge.yml` | `.github/skills/disklordz-hardware-preset-designer/SKILL.md` |
 
 ### Activation legend
 

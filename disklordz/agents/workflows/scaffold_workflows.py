@@ -49,6 +49,7 @@ ACTIVATION: dict[str, str] = {
     "social-clip-factory": "cli_script",
     "analytics-interpreter": "manual_stub",
     "release-notes": "ci_script",
+    "hardware-preset-designer": "ci_on_pr",
 }
 
 CI_WORKFLOWS = [
@@ -61,6 +62,7 @@ CI_WORKFLOWS = [
     (".github/workflows/activate-integrations.yml", "ops-schema, integration-health"),
     (".github/workflows/airtable-antigravity-handoff.yml", "ship-velocity, airtable-wo-triage"),
     (".github/workflows/build.yml", "golden-wav-qa"),
+    (".github/workflows/synth-forge.yml", "hardware-preset-designer"),
 ]
 
 # First-person announcements + one-line help for Disklordz
@@ -188,6 +190,10 @@ ANNOUNCE: dict[str, str] = {
     "release-notes": (
         "I'm **Release Notes** — I turn merged PRs into customer-facing changelog lines "
         "so upgrades feel trustworthy."
+    ),
+    "hardware-preset-designer": (
+        "I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches from "
+        "prompts and samples, with safety clamps and librarian-ready export staging."
     ),
 }
 
@@ -381,6 +387,16 @@ WORKFLOWS: dict[str, dict] = {
         "trigger": "release published",
         "workflow_file": "disklordz/agents/workflows/scripts/release-notes-from-prs.sh",
         "steps": ["gh pr list merged", "Customer-facing MD"],
+    },
+    "hardware-preset-designer": {
+        "platform": "github",
+        "trigger": "pull_request paths tools/synth-forge/**",
+        "workflow_file": ".github/workflows/synth-forge.yml",
+        "steps": [
+            "pytest tools/synth-forge/tests",
+            "hardware_preset_designer.py --self-test",
+            "Optional uvicorn studio smoke",
+        ],
     },
 }
 

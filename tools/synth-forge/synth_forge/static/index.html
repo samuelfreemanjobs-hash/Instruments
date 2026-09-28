@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SynthForge Studio</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>SynthForge</h1>
+      <p class="tagline">Batch presets · prompt copilot · cloner · librarian staging</p>
+    </header>
+    <main class="grid">
+      <section class="panel">
+        <h2>Batch generate</h2>
+        <label>Synth
+          <select id="synthSelect"></select>
+        </label>
+        <label>Category <input id="category" value="luxury_west_coast" /></label>
+        <label>Count <input id="count" type="number" min="1" max="32" value="8" /></label>
+        <button id="btnBatch">Generate batch</button>
+        <pre id="batchOut"></pre>
+      </section>
+      <section class="panel">
+        <h2>Prompt copilot</h2>
+        <div class="chips">
+          <button type="button" class="chip" data-prompt="Cardo luxury cruising pad">Cardo pad</button>
+          <button type="button" class="chip" data-prompt="Mannie Fresh bounce brass stab">Bounce brass</button>
+          <button type="button" class="chip" data-prompt="phonk reese bass aggressive">Phonk Reese</button>
+        </div>
+        <textarea id="prompt" rows="3" placeholder="Describe the patch…"></textarea>
+        <button id="btnPrompt">Prompt → patches</button>
+        <pre id="promptOut"></pre>
+      </section>
+      <section class="panel">
+        <h2>Sound cloner</h2>
+        <div id="dropzone" class="dropzone">Drop WAV or click to upload</div>
+        <input id="fileInput" type="file" accept="audio/wav" hidden />
+        <pre id="cloneOut"></pre>
+      </section>
+      <section class="panel wide">
+        <h2>Memory vault</h2>
+        <button id="btnRefresh">Refresh</button>
+        <ul id="vault"></ul>
+      </section>
+      <section class="panel">
+        <h2>Audition keyboard</h2>
+        <div id="keyboard" class="keyboard"></div>
+        <p id="keyStatus">Click a key to log MIDI note (browser preview via API).</p>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

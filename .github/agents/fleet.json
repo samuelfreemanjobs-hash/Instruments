@@ -10,7 +10,7 @@
     "workflow-automation",
     "pm-agent"
   ],
-  "agent_count": 31,
+  "agent_count": 32,
   "agents": [
     {
       "id": "workflow-automation",
@@ -568,6 +568,25 @@
       "profit_entry": "disklordz/agents/profit/release-notes/agent.md",
       "copilot_skill": ".github/skills/disklordz-release-notes/SKILL.md",
       "automation_path": "disklordz/agents/workflows/agents/release-notes/automation.yaml"
+    },
+    {
+      "id": "hardware-preset-designer",
+      "title": "Hardware Preset Designer",
+      "activation": "ci_on_pr",
+      "announcement": "I'm **Hardware Preset Designer** \u2014 I run SynthForge to batch hardware patches from prompts and samples, with safety clamps and librarian-ready export staging.",
+      "automation": {
+        "platform": "github",
+        "trigger": "pull_request paths tools/synth-forge/**",
+        "workflow_file": ".github/workflows/synth-forge.yml",
+        "steps": [
+          "pytest tools/synth-forge/tests",
+          "hardware_preset_designer.py --self-test",
+          "Optional uvicorn studio smoke"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/hardware-preset-designer/agent.md",
+      "copilot_skill": ".github/skills/disklordz-hardware-preset-designer/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/hardware-preset-designer/automation.yaml"
     }
   ],
   "ci_workflows": [
@@ -606,6 +625,10 @@
     {
       "path": ".github/workflows/build.yml",
       "serves": "golden-wav-qa"
+    },
+    {
+      "path": ".github/workflows/synth-forge.yml",
+      "serves": "hardware-preset-designer"
     }
   ]
 }

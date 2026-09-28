@@ -67,3 +67,7 @@ Local **command center** (drop-in folder + AI-friendly `error_log.txt`): [vst-te
 
 - Add a new tool: `add_executable` in `CMakeLists.txt`, document it in this file and in root [ARCHITECTURE.md](../ARCHITECTURE.md).
 - Shared WAV logic belongs in `WavCompare.h` (header-only) to keep `SpectralDiff` thin.
+
+## SynthForge (Python)
+
+Preset batching, cloning, and hardware export staging: [synth-forge/ARCHITECTURE.md](synth-forge/ARCHITECTURE.md). Not part of CMake; CI via [`.github/workflows/synth-forge.yml`](../.github/workflows/synth-forge.yml).

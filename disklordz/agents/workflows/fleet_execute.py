@@ -29,7 +29,7 @@ def main() -> int:
 
     fleet = json.loads(FLEET.read_text(encoding="utf-8"))
     count = fleet.get("agent_count", 0)
-    assert count >= 31, f"expected >=31 agents, got {count}"
+    assert count >= 32, f"expected >=32 agents, got {count}"
 
     run(["python3", "disklordz/agents/profit/scaffold_agents.py", "--check"])
     run(["python3", "disklordz/agents/workflows/scaffold_workflows.py"])

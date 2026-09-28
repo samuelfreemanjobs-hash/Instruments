@@ -72,6 +72,18 @@ streamlit run vst-testing-ops/app.py                       # operations dashboar
 
 - [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
 
+## SynthForge (preset workstation)
+
+```bash
+cd tools/synth-forge && python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt && pip install -e . && pytest tests -v
+uvicorn synth_forge.main:app --reload --port 8000
+```
+
+See [tools/synth-forge/ARCHITECTURE.md](tools/synth-forge/ARCHITECTURE.md).
+
+**Fleet agent:** `hardware-preset-designer` — read `disklordz/agents/profit/hardware-preset-designer/agent.md` or skill `disklordz-hardware-preset-designer`. CLI: `python3 disklordz/integrations/agents/hardware_preset_designer.py --help`.
+
 ## Git
 
 - Do not force-push or deploy production unless the user asks.  
