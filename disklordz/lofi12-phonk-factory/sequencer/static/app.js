@@ -10,12 +10,23 @@ import {
   restartBacking,
   hasBacking,
 } from "./audio_engine.js";
+import { drawWaveformFromBuffer } from "./waveform_viz.js";
+import { bindFaderLeds } from "./fader_led.js";
 
 const STEPS = 16;
 const TRACK_NAMES = ["Kick", "Snare", "Hat", "Cowbell", "Perc", "OpenHat"];
 const STEM_IDS = ["kick", "snare", "hat", "cowbell", "perc", "openhat"];
 const DEFAULT_NOTES = [36, 39, 42, 45, 48, 46]; // slots 1,4,7,10,13,8
 const SLOT_BASE = 36;
+const PATTERN_BANK_KEY = "lofi12_pattern_bank_v1";
+/** Fictional UI labels for lane ids returned by the API (no artist names in status). */
+const LANE_UI_LABELS = {
+  juicy_j: "Hard Dirt 808",
+  dj_paul: "Bounce & Cowbell",
+  dj_toomp: "Traproom Tape",
+  dj_zirk: "Zirk bounce",
+  memphis_trinity: "Memphis Insanity",
+};
 
 /** @type {{ on: boolean, note: number, velocity: number }[][]} */
 let pattern = TRACK_NAMES.map((_, ti) =>
@@ -28,7 +39,7 @@ let pattern = TRACK_NAMES.map((_, ti) =>
 
 let currentStep = -1;
 let playing = false;
-let timerId = null;
+let stepTimeoutId = null;
 /** @type {MIDIOutput | null} */
 let midiOut = null;
 let clockTimer = null;
@@ -100,7 +111,7 @@ function buildTrackTabs() {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "track-tab" + (ti === focusedTrack ? " active" : "");
-    btn.textContent = name;
+    btn.textContent = `${name.toUpperCase()} [${ti + 1}]`;
     btn.addEventListener("click", () => {
       focusedTrack = ti;
       selected = { ti, si: selected.si };
@@ -123,6 +134,10 @@ function buildSingleTrackGrid() {
     btn.dataset.track = String(ti);
     btn.dataset.step = String(si);
     btn.addEventListener("click", (ev) => onStepClick(ti, si, ev));
+    const num = document.createElement("span");
+    num.className = "step-num";
+    num.textContent = String(si + 1);
+    btn.appendChild(num);
     singleTrackGrid.appendChild(btn);
   }
 }
@@ -223,8 +238,87 @@ function onStepClick(ti, si, ev) {
   syncGridUi();
 }
 
-function setStatus(msg) {
+function setStatus(msg, busy = false) {
   statusEl.textContent = msg;
+  statusEl.classList.toggle("busy", busy);
+}
+
+function updateSwingDisplay() {
+  const swingEl = document.getElementById("swing");
+  const disp = document.getElementById("swingDisplay");
+  if (swingEl && disp) disp.textContent = `${swingEl.value}%`;
+}
+
+function updatePatDisplay() {
+  const el = document.getElementById("patDisplay");
+  if (!el) return;
+  if (playing && currentStep >= 0) {
+    el.textContent = String(currentStep + 1).padStart(2, "0");
+    return;
+  }
+  const slot = document.getElementById("patternSlot");
+  const idx = slot ? Number(slot.value) : 0;
+  el.textContent = String(idx + 1).padStart(2, "0");
+}
+
+function refreshFxInputs() {
+  ["fxFilter", "fxReverb", "fxTape", "fxDrive", "fxCassette", "fxBitcrush", "fxGain"].forEach(
+    (id) => {
+      document.getElementById(id)?.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+  );
+}
+
+function loopStatusFromMeta(meta) {
+  const preset = presetCache.find((p) => p.id === selectedPresetId());
+  const laneLabel =
+    (meta.memphisLane && LANE_UI_LABELS[meta.memphisLane]) ||
+    preset?.label ||
+    "Memphis groove";
+  const engine = meta.drumEngineLabel || meta.drumEngine || "phonk bus";
+  const bpm = meta.bpm ?? bpmEl.value;
+  return `${laneLabel} · ${engine} · ${bpm} BPM`;
+}
+
+async function paintWaveform(buf) {
+  const canvas = document.getElementById("waveCanvas");
+  if (canvas && buf) await drawWaveformFromBuffer(canvas, buf);
+}
+
+function readPatternBank() {
+  try {
+    return JSON.parse(localStorage.getItem(PATTERN_BANK_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function savePatternSlot() {
+  const idx = Number(document.getElementById("patternSlot").value);
+  const bank = readPatternBank();
+  const payload = patternToJson();
+  payload.swing = Number(document.getElementById("swing").value) || 54;
+  bank[String(idx)] = payload;
+  localStorage.setItem(PATTERN_BANK_KEY, JSON.stringify(bank));
+  updatePatDisplay();
+  setStatus(`Saved pattern to bank ${String(idx + 1).padStart(2, "0")}`);
+}
+
+function loadPatternSlot() {
+  const idx = Number(document.getElementById("patternSlot").value);
+  const bank = readPatternBank();
+  const data = bank[String(idx)];
+  if (!data) {
+    setStatus(`Bank ${String(idx + 1).padStart(2, "0")} is empty — use Save slot first`);
+    return;
+  }
+  loadFromJson(data);
+  if (data.swing != null) {
+    document.getElementById("swing").value = String(data.swing);
+    updateSwingDisplay();
+  }
+  updatePatDisplay();
+  setStatus(`Loaded bank ${String(idx + 1).padStart(2, "0")}`);
 }
 
 async function refreshMidi() {
@@ -255,16 +349,38 @@ function sendNote(channel, note, velocity, durationMs) {
   previewNote(note, velocity, durationMs / 1000);
 }
 
-function stepDurationMs() {
+function baseStepMs() {
   return (60000 / (Number(bpmEl.value) || 84)) / 4;
+}
+
+function swingRatio() {
+  const swing = Number(document.getElementById("swing")?.value) || 50;
+  return Math.max(0, Math.min(1, (swing - 50) / 12));
+}
+
+function stepDelayMs(stepIndex) {
+  const base = baseStepMs();
+  const r = swingRatio();
+  if (r <= 0) return base;
+  if (stepIndex % 2 === 1) return base * (1 + r * 0.42);
+  return base * (1 - r * 0.42);
 }
 
 function playStep(si) {
   pattern.forEach((track, ti) => {
     const cell = track[si];
     if (!cell.on) return;
-    sendNote(Math.min(ti, 15), cell.note, cell.velocity, Math.min(120, stepDurationMs() * 0.85));
+    sendNote(Math.min(ti, 15), cell.note, cell.velocity, Math.min(120, baseStepMs() * 0.85));
   });
+}
+
+function scheduleStep() {
+  if (!playing) return;
+  currentStep = (currentStep + 1) % STEPS;
+  playStep(currentStep);
+  syncGridUi();
+  updatePatDisplay();
+  stepTimeoutId = setTimeout(scheduleStep, stepDelayMs(currentStep));
 }
 
 async function startTransport() {
@@ -273,26 +389,22 @@ async function startTransport() {
   if (document.getElementById("backingOn").checked && hasBacking()) {
     restartBacking(true);
   }
+  if (stepTimeoutId) clearTimeout(stepTimeoutId);
   playing = true;
   currentStep = -1;
   sendFxCc();
-  const tick = () => {
-    currentStep = (currentStep + 1) % STEPS;
-    playStep(currentStep);
-    syncGridUi();
-  };
-  tick();
-  timerId = setInterval(tick, stepDurationMs());
+  scheduleStep();
   setStatus(document.getElementById("backingOn").checked ? "Playing pattern + backing" : "Playing…");
 }
 
 function stopTransport() {
   playing = false;
-  if (timerId) clearInterval(timerId);
-  timerId = null;
+  if (stepTimeoutId) clearTimeout(stepTimeoutId);
+  stepTimeoutId = null;
   if (clockTimer) clearInterval(clockTimer);
   currentStep = -1;
   syncGridUi();
+  updatePatDisplay();
   setStatus("Stopped");
 }
 
@@ -301,6 +413,7 @@ function patternToJson() {
     format: "LOFI12_STEP_PATTERN",
     version: 2,
     bpm: Number(bpmEl.value) || 84,
+    swing: Number(document.getElementById("swing")?.value) || 54,
     steps: STEPS,
     fx: fxValues(),
     tracks: TRACK_NAMES.map((name, ti) => ({
@@ -315,6 +428,11 @@ function patternToJson() {
 function loadFromJson(obj) {
   if (!obj.tracks) return;
   bpmEl.value = obj.bpm || 84;
+  if (obj.swing != null) {
+    const swingEl = document.getElementById("swing");
+    if (swingEl) swingEl.value = String(obj.swing);
+    updateSwingDisplay();
+  }
   if (obj.fx) {
     document.getElementById("fxFilter").value = obj.fx.filter ?? 0.65;
     document.getElementById("fxReverb").value = obj.fx.reverb ?? 0.25;
@@ -325,6 +443,7 @@ function loadFromJson(obj) {
     document.getElementById("fxGain").value = obj.fx.gain ?? 0.75;
   }
   updateFxModeTag();
+  refreshFxInputs();
   obj.tracks.forEach((tr, ti) => {
     if (ti >= TRACK_NAMES.length) return;
     if (tr.defaultNote) DEFAULT_NOTES[ti] = tr.defaultNote;
@@ -365,41 +484,51 @@ function downloadBackingBuffer(buf) {
 
 async function generateBacking(variationOverride) {
   const prompt = document.getElementById("groovePrompt").value || "juicy j memphis phonk 84";
-  setStatus("Rendering backing loop…");
-  const variation =
-    typeof variationOverride === "number" ? variationOverride : loopVariation;
-  const body = {
-    prompt,
-    bpm: Number(bpmEl.value) || 84,
-    bars: 2,
-    variation,
-    fx: fxValues(),
-  };
-  const preset = selectedPresetId();
-  if (preset) body.preset = preset;
-  const res = await fetch("/api/render_loop", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const metaRaw = res.headers.get("X-Loop-Meta");
-  const buf = await res.arrayBuffer();
-  lastBackingBuffer = buf;
-  if (metaRaw) {
-    try {
-      const meta = JSON.parse(metaRaw);
-      if (meta.bpm) bpmEl.value = meta.bpm;
-      if (meta.memphisLaneName) {
-        setStatus(`Backing: ${meta.memphisLaneName} · ${meta.drumEngine} · ${meta.bpm} BPM`);
-      }
-    } catch (_) {}
+  const genBtn = document.getElementById("genNewLoop");
+  genBtn?.classList.add("is-generating");
+  setStatus("Rendering backing loop…", true);
+  try {
+    const variation =
+      typeof variationOverride === "number" ? variationOverride : loopVariation;
+    const body = {
+      prompt,
+      bpm: Number(bpmEl.value) || 84,
+      bars: 2,
+      variation,
+      fx: fxValues(),
+    };
+    const preset = selectedPresetId();
+    if (preset) body.preset = preset;
+    const res = await fetch("/api/render_loop", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const metaRaw = res.headers.get("X-Loop-Meta");
+    const buf = await res.arrayBuffer();
+    lastBackingBuffer = buf;
+    let metaLine = "";
+    if (metaRaw) {
+      try {
+        const meta = JSON.parse(metaRaw);
+        if (meta.bpm) bpmEl.value = meta.bpm;
+        metaLine = loopStatusFromMeta(meta);
+      } catch (_) {}
+    }
+    await paintWaveform(buf);
+    await playBackingArrayBuffer(buf, true, false);
+    if (document.getElementById("autoDownloadWav").checked) {
+      downloadBackingBuffer(buf);
+    }
+    setStatus(
+      metaLine
+        ? `Loop ready — ${metaLine}. Press Play when ready (no auto-play).`
+        : "Loop rendered — stored in memory. Press Play when ready (no auto-play)."
+    );
+    return variation;
+  } finally {
+    genBtn?.classList.remove("is-generating");
   }
-  await playBackingArrayBuffer(buf, true, false);
-  if (document.getElementById("autoDownloadWav").checked) {
-    downloadBackingBuffer(buf);
-  }
-  setStatus("Loop rendered — stored in memory. Press Play when ready (no auto-play).");
-  return variation;
 }
 
 async function generateNewDrumLoop() {
@@ -493,6 +622,7 @@ function applyPresetFromUi() {
     sendFxCc();
   }
   updateFxModeTag();
+  refreshFxInputs();
   setStatus(`Preset: ${p.label}`);
 }
 
@@ -607,9 +737,23 @@ document.getElementById("loadBackingFile").onchange = async (ev) => {
   if (!file) return;
   const buf = await file.arrayBuffer();
   lastBackingBuffer = buf;
+  await paintWaveform(buf);
   await playBackingArrayBuffer(buf, true, false);
   setStatus(`Loaded ${file.name} — press Play when ready`);
 };
+
+document.getElementById("swing")?.addEventListener("input", () => updateSwingDisplay());
+document.getElementById("patternSlot")?.addEventListener("change", () => updatePatDisplay());
+document.getElementById("saveSlot")?.addEventListener("click", () => savePatternSlot());
+document.getElementById("loadSlot")?.addEventListener("click", () => loadPatternSlot());
+
+document.querySelectorAll(".nav-item[data-scroll]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const target = document.getElementById(btn.dataset.scroll || "");
+    target?.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (target?.id) window.location.hash = target.id;
+  });
+});
 
 buildTrackTabs();
 buildSingleTrackGrid();
@@ -618,3 +762,6 @@ updateFxModeTag();
 buildGrid();
 loadPresets();
 refreshMidi();
+bindFaderLeds();
+updateSwingDisplay();
+updatePatDisplay();

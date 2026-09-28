@@ -15,7 +15,7 @@
 | Version | Tool | Date | Spec status |
 |---------|------|------|-------------|
 | v0 | Cursor code-first | 2026-09 | Superseded |
-| **v1-stitch** | Stitch | 2026-09-28 | **DRAFT v1-stitch** — awaiting LOCK after decisions |
+| **v1-stitch** | Stitch | 2026-09-28 | **LOCKED v1-stitch** — Frame A implemented in `sequencer/static/` |
 
 ## Next step
 

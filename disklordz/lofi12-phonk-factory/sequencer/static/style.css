@@ -128,6 +128,65 @@ body {
   gap: 0.5rem;
 }
 
+.lcd-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.35rem 0.5rem;
+  background: #000;
+  border: 1px solid var(--border-glow);
+  border-radius: 8px;
+  min-width: 3.5rem;
+}
+
+.lcd-block.swing-block {
+  min-width: 7rem;
+}
+
+.lcd-block select {
+  background: #000;
+  border: 1px solid var(--border-glow);
+  color: var(--accent-mint);
+  border-radius: 6px;
+  font-family: var(--font-ui);
+  padding: 0.2rem;
+}
+
+.lcd-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.lcd-label.dim {
+  display: inline;
+}
+
+.lcd-readout {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--accent-cyan);
+  line-height: 1;
+}
+
+.lcd-readout.small {
+  font-size: 0.75rem;
+  font-family: var(--font-ui);
+  color: var(--accent-mint);
+}
+
+.lcd-bpm {
+  font-family: var(--font-display);
+  width: 4.5rem;
+  background: transparent;
+  border: none;
+  color: var(--accent-cyan);
+  font-size: 1.1rem;
+  padding: 0;
+}
+
 .lcd input {
   font-family: var(--font-ui);
   width: 4.5rem;
@@ -136,6 +195,11 @@ body {
   color: var(--accent-mint);
   border-radius: 6px;
   padding: 0.35rem;
+}
+
+.swing-block input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent-cyan);
 }
 
 .lcd.dim {
@@ -204,18 +268,21 @@ button.wide {
   color: var(--accent-mint);
 }
 
-.wave-placeholder {
-  height: 56px;
+.wave-canvas {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  height: 72px;
   margin: 0.75rem 0;
   border-radius: 8px;
-  background: repeating-linear-gradient(
-    90deg,
-    rgba(0, 229, 255, 0.15) 0,
-    rgba(125, 255, 179, 0.25) 4px,
-    transparent 4px,
-    transparent 8px
-  );
   border: 1px solid var(--border-glow);
+  background: var(--bg-deep);
+}
+
+.prompt-details {
+  margin: 0.35rem 0;
+  color: var(--text-dim);
+  font-size: 0.75rem;
 }
 
 .prompt-input {
@@ -247,6 +314,40 @@ button.wide {
   gap: 0.35rem;
   min-height: 160px;
   align-items: flex-end;
+}
+
+.fader-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 0.35rem;
+}
+
+.led-col {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+  height: 120px;
+  justify-content: flex-start;
+}
+
+.led-seg {
+  width: 10px;
+  height: 7px;
+  border-radius: 2px;
+  background: rgba(107, 114, 128, 0.35);
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+.led-seg.on {
+  background: var(--accent-cyan);
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.55);
+}
+
+.led-seg.on:nth-last-child(-n + 3) {
+  background: var(--accent-mint);
+  box-shadow: 0 0 6px rgba(125, 255, 179, 0.45);
 }
 
 .fader {
@@ -323,6 +424,15 @@ button.wide {
   font-size: 0.65rem;
 }
 
+.step-num {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 0.55rem;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
 .step.on,
 .single-step.on {
   background: rgba(0, 229, 255, 0.2);
@@ -388,6 +498,33 @@ button.wide {
   margin-top: 1rem;
   color: var(--text-dim);
   font-size: 0.8rem;
+}
+
+.status.busy::after {
+  content: " …";
+  animation: pulse-dots 1s steps(3, end) infinite;
+}
+
+@keyframes pulse-dots {
+  0% {
+    content: " .";
+  }
+  33% {
+    content: " ..";
+  }
+  66% {
+    content: " ...";
+  }
+}
+
+button.primary.is-generating {
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.fx-rack:target {
+  outline: 2px solid rgba(0, 229, 255, 0.35);
+  outline-offset: 4px;
 }
 
 .file-btn {
