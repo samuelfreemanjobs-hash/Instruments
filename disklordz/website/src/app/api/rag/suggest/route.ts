@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { parseGenerationSpec } from "@/lib/generation/generation-spec";
+import { polishPromptWithAi } from "@/lib/rag/ai-suggest";
+import { retrieveHybrid } from "@/lib/rag/hybrid-retrieve";
 import {
   exemplarToSpecHints,
   mergePromptWithSnippets,
   pickRandomExemplar,
-  retrieveSnippets,
   suggestExemplar,
 } from "@/lib/rag/retrieve";
 import { getPreset, STYLE_PRESETS } from "@/lib/presets";
@@ -15,6 +16,7 @@ type Body = {
   presetId?: string;
   query?: string;
   applySpec?: boolean;
+  useAiPolish?: boolean;
 };
 
 export async function POST(req: NextRequest) {
@@ -36,15 +38,22 @@ export async function POST(req: NextRequest) {
     mode === "random" ? pickRandomExemplar(presetId) : suggestExemplar(query || "drums", presetId);
 
   const effectivePreset = exemplar.presetId ?? presetId;
-  const snippets = retrieveSnippets(
+  const { snippets, retrieval } = await retrieveHybrid(
     `${query} ${exemplar.prompt} ${exemplar.tags.join(" ")}`,
     3,
   );
 
-  const prompt =
+  let prompt =
     mode === "suggest" && query.length >= 3
       ? mergePromptWithSnippets(query, snippets)
       : exemplar.prompt;
+
+  if (body.useAiPolish !== false) {
+    const polished = await polishPromptWithAi(prompt, snippets);
+    if (polished) {
+      prompt = polished;
+    }
+  }
 
   const specPartial = exemplarToSpecHints(exemplar, effectivePreset);
   const parsed = parseGenerationSpec(specPartial, effectivePreset);
@@ -60,6 +69,6 @@ export async function POST(req: NextRequest) {
       tags: exemplar.tags,
     },
     snippets: snippets.map((s) => ({ id: s.id, text: s.text })),
-    retrieval: "keyword_v1",
+    retrieval,
   });
 }

@@ -1,9 +1,7 @@
 import { randomUUID } from "crypto";
 
-import {
-  provenanceForEngine,
-  renderSampleForEngine,
-} from "@/lib/generation/engine-render";
+import { provenanceForEngine, renderSampleForEngine } from "@/lib/generation/engine-render";
+import { renderSampleViaRegistry } from "@/lib/generation/engines/registry";
 import type { GenerationSpec } from "@/lib/generation/generation-spec";
 import { renderDrumLoop } from "@/lib/generation/loop-render";
 import { renderSfx } from "@/lib/generation/sfx-render";
@@ -76,7 +74,12 @@ export async function buildFactoryKit(
     );
   } else {
     for (const name of SAMPLE_NAMES) {
-      const pcm = renderSampleForEngine(name, params, generationSpec.engine);
+      const pcm = await renderSampleViaRegistry(
+        name,
+        params,
+        generationSpec,
+        prompt,
+      );
       const filename = `${name}.wav`;
       samples.push(
         await writeSampleAsset(kitId, baseUrl, {
