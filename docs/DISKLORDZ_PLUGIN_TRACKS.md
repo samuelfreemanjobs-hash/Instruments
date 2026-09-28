@@ -1,6 +1,6 @@
 # Disklordz plugin tracks (Plugin Lab)
 
-**PM:** Airtable · **JUCE factory implementer:** Cursor Cloud Agent · **HISE sketch lane (D):** Antigravity (local Windows) · **Advisory:** Grok Plugin team  
+**PM:** Airtable · **JUCE factory implementer:** Cursor Cloud Agent · **HISE sketch lane (D):** Antigravity (local Windows) · **Closed-loop orchestration:** Grok Plugin team ([GROK_CLOSED_LOOP_ENGINE.md](GROK_CLOSED_LOOP_ENGINE.md))  
 
 **App track (SaaS):** [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md) — separate lane; do not mix plugin WOs with web WOs in one PR.
 
@@ -39,7 +39,7 @@ Example week during Junova push:
 
 ## Grok Plugin team prompt (attach to team)
 
-Use the charter in [GROK_PLUGIN_TEAM.md](GROK_PLUGIN_TEAM.md). Add for this week:
+Use [GROK_PLUGIN_TEAM.md](GROK_PLUGIN_TEAM.md) and [GROK_CLOSED_LOOP_ENGINE.md](GROK_CLOSED_LOOP_ENGINE.md). Add for this week:
 
 > Continue **Junova-X** from `Junova-X/REPO_HANDOFF.md`. Parallel: **NovaDrum** MVP in `vst-tr808/plugin-spec-mvp.md` — voice schematics for BD→CP first. Do not implement JD Upgraded kernel sharing. Output Airtable-ready WOs with `[Plugin][Junova-X]` or `[Plugin][NovaDrum]` prefixes.
 
