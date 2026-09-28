@@ -33,16 +33,23 @@ index.html (inline JS)
 | Path | Role |
 |------|------|
 | `index.html` | UI, DSP, WAV encoder (self-contained) |
+| `scripts/generate_kick.py` | CLI Engine B kick (parity with `synthesizeKick`) |
+| `scripts/generate_snare.py` | CLI Engine B snare (parity with `synthesizeSnare`) |
+| `scripts/smoke.py` | RIFF / 24-bit render smoke test |
+| `docs/` | Gemini Gem instructions + research → knob mapping |
 
 Legacy modular `js/` split removed in favor of this Gemini reference build.
 
 ## Extension points
 
-- Extract `synthesizeKick` / `synthesizeSnare` to shared module for unit tests.
+- Optional kick click/sub layers (research 1–2.8 kHz / 35–55 Hz) as extra oscillators.
 - Host under `disklordz/website/public/memphis-architect/` for production.
-- Engine A patch sheets remain a separate Gemini Gem workflow.
+- Engine A patch sheets: [docs/GEM_MEMPHIS-660_KICK.md](docs/GEM_MEMPHIS-660_KICK.md), [docs/GEM_MEMPHIS-DR660_SNARE.md](docs/GEM_MEMPHIS-DR660_SNARE.md).
 
 ## Related docs
 
+- [docs/README.md](docs/README.md) — Gem setup and research index
+- [docs/RESEARCH_TO_ENGINE_B.md](docs/RESEARCH_TO_ENGINE_B.md)
+- [docs/808_SNARE_MEMPHIS_SYSTEMATIC.md](docs/808_SNARE_MEMPHIS_SYSTEMATIC.md)
 - [disklordz/sound-factory/ARCHITECTURE.md](../sound-factory/ARCHITECTURE.md)
 - [disklordz/ARCHITECTURE.md](../ARCHITECTURE.md)
