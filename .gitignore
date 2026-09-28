@@ -2,6 +2,8 @@ node_modules/
 
 .reference/
 
+Junova-X/gtm/dist/
+
 build/
 _deps/
 cmake-build-*/

@@ -38,6 +38,7 @@ class StageId(str, Enum):
     WAVE909_TESTS = "wave909_tests"
     PLUGINVAL = "pluginval"
     DISKLORDZ_WEB = "disklordz_web"
+    JUNOVA_FINISH = "junova_finish"
 
 
 @dataclass
@@ -63,6 +64,8 @@ class PipelineConfig:
     wave909_tests: bool = True
     pluginval: bool = True
     disklordz_web: bool = False
+    junova_finish: bool = False
+    junova_finish_mode: str = "ci"
     build_jobs: int | None = None
 
 
@@ -264,6 +267,24 @@ def stage_pluginval() -> StageResult:
     return StageResult(StageId.PLUGINVAL, True, time.time() - t0, "".join(chunks))
 
 
+def stage_junova_finish() -> StageResult:
+    t0 = time.time()
+    script = REPO_ROOT / "Junova-X/scripts/finish_line.sh"
+    if not script.is_file():
+        return StageResult(
+            StageId.JUNOVA_FINISH,
+            False,
+            time.time() - t0,
+            "finish_line.sh not found\n",
+        )
+    mode = os.environ.get("JUNOVA_FINISH_MODE", "ci")
+    env = os.environ.copy()
+    env["JUNOVA_FINISH_MODE"] = mode
+    env.setdefault("JUNOVA_FINISH_SKIP_PACKAGE", "0")
+    code, out = _run(["bash", str(script), "--mode", mode], env=env)
+    return StageResult(StageId.JUNOVA_FINISH, code == 0, time.time() - t0, out)
+
+
 def stage_disklordz_web() -> StageResult:
     t0 = time.time()
     website = REPO_ROOT / "disklordz/website"
@@ -297,6 +318,7 @@ STAGE_RUNNERS: dict[StageId, Callable[[], StageResult]] = {
     StageId.WAVE909_TESTS: stage_wave909_tests,
     StageId.PLUGINVAL: stage_pluginval,
     StageId.DISKLORDZ_WEB: stage_disklordz_web,
+    StageId.JUNOVA_FINISH: stage_junova_finish,
 }
 
 
@@ -315,8 +337,26 @@ PROFILES: dict[str, PipelineConfig] = {
         wave909_tests=True,
         pluginval=True,
         disklordz_web=False,
+        junova_finish=True,
+        junova_finish_mode="ci",
     ),
-    "full": PipelineConfig(disklordz_web=True),
+    "junova-ship": PipelineConfig(
+        configure=True,
+        build_all=True,
+        check_artefacts=True,
+        determinism=True,
+        golden=True,
+        wave909_tests=True,
+        pluginval=True,
+        disklordz_web=False,
+        junova_finish=True,
+        junova_finish_mode="full",
+    ),
+    "full": PipelineConfig(
+        disklordz_web=True,
+        junova_finish=True,
+        junova_finish_mode="full",
+    ),
     "plugin-quick": PipelineConfig(
         configure=False,
         build_all=False,
@@ -357,6 +397,20 @@ def resolve_stages(config: PipelineConfig) -> list[tuple[StageId, Callable[[], S
         stages.append((StageId.PLUGINVAL, STAGE_RUNNERS[StageId.PLUGINVAL]))
     if config.disklordz_web:
         stages.append((StageId.DISKLORDZ_WEB, STAGE_RUNNERS[StageId.DISKLORDZ_WEB]))
+    if config.junova_finish:
+
+        def _junova_finish_runner() -> StageResult:
+            prev = os.environ.get("JUNOVA_FINISH_MODE")
+            os.environ["JUNOVA_FINISH_MODE"] = config.junova_finish_mode
+            try:
+                return stage_junova_finish()
+            finally:
+                if prev is None:
+                    os.environ.pop("JUNOVA_FINISH_MODE", None)
+                else:
+                    os.environ["JUNOVA_FINISH_MODE"] = prev
+
+        stages.append((StageId.JUNOVA_FINISH, _junova_finish_runner))
     return stages
 
 

@@ -22,10 +22,14 @@
 
 ## Phase 3 — Product
 
-- Windows demo installer
-- `junova-x-landing` + store ($29→$49)
+Automated **Tier C shippable** gates: [FINISH_LINE.md](FINISH_LINE.md) · `bash Junova-X/scripts/finish_line.sh --mode ci`
+
+- Windows demo installer (Tier D)
+- `junova-x-landing` + store ($29→$49) — copy stub in [gtm/LANDING_COPY.md](../gtm/LANDING_COPY.md)
 - Preset bank 2 (>48 total story)
 - Reaper/Reaper-specific QA clips
+
+Monorepo agent loop: [docs/PRODUCT_FINISH_PLAYBOOK.md](../../docs/PRODUCT_FINISH_PLAYBOOK.md)
 
 ## Hermes seats
 

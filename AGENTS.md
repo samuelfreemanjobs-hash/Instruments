@@ -64,7 +64,11 @@ streamlit run vst-testing-ops/app.py                       # operations dashboar
 
 ```bash
 cmake --build build -j --target JunovaX_Standalone JunovaX_VST3 JunovaX_CLAP
+bash Junova-X/scripts/finish_line.sh --mode full
+python3 vst-testing-ops/run_business.py --profile junova-ship
 ```
+
+Finish gates: [Junova-X/docs/FINISH_LINE.md](Junova-X/docs/FINISH_LINE.md) · monorepo [docs/PRODUCT_FINISH_PLAYBOOK.md](docs/PRODUCT_FINISH_PLAYBOOK.md)
 
 **After editing plugin C++ (`Source/`, `Wave909/`, `Junova-X/`, etc.):** run `run_business.py --profile ci` before pushing; on failure read `vst-testing-ops/error_log.txt` and fix until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit updated WAVs.
 

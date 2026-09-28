@@ -58,6 +58,12 @@ UI: CelestialMainPanel / DiagPanel ←→ APVTS attachments
 - Presets: edit `scripts/generate_factory_presets.py` or add bank 2 files under `Source/Presets/`.
 - UI assets: `Resources/` + [docs/UI_DESIGN_HANDOFF.md](docs/UI_DESIGN_HANDOFF.md).
 
+## Finish line (shippable product)
+
+- [docs/FINISH_LINE.md](docs/FINISH_LINE.md) — Tier A–D gates
+- `bash Junova-X/scripts/finish_line.sh --mode full`
+- `python3 vst-testing-ops/run_business.py --profile junova-ship`
+
 ## Related docs
 
 - [REPO_HANDOFF.md](REPO_HANDOFF.md)
