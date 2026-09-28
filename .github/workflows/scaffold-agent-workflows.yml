@@ -24,9 +24,12 @@ jobs:
 
       - name: Check for drift
         run: |
-          git diff --exit-code disklordz/agents/workflows/PM_ADD.md \
+          git diff --exit-code DISKLORDZ_AGENTS.md \
+            docs/DISKLORDZ_AGENT_FLEET.md \
+            .github/agents/fleet.json \
+            disklordz/agents/workflows/PM_ADD.md \
             disklordz/agents/workflows/manifest.json \
             disklordz/agents/workflows/agents/ || {
-            echo "::error::Run python3 disklordz/agents/workflows/scaffold_workflows.py and commit"
+            echo "::error::Run ./scripts/sync-disklordz-agent-fleet.sh and commit"
             exit 1
           }

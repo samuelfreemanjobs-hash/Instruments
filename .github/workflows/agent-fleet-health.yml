@@ -12,9 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Workflow manifest smoke
+      - name: Repo-wide fleet smoke
         run: |
-          python3 -c "import json; m=json.load(open('disklordz/agents/workflows/manifest.json')); assert m['agent_count'] >= 30, m"
+          python3 -c "import json; f=json.load(open('.github/agents/fleet.json')); assert f['agent_count'] >= 31, f"
+          test -f DISKLORDZ_AGENTS.md
 
       - name: Remote integration verify
         if: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL != '' }}

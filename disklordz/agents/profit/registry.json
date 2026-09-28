@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "agent_count": 30,
+  "agent_count": 31,
   "agents": [
     {
       "id": "workflow-automation",
@@ -10,6 +10,15 @@
       "entry": "disklordz/agents/profit/workflow-automation/agent.md",
       "skill": "disklordz/agents/profit/workflow-automation/skill.md",
       "upstream_repo": "https://github.com/inngest/inngest"
+    },
+    {
+      "id": "pm-agent",
+      "title": "PM Agent (Fleet ADD)",
+      "profit_lever": "No hidden agents \u2014 fleet is discoverable and running",
+      "path": "disklordz/agents/profit/pm-agent",
+      "entry": "disklordz/agents/profit/pm-agent/agent.md",
+      "skill": "disklordz/agents/profit/pm-agent/skill.md",
+      "upstream_repo": "https://github.com/github/github-mcp-server"
     },
     {
       "id": "conversion-qa",

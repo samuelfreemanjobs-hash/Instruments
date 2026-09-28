@@ -16,6 +16,20 @@
       "soul": ["Every profit agent gets a trigger and a file path.", "Regenerate PM_ADD from code, not hand-edits.", "Stubs before secrets — document env in ARCHITECTURE.md."]
     },
     {
+      "id": "pm-agent",
+      "title": "PM Agent (Fleet ADD)",
+      "description": "Repo-wide fleet governance: DISKLORDZ_AGENTS.md, .github/agents/fleet.json, PM ADD; CI proves agents are registered and executable.",
+      "profit_lever": "No hidden agents — fleet is discoverable and running",
+      "upstream_repo": "https://github.com/github/github-mcp-server",
+      "model": "inherit",
+      "permission_mode": "plan",
+      "max_turns": 40,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": ["github"],
+      "automate": "agent-fleet-governance.yml, agent-fleet-execute.yml, sync-disklordz-agent-fleet.sh",
+      "soul": ["If it is not in DISKLORDZ_AGENTS.md it does not exist for the company.", "Orchestration agents lead the roster.", "Active means CI or runtime path runs without a human remembering."]
+    },
+    {
       "id": "conversion-qa",
       "title": "Conversion QA",
       "description": "Protect generate → preview → checkout funnel; run Playwright MCP and verify-go-live.",

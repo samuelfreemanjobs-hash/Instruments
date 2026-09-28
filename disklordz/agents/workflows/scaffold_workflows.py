@@ -12,12 +12,66 @@ REGISTRY = ROOT.parent / "profit" / "registry.json"
 AGENTS_DIR = ROOT / "agents"
 MANIFEST = ROOT / "manifest.json"
 PM_ADD = ROOT / "PM_ADD.md"
+REPO_FLEET_ENTRY = REPO / "DISKLORDZ_AGENTS.md"
+DOCS_FLEET = REPO / "docs" / "DISKLORDZ_AGENT_FLEET.md"
+GITHUB_FLEET = REPO / ".github" / "agents" / "fleet.json"
+
+# How the agent actually runs in this repo (for PM / fleet tables)
+ACTIVATION: dict[str, str] = {
+    "workflow-automation": "ci_on_push",
+    "pm-agent": "ci_scheduled",
+    "conversion-qa": "ci_manual",
+    "billing-ops": "manual_stub",
+    "ship-velocity": "ci_event",
+    "async-generation": "runtime_inngest",
+    "prompt-coach": "ci_on_push",
+    "product-factory": "runtime_api",
+    "spec-validator": "runtime_api",
+    "lane-workflow": "cli",
+    "ops-schema": "ci_manual",
+    "marketing-glue": "manual_stub",
+    "support-macro": "runtime_api",
+    "desktop-ops": "manual_external",
+    "factory-batch-gpu": "manual_external",
+    "engine-swap": "runtime_env",
+    "integration-health": "ci_scheduled",
+    "churn-winback": "manual_stub",
+    "seo-kit-pages": "runtime_build",
+    "referral-affiliate": "runtime_stripe",
+    "fraud-abuse": "runtime_api",
+    "pricing-experiment": "manual_skill",
+    "onboarding-concierge": "runtime_inngest",
+    "daw-inbox-copilot": "cli_local",
+    "airtable-wo-triage": "ci_event",
+    "golden-wav-qa": "ci_on_pr",
+    "competitive-intel": "manual_doc",
+    "license-compliance": "manual_gate",
+    "social-clip-factory": "cli_script",
+    "analytics-interpreter": "manual_stub",
+    "release-notes": "ci_script",
+}
+
+CI_WORKFLOWS = [
+    (".github/workflows/agent-fleet-governance.yml", "pm-agent, workflow-automation"),
+    (".github/workflows/agent-fleet-health.yml", "integration-health, pm-agent"),
+    (".github/workflows/agent-fleet-execute.yml", "pm-agent + executable fleet roles"),
+    (".github/workflows/scaffold-agent-workflows.yml", "workflow-automation"),
+    (".github/workflows/disklordz-go-live.yml", "conversion-qa, ops-schema"),
+    (".github/workflows/rag-reindex.yml", "prompt-coach"),
+    (".github/workflows/activate-integrations.yml", "ops-schema, integration-health"),
+    (".github/workflows/airtable-antigravity-handoff.yml", "ship-velocity, airtable-wo-triage"),
+    (".github/workflows/build.yml", "golden-wav-qa"),
+]
 
 # First-person announcements + one-line help for Disklordz
 ANNOUNCE: dict[str, str] = {
     "workflow-automation": (
         "I'm **Workflow Automation** — I wire GitHub Actions, Inngest, and n8n stubs "
         "so every profit agent runs on a schedule or event without you babysitting scripts."
+    ),
+    "pm-agent": (
+        "I'm **PM Agent (Fleet ADD)** — I publish the company-wide roster at repo root "
+        "(`DISKLORDZ_AGENTS.md`, `.github/agents/fleet.json`) and CI proves the fleet is registered and executing."
     ),
     "conversion-qa": (
         "I'm **Conversion QA** — I run go-live smoke and Playwright checks so generate → "
@@ -143,6 +197,16 @@ WORKFLOWS: dict[str, dict] = {
         "trigger": "workflow_dispatch",
         "workflow_file": ".github/workflows/scaffold-agent-workflows.yml",
         "steps": ["Run scaffold_workflows.py", "Open PR if manifest diff"],
+    },
+    "pm-agent": {
+        "platform": "github",
+        "trigger": "daily + push fleet docs",
+        "workflow_file": ".github/workflows/agent-fleet-governance.yml",
+        "steps": [
+            "sync-disklordz-agent-fleet.sh",
+            "scaffold_agents.py --check",
+            "Fail if DISKLORDZ_AGENTS.md drift",
+        ],
     },
     "conversion-qa": {
         "platform": "github",
@@ -387,18 +451,148 @@ def build_pm_add(entries: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def build_disklordz_agents_md(entries: list[dict], manifest_agents: list[dict]) -> str:
+    lines = [
+        "# Disklordz agent fleet (repo-wide)",
+        "",
+        "Company-wide index for **Instruments / Disklordz**. Every Cursor Cloud Agent, Claude Code session, "
+        "and engineer should discover agents here — not only under `disklordz/agents/`.",
+        "",
+        "| Resource | Purpose |",
+        "|----------|---------|",
+        "| [PM ADD roster](disklordz/agents/workflows/PM_ADD.md) | Who we are + automation pointers |",
+        "| [Agent fleet table](docs/DISKLORDZ_AGENT_FLEET.md) | Activation status + paths |",
+        "| [`.github/agents/fleet.json`](.github/agents/fleet.json) | Machine index for CI and tooling |",
+        "| [Profit trees](disklordz/agents/profit/) | `agent.md`, `skill.md`, … per agent |",
+        "| [GitHub Copilot skills](.github/skills/) | `disklordz-<id>/SKILL.md` |",
+        "",
+        "## Orchestration (read first)",
+        "",
+        "| ID | Role |",
+        "|----|------|",
+        "| **workflow-automation** | Scaffolds PM ADD + per-agent `automation.yaml` |",
+        "| **pm-agent** | Repo-wide fleet governance + scheduled execution checks |",
+        "",
+        f"**Fleet size:** {len(manifest_agents)} agents (includes orchestration).",
+        "",
+        "## Active CI (executing now)",
+        "",
+        "| Workflow | Serves |",
+        "|----------|--------|",
+    ]
+    for wf, serves in CI_WORKFLOWS:
+        lines.append(f"| `{wf}` | {serves} |")
+    lines.extend(
+        [
+            "",
+            "## Regenerate (Workflow Automation + PM Agent)",
+            "",
+            "```bash",
+            "./scripts/sync-disklordz-agent-fleet.sh",
+            "```",
+            "",
+            "Maintained by `scaffold_workflows.py` — do not hand-edit sections below the marker.",
+            "",
+            "<!-- FLEET_ROSTER_BEGIN -->",
+            "",
+        ]
+    )
+    for e in manifest_agents:
+        aid = e["id"]
+        title = e.get("title") or aid
+        act = ACTIVATION.get(aid, "manual")
+        lines.append(f"- `{aid}` — **{title}** (`{act}`)")
+    lines.extend(["", "<!-- FLEET_ROSTER_END -->", ""])
+    return "\n".join(lines)
+
+
+def build_docs_fleet_md(entries: list[dict], manifest_agents: list[dict]) -> str:
+    lines = [
+        "# Disklordz agent fleet — activation matrix",
+        "",
+        "Repo-wide companion to [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) and "
+        "[PM ADD](../disklordz/agents/workflows/PM_ADD.md).",
+        "",
+        "| ID | Title | Activation | Primary automation | Skill |",
+        "|----|-------|------------|--------------------|-------|",
+    ]
+    for e in manifest_agents:
+        aid = e["id"]
+        title = e.get("title") or aid
+        act = ACTIVATION.get(aid, "manual")
+        wf = WORKFLOWS.get(aid, {})
+        primary = wf.get("workflow_file", "TBD")
+        skill = f"`.github/skills/disklordz-{aid}/SKILL.md`"
+        lines.append(f"| `{aid}` | {title} | `{act}` | `{primary}` | {skill} |")
+    lines.extend(
+        [
+            "",
+            "### Activation legend",
+            "",
+            "| Code | Meaning |",
+            "|------|---------|",
+            "| `ci_scheduled` | GitHub Actions cron runs fleet health / governance |",
+            "| `ci_on_push` | Workflow runs when mapped paths change |",
+            "| `ci_on_pr` | Plugin / website CI on pull request |",
+            "| `runtime_api` | Live on Vercel API routes |",
+            "| `runtime_inngest` | Inngest functions in production |",
+            "| `manual_stub` | n8n JSON stub — import + secrets required |",
+            "",
+            "Regenerate: `./scripts/sync-disklordz-agent-fleet.sh`",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def build_github_fleet_json(manifest_agents: list[dict]) -> dict:
+    return {
+        "version": 2,
+        "scope": "repo-wide",
+        "entrypoints": {
+            "human": "DISKLORDZ_AGENTS.md",
+            "pm_add": "disklordz/agents/workflows/PM_ADD.md",
+            "architecture": "disklordz/agents/ARCHITECTURE.md",
+        },
+        "orchestration": ["workflow-automation", "pm-agent"],
+        "agent_count": len(manifest_agents),
+        "agents": [
+            {
+                "id": e["id"],
+                "title": e.get("title"),
+                "activation": ACTIVATION.get(e["id"], "manual"),
+                "announcement": e.get("announcement", ""),
+                "automation": e.get("automation", {}),
+                "profit_entry": f"disklordz/agents/profit/{e['id']}/agent.md",
+                "copilot_skill": f".github/skills/disklordz-{e['id']}/SKILL.md",
+                "automation_path": e.get("automation_path"),
+            }
+            for e in manifest_agents
+        ],
+        "ci_workflows": [{"path": p, "serves": s} for p, s in CI_WORKFLOWS],
+    }
+
+
 def main() -> None:
     registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
     agents = registry.get("agents") or []
 
-    # Ensure workflow-automation in roster even before registry regen
-    extra = {
-        "id": "workflow-automation",
-        "title": "Workflow Automation",
-        "profit_lever": "Agents run without manual babysitting",
-    }
-    if not any(a["id"] == "workflow-automation" for a in agents):
-        agents = [extra] + agents
+    # Ensure orchestration agents in roster even before registry regen
+    extras = [
+        {
+            "id": "workflow-automation",
+            "title": "Workflow Automation",
+            "profit_lever": "Agents run without manual babysitting",
+        },
+        {
+            "id": "pm-agent",
+            "title": "PM Agent (Fleet ADD)",
+            "profit_lever": "No hidden agents — fleet is discoverable and running",
+        },
+    ]
+    for extra in reversed(extras):
+        if not any(a["id"] == extra["id"] for a in agents):
+            agents = [extra] + agents
 
     manifest_agents = []
     for a in agents:
@@ -418,7 +612,17 @@ def main() -> None:
     manifest = {"version": 1, "agent_count": len(manifest_agents), "agents": manifest_agents}
     MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     PM_ADD.write_text(build_pm_add(agents), encoding="utf-8")
-    print(f"Wrote PM_ADD.md + {len(manifest_agents)} automation.yaml files")
+
+    GITHUB_FLEET.parent.mkdir(parents=True, exist_ok=True)
+    GITHUB_FLEET.write_text(
+        json.dumps(build_github_fleet_json(manifest_agents), indent=2) + "\n", encoding="utf-8"
+    )
+    REPO_FLEET_ENTRY.write_text(build_disklordz_agents_md(agents, manifest_agents), encoding="utf-8")
+    DOCS_FLEET.write_text(build_docs_fleet_md(agents, manifest_agents), encoding="utf-8")
+
+    print(
+        f"Wrote PM_ADD + fleet entrypoints + {len(manifest_agents)} automation.yaml files"
+    )
 
 
 if __name__ == "__main__":

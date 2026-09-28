@@ -2,19 +2,15 @@
 
 ## Purpose
 
-**Workflow Automation** maps each profit agent to a concrete trigger (GitHub Actions, Inngest, API route, n8n stub, or manual SOP) and publishes the **PM ADD** roster so product and eng see who does what for Disklordz revenue.
+**PM Agent** publishes the fleet at repo root (`DISKLORDZ_AGENTS.md`, `.github/agents/fleet.json`) and runs governance CI. **Workflow Automation** maps each profit agent to a concrete trigger (GitHub Actions, Inngest, API route, n8n stub, or manual SOP) and publishes the **PM ADD** roster so product and eng see who does what for Disklordz revenue.
 
 ## Build & run
 
 ```bash
-# Regenerate PM_ADD.md, manifest.json, agents/*/automation.yaml
-python3 disklordz/agents/workflows/scaffold_workflows.py
-
-# After editing profit/_specs.json (includes workflow-automation agent tree)
-python3 disklordz/agents/profit/scaffold_agents.py --publish-skills
+./scripts/sync-disklordz-agent-fleet.sh
 ```
 
-CI: **Scaffold agent workflows** (on `disklordz/agents/workflows/**` changes) and **Agent fleet health** (daily integration verify).
+CI: **Agent fleet governance** (PM Agent), **Agent fleet execute** (weekday roles), **Scaffold agent workflows**, **Agent fleet health**.
 
 ## Data flow
 

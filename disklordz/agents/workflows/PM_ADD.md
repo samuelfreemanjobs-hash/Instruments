@@ -18,6 +18,14 @@ I'm **Workflow Automation** — I wire GitHub Actions, Inngest, and n8n stubs so
 - **Agent docs:** [`profit/workflow-automation/agent.md`](../profit/workflow-automation/agent.md)
 - **Workflow file:** [`agents/workflow-automation/automation.yaml`](agents/workflow-automation/automation.yaml)
 
+## pm-agent
+
+I'm **PM Agent (Fleet ADD)** — I publish the company-wide roster at repo root (`DISKLORDZ_AGENTS.md`, `.github/agents/fleet.json`) and CI proves the fleet is registered and executing.
+
+- **Automation:** `.github/workflows/agent-fleet-governance.yml` (github, daily + push fleet docs)
+- **Agent docs:** [`profit/pm-agent/agent.md`](../profit/pm-agent/agent.md)
+- **Workflow file:** [`agents/pm-agent/automation.yaml`](agents/pm-agent/automation.yaml)
+
 ## conversion-qa
 
 I'm **Conversion QA** — I run go-live smoke and Playwright checks so generate → preview → checkout never silently breaks after a deploy.
