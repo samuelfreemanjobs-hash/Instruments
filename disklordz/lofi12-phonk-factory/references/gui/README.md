@@ -1,25 +1,22 @@
 # GUI mockups — Lofi-12 phonk factory
 
-Drop **Stitch**, **Figma**, or exported **PNG** frames here for the GUI Agent.
+## v1-stitch (2026-09-28)
 
-## Naming
+| File | Description |
+|------|-------------|
+| [v1-stitch/phonk-sequencer-v1-lofi12-layout.png](v1-stitch/phonk-sequencer-v1-lofi12-layout.png) | **Primary** — LIVEN sidebar, factory deck, vertical FX, 6 tabs, 4×4 steps |
+| [v1-stitch/phonk-sequencer-v1-rack-vst-layout.png](v1-stitch/phonk-sequencer-v1-rack-vst-layout.png) | Alternate rack / 20-step VST concept |
 
-`phonk-sequencer-v<N>-<frame>.png`
+**Tool:** Google Stitch (+ Gemini conversation).  
+**Spec:** [docs/GUI_MOCKUP_SPEC.md](../../docs/GUI_MOCKUP_SPEC.md) · **Tokens:** [docs/GUI_TOKENS.md](../../docs/GUI_TOKENS.md)
 
-Examples:
+## Index
 
-- `phonk-sequencer-v1-default-kick.png`
-- `phonk-sequencer-v1-factory-generate.png`
-- `phonk-sequencer-v1-fx-panel.png`
+| Version | Tool | Date | Spec status |
+|---------|------|------|-------------|
+| v0 | Cursor code-first | 2026-09 | Superseded |
+| **v1-stitch** | Stitch | 2026-09-28 | **DRAFT v1-stitch** — awaiting LOCK after decisions |
 
-## Index (fill in when you add files)
+## Next step
 
-| Version | Tool | Date | Files | Spec status |
-|---------|------|------|-------|-------------|
-| v0 | Cursor (code-first) | 2026-09 | (see live UI) | DRAFT — [GUI_MOCKUP_SPEC.md](../../docs/GUI_MOCKUP_SPEC.md) |
-
-## After upload
-
-1. Update the table above.  
-2. Add a **Frames** table to `docs/GUI_MOCKUP_SPEC.md`.  
-3. Start a **GUI Agent** run with [docs/GUI_AGENT_PLAYBOOK.md](../../../../docs/GUI_AGENT_PLAYBOOK.md) prompt template.
+Answer open decisions in `GUI_MOCKUP_SPEC.md` → **GUI Agent** pass per [docs/GUI_AGENT_PLAYBOOK.md](../../../docs/GUI_AGENT_PLAYBOOK.md).

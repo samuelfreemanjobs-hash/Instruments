@@ -74,6 +74,8 @@ Use when layout and **information architecture** are still fuzzy.
 
 ### Phase 3 — Visual mock with Google Stitch (or Figma)
 
+**Reference implementation:** Lofi-12 phonk factory Stitch v1 — [references/gui/v1-stitch/](../disklordz/lofi12-phonk-factory/references/gui/v1-stitch/) + [GUI_MOCKUP_SPEC.md](../disklordz/lofi12-phonk-factory/docs/GUI_MOCKUP_SPEC.md).
+
 **Stitch** (Google): prompt- or sketch-driven **UI mocks** — use for:
 
 - Tab order, density, color mood (Memphis / phonk / dark studio).
