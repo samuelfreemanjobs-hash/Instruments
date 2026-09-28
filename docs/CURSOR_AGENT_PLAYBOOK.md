@@ -23,6 +23,8 @@ First agent task: **one vertical slice** (scaffold + health check), not full pro
 
 ## 2. Structured prompting template
 
+**JUCE / plugin products:** use [PLUGIN_FACTORY_OS_PROMPT.md](PLUGIN_FACTORY_OS_PROMPT.md) (factory + §0 repo workflow). **DISKLORDZ ROMPLER:** [DISKLORDZ_ROMPLER_CURSOR_PROMPT.md](DISKLORDZ_ROMPLER_CURSOR_PROMPT.md).
+
 Copy into every Cloud Agent or IDE Agent task:
 
 ```markdown
