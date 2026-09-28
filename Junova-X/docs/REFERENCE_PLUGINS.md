@@ -30,13 +30,29 @@ Dry/wet summer ratios (IC6): **kDry 0.863**, **kWet 1.257** (peak-normalized in 
 
 VCF: KR-106 uses TPT ladder + weak tanh (BA662-style). Junova uses JUCE SVF + OTA tanh — converge via golden + optional KR-106 WAV diff.
 
+## User catalog (Yonu106, TAL, RJU-60, Sixth Month June, …)
+
+Spelling → real plugin names, free vs demo vs paid, bitness: **[FREE_JUNO_VST_CATALOG.md](FREE_JUNO_VST_CATALOG.md)**.
+
+Quick picks:
+
+| Goal | Plugin |
+|------|--------|
+| **106 + source code** | KR-106 (GPL) |
+| **Free 64-bit Juno-6** | Morphoice **EightySix** |
+| **Free Juno chorus FX** | **TAL-Chorus-LX** |
+| **Legacy free Win32** | Yonu60, RJU-60, Sixth Month June |
+
 ## Free closed-source (audio-only)
 
 | Plugin | Notes |
 |--------|--------|
-| [TAL-U-NO-LX](https://tal-software.com/products/tal-u-no-lx) | Juno-60; industry A/B baseline (YouTube shootouts in [COMPETITIVE_JUN6.md](COMPETITIVE_JUN6.md)) |
-| [Tyrell N6](https://u-he.com/products/tyrelln6/) | Free; Juno-*inspired*, not 106-accurate — good for pad/chorus vibe checks |
-| Roland / Arturia / Cherry | Paid or subscription — manual WAV export for competitive matrix |
+| [TAL-U-NO-LX](https://tal-software.com/products/tal-u-no-lx) | Juno-60; **demo** or paid — not fully free |
+| [TAL-Chorus-LX](https://tal-software.com/products/TAL-Chorus-LX) | **Free** Juno-60 chorus (modes I/II) |
+| [Morphoice EightySix](https://www.morphoice.com/eightysix) | **Free** Juno-6 + separate chorus FX |
+| [Tyrell N6](https://u-he.com/products/tyrelln6/) | Free; Juno-*inspired* |
+| Arturia Chorus JUN-6 | Paid (free only if claimed in 2020 promo) |
+| Roland / Arturia / Cherry full synths | Paid / subscription — WAV export only |
 
 ## Workflow in this monorepo
 

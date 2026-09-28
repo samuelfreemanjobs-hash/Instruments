@@ -38,11 +38,15 @@ cmake --build build -j --target JunovaOfflineRender
 ./tests/golden/junova/compare_kr106_reference.sh ab03-chorus-i 57 3.0
 ```
 
-**Any plugin bounce** (TAL, Arturia, etc.):
+**Any plugin bounce** (EightySix, Yonu60, RJU-60, TAL-U-NO-LX demo, TAL-Chorus-LX, Chorus JUN-6, etc.):
+
+See name mapping: [FREE_JUNO_VST_CATALOG.md](FREE_JUNO_VST_CATALOG.md).
 
 ```bash
 ./tests/golden/junova/compare_jun6_reference.sh /path/to/reference.wav ab02-fat-pad 48 4.0
 ```
+
+**TAL-Chorus-LX on dry Junova:** render `ab01-dry-saw`, send through chorus in DAW, export, compare to `ab03-chorus-i`.
 
 Thresholds are intentionally loose; **solo + in-mix** listening wins disputes (see Bass Valley / Luke Million methodology in COMPETITIVE_JUN6.md).
 

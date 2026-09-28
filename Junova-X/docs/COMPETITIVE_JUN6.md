@@ -59,7 +59,9 @@ Use these when designing **Junova golden scenarios** and manual listening tests.
 | Source | URL | Use |
 |--------|-----|-----|
 | **Ultramaster KR-106** (JUCE, GPL) | https://github.com/kayrockscreenprinting/ultramaster_kr106 | **Primary open reference** — `render_midi` + [REFERENCE_PLUGINS.md](REFERENCE_PLUGINS.md); study/reimplement, no code paste |
-| **TAL-U-NO-LX** (free, closed) | https://tal-software.com/products/tal-u-no-lx | Audio A/B only |
+| **Free Juno VST list** (Yonu60, RJU-60, Sixth Month June, EightySix, TAL-Chorus-LX, …) | [FREE_JUNO_VST_CATALOG.md](FREE_JUNO_VST_CATALOG.md) | User-facing name → plugin mapping |
+| **TAL-U-NO-LX** (demo/paid) | https://tal-software.com/products/tal-u-no-lx | Juno-60 audio A/B |
+| **TAL-Chorus-LX** (free) | https://tal-software.com/products/TAL-Chorus-LX | Chorus A/B vs `BbdChorus` |
 | **Tyrell N6** (free) | https://u-he.com/products/tyrelln6/ | Audio A/B; Juno-inspired |
 | **iPlug2 IPlugInstrument** | `vst-juno106/third_party/iPlug2/Examples/IPlugInstrument/` | Disklordz **iPlug2 framework** in monorepo; Juno106 product code still external |
 
