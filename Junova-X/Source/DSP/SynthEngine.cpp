@@ -47,6 +47,7 @@ void SynthEngine::prepare (double sampleRate, int maxBlockSize) noexcept
     hpfL_.prepare (spec_);
     hpfR_.prepare (spec_);
     chorus_.prepare (sampleRate);
+    rng_.setSeed (0x4a434u);
     reset();
 }
 

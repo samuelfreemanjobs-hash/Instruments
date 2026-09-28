@@ -37,7 +37,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 4.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Disk Bass", "BASS", PresetParams {
                 .masterGain = 0.0f,
@@ -69,7 +70,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 5.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Analog Floor", "BASS", PresetParams {
                 .masterGain = 0.0f,
@@ -101,7 +103,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 6.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Low Rider", "BASS", PresetParams {
                 .masterGain = 0.0f,
@@ -133,7 +136,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 7.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Club Sub", "BASS", PresetParams {
                 .masterGain = 0.0f,
@@ -165,7 +169,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 8.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Warm Bottom", "BASS", PresetParams {
                 .masterGain = 0.0f,
@@ -197,7 +202,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 4.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Pulse Bass", "BASS", PresetParams {
                 .masterGain = 0.0f,
@@ -229,7 +235,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 5.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Night Drive", "BASS", PresetParams {
                 .masterGain = 0.0f,
@@ -261,7 +268,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 6.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Celestial Wash", "PAD", PresetParams {
                 .masterGain = 0.0f,
@@ -293,7 +301,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 7.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Nebula Choir", "PAD", PresetParams {
                 .masterGain = 0.0f,
@@ -325,7 +334,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 8.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Glass Pad", "PAD", PresetParams {
                 .masterGain = 0.0f,
@@ -357,7 +367,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 4.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Solar Haze", "PAD", PresetParams {
                 .masterGain = 0.0f,
@@ -389,7 +400,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 5.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Midnight Air", "PAD", PresetParams {
                 .masterGain = 0.0f,
@@ -421,7 +433,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 6.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Analog Cloud", "PAD", PresetParams {
                 .masterGain = 0.0f,
@@ -453,7 +466,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 7.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Dream Stack", "PAD", PresetParams {
                 .masterGain = 0.0f,
@@ -485,7 +499,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 8.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Wide Aurora", "PAD", PresetParams {
                 .masterGain = 0.0f,
@@ -517,7 +532,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 4.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Soft Poly", "PAD", PresetParams {
                 .masterGain = 0.0f,
@@ -549,7 +565,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 5.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Hold Fade", "PAD", PresetParams {
                 .masterGain = 0.0f,
@@ -581,7 +598,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 6.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Neon Solo", "LEAD", PresetParams {
                 .masterGain = 0.0f,
@@ -613,7 +631,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 12.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Cut Lead", "LEAD", PresetParams {
                 .masterGain = 0.0f,
@@ -645,7 +664,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 12.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Sync Bite", "LEAD", PresetParams {
                 .masterGain = 0.0f,
@@ -677,7 +697,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 12.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Portamento", "LEAD", PresetParams {
                 .masterGain = 0.0f,
@@ -709,7 +730,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 12.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Bright Hook", "LEAD", PresetParams {
                 .masterGain = 0.0f,
@@ -741,7 +763,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 12.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Filter Talk", "LEAD", PresetParams {
                 .masterGain = 0.0f,
@@ -773,7 +796,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 12.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Reso Lead", "LEAD", PresetParams {
                 .masterGain = 0.0f,
@@ -805,7 +829,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 12.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Stage Solo", "LEAD", PresetParams {
                 .masterGain = 0.0f,
@@ -837,7 +862,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 12.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Hook Line", "LEAD", PresetParams {
                 .masterGain = 0.0f,
@@ -869,7 +895,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 12.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Laser Mono", "LEAD", PresetParams {
                 .masterGain = 0.0f,
@@ -901,7 +928,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 12.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Classic Poly", "POLY", PresetParams {
                 .masterGain = 0.0f,
@@ -933,7 +961,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 7.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Brass Stack", "POLY", PresetParams {
                 .masterGain = 0.0f,
@@ -965,7 +994,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 8.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Chorus Keys", "POLY", PresetParams {
                 .masterGain = 0.0f,
@@ -997,7 +1027,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 4.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Unison Stack", "POLY", PresetParams {
                 .masterGain = 0.0f,
@@ -1029,7 +1060,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 5.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Five Voice", "POLY", PresetParams {
                 .masterGain = 0.0f,
@@ -1061,7 +1093,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 6.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Disco Poly", "POLY", PresetParams {
                 .masterGain = 0.0f,
@@ -1093,7 +1126,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 7.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Junova Stack", "POLY", PresetParams {
                 .masterGain = 0.0f,
@@ -1125,7 +1159,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 8.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Spread Poly", "POLY", PresetParams {
                 .masterGain = 0.0f,
@@ -1157,7 +1192,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 4.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Room Poly", "POLY", PresetParams {
                 .masterGain = 0.0f,
@@ -1189,7 +1225,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 5.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Init Plus", "POLY", PresetParams {
                 .masterGain = 0.0f,
@@ -1221,7 +1258,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 6.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Electric Keys", "KEYS", PresetParams {
                 .masterGain = 0.0f,
@@ -1253,7 +1291,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 7.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Soft Clav", "KEYS", PresetParams {
                 .masterGain = 0.0f,
@@ -1285,7 +1324,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 8.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Pluck Key", "KEYS", PresetParams {
                 .masterGain = 0.0f,
@@ -1317,7 +1357,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 4.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Bell Key", "KEYS", PresetParams {
                 .masterGain = 0.0f,
@@ -1349,7 +1390,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 5.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "House Key", "KEYS", PresetParams {
                 .masterGain = 0.0f,
@@ -1381,7 +1423,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 6.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Mellow Key", "KEYS", PresetParams {
                 .masterGain = 0.0f,
@@ -1413,7 +1456,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 7.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Noise Sweep", "FX", PresetParams {
                 .masterGain = 0.0f,
@@ -1445,7 +1489,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 8.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Reso FX", "FX", PresetParams {
                 .masterGain = 0.0f,
@@ -1477,7 +1522,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 4.0f,
                 .width = 100.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "LFO Wobble", "FX", PresetParams {
                 .masterGain = 0.0f,
@@ -1509,7 +1555,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 5.0f,
                 .width = 115.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
         { "Chorus Wash", "FX", PresetParams {
                 .masterGain = 0.0f,
@@ -1541,7 +1588,8 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .detune = 6.0f,
                 .width = 130.0f,
                 .arpRange = 2.0f,
-                .arpRate = 0.25f
+                .arpRate = 0.25f,
+                .arpLatch = false
             } },
     };
     return kPresets;

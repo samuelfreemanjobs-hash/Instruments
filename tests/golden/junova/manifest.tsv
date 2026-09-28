@@ -1,0 +1,3 @@
+# filename	program	midiNote	velocity	seconds	sampleRate
+preset0-c4-0.5s.wav	0	60	100	0.5	44100
+preset8-c4-0.5s.wav	8	60	100	0.5	44100

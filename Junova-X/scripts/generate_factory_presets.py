@@ -43,7 +43,7 @@ def main() -> None:
         "chorusMode", "voiceMode", "lfoRate", "lfoDelay", "glide",
         "dcoLfoMod", "dcoPwm", "dcoSubLvl", "dcoNoise",
         "vcfEnv", "vcfLfo", "vcfKey", "drift", "detune", "width",
-        "arpRange", "arpRate",
+        "arpRange", "arpRate", "arpLatch",
     ]
     entries: list[str] = []
     idx = 0
@@ -73,7 +73,7 @@ def main() -> None:
                 "drift": 10 + (idx % 7),
                 "detune": 4 + (idx % 5),
                 "width": 100 + (idx % 3) * 15,
-                "arpRange": 2, "arpRate": 0.25,
+                "arpRange": 2, "arpRate": 0.25, "arpLatch": False,
             }
             p.update(overrides)
             if cat == "LEAD" and name == "Portamento":

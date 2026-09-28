@@ -86,6 +86,7 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
         refreshPresetLabel();
     };
     refreshPresetLabel();
+    refreshHostBar();
     startTimerHz (4);
 
     addAndMakeVisible (oscMonitor_);
@@ -106,6 +107,8 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
     addVerticalFader (dco, junovax::ParameterIDs::dcoNoise, "NOISE");
 
     addVerticalFader (hpfModule_, junovax::ParameterIDs::hpfCutoff, "HPF");
+    hpfModule_.addAndMakeVisible (hpfEnable_);
+    hpfAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), junovax::ParameterIDs::hpfEnabled, hpfEnable_);
 
     auto& vcf = vcfModule_;
     addVerticalFader (vcf, junovax::ParameterIDs::filterCutoff, "FREQ");
@@ -128,6 +131,8 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
 
     addVerticalFader (arpModule_, junovax::ParameterIDs::arpRange, "RANGE");
     addVerticalFader (arpModule_, junovax::ParameterIDs::arpRate, "RATE");
+    arpModule_.addAndMakeVisible (arpLatch_);
+    arpLatchAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), junovax::ParameterIDs::arpLatch, arpLatch_);
 
     addVerticalFader (masterModule_, junovax::ParameterIDs::masterGain, "MASTER");
 
@@ -145,6 +150,15 @@ CelestialMainPanel::~CelestialMainPanel()
 void CelestialMainPanel::timerCallback()
 {
     refreshPresetLabel();
+    refreshHostBar();
+}
+
+void CelestialMainPanel::refreshHostBar()
+{
+    const float bpm = processor_.getDisplayBpm();
+    const int sr = static_cast<int> (processor_.getEffectiveSampleRate() + 0.5);
+    hostBar_.setText ("HOST | BPM: " + juce::String (bpm, 2) + " | 4/4 | SR: " + juce::String (sr) + " Hz",
+                      juce::dontSendNotification);
 }
 
 void CelestialMainPanel::refreshPresetLabel()
@@ -257,7 +271,17 @@ void CelestialMainPanel::resized()
     idx = 0;
     placeRow (lfoModule_, 3);
     placeRow (dcoModule_, 4);
+    const int hpfSliderIdx = idx;
     placeRow (hpfModule_, 1);
+    {
+        auto area = hpfModule_.getContentArea();
+        hpfEnable_.setBounds (area.getX() + 2, area.getY(), area.getWidth() - 4, 22);
+        if (hpfSliderIdx < static_cast<int> (sliders_.size()))
+        {
+            auto slot = area.withTrimmedTop (26);
+            sliders_[static_cast<std::size_t> (hpfSliderIdx)]->setBounds (slot.getX() + 4, slot.getY(), slot.getWidth() - 8, slot.getHeight());
+        }
+    }
     placeRow (vcfModule_, 5);
     placeRow (envModule_, 4);
 
@@ -270,7 +294,19 @@ void CelestialMainPanel::resized()
     masterModule_.setBounds (gap * 4 + w4 * 3 + 20, row2Y, w4 + 20, row2H);
 
     placeRow (driftModule_, 3);
+    const int arpSliderIdx = idx;
     placeRow (arpModule_, 2);
+    {
+        auto area = arpModule_.getContentArea();
+        arpLatch_.setBounds (area.getX() + 2, area.getY(), area.getWidth() - 4, 22);
+        if (arpSliderIdx + 1 < static_cast<int> (sliders_.size()))
+        {
+            auto slot = area.withTrimmedTop (26);
+            const int fw = juce::jmax (32, slot.getWidth() / 2 - 2);
+            sliders_[static_cast<std::size_t> (arpSliderIdx)]->setBounds (slot.getX() + 4, slot.getY(), fw, slot.getHeight());
+            sliders_[static_cast<std::size_t> (arpSliderIdx + 1)]->setBounds (slot.getX() + 6 + fw, slot.getY(), fw, slot.getHeight());
+        }
+    }
     placeRow (masterModule_, 1);
 
     auto chArea = chorusModule_.getContentArea();

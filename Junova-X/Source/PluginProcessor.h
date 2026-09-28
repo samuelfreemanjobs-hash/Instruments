@@ -7,6 +7,8 @@
 
 #include <JuceHeader.h>
 
+#include <atomic>
+
 class JunovaXAudioProcessor final : public juce::AudioProcessor
 {
 public:
@@ -46,6 +48,9 @@ public:
         scopeFifo_.copyRecent (dest, numSamples);
     }
 
+    float getDisplayBpm() const noexcept { return displayBpm_.load (std::memory_order_relaxed); }
+    double getEffectiveSampleRate() const noexcept { return lastSampleRate_; }
+
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 private:
@@ -57,6 +62,8 @@ private:
     junovax::dsp::SynthEngine engine_;
     junovax::dsp::ScopeFifo scopeFifo_;
     int currentProgram_ = 0;
+    std::atomic<float> displayBpm_ { 120.0f };
+    double lastSampleRate_ = 48000.0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JunovaXAudioProcessor)
 };

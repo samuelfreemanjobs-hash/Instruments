@@ -11,9 +11,9 @@
 
 | ID | Focus | Status |
 |----|--------|--------|
-| 004 | Arpeggiator + DSP module split | **In progress** — `Arpeggiator`, `BbdChorus`, docs |
-| 005 | Host PPQ arp + latch / hold mode | Planned |
-| 006 | Offline render + golden smoke for Junova | Planned |
+| 004 | Arpeggiator + DSP module split | **Done** — `Arpeggiator`, `BbdChorus`, docs |
+| 005 | Host PPQ arp + latch / hold mode | **Done** — PPQ grid 1/16–1/2, `arpLatch`, Celestial host BPM bar |
+| 006 | Offline render + golden smoke for Junova | **Done** — `JunovaOfflineRender`, `tests/golden/junova/` |
 | 007 | iPlug2 DSP import checklist (when reference available) | Blocked on reference |
 
 ## Phase 3 — Product

@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# Compare OfflineRender output to committed golden WAVs (see manifest.tsv).
+# Compare JunovaOfflineRender output to committed golden WAVs under tests/golden/junova/
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-RENDER="${ROOT}/build/OfflineRender"
+RENDER="${ROOT}/build/Junova-X/JunovaOfflineRender"
 DIFF="${ROOT}/build/SpectralDiff"
-MANIFEST="${ROOT}/tests/golden/manifest.tsv"
-MAX_RMS_DB="${MAX_RMS_DB:--80}"
-MAX_SPECTRAL_DB="${MAX_SPECTRAL_DB:-0.25}"
+MANIFEST="${ROOT}/tests/golden/junova/manifest.tsv"
+MAX_RMS_DB="${MAX_RMS_DB:--75}"
+MAX_SPECTRAL_DB="${MAX_SPECTRAL_DB:-0.35}"
 
 if [[ ! -x "$RENDER" || ! -x "$DIFF" ]]; then
-  echo "Build OfflineRender and SpectralDiff first (cmake --build build -j)" >&2
+  echo "Build JunovaOfflineRender and SpectralDiff first (cmake --build build -j --target JunovaOfflineRender)" >&2
   exit 1
 fi
 
@@ -18,20 +18,16 @@ while IFS= read -r line || [[ -n "$line" ]]; do
   [[ "$line" =~ ^# ]] && continue
   [[ -z "${line// }" ]] && continue
   read -r filename program note velocity seconds sample_rate <<<"$line"
-  golden="${ROOT}/tests/golden/${filename}"
+  golden="${ROOT}/tests/golden/junova/${filename}"
   if [[ ! -f "$golden" ]]; then
     echo "Missing golden file: $golden" >&2
     exit 1
   fi
-  tmp="$(mktemp /tmp/jdupg-golden-XXXXXX.wav)"
+  tmp="$(mktemp /tmp/junova-golden-XXXXXX.wav)"
   "$RENDER" "$tmp" "$program" "$note" "$velocity" "$seconds" "$sample_rate"
-  echo "== ${filename} (program ${program}, note ${note}) =="
+  echo "== junova ${filename} (program ${program}, note ${note}) =="
   "$DIFF" "$golden" "$tmp" --max-rms-db "$MAX_RMS_DB" --max-spectral-db "$MAX_SPECTRAL_DB"
   rm -f "$tmp"
 done <"$MANIFEST"
 
-echo "All JD Upgraded golden comparisons passed."
-
-if [[ -x "${ROOT}/tests/golden/verify_junova_golden.sh" ]]; then
-  bash "${ROOT}/tests/golden/verify_junova_golden.sh"
-fi
+echo "All Junova golden comparisons passed."

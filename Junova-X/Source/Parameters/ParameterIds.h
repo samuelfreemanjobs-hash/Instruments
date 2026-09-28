@@ -43,6 +43,7 @@ struct ParameterIDs
 
     static constexpr const char* arpRange = "arpRange";
     static constexpr const char* arpRate = "arpRate";
+    static constexpr const char* arpLatch = "arpLatch";
 
     static constexpr const char* diagTestTone = "diagTestTone";
     static constexpr const char* diagToneFreq = "diagToneFreq";

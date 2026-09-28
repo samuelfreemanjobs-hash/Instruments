@@ -160,6 +160,7 @@ def stage_artefacts() -> StageResult:
         JUNOVA_VST3_BUNDLE,
         JUNOVA_CLAP_BUNDLE,
         REPO_ROOT / "build/Junova-X/JunovaX_artefacts/Release/Standalone/Junova-X",
+        REPO_ROOT / "build/Junova-X/JunovaOfflineRender",
     ]
     lines: list[str] = []
     ok = True

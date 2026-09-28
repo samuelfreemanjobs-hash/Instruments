@@ -49,6 +49,7 @@ struct RuntimeParams
 
     float arpRange = 2.0f;
     float arpRate = 0.25f;
+    bool arpLatch = false;
 
     bool diagTestTone = false;
     float diagToneFreqHz = 440.0f;

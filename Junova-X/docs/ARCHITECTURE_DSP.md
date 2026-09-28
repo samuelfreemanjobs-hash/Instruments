@@ -26,7 +26,9 @@ flowchart LR
 - **Held notes:** up to 16; sorted upward pattern.
 - **Range:** `arpRange` 1–4 octaves (UI fader 1–4).
 - **Rate:** normalized fader maps to step length vs **host BPM** (fallback 120).
-- **Future:** sample-accurate step placement; sync to PPQ / swing; patterns (down, random).
+- **PPQ:** steps on 1/16, 1/8, 1/4, 1/2 quarter-note grid from host `ppqPosition` (free-run PPQ in standalone).
+- **Latch:** `arpLatch` keeps held notes after key release until all-notes-off.
+- **Future:** swing, down/random patterns, sample-accurate sub-block placement refinements.
 
 ## SynthEngine
 

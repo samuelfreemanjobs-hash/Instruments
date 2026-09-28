@@ -13,8 +13,9 @@ From repo root:
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
-cmake --build build -j --target JunovaX_VST3 JunovaX_Standalone JunovaX_CLAP JunovaXTests
+cmake --build build -j --target JunovaX_VST3 JunovaX_Standalone JunovaX_CLAP JunovaXTests JunovaOfflineRender
 ctest -R JunovaXArpeggiator --test-dir build --output-on-failure
+bash tests/golden/verify_junova_golden.sh
 ./build/Junova-X/JunovaX_artefacts/Release/Standalone/Junova-X
 ```
 

@@ -38,6 +38,7 @@ public:
     void resized() override;
 
     void refreshPresetLabel();
+    void refreshHostBar();
 
 private:
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
@@ -81,6 +82,11 @@ private:
     juce::TextButton chorusBoth_ { "I + II" };
 
     juce::Component keyboardStrip_;
+
+    juce::ToggleButton hpfEnable_ { "HPF ON" };
+    juce::ToggleButton arpLatch_ { "LATCH" };
+    std::unique_ptr<ButtonAttachment> hpfAttachment_;
+    std::unique_ptr<ButtonAttachment> arpLatchAttachment_;
 
     std::vector<std::unique_ptr<juce::Slider>> sliders_;
     std::vector<std::unique_ptr<SliderAttachment>> sliderAttachments_;

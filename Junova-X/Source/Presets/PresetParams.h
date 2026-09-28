@@ -46,6 +46,7 @@ struct PresetParams
 
     float arpRange = 2.0f;
     float arpRate = 0.25f;
+    bool arpLatch = false;
 };
 
 struct FactoryPreset

@@ -47,6 +47,22 @@ target_link_libraries (JunovaXTests
 
 add_test (NAME JunovaXArpeggiator COMMAND JunovaXTests)
 
+add_executable (JunovaOfflineRender tools/OfflineRender.cpp)
+target_include_directories (JunovaOfflineRender PRIVATE Source)
+target_compile_definitions (JunovaOfflineRender PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
+target_include_directories (JunovaOfflineRender
+    PRIVATE
+        "${CMAKE_BINARY_DIR}/Junova-X/JunovaX_artefacts/JuceLibraryCode"
+)
+add_dependencies (JunovaOfflineRender JunovaX)
+target_link_libraries (JunovaOfflineRender
+    PRIVATE
+        JunovaX
+        juce::juce_audio_formats
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_warning_flags
+)
+
 target_compile_definitions (JunovaX
     PUBLIC
         JUCE_WEB_BROWSER=0

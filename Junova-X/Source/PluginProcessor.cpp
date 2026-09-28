@@ -66,6 +66,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JunovaXAudioProcessor::creat
 
     addFloat (layout, PID::arpRange, "Arp Range", { 1.0f, 4.0f, 1.0f }, 2.0f);
     addFloat (layout, PID::arpRate, "Arp Rate", { 0.0f, 1.0f, 0.001f }, 0.25f);
+    layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::arpLatch, 1 }, "Arp Latch", false));
 
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::diagTestTone, 1 }, "Diag Test Tone", false));
     addFloat (layout, PID::diagToneFreq, "Diag Freq", { 55.0f, 880.0f, 0.01f, 0.5f }, 440.0f);
@@ -175,12 +176,14 @@ void JunovaXAudioProcessor::applyFactoryPreset (int index)
     setF (PID::width, p.width);
     setF (PID::arpRange, p.arpRange);
     setF (PID::arpRate, p.arpRate);
+    setB (PID::arpLatch, p.arpLatch);
 
     pushParamsToEngine();
 }
 
 void JunovaXAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    lastSampleRate_ = sampleRate;
     arpeggiator_.prepare (sampleRate);
     engine_.prepare (sampleRate, samplesPerBlock);
     pushParamsToEngine();
@@ -201,14 +204,32 @@ void JunovaXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     juce::ScopedNoDenormals noDenormals;
     pushParamsToEngine();
 
-    double bpm = 120.0;
+    junovax::dsp::ArpHostContext host;
+    host.bpm = 120.0;
+    host.ppqValid = false;
     if (auto* head = getPlayHead())
+    {
         if (auto pos = head->getPosition())
-            bpm = pos->getBpm().orFallback (120.0);
+        {
+            host.bpm = pos->getBpm().orFallback (120.0);
+            if (auto ppq = pos->getPpqPosition())
+            {
+                host.ppqPosition = *ppq;
+                host.ppqValid = true;
+            }
+        }
+    }
+    displayBpm_.store (static_cast<float> (host.bpm), std::memory_order_relaxed);
 
     const auto params = readParamsFromApvts();
     juce::MidiBuffer arpMidi;
-    arpeggiator_.process (midi, arpMidi, params.arpRate, params.arpRange, bpm, buffer.getNumSamples());
+    arpeggiator_.process (midi,
+                          arpMidi,
+                          params.arpRate,
+                          params.arpRange,
+                          params.arpLatch,
+                          host,
+                          buffer.getNumSamples());
     engine_.render (buffer, arpMidi);
 
     if (buffer.getNumChannels() > 0)
@@ -269,6 +290,7 @@ junovax::dsp::RuntimeParams JunovaXAudioProcessor::readParamsFromApvts() const n
     p.width = f (PID::width);
     p.arpRange = f (PID::arpRange);
     p.arpRate = f (PID::arpRate);
+    p.arpLatch = f (PID::arpLatch) > 0.5f;
     p.diagTestTone = f (PID::diagTestTone) > 0.5f;
     p.diagToneFreqHz = f (PID::diagToneFreq);
     return p;
