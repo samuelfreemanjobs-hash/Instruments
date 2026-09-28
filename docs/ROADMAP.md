@@ -7,7 +7,7 @@ Single place to see **where we are going** and **what is done**. PM Agent refres
 ---
 
 <!-- ROADMAP_PROGRESS_BEGIN -->
-*Last updated:* 2026-09-28 12:13 UTC · regenerate: `python3 scripts/update-roadmap-progress.py`
+*Last updated:* 2026-09-28 16:42 UTC · regenerate: `python3 scripts/update-roadmap-progress.py`
 
 | Metric | Value |
 |--------|------:|
@@ -26,7 +26,7 @@ Single place to see **where we are going** and **what is done**. PM Agent refres
 | Track | Current focus | Status |
 |-------|---------------|--------|
 | **Disklordz SaaS v0** | Auth, generate, ZIP, deploy | **Shipped** — see [DISKLORDZ_GO_LIVE.md](DISKLORDZ_GO_LIVE.md) |
-| **SaaS 007+ (ILLUGEN-shaped)** | Spec, variations, async, credits, RAG | **In progress** — partial API + integrations hub |
+| **SaaS 007–016 (ILLUGEN-shaped)** | Spec, variations, factory, inbox | **Shipped in git** — prod secrets for async/Stripe/pgvector: [NEXT.md](NEXT.md) |
 | **Agent fleet (31)** | Repo-wide docs + autopilot CI | **Shipped** — scheduled CI on `main` |
 | **OSS integrations (35)** | manifest + website wiring | **34 integrated**, 1 external (Bytebot) — run `promote-integrations.py` after new stubs |
 | **JD Upgraded plugin** | Phase 5 | See [PHASE5.md](PHASE5.md) |
@@ -88,12 +88,12 @@ Set secret **`DISKLORDZ_VERIFY_BASE_URL`** for production smoke in CI.
 | WO | Theme | Progress |
 |----|-------|----------|
 | 001–006 | v0 scaffold → rate limits | **Done** (see [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md)) |
-| 007 | GenerationSpec in API/UI | **Partial** — spec validator agent + API paths |
-| 008+ | Variations, async jobs | **Partial** — Inngest routes; prod keys optional |
-| 009+ | Credits / Stripe Pro | **Partial** — billing-ops agent; Stripe MCP |
-| 010+ | RAG pgvector | **Partial** — hybrid RAG; embed optional |
-| 011+ | Product factory SKUs | **Partial** — `/api/factory/batch` |
-| 012+ | DAW inbox + library | **Started** — daw-inbox package |
+| 007 | GenerationSpec in API/UI | **Done** — `GenerationSpecFields`, API parse |
+| 008 | Variations | **Done** — 2 studio / 3 creative |
+| 009–010 | Async + credits / Stripe | **Code done** — needs `INNGEST_*` / `STRIPE_*` on Vercel |
+| 011–012 | History + RAG | **Done** keyword; **012b** pgvector needs embed keys |
+| 013–016 | Engines, loop/SFX, factory, daw-inbox | **Done** in repo |
+| **Next** | Production + phase-3 agents | [NEXT.md](NEXT.md) |
 
 Detail mapping to ILLUGEN systems: [DISKLORDZ_ILLUGEN_RESEARCH.md](DISKLORDZ_ILLUGEN_RESEARCH.md) (table § “Twelve systems”).
 
