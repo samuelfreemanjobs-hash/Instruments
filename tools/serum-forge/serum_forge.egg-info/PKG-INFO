@@ -1,0 +1,30 @@
+Metadata-Version: 2.4
+Name: serum-forge
+Version: 0.1.0
+Summary: Serum symbolic preset pipeline (guardrails, JSON intermediate, optional packager)
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: uvicorn[standard]>=0.32.0
+Requires-Dist: pydantic>=2.7.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: httpx>=0.27.0; extra == "dev"
+
+# Serum Forge
+
+Autonomous **Serum** preset pipeline: constrained symbolic ParamSpec, guardrails, optional binary packager hook, headless render stubs.
+
+```bash
+cd tools/serum-forge
+pip install -r requirements.txt
+python scripts/smoke.py
+python scripts/cli.py --prompt "dusty lofi ambient pad" --out-dir ./out
+python scripts/cli.py --schema   # OpenAPI JSON for LLM tools
+```
+
+Set `SERUM_PACKAGER_BIN` and `SERUM_VST3_PATH` per [.env.example](.env.example) for stages 3–4.
+
+Docs: [docs/SERUM_BINARY_ARCHITECTURE.md](docs/SERUM_BINARY_ARCHITECTURE.md) · [docs/GEM_SERUM_FORGE.md](docs/GEM_SERUM_FORGE.md)
+
+See [ARCHITECTURE.md](ARCHITECTURE.md). Distinct from [SynthForge](../synth-forge/ARCHITECTURE.md) (hardware SysEx adapters).
