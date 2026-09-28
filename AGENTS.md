@@ -72,6 +72,16 @@ streamlit run vst-testing-ops/app.py                       # operations dashboar
 
 - [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
 
+## SynthForge (preset workstation)
+
+```bash
+cd tools/synth-forge && python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt && pip install -e . && pytest tests -v
+uvicorn synth_forge.main:app --reload --port 8000
+```
+
+See [tools/synth-forge/ARCHITECTURE.md](tools/synth-forge/ARCHITECTURE.md).
+
 ## Git
 
 - Do not force-push or deploy production unless the user asks.  
