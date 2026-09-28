@@ -32,6 +32,7 @@ pip install -r requirements.txt -r requirements-train.txt
 pip install -e .
 pytest tests/test_torch_ddsp.py -v
 python scripts/train_ddsp_808.py --steps 60
+python scripts/ddsp_training_loop.py --folder ./drums --epochs 20
 # writes artifacts/ddsp_808_encoder.onnx (encoder only; synth stays in C++)
 ```
 
@@ -40,7 +41,9 @@ python scripts/train_ddsp_808.py --steps 60
 | `torch_ddsp/spectral_loss.py` | torchaudio STFT **512 / 1024 / 2048**; normalized linear + log Frobenius |
 | `torch_ddsp/synth_torch.py` | **4** bounded controls → exp pitch sweep + tanh (matches training blueprint) |
 | `torch_ddsp/encoder.py` | Mel Conv2d `DDSP808Encoder`; ONNX **`mel_input` → `synth_parameters`** |
-| `torch_ddsp/pipeline.py` | Adam loop + export `ddsp_808_encoder.onnx` |
+| `torch_ddsp/dataset.py` | ``DrumSampleDataset`` — flat ``.wav`` folder, resample/mono/pad/peak-norm |
+| `torch_ddsp/mel_front_end.py` | Shared mel config (n_fft=2048, hop=1024, 128 mels) |
+| `torch_ddsp/pipeline.py` | Smoke train, **folder train**, ONNX export |
 
 ## DDSP → ONNX → JUCE
 

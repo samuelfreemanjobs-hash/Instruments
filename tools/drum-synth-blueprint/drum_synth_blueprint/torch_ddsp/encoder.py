@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import torch
 import torch.nn as nn
-import torchaudio.transforms as T
 
+from drum_synth_blueprint.torch_ddsp.mel_front_end import MEL_N_MELS, make_mel_spectrogram
 from drum_synth_blueprint.torch_ddsp.synth_torch import Differentiable808Synth
 
 
@@ -17,7 +17,7 @@ class DDSP808Encoder(nn.Module):
     ONNX output: ``synth_parameters`` float tensor ``[batch, 4]`` in ``[0, 1]``
     """
 
-    def __init__(self, n_mels: int = 128) -> None:
+    def __init__(self, n_mels: int = MEL_N_MELS) -> None:
         super().__init__()
         self.n_mels = n_mels
         self.conv_stack = nn.Sequential(
@@ -55,15 +55,11 @@ class DDSP808TrainableSystem(nn.Module):
         *,
         sample_rate: float = 44100.0,
         duration_sec: float = 2.0,
-        n_mels: int = 128,
+        n_mels: int = MEL_N_MELS,
     ) -> None:
         super().__init__()
         self.sample_rate = sample_rate
-        self.mel_transform = T.MelSpectrogram(
-            sample_rate=int(sample_rate),
-            n_fft=2048,
-            n_mels=n_mels,
-        )
+        self.mel_transform = make_mel_spectrogram(sample_rate=int(sample_rate), n_mels=n_mels)
         self.encoder = DDSP808Encoder(n_mels=n_mels)
         self.synth = Differentiable808Synth(sample_rate=sample_rate, duration_sec=duration_sec)
 
