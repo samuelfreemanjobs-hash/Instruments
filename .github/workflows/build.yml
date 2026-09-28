@@ -9,6 +9,7 @@ on:
 jobs:
   cmake:
     runs-on: ubuntu-24.04
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
 
@@ -18,7 +19,7 @@ jobs:
           sudo apt-get install -y build-essential g++-12 libstdc++-12-dev \
             libasound2-dev libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev \
             libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev \
-            libcurl4-openssl-dev
+            libcurl4-openssl-dev unzip xvfb
 
       - name: Configure
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
@@ -26,16 +27,11 @@ jobs:
       - name: Build
         run: cmake --build build -j$(nproc)
 
-      - name: Plugin artefacts
-        run: |
-          test -d "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3"
-          test -f "build/JDUpgraded_artefacts/Release/CLAP/JD Upgraded.clap"
-          test -x "build/JDUpgraded_artefacts/Release/Standalone/JD Upgraded"
+      - name: Cache pluginval binary
+        run: python3 scripts/vst/run_pluginval.py --install-only
 
-      - name: Offline render smoke
-        run: |
-          ./build/OfflineRender /tmp/jdupg-a.wav 0 60 100 0.5 44100
-          ./build/OfflineRender /tmp/jdupg-b.wav 0 60 100 0.5 44100
-          test -s /tmp/jdupg-a.wav
-          ./build/SpectralDiff /tmp/jdupg-a.wav /tmp/jdupg-b.wav --max-rms-db -80 --max-spectral-db 0.25
-          ./tests/golden/verify_golden.sh
+      - name: Monorepo QA verification
+        env:
+          PYTHONUNBUFFERED: "1"
+          CI: true
+        run: xvfb-run -a python3 -u vst-testing-ops/run_business.py --profile ci-verify

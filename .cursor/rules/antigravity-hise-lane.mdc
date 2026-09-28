@@ -1,0 +1,11 @@
+---
+description: When user mentions Antigravity or HISE handoff, use the git bridge — do not claim remote IDE control.
+globs: disklordz/antigravity/**,docs/HISE_*.md,hise-sketch/**
+---
+
+# Antigravity handoff (Cursor Cloud)
+
+- **Cannot** remote-login to the user's Antigravity IDE. Use **git handoff files** instead.
+- To assign HISE work: run `./scripts/antigravity-bridge/antigravity-bridge.sh send --wo ... --title ... --push`
+- Inbox: `disklordz/antigravity/inbox/` · Outbox: `outbox/`
+- Docs: `disklordz/antigravity/ARCHITECTURE.md`, `docs/HISE_ANTIGRAVITY_LANE.md`
