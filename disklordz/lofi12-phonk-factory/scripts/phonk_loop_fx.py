@@ -1,0 +1,152 @@
+"""Mix-bus FX for rendered phonk loops (filter, reverb, tape, drive)."""
+
+from __future__ import annotations
+
+import math
+from dataclasses import asdict, dataclass
+
+from phonk_synth import SRC_RATE, noise
+
+
+@dataclass
+class LoopFxParams:
+    filter_cutoff: float = 0.65  # 0 dark – 1 bright (maps to Lofi CC 38 idea)
+    reverb_send: float = 0.25  # 0–1 wet (CC 36)
+    tape: float = 0.2  # wobble + light hiss
+    drive: float = 0.15
+    cassette: float = 0.0  # wow/flutter + muffled cassette band + hiss
+    bitcrush: float = 0.0  # 0–1 SP-1200-style crush
+    gain: float = 0.75  # 0–1 output trim after mix bus
+    laid_back_ms: float = 0.0  # global micro delay (CC 31 vibe)
+
+
+def fx_from_prompt(prompt: str) -> LoopFxParams:
+    p = prompt.lower()
+    fx = LoopFxParams()
+    if "dark" in p or "screw" in p:
+        fx.filter_cutoff = 0.42
+        fx.tape = 0.35
+    if "bright" in p or "clean" in p:
+        fx.filter_cutoff = 0.82
+    if "wet" in p or "space" in p or "reverb" in p:
+        fx.reverb_send = 0.45
+    if "dry" in p:
+        fx.reverb_send = 0.08
+    if "dirty" in p or "phonk" in p or "memphis" in p:
+        fx.drive = 0.28
+        fx.tape = max(fx.tape, 0.22)
+    if "toomp" in p or "sp1200" in p or "sp-1200" in p:
+        fx.filter_cutoff = min(fx.filter_cutoff, 0.5)
+        fx.tape = max(fx.tape, 0.26)
+        fx.drive = max(fx.drive, 0.3)
+        fx.bitcrush = max(fx.bitcrush, 0.35)
+    if "cassette" in p or "tape deck" in p:
+        fx.cassette = max(fx.cassette, 0.4)
+    if "bit crush" in p or "bitcrush" in p or "12 bit" in p or "12-bit" in p:
+        fx.bitcrush = max(fx.bitcrush, 0.45)
+    if "drift" in p:
+        fx.reverb_send = 0.32
+    return fx
+
+
+def _lowpass(samples: list[float], cutoff: float) -> list[float]:
+    # cutoff 0..1 → coefficient
+    a = min(0.995, max(0.05, 1.0 - cutoff * 0.92))
+    out: list[float] = []
+    state = 0.0
+    for s in samples:
+        state = a * state + (1 - a) * s
+        out.append(state)
+    return out
+
+
+def _bitcrush(samples: list[float], amount: float) -> list[float]:
+    if amount <= 0.001:
+        return samples
+    bits = max(4, int(16 - amount * 11))
+    levels = 2**bits
+    hold = max(1, int(1 + amount * 14))
+    out: list[float] = []
+    for i, s in enumerate(samples):
+        if i % hold != 0 and out:
+            out.append(out[-1])
+            continue
+        crushed = round(s * levels) / levels
+        out.append(crushed)
+    return out
+
+
+def _cassette(samples: list[float], amount: float, seed: int = 0) -> list[float]:
+    if amount <= 0.001:
+        return samples
+    out: list[float] = []
+    read_pos = 0.0
+    for i, _ in enumerate(samples):
+        t = i / SRC_RATE
+        flutter = 1.0 + amount * 0.035 * math.sin(t * 6.3 + seed)
+        flutter += amount * 0.012 * math.sin(t * 13.7)
+        read_pos += flutter
+        idx = int(read_pos)
+        read_pos -= idx
+        s = samples[min(idx, len(samples) - 1)]
+        s = s * (1.0 - amount * 0.08) + noise(t, seed + i) * amount * 0.025
+        out.append(s)
+    out = _lowpass(out, max(0.15, 0.55 - amount * 0.35))
+    return out
+
+
+def _simple_reverb(samples: list[float], wet: float, seed: int = 0) -> list[float]:
+    if wet <= 0.001:
+        return samples
+    delays = [int(SRC_RATE * t) for t in (0.031, 0.047, 0.061)]
+    buf = list(samples)
+    out = list(samples)
+    for d in delays:
+        for i in range(d, len(out)):
+            out[i] += buf[i - d] * wet * 0.22
+    for i in range(len(out)):
+        out[i] += noise(i / SRC_RATE, seed) * wet * 0.015
+    return out
+
+
+def apply_loop_fx(samples: list[float], fx: LoopFxParams, *, seed: int = 0) -> list[float]:
+    if not samples:
+        return samples
+    out = list(samples)
+    if fx.laid_back_ms > 0:
+        shift = int(SRC_RATE * (fx.laid_back_ms / 1000.0))
+        if shift > 0:
+            out = [0.0] * shift + out[:-shift]
+    out = _lowpass(out, fx.filter_cutoff)
+    drive = 1.0 + fx.drive * 3.5
+    out = [math.tanh(s * drive) / math.tanh(drive) for s in out]
+    if fx.tape > 0:
+        for i in range(len(out)):
+            t = i / SRC_RATE
+            wobble = 1.0 + fx.tape * 0.02 * math.sin(t * 4.1 + seed)
+            out[i] *= wobble
+            out[i] += noise(t, seed + i) * fx.tape * 0.012
+    if fx.bitcrush > 0:
+        out = _bitcrush(out, fx.bitcrush)
+    if fx.cassette > 0:
+        out = _cassette(out, fx.cassette, seed + 17)
+    wet = fx.reverb_send
+    out = _simple_reverb(out, wet, seed)
+    peak = max(abs(x) for x in out) or 1.0
+    trim = max(0.05, min(1.0, fx.gain)) * 1.1
+    return [x * (0.89 / peak) * trim for x in out]
+
+
+def fx_to_lofi12_cc(fx: LoopFxParams) -> dict[str, int]:
+    """Approximate CC values for manual Lofi-12 matching (0–127)."""
+    return {
+        "filterCutoff": int(max(0, min(127, fx.filter_cutoff * 127))),
+        "reverbSend": int(max(0, min(127, fx.reverb_send * 127))),
+        "laidBack": int(max(0, min(127, fx.laid_back_ms / 20.0 * 127))),
+    }
+
+
+def fx_dict(fx: LoopFxParams) -> dict:
+    d = asdict(fx)
+    d["lofi12Cc"] = fx_to_lofi12_cc(fx)
+    return d

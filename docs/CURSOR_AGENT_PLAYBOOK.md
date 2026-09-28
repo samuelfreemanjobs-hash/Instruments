@@ -114,13 +114,17 @@ Disklordz SaaS deploy: root directory `disklordz/website`, Supabase redirect URL
 
 ---
 
-## 8. Skills and MCP
+## 8. GUI Agent lane
+
+Product UI (web, sequencer, Streamlit ops): follow [GUI_DESIGN_SOP.md](GUI_DESIGN_SOP.md) and invoke the **GUI Agent** prompt from [GUI_AGENT_PLAYBOOK.md](GUI_AGENT_PLAYBOOK.md). Design exploration may use **Gemini**, **Google Stitch**, or **Google AI Studio**; implementation and proof stay in Cursor with locked `GUI_MOCKUP_SPEC.md` + artifacts.
+
+## 9. Skills and MCP
 
 Enable marketplace skills for your stack (Vercel, Supabase, env-setup). Use **native MCP** when available; Zapier for cross-app chains.
 
 ---
 
-## 9. First-week sequence (any greenfield app)
+## 10. First-week sequence (any greenfield app)
 
 1. Architecture rule + `ARCHITECTURE.md`  
 2. Agent scaffold + CI  
@@ -131,7 +135,7 @@ Enable marketplace skills for your stack (Vercel, Supabase, env-setup). Use **na
 
 ---
 
-## 10. Disklordz pointers
+## 11. Disklordz pointers
 
 | Topic | Doc |
 |--------|-----|

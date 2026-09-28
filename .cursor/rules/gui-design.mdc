@@ -1,0 +1,23 @@
+---
+description: GUI design and GUI Agent workflow — read before editing product UI
+globs:
+  - "**/sequencer/static/**"
+  - "**/disklordz/website/**/*.{tsx,jsx,css}"
+  - "**/vst-testing-ops/**/*.py"
+  - "**/GUI_MOCKUP_SPEC.md"
+  - "**/references/gui/**"
+---
+
+# GUI design rule
+
+When changing user-facing UI in matched paths:
+
+1. Read [docs/GUI_DESIGN_SOP.md](../../docs/GUI_DESIGN_SOP.md) and [docs/GUI_AGENT_PLAYBOOK.md](../../docs/GUI_AGENT_PLAYBOOK.md).
+2. Read the product **`GUI_MOCKUP_SPEC.md`** if it exists (e.g. `disklordz/lofi12-phonk-factory/docs/GUI_MOCKUP_SPEC.md`).
+3. Do not add controls that are not in the spec or an approved mockup in `references/gui/` — update the spec first or note DRAFT in PR.
+4. Preserve stable **`id=`** attributes on interactive elements when spec lists them (API wiring and tests).
+5. Non-trivial UI changes require **browser verification** and walkthrough artifacts (video/screenshots) per the Cursor testing contract.
+6. External design tools (Gemini, Google Stitch, Google AI Studio): use for layout/copy only; do not paste secrets into those tools.
+7. Match existing panel/transport/FX patterns in sibling files before inventing new component libraries.
+
+Mockup drop zone: `disklordz/lofi12-phonk-factory/references/gui/` (README describes naming).
