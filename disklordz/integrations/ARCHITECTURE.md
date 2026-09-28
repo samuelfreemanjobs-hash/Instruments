@@ -10,6 +10,10 @@ Wire the **35 reference GitHub projects** (agents, skills, MCP, RAG, async jobs,
 # One-shot local setup (optional Python venv + npm deps + chunk corpus)
 ./scripts/setup-open-source-integrations.sh
 
+# Production: migrations, RAG embed, Vercel env, Inngest, verify
+bash disklordz/integrations/scripts/activate-integrations.sh --all
+# CI: Actions → Activate Disklordz integrations
+
 # Website (required)
 cd disklordz/website && npm ci && npm run build
 
@@ -59,6 +63,7 @@ POST /api/generate/async → Inngest event → same batch builder → Storage
 
 ## Related docs
 
+- [docs/DISKLORDZ_PROFIT_AGENTS.md](../../docs/DISKLORDZ_PROFIT_AGENTS.md) — 15 automatable profit agents
 - [docs/DISKLORDZ_OPEN_SOURCE_REFERENCES.md](../../docs/DISKLORDZ_OPEN_SOURCE_REFERENCES.md)
 - [disklordz/rag/ARCHITECTURE.md](../rag/ARCHITECTURE.md)
 - [disklordz/website/ARCHITECTURE.md](../website/ARCHITECTURE.md)

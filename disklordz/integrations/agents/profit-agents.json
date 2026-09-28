@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "description": "Fifteen automatable agent roles mapped to profit levers for Disklordz.",
+  "agents": [
+    {
+      "id": "conversion-qa",
+      "repo": "https://github.com/microsoft/playwright-mcp",
+      "profitLever": "checkout_and_generate_funnel",
+      "automate": "MCP + verify-go-live.sh / scheduled CI"
+    },
+    {
+      "id": "billing-ops",
+      "repo": "https://github.com/stripe/agent-toolkit",
+      "profitLever": "mrr_and_payment_recovery",
+      "automate": "Stripe MCP in .cursor/mcp.json"
+    },
+    {
+      "id": "ship-velocity",
+      "repo": "https://github.com/github/github-mcp-server",
+      "profitLever": "time_to_ship_features",
+      "automate": "Cursor Cloud + airtable-antigravity-handoff.yml"
+    },
+    {
+      "id": "async-generation",
+      "repo": "https://github.com/inngest/inngest",
+      "profitLever": "completed_paid_generations",
+      "automate": "activate-integrations.sh --inngest"
+    },
+    {
+      "id": "prompt-coach",
+      "repo": "https://github.com/vercel/ai",
+      "profitLever": "free_to_paid_conversion",
+      "automate": "embed_and_upsert.py + /api/rag/suggest"
+    },
+    {
+      "id": "product-factory",
+      "repo": "https://github.com/crewAIInc/crewAI",
+      "profitLever": "storefront_pack_aov",
+      "automate": "crew_product_factory.py + /api/factory/batch"
+    },
+    {
+      "id": "spec-validator",
+      "repo": "https://github.com/pydantic/pydantic-ai",
+      "profitLever": "fewer_refunds",
+      "automate": "pydantic_spec_agent.py"
+    },
+    {
+      "id": "lane-workflow",
+      "repo": "https://github.com/langchain-ai/langgraph",
+      "profitLever": "quality_variations",
+      "automate": "langgraph_spec_flow.py"
+    },
+    {
+      "id": "ops-schema",
+      "repo": "https://github.com/supabase/mcp",
+      "profitLever": "uptime",
+      "automate": "apply-supabase-migrations.sh"
+    },
+    {
+      "id": "marketing-glue",
+      "repo": "https://github.com/n8n-io/n8n",
+      "profitLever": "retention_and_leads",
+      "automate": "docker-compose.optional.yml --profile n8n"
+    },
+    {
+      "id": "support-macro",
+      "repo": "https://github.com/anthropics/skills",
+      "profitLever": "support_cost",
+      "automate": ".github/skills/disklordz-rag"
+    },
+    {
+      "id": "desktop-ops",
+      "repo": "https://github.com/bytebot-ai/bytebot",
+      "profitLever": "ops_time",
+      "automate": "docs/BYTEBOT_SETUP.md"
+    },
+    {
+      "id": "factory-batch-gpu",
+      "repo": "https://github.com/triggerdotdev/trigger.dev",
+      "profitLever": "catalog_sku_velocity",
+      "automate": "integrations/engines/README.md#triggerdev"
+    },
+    {
+      "id": "engine-swap",
+      "repo": "https://github.com/facebookresearch/audiocraft",
+      "profitLever": "pro_retention",
+      "automate": "DISKLORDZ_ENGINE=remote + engine docker profile"
+    },
+    {
+      "id": "integration-health",
+      "repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "profitLever": "prevent_revenue_leaks",
+      "automate": "verify-integrations.sh + /api/integrations/status"
+    }
+  ]
+}

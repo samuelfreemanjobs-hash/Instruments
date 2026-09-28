@@ -24,3 +24,6 @@ fi
 
 echo "Done. Check: cd disklordz/website && npm run dev"
 echo "Status: curl -s http://localhost:3000/api/integrations/status | head"
+echo ""
+echo "Production activation (when secrets are set):"
+echo "  bash disklordz/integrations/scripts/activate-integrations.sh --all"
