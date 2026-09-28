@@ -58,7 +58,9 @@ Use these when designing **Junova golden scenarios** and manual listening tests.
 
 | Source | URL | Use |
 |--------|-----|-----|
-| **Ultramaster KR-106** (JUCE, GPL) | https://github.com/kayrockscreenprinting/ultramaster_kr106 | **IR3109 / BBD / SysEx** parity ideas when iPlug2 Juno106 tree is unavailable |
+| **Ultramaster KR-106** (JUCE, GPL) | https://github.com/kayrockscreenprinting/ultramaster_kr106 | **Primary open reference** — `render_midi` + [REFERENCE_PLUGINS.md](REFERENCE_PLUGINS.md); study/reimplement, no code paste |
+| **TAL-U-NO-LX** (free, closed) | https://tal-software.com/products/tal-u-no-lx | Audio A/B only |
+| **Tyrell N6** (free) | https://u-he.com/products/tyrelln6/ | Audio A/B; Juno-inspired |
 | **iPlug2 IPlugInstrument** | `vst-juno106/third_party/iPlug2/Examples/IPlugInstrument/` | Disklordz **iPlug2 framework** in monorepo; Juno106 product code still external |
 
 ## Junova-X A/B test matrix (WO-2026-008+)

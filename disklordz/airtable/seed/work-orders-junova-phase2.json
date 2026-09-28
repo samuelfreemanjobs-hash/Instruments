@@ -40,5 +40,11 @@
     "title": "[Plugin][Junova-X] Juno 6-voice poly mode",
     "status": "Done",
     "acceptance": "Voice mode Juno 6 limits poly to 6; Celestial button; golden ab-juno6-poly"
+  },
+  {
+    "id": "WO-2026-011",
+    "title": "[Plugin][Junova-X] Free Juno reference plugins workflow",
+    "status": "Done",
+    "acceptance": "REFERENCE_PLUGINS.md; KR-106 clone script; compare_kr106_reference.sh; chorus aligned to published HW LFO rates"
   }
 ]

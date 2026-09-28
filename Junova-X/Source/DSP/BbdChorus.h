@@ -19,7 +19,6 @@ public:
 private:
     double sampleRate_ = 48000.0;
     float chorusPhase_ = 0.0f;
-    float chorusPhase2_ = 0.0f;
     float wetLpL_ = 0.0f;
     float wetLpR_ = 0.0f;
     int delayWrite_ = 0;

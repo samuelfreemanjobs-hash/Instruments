@@ -66,4 +66,5 @@ UI: CelestialMainPanel / DiagPanel ←→ APVTS attachments
 - [docs/QA_HOST_SMOKE.md](docs/QA_HOST_SMOKE.md)
 - [docs/COMPETITIVE_JUN6.md](docs/COMPETITIVE_JUN6.md)
 - [docs/IPLUG2_REFERENCE.md](docs/IPLUG2_REFERENCE.md)
+- [docs/REFERENCE_PLUGINS.md](docs/REFERENCE_PLUGINS.md)
 - [docs/HERMES_AGENT_FRAMEWORK.md](../docs/HERMES_AGENT_FRAMEWORK.md)

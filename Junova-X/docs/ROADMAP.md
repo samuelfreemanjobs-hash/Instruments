@@ -18,6 +18,7 @@
 | 008 | Jun-6 V competitive A/B matrix + golden expansion | **Done** — scenarios, manifest, [QA_AB_JUN6.md](QA_AB_JUN6.md) |
 | 009 | IR3109 VCF + chorus BBD v2 | **Partial** — OTA tanh VCF + Juno-ish chorus LFO rates (see ARCHITECTURE_DSP) |
 | 010 | 6-voice Juno mode | **Done** — voice mode **Juno 6**, UI button, golden `ab-juno6-poly` |
+| 011 | Free reference plugins (KR-106 et al.) | **Done** — [REFERENCE_PLUGINS.md](REFERENCE_PLUGINS.md), `setup_kr106_reference.sh`, `compare_kr106_reference.sh` |
 
 ## Phase 3 — Product
 

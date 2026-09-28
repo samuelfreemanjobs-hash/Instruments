@@ -30,8 +30,18 @@ Same MIDI note, velocity, length, **no extra FX**. Peak-normalize both files in 
 
 ## 3. Spectral diff (optional)
 
+**Open-source KR-106** (built from source, not binary RE):
+
 ```bash
-./tests/golden/junova/compare_jun6_reference.sh /path/to/jun6v.wav ab02-fat-pad 48 4.0
+./Junova-X/scripts/setup_kr106_reference.sh
+cmake --build build -j --target JunovaOfflineRender
+./tests/golden/junova/compare_kr106_reference.sh ab03-chorus-i 57 3.0
+```
+
+**Any plugin bounce** (TAL, Arturia, etc.):
+
+```bash
+./tests/golden/junova/compare_jun6_reference.sh /path/to/reference.wav ab02-fat-pad 48 4.0
 ```
 
 Thresholds are intentionally loose; **solo + in-mix** listening wins disputes (see Bass Valley / Luke Million methodology in COMPETITIVE_JUN6.md).

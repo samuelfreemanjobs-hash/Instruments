@@ -43,7 +43,7 @@ flowchart LR
 |-----------|-----|------|
 | DCO waveforms | saw/pwm/sub | full Juno wave blend |
 | VCF | SVF + **OTA tanh** saturation | IR3109-style nonlinear (WO-009) |
-| Chorus | dual delay, mode LFO rates ~0.42/0.82/0.65+1.05 Hz, wet LP | clock-noise + stereo spread |
+| Chorus | Hermite delay; LFO **0.393 / 0.797 / 8 Hz** (triangle/sine); IC6 dry/wet | KR-106 parity pass — [REFERENCE_PLUGINS.md](REFERENCE_PLUGINS.md) |
 | Env | dual ADSR | cross-mod, velocity |
 | Arp | up, BPM | host sync PPQ, latch |
 | Voices | 8 poly / unison / mono; **Juno 6** caps poly at 6 | SysEx subset (WO-010) |
