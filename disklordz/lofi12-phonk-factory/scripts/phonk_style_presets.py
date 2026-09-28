@@ -21,7 +21,7 @@ class StylePreset:
 PRESETS: dict[str, StylePreset] = {
     "juicy_j": StylePreset(
         "juicy_j",
-        "Juicy J — dirty Memphis 808 + tape",
+        "Hard Dirt 808",
         "juicy j dirty memphis phonk 808 cowbell 86 bpm",
         "juicy_j",
         "juicy_j",
@@ -37,7 +37,7 @@ PRESETS: dict[str, StylePreset] = {
     ),
     "dj_paul": StylePreset(
         "dj_paul",
-        "DJ Paul — bounce kicks, clap snare, cowbell",
+        "Bounce & Cowbell",
         "dj paul three 6 memphis 808 cowbell dirty 84 bpm",
         "dj_paul",
         "juicy_j",
@@ -46,7 +46,7 @@ PRESETS: dict[str, StylePreset] = {
     ),
     "dj_toomp": StylePreset(
         "dj_toomp",
-        "DJ Toomp — SP-1200 crunch + hard trap 808",
+        "Traproom Tape",
         "dj toomp atlanta memphis trap dirty 808 78 bpm",
         "dj_toomp",
         "dj_toomp",
@@ -55,8 +55,8 @@ PRESETS: dict[str, StylePreset] = {
     ),
     "memphis_trinity": StylePreset(
         "memphis_trinity",
-        "Juicy J + DJ Paul + Toomp (default stack)",
-        "juicy j dj paul toomp dirty memphis sp1200 86 bpm",
+        "Memphis Insanity",
+        "dirty memphis phonk sp1200 808 cowbell 86 bpm",
         "juicy_j",
         "juicy_j",
         86.0,

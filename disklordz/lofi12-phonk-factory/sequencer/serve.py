@@ -32,6 +32,7 @@ def _fx_from_payload(fx_raw: dict) -> "LoopFxParams":
         drive=float(fx_raw.get("drive", 0.15)),
         cassette=float(fx_raw.get("cassette", 0.0)),
         bitcrush=float(fx_raw.get("bitcrush", 0.0)),
+        gain=float(fx_raw.get("gain", 0.75)),
     )
 
 

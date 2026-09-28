@@ -92,6 +92,7 @@ export async function playBackingArrayBuffer(arrayBuffer, loop = true, autoplay 
   const ac = ctx();
   backingBuffer = await ac.decodeAudioData(arrayBuffer.slice(0));
   if (autoplay) startBackingFromBuffer(loop);
+  else stopBacking();
 }
 
 /** Restart backing from bar 1 (call when sequencer transport starts). */

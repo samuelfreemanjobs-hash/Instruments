@@ -16,6 +16,7 @@ class LoopFxParams:
     drive: float = 0.15
     cassette: float = 0.0  # wow/flutter + muffled cassette band + hiss
     bitcrush: float = 0.0  # 0–1 SP-1200-style crush
+    gain: float = 0.75  # 0–1 output trim after mix bus
     laid_back_ms: float = 0.0  # global micro delay (CC 31 vibe)
 
 
@@ -132,7 +133,8 @@ def apply_loop_fx(samples: list[float], fx: LoopFxParams, *, seed: int = 0) -> l
     wet = fx.reverb_send
     out = _simple_reverb(out, wet, seed)
     peak = max(abs(x) for x in out) or 1.0
-    return [x * (0.89 / peak) for x in out]
+    trim = max(0.05, min(1.0, fx.gain)) * 1.1
+    return [x * (0.89 / peak) * trim for x in out]
 
 
 def fx_to_lofi12_cc(fx: LoopFxParams) -> dict[str, int]:

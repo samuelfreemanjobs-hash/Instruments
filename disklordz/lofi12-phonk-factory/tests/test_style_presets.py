@@ -34,6 +34,16 @@ class StylePresetTests(unittest.TestCase):
     def test_api_preset_list(self) -> None:
         self.assertGreaterEqual(len(all_presets_api()), 4)
 
+    def test_display_names_no_artists(self) -> None:
+        ps = get_preset("memphis_trinity")
+        assert ps is not None
+        self.assertEqual(ps.label, "Memphis Insanity")
+        for item in all_presets_api():
+            label = item["label"].lower()
+            self.assertNotIn("juicy", label)
+            self.assertNotIn("dj paul", label)
+            self.assertNotIn("toomp", label)
+
 
 if __name__ == "__main__":
     unittest.main()

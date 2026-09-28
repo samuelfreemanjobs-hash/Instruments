@@ -1,6 +1,6 @@
 # GUI mockup spec — Phonk Factory + Step Sequencer
 
-**Status:** DRAFT **v1-stitch** (mockups checked in; implementation pending)  
+**Status:** **LOCKED v1-stitch** (2026-09-28 product decisions)  
 **SOP:** [docs/GUI_DESIGN_SOP.md](../../../docs/GUI_DESIGN_SOP.md) · **GUI Agent:** [docs/GUI_AGENT_PLAYBOOK.md](../../../docs/GUI_AGENT_PLAYBOOK.md)  
 **Tokens:** [GUI_TOKENS.md](GUI_TOKENS.md)  
 **Mockups:** [references/gui/v1-stitch/](../references/gui/v1-stitch/)
@@ -118,16 +118,16 @@ See [GUI_TOKENS.md](GUI_TOKENS.md): charcoal base, **cyan + mint** accents, glow
 
 ---
 
-## Open decisions (need your pick)
+## Product decisions (locked)
 
-1. **Primary frame:** Confirm **A** for first implementation pass.  
-2. **Sidebar modules:** OK as disabled nav + only Sequencer live?  
-3. **GAIN fader:** Add to DSP + UI? (recommended yes)  
-4. **REVERB/WOBBLE:** Hidden under “Advanced FX” or always visible like current app?  
-5. **Generate:** Auto-start backing playback after GENERATE DRUM LOOP? (mockup implies yes if LOOP LOOP on)  
-6. **Preset label:** Rename presets to display names like “Memphis Insanity” in UI while keeping ids (`memphis_trinity`, etc.)?
-
-Reply in PR or issue with numbers; then set **Status: LOCKED v1-stitch** and run **GUI Agent**.
+| # | Decision |
+|---|----------|
+| 1 | **Frame A** — primary web layout |
+| 2 | **Sidebar** — disabled “coming soon” items; only Step sequencer active |
+| 3 | **GAIN** — on mix bus + vertical fader |
+| 4 | **Reverb / Wobble** — under **Advanced FX** |
+| 5 | **Generate drum loop** — **no auto-play**; user presses Play (slow laptops) |
+| 6 | **Preset display names** — fictional only (e.g. **Memphis Insanity**); **no real artist names** in UI. Internal prompt/lane ids unchanged for sound engine. |
 
 ---
 
@@ -145,11 +145,11 @@ Reply in PR or issue with numbers; then set **Status: LOCKED v1-stitch** and run
 
 ## Implementation checklist (GUI Agent)
 
-- [ ] Layout shell: sidebar + main columns per Frame A  
-- [ ] Apply [GUI_TOKENS.md](GUI_TOKENS.md) in `sequencer/static/style.css`  
-- [ ] Factory deck + vertical FX faders  
-- [ ] 4×4 step matrix for active track  
-- [ ] Optional `gain` on mix bus  
+- [x] Layout shell: sidebar + main columns per Frame A  
+- [x] Apply [GUI_TOKENS.md](GUI_TOKENS.md) in `sequencer/static/style.css`  
+- [x] Factory deck + vertical FX faders + Advanced FX  
+- [x] 4×4 step matrix for active track  
+- [x] `gain` on mix bus  
 - [ ] Screen recording + before/after screenshots in PR  
 
 ---

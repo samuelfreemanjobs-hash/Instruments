@@ -68,7 +68,22 @@ function fxValues() {
     drive: Number(document.getElementById("fxDrive").value),
     cassette: Number(document.getElementById("fxCassette").value),
     bitcrush: Number(document.getElementById("fxBitcrush").value),
+    gain: Number(document.getElementById("fxGain").value),
   };
+}
+
+function updateFxModeTag() {
+  const fx = fxValues();
+  const el = document.getElementById("fxModeTag");
+  if (!el) return;
+  const glitch = fx.cassette > 0.15 || fx.bitcrush > 0.2;
+  el.textContent = glitch ? "MODE: PHONK · ANALOG GLITCH (ACTIVE)" : "MODE: PHONK · CLEAN BUS";
+}
+
+function updateSeqHeader() {
+  const el = document.getElementById("seqHeader");
+  if (!el) return;
+  el.textContent = `Sequence · ${TRACK_NAMES[focusedTrack]} · 16 steps`;
 }
 
 function sendFxCc() {
@@ -91,6 +106,7 @@ function buildTrackTabs() {
       selected = { ti, si: selected.si };
       buildTrackTabs();
       buildSingleTrackGrid();
+      updateSeqHeader();
       syncGridUi();
     });
     trackTabBar.appendChild(btn);
@@ -175,6 +191,8 @@ function syncGridUi() {
   const c = pattern[selected.ti][selected.si];
   editNoteEl.value = c.note;
   editVelEl.value = c.velocity;
+  const velSlider = document.getElementById("editVelSlider");
+  if (velSlider) velSlider.value = String(c.velocity);
 }
 
 function onStepClick(ti, si, ev) {
@@ -304,7 +322,9 @@ function loadFromJson(obj) {
     document.getElementById("fxDrive").value = obj.fx.drive ?? 0.15;
     document.getElementById("fxCassette").value = obj.fx.cassette ?? 0.18;
     document.getElementById("fxBitcrush").value = obj.fx.bitcrush ?? 0.25;
+    document.getElementById("fxGain").value = obj.fx.gain ?? 0.75;
   }
+  updateFxModeTag();
   obj.tracks.forEach((tr, ti) => {
     if (ti >= TRACK_NAMES.length) return;
     if (tr.defaultNote) DEFAULT_NOTES[ti] = tr.defaultNote;
@@ -374,13 +394,11 @@ async function generateBacking(variationOverride) {
       }
     } catch (_) {}
   }
-  if (document.getElementById("backingOn").checked) {
-    await playBackingArrayBuffer(buf, true);
-  }
+  await playBackingArrayBuffer(buf, true, false);
   if (document.getElementById("autoDownloadWav").checked) {
     downloadBackingBuffer(buf);
   }
-  if (!metaRaw) setStatus("Backing loop ready — hit Play to practice");
+  setStatus("Loop rendered — stored in memory. Press Play when ready (no auto-play).");
   return variation;
 }
 
@@ -471,8 +489,10 @@ function applyPresetFromUi() {
     document.getElementById("fxDrive").value = p.fx.drive;
     if (p.fx.cassette != null) document.getElementById("fxCassette").value = p.fx.cassette;
     if (p.fx.bitcrush != null) document.getElementById("fxBitcrush").value = p.fx.bitcrush;
+    if (p.fx.gain != null) document.getElementById("fxGain").value = p.fx.gain;
     sendFxCc();
   }
+  updateFxModeTag();
   setStatus(`Preset: ${p.label}`);
 }
 
@@ -554,8 +574,20 @@ document.getElementById("applyEdit").onclick = () => {
   c.on = true;
   syncGridUi();
 };
-["fxFilter", "fxReverb", "fxTape", "fxDrive", "fxCassette", "fxBitcrush"].forEach((id) => {
-  document.getElementById(id).addEventListener("input", () => sendFxCc());
+["fxFilter", "fxReverb", "fxTape", "fxDrive", "fxCassette", "fxBitcrush", "fxGain"].forEach(
+  (id) => {
+    document.getElementById(id).addEventListener("input", () => {
+      sendFxCc();
+      updateFxModeTag();
+    });
+  }
+);
+document.getElementById("editVelSlider")?.addEventListener("input", (ev) => {
+  const v = Number(ev.target.value);
+  editVelEl.value = v;
+  const c = pattern[selected.ti]?.[selected.si];
+  if (c) c.velocity = v;
+  syncGridUi();
 });
 document.getElementById("saveJson").onclick = () => {
   const blob = new Blob([JSON.stringify(patternToJson(), null, 2)], { type: "application/json" });
@@ -573,12 +605,16 @@ document.getElementById("loadJson").onchange = async (ev) => {
 document.getElementById("loadBackingFile").onchange = async (ev) => {
   const file = ev.target.files?.[0];
   if (!file) return;
-  await playBackingArrayBuffer(await file.arrayBuffer(), true);
-  setStatus(`Backing: ${file.name}`);
+  const buf = await file.arrayBuffer();
+  lastBackingBuffer = buf;
+  await playBackingArrayBuffer(buf, true, false);
+  setStatus(`Loaded ${file.name} — press Play when ready`);
 };
 
 buildTrackTabs();
 buildSingleTrackGrid();
+updateSeqHeader();
+updateFxModeTag();
 buildGrid();
 loadPresets();
 refreshMidi();

@@ -82,6 +82,7 @@ def main() -> None:
     p.add_argument("--drive", type=float, default=-1, help="Saturation 0–1")
     p.add_argument("--cassette", type=float, default=-1, help="Cassette wow/muff/hiss 0–1")
     p.add_argument("--bitcrush", type=float, default=-1, help="Bit crusher 0–1")
+    p.add_argument("--gain", type=float, default=-1, help="Output gain 0–1")
     preset_help = ", ".join(list_preset_ids())
     p.add_argument(
         "--preset",
@@ -117,6 +118,8 @@ def main() -> None:
         fx.cassette = min(1.0, max(0.0, args.cassette))
     if args.bitcrush >= 0:
         fx.bitcrush = min(1.0, max(0.0, args.bitcrush))
+    if args.gain >= 0:
+        fx.gain = min(1.0, max(0.0, args.gain))
 
     lane = resolve_memphis_lane(args.prompt, args.lane)
     engine = resolve_engine_id(args.prompt, args.engine)
