@@ -6,6 +6,7 @@ Structured memory for the **audio-rd** agent. Pair with **ddsp-ml-engineer** (im
 |----|------|------------|-------|--------|----------|
 | RD-808-001 | 2026-03-28 | Mel feature-loss beats waveform MSE for 808 clone | audio-rd | **promoted** | `mel_loss.py` + pytest |
 | RD-808-002 | TBD | Encoder ONNX + C++ oscillator vs full-graph ONNX | audio-rd | park | `juce_onnx_pipeline_guide.txt` |
+| RD-808-003 | 2026-09-28 | End-to-end torch DDSP + multi-scale spectral loss → `ddsp_808_encoder.onnx` | ddsp-ml-engineer | **promoted** | `torch_ddsp/`, `pytest tests/test_torch_ddsp.py` [executed] |
 
 ## Template (copy per spike)
 

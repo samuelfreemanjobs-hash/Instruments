@@ -28,6 +28,25 @@ def main() -> int:
             cwd=BLUEPRINT,
             check=True,
         )
+        train_script = BLUEPRINT / "scripts" / "train_ddsp_808.py"
+        if train_script.is_file():
+            try:
+                import torch  # noqa: F401
+            except ImportError:
+                print("ddsp-ml-engineer: torch not installed; skip train smoke")
+            else:
+                subprocess.run(
+                    [
+                        sys.executable,
+                        str(train_script),
+                        "--steps",
+                        "12",
+                        "--export",
+                        str(BLUEPRINT / "artifacts" / "ddsp_808_encoder.onnx"),
+                    ],
+                    cwd=BLUEPRINT,
+                    check=True,
+                )
         print("ddsp-ml-engineer: ok")
         return 0
     print(f"Run: cd {BLUEPRINT} && pytest tests -v")

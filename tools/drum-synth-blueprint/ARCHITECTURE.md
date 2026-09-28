@@ -22,6 +22,25 @@ python -m drum_synth_blueprint.synth_808_generator
 | `trap_kick_808.py` | Layered trap kick + glide 808 (legacy API) |
 | `mel_loss.py` | Log-mel **feature difference loss** (phase-robust) |
 | `encoder_stub.py` | Sample → `[pitch_decay, amp_decay, drive]` (numpy; optional torch MLP) |
+| `torch_ddsp/` | **PyTorch** multi-scale `SpectralDistanceLoss`, `Differentiable808Synth`, train + **`ddsp_808_encoder.onnx`** export |
+
+## PyTorch DDSP train + ONNX
+
+```bash
+cd tools/drum-synth-blueprint
+pip install -r requirements.txt -r requirements-train.txt
+pip install -e .
+pytest tests/test_torch_ddsp.py -v
+python scripts/train_ddsp_808.py --steps 60
+# writes artifacts/ddsp_808_encoder.onnx (encoder only; synth stays in C++)
+```
+
+| Module | Role |
+|--------|------|
+| `torch_ddsp/spectral_loss.py` | Mel STFT at FFT **512 / 1024 / 2048**; linear + log-mel MSE |
+| `torch_ddsp/synth_torch.py` | Fully differentiable 808 (exp pitch, integrated phase, tanh) |
+| `torch_ddsp/encoder.py` | `DDSP808Encoder` + `DDSP808TrainableSystem` |
+| `torch_ddsp/pipeline.py` | Smoke training loop + ONNX export |
 
 ## DDSP → ONNX → JUCE
 
@@ -34,7 +53,7 @@ Agent prompts: [`docs/DDSP_TRAP_PHONK_AGENT_PROMPTS.md`](../../docs/DDSP_TRAP_PH
 ```text
 acoustic WAV → encoder_stub → synth params
             → synthesize_808 → mel_loss vs target
-            → (export) ONNX encoder + C++ oscillator in JUCE
+            → (export) ddsp_808_encoder.onnx + C++ oscillator in JUCE
 ```
 
 ## Related

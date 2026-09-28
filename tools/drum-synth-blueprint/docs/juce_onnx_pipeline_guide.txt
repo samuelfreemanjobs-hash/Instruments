@@ -46,14 +46,19 @@ synthetic audio to log-mel spectrograms and minimize mean squared mel error:
 
 Implementation: tools/drum-synth-blueprint/drum_synth_blueprint/mel_loss.py
 
-Training loop (PyTorch, offline):
+Training loop (PyTorch, offline — `torch_ddsp/pipeline.py`):
 
-  params = encoder(mel_features)
-  wav = differentiable_render(params)   # or surrogate via precomputed grid
-  loss = feature_difference_loss(target_wav, wav)
+  wav_tgt = load_or_teacher_batch()
+  params = encoder(wav_tgt)
+  wav_syn = Differentiable808Synth(params)   # torch tensors, grad-enabled
+  loss = SpectralDistanceLoss()(wav_syn, wav_tgt)  # FFT 512/1024/2048 mel
   loss.backward()
 
-For v1 in this repo, render is NumPy (non-diff); use CMA-ES / grid search on
+Export encoder only as **`ddsp_808_encoder.onnx`** (waveform in → params out):
+
+  python tools/drum-synth-blueprint/scripts/train_ddsp_808.py --steps 60
+
+For NumPy-only baselines, render is non-diff; use CMA-ES / grid search on
 [pitch_decay, amp_decay, drive] with mel_loss.loss_for_synth_params(), then
 distill encoder labels from optimal params.
 
@@ -78,16 +83,22 @@ CLI smoke:
 3. ONNX EXPORT (encoder head only in v1)
 --------------------------------------------------------------------------------
 
-Export the MLP that maps flattened mel patches → 3 floats:
+Export the conv encoder that maps mono waveform → 3 floats (repo default):
+
+  cd tools/drum-synth-blueprint
+  python scripts/train_ddsp_808.py --export artifacts/ddsp_808_encoder.onnx
 
   torch.onnx.export(
       encoder,
-      dummy_input,
-      "808_param_encoder.onnx",
-      input_names=["mel_flat"],
-      output_names=["pitch_decay", "amp_decay", "drive"],
-      dynamic_axes={"mel_flat": {0: "batch"}},
+      dummy_waveform,                      # [batch, num_samples]
+      "ddsp_808_encoder.onnx",
+      input_names=["waveform"],
+      output_names=["params"],
+      dynamic_axes={"waveform": {0: "batch", 1: "samples"}, "params": {0: "batch"}},
   )
+
+Legacy mel-flat MLP sketch (encoder_stub) may use separate filenames; ship
+**ddsp_808_encoder.onnx** for the waveform→params head in this pipeline.
 
 Keep the oscillator + tanh in C++ (deterministic, low CPU) and only run ONNX
 for parameter inference — smaller graph, easier realtime bounds.
@@ -107,8 +118,7 @@ Threading model (required):
 
   [Background / FIFO thread]
     - On new reference sample or UI "analyze":
-        mel = computeMel(inputWav);
-        params = onnxSession.Run(mel);
+        params = onnxSession.Run(waveform);   // ddsp_808_encoder.onnx
         paramsLatest.store(params);  // lock-free atomic struct
 
 Memory:
