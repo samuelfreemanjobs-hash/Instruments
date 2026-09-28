@@ -9,7 +9,11 @@ Each Hermes seat has a **mini-repo** inside the monorepo where it improves **ind
 ```bash
 python3 disklordz/hermes/scripts/hermes_tool.py agent status
 python3 disklordz/hermes/scripts/hermes_tool.py agent record-run --seat hermes-dsp --wo WO-2026-001 --summary "pluginval green"
+python3 disklordz/hermes/scripts/agent_promote.py scan
+python3 disklordz/hermes/scripts/agent_promote.py open --source "$(git branch --show-current)"
 ```
+
+**Lead auto-opens:** pushing changes under `agent-repos/**/proposals/` triggers [`.github/workflows/hermes-agent-promote.yml`](../.github/workflows/hermes-agent-promote.yml) to create **draft** promotion PRs. CD marks `**Status:** approved` in the proposal file; after skill merge, set `**Status:** merged` and `**Promotion PR:**`.
 
 ## Why not one shared doc?
 
@@ -29,10 +33,14 @@ disklordz/hermes/agent-repos/<seat-id>/       ← individual learning + proposal
 
 ## Promotion workflow
 
-1. Agent appends `PLAYBOOK.local.md` or adds `proposals/*.md`.
-2. **hermes-lead** triages in weekly or pre-merge review.
-3. Approved text moves into skill/chartier via normal PR.
-4. `CHANGELOG.md` updated; optional playbook entry trimmed if fully promoted.
+1. Agent appends `PLAYBOOK.local.md` or adds `proposals/*.md` (`**Status:** draft`).
+2. **hermes-lead** (CI on push) auto-opens a **draft promotion PR** for CD review.
+3. CD sets `**Status:** approved`; lead merges skill/chartier edits (same PR or follow-up).
+4. Set `**Status:** merged` + `**Promotion PR:**` URL; update seat `CHANGELOG.md`; note promoted lines in `PLAYBOOK.local.md`.
+
+## Monorepo vs external repos
+
+Default is **in-monorepo** agent folders (simple PR path, one CI). External per-seat GitHub repos remain optional later (mirror/submodule) if isolation is needed — no change required until CD picks a model.
 
 ## Cloud Agent stores
 

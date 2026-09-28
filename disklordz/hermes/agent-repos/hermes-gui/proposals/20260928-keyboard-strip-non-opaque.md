@@ -2,7 +2,8 @@
 
 **Seat:** hermes-gui  
 **WO:** WO-2026-001  
-**Status:** draft (awaiting hermes-lead + CD)
+**Status:** merged  
+**Promotion PR:** https://github.com/samuelfreemanjobs-hash/Instruments/pull/70 (skill bullet in `.cursor/skills/hermes-elite-gui/SKILL.md`)
 
 ## Problem
 

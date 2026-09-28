@@ -388,6 +388,31 @@ def main() -> int:
     agent_sub = agent.add_subparsers(dest="agent_cmd", required=True)
     agent_sub.add_parser("init", help="Scaffold all agent repos").set_defaults(func=cmd_agent_init)
     agent_sub.add_parser("status", help="List agent repo health").set_defaults(func=cmd_agent_status)
+
+    def cmd_agent_promote_scan(_: argparse.Namespace) -> int:
+        script = HERMES_ROOT / "scripts" / "agent_promote.py"
+        return subprocess.run([sys.executable, str(script), "scan"], cwd=str(REPO_ROOT)).returncode
+
+    def cmd_agent_promote_open(args: argparse.Namespace) -> int:
+        script = HERMES_ROOT / "scripts" / "agent_promote.py"
+        cmd = [sys.executable, str(script), "open", "--source", args.source or "HEAD"]
+        if args.seat:
+            cmd.extend(["--seat", args.seat])
+        if args.proposal:
+            cmd.extend(["--proposal", args.proposal])
+        if args.force:
+            cmd.append("--force")
+        return subprocess.run(cmd, cwd=str(REPO_ROOT)).returncode
+
+    agent_sub.add_parser("promote-scan", help="List pending skill proposals").set_defaults(
+        func=cmd_agent_promote_scan
+    )
+    po = agent_sub.add_parser("promote-open", help="Open draft promotion PR(s) (needs gh)")
+    po.add_argument("--seat", default="")
+    po.add_argument("--proposal", default="")
+    po.add_argument("--source", default="HEAD")
+    po.add_argument("--force", action="store_true")
+    po.set_defaults(func=cmd_agent_promote_open)
     ar = agent_sub.add_parser("record-run", help="Append run log under agent-repos/<seat>/runs/")
     ar.add_argument("--seat", required=True, choices=AGENT_SEATS)
     ar.add_argument("--wo", default="")
