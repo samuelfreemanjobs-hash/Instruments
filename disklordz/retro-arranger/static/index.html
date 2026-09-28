@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Retro Arranger — 1980s Session Band</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #0a0612; color: #e8d4ff; font-family: system-ui, sans-serif; }
+    .tile { border: 1px solid #6b4c9a; background: linear-gradient(135deg,#1a0f2e,#120820); }
+    .tile:active { transform: scale(0.98); }
+    .section-pill { font-size: 10px; letter-spacing: 0.08em; }
+  </style>
+</head>
+<body class="min-h-screen p-6">
+  <header class="mb-8 border-b border-purple-900 pb-4">
+    <p class="text-xs uppercase tracking-widest text-purple-400">Session band multi-agent MIDI</p>
+    <h1 class="text-3xl font-bold text-pink-300">Retro Arranger</h1>
+    <p class="text-sm text-gray-400 mt-1">Quiet Storm · Boogie Funk · Sophisti-Pop · Vaporwave-ready stems</p>
+  </header>
+
+  <section class="grid lg:grid-cols-3 gap-6 mb-8">
+    <div class="lg:col-span-2 tile rounded-lg p-4">
+      <h2 class="text-sm font-semibold text-purple-300 mb-3">Arrangement map</h2>
+      <div id="section-map" class="flex flex-wrap gap-2"></div>
+      <p id="meta-line" class="text-xs text-gray-500 mt-3"></p>
+    </div>
+    <div class="tile rounded-lg p-4 space-y-3">
+      <label class="text-xs text-gray-400">Title</label>
+      <input id="title" class="w-full bg-black border border-purple-800 rounded px-2 py-1 text-sm" value="Quiet Storm Night Drive" />
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="text-xs text-gray-400">Key</label>
+          <select id="key_root" class="w-full bg-black border border-purple-800 rounded px-2 py-1 text-sm">
+            <option>A</option><option>D</option><option>E</option><option>F</option><option>G</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-gray-400">Scale</label>
+          <select id="scale" class="w-full bg-black border border-purple-800 rounded px-2 py-1 text-sm">
+            <option value="dorian">Dorian</option>
+            <option value="mixolydian">Mixolydian</option>
+            <option value="aeolian">Aeolian</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="text-xs text-gray-400">BPM <span id="bpm-val">98</span></label>
+          <input id="bpm" type="range" min="72" max="124" value="98" class="w-full" />
+        </div>
+        <div>
+          <label class="text-xs text-gray-400">Swing % <span id="swing-val">58</span></label>
+          <input id="swing_pct" type="range" min="54" max="62" value="58" class="w-full" />
+        </div>
+      </div>
+      <div>
+        <label class="text-xs text-gray-400">Bass mode</label>
+        <select id="bass_mode" class="w-full bg-black border border-purple-800 rounded px-2 py-1 text-sm">
+          <option value="synth">Synth (Minimoog)</option>
+          <option value="electric">Electric (Slap)</option>
+        </select>
+      </div>
+      <button id="btn-generate" class="w-full py-2 bg-pink-600 hover:bg-pink-500 text-black font-bold rounded">Generate session</button>
+    </div>
+  </section>
+
+  <section>
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="text-sm font-semibold text-purple-300">Stems — drag into your DAW</h2>
+      <button id="btn-zip" class="text-xs px-3 py-1 border border-purple-600 rounded hover:bg-purple-900" disabled>Download all (.zip)</button>
+    </div>
+    <div id="stem-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+    <div id="full-tile-wrap" class="mt-4 hidden"></div>
+  </section>
+
+  <p id="status" class="text-xs text-gray-500 mt-6"></p>
+
+  <script>
+    const SECTIONS = [
+      ['intro', 4], ['verse', 8], ['pre_chorus', 4], ['chorus', 8],
+      ['bridge', 4], ['solo', 8], ['outro', 4]
+    ];
+    const totalBars = SECTIONS.reduce((a, s) => a + s[1], 0);
+
+    function renderSectionMap() {
+      const el = document.getElementById('section-map');
+      el.innerHTML = '';
+      SECTIONS.forEach(([name, bars]) => {
+        const pill = document.createElement('span');
+        pill.className = 'section-pill px-2 py-1 rounded bg-purple-950 border border-purple-800 text-purple-200';
+        pill.textContent = `${name.replace('_', ' ')} · ${bars} bars`;
+        el.appendChild(pill);
+      });
+      document.getElementById('meta-line').textContent = `${totalBars} bars · Type 1 multitrack + isolated stems`;
+    }
+
+    function setupDAWDrag(element, fileName, blob) {
+      const mimeType = 'audio/midi';
+      const objectUrl = URL.createObjectURL(blob);
+      element.setAttribute('draggable', 'true');
+      element.addEventListener('dragstart', (event) => {
+        const downloadData = `${mimeType}:${fileName}:${new URL(objectUrl, window.location.href).href}`;
+        event.dataTransfer.setData('DownloadURL', downloadData);
+        event.dataTransfer.setData('text/plain', fileName);
+        event.dataTransfer.effectAllowed = 'copy';
+      });
+    }
+
+    function b64ToBlob(b64) {
+      const raw = atob(b64);
+      const arr = new Uint8Array(raw.length);
+      for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+      return new Blob([arr], { type: 'audio/midi' });
+    }
+
+    let lastZipBody = null;
+
+    function renderStems(data) {
+      const grid = document.getElementById('stem-grid');
+      grid.innerHTML = '';
+      data.stems.forEach((stem) => {
+        const blob = b64ToBlob(stem.data_base64);
+        const tile = document.createElement('div');
+        tile.className = 'tile rounded p-3 cursor-grab';
+        tile.innerHTML = `<p class="text-xs text-purple-400">${stem.stem_id}</p><p class="font-mono text-sm">${stem.file_name}</p><p class="text-[10px] text-gray-500 mt-2">Drag → Ableton / FL / Logic / REAPER</p>`;
+        setupDAWDrag(tile, stem.file_name, blob);
+        tile.addEventListener('click', () => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = stem.file_name;
+          a.click();
+        });
+        grid.appendChild(tile);
+      });
+
+      const wrap = document.getElementById('full-tile-wrap');
+      wrap.classList.remove('hidden');
+      wrap.innerHTML = '';
+      const fullBlob = b64ToBlob(data.full_mid_base64);
+      const fullTile = document.createElement('div');
+      fullTile.className = 'tile rounded p-4 cursor-grab';
+      fullTile.innerHTML = '<p class="font-bold text-pink-300">Full_Arrangement_Multitrack.mid</p><p class="text-xs text-gray-500">All tracks aligned · Type 1</p>';
+      setupDAWDrag(fullTile, 'Full_Arrangement_Multitrack.mid', fullBlob);
+      wrap.appendChild(fullTile);
+
+      document.getElementById('btn-zip').disabled = false;
+      document.getElementById('status').textContent = `Generated "${data.title}" · ${data.total_bars} bars`;
+    }
+
+    async function generate() {
+      document.getElementById('status').textContent = 'Composing…';
+      const body = {
+        title: document.getElementById('title').value,
+        key_root: document.getElementById('key_root').value,
+        scale: document.getElementById('scale').value,
+        bpm: Number(document.getElementById('bpm').value),
+        swing_pct: Number(document.getElementById('swing_pct').value),
+        bass_mode: document.getElementById('bass_mode').value,
+      };
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      renderStems(data);
+      lastZipBody = body;
+    }
+
+    document.getElementById('bpm').addEventListener('input', (e) => {
+      document.getElementById('bpm-val').textContent = e.target.value;
+    });
+    document.getElementById('swing_pct').addEventListener('input', (e) => {
+      document.getElementById('swing-val').textContent = e.target.value;
+    });
+    document.getElementById('btn-generate').addEventListener('click', () => generate().catch((e) => {
+      document.getElementById('status').textContent = e.message;
+    }));
+    document.getElementById('btn-zip').addEventListener('click', async () => {
+      if (!lastZipBody) return;
+      const res = await fetch('/api/generate/zip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(lastZipBody),
+      });
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Retro_Arranger_Stems.zip';
+      a.click();
+    });
+
+    renderSectionMap();
+  </script>
+</body>
+</html>
