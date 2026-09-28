@@ -70,6 +70,7 @@ def train_ddsp_808_from_folder(
     device: str | None = None,
     num_workers: int = 0,
     export_path: str | Path | None = None,
+    verbose: bool = True,
 ) -> dict[str, float | int | str]:
     """
     Train encoder on real ``.wav`` clips: mel → params → differentiable synth → spectral loss.
@@ -96,7 +97,7 @@ def train_ddsp_808_from_folder(
     mel_time_frames = 0
     last_avg = 0.0
     encoder.train()
-    for _epoch in range(num_epochs):
+    for epoch in range(1, num_epochs + 1):
         epoch_loss = 0.0
         batch_count = 0
         for target_audio in loader:
@@ -116,6 +117,12 @@ def train_ddsp_808_from_folder(
             epoch_loss += float(loss.detach().cpu())
             batch_count += 1
         last_avg = epoch_loss / max(batch_count, 1)
+        if verbose:
+            print(
+                f"  Epoch [{epoch:>3}/{num_epochs}]  "
+                f"Batches: {batch_count}  "
+                f"Avg Spectral Loss: {last_avg:.5f}"
+            )
 
     result: dict[str, float | int | str] = {
         "final_avg_spectral_loss": last_avg,
@@ -124,6 +131,8 @@ def train_ddsp_808_from_folder(
         "mel_time_frames": mel_time_frames,
     }
     if export_path is not None:
+        if verbose:
+            print("\n[Export] Tracing encoder for C++ / ONNX Runtime...")
         encoder.eval()
         onnx_file = export_ddsp_808_encoder_onnx(
             export_path,
@@ -131,6 +140,8 @@ def train_ddsp_808_from_folder(
             mel_time_frames=max(mel_time_frames, 1),
         )
         result["onnx_path"] = str(onnx_file.resolve())
+        if verbose:
+            print(f"[Export] Saved → {onnx_file.resolve()}")
     return result
 
 

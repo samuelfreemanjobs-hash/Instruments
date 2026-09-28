@@ -35,15 +35,27 @@ def _load_wav(path: Path) -> tuple[torch.Tensor, int]:
 
 class DrumSampleDataset(Dataset):
     """
-    Reads every ``.wav`` in a flat folder; returns fixed-length mono waveforms.
+    Flat-folder acoustic targets for DDSP encoder training.
 
-    Resamples to ``target_sr``, zero-pads or trims to ``duration`` seconds,
-    peak-normalizes to 1.0.
+    - Scans one directory level for ``.wav`` files (sorted paths).
+    - Stereo / multi-channel → mono (channel mean).
+    - Resamples to ``target_sr`` (e.g. 48 kHz → 44100) via ``torchaudio.transforms.Resample``.
+    - Pad with zeros or trim from the end so length is exactly ``target_sr * duration``.
+    - Peak-normalize each clip to 1.0 so hot samples do not dominate spectral loss.
+
+    PCM load uses stdlib ``wave`` (16/32-bit); resample/mel still use torchaudio.
     """
 
     SUPPORTED_EXT = {".wav"}
 
-    def __init__(self, folder_path: str | Path, target_sr: int = 44100, duration: float = 2.0) -> None:
+    def __init__(
+        self,
+        folder_path: str | Path,
+        target_sr: int = 44100,
+        duration: float = 2.0,
+        *,
+        log: bool = True,
+    ) -> None:
         self.target_sr = target_sr
         self.num_samples = int(target_sr * duration)
         folder = Path(folder_path)
@@ -60,6 +72,9 @@ class DrumSampleDataset(Dataset):
                 f"[DrumSampleDataset] No .wav files found in: {folder}\n"
                 "Use a flat folder (no nested sub-directories)."
             )
+        self._resamplers: dict[int, T.Resample] = {}
+        if log:
+            print(f"[DrumSampleDataset] Loaded {len(self.file_paths)} .wav file(s) from '{folder}'")
 
     def __len__(self) -> int:
         return len(self.file_paths)
