@@ -1,5 +1,9 @@
 # Disklordz automation
 
+## VST Plugin Factory handoff from Airtable
+
+See [VST_PLUGIN_FACTORY.md](VST_PLUGIN_FACTORY.md) — `[Plugin][JUCE]` → `disklordz/vst-factory/inbox/`.
+
 ## Antigravity handoff from Airtable
 
 ```bash

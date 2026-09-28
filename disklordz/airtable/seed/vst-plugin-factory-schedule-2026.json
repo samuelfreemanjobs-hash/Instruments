@@ -1,0 +1,71 @@
+{
+  "base_id_hint": "Disklordz OS — seed VST Plugin Factory process row + recurring maintenance WOs",
+  "products": [
+    {
+      "product_id": "DL-LANE-VST-PLUGIN-FACTORY",
+      "name": "VST Plugin Factory (process)",
+      "division": "Plugin",
+      "status": "Active",
+      "brief": "Standing Cursor Cloud agent for JUCE/VST3/CLAP implementation. PM routes [Plugin][JUCE] WOs; Workflow Automation Agent owns cron health/doc sync. See docs/VST_PLUGIN_FACTORY_AGENT.md and docs/VST_PLUGIN_FACTORY_SCHEDULE.md.",
+      "github_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "price_tier": "n/a",
+      "ladder_tier": "process",
+      "sonic_problem": "Ship and maintain production JUCE plugins without overloading ad-hoc prompts",
+      "family_id": "DL-FAMILY-DIGITAL-SAMPLER",
+      "compile_targets": "[\"vst3\",\"clap\",\"standalone\"]"
+    }
+  ],
+  "projects": [
+    {
+      "project_id": "PRJ-2026-VST-FACTORY",
+      "name": "VST Plugin Factory — Cursor Cloud",
+      "product_id": "DL-LANE-VST-PLUGIN-FACTORY",
+      "phase": "1-Operate",
+      "status": "Active",
+      "owner_agent": "cursor-vst-plugin-factory"
+    }
+  ],
+  "work_orders": [
+    {
+      "work_order_id": "WO-2026-JUCE-FACTORY-001",
+      "project_id": "PRJ-2026-VST-FACTORY",
+      "title": "[Plugin][JUCE] Factory lane bootstrap — inbox bridge + team roster docs",
+      "status": "Done",
+      "priority": "P2",
+      "owner_agent": "cursor-vst-plugin-factory",
+      "acceptance_criteria": "docs/AGENT_TEAM_ROSTER.md names pm-agent, workflow-automation-agent, cursor-vst-plugin-factory. Handoff script wo_to_vst_factory_handoff.py and vst-factory-bridge.sh write inbox JSON. GitHub workflows airtable-vst-factory-handoff + vst-plugin-factory-schedule exist. Schedule doc lists Mon health + Fri doc sync UTC."
+    },
+    {
+      "work_order_id": "WO-2026-JUCE-HEALTH-RECUR",
+      "project_id": "PRJ-2026-VST-FACTORY",
+      "title": "[Plugin][JUCE][Recurring] Monday CI health triage",
+      "status": "Backlog",
+      "priority": "P3",
+      "owner_agent": "workflow-automation-agent",
+      "acceptance_criteria": "After Mon 09:00 UTC schedule run: if health artifact FAIL, pm-agent opens or unblocks a fix WO within 24h; if PASS, no action. Does not count toward Factory Manager WIP of 2."
+    },
+    {
+      "work_order_id": "WO-2026-JUCE-DOCSYNC-RECUR",
+      "project_id": "PRJ-2026-VST-FACTORY",
+      "title": "[Plugin][JUCE][Recurring] Friday ARCHITECTURE doc sync",
+      "status": "Backlog",
+      "priority": "P3",
+      "owner_agent": "cursor-vst-plugin-factory",
+      "acceptance_criteria": "Consume doc-sync artifact from vst-plugin-factory-schedule workflow; if checklist has open items, draft docs-only PR or comment WO for pm-agent."
+    }
+  ],
+  "agent_roles": [
+    {
+      "agent_id": "pm-agent",
+      "description": "Airtable work orders, owner_agent routing, WIP gates with factory-manager"
+    },
+    {
+      "agent_id": "workflow-automation-agent",
+      "description": "GitHub cron, repository_dispatch, Cursor Automations, subscribe_timer loops"
+    },
+    {
+      "agent_id": "cursor-vst-plugin-factory",
+      "description": "JUCE implementer; run_business.py --profile ci before merge"
+    }
+  ]
+}

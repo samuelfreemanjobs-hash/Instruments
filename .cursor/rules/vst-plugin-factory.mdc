@@ -1,0 +1,30 @@
+---
+description: JUCE VST Plugin Factory lane — DSP, CMake, CI, and WO discipline
+globs: Source/**,Wave909/**,MyFirstPlugin/**,tests/golden/**,vst-testing-ops/**
+---
+
+# VST Plugin Factory (`cursor-vst-plugin-factory`)
+
+Standing implementer for **`[Plugin][JUCE]`** work orders. Read [docs/VST_PLUGIN_FACTORY_AGENT.md](../../docs/VST_PLUGIN_FACTORY_AGENT.md) and product `ARCHITECTURE.md` before changing behavior.
+
+## Build & verify
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+cmake --build build -j
+python3 vst-testing-ops/run_business.py --profile ci
+```
+
+After intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit WAVs.
+
+## Rules
+
+- Real-time safe audio thread: no alloc, locks, file I/O, or logging.
+- Stable APVTS parameter IDs; document new params in ARCHITECTURE extension points.
+- Do not edit `disklordz/website/` unless the WO explicitly requires it.
+- HISE sketch work belongs to **antigravity-hise** — see `docs/HISE_ANTIGRAVITY_LANE.md`.
+- PR title must include `WO-…` when assigned from Airtable.
+
+## Handoff
+
+Check `disklordz/vst-factory/inbox/HO-*.json` for open assignments from pm-agent / workflow-automation-agent.

@@ -1,6 +1,6 @@
 # Disklordz plugin tracks (Plugin Lab)
 
-**PM:** Airtable · **JUCE factory implementer:** Cursor Cloud Agent · **HISE sketch lane (D):** Antigravity (local Windows) · **Advisory:** Grok Plugin team  
+**PM:** Airtable (`pm-agent`) · **JUCE factory implementer:** **VST Plugin Factory** (`cursor-vst-plugin-factory`) · **Schedule:** `workflow-automation-agent` · **HISE sketch lane (D):** Antigravity (local Windows) · **Advisory:** Grok Plugin team  
 
 **HISE sketch lane:** [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md) (handoff) · [HISE_SKETCH_LANE.md](HISE_SKETCH_LANE.md) (full) — **Business Planner + Marketing** gate every customer-facing SKU.
 
