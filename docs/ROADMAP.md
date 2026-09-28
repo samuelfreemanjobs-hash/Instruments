@@ -7,7 +7,7 @@ Single place to see **where we are going** and **what is done**. PM Agent refres
 ---
 
 <!-- ROADMAP_PROGRESS_BEGIN -->
-*Last updated:* 2026-09-28 12:08 UTC · regenerate: `python3 scripts/update-roadmap-progress.py`
+*Last updated:* 2026-09-28 12:09 UTC · regenerate: `python3 scripts/update-roadmap-progress.py`
 
 | Metric | Value |
 |--------|------:|
@@ -27,7 +27,7 @@ Single place to see **where we are going** and **what is done**. PM Agent refres
 |-------|---------------|--------|
 | **Disklordz SaaS v0** | Auth, generate, ZIP, deploy | **Shipped** — see [DISKLORDZ_GO_LIVE.md](DISKLORDZ_GO_LIVE.md) |
 | **SaaS 007+ (ILLUGEN-shaped)** | Spec, variations, async, credits, RAG | **In progress** — partial API + integrations hub |
-| **Agent fleet (31)** | Repo-wide docs + autopilot CI | **Shipped on branch** — merge PR for scheduled CI on `main` |
+| **Agent fleet (31)** | Repo-wide docs + autopilot CI | **Shipped** — scheduled CI on `main` |
 | **OSS integrations (35)** | manifest + website wiring | **15 integrated**, 19 partial |
 | **JD Upgraded plugin** | Phase 5 | See [PHASE5.md](PHASE5.md) |
 | **WAVE-909** | Trap wavetable synth | Active product — [Wave909/ARCHITECTURE.md](../Wave909/ARCHITECTURE.md) |
