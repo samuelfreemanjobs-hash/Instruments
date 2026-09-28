@@ -304,7 +304,26 @@ function buildSequencerUI() {
   });
 }
 
+function showToast(msg) {
+  const toast = document.getElementById("toast");
+  const toastMsg = document.getElementById("toast-msg");
+  if (!toast || !toastMsg) return;
+  toastMsg.textContent = msg;
+  toast.classList.remove("translate-y-32", "opacity-0");
+  toast.classList.add("translate-y-0", "opacity-100");
+  setTimeout(() => {
+    toast.classList.remove("translate-y-0", "opacity-100");
+    toast.classList.add("translate-y-32", "opacity-0");
+  }, 2600);
+}
+
 function refreshSequencerSteps() {
+  document.querySelectorAll("#chase-leds-bar > div").forEach((led, i) => {
+    led.className =
+      kitState.playing && kitState.step === i
+        ? "rounded-sm bg-cyanAccent shadow-[0_0_8px_#38bdf8]"
+        : `rounded-sm ${Math.floor(i / 4) % 2 === 0 ? "bg-brand-900 border border-brand-600" : "bg-brand-950 border border-brand-800"}`;
+  });
   document.querySelectorAll(".step[data-row]").forEach((btn) => {
     const id = btn.dataset.row;
     const s = parseInt(btn.dataset.step, 10);
@@ -508,7 +527,22 @@ function initUI() {
   document.getElementById("canvas-visualizer")?.addEventListener("click", () => updateAndRenderCurrent(true));
   document.getElementById("btn-download")?.addEventListener("click", () => exportDrumWav(kitState.currentDrum));
   document.getElementById("btn-export-all")?.addEventListener("click", exportFullKit);
-  document.getElementById("btn-export-vel")?.addEventListener("click", exportMultiVelocityPack);
+  document.getElementById("btn-export-vel")?.addEventListener("click", () => {
+    exportMultiVelocityPack();
+    showToast(`Exported 3-velocity pack: ${kitState.currentDrum.toUpperCase()}`);
+  });
+  document.getElementById("btn-master-randomize")?.addEventListener("click", () => {
+    const id = kitState.currentDrum;
+    const p = kitState.drums[id];
+    p.drive = Math.random() * 0.8 + 0.2;
+    p.fCut = Math.floor(Math.random() * 8000 + 2000);
+    p.aD = Math.random() * 0.3 + 0.05;
+    if (p.snap != null) p.snap = Math.random() * 0.5 + 0.4;
+    kitState.renderCache = {};
+    syncUIFromState();
+    updateAndRenderCurrent(true);
+    showToast(`Mutated ${id.toUpperCase()}`);
+  });
   document.getElementById("btn-seq-play")?.addEventListener("click", () => {
     if (kitState.playing) stopSequencer();
     else startSequencer();
@@ -554,6 +588,14 @@ function initUI() {
   });
 
   buildSequencerUI();
+  const chase = document.getElementById("chase-leds-bar");
+  if (chase && !chase.children.length) {
+    for (let i = 0; i < 16; i++) {
+      const d = document.createElement("div");
+      d.className = "rounded-sm bg-brand-900 border border-brand-600";
+      chase.appendChild(d);
+    }
+  }
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
   selectAndAuditionDrum("kick", { play: false });
