@@ -82,6 +82,8 @@ uvicorn synth_forge.main:app --reload --port 8000
 
 See [tools/synth-forge/ARCHITECTURE.md](tools/synth-forge/ARCHITECTURE.md).
 
+**Fleet agent:** `hardware-preset-designer` — read `disklordz/agents/profit/hardware-preset-designer/agent.md` or skill `disklordz-hardware-preset-designer`. CLI: `python3 disklordz/integrations/agents/hardware_preset_designer.py --help`.
+
 ## Git
 
 - Do not force-push or deploy production unless the user asks.  

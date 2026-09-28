@@ -1,0 +1,16 @@
+# Automation — Hardware Preset Designer (`hardware-preset-designer`)
+
+platform: github
+trigger: pull_request paths tools/synth-forge/**
+primary: .github/workflows/synth-forge.yml
+
+## Steps
+1. pytest tools/synth-forge/tests
+2. hardware_preset_designer.py --self-test
+3. Optional uvicorn studio smoke
+
+## Invoke agent
+Read: disklordz/agents/profit/hardware-preset-designer/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#hardware-preset-designer

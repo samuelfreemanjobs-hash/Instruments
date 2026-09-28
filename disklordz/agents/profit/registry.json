@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "agent_count": 31,
+  "agent_count": 32,
   "agents": [
     {
       "id": "workflow-automation",
@@ -280,6 +280,15 @@
       "entry": "disklordz/agents/profit/release-notes/agent.md",
       "skill": "disklordz/agents/profit/release-notes/skill.md",
       "upstream_repo": "https://github.com/github/github-mcp-server"
+    },
+    {
+      "id": "hardware-preset-designer",
+      "title": "Hardware Preset Designer",
+      "profit_lever": "Hardware preset velocity \u2014 cross-sell Instruments + producer kits",
+      "path": "disklordz/agents/profit/hardware-preset-designer",
+      "entry": "disklordz/agents/profit/hardware-preset-designer/agent.md",
+      "skill": "disklordz/agents/profit/hardware-preset-designer/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
     }
   ]
 }

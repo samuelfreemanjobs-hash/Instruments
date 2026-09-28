@@ -59,6 +59,14 @@ All generation and adapter pack paths call `clamp_for_hardware` (resonance ≤ 0
 - New genre archetype: extend `ARCHETYPES` / `STYLE_PATTERNS` in generator + semantic_engine.
 - Production capture: optional `sounddevice` extra in `pyproject.toml`.
 
+## Fleet agent
+
+| ID | Entry |
+|----|--------|
+| `hardware-preset-designer` | [disklordz/agents/profit/hardware-preset-designer/agent.md](../../disklordz/agents/profit/hardware-preset-designer/agent.md) |
+| CLI | `python3 disklordz/integrations/agents/hardware_preset_designer.py` |
+| Copilot skill | `.github/skills/disklordz-hardware-preset-designer/SKILL.md` |
+
 ## Related docs
 
 - [tools/ARCHITECTURE.md](../ARCHITECTURE.md) — C++ offline tools index  
