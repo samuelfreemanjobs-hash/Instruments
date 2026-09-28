@@ -15,17 +15,52 @@ export function noteHz(note, octave = 1) {
   return 440 * Math.pow(2, (midi - 69) / 12);
 }
 
-/** 2× linear upsample → nonlinear → average down (anti-aliased saturation). */
-export function applySaturationBuffer(mono, drive = 1.2) {
-  const out = new Float32Array(mono.length);
+export function mulberry32(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const HB7 = [-0.037935, 0, 0.28729, 0.5, 0.28729, 0, -0.037935];
+
+function upsampleHold2x(mono) {
+  const up = new Float32Array(mono.length * 2);
   for (let i = 0; i < mono.length; i++) {
-    const a = mono[i];
-    const b = i + 1 < mono.length ? mono[i + 1] : a;
-    const s0 = softClipFl(triode(a, drive));
-    const s1 = softClipFl(triode((a + b) * 0.5, drive));
-    out[i] = (s0 + s1) * 0.5;
+    up[i * 2] = mono[i];
+    up[i * 2 + 1] = mono[i];
+  }
+  return up;
+}
+
+function halfBandDecimate2x(up2x) {
+  const n = Math.floor(up2x.length / 2);
+  const out = new Float32Array(n);
+  const mid = (HB7.length - 1) / 2;
+  for (let i = 0; i < n; i++) {
+    const center = i * 2;
+    let s = 0;
+    for (let k = 0; k < HB7.length; k++) {
+      const idx = center - mid + k;
+      if (idx >= 0 && idx < up2x.length) s += up2x[idx] * HB7[k];
+    }
+    out[i] = s;
   }
   return out;
+}
+
+export function applyNonlinearOversample2x(mono, sampleFn) {
+  const up = upsampleHold2x(mono);
+  for (let i = 0; i < up.length; i++) up[i] = sampleFn(up[i]);
+  return halfBandDecimate2x(up);
+}
+
+/** 2× OS: hold upsample → nonlinear → half-band decimate. */
+export function applySaturationBuffer(mono, drive = 1.2) {
+  return applyNonlinearOversample2x(mono, (x) => softClipFl(triode(x, drive)));
 }
 
 export function triode(x, drive = 1.2) {
@@ -103,6 +138,29 @@ export function biquadLP(input, state, cutoff, q = 0.707) {
   const y0 = (b0 * input + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2) / a0;
   state.x2 = x1; state.x1 = input; state.y2 = y1; state.y1 = y0;
   return y0;
+}
+
+/** Band-limited white noise buffer (deterministic seed). */
+export function fillBandLimitedNoise(out, cutoff = 9000, seed = 0x7a3f0001) {
+  const rng = mulberry32(seed);
+  const st = { x1: 0, x2: 0, y1: 0, y2: 0 };
+  for (let i = 0; i < out.length; i++) {
+    out[i] = biquadLP(rng() * 2 - 1, st, cutoff, 0.65);
+  }
+}
+
+export function fillPinkNoise(out, seed = 0xbeef0001) {
+  const rng = mulberry32(seed);
+  let b0 = 0;
+  let b1 = 0;
+  let b2 = 0;
+  for (let i = 0; i < out.length; i++) {
+    const white = rng() * 2 - 1;
+    b0 = 0.99886 * b0 + white * 0.0555179;
+    b1 = 0.99332 * b1 + white * 0.0750759;
+    b2 = 0.969 * b2 + white * 0.153852;
+    out[i] = (b0 + b1 + b2 + white * 0.5362) * 0.22;
+  }
 }
 
 export function normalizePeak(mono, db = -0.3) {

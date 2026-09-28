@@ -53,7 +53,7 @@ ES modules require HTTP (not `file://`). Install as PWA from browser menu when s
 | `serve.py` | FastAPI static host + `/api/ai/vibe` |
 | `manifest.webmanifest` · `sw.js` | PWA install + offline app shell |
 
-808 glide: `f = f_root + (f_target - f_root) * (t/T)^2.2`. Transient shaper: ±12 dB in the first 15 ms before saturation. Master: parallel trunk smash + FL soft-clip (`applyTrunkMasterBus`).
+808 glide: `f = f_root + (f_target - f_root) * (t/T)^2.2`. **Elite DSP (studio):** layered kick/clap/snare passes with `phaseAlignMix` (`js/elite-layers.js`); 2× half-band OS saturation (`applyNonlinearOversample2x`); band-limited/pink noise (`fillBandLimitedNoise`, `fillPinkNoise`). MPC shell: glide ms/semi on tab 4; modular studio: `glideInterval` on preset load (Mike Will +7 st).
 
 ## Extension points
 

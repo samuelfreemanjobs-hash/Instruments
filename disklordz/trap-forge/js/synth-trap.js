@@ -10,8 +10,11 @@ import {
   attackTransientGain,
   sustainBodyGain,
   svfLowPass,
+  fillBandLimitedNoise,
+  fillPinkNoise,
 } from "./dsp-core.js";
 import { cardoReverb } from "./reverb-cardo.js";
+import { phaseAlignMix, applyGlideIntervalParams } from "./elite-layers.js";
 
 const HAT808 = [263, 400, 421, 474, 587, 845];
 
@@ -73,21 +76,23 @@ function processChain(mono, p, stereoFn) {
 export function synthKick(p) {
   const dur = p.duration ?? 0.28;
   const n = Math.floor(SR * (dur + (p.aR ?? 0.05)));
-  const mono = new Float32Array(n);
+  const gate = dur;
+  const beater = new Float32Array(n);
+  const body = new Float32Array(n);
+  const sub = new Float32Array(n);
   let phase = 0;
-  let lp = 0;
   for (let i = 0; i < n; i++) {
     const t = i / SR;
-    const gate = dur;
     const ae = adsr(t, p.aA ?? 0.001, p.aD ?? 0.12, p.aS ?? 0, p.aR ?? 0.05, gate);
-    const beater = t < 0.004 ? Math.exp(-t / 0.0008) * Math.sin(2 * Math.PI * 2800 * t) * 0.55 : 0;
+    beater[i] =
+      t < 0.006 ? Math.exp(-t / 0.00075) * Math.sin(2 * Math.PI * 3200 * t) * ae : 0;
     const pitchEnv = Math.exp(-t / (p.pitchDecay ?? 0.022));
     const f0 = (p.rootHz ?? 48) * Math.pow(2, ((p.pitchMod ?? 36) * pitchEnv) / 12);
     phase += (2 * Math.PI * f0) / SR;
-    const body = Math.sin(phase);
-    const sub = Math.sin(phase * 0.5) * 0.35;
-    mono[i] = (beater + body * 0.75 + sub) * ae;
+    body[i] = Math.sin(phase) * ae * 0.82;
+    sub[i] = Math.sin(phase * 0.5) * ae * 0.45;
   }
+  const mono = phaseAlignMix([beater, body, sub], [1, 0.9, 0.65]);
   return processChain(mono, p);
 }
 
@@ -123,11 +128,15 @@ export function synth808(p) {
 export function synthSnare(p) {
   const dur = p.duration ?? 0.32;
   const n = Math.floor(SR * dur);
-  const mono = new Float32Array(n);
+  const tone = new Float32Array(n);
+  const noiseLayer = new Float32Array(n);
+  const noiseSrc = new Float32Array(n);
+  fillBandLimitedNoise(noiseSrc, 12000 + (p.snap ?? 0.65) * 4000, 0x50010001);
   const pitch = Math.pow(2, (p.pitchSemi ?? 0) / 12);
   const f1 = 180 * pitch;
   const f2 = 330 * pitch;
-  let p1 = 0, p2 = 0;
+  let p1 = 0;
+  let p2 = 0;
   const snapAmt = p.snap ?? 0.65;
   const bite = p.snapBite ?? 0.5;
   const snapFreq = 1800 + snapAmt * 4200 + bite * 900;
@@ -137,11 +146,11 @@ export function synthSnare(p) {
     const ae = adsr(t, p.aA ?? 0.001, p.aD ?? 0.09, p.aS ?? 0, p.aR ?? 0.06, dur * 0.85);
     p1 += (2 * Math.PI * f1) / SR;
     p2 += (2 * Math.PI * f2) / SR;
-    const shell = 0.55 * Math.sin(p1) + 0.35 * Math.sin(p2 * 1.07);
-    const noise = (Math.random() * 2 - 1) * Math.exp(-t / 0.045);
-    const snap = biquadLP(noise, st, snapFreq, 0.9 + snapAmt);
-    mono[i] = (shell + snap * snapAmt * 0.9) * ae;
+    tone[i] = (0.55 * Math.sin(p1) + 0.35 * Math.sin(p2 * 1.07)) * ae;
+    const nEnv = noiseSrc[i] * Math.exp(-t / 0.045);
+    noiseLayer[i] = biquadLP(nEnv, st, snapFreq, 0.9 + snapAmt) * snapAmt * ae;
   }
+  const mono = phaseAlignMix([tone, noiseLayer], [1, 0.95]);
   let result = processChain(mono, p);
   if ((p.reverbMix ?? 0) > 0) {
     result = cardoReverb(result.mono, {
@@ -159,6 +168,10 @@ export function synthClap(p) {
   const n = Math.floor(SR * dur);
   const left = new Float32Array(n);
   const right = new Float32Array(n);
+  const nL = new Float32Array(n);
+  const nR = new Float32Array(n);
+  fillPinkNoise(nL, 0xc1a90001);
+  fillPinkNoise(nR, 0xc1a90002);
   const bursts = [0, 0.008, 0.016, p.flamMs ?? 0.022];
   for (let i = 0; i < n; i++) {
     const t = i / SR;
@@ -167,13 +180,10 @@ export function synthClap(p) {
     bursts.forEach((b, k) => {
       if (t >= b) env += (0.5 + k * 0.15) * Math.exp(-(t - b) / 0.028);
     });
-    const nL = Math.random() * 2 - 1;
-    const nR = Math.random() * 2 - 1;
-    left[i] = nL * env * ae;
-    right[i] = nR * env * ae * 1.05;
+    left[i] = nL[i] * env * ae;
+    right[i] = nR[i] * env * ae * 1.05;
   }
-  const mono = new Float32Array(n);
-  for (let i = 0; i < n; i++) mono[i] = (left[i] + right[i]) * 0.5;
+  const mono = phaseAlignMix([left, right], [0.5, 0.52]);
   let result = processChain(mono, p, () => ({ left, right, mono }));
   if ((p.reverbMix ?? 0) > 0) {
     result = cardoReverb(result.mono, {
@@ -198,10 +208,13 @@ export function synthHatClosed(p) {
       const det = 1 + (k - 2.5) * (p.dispersion ?? 0.008);
       s += softSquare((2 * Math.PI * f * det * t)) / HAT808.length;
     });
-    s += (Math.random() * 2 - 1) * 0.08;
+    s += 0; // metallic partials only; sizzle from partial stack
     mono[i] = s * ae;
   }
   p.fCut = p.fCut ?? 7000;
+  const pink = new Float32Array(n);
+  fillPinkNoise(pink, 0x0a700001);
+  for (let i = 0; i < n; i++) mono[i] += pink[i] * 0.06 * Math.exp(-(i / SR) / 0.02);
   return processChain(mono, p);
 }
 
@@ -214,9 +227,11 @@ export function synthHatOpen(p) {
     const ae = adsr(t, p.aA ?? 0.002, p.aD ?? 0.18, p.aS ?? 0.12, p.aR ?? 0.2, dur);
     let s = 0;
     HAT808.forEach((f) => { s += softSquare((2 * Math.PI * f * 1.02 * t)) / HAT808.length; });
-    s += (Math.random() * 2 - 1) * 0.15 * Math.exp(-t / 0.08);
     mono[i] = s * ae;
   }
+  const pink = new Float32Array(n);
+  fillPinkNoise(pink, 0x0a700002);
+  for (let i = 0; i < n; i++) mono[i] += pink[i] * 0.12 * Math.exp(-(i / SR) / 0.08);
   p.fCut = p.fCut ?? 5500;
   return processChain(mono, p);
 }

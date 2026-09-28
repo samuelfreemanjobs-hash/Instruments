@@ -54,4 +54,15 @@ for (const d of DRUM_ORDER) {
   if (!b.left?.length) throw new Error(`empty buffer for ${d.id}`);
 }
 
-console.log("trap-forge smoke: ok", { drums: DRUM_ORDER.length, velocityRatio: ratio.toFixed(3) });
+const kickMono = renderDrumSample("kick", null, 1).mono || renderDrumSample("kick", null, 1).left;
+let kickPeak = 0;
+for (let i = 0; i < Math.min(500, kickMono.length); i++) {
+  kickPeak = Math.max(kickPeak, Math.abs(kickMono[i]));
+}
+if (kickPeak < 0.05) throw new Error("layered kick expected strong onset peak");
+
+const mike = renderDrumSample("sub808", { ...kitState.drums.sub808, glideMs: 120, glideInterval: 7, rootHz: 47 }, 1);
+const m = mike.mono || mike.left;
+if (m.length < 44100) throw new Error("808 glide render too short");
+
+console.log("trap-forge smoke: ok", { drums: DRUM_ORDER.length, velocityRatio: ratio.toFixed(3), kickPeak: kickPeak.toFixed(3) });

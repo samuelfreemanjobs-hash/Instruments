@@ -39,7 +39,7 @@
       desc: "Sustained UK/NY drill glide bass",
       amp: { attack: 0.003, decay: 0.8, sustain: 0.85, release: 1.2 },
       filter: { type: "lowpass", cutoff: 2200, reso: 4.8, env: 0.2, decay: 0.4 },
-      transient: { attack: 4.0, sustain: 2.0, pitchStart: 120, pitchDecay: 0.06, baseFreq: 41 },
+        transient: { attack: 4.0, sustain: 2.0, pitchStart: 120, pitchDecay: 0.06, baseFreq: 41, glideMs: 120, glideSemi: 7 },
       tx: { drive: 68, type: "tube", subHarm: 40, noise: 2, ceiling: -0.1 },
     },
     {
@@ -222,6 +222,16 @@ The output JSON schema MUST match:
     if (glideFromFreq && document.getElementById("glideToggle")?.checked) {
       osc.frequency.setValueAtTime(glideFromFreq, now);
       osc.frequency.exponentialRampToValueAtTime(Math.max(20, rootBaseFreq), now + 0.08);
+    } else if (
+      soundParams.cat === "808" &&
+      (soundParams.transient.glideMs ?? 0) > 0 &&
+      (soundParams.transient.glideSemi ?? 0) !== 0
+    ) {
+      const glideT = Math.max(0.01, (soundParams.transient.glideMs ?? 120) / 1000);
+      const target =
+        rootBaseFreq * Math.pow(2, (soundParams.transient.glideSemi ?? 7) / 12);
+      osc.frequency.setValueAtTime(Math.max(20, rootBaseFreq), now);
+      osc.frequency.exponentialRampToValueAtTime(Math.max(20, target), now + glideT);
     } else {
       osc.frequency.setValueAtTime(Math.max(20, startPitchFreq), now);
       osc.frequency.exponentialRampToValueAtTime(Math.max(20, rootBaseFreq), now + soundParams.transient.pitchDecay);
@@ -404,6 +414,10 @@ The output JSON schema MUST match:
     document.getElementById("pitchDecay").value = currentSound.transient.pitchDecay;
     document.getElementById("pitchDecayVal").textContent = `${Math.round(currentSound.transient.pitchDecay * 1000)} ms`;
     document.getElementById("pitchBaseVal").textContent = `${currentSound.transient.baseFreq} Hz`;
+    document.getElementById("glideMs").value = currentSound.transient.glideMs ?? 0;
+    document.getElementById("glideMsVal").textContent = `${currentSound.transient.glideMs ?? 0} ms`;
+    document.getElementById("glideSemi").value = currentSound.transient.glideSemi ?? 0;
+    document.getElementById("glideSemiVal").textContent = `+${currentSound.transient.glideSemi ?? 0} st`;
     document.getElementById("distType").value = currentSound.tx.type;
     document.getElementById("driveAmount").value = currentSound.tx.drive;
     document.getElementById("driveAmountVal").textContent = `${currentSound.tx.drive} %`;
@@ -422,6 +436,8 @@ The output JSON schema MUST match:
       const val = parseFloat(e.target.value);
       targetObj[key] = val;
       if (unit === "ms") display.textContent = `${Math.round(val * 1000)} ms`;
+      else if (unit === "secms") display.textContent = `${Math.round(val)} ms`;
+      else if (unit === "semi") display.textContent = `+${Math.round(val)} st`;
       else if (unit === "%") display.textContent = `${Math.round(val * factor)} %`;
       else if (unit === "dB") display.textContent = `${val > 0 ? "+" : ""}${val.toFixed(1)} dB`;
       else if (unit === "Hz") display.textContent = `${val.toLocaleString()} Hz`;
@@ -717,6 +733,8 @@ The output JSON schema MUST match:
     bindSlider("transientSustain", currentSound.transient, "sustain", "dB");
     bindSlider("pitchStart", currentSound.transient, "pitchStart", "Hz");
     bindSlider("pitchDecay", currentSound.transient, "pitchDecay", "ms");
+    bindSlider("glideMs", currentSound.transient, "glideMs", "secms");
+    bindSlider("glideSemi", currentSound.transient, "glideSemi", "semi");
     bindSlider("driveAmount", currentSound.tx, "drive", "%");
     bindSlider("subHarmonics", currentSound.tx, "subHarm", "%");
     bindSlider("noiseAmount", currentSound.tx, "noise", "%");

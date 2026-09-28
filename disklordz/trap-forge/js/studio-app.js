@@ -21,6 +21,7 @@ import {
   NOTE_FREQS,
   defaultParamsFor,
 } from "./trap-presets.js";
+import { applyGlideIntervalParams } from "./elite-layers.js";
 
 export { DRUM_ORDER, NOTE_FREQS, PRODUCER_PRESETS };
 
@@ -53,12 +54,7 @@ function scaleStereoBuffer(buf, scale) {
 }
 
 function resolveSub808Glide(p) {
-  const out = { ...p };
-  const f0 = out.rootHz ?? 55;
-  if (out.glideTargetHz != null) return out;
-  if (out.glideSemi) out.glideTargetHz = f0 * Math.pow(2, out.glideSemi / 12);
-  else if (out.glideTarget != null) out.glideTargetHz = out.glideTarget;
-  return out;
+  return applyGlideIntervalParams(p);
 }
 
 /** Render one drum hit; `velocityScale` scales output amplitude (0–1). */
@@ -180,7 +176,12 @@ export function renderDynamicControls(drumId) {
       <input type="range" data-param="glideMs" min="0" max="450" step="5" value="${p.glideMs ?? 0}" class="w-full" />
       <span data-val class="text-emerald-400">${p.glideMs ?? 0}</span>
     </label>
-    <label class="text-xs text-slate-300">Glide semi
+    <label class="text-xs text-slate-300">Glide interval (st)
+      <select data-param="glideInterval" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1">
+        ${[0, 2, 3, 4, 5, 7, 12].map((st) => `<option value="${st}" ${(p.glideInterval ?? p.glideSemi ?? 0) === st ? "selected" : ""}>+${st} st</option>`).join("")}
+      </select>
+    </label>
+    <label class="text-xs text-slate-300">Glide semi (fine)
       <input type="range" data-param="glideSemi" min="-12" max="12" step="1" value="${p.glideSemi ?? 0}" class="w-full" />
       <span data-val class="text-emerald-400">${p.glideSemi ?? 0}</span>
     </label>
@@ -205,6 +206,16 @@ function bindParam(el) {
     }
     if (key === "glideTargetHz" && (el.value === "" || Number.isNaN(val))) {
       kitState.drums[id].glideTargetHz = null;
+      kitState.renderCache = {};
+      updateAndRenderCurrent(false);
+      return;
+    }
+    if (key === "glideInterval") {
+      const semi = parseInt(el.value, 10);
+      kitState.drums[id].glideInterval = semi;
+      kitState.drums[id].glideSemi = semi;
+      const resolved = applyGlideIntervalParams(kitState.drums[id]);
+      kitState.drums[id].glideTargetHz = resolved.glideTargetHz;
       kitState.renderCache = {};
       updateAndRenderCurrent(false);
       return;
@@ -487,6 +498,9 @@ function applyPreset(key) {
   selectAndAuditionDrum(id, { play: false });
   const { drum, label, ...params } = preset;
   Object.assign(kitState.drums[id], params);
+  if (id === "sub808") {
+    Object.assign(kitState.drums[id], applyGlideIntervalParams(kitState.drums[id]));
+  }
   kitState.renderCache = {};
   syncUIFromState();
   renderDynamicControls(id);
