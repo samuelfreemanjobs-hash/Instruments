@@ -5,11 +5,15 @@ on:
     paths:
       - "disklordz/website/**"
       - "disklordz/daw-inbox/**"
+      - "disklordz/rag/**"
+      - "disklordz/scripts/**"
       - ".github/workflows/disklordz-website.yml"
   pull_request:
     paths:
       - "disklordz/website/**"
       - "disklordz/daw-inbox/**"
+      - "disklordz/rag/**"
+      - "disklordz/scripts/**"
 
 jobs:
   build:
@@ -25,7 +29,12 @@ jobs:
           cache: npm
           cache-dependency-path: disklordz/website/package-lock.json
       - run: npm ci
+      - run: npm run lint
       - run: npm run build
+      - name: RAG corpus
+        run: |
+          python3 ../rag/scripts/chunk_corpus.py
+          python3 ../rag/scripts/query_local.py "disklordz preset" | head -n 2
       - run: npm ci
         working-directory: disklordz/daw-inbox
       - run: node --check bin/watch.mjs

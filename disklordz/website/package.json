@@ -7,6 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "qa": "bash ../scripts/run_qa.sh",
     "verify:go-live": "bash scripts/verify-go-live.sh",
     "go-live": "bash scripts/go-live.sh --sync-vercel"
   },
