@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MPC TRAP-FORGE // Elite Drum Generator</title>
+  <meta name="theme-color" content="#090a0d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="description" content="AI &amp; DSP Procedural Trap Drum Studio for Akai MPC hardware and DAWs.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/mpc-akai.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            mpc: {
+              black: '#07080a', panel: '#101217', card: '#161821', border: '#252936',
+              accent: '#ff2e43', orange: '#ff6b2b', gold: '#ffb703', cyan: '#00f2fe', neon: '#22c55e'
+            }
+          },
+          fontFamily: {
+            mono: ['"JetBrains Mono"', 'monospace'],
+            tech: ['"Chakra Petch"', 'sans-serif'],
+            sans: ['"Space Grotesk"', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-mpc-black text-slate-200 font-sans min-h-screen crt-grid select-none flex flex-col overflow-x-hidden">
+
+<header class="border-b border-mpc-border bg-mpc-panel/95 backdrop-blur-md sticky top-0 z-50 px-3 sm:px-5 py-2.5">
+  <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-mpc-accent flex items-center justify-center font-tech font-bold text-white text-lg">MPC</div>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h1 class="font-tech font-bold text-base sm:text-lg text-white tracking-wider">TRAP-FORGE</h1>
+          <span class="text-[10px] font-mono uppercase bg-mpc-accent/20 border border-mpc-accent/40 text-mpc-accent px-1.5 py-0.5 rounded font-bold">PRO STUDIO</span>
+        </div>
+        <p class="text-[10px] font-mono text-slate-400">Pure Procedural DSP Trap Drum Synthesizer</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <a href="studio.html" class="hidden sm:inline px-2 py-1 text-[10px] font-mono border border-mpc-border rounded text-slate-400 hover:text-white">Modular studio</a>
+      <button id="installPwaBtn" class="hidden px-2.5 py-1 text-xs font-mono rounded border border-mpc-cyan/40 bg-mpc-cyan/10 text-mpc-cyan">Install</button>
+      <button id="quickHelpBtn" class="px-3 py-1.5 rounded-lg bg-mpc-card border border-mpc-border text-xs font-mono text-slate-300">Guide</button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto w-full px-3 sm:px-4 py-4 space-y-4 flex-1">
+
+<section class="bg-gradient-to-r from-mpc-panel via-mpc-card to-mpc-panel border border-mpc-border rounded-2xl p-3.5 shadow-xl flex flex-col md:flex-row items-center gap-4">
+  <div class="flex items-center gap-3 w-full md:w-auto">
+    <span id="currentCategoryTag" class="px-2.5 py-1 rounded text-xs font-mono uppercase bg-mpc-accent/20 border border-mpc-accent/50 text-mpc-accent font-bold">808 BASS</span>
+    <div>
+      <h2 id="currentSoundName" class="font-tech font-bold text-white text-lg">SPINZ_808_DIRTY</h2>
+      <p id="currentSoundDesc" class="text-xs font-mono text-slate-400">Classic Atlanta Spinz 808 with clipping</p>
+    </div>
+  </div>
+  <button id="masterPreviewBtn" class="w-full md:w-auto flex-1 max-w-md py-3.5 px-6 rounded-xl bg-gradient-to-r from-mpc-accent to-mpc-orange border-2 border-white/20 shadow-xl flex items-center justify-center gap-3 group" title="Spacebar to preview">
+    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><span class="text-white text-lg">▶</span></div>
+    <div class="text-left">
+      <div class="font-tech font-bold text-white tracking-wider">PRESS TO PREVIEW WAV <span class="w-2 h-2 inline-block rounded-full bg-white led-pulse"></span></div>
+      <div class="text-[11px] font-mono text-white/80">Click or [SPACEBAR]</div>
+    </div>
+  </button>
+  <button id="quickRandomBtn" class="px-3 py-2 bg-mpc-card border border-mpc-border rounded-lg text-xs font-mono text-slate-300">Mutate</button>
+</section>
+
+<canvas id="waveCanvas" width="640" height="72" class="w-full max-w-6xl mx-auto rounded-xl border border-mpc-border bg-mpc-black"></canvas>
+
+<nav class="flex gap-1.5 overflow-x-auto pb-1 text-xs font-tech font-bold border-b border-mpc-border/80">
+  <button class="nav-tab active-tab px-3 py-2 rounded-t-lg bg-mpc-panel border-t-2 border-mpc-accent text-white" data-target="pagePads">1. PADS &amp; AI</button>
+  <button class="nav-tab px-3 py-2 rounded-t-lg bg-mpc-panel/50 text-slate-400" data-target="pageAmp">2. AMP ADSR</button>
+  <button class="nav-tab px-3 py-2 rounded-t-lg bg-mpc-panel/50 text-slate-400" data-target="pageFilter">3. FILTER</button>
+  <button class="nav-tab px-3 py-2 rounded-t-lg bg-mpc-panel/50 text-slate-400" data-target="pageTransient">4. TRANSIENT</button>
+  <button class="nav-tab px-3 py-2 rounded-t-lg bg-mpc-panel/50 text-slate-400" data-target="pageTxDrive">5. TX DRIVE</button>
+  <button class="nav-tab px-3 py-2 rounded-t-lg bg-mpc-panel/50 text-slate-400" data-target="pageSequencerExport">6. SEQ &amp; EXPORT</button>
+</nav>
+
+<div id="pagePads" class="tab-page space-y-4">
+  <section class="bg-mpc-panel border border-mpc-border rounded-2xl p-4 shadow-xl space-y-3">
+    <label class="text-xs font-tech font-bold uppercase text-mpc-accent">AI Drum Vibe Forge</label>
+    <input id="promptInput" type="text" placeholder="Aggressive Metro 808, Southside snare, Pierre perc…" class="w-full px-3 py-3 bg-mpc-black border border-mpc-border rounded-xl text-sm text-white"/>
+    <div class="flex flex-col sm:flex-row gap-2">
+      <input id="geminiApiKey" type="password" autocomplete="off" placeholder="Optional Gemini API key (or use server GEMINI_API_KEY)" class="flex-1 px-3 py-2 bg-mpc-black border border-mpc-border rounded-lg text-xs font-mono text-slate-300"/>
+      <select id="geminiModelSelect" class="px-2 py-2 bg-mpc-card border border-mpc-border rounded-lg text-xs font-mono">
+        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+        <option value="gemini-2.5-flash-preview-05-20">Gemini 2.5 Flash</option>
+      </select>
+      <button id="generateAiBtn" class="px-5 py-2 bg-mpc-accent text-white font-tech text-xs rounded-xl flex items-center gap-2"><span id="aiBtnSpinner" class="hidden w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>Forge Sound</button>
+    </div>
+    <div class="flex gap-1.5 overflow-x-auto text-xs">
+      <button class="vibe-pill px-2 py-1 rounded bg-mpc-card border border-mpc-border" data-prompt="Heavy distorted Spinz 808 with gritty harmonics">Spinz 808</button>
+      <button class="vibe-pill px-2 py-1 rounded bg-mpc-card border border-mpc-border" data-prompt="Crisp Atlanta layered trap snare">Hard Snare</button>
+      <button class="vibe-pill px-2 py-1 rounded bg-mpc-card border border-mpc-border" data-prompt="Tight punchy Southside kick">Punch Kick</button>
+    </div>
+  </section>
+
+  <div class="flex flex-wrap gap-2 bg-mpc-panel border border-mpc-border rounded-xl p-3 text-xs font-tech">
+    <button class="cat-selector px-3 py-1.5 rounded-lg border border-mpc-accent bg-mpc-accent/20 text-white" data-cat="808">808</button>
+    <button class="cat-selector px-3 py-1.5 rounded-lg border border-mpc-border bg-mpc-card" data-cat="KICK">KICK</button>
+    <button class="cat-selector px-3 py-1.5 rounded-lg border border-mpc-border bg-mpc-card" data-cat="SNARE">SNARE</button>
+    <button class="cat-selector px-3 py-1.5 rounded-lg border border-mpc-border bg-mpc-card" data-cat="HIHAT">HI-HAT</button>
+    <button class="cat-selector px-3 py-1.5 rounded-lg border border-mpc-border bg-mpc-card" data-cat="PERC">PERC</button>
+    <button id="padMode16Levels" class="ml-auto px-2 py-1 rounded bg-mpc-accent text-white font-mono">16 LEVELS</button>
+    <button id="padModeKit" class="px-2 py-1 rounded text-slate-400 font-mono">KIT</button>
+    <label class="flex items-center gap-1 font-mono"><input type="checkbox" id="glideToggle" class="accent-mpc-accent">808 Glide</label>
+  </div>
+
+  <section class="bg-mpc-panel border border-mpc-border rounded-2xl p-4 shadow-2xl">
+    <div id="padMatrixTitle" class="text-xs font-tech font-bold text-slate-200 mb-3">AKAI MPC 16-LEVELS PITCH AUDITION MATRIX</div>
+    <div id="padsGridContainer" class="grid grid-cols-4 gap-2.5">
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="13" data-semitone="12"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="14" data-semitone="10"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="15" data-semitone="7"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="16" data-semitone="5"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="9" data-semitone="4"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="10" data-semitone="3"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="11" data-semitone="2"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="12" data-semitone="1"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="5" data-semitone="0" data-root="true"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="6" data-semitone="-1"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="7" data-semitone="-2"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="8" data-semitone="-3"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="1" data-semitone="-4"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="2" data-semitone="-5"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="3" data-semitone="-7"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="4" data-semitone="-12"></button>
+    </div>
+    <div class="mt-3 flex flex-wrap gap-2 text-xs font-mono text-slate-400">
+      Roll: <select id="rollRateSelect" class="bg-mpc-card border border-mpc-border rounded px-2 py-1"><option value="0">Off</option><option value="16">1/16</option><option value="32" selected>1/32</option><option value="64">1/64</option></select>
+    </div>
+  </section>
+  <div id="presetPills" class="flex flex-wrap gap-2 text-xs font-mono"></div>
+</div>
+
+<div id="pageAmp" class="tab-page hidden space-y-4">
+  <div class="bg-mpc-panel border border-mpc-border rounded-2xl p-5 space-y-4">
+    <button class="preview-btn-inline px-3 py-1.5 bg-mpc-accent/20 border border-mpc-accent text-mpc-accent text-xs font-tech rounded-lg">PREVIEW</button>
+    <div class="grid md:grid-cols-2 gap-4 text-sm font-mono">
+      <div>Attack <span id="ampAttackVal" class="text-mpc-accent"></span><input type="range" id="ampAttack" min="0.001" max="0.5" step="0.001" value="0.002" class="w-full"></div>
+      <div>Decay <span id="ampDecayVal" class="text-mpc-accent"></span><input type="range" id="ampDecay" min="0.01" max="2" step="0.01" value="0.35" class="w-full"></div>
+      <div>Sustain <span id="ampSustainVal" class="text-mpc-accent"></span><input type="range" id="ampSustain" min="0" max="1" step="0.01" value="0.4" class="w-full"></div>
+      <div>Release <span id="ampReleaseVal" class="text-mpc-accent"></span><input type="range" id="ampRelease" min="0.01" max="4" step="0.01" value="0.85" class="w-full"></div>
+    </div>
+  </div>
+</div>
+
+<div id="pageFilter" class="tab-page hidden space-y-4">
+  <div class="bg-mpc-panel border border-mpc-border rounded-2xl p-5 space-y-4">
+    <button class="preview-btn-inline px-3 py-1.5 border border-mpc-cyan text-mpc-cyan text-xs rounded-lg">PREVIEW</button>
+    <select id="filterType" class="bg-mpc-card border border-mpc-border rounded px-2 py-1 text-sm"><option value="lowpass">Lowpass</option><option value="highpass">Highpass</option><option value="bandpass">Bandpass</option><option value="notch">Notch</option></select>
+    <div class="grid md:grid-cols-2 gap-4 text-sm font-mono">
+      <div>Cutoff <span id="filterCutoffVal" class="text-mpc-cyan"></span><input type="range" id="filterCutoff" min="40" max="18000" step="10" value="2850" class="w-full"></div>
+      <div>Reso <span id="filterResoVal" class="text-mpc-cyan"></span><input type="range" id="filterReso" min="0.1" max="18" step="0.1" value="3.2" class="w-full"></div>
+      <div>Env <span id="filterEnvVal" class="text-mpc-cyan"></span><input type="range" id="filterEnv" min="-1" max="1" step="0.05" value="0.65" class="w-full"></div>
+      <div>F decay <span id="filterDecayVal" class="text-mpc-cyan"></span><input type="range" id="filterDecay" min="0.01" max="1.5" step="0.01" value="0.22" class="w-full"></div>
+    </div>
+  </div>
+</div>
+
+<div id="pageTransient" class="tab-page hidden space-y-4">
+  <div class="bg-mpc-panel border border-mpc-border rounded-2xl p-5 space-y-4">
+    <button class="preview-btn-inline px-3 py-1.5 border border-mpc-orange text-mpc-orange text-xs rounded-lg">PREVIEW</button>
+    <div class="grid md:grid-cols-2 gap-4 text-sm font-mono">
+      <div>Attack punch <span id="transientAttackVal" class="text-mpc-orange"></span><input type="range" id="transientAttack" min="-12" max="14" step="0.5" value="6" class="w-full"></div>
+      <div>Sustain <span id="transientSustainVal" class="text-mpc-orange"></span><input type="range" id="transientSustain" min="-18" max="6" step="0.5" value="0" class="w-full"></div>
+      <div>Pitch start <span id="pitchStartVal" class="text-mpc-orange"></span><input type="range" id="pitchStart" min="30" max="600" step="5" value="180" class="w-full"></div>
+      <div>Pitch decay <span id="pitchDecayVal" class="text-mpc-orange"></span><input type="range" id="pitchDecay" min="0.005" max="0.3" step="0.005" value="0.045" class="w-full"></div>
+    </div>
+    <div class="text-sm font-mono">Base sub: <span id="pitchBaseVal" class="text-mpc-orange font-bold"></span></div>
+    <div class="grid md:grid-cols-2 gap-4 text-sm font-mono mt-3">
+      <div>808 glide ms <span id="glideMsVal" class="text-mpc-orange"></span><input type="range" id="glideMs" min="0" max="450" step="5" value="0" class="w-full"></div>
+      <div>Glide interval (st) <span id="glideSemiVal" class="text-mpc-orange"></span><input type="range" id="glideSemi" min="0" max="12" step="1" value="0" class="w-full"></div>
+    </div>
+  </div>
+</div>
+
+<div id="pageTxDrive" class="tab-page hidden space-y-4">
+  <div class="bg-mpc-panel border border-mpc-border rounded-2xl p-5 space-y-4">
+    <button class="preview-btn-inline px-3 py-1.5 border border-mpc-gold text-mpc-gold text-xs rounded-lg">PREVIEW</button>
+    <select id="dacEmulationSelect" class="bg-mpc-black border border-mpc-border rounded px-3 py-2 text-xs font-mono text-mpc-gold w-full max-w-md">
+      <option value="clean">Studio 24-Bit Clean</option>
+      <option value="mpc60">MPC 60 (12-bit / 26k)</option>
+      <option value="mpc3000">MPC 3000 (16-bit)</option>
+      <option value="sp1200">SP-1200 (12-bit ring)</option>
+    </select>
+    <select id="distType" class="bg-mpc-card border border-mpc-border rounded px-2 py-1 text-sm"><option value="hard">Hard clip</option><option value="tape">Tape</option><option value="tube">Tube</option><option value="fold">Foldback</option></select>
+    <div class="grid md:grid-cols-2 gap-4 text-sm font-mono">
+      <div>Drive <span id="driveAmountVal" class="text-mpc-gold"></span><input type="range" id="driveAmount" min="0" max="100" step="1" value="45" class="w-full"></div>
+      <div>Sub harm <span id="subHarmonicsVal" class="text-mpc-gold"></span><input type="range" id="subHarmonics" min="0" max="100" step="1" value="25" class="w-full"></div>
+      <div>Noise <span id="noiseAmountVal" class="text-mpc-gold"></span><input type="range" id="noiseAmount" min="0" max="100" step="1" value="8" class="w-full"></div>
+      <div>Ceiling <span id="outputCeilingVal" class="text-mpc-gold"></span><input type="range" id="outputCeiling" min="-6" max="0" step="0.1" value="-0.1" class="w-full"></div>
+    </div>
+  </div>
+</div>
+
+<div id="pageSequencerExport" class="tab-page hidden space-y-4">
+  <section class="bg-mpc-panel border border-mpc-border rounded-2xl p-5 space-y-4">
+    <div class="flex flex-wrap gap-3 items-center text-xs font-mono">
+      BPM <input type="number" id="seqBpm" min="80" max="190" value="142" class="w-14 bg-mpc-black border border-mpc-border rounded px-2 text-center">
+      Swing <select id="seqSwing" class="bg-mpc-card border border-mpc-border rounded px-2 py-1"><option value="0.50">50%</option><option value="0.58" selected>58%</option><option value="0.66">66%</option></select>
+      <button id="seqPlayBtn" class="px-4 py-1.5 rounded-lg bg-mpc-neon/20 border border-mpc-neon/60 text-mpc-neon font-tech text-xs"><span id="seqPlayText">PLAY</span></button>
+      <button id="seqClearBtn" class="px-3 py-1.5 rounded-lg border border-mpc-border text-slate-400">Clear</button>
+    </div>
+    <div id="seqTracksContainer"></div>
+  </section>
+  <section class="bg-mpc-panel border border-mpc-border rounded-2xl p-5 grid md:grid-cols-3 gap-4">
+    <button class="export-specific-btn py-2 bg-mpc-accent text-white font-tech text-xs rounded-lg" data-format="wav24">24-bit WAV</button>
+    <button class="export-specific-btn py-2 bg-mpc-card border border-mpc-border text-xs rounded-lg" data-format="wav16">16-bit WAV</button>
+    <button class="export-specific-btn py-2 bg-mpc-gold/20 border border-mpc-gold/60 text-mpc-gold text-xs rounded-lg" data-format="xpm">Export .XPM Kit</button>
+  </section>
+</div>
+
+</main>
+
+<div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+<div id="helpModal" class="fixed inset-0 bg-black/85 z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-mpc-panel border border-mpc-border max-w-lg w-full rounded-2xl p-5 space-y-3">
+    <h3 class="font-tech font-bold text-white">MPC TRAP-FORGE Guide</h3>
+    <p class="text-xs text-slate-300">Preview with the red button or spacebar. Use pads for 16-level pitch or kit mode. Export WAV or Akai .XPM on tab 6.</p>
+    <button id="dismissHelpBtn" class="w-full py-2 bg-mpc-card border border-mpc-border rounded-lg text-xs font-mono">GOT IT</button>
+    <button id="closeHelpBtn" class="hidden"></button>
+  </div>
+</div>
+
+<footer class="border-t border-mpc-border/60 py-2 text-center text-[11px] font-mono text-slate-500">MPC TRAP-FORGE • PROCEDURAL DSP</footer>
+<script src="js/mpc-trap-forge-ui.js"></script>
+</body>
+</html>

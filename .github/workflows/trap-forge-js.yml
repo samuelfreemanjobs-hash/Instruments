@@ -1,0 +1,26 @@
+name: TRAP-FORGE JS (Vitest)
+
+on:
+  push:
+    paths:
+      - "disklordz/trap-forge/**"
+      - ".github/workflows/trap-forge-js.yml"
+  pull_request:
+    paths:
+      - "disklordz/trap-forge/**"
+
+jobs:
+  vitest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: disklordz/trap-forge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: disklordz/trap-forge/package-lock.json
+      - run: npm install
+      - run: npm test
