@@ -114,9 +114,11 @@ Disklordz SaaS deploy: root directory `disklordz/website`, Supabase redirect URL
 
 ---
 
-## 8. Skills and MCP
+## 8. Hermes team + skills + MCP
 
-Enable marketplace skills for your stack (Vercel, Supabase, env-setup). Use **native MCP** when available; Zapier for cross-app chains.
+**Default dev model:** [HERMES_QUICKSTART.md](HERMES_QUICKSTART.md) — lead routes to architect / dsp / gui / web / qa; each seat reads `.cursor/skills/hermes-elite-*/SKILL.md`.
+
+Also enable marketplace skills for your stack (Vercel, Supabase, env-setup). Use **native MCP** when available; Zapier for cross-app chains.
 
 ---
 

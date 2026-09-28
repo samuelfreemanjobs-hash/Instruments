@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "updated": "2026-09-28",
+  "sops": [
+    {
+      "id": "SOP-HERMES-001",
+      "title": "Seat routing and dispatch",
+      "path": "sops/SOP-HERMES-001-seat-routing.md",
+      "owner_seat": "hermes-lead",
+      "consumer_seats": ["hermes-lead", "hermes-ops"],
+      "cadence": "every_task"
+    },
+    {
+      "id": "SOP-HERMES-002",
+      "title": "SOP authoring and audit",
+      "path": "sops/SOP-HERMES-002-sop-maintenance.md",
+      "owner_seat": "hermes-sop",
+      "consumer_seats": ["hermes-sop", "hermes-lead", "hermes-ops"],
+      "cadence": "weekly_or_on_gap"
+    },
+    {
+      "id": "SOP-OPS-001",
+      "title": "Work order lifecycle",
+      "path": "sops/SOP-OPS-001-work-order-lifecycle.md",
+      "owner_seat": "hermes-ops",
+      "consumer_seats": ["hermes-lead", "hermes-ops", "hermes-handoff"],
+      "cadence": "every_wo"
+    },
+    {
+      "id": "SOP-OPS-002",
+      "title": "PR title, evidence, and Done",
+      "path": "sops/SOP-OPS-002-pr-evidence-done.md",
+      "owner_seat": "hermes-ops",
+      "consumer_seats": ["hermes-lead", "hermes-qa", "hermes-web"],
+      "cadence": "every_pr"
+    },
+    {
+      "id": "SOP-DEV-001",
+      "title": "JUCE plugin CI and pluginval",
+      "path": "sops/SOP-DEV-001-plugin-ci.md",
+      "owner_seat": "hermes-devops",
+      "consumer_seats": ["hermes-devops", "hermes-qa", "hermes-dsp", "hermes-architect"],
+      "cadence": "every_plugin_pr"
+    },
+    {
+      "id": "SOP-DEV-002",
+      "title": "Junova-X finish line (shippable demo)",
+      "path": "sops/SOP-DEV-002-junova-finish-line.md",
+      "owner_seat": "hermes-architect",
+      "consumer_seats": ["hermes-architect", "hermes-dsp", "hermes-qa", "hermes-gtm"],
+      "cadence": "every_junova_release"
+    },
+    {
+      "id": "SOP-SAAS-001",
+      "title": "Disklordz web build and deploy smoke",
+      "path": "sops/SOP-SAAS-001-web-build-deploy.md",
+      "owner_seat": "hermes-web",
+      "consumer_seats": ["hermes-web", "hermes-data", "hermes-qa", "hermes-devops"],
+      "cadence": "every_saas_pr"
+    },
+    {
+      "id": "SOP-SEC-001",
+      "title": "Secrets and security baseline",
+      "path": "sops/SOP-SEC-001-secrets-baseline.md",
+      "owner_seat": "hermes-security",
+      "consumer_seats": ["hermes-security", "hermes-web", "hermes-data", "hermes-lead"],
+      "cadence": "every_pr"
+    },
+    {
+      "id": "SOP-GTM-001",
+      "title": "Product launch and pricing handoff",
+      "path": "sops/SOP-GTM-001-launch-checklist.md",
+      "owner_seat": "hermes-gtm",
+      "consumer_seats": ["hermes-gtm", "hermes-lead", "hermes-support"],
+      "cadence": "per_launch"
+    },
+    {
+      "id": "SOP-RAG-001",
+      "title": "RAG corpus refresh and support queries",
+      "path": "sops/SOP-RAG-001-corpus-support.md",
+      "owner_seat": "hermes-support",
+      "consumer_seats": ["hermes-support", "hermes-research", "hermes-web"],
+      "cadence": "weekly_or_on_doc_change"
+    },
+    {
+      "id": "SOP-HANDOFF-001",
+      "title": "Cursor ↔ Antigravity handoff",
+      "path": "sops/SOP-HANDOFF-001-antigravity.md",
+      "owner_seat": "hermes-handoff",
+      "consumer_seats": ["hermes-handoff", "hermes-architect", "hermes-lead"],
+      "cadence": "per_hise_wo"
+    },
+    {
+      "id": "SOP-RESEARCH-001",
+      "title": "Hyperresearch brief to WO",
+      "path": "sops/SOP-RESEARCH-001-hyperresearch.md",
+      "owner_seat": "hermes-research",
+      "consumer_seats": ["hermes-research", "hermes-lead", "hermes-architect"],
+      "cadence": "on_demand"
+    }
+  ]
+}

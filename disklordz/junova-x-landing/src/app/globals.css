@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #07070c;
+  --fg: #e8e6f2;
+  --accent: #7c6bff;
+  --muted: #9a97ad;
+}
+
+body {
+  background: radial-gradient(1200px 600px at 50% -10%, #1a1530 0%, var(--bg) 55%);
+  color: var(--fg);
+  min-height: 100vh;
+}

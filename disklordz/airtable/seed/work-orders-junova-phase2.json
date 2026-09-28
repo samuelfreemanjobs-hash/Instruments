@@ -1,0 +1,50 @@
+[
+  {
+    "id": "WO-2026-004",
+    "title": "[Plugin][Junova-X] Arpeggiator + DSP module architecture",
+    "status": "Done",
+    "acceptance": "Arpeggiator.cpp, BbdChorus.cpp, ARCHITECTURE_DSP.md, JunovaXTests green"
+  },
+  {
+    "id": "WO-2026-005",
+    "title": "[Plugin][Junova-X] Host PPQ arp sync + latch",
+    "status": "Done",
+    "acceptance": "Steps on 1/16–1/4 grid from playhead; latch mode in UI"
+  },
+  {
+    "id": "WO-2026-006",
+    "title": "[Plugin][Junova-X] Offline render smoke in CI",
+    "status": "Done",
+    "acceptance": "Short WAV render + spectral diff gate in vst-testing-ops"
+  },
+  {
+    "id": "WO-2026-007",
+    "title": "[Plugin][Junova-X] iPlug2 reference import checklist",
+    "status": "In progress",
+    "acceptance": "iPlug2 submodule under vst-juno106; IPLUG2_REFERENCE.md; parity table filled when Juno106 tree lands"
+  },
+  {
+    "id": "WO-2026-008",
+    "title": "[Plugin][Junova-X] Jun-6 V competitive A/B matrix",
+    "status": "Done",
+    "acceptance": "GoldenScenarios + manifest AB rows + QA_AB_JUN6.md + refresh/verify scripts"
+  },
+  {
+    "id": "WO-2026-009",
+    "title": "[Plugin][Junova-X] VCF/chorus timbre pass",
+    "status": "In progress",
+    "acceptance": "OTA VCF saturation + BBD chorus mode rates; golden refresh green"
+  },
+  {
+    "id": "WO-2026-010",
+    "title": "[Plugin][Junova-X] Juno 6-voice poly mode",
+    "status": "Done",
+    "acceptance": "Voice mode Juno 6 limits poly to 6; Celestial button; golden ab-juno6-poly"
+  },
+  {
+    "id": "WO-2026-011",
+    "title": "[Plugin][Junova-X] Free Juno reference plugins workflow",
+    "status": "Done",
+    "acceptance": "REFERENCE_PLUGINS.md; KR-106 clone script; compare_kr106_reference.sh; chorus aligned to published HW LFO rates"
+  }
+]

@@ -1,0 +1,12 @@
+Junova-X — demo install (Linux x64)
+====================================
+
+1. Unzip this archive.
+2. VST3: copy Junova-X.vst3 into ~/.vst3/ (or your host's VST3 path).
+3. CLAP: copy Junova-X.clap into ~/.clap/ (or host CLAP folder).
+4. Standalone: run bin/Junova-X (may need libfreetype / ALSA deps on minimal systems).
+5. Rescan plugins in your DAW. Manufacturer: SmFr.
+
+Factory presets: 48 programs (host preset menu / plugin menu).
+
+Support / updates: see Disklordz when store is live.

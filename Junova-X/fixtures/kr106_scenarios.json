@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "description": "KR-106 SysEx APR/IPR maps aligned to Junova golden scenarios (GoldenScenarios.cpp)",
+  "scenarios": {
+    "ab03-chorus-i": {
+      "note": 57,
+      "seconds": 3.0,
+      "sliders": {
+        "0x03": 76,
+        "0x05": 91,
+        "0x0A": 100,
+        "0x0B": 0,
+        "0x0C": 64,
+        "0x0D": 108,
+        "0x0E": 64
+      },
+      "sw1": 82,
+      "sw2": 25,
+      "comment": "sw1=0x52: 8'+saw+chorus I (0x40, no 0x20 off). Junova: chorus mode I, cutoff 0.72, pwm 60, sustain 0.85"
+    },
+    "ab01-dry-saw": {
+      "note": 60,
+      "seconds": 2.0,
+      "sliders": {
+        "0x03": 50,
+        "0x05": 121,
+        "0x06": 6,
+        "0x0A": 100,
+        "0x0B": 0,
+        "0x0C": 64,
+        "0x0D": 127,
+        "0x0E": 102
+      },
+      "sw1": 50,
+      "sw2": 25,
+      "comment": "chorus off (0x20), dry saw, open filter"
+    }
+  }
+}

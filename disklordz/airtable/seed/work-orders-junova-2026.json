@@ -1,0 +1,34 @@
+{
+  "base_id_hint": "Disklordz OS — set AIRTABLE_BASE_ID (legacy interim: appwaEPUOCXBoq8jB Business Idea Tracker)",
+  "table": "Agent Work Orders",
+  "records": [
+    {
+      "work_order_id": "WO-2026-001",
+      "title": "[Plugin][Junova-X] JUCE VST3 first host green + pluginval smoke",
+      "assigned_team": "engineering",
+      "assigned_role": "dsp-engineer",
+      "status": "Queued",
+      "priority": "P0",
+      "acceptance_criteria": "Port/reference iPlug2 scaffold into Junova-X/ as JUCE VST3; Release|x64 (and Linux CI parity with Instruments build.yml where applicable) builds from agreed tree; loads in Reaper; MIDI + Diag Test tone/Panic pass; dual ADSR / HPF 0 vs 1 / Chorus Off|I|II smoke per first-test checklist; pluginval run attached (pass or documented waivers); no shared kernel with JD Upgraded; PR title includes WO-2026-001."
+    },
+    {
+      "work_order_id": "WO-2026-002",
+      "title": "[Plugin][Junova-X] CLAP target + dual-format CI checklist",
+      "assigned_team": "engineering",
+      "assigned_role": "dsp-engineer",
+      "status": "Queued",
+      "priority": "P0",
+      "acceptance_criteria": "CLAP target beside VST3 under Junova-X/ CMake; same DSP/params as VST3; loads in one CLAP host with MIDI→audio; documented CMake/CI steps for both formats; validator notes; AU explicitly out of scope; PR title includes WO-2026-002."
+    },
+    {
+      "work_order_id": "WO-2026-003",
+      "title": "[Plugin][Junova-X] Factory presets (48 MVP bank) + state save/load",
+      "assigned_team": "engineering",
+      "assigned_role": "preset-designer",
+      "status": "Queued",
+      "priority": "P1",
+      "acceptance_criteria": "48 factory presets covering bass/pad/poly/lead/FX; prev/next + user save; recall after host reload; format documented; QA checklist section updated; roadmap note for additional banks beyond 48 post-MVP; PR title includes WO-2026-003.",
+      "project_id": "PRJ-2026-JUNOVA"
+    }
+  ]
+}

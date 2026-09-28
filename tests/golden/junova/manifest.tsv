@@ -1,0 +1,12 @@
+# filename	program	note	velocity	seconds	sampleRate	scenario
+preset0-c4-0.5s.wav	0	60	100	0.5	44100	-
+preset8-c4-0.5s.wav	8	60	100	0.5	44100	-
+ab01-dry-saw-c4-2s.wav	-	60	100	2.0	44100	ab01-dry-saw
+ab02-fat-pad-c3-4s.wav	-	48	100	4.0	44100	ab02-fat-pad
+ab03-chorus-i-a3-3s.wav	-	57	100	3.0	44100	ab03-chorus-i
+ab03-chorus-ii-a3-3s.wav	-	57	100	3.0	44100	ab03-chorus-ii
+ab03-chorus-i-ii-a3-3s.wav	-	57	100	3.0	44100	ab03-chorus-i-ii
+ab04-filter-sweep-c4-2s.wav	-	60	100	2.0	44100	ab04-filter-sweep
+ab06-noise-hpf-c4-1s.wav	-	60	100	1.0	44100	ab06-noise-hpf
+ab07-unison-lead-g3-2s.wav	-	55	100	2.0	44100	ab07-unison-lead
+ab-juno6-poly-c4-1s.wav	-	60	100	1.0	44100	ab-juno6-poly

@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "products": {
+    "saas": [
+      "docs/DISKLORDZ_ILLUGEN_RESEARCH.md",
+      "docs/DISKLORDZ_SAAS_V0.md",
+      "docs/DISKLORDZ_GO_LIVE.md",
+      "docs/RAG_AND_INTELLIGENT_AUTOMATION.md",
+      "disklordz/website/ARCHITECTURE.md",
+      "disklordz/rag/ARCHITECTURE.md"
+    ],
+    "junova": [
+      "Junova-X/ARCHITECTURE.md",
+      "Junova-X/REPO_HANDOFF.md",
+      "Junova-X/docs/junova-x-mvp-gap-analysis.md",
+      "docs/DISKLORDZ_PLUGIN_TRACKS.md",
+      "docs/GROK_PLUGIN_TEAM.md"
+    ],
+    "plugin": [
+      "docs/DISKLORDZ_PLUGIN_TRACKS.md",
+      "vst-testing-ops/ARCHITECTURE.md",
+      "docs/REPO_AUTOMATION.md",
+      "Wave909/ARCHITECTURE.md"
+    ],
+    "general": [
+      "ARCHITECTURE.md",
+      "docs/HERMES_AGENT_FRAMEWORK.md",
+      "docs/GROK_CLOSED_LOOP_ENGINE.md",
+      "docs/AGENTIC_PROJECT_STANDARDS.md"
+    ]
+  }
+}

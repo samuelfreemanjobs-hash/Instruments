@@ -1,0 +1,8 @@
+wineprefix/
+host/*.exe
+host/*.dll
+plugins/*.dll
+plugins/**/*.dll
+renders/*.wav
+renders/**/*.wav
+*.log

@@ -1,0 +1,30 @@
+# Hermes lead: when a seat adds/updates proposals/, open draft promotion PR(s) for CD review.
+name: Hermes agent promote
+
+on:
+  push:
+    paths:
+      - "disklordz/hermes/agent-repos/**/proposals/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  open-promotion-pr:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      !startsWith(github.ref_name, 'cursor/hermes-promote-')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Open draft promotion PRs for new proposals
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 disklordz/hermes/scripts/agent_promote.py scan
+          python3 disklordz/hermes/scripts/agent_promote.py open --source "${{ github.ref_name }}"

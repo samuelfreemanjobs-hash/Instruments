@@ -1,0 +1,102 @@
+{
+  "base_id_hint": "Disklordz OS — AIRTABLE_BASE_ID (not DISKLORDZ Factory appykxDsfaMFC2hGp)",
+  "products": [
+    {
+      "product_id": "DL-PLUGIN-JUNOVA-X",
+      "name": "Junova-X",
+      "division": "Plugin",
+      "status": "In Development",
+      "brief": "Juno-class instrument. JUCE port from iPlug2 reference under Junova-X/; VST3+CLAP MVP; 48 factory presets; no AU; no JD Upgraded kernel. GTM $29→$49, Windows demo.",
+      "github_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "price_tier": "tier_1",
+      "ladder_tier": "plugin",
+      "sonic_problem": "Junova poly — chorus, dual ADSR, HPF, diag/test workflow",
+      "family_id": "DL-FAMILY-DIGITAL-SAMPLER",
+      "compile_targets": "[\"vst3\",\"clap\"]"
+    },
+    {
+      "product_id": "DL-PLUGIN-NOVADRUM",
+      "name": "NovaDrum",
+      "division": "Plugin",
+      "status": "Specified",
+      "brief": "TR-808 class drum machine; 16 circuit-class voices (not samples); MIDI + kit prev/next + CH/OH choke; iPlug2 spec → JUCE after Junova host milestone.",
+      "github_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "price_tier": "tier_1",
+      "ladder_tier": "plugin",
+      "sonic_problem": "808-class electronic drums — circuit engines",
+      "family_id": "DL-FAMILY-DIGITAL-SAMPLER",
+      "compile_targets": "[\"vst3\",\"clap\"]"
+    },
+    {
+      "product_id": "DL-SAAS-DRUM-PROMPT",
+      "name": "Disklordz Drum (SaaS)",
+      "division": "Sample",
+      "status": "Briefed",
+      "brief": "Web SaaS v0: prompt → preview → ZIP download; Next.js; subscription after v0. Star growth SKU.",
+      "github_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "price_tier": "free",
+      "ladder_tier": "kit",
+      "sonic_problem": "2000s digital drum kits from prompts",
+      "family_id": "DL-FAMILY-DIGITAL-SAMPLER",
+      "compile_targets": "[\"web_app\"]"
+    }
+  ],
+  "projects": [
+    {
+      "project_id": "PRJ-2026-JUNOVA",
+      "name": "Junova-X — JUCE MVP ship",
+      "product_id": "DL-PLUGIN-JUNOVA-X",
+      "phase": "1-MVP-Factory-Product",
+      "status": "Active",
+      "owner_agent": "juce-engineer"
+    },
+    {
+      "project_id": "PRJ-2026-NOVADRUM",
+      "name": "NovaDrum — spec & MVP",
+      "product_id": "DL-PLUGIN-NOVADRUM",
+      "phase": "1-MVP-Factory-Product",
+      "status": "Planned",
+      "owner_agent": "dsp-engineer"
+    },
+    {
+      "project_id": "PRJ-2026-SAAS",
+      "name": "Drum SaaS v0",
+      "product_id": "DL-SAAS-DRUM-PROMPT",
+      "phase": "1-MVP-Factory-Product",
+      "status": "Active",
+      "owner_agent": "product-factory"
+    }
+  ],
+  "work_orders": [
+    {
+      "work_order_id": "WO-2026-001",
+      "title": "[Plugin][Junova-X] JUCE VST3 first host green + pluginval smoke",
+      "assigned_team": "engineering",
+      "assigned_role": "dsp-engineer",
+      "status": "Queued",
+      "priority": "P0",
+      "acceptance_criteria": "Port/reference iPlug2 scaffold into Junova-X/ as JUCE VST3; Release|x64 (and Linux CI parity with Instruments build.yml where applicable) builds from agreed tree; loads in Reaper; MIDI + Diag Test tone/Panic pass; dual ADSR / HPF 0 vs 1 / Chorus Off|I|II smoke per first-test checklist; pluginval run attached (pass or documented waivers); no shared kernel with JD Upgraded; PR title includes WO-2026-001.",
+      "project_id": "PRJ-2026-JUNOVA"
+    },
+    {
+      "work_order_id": "WO-2026-002",
+      "title": "[Plugin][Junova-X] CLAP target + dual-format CI checklist",
+      "assigned_team": "engineering",
+      "assigned_role": "dsp-engineer",
+      "status": "Queued",
+      "priority": "P0",
+      "acceptance_criteria": "CLAP target beside VST3 under Junova-X/ CMake; same DSP/params as VST3; loads in one CLAP host with MIDI→audio; documented CMake/CI steps for both formats; validator notes; AU explicitly out of scope; PR title includes WO-2026-002.",
+      "project_id": "PRJ-2026-JUNOVA"
+    },
+    {
+      "work_order_id": "WO-2026-003",
+      "title": "[Plugin][Junova-X] Factory presets (48 MVP bank) + state save/load",
+      "assigned_team": "engineering",
+      "assigned_role": "preset-designer",
+      "status": "Queued",
+      "priority": "P1",
+      "acceptance_criteria": "48 factory presets covering bass/pad/poly/lead/FX; prev/next + user save; recall after host reload; format documented; QA checklist section updated; roadmap note for additional banks beyond 48 post-MVP; PR title includes WO-2026-003.",
+      "project_id": "PRJ-2026-JUNOVA"
+    }
+  ]
+}

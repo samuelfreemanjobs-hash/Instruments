@@ -30,4 +30,8 @@ while IFS= read -r line || [[ -n "$line" ]]; do
   rm -f "$tmp"
 done <"$MANIFEST"
 
-echo "All golden comparisons passed."
+echo "All JD Upgraded golden comparisons passed."
+
+if [[ -x "${ROOT}/tests/golden/verify_junova_golden.sh" ]]; then
+  bash "${ROOT}/tests/golden/verify_junova_golden.sh"
+fi

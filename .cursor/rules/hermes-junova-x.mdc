@@ -1,0 +1,12 @@
+---
+description: Hermes agent seats and WO discipline for Junova-X JUCE plugin
+globs: "Junova-X/**"
+---
+
+# Hermes — Junova-X
+
+- Read `Junova-X/ARCHITECTURE.md` and `docs/HERMES_AGENT_FRAMEWORK.md` before structural edits.
+- Seat routing: architect (CMake/APVTS), dsp (`Source/DSP/`), gui (`Source/UI/` + GUI Agent), qa (pluginval).
+- PR titles must include active WO (e.g. `WO-2026-001`).
+- GUI design handoff: `Junova-X/docs/UI_DESIGN_HANDOFF.md` — update `UiLayout.h`, not ad-hoc magic numbers in cpp.
+- No shared DSP kernel with `Source/` (JD Upgraded) without explicit WO.
