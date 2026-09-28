@@ -54,6 +54,6 @@ CLI and batch workers should use **process isolation** per Serum instance (plugi
 
 ## Related docs
 
-- [docs/SERUM_BINARY_ARCHITECTURE.md](docs/SERUM_BINARY_ARCHITECTURE.md)  
+- [docs/SERUM_TEXT_TO_PRESET_PROMPTS.md](docs/SERUM_TEXT_TO_PRESET_PROMPTS.md) — Trap/phonk Serum prompt library  
 - [SynthForge](../synth-forge/ARCHITECTURE.md) — hardware preset workstation  
 - Root [ARCHITECTURE.md](../../ARCHITECTURE.md)
