@@ -12,9 +12,14 @@ REPO = Path(__file__).resolve().parents[3]
 FLEET = REPO / ".github" / "agents" / "fleet.json"
 
 
-def run(cmd: list[str], *, cwd: Path | None = None) -> None:
+def run(cmd: list[str], *, cwd: Path | None = None, env: dict[str, str] | None = None) -> None:
     print("+", " ".join(cmd))
-    subprocess.run(cmd, cwd=cwd or REPO, check=True)
+    import os
+
+    merged = os.environ.copy()
+    if env:
+        merged.update(env)
+    subprocess.run(cmd, cwd=cwd or REPO, check=True, env=merged)
 
 
 def main() -> int:
@@ -33,11 +38,16 @@ def main() -> int:
     if chunk.is_file():
         run(["python3", str(chunk)])
 
-    base = __import__("os").environ.get("DISKLORDZ_URL", "").strip()
+    import os
+
+    base = os.environ.get("DISKLORDZ_URL", "").strip()
     if base:
-        run(["bash", "disklordz/integrations/scripts/verify-integrations.sh"])
+        run(["bash", "disklordz/integrations/scripts/verify-integrations.sh"], env={"DISKLORDZ_URL": base})
+        go_live = REPO / "disklordz/website/scripts/verify-go-live.sh"
+        if go_live.is_file():
+            run(["bash", str(go_live)], env={"DISKLORDZ_URL": base})
     else:
-        print("SKIP remote verify (set DISKLORDZ_URL or DISKLORDZ_VERIFY_BASE_URL in CI)")
+        print("SKIP site verify (set DISKLORDZ_URL or DISKLORDZ_VERIFY_BASE_URL in CI)")
 
     print(f"OK: fleet_execute completed for {count} agents")
     return 0
