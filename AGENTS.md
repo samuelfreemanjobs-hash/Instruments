@@ -4,9 +4,15 @@ Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the ar
 
 ## Standards
 
-- [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts  
-- [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
-- `.cursor/rules/*.mdc` — always-on architecture and security  
+- [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts 
+- [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done 
+- [docs/GUI_DESIGN_SOP.md](docs/GUI_DESIGN_SOP.md) — GUI pipeline (Gemini, Stitch, AI Studio → spec → build)
+- [docs/GUI_AGENT_PLAYBOOK.md](docs/GUI_AGENT_PLAYBOOK.md) — how to run the **GUI Agent** in Cursor
+- `.cursor/rules/*.mdc` — always-on architecture, security, **gui-design** on UI paths
+
+### GUI Agent (Cursor)
+
+For screens, sequencers, or web UI: read **GUI_DESIGN_SOP** + product **`GUI_MOCKUP_SPEC.md`**, put Stitch/mock PNGs in `references/gui/`, then use the structured prompt in **GUI_AGENT_PLAYBOOK**. Prove changes with browser recording + screenshots.
 
 ## Disklordz SaaS (web)
 

@@ -1,5 +1,9 @@
 # GUI mockup spec (align your design here)
 
+**Status:** DRAFT v0.2 (code-first; Stitch mock not yet checked in)  
+**SOP:** [docs/GUI_DESIGN_SOP.md](../../../docs/GUI_DESIGN_SOP.md) · **GUI Agent:** [docs/GUI_AGENT_PLAYBOOK.md](../../../docs/GUI_AGENT_PLAYBOOK.md)  
+**Mockups:** [references/gui/](../references/gui/)
+
 Use this when sketching the factory + sequencer UI. Current implementation follows **v0.2** below; your mockup can rename or rearrange—keep the **capabilities** so we can wire it 1:1.
 
 ## Layout (recommended)
