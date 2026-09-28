@@ -1,55 +1,66 @@
-# 15 profit agents (implemented fleet)
+# Profit agents (29 implemented)
 
-Elite agent file trees live under **`disklordz/agents/profit/<id>/`** — each folder includes:
+Elite agent file trees: **`disklordz/agents/profit/<id>/`** (8 files each). Bound by **[META v3.1 charter](../CLAUDE.md)** — sync via `./scripts/sync-meta-llm-charter.sh`.
 
 | File | Role |
 |------|------|
-| `agent.md` | Frontmatter + system prompt (Claude Code agent definition) |
-| `skill.md` | Two-phase skill (when_to_use, paths) |
+| `agent.md` | Frontmatter + system prompt |
+| `skill.md` | Two-phase skill |
 | `subagents.md` | Coordinator / explore / verify / implement |
-| `soul.md` | Non-negotiable principles |
-| `hooks.md` | PreToolUse, Stop, SessionStart |
-| `memory.md` | File-tier MEMORY layout |
-| `tools.md` | Allowlist + MCP + concurrency |
-| `loop.md` | AsyncGenerator query() SOP |
+| `soul.md` | Principles + charter reference |
+| `hooks.md` | Lifecycle hooks |
+| `memory.md` | File-tier MEMORY |
+| `tools.md` | Allowlist + MCP |
+| `loop.md` | AsyncGenerator SOP |
 
-Registry: [`disklordz/agents/profit/registry.json`](../disklordz/agents/profit/registry.json)
-
-Copilot/Cursor skills (published from skill.md): `.github/skills/disklordz-<id>/SKILL.md`
+Registry: [`disklordz/agents/profit/registry.json`](../disklordz/agents/profit/registry.json)  
+Copilot skills: `.github/skills/disklordz-<id>/SKILL.md`
 
 ## Regenerate
 
 ```bash
+./scripts/sync-meta-llm-charter.sh   # optional: refresh META core + /weave skills
 python3 disklordz/agents/profit/scaffold_agents.py --publish-skills
 python3 disklordz/agents/profit/scaffold_agents.py --check
 ```
 
-## The 15 agents
+## Fleet (1–15)
 
-| # | ID | Title | Entry |
-|---|-----|-------|-------|
-| 1 | conversion-qa | Conversion QA | [agent.md](../disklordz/agents/profit/conversion-qa/agent.md) |
-| 2 | billing-ops | Billing Ops | [agent.md](../disklordz/agents/profit/billing-ops/agent.md) |
-| 3 | ship-velocity | Ship Velocity | [agent.md](../disklordz/agents/profit/ship-velocity/agent.md) |
-| 4 | async-generation | Async Generation | [agent.md](../disklordz/agents/profit/async-generation/agent.md) |
-| 5 | prompt-coach | Prompt Coach | [agent.md](../disklordz/agents/profit/prompt-coach/agent.md) |
-| 6 | product-factory | Product Factory | [agent.md](../disklordz/agents/profit/product-factory/agent.md) |
-| 7 | spec-validator | Spec Validator | [agent.md](../disklordz/agents/profit/spec-validator/agent.md) |
-| 8 | lane-workflow | Lane Workflow | [agent.md](../disklordz/agents/profit/lane-workflow/agent.md) |
-| 9 | ops-schema | Ops Schema | [agent.md](../disklordz/agents/profit/ops-schema/agent.md) |
-| 10 | marketing-glue | Marketing Glue | [agent.md](../disklordz/agents/profit/marketing-glue/agent.md) |
-| 11 | support-macro | Support Macro | [agent.md](../disklordz/agents/profit/support-macro/agent.md) |
-| 12 | desktop-ops | Desktop Ops | [agent.md](../disklordz/agents/profit/desktop-ops/agent.md) |
-| 13 | factory-batch-gpu | Factory Batch GPU | [agent.md](../disklordz/agents/profit/factory-batch-gpu/agent.md) |
-| 14 | engine-swap | Engine Swap | [agent.md](../disklordz/agents/profit/engine-swap/agent.md) |
-| 15 | integration-health | Integration Health | [agent.md](../disklordz/agents/profit/integration-health/agent.md) |
+| # | ID | Title |
+|---|-----|-------|
+| 1 | conversion-qa | Conversion QA |
+| 2 | billing-ops | Billing Ops |
+| 3 | ship-velocity | Ship Velocity |
+| 4 | async-generation | Async Generation |
+| 5 | prompt-coach | Prompt Coach |
+| 6 | product-factory | Product Factory |
+| 7 | spec-validator | Spec Validator |
+| 8 | lane-workflow | Lane Workflow |
+| 9 | ops-schema | Ops Schema |
+| 10 | marketing-glue | Marketing Glue |
+| 11 | support-macro | Support Macro |
+| 12 | desktop-ops | Desktop Ops |
+| 13 | factory-batch-gpu | Factory Batch GPU |
+| 14 | engine-swap | Engine Swap |
+| 15 | integration-health | Integration Health |
 
-**Phase 2 (15 more ideas):** [DISKLORDZ_PROFIT_AGENTS_EXTENDED.md](DISKLORDZ_PROFIT_AGENTS_EXTENDED.md)
+## Fleet (16–29)
 
-## Automation (infra)
+| # | ID | Title | Profit focus |
+|---|-----|-------|----------------|
+| 16 | churn-winback | Churn Win-back | Reactivate lapsed Pro |
+| 17 | seo-kit-pages | SEO Kit Pages | Organic → signups |
+| 18 | referral-affiliate | Referral & Affiliate | Lower CAC |
+| 19 | fraud-abuse | Fraud & Abuse | Free-tier margin |
+| 20 | pricing-experiment | Pricing Experiment | ARPU / Stripe A/B |
+| 21 | onboarding-concierge | Onboarding Concierge | Time-to-first-kit |
+| 22 | daw-inbox-copilot | DAW Inbox Copilot | Producer stickiness |
+| 23 | airtable-wo-triage | Airtable WO Triage | PM throughput |
+| 24 | golden-wav-qa | Golden WAV QA | Plugin cross-sell quality |
+| 25 | competitive-intel | Competitive Intel | vs ILLUGEN |
+| 26 | license-compliance | License & Compliance | Engine licensing |
+| 27 | social-clip-factory | Social Clip Factory | Top-of-funnel clips |
+| 28 | analytics-interpreter | Analytics Interpreter | MRR / gen metrics |
+| 29 | release-notes | Release Notes | Trust + upgrades |
 
-```bash
-bash disklordz/integrations/scripts/activate-integrations.sh --all
-```
-
-Blueprint SOP: Claude Code architecture (async generator loop, hooks, memory files, MCP boundaries) — encoded in each agent's `loop.md` and `hooks.md`.
+Phase 3 ideas: [DISKLORDZ_PROFIT_AGENTS_EXTENDED.md](DISKLORDZ_PROFIT_AGENTS_EXTENDED.md)

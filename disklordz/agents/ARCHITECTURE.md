@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Fifteen **profit agents** with Claude-Code-style file trees (`agent.md`, `skill.md`, `subagents.md`, `soul.md`, …) for Cursor, Claude Code, Copilot skills, and Cloud Agents working on Disklordz.
+Twenty-nine **profit agents** with Claude-Code-style file trees, bound by **META v3.1** ([charter/](charter/ARCHITECTURE.md)). (`agent.md`, `skill.md`, `subagents.md`, `soul.md`, …) for Cursor, Claude Code, Copilot skills, and Cloud Agents working on Disklordz.
 
 ## Build & run
 

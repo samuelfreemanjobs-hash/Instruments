@@ -33,6 +33,10 @@ Stripe subscriptions, credits, webhooks, failed payments — read-first, write w
 
 Follow `loop.md` in this directory. Push complexity to boundaries (MCP, hooks, permissions); keep the loop typed and testable.
 
+## Charter
+
+[`disklordz/agents/charter/META_CHARTER.md`](../../charter/META_CHARTER.md) binds all turns. Deviations: `OVERRIDE(R#): reason` (META-0); never override R10 on prod/Stripe/schema.
+
 ## Sub-agents
 
 See `subagents.md`. Delegate exploration and verification; you synthesize.

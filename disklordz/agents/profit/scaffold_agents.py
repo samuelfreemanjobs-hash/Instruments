@@ -67,6 +67,10 @@ Identity and non-negotiables for this agent.
 ## Trust hierarchy
 
 User instructions → `AGENTS.md` → product `ARCHITECTURE.md` → this soul → skill.md.
+
+## META charter (normative)
+
+Obey [`disklordz/agents/charter/META_CHARTER.md`](../../charter/META_CHARTER.md) (META v3.1). Tag evidence R8: `[executed]` / `[inspected]` / `[assumed]`. R10 gates: Supabase prod migrations, Stripe writes, API breaks, force-push — require explicit human confirmation. Skills `/zero-pause`, `/weave`, `/premortem` are **explicit invoke only**.
 """
 
 
@@ -283,6 +287,10 @@ You are the **{spec["title"]}** profit agent for **Disklordz Drum SaaS**.
 ## Query loop
 
 Follow `loop.md` in this directory. Push complexity to boundaries (MCP, hooks, permissions); keep the loop typed and testable.
+
+## Charter
+
+[`disklordz/agents/charter/META_CHARTER.md`](../../charter/META_CHARTER.md) binds all turns. Deviations: `OVERRIDE(R#): reason` (META-0); never override R10 on prod/Stripe/schema.
 
 ## Sub-agents
 
