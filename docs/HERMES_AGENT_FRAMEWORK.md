@@ -7,7 +7,7 @@
 
 **Grok Bot** runs the **closed-loop** spec/WO layer ([GROK_CLOSED_LOOP_ENGINE.md](GROK_CLOSED_LOOP_ENGINE.md)). **Hermes + Cursor** runs **code + proof**.
 
-## Seats (full team — 14 Cursor seats + Grok)
+## Seats (full team — 15 Cursor seats + Grok)
 
 **Catalog:** [HERMES_SEATS.md](HERMES_SEATS.md) · **Registry:** [.cursor/hermes/SKILLS_REGISTRY.md](../.cursor/hermes/SKILLS_REGISTRY.md)
 
