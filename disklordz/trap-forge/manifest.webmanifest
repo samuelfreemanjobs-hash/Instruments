@@ -4,8 +4,8 @@
   "description": "Procedural trap drum synthesis, MPC pads, AI vibe forge, 24-bit WAV export for MPC and DAWs.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#020712",
-  "theme_color": "#061329",
+  "background_color": "#07080a",
+  "theme_color": "#090a0d",
   "icons": [
     {
       "src": "icons/icon-192.png",

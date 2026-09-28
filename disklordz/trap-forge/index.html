@@ -1,286 +1,236 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#061329" />
-  <link rel="manifest" href="manifest.webmanifest" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MPC TRAP-FORGE // Elite Drum Generator</title>
+  <meta name="theme-color" content="#090a0d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="description" content="AI &amp; DSP Procedural Trap Drum Studio for Akai MPC hardware and DAWs.">
+  <link rel="manifest" href="manifest.webmanifest">
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/mpc-akai.css">
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            brand: {
-              950: '#020712', 900: '#061329', 850: '#0b1d3d', 800: '#102751',
-              700: '#17366d', 600: '#1d4ed8', 500: '#2563eb', 400: '#38bdf8',
-            },
-            cyanAccent: '#38bdf8',
+            mpc: {
+              black: '#07080a', panel: '#101217', card: '#161821', border: '#252936',
+              accent: '#ff2e43', orange: '#ff6b2b', gold: '#ffb703', cyan: '#00f2fe', neon: '#22c55e'
+            }
           },
-        },
-      },
+          fontFamily: {
+            mono: ['"JetBrains Mono"', 'monospace'],
+            tech: ['"Chakra Petch"', 'sans-serif'],
+            sans: ['"Space Grotesk"', 'sans-serif']
+          }
+        }
+      }
     };
   </script>
-  <style>
-    body {
-      background-color: #040e22;
-      background-image:
-        radial-gradient(ellipse at 50% 0%, #0c2554 0%, transparent 65%),
-        linear-gradient(180deg, #040e22 0%, #020712 100%);
-    }
-    .glass-panel {
-      background: rgba(11, 29, 61, 0.75);
-      backdrop-filter: blur(14px);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-    }
-    .dnd-shelf { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .dnd-chip {
-      cursor: grab; padding: 0.35rem 0.65rem; border-radius: 0.375rem;
-      background: #1e3a5f; color: #e2e8f0; font-size: 0.7rem; border: 1px solid #334155;
-    }
-    .dnd-chip:hover { background: #2563eb; }
-    .meter { height: 6px; background: #0f172a; border-radius: 3px; overflow: hidden; }
-    .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #22c55e, #eab308, #ef4444); transition: width 0.05s; }
-    .meter-fill.clip { background: #ef4444; }
-  </style>
 </head>
-<body class="min-h-full text-white font-sans p-3 sm:p-6">
-  <header class="glass-panel max-w-7xl mx-auto rounded-2xl px-4 py-3 mb-4 flex flex-wrap items-center justify-between gap-3">
+<body class="bg-mpc-black text-slate-200 font-sans min-h-screen crt-grid select-none flex flex-col overflow-x-hidden">
+
+<header class="border-b border-mpc-border bg-mpc-panel/95 backdrop-blur-md sticky top-0 z-50 px-3 sm:px-5 py-2.5">
+  <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-mpc-accent flex items-center justify-center font-tech font-bold text-white text-lg">MPC</div>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h1 class="font-tech font-bold text-base sm:text-lg text-white tracking-wider">TRAP-FORGE</h1>
+          <span class="text-[10px] font-mono uppercase bg-mpc-accent/20 border border-mpc-accent/40 text-mpc-accent px-1.5 py-0.5 rounded font-bold">PRO STUDIO</span>
+        </div>
+        <p class="text-[10px] font-mono text-slate-400">Pure Procedural DSP Trap Drum Synthesizer</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <a href="studio.html" class="hidden sm:inline px-2 py-1 text-[10px] font-mono border border-mpc-border rounded text-slate-400 hover:text-white">Modular studio</a>
+      <button id="installPwaBtn" class="hidden px-2.5 py-1 text-xs font-mono rounded border border-mpc-cyan/40 bg-mpc-cyan/10 text-mpc-cyan">Install</button>
+      <button id="quickHelpBtn" class="px-3 py-1.5 rounded-lg bg-mpc-card border border-mpc-border text-xs font-mono text-slate-300">Guide</button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto w-full px-3 sm:px-4 py-4 space-y-4 flex-1">
+
+<section class="bg-gradient-to-r from-mpc-panel via-mpc-card to-mpc-panel border border-mpc-border rounded-2xl p-3.5 shadow-xl flex flex-col md:flex-row items-center gap-4">
+  <div class="flex items-center gap-3 w-full md:w-auto">
+    <span id="currentCategoryTag" class="px-2.5 py-1 rounded text-xs font-mono uppercase bg-mpc-accent/20 border border-mpc-accent/50 text-mpc-accent font-bold">808 BASS</span>
     <div>
-      <h1 class="text-2xl font-extrabold tracking-tight text-white uppercase">MPC TRAP-FORGE <span class="text-cyanAccent font-mono text-base font-normal tracking-widest">// ELITE DRUM GEN</span></h1>
-      <p class="text-xs text-brand-400 mt-1">Procedural Web Audio · MPC pads · AI Vibe Forge · 16/24/32-bit WAV</p>
+      <h2 id="currentSoundName" class="font-tech font-bold text-white text-lg">SPINZ_808_DIRTY</h2>
+      <p id="currentSoundDesc" class="text-xs font-mono text-slate-400">Classic Atlanta Spinz 808 with clipping</p>
     </div>
-    <div class="flex flex-wrap gap-2">
-      <button type="button" id="btn-master-randomize" class="px-3 py-2 rounded-lg bg-brand-800 border border-brand-500 text-xs font-semibold">MUTATE SOUND</button>
-      <button type="button" id="btn-trigger" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-sm font-medium">Trigger [Space]</button>
-      <button type="button" id="btn-download" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm">Export WAV</button>
-      <button type="button" id="btn-export-all" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm">Export Full Kit</button>
-      <button type="button" id="btn-export-vel" class="px-3 py-2 rounded-lg bg-blue-700 hover:bg-blue-600 text-sm">Export 3-Velocity Pack</button>
+  </div>
+  <button id="masterPreviewBtn" class="w-full md:w-auto flex-1 max-w-md py-3.5 px-6 rounded-xl bg-gradient-to-r from-mpc-accent to-mpc-orange border-2 border-white/20 shadow-xl flex items-center justify-center gap-3 group" title="Spacebar to preview">
+    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><span class="text-white text-lg">▶</span></div>
+    <div class="text-left">
+      <div class="font-tech font-bold text-white tracking-wider">PRESS TO PREVIEW WAV <span class="w-2 h-2 inline-block rounded-full bg-white led-pulse"></span></div>
+      <div class="text-[11px] font-mono text-white/80">Click or [SPACEBAR]</div>
     </div>
-  </header>
+  </button>
+  <button id="quickRandomBtn" class="px-3 py-2 bg-mpc-card border border-mpc-border rounded-lg text-xs font-mono text-slate-300">Mutate</button>
+</section>
 
-  <div class="max-w-7xl mx-auto flex flex-col lg:flex-row min-h-[calc(100vh-6rem)] gap-4">
-    <nav id="drum-tabs" class="lg:w-44 shrink-0 border-b lg:border-b-0 lg:border-r border-slate-800 p-2 flex lg:flex-col gap-1 overflow-x-auto" aria-label="Drum types"></nav>
+<canvas id="waveCanvas" width="640" height="72" class="w-full max-w-6xl mx-auto rounded-xl border border-mpc-border bg-mpc-black"></canvas>
 
-    <main class="flex-1 p-4 overflow-y-auto max-w-3xl">
-      <section data-drum-panel="kick" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Punch Kick</h2>
-        <div class="grid grid-cols-2 gap-3 text-xs">
-          <label>Root Hz <input data-param="rootHz" type="range" min="35" max="80" step="1" value="50" class="w-full" /><span data-val>50</span></label>
-          <label>Pitch mod <input data-param="pitchMod" type="range" min="0" max="60" step="1" value="38" class="w-full" /><span data-val>38</span></label>
-          <label>Pitch decay <input data-param="pitchDecay" type="range" min="0.008" max="0.05" step="0.001" value="0.02" class="w-full" /><span data-val>0.02</span></label>
-        </div>
-      </section>
+<nav class="flex gap-1.5 overflow-x-auto pb-1 text-xs font-tech font-bold border-b border-mpc-border/80">
+  <button class="nav-tab active-tab px-3 py-2 rounded-t-lg bg-mpc-panel border-t-2 border-mpc-accent text-white" data-target="pagePads">1. PADS &amp; AI</button>
+  <button class="nav-tab px-3 py-2 rounded-t-lg bg-mpc-panel/50 text-slate-400" data-target="pageAmp">2. AMP ADSR</button>
+  <button class="nav-tab px-3 py-2 rounded-t-lg bg-mpc-panel/50 text-slate-400" data-target="pageFilter">3. FILTER</button>
+  <button class="nav-tab px-3 py-2 rounded-t-lg bg-mpc-panel/50 text-slate-400" data-target="pageTransient">4. TRANSIENT</button>
+  <button class="nav-tab px-3 py-2 rounded-t-lg bg-mpc-panel/50 text-slate-400" data-target="pageTxDrive">5. TX DRIVE</button>
+  <button class="nav-tab px-3 py-2 rounded-t-lg bg-mpc-panel/50 text-slate-400" data-target="pageSequencerExport">6. SEQ &amp; EXPORT</button>
+</nav>
 
-      <section data-drum-panel="sub808" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800 hidden">
-        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Trap 808 Sub</h2>
-        <div class="grid grid-cols-2 gap-3 text-xs">
-          <label>Root note
-            <select data-param="rootNote" class="w-full bg-slate-950 border border-slate-700 rounded px-1 py-1">
-              <option value="C">C</option><option value="C#">C#</option><option value="D">D</option>
-              <option value="D#">D#</option><option value="E">E</option><option value="F">F</option>
-              <option value="F#">F#</option><option value="G" selected>G</option><option value="G#">G#</option>
-              <option value="A">A</option><option value="A#">A#</option><option value="B">B</option>
-            </select>
-          </label>
-          <label>Root Hz <input data-param="rootHz" type="range" min="30" max="90" step="1" value="55" class="w-full" /><span data-val>55</span></label>
-          <label>2nd harmonic <input data-param="harm2" type="range" min="0" max="0.8" step="0.01" value="0.38" class="w-full" /><span data-val>0.38</span></label>
-          <label>3rd harmonic <input data-param="harm3" type="range" min="0" max="0.6" step="0.01" value="0.24" class="w-full" /><span data-val>0.24</span></label>
-        </div>
-        <div id="dynamic-controls"></div>
-      </section>
+<div id="pagePads" class="tab-page space-y-4">
+  <section class="bg-mpc-panel border border-mpc-border rounded-2xl p-4 shadow-xl space-y-3">
+    <label class="text-xs font-tech font-bold uppercase text-mpc-accent">AI Drum Vibe Forge</label>
+    <input id="promptInput" type="text" placeholder="Aggressive Metro 808, Southside snare, Pierre perc…" class="w-full px-3 py-3 bg-mpc-black border border-mpc-border rounded-xl text-sm text-white"/>
+    <div class="flex flex-col sm:flex-row gap-2">
+      <input id="geminiApiKey" type="password" autocomplete="off" placeholder="Optional Gemini API key (or use server GEMINI_API_KEY)" class="flex-1 px-3 py-2 bg-mpc-black border border-mpc-border rounded-lg text-xs font-mono text-slate-300"/>
+      <select id="geminiModelSelect" class="px-2 py-2 bg-mpc-card border border-mpc-border rounded-lg text-xs font-mono">
+        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+        <option value="gemini-2.5-flash-preview-05-20">Gemini 2.5 Flash</option>
+      </select>
+      <button id="generateAiBtn" class="px-5 py-2 bg-mpc-accent text-white font-tech text-xs rounded-xl flex items-center gap-2"><span id="aiBtnSpinner" class="hidden w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>Forge Sound</button>
+    </div>
+    <div class="flex gap-1.5 overflow-x-auto text-xs">
+      <button class="vibe-pill px-2 py-1 rounded bg-mpc-card border border-mpc-border" data-prompt="Heavy distorted Spinz 808 with gritty harmonics">Spinz 808</button>
+      <button class="vibe-pill px-2 py-1 rounded bg-mpc-card border border-mpc-border" data-prompt="Crisp Atlanta layered trap snare">Hard Snare</button>
+      <button class="vibe-pill px-2 py-1 rounded bg-mpc-card border border-mpc-border" data-prompt="Tight punchy Southside kick">Punch Kick</button>
+    </div>
+  </section>
 
-      <section data-drum-panel="snare" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800 hidden">
-        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Crack Snare + Cardo</h2>
-        <div class="grid grid-cols-2 gap-3 text-xs">
-          <label>Pitch semi <input data-param="pitchSemi" type="range" min="-12" max="12" step="1" value="0" class="w-full" /><span data-val>0</span></label>
-          <label>Snap <input data-param="snap" type="range" min="0" max="1" step="0.01" value="0.68" class="w-full" /><span data-val>0.68</span></label>
-          <label>Snap bite <input data-param="snapBite" type="range" min="0" max="1" step="0.01" value="0.55" class="w-full" /><span data-val>0.55</span></label>
-          <label>Reverb mix <input data-param="reverbMix" type="range" min="0" max="0.7" step="0.01" value="0.28" class="w-full" /><span data-val>0.28</span></label>
-          <label>Reverb decay <input data-param="reverbDecay" type="range" min="0.2" max="0.95" step="0.01" value="0.58" class="w-full" /><span data-val>0.58</span></label>
-          <label>Pre-delay ms <input data-param="reverbPre" type="range" min="0" max="80" step="1" value="14" class="w-full" /><span data-val>14</span></label>
-        </div>
-      </section>
-
-      <section data-drum-panel="clap" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800 hidden">
-        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Dirty Clap</h2>
-        <div class="grid grid-cols-2 gap-3 text-xs">
-          <label>Flam ms <input data-param="flamMs" type="range" min="0.01" max="0.04" step="0.001" value="0.022" class="w-full" /><span data-val>0.022</span></label>
-          <label>Reverb mix <input data-param="reverbMix" type="range" min="0" max="0.7" step="0.01" value="0.24" class="w-full" /><span data-val>0.24</span></label>
-        </div>
-      </section>
-
-      <section data-drum-panel="closedhat" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800 hidden">
-        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Closed Hat</h2>
-        <div class="grid grid-cols-2 gap-3 text-xs mb-4">
-          <label>Dispersion <input data-param="dispersion" type="range" min="0" max="0.03" step="0.001" value="0.01" class="w-full" /><span data-val>0.01</span></label>
-          <label>Filter cutoff <input data-param="fCut" type="range" min="3000" max="12000" step="50" value="7800" class="w-full" /><span data-val>7800</span></label>
-        </div>
-        <div class="p-3 rounded-lg border border-slate-700 bg-slate-950/50">
-          <h3 class="text-xs font-semibold text-yellow-400 mb-2">Phase 5 — Hat roll</h3>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-            <label>Division
-              <select id="hat-roll-div" class="w-full bg-slate-900 border border-slate-700 rounded px-1">
-                <option value="8">1/8</option><option value="16" selected>1/16</option><option value="32">1/32</option><option value="64">1/64</option>
-                <option value="12T">1/8T</option><option value="24T">1/16T</option>
-              </select>
-            </label>
-            <label>Ramp
-              <select id="hat-roll-ramp" class="w-full bg-slate-900 border border-slate-700 rounded px-1">
-                <option value="flat">Flat</option><option value="crescendo">Crescendo</option><option value="decrescendo">Decrescendo</option><option value="jitter">Humanize</option>
-              </select>
-            </label>
-            <label>Hits <input id="hat-roll-count" type="number" min="4" max="32" value="8" class="w-full bg-slate-900 border border-slate-700 rounded px-1" /></label>
-            <label>Pitch drift <input id="hat-roll-drift" type="range" min="0" max="0.02" step="0.001" value="0.006" class="w-full" /></label>
-            <label>Timing jitter <input id="hat-roll-jitter" type="range" min="0" max="0.04" step="0.001" value="0.018" class="w-full" /></label>
-            <label>Pitch slide <input id="hat-roll-slide" type="range" min="0" max="0.015" step="0.001" value="0" class="w-full" /></label>
-          </div>
-          <div class="flex gap-2 mt-3">
-            <button type="button" id="btn-hat-roll" class="px-3 py-1.5 rounded bg-emerald-700 text-xs">Render &amp; Audition Roll</button>
-            <button type="button" id="btn-hat-roll-export" class="px-3 py-1.5 rounded bg-slate-700 text-xs">Export Roll WAV</button>
-          </div>
-        </div>
-      </section>
-
-      <section data-drum-panel="openhat" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800 hidden">
-        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Open Hat</h2>
-        <label class="text-xs">Filter cutoff <input data-param="fCut" type="range" min="2500" max="10000" step="50" value="5200" class="w-full" /><span data-val>5200</span></label>
-      </section>
-
-      <section data-drum-panel="perc" class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800 hidden">
-        <h2 class="text-sm font-semibold text-emerald-400 mb-3">Perc / Cowbell</h2>
-        <label class="text-xs">Tone Hz <input data-param="rootHz" type="range" min="400" max="900" step="5" value="540" class="w-full" /><span data-val>540</span></label>
-      </section>
-
-      <section class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-        <h2 class="text-sm font-semibold text-slate-300 mb-3">Amp &amp; filter ADSR</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-          <label>A attack <input id="param-amp-a" data-param="aA" type="range" min="0" max="0.05" step="0.0005" value="0.001" class="w-full" /></label>
-          <label>A decay <input data-param="aD" type="range" min="0.01" max="0.8" step="0.005" value="0.1" class="w-full" /></label>
-          <label>A sustain <input data-param="aS" type="range" min="0" max="1" step="0.01" value="0" class="w-full" /></label>
-          <label>A release <input data-param="aR" type="range" min="0.01" max="0.5" step="0.005" value="0.05" class="w-full" /></label>
-          <label>F attack <input data-param="fA" type="range" min="0" max="0.05" step="0.0005" value="0.002" class="w-full" /></label>
-          <label>F decay <input data-param="fD" type="range" min="0.01" max="0.5" step="0.005" value="0.08" class="w-full" /></label>
-          <label>F sustain <input data-param="fS" type="range" min="0" max="1" step="0.01" value="0.15" class="w-full" /></label>
-          <label>F release <input data-param="fR" type="range" min="0.01" max="0.4" step="0.005" value="0.06" class="w-full" /></label>
-          <label>Filter Hz <input data-param="fCut" type="range" min="80" max="14000" step="20" value="7500" class="w-full" /></label>
-          <label>F env <input data-param="fEnvAmt" type="range" min="0" max="48" step="1" value="18" class="w-full" /></label>
-          <label>Filter Q <input data-param="fQ" type="range" min="0.3" max="2" step="0.05" value="0.85" class="w-full" /></label>
-          <label>Filter
-            <select data-param="filterMode" class="w-full bg-slate-950 border border-slate-700 rounded px-1">
-              <option value="lp12">12dB LP</option><option value="lp24">24dB LP</option><option value="svf">SVF LP</option>
-            </select>
-          </label>
-        </div>
-      </section>
-
-      <section class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-        <h2 class="text-sm font-semibold text-slate-300 mb-3">Lo-Fi &amp; drive</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-          <label>Bit depth <input data-param="bits" type="range" min="6" max="16" step="1" value="12" class="w-full" /></label>
-          <label>Sample rate <input data-param="lofiSr" type="range" min="8000" max="44100" step="500" value="26040" class="w-full" /></label>
-          <label>Drive <input data-param="drive" type="range" min="0" max="1.2" step="0.02" value="0.42" class="w-full" /></label>
-          <label>Distortion (TX)
-            <select data-param="distType" class="w-full bg-slate-950 border border-slate-700 rounded px-1">
-              <option value="triode">Tube</option>
-              <option value="tape">Tape</option>
-              <option value="foldback">Foldback</option>
-              <option value="spinz">Spinz Hard-Clip</option>
-              <option value="fl_clip">FL Soft-Clip</option>
-            </select>
-          </label>
-          <label>Export bits
-            <select id="export-bits" class="w-full bg-slate-950 border border-slate-700 rounded px-1">
-              <option value="24" selected>24-bit (MPC/DAW)</option>
-              <option value="16">16-bit</option>
-              <option value="32">32-bit float</option>
-            </select>
-          </label>
-        </div>
-      </section>
-
-      <section class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-        <h2 class="text-sm font-semibold text-slate-300 mb-3">Transient shaper (first 15 ms)</h2>
-        <div class="grid grid-cols-2 gap-3 text-xs">
-          <label>Attack ±12 dB <input data-param="transAttackDb" type="range" min="-12" max="12" step="0.5" value="0" class="w-full" /><span data-val>0</span></label>
-          <label>Sustain ±12 dB <input data-param="transSustainDb" type="range" min="-12" max="12" step="0.5" value="0" class="w-full" /><span data-val>0</span></label>
-        </div>
-      </section>
-
-      <section class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-        <h2 class="text-sm font-semibold text-cyanAccent mb-3">AI Vibe Forge</h2>
-        <p class="text-[10px] text-slate-500 mb-2">Gemini maps prompts to DSP (run <code class="text-cyanAccent">python serve.py</code> + GEMINI_API_KEY, or paste key below).</p>
-        <textarea id="ai-vibe-prompt" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-xs mb-2" placeholder="Pierre Bourne bouncy perc, Spinz 808 with gritty clip…"></textarea>
-        <div class="grid grid-cols-2 gap-2 text-xs mb-2">
-          <label>Model
-            <select id="ai-gemini-model" class="w-full bg-slate-950 border border-slate-700 rounded px-1">
-              <option value="gemini-2.0-flash">gemini-2.0-flash</option>
-              <option value="gemini-2.0-flash-exp">gemini-2.0-flash-exp</option>
-              <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
-            </select>
-          </label>
-          <label>API key (local only)
-            <input id="ai-gemini-key" type="password" placeholder="optional" class="w-full bg-slate-950 border border-slate-700 rounded px-1" autocomplete="off" />
-          </label>
-        </div>
-        <button type="button" id="btn-ai-vibe" class="w-full py-2 rounded bg-cyanAccent text-brand-950 font-bold text-xs">FORGE VIBE</button>
-      </section>
-
-      <section class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-        <h2 class="text-sm font-semibold text-slate-300 mb-2">Producer presets</h2>
-        <select id="preset-selector" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-2 text-sm">
-          <option value="">— Load preset —</option>
-        </select>
-      </section>
-    </main>
-
-    <aside class="lg:w-[22rem] shrink-0 border-t lg:border-t-0 lg:border-l border-slate-800 p-4 space-y-4 overflow-y-auto">
-      <div class="rounded-lg overflow-hidden border border-slate-800 bg-slate-900">
-        <canvas id="canvas-visualizer" width="600" height="90" class="w-full h-[90px]" aria-label="Waveform"></canvas>
-      </div>
-      <div class="rounded-lg overflow-hidden border border-slate-800 bg-slate-900">
-        <canvas id="canvas-fft" width="600" height="90" class="w-full h-[90px]" aria-label="Spectrum"></canvas>
-      </div>
-      <p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">MPC 4×4 audition</p>
-      <div id="pads" class="mb-2"></div>
-
-      <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
-        <h2 class="text-xs font-semibold mb-2">Step sequencer</h2>
-        <div class="flex items-center gap-2 text-xs mb-2">
-          <label>TEMPO (50–185) <input id="param-seq-tempo" type="range" min="50" max="185" value="140" class="flex-1" /> <span id="param-seq-tempo-val">140</span> BPM</label>
-          <button type="button" id="btn-seq-play" class="px-2 py-1 rounded bg-cyanAccent text-brand-950 text-xs font-bold">▶</button>
-          <button type="button" id="btn-seq-clear" class="px-2 py-1 rounded bg-slate-800 text-xs">Clear</button>
-        </div>
-        <div id="chase-leds-bar" class="grid grid-cols-16 gap-1 mb-2 h-2"></div>
-        <div id="sequencer-rows"></div>
-      </div>
-
-      <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-2">
-        <h2 class="font-semibold">Master bus</h2>
-        <label>Ceiling dBFS <input id="master-ceiling" type="range" min="-1.2" max="0" step="0.1" value="-0.3" class="w-full" /></label>
-        <label>Drive <input id="master-drive" type="range" min="0" max="0.5" step="0.02" value="0.15" class="w-full" /></label>
-        <label>Trunk smash <input id="master-trunk" type="range" min="0" max="0.85" step="0.02" value="0.38" class="w-full" /></label>
-        <div class="meter"><div class="meter-fill" id="peak-meter"></div></div>
-      </div>
-
-      <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
-        <h2 class="text-xs font-semibold mb-2">Drag into your DAW</h2>
-        <p class="text-[10px] text-slate-500 mb-2">Drag chips into FL Studio, Ableton, Logic, or Reaper.</p>
-        <div id="dnd-shelf" class="dnd-shelf"></div>
-      </div>
-    </aside>
+  <div class="flex flex-wrap gap-2 bg-mpc-panel border border-mpc-border rounded-xl p-3 text-xs font-tech">
+    <button class="cat-selector px-3 py-1.5 rounded-lg border border-mpc-accent bg-mpc-accent/20 text-white" data-cat="808">808</button>
+    <button class="cat-selector px-3 py-1.5 rounded-lg border border-mpc-border bg-mpc-card" data-cat="KICK">KICK</button>
+    <button class="cat-selector px-3 py-1.5 rounded-lg border border-mpc-border bg-mpc-card" data-cat="SNARE">SNARE</button>
+    <button class="cat-selector px-3 py-1.5 rounded-lg border border-mpc-border bg-mpc-card" data-cat="HIHAT">HI-HAT</button>
+    <button class="cat-selector px-3 py-1.5 rounded-lg border border-mpc-border bg-mpc-card" data-cat="PERC">PERC</button>
+    <button id="padMode16Levels" class="ml-auto px-2 py-1 rounded bg-mpc-accent text-white font-mono">16 LEVELS</button>
+    <button id="padModeKit" class="px-2 py-1 rounded text-slate-400 font-mono">KIT</button>
+    <label class="flex items-center gap-1 font-mono"><input type="checkbox" id="glideToggle" class="accent-mpc-accent">808 Glide</label>
   </div>
 
-  <div id="toast" class="fixed bottom-6 right-6 bg-brand-800 border-2 border-cyanAccent text-white px-5 py-3 rounded-xl shadow-2xl transition transform translate-y-32 opacity-0 flex items-center gap-3 text-xs z-50">
-    <span>⚡</span><span id="toast-msg">Ready</span>
-  </div>
+  <section class="bg-mpc-panel border border-mpc-border rounded-2xl p-4 shadow-2xl">
+    <div id="padMatrixTitle" class="text-xs font-tech font-bold text-slate-200 mb-3">AKAI MPC 16-LEVELS PITCH AUDITION MATRIX</div>
+    <div id="padsGridContainer" class="grid grid-cols-4 gap-2.5">
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="13" data-semitone="12"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="14" data-semitone="10"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="15" data-semitone="7"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="16" data-semitone="5"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="9" data-semitone="4"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="10" data-semitone="3"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="11" data-semitone="2"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="12" data-semitone="1"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="5" data-semitone="0" data-root="true"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="6" data-semitone="-1"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="7" data-semitone="-2"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="8" data-semitone="-3"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="1" data-semitone="-4"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="2" data-semitone="-5"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="3" data-semitone="-7"></button>
+      <button class="mpc-pad mpc-pad-shadow bg-mpc-card border border-mpc-border rounded-xl p-3" data-pad="4" data-semitone="-12"></button>
+    </div>
+    <div class="mt-3 flex flex-wrap gap-2 text-xs font-mono text-slate-400">
+      Roll: <select id="rollRateSelect" class="bg-mpc-card border border-mpc-border rounded px-2 py-1"><option value="0">Off</option><option value="16">1/16</option><option value="32" selected>1/32</option><option value="64">1/64</option></select>
+    </div>
+  </section>
+  <div id="presetPills" class="flex flex-wrap gap-2 text-xs font-mono"></div>
+</div>
 
-  <script type="module" src="js/studio-app.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
-    }
-  </script>
+<div id="pageAmp" class="tab-page hidden space-y-4">
+  <div class="bg-mpc-panel border border-mpc-border rounded-2xl p-5 space-y-4">
+    <button class="preview-btn-inline px-3 py-1.5 bg-mpc-accent/20 border border-mpc-accent text-mpc-accent text-xs font-tech rounded-lg">PREVIEW</button>
+    <div class="grid md:grid-cols-2 gap-4 text-sm font-mono">
+      <div>Attack <span id="ampAttackVal" class="text-mpc-accent"></span><input type="range" id="ampAttack" min="0.001" max="0.5" step="0.001" value="0.002" class="w-full"></div>
+      <div>Decay <span id="ampDecayVal" class="text-mpc-accent"></span><input type="range" id="ampDecay" min="0.01" max="2" step="0.01" value="0.35" class="w-full"></div>
+      <div>Sustain <span id="ampSustainVal" class="text-mpc-accent"></span><input type="range" id="ampSustain" min="0" max="1" step="0.01" value="0.4" class="w-full"></div>
+      <div>Release <span id="ampReleaseVal" class="text-mpc-accent"></span><input type="range" id="ampRelease" min="0.01" max="4" step="0.01" value="0.85" class="w-full"></div>
+    </div>
+  </div>
+</div>
+
+<div id="pageFilter" class="tab-page hidden space-y-4">
+  <div class="bg-mpc-panel border border-mpc-border rounded-2xl p-5 space-y-4">
+    <button class="preview-btn-inline px-3 py-1.5 border border-mpc-cyan text-mpc-cyan text-xs rounded-lg">PREVIEW</button>
+    <select id="filterType" class="bg-mpc-card border border-mpc-border rounded px-2 py-1 text-sm"><option value="lowpass">Lowpass</option><option value="highpass">Highpass</option><option value="bandpass">Bandpass</option><option value="notch">Notch</option></select>
+    <div class="grid md:grid-cols-2 gap-4 text-sm font-mono">
+      <div>Cutoff <span id="filterCutoffVal" class="text-mpc-cyan"></span><input type="range" id="filterCutoff" min="40" max="18000" step="10" value="2850" class="w-full"></div>
+      <div>Reso <span id="filterResoVal" class="text-mpc-cyan"></span><input type="range" id="filterReso" min="0.1" max="18" step="0.1" value="3.2" class="w-full"></div>
+      <div>Env <span id="filterEnvVal" class="text-mpc-cyan"></span><input type="range" id="filterEnv" min="-1" max="1" step="0.05" value="0.65" class="w-full"></div>
+      <div>F decay <span id="filterDecayVal" class="text-mpc-cyan"></span><input type="range" id="filterDecay" min="0.01" max="1.5" step="0.01" value="0.22" class="w-full"></div>
+    </div>
+  </div>
+</div>
+
+<div id="pageTransient" class="tab-page hidden space-y-4">
+  <div class="bg-mpc-panel border border-mpc-border rounded-2xl p-5 space-y-4">
+    <button class="preview-btn-inline px-3 py-1.5 border border-mpc-orange text-mpc-orange text-xs rounded-lg">PREVIEW</button>
+    <div class="grid md:grid-cols-2 gap-4 text-sm font-mono">
+      <div>Attack punch <span id="transientAttackVal" class="text-mpc-orange"></span><input type="range" id="transientAttack" min="-12" max="14" step="0.5" value="6" class="w-full"></div>
+      <div>Sustain <span id="transientSustainVal" class="text-mpc-orange"></span><input type="range" id="transientSustain" min="-18" max="6" step="0.5" value="0" class="w-full"></div>
+      <div>Pitch start <span id="pitchStartVal" class="text-mpc-orange"></span><input type="range" id="pitchStart" min="30" max="600" step="5" value="180" class="w-full"></div>
+      <div>Pitch decay <span id="pitchDecayVal" class="text-mpc-orange"></span><input type="range" id="pitchDecay" min="0.005" max="0.3" step="0.005" value="0.045" class="w-full"></div>
+    </div>
+    <div class="text-sm font-mono">Base sub: <span id="pitchBaseVal" class="text-mpc-orange font-bold"></span></div>
+  </div>
+</div>
+
+<div id="pageTxDrive" class="tab-page hidden space-y-4">
+  <div class="bg-mpc-panel border border-mpc-border rounded-2xl p-5 space-y-4">
+    <button class="preview-btn-inline px-3 py-1.5 border border-mpc-gold text-mpc-gold text-xs rounded-lg">PREVIEW</button>
+    <select id="dacEmulationSelect" class="bg-mpc-black border border-mpc-border rounded px-3 py-2 text-xs font-mono text-mpc-gold w-full max-w-md">
+      <option value="clean">Studio 24-Bit Clean</option>
+      <option value="mpc60">MPC 60 (12-bit / 26k)</option>
+      <option value="mpc3000">MPC 3000 (16-bit)</option>
+      <option value="sp1200">SP-1200 (12-bit ring)</option>
+    </select>
+    <select id="distType" class="bg-mpc-card border border-mpc-border rounded px-2 py-1 text-sm"><option value="hard">Hard clip</option><option value="tape">Tape</option><option value="tube">Tube</option><option value="fold">Foldback</option></select>
+    <div class="grid md:grid-cols-2 gap-4 text-sm font-mono">
+      <div>Drive <span id="driveAmountVal" class="text-mpc-gold"></span><input type="range" id="driveAmount" min="0" max="100" step="1" value="45" class="w-full"></div>
+      <div>Sub harm <span id="subHarmonicsVal" class="text-mpc-gold"></span><input type="range" id="subHarmonics" min="0" max="100" step="1" value="25" class="w-full"></div>
+      <div>Noise <span id="noiseAmountVal" class="text-mpc-gold"></span><input type="range" id="noiseAmount" min="0" max="100" step="1" value="8" class="w-full"></div>
+      <div>Ceiling <span id="outputCeilingVal" class="text-mpc-gold"></span><input type="range" id="outputCeiling" min="-6" max="0" step="0.1" value="-0.1" class="w-full"></div>
+    </div>
+  </div>
+</div>
+
+<div id="pageSequencerExport" class="tab-page hidden space-y-4">
+  <section class="bg-mpc-panel border border-mpc-border rounded-2xl p-5 space-y-4">
+    <div class="flex flex-wrap gap-3 items-center text-xs font-mono">
+      BPM <input type="number" id="seqBpm" min="80" max="190" value="142" class="w-14 bg-mpc-black border border-mpc-border rounded px-2 text-center">
+      Swing <select id="seqSwing" class="bg-mpc-card border border-mpc-border rounded px-2 py-1"><option value="0.50">50%</option><option value="0.58" selected>58%</option><option value="0.66">66%</option></select>
+      <button id="seqPlayBtn" class="px-4 py-1.5 rounded-lg bg-mpc-neon/20 border border-mpc-neon/60 text-mpc-neon font-tech text-xs"><span id="seqPlayText">PLAY</span></button>
+      <button id="seqClearBtn" class="px-3 py-1.5 rounded-lg border border-mpc-border text-slate-400">Clear</button>
+    </div>
+    <div id="seqTracksContainer"></div>
+  </section>
+  <section class="bg-mpc-panel border border-mpc-border rounded-2xl p-5 grid md:grid-cols-3 gap-4">
+    <button class="export-specific-btn py-2 bg-mpc-accent text-white font-tech text-xs rounded-lg" data-format="wav24">24-bit WAV</button>
+    <button class="export-specific-btn py-2 bg-mpc-card border border-mpc-border text-xs rounded-lg" data-format="wav16">16-bit WAV</button>
+    <button class="export-specific-btn py-2 bg-mpc-gold/20 border border-mpc-gold/60 text-mpc-gold text-xs rounded-lg" data-format="xpm">Export .XPM Kit</button>
+  </section>
+</div>
+
+</main>
+
+<div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+<div id="helpModal" class="fixed inset-0 bg-black/85 z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-mpc-panel border border-mpc-border max-w-lg w-full rounded-2xl p-5 space-y-3">
+    <h3 class="font-tech font-bold text-white">MPC TRAP-FORGE Guide</h3>
+    <p class="text-xs text-slate-300">Preview with the red button or spacebar. Use pads for 16-level pitch or kit mode. Export WAV or Akai .XPM on tab 6.</p>
+    <button id="dismissHelpBtn" class="w-full py-2 bg-mpc-card border border-mpc-border rounded-lg text-xs font-mono">GOT IT</button>
+    <button id="closeHelpBtn" class="hidden"></button>
+  </div>
+</div>
+
+<footer class="border-t border-mpc-border/60 py-2 text-center text-[11px] font-mono text-slate-500">MPC TRAP-FORGE • PROCEDURAL DSP</footer>
+<script src="js/mpc-trap-forge-ui.js"></script>
 </body>
 </html>

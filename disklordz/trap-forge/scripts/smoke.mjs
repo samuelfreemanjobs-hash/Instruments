@@ -17,6 +17,7 @@ function assertSyntax(rel) {
 }
 
 assertSyntax("js/studio-app.js");
+assertSyntax("js/mpc-trap-forge-ui.js");
 assertSyntax("js/trap-presets.js");
 
 const { renderDrumSample, exportMultiVelocityPack, kitState } = await import(

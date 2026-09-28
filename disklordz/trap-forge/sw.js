@@ -1,8 +1,11 @@
-const CACHE = "trap-forge-v1";
+const CACHE = "trap-forge-v2";
 const ASSETS = [
   "./",
   "./index.html",
+  "./studio.html",
   "./manifest.webmanifest",
+  "./css/mpc-akai.css",
+  "./js/mpc-trap-forge-ui.js",
   "./js/studio-app.js",
   "./js/dsp-core.js",
   "./js/synth-trap.js",

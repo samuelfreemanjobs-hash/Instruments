@@ -28,7 +28,7 @@ ES modules require HTTP (not `file://`). Install as PWA from browser menu when s
 
 ## Data flow
 
-1. Primary UI: `index.html` + `js/studio-app.js` (`kitState.drums`, pattern, BPM, master bus). Legacy path: `js/app.js`.
+1. **Primary UI:** `index.html` + `js/mpc-trap-forge-ui.js` — Akai-themed MPC shell (OfflineAudioContext engine, 16-level pads, kit mode, sequencer, `.XPM` export). **Modular studio:** `studio.html` + `js/studio-app.js` (full kit, Cardo reverb, DnD shelf). Legacy: `js/app.js`.
 2. `selectAndAuditionDrum()` keeps tabs, `#canvas-visualizer`, and audition in sync.
 3. `synth-trap.js` renders each drum to stereo buffers (44100 Hz float → master soft-clip → Web Audio or WAV encoder).
 4. Sequencer triggers cached renders polyphonically (`activeSources` set).
@@ -37,7 +37,9 @@ ES modules require HTTP (not `file://`). Install as PWA from browser menu when s
 
 | Path | Role |
 |------|------|
-| `index.html` | Tailwind layout, per-drum panels, sequencer, DnD shelf |
+| `index.html` | MPC Elite shell (6 tabs, Akai red theme, waveform canvas) |
+| `js/mpc-trap-forge-ui.js` | Standalone OfflineAudioContext synth, pads, AI forge, export |
+| `studio.html` | Modular TRAP-FORGE studio (per-drum kit, visualizer shelf) |
 | `js/studio-app.js` | State, `renderDrumSample`, sequencer, export, visualizer |
 | `js/trap-presets.js` | `DRUM_DEFAULTS`, `NOTE_FREQS`, `PRODUCER_PRESETS` |
 | `css/trap-forge.css` | Legacy theme (used by `app.js` path) |
