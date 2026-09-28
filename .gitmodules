@@ -1,0 +1,3 @@
+[submodule "vst-juno106/third_party/iPlug2"]
+	path = vst-juno106/third_party/iPlug2
+	url = https://github.com/iPlug2/iPlug2.git
