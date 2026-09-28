@@ -1,6 +1,6 @@
-# TRAP-FORGE Studio
+# TRAP-FORGE / MPC TRAP-FORGE Studio
 
-Browser-based Atlanta trap drum synthesizer (TR-808–inspired DSP) with per-drum pages, dual amp/filter ADSR, Cardo-style reverb on snare/clap, FL/TR-808 step sequencer, and 24-bit WAV export.
+Browser-based Atlanta trap drum synthesizer (TR-808–inspired DSP) with per-drum pages, dual amp/filter ADSR, Cardo-style reverb on snare/clap, FL/TR-808 step sequencer, **MPC 4×4 pad matrix**, **AI Vibe Forge (Gemini)**, PWA offline shell, and **16/24/32-bit** WAV export.
 
 ## Purpose
 
@@ -8,7 +8,7 @@ Design punch kicks, long 808 subs, crisp snares, claps, hats, and perc in the ve
 
 ## Build & run
 
-Static site — no build step.
+Static site (no AI proxy):
 
 ```bash
 cd disklordz/trap-forge
@@ -16,7 +16,15 @@ python3 -m http.server 8765
 # open http://127.0.0.1:8765/
 ```
 
-ES modules require HTTP (not `file://`).
+**Recommended (AI Vibe Forge + PWA origin):**
+
+```bash
+pip install -r requirements-serve.txt
+export GEMINI_API_KEY=...
+python3 serve.py   # http://127.0.0.1:8765
+```
+
+ES modules require HTTP (not `file://`). Install as PWA from browser menu when served over HTTP(S).
 
 ## Data flow
 
@@ -38,7 +46,10 @@ ES modules require HTTP (not `file://`).
 | `js/dsp-core.js` | ADSR, filters, lo-fi, saturation, trunk master bus, WAV |
 | `js/reverb-cardo.js` | Stereo comb reverb for snare/clap |
 | `js/hat-roll.js` | Phase 5 ratchet rolls (32nd/triplet, jitter, drift) + composite buffer |
-| `js/export-dnd.js` | Drag-and-drop WAV chips for DAW import |
+| `js/ai-vibe-forge.js` | Gemini prompt → DSP params (proxy or direct key) |
+| `js/mpc-pad-grid.js` | 4×4 MPC audition matrix (pitch, rolls, velocity) |
+| `serve.py` | FastAPI static host + `/api/ai/vibe` |
+| `manifest.webmanifest` · `sw.js` | PWA install + offline app shell |
 
 808 glide: `f = f_root + (f_target - f_root) * (t/T)^2.2`. Transient shaper: ±12 dB in the first 15 ms before saturation. Master: parallel trunk smash + FL soft-clip (`applyTrunkMasterBus`).
 

@@ -40,11 +40,23 @@ export function softClipFl(x, threshold = 0.9) {
   return x;
 }
 
-/** Per-sample drive: `triode` (default) or FL Studio–style `fl_clip`. */
 export function applyDrive(sample, drive = 1, distType = "triode") {
   const d = 1 + (drive ?? 0);
-  if (distType === "fl_clip") return softClipFl(sample * d, 0.9);
-  return softClipFl(triode(sample, d), 0.92);
+  const x = sample * d;
+  switch (distType) {
+    case "tape":
+      return Math.tanh(x * 0.85) * 0.92 + x * 0.04;
+    case "tube":
+      return softClipFl(triode(sample, d), 0.92);
+    case "foldback":
+      return Math.sin(x * Math.PI * 0.55);
+    case "spinz":
+      return softClipFl(x, 0.82);
+    case "fl_clip":
+      return softClipFl(x, 0.9);
+    default:
+      return softClipFl(triode(sample, d), 0.92);
+  }
 }
 
 /** Chamberlin SVF low-pass (12 dB). */
@@ -174,6 +186,87 @@ export function encodeStereoWav24(left, right) {
 
 export function encodeMonoWav24(mono) {
   return encodeStereoWav24(mono, mono);
+}
+
+function writeWavHeader(view, channels, sampleRate, bits, dataSize) {
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) view.setUint8(o + i, s.charCodeAt(i)); };
+  const blockAlign = channels * (bits / 8);
+  w(0, "RIFF");
+  view.setUint32(4, 36 + dataSize, true);
+  w(8, "WAVE");
+  w(12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, channels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * blockAlign, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, bits, true);
+  w(36, "data");
+  view.setUint32(40, dataSize, true);
+}
+
+export function encodeMonoWav(mono, bits = 24) {
+  const n = mono.length;
+  if (bits === 16) {
+    const dataSize = n * 2;
+    const buf = new ArrayBuffer(44 + dataSize);
+    const v = new DataView(buf);
+    writeWavHeader(v, 1, SR, 16, dataSize);
+    let o = 44;
+    for (let i = 0; i < n; i++) {
+      const val = Math.round(Math.max(-1, Math.min(1, mono[i])) * 32767);
+      v.setInt16(o, val, true);
+      o += 2;
+    }
+    return buf;
+  }
+  if (bits === 32) {
+    const dataSize = n * 4;
+    const buf = new ArrayBuffer(44 + dataSize);
+    const v = new DataView(buf);
+    writeWavHeader(v, 1, SR, 32, dataSize);
+    let o = 44;
+    for (let i = 0; i < n; i++) {
+      v.setFloat32(o, mono[i], true);
+      o += 4;
+    }
+    return buf;
+  }
+  return encodeMonoWav24(mono);
+}
+
+export function encodeStereoWav(left, right, bits = 24) {
+  const n = Math.min(left.length, right.length);
+  if (bits === 24) return encodeStereoWav24(left, right);
+  if (bits === 16) {
+    const dataSize = n * 4;
+    const buf = new ArrayBuffer(44 + dataSize);
+    const v = new DataView(buf);
+    writeWavHeader(v, 2, SR, 16, dataSize);
+    let o = 44;
+    for (let i = 0; i < n; i++) {
+      for (const s of [left[i], right[i]]) {
+        v.setInt16(o, Math.round(Math.max(-1, Math.min(1, s)) * 32767), true);
+        o += 2;
+      }
+    }
+    return buf;
+  }
+  if (bits === 32) {
+    const dataSize = n * 8;
+    const buf = new ArrayBuffer(44 + dataSize);
+    const v = new DataView(buf);
+    writeWavHeader(v, 2, SR, 32, dataSize);
+    let o = 44;
+    for (let i = 0; i < n; i++) {
+      v.setFloat32(o, left[i], true);
+      v.setFloat32(o + 4, right[i], true);
+      o += 8;
+    }
+    return buf;
+  }
+  return encodeStereoWav24(left, right);
 }
 
 export function downloadBuffer(buf, name) {

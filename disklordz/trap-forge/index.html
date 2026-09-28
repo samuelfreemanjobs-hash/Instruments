@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TRAP-FORGE // Studio DSP Drum Kit Generator</title>
+  <meta name="theme-color" content="#061329" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>MPC TRAP-FORGE // Elite Drum Generator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -46,8 +48,8 @@
 <body class="min-h-full text-white font-sans p-3 sm:p-6">
   <header class="glass-panel max-w-7xl mx-auto rounded-2xl px-4 py-3 mb-4 flex flex-wrap items-center justify-between gap-3">
     <div>
-      <h1 class="text-2xl font-extrabold tracking-tight text-white uppercase">TRAP-FORGE <span class="text-cyanAccent font-mono text-base font-normal tracking-widest">// DSP ARCHITECT</span></h1>
-      <p class="text-xs text-brand-400 mt-1">Young Jeezy · Gucci · Shawty Redd · Cardo · Mike Will · Drumma Boy · EST Gee</p>
+      <h1 class="text-2xl font-extrabold tracking-tight text-white uppercase">MPC TRAP-FORGE <span class="text-cyanAccent font-mono text-base font-normal tracking-widest">// ELITE DRUM GEN</span></h1>
+      <p class="text-xs text-brand-400 mt-1">Procedural Web Audio · MPC pads · AI Vibe Forge · 16/24/32-bit WAV</p>
     </div>
     <div class="flex flex-wrap gap-2">
       <button type="button" id="btn-master-randomize" class="px-3 py-2 rounded-lg bg-brand-800 border border-brand-500 text-xs font-semibold">MUTATE SOUND</button>
@@ -179,9 +181,20 @@
           <label>Bit depth <input data-param="bits" type="range" min="6" max="16" step="1" value="12" class="w-full" /></label>
           <label>Sample rate <input data-param="lofiSr" type="range" min="8000" max="44100" step="500" value="26040" class="w-full" /></label>
           <label>Drive <input data-param="drive" type="range" min="0" max="1.2" step="0.02" value="0.42" class="w-full" /></label>
-          <label>Distortion
+          <label>Distortion (TX)
             <select data-param="distType" class="w-full bg-slate-950 border border-slate-700 rounded px-1">
-              <option value="triode">Triode</option><option value="fl_clip">FL clip</option>
+              <option value="triode">Tube</option>
+              <option value="tape">Tape</option>
+              <option value="foldback">Foldback</option>
+              <option value="spinz">Spinz Hard-Clip</option>
+              <option value="fl_clip">FL Soft-Clip</option>
+            </select>
+          </label>
+          <label>Export bits
+            <select id="export-bits" class="w-full bg-slate-950 border border-slate-700 rounded px-1">
+              <option value="24" selected>24-bit (MPC/DAW)</option>
+              <option value="16">16-bit</option>
+              <option value="32">32-bit float</option>
             </select>
           </label>
         </div>
@@ -193,6 +206,25 @@
           <label>Attack ±12 dB <input data-param="transAttackDb" type="range" min="-12" max="12" step="0.5" value="0" class="w-full" /><span data-val>0</span></label>
           <label>Sustain ±12 dB <input data-param="transSustainDb" type="range" min="-12" max="12" step="0.5" value="0" class="w-full" /><span data-val>0</span></label>
         </div>
+      </section>
+
+      <section class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
+        <h2 class="text-sm font-semibold text-cyanAccent mb-3">AI Vibe Forge</h2>
+        <p class="text-[10px] text-slate-500 mb-2">Gemini maps prompts to DSP (run <code class="text-cyanAccent">python serve.py</code> + GEMINI_API_KEY, or paste key below).</p>
+        <textarea id="ai-vibe-prompt" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-xs mb-2" placeholder="Pierre Bourne bouncy perc, Spinz 808 with gritty clip…"></textarea>
+        <div class="grid grid-cols-2 gap-2 text-xs mb-2">
+          <label>Model
+            <select id="ai-gemini-model" class="w-full bg-slate-950 border border-slate-700 rounded px-1">
+              <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+              <option value="gemini-2.0-flash-exp">gemini-2.0-flash-exp</option>
+              <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
+            </select>
+          </label>
+          <label>API key (local only)
+            <input id="ai-gemini-key" type="password" placeholder="optional" class="w-full bg-slate-950 border border-slate-700 rounded px-1" autocomplete="off" />
+          </label>
+        </div>
+        <button type="button" id="btn-ai-vibe" class="w-full py-2 rounded bg-cyanAccent text-brand-950 font-bold text-xs">FORGE VIBE</button>
       </section>
 
       <section class="mb-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
@@ -210,8 +242,8 @@
       <div class="rounded-lg overflow-hidden border border-slate-800 bg-slate-900">
         <canvas id="canvas-fft" width="600" height="90" class="w-full h-[90px]" aria-label="Spectrum"></canvas>
       </div>
-      <p class="text-[10px] text-slate-500">Keys 1–7 · Space triggers</p>
-      <div id="pads" class="flex gap-2 flex-wrap"></div>
+      <p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">MPC 4×4 audition</p>
+      <div id="pads" class="mb-2"></div>
 
       <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
         <h2 class="text-xs font-semibold mb-2">Step sequencer</h2>
@@ -245,5 +277,10 @@
   </div>
 
   <script type="module" src="js/studio-app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+    }
+  </script>
 </body>
 </html>

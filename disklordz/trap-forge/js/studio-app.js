@@ -2,6 +2,8 @@ import {
   SR,
   encodeStereoWav24,
   encodeMonoWav24,
+  encodeMonoWav,
+  encodeStereoWav,
   downloadBuffer,
   noteHz,
   normalizePeak,
@@ -10,6 +12,8 @@ import {
 import { SYNTHS } from "./synth-trap.js";
 import { renderHatRoll } from "./hat-roll.js";
 import { refreshDndShelf } from "./export-dnd.js";
+import { forgeVibeFromPrompt, applyForgedParams } from "./ai-vibe-forge.js";
+import { mountMpcPadGrid } from "./mpc-pad-grid.js";
 import {
   DRUM_ORDER,
   buildInitialDrums,
@@ -29,6 +33,7 @@ export const kitState = {
   pattern: Object.fromEntries(DRUM_ORDER.map((d) => [d.id, new Array(16).fill(false)])),
   mutes: Object.fromEntries(DRUM_ORDER.map((d) => [d.id, false])),
   master: { ceilingDb: -0.3, drive: 0.15, trunkAmount: 0.38, distType: "fl_clip" },
+  exportBits: 24,
   renderCache: {},
   hatRollCache: null,
 };
@@ -372,8 +377,9 @@ function startSequencer() {
 export function encodeDrumWav(id, buf) {
   const b = buf || kitState.renderCache[id];
   if (!b) return null;
-  if (id === "kick" || id === "sub808") return encodeMonoWav24(b.mono || b.left);
-  return encodeStereoWav24(b.left, b.right);
+  const bits = kitState.exportBits || 24;
+  if (id === "kick" || id === "sub808") return encodeMonoWav(b.mono || b.left, bits);
+  return encodeStereoWav(b.left, b.right, bits);
 }
 
 function exportDrumWav(id, suffix = "") {
@@ -453,7 +459,7 @@ function refreshExportShelfUI() {
     label: "HAT ROLL",
     getBuffer: () => {
       const roll = kitState.hatRollCache || buildHatRollBuffer();
-      return encodeStereoWav24(roll.left, roll.right);
+      return encodeStereoWav(roll.left, roll.right, kitState.exportBits || 24);
     },
     filename: () => `trap-forge_hat_roll_${document.getElementById("hat-roll-div")?.value || "16"}.wav`,
   });
@@ -471,7 +477,7 @@ function auditionHatRoll() {
 
 function exportHatRollWav() {
   const roll = buildHatRollBuffer();
-  downloadBuffer(encodeStereoWav24(roll.left, roll.right), `trap-forge_hat_roll_${getHatRollOptions().division}.wav`);
+  downloadBuffer(encodeStereoWav(roll.left, roll.right, kitState.exportBits || 24), `trap-forge_hat_roll_${getHatRollOptions().division}.wav`);
 }
 
 function applyPreset(key) {
@@ -509,14 +515,62 @@ function initUI() {
     btn.textContent = d.label;
     btn.addEventListener("click", () => selectAndAuditionDrum(d.id));
     tabNav?.appendChild(btn);
-    const pads = document.getElementById("pads");
-    if (pads) {
-      const pad = document.createElement("button");
-      pad.type = "button";
-      pad.className = "w-10 h-10 rounded bg-slate-800 hover:bg-emerald-700 text-sm";
-      pad.textContent = String(idx + 1);
-      pad.addEventListener("click", () => selectAndAuditionDrum(d.id));
-      pads.appendChild(pad);
+  });
+
+  mountMpcPadGrid(document.getElementById("pads"), {
+    selectDrum: (id) => selectAndAuditionDrum(id),
+    auditionPitchSemi: (semi) => {
+      const id = kitState.currentDrum;
+      const p = { ...kitState.drums[id], pitchSemi: (kitState.drums[id].pitchSemi || 0) + semi };
+      if (p.rootHz) p.rootHz *= Math.pow(2, semi / 12);
+      let buf = renderDrumSample(id, p, 1);
+      buf = applyMasterStereo(buf.left, buf.right);
+      playStereo(buf);
+      lastWaveform = buf.mono || buf.left;
+      drawVisualizer(lastWaveform);
+    },
+    auditionHatRoll: (div) => {
+      selectAndAuditionDrum("closedhat", { play: false });
+      const divEl = document.getElementById("hat-roll-div");
+      if (divEl) divEl.value = div;
+      auditionHatRoll();
+    },
+    auditionVelocity: (v) => {
+      const id = kitState.currentDrum;
+      let buf = renderDrumSample(id, null, v);
+      buf = applyMasterStereo(buf.left, buf.right);
+      playStereo(buf);
+    },
+  });
+
+  document.getElementById("export-bits")?.addEventListener("change", (e) => {
+    kitState.exportBits = parseInt(e.target.value, 10);
+    refreshExportShelfUI();
+  });
+
+  document.getElementById("btn-ai-vibe")?.addEventListener("click", async () => {
+    const prompt = document.getElementById("ai-vibe-prompt")?.value?.trim();
+    if (!prompt) {
+      showToast("Enter a vibe prompt");
+      return;
+    }
+    const modelEl = document.getElementById("ai-gemini-model");
+    const keyEl = document.getElementById("ai-gemini-key");
+    if (modelEl) localStorage.setItem("trapforge_gemini_model", modelEl.value);
+    if (keyEl?.value) localStorage.setItem("trapforge_gemini_key", keyEl.value);
+    showToast("Forging…");
+    try {
+      const forged = await forgeVibeFromPrompt(prompt, kitState.currentDrum, {
+        model: modelEl?.value,
+        apiKey: keyEl?.value,
+      });
+      applyForgedParams(kitState.drums[kitState.currentDrum], forged);
+      kitState.renderCache = {};
+      syncUIFromState();
+      updateAndRenderCurrent(true);
+      showToast("AI vibe applied");
+    } catch (err) {
+      showToast(err.message || "AI forge failed");
     }
   });
 
