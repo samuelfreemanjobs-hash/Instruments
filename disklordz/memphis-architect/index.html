@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MEMPHIS-660 // Phonk Drum Architect</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="top-bar">
+      <div class="brand">
+        <span class="brand-tag">ENGINE B</span>
+        <h1>MEMPHIS-660 <span class="dim">// PHONK ARCHITECT</span></h1>
+      </div>
+      <nav class="main-nav">
+        <button type="button" class="nav-btn active" data-page="kick">KICK</button>
+        <button type="button" class="nav-btn" data-page="snare">SNARE</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="page-kick" class="page visible">
+        <div class="intro">
+          <p>Deterministic phonk kick synthesis — pitch envelope, amp/filter ADSR, SP-1200 decimation, tape LP, soft clip. Click waveform to preview.</p>
+          <div class="style-chips">
+            <button type="button" data-kick-style="doomshop">Doomshop</button>
+            <button type="button" data-kick-style="drift">Drift</button>
+            <button type="button" data-kick-style="modern">Modern</button>
+          </div>
+        </div>
+        <div class="layout">
+          <div class="panel">
+            <h2>Tuning &amp; pitch env</h2>
+            <label>Note
+              <select id="kick-note">
+                <option value="D-1">D1 (36.7 Hz)</option>
+                <option value="F-1" selected>F1 (43.7 Hz)</option>
+                <option value="F#-1">F#1 (46.2 Hz)</option>
+                <option value="A-1">A1 (27.5 Hz sub)</option>
+              </select>
+            </label>
+            <label>Root Hz <input id="kick-root-hz" type="number" step="0.01" value="43.65" /></label>
+            <label>Pitch mod (st) <input id="kick-pitch-mod" type="range" min="12" max="60" value="48" /></label>
+            <label>Pitch decay (ms) <input id="kick-pitch-decay" type="range" min="8" max="40" value="22" /></label>
+            <label>Length (ms) <input id="kick-duration" type="range" min="120" max="400" value="250" /></label>
+            <label>Filter machine
+              <select id="kick-filter-type"></select>
+            </label>
+          </div>
+          <div class="panel">
+            <h2>Amp ADSR</h2>
+            <label>A (ms) <input id="kick-amp-a" type="range" min="0" max="20" value="1" /></label>
+            <label>D (ms) <input id="kick-amp-d" type="range" min="20" max="300" value="140" /></label>
+            <label>S <input id="kick-amp-s" type="range" min="0" max="100" value="0" step="1" /></label>
+            <label>R (ms) <input id="kick-amp-r" type="range" min="10" max="120" value="40" /></label>
+            <h2>Filter ADSR</h2>
+            <label>A (ms) <input id="kick-fil-a" type="range" min="0" max="20" value="2" /></label>
+            <label>D (ms) <input id="kick-fil-d" type="range" min="5" max="80" value="35" /></label>
+            <label>S <input id="kick-fil-s" type="range" min="0" max="100" value="15" /></label>
+            <label>R (ms) <input id="kick-fil-r" type="range" min="10" max="150" value="80" /></label>
+          </div>
+          <div class="panel">
+            <h2>Degradation</h2>
+            <label>Lo-fi SR (Hz) <input id="kick-lofi-sr" type="number" value="26040" /></label>
+            <label>Bit depth <input id="kick-bit-depth" type="range" min="8" max="16" value="12" /></label>
+            <label>Tape LP (Hz) <input id="kick-tape-lp" type="range" min="8000" max="14000" value="12000" /></label>
+            <label>Clip drive (dB) <input id="kick-clip" type="range" min="0" max="8" step="0.5" value="4" /></label>
+            <div class="actions">
+              <button type="button" id="kick-preview-btn" class="primary">▶ Preview</button>
+              <button type="button" id="kick-export" class="secondary">↓ Export 24-bit WAV</button>
+            </div>
+          </div>
+        </div>
+        <canvas id="kick-canvas" width="960" height="160" title="Click to preview"></canvas>
+        <p class="hint">Click waveform to audition · mono · 44.1 kHz · peak −0.3 dBFS</p>
+      </section>
+
+      <section id="page-snare" class="page">
+        <div class="intro">
+          <p>MEMPHIS-DR660 snare — membrane + bandpassed noise wires + offset clap flam, vintage chain.</p>
+          <div class="style-chips">
+            <button type="button" data-snare-style="doomshop">Doomshop</button>
+            <button type="button" data-snare-style="drift">Drift</button>
+            <button type="button" data-snare-style="dusty">Dusty cassette</button>
+          </div>
+        </div>
+        <div class="layout">
+          <div class="panel">
+            <h2>Membrane body</h2>
+            <label>Fundamental (Hz) <input id="snare-membrane" type="range" min="150" max="350" value="220" /></label>
+            <label>Pitch drop (st) <input id="snare-pitch-mod" type="range" min="12" max="40" value="24" /></label>
+            <label>Pitch decay (ms) <input id="snare-pitch-decay" type="range" min="10" max="35" value="18" /></label>
+            <label>Length (ms) <input id="snare-duration" type="range" min="200" max="500" value="350" /></label>
+          </div>
+          <div class="panel">
+            <h2>Body ADSR</h2>
+            <label>A (ms) <input id="snare-body-a" type="range" min="1" max="10" value="3" /></label>
+            <label>D (ms) <input id="snare-body-d" type="range" min="40" max="200" value="85" /></label>
+            <label>S <input id="snare-body-s" type="range" min="0" max="50" value="0" /></label>
+            <label>R (ms) <input id="snare-body-r" type="range" min="20" max="120" value="50" /></label>
+            <h2>Noise &amp; flam</h2>
+            <label>Noise BP (Hz) <input id="snare-noise-center" type="range" min="1200" max="5500" value="2400" /></label>
+            <label>Noise decay (ms) <input id="snare-noise-decay" type="range" min="80" max="250" value="190" /></label>
+            <label>Flam delay (ms) <input id="snare-flam" type="range" min="2" max="10" value="4" step="0.5" /></label>
+          </div>
+          <div class="panel">
+            <h2>Degradation</h2>
+            <label>Lo-fi SR <input id="snare-lofi-sr" type="number" value="26040" /></label>
+            <label>Bit depth <input id="snare-bit-depth" type="range" min="8" max="16" value="12" /></label>
+            <label>Tape LP (Hz) <input id="snare-tape-lp" type="range" min="9000" max="13000" value="11500" /></label>
+            <label>Clip (dB) <input id="snare-clip" type="range" min="2" max="8" step="0.5" value="5.5" /></label>
+            <div class="actions">
+              <button type="button" id="snare-preview-btn" class="primary">▶ Preview</button>
+              <button type="button" id="snare-export" class="secondary">↓ Export 24-bit WAV</button>
+            </div>
+          </div>
+        </div>
+        <canvas id="snare-canvas" width="960" height="160" title="Click to preview"></canvas>
+        <p class="hint">Click waveform to audition · HPF 105 Hz · mono export</p>
+      </section>
+    </main>
+    <footer>
+      <p>Engine B — browser DSP (no server). Patch sheets (Engine A) via Gemini Gem optional.</p>
+    </footer>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
