@@ -1,5 +1,7 @@
 node_modules/
 
+.reference/
+
 build/
 _deps/
 cmake-build-*/
