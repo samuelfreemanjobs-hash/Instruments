@@ -16,6 +16,7 @@ All profit agents are **company-wide** in this monorepo — not only under `disk
 ```bash
 ./scripts/run-agent-fleet-now.sh          # sync + execute all local agent roles now
 ./scripts/complete-roadmap-automation.sh  # integrations promote + 007 smoke + stub blockers
+./scripts/run-next.sh                   # after full business: smoke + ci-verify
 ./scripts/sync-disklordz-agent-fleet.sh   # regenerate fleet docs after _specs.json edits
 ```
 
