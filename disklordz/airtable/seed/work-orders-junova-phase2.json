@@ -2,19 +2,19 @@
   {
     "id": "WO-2026-004",
     "title": "[Plugin][Junova-X] Arpeggiator + DSP module architecture",
-    "status": "In Progress",
+    "status": "Done",
     "acceptance": "Arpeggiator.cpp, BbdChorus.cpp, ARCHITECTURE_DSP.md, JunovaXTests green"
   },
   {
     "id": "WO-2026-005",
     "title": "[Plugin][Junova-X] Host PPQ arp sync + latch",
-    "status": "Planned",
+    "status": "Done",
     "acceptance": "Steps on 1/16–1/4 grid from playhead; latch mode in UI"
   },
   {
     "id": "WO-2026-006",
     "title": "[Plugin][Junova-X] Offline render smoke in CI",
-    "status": "Planned",
+    "status": "Done",
     "acceptance": "Short WAV render + spectral diff gate in vst-testing-ops"
   }
 ]
