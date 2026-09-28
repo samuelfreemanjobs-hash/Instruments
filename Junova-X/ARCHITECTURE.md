@@ -2,7 +2,7 @@
 
 ## Purpose
 
-**Junova-X** is a Juno-class analog poly synth plugin (`JunovaX.vst3` / `JunovaX.clap`) for Disklordz. MVP: JUCE VST3+CLAP+Standalone, Celestial UI, analog-style poly DSP, **48 factory presets** (WO-2026-003). iPlug2 remains reference for future parity.
+**Junova-X** is a Juno-class analog poly synth plugin (`JunovaX.vst3` / `JunovaX.clap`) for Disklordz. MVP: JUCE VST3+CLAP+Standalone, Celestial UI, analog-style poly DSP, **48 factory presets** (WO-2026-003). iPlug2 framework: `vst-juno106/third_party/iPlug2` — see [docs/IPLUG2_REFERENCE.md](docs/IPLUG2_REFERENCE.md) and [docs/COMPETITIVE_JUN6.md](docs/COMPETITIVE_JUN6.md).
 
 **Phase 2:** modular DSP, host-aware arpeggiator — see [docs/ROADMAP.md](docs/ROADMAP.md) and [docs/ARCHITECTURE_DSP.md](docs/ARCHITECTURE_DSP.md).
 
@@ -64,4 +64,6 @@ UI: CelestialMainPanel / DiagPanel ←→ APVTS attachments
 - [docs/junova-x-mvp-gap-analysis.md](docs/junova-x-mvp-gap-analysis.md)
 - [docs/CLAP_CI_CHECKLIST.md](docs/CLAP_CI_CHECKLIST.md)
 - [docs/QA_HOST_SMOKE.md](docs/QA_HOST_SMOKE.md)
+- [docs/COMPETITIVE_JUN6.md](docs/COMPETITIVE_JUN6.md)
+- [docs/IPLUG2_REFERENCE.md](docs/IPLUG2_REFERENCE.md)
 - [docs/HERMES_AGENT_FRAMEWORK.md](../docs/HERMES_AGENT_FRAMEWORK.md)

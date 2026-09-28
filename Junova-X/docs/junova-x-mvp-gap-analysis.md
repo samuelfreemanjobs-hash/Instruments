@@ -4,7 +4,7 @@
 
 ## Executive summary
 
-**JUCE MVP shipped in monorepo** (`Junova-X/`): VST3 + CLAP + Standalone, Celestial UI, poly DSP, **48 factory presets**, pluginval green. iPlug2 remains reference for future parity. **AU:** out of scope. **DAW smoke:** manual checklist in [QA_HOST_SMOKE.md](QA_HOST_SMOKE.md). **Presets:** expand banks post-MVP.
+**JUCE MVP shipped in monorepo** (`Junova-X/`): VST3 + CLAP + Standalone, Celestial UI, poly DSP, **48 factory presets**, pluginval green. iPlug2 framework is in-repo (`vst-juno106/third_party/iPlug2`); Juno106 product tree still external — [IPLUG2_REFERENCE.md](IPLUG2_REFERENCE.md). **AU:** out of scope. **DAW smoke:** manual checklist in [QA_HOST_SMOKE.md](QA_HOST_SMOKE.md). **Presets:** expand banks post-MVP. **Competitive A/B vs Arturia:** [COMPETITIVE_JUN6.md](COMPETITIVE_JUN6.md).
 
 ## Gap table
 

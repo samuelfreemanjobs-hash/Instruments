@@ -16,5 +16,17 @@
     "title": "[Plugin][Junova-X] Offline render smoke in CI",
     "status": "Done",
     "acceptance": "Short WAV render + spectral diff gate in vst-testing-ops"
+  },
+  {
+    "id": "WO-2026-007",
+    "title": "[Plugin][Junova-X] iPlug2 reference import checklist",
+    "status": "In progress",
+    "acceptance": "iPlug2 submodule under vst-juno106; IPLUG2_REFERENCE.md; parity table filled when Juno106 tree lands"
+  },
+  {
+    "id": "WO-2026-008",
+    "title": "[Plugin][Junova-X] Jun-6 V competitive A/B matrix",
+    "status": "Planned",
+    "acceptance": "COMPETITIVE_JUN6.md; AB-01..07 golden expansion plan executed or scheduled"
   }
 ]
