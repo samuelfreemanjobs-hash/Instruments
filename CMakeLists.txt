@@ -146,6 +146,22 @@ target_compile_definitions(OfflineRender
 )
 add_dependencies(OfflineRender JDUpgradedRomData)
 
+add_executable(Vst3OfflineRender tools/Vst3OfflineRender.cpp)
+target_link_libraries(Vst3OfflineRender
+    PRIVATE
+        juce::juce_audio_formats
+        juce::juce_audio_processors
+        juce::juce_audio_utils
+)
+target_include_directories(Vst3OfflineRender PRIVATE "${CMAKE_SOURCE_DIR}/tools")
+target_compile_definitions(Vst3OfflineRender
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+        JUCE_PLUGINHOST_VST3=1
+)
+add_dependencies(Vst3OfflineRender JDUpgraded_VST3)
+
 add_executable(ExportPreset tools/ExportPreset.cpp)
 target_link_libraries(ExportPreset
     PRIVATE

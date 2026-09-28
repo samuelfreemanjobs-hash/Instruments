@@ -8,6 +8,7 @@ Command-line binaries built from `tools/` and registered in the root `CMakeLists
 |--------|--------|------|
 | `GenerateCleanroomRom` | `GenerateCleanroomRom.cpp` | Synthesize `jdupg_cleanroom.rom` at build time (256 waves, multisample metadata). |
 | `OfflineRender` | `OfflineRender.cpp` | Instantiate `JDUpgradedAudioProcessor`, feed MIDI, write stereo 24-bit WAV. |
+| `Vst3OfflineRender` | `Vst3OfflineRender.cpp` | Load a `.vst3` bundle via JUCE VST3 host; same MIDI→WAV path as `OfflineRender` ([`HeadlessMidiRender.h`](HeadlessMidiRender.h)). |
 | `SpectralDiff` | `SpectralDiff.cpp`, `WavCompare.h` | Peak-normalized mono comparison; RMS and mean spectral bin error. |
 | `ExportPreset` | `ExportPreset.cpp` | Write `.jdpreset` APVTS XML for a factory program index. |
 
@@ -29,6 +30,22 @@ argv → createPluginFilter() → prepareToPlay → setCurrentProgram
 - **Defaults:** program `0`, note `60`, velocity `100`, `2.0` s, `44100` Hz.
 - **Dependencies:** Full `JDUpgraded` target + ROM binary data (same as plugin).
 - **Use:** CI smoke, golden reference generation, manual A/B ([AB_HARNESS.md](../docs/AB_HARNESS.md)).
+
+## Vst3OfflineRender
+
+```
+argv → load .vst3 (JUCE VST3PluginFormat) → prepareToPlay → setCurrentProgram
+     → shared HeadlessMidiRender loop → stereo 24-bit WAV
+```
+
+```bash
+cmake --build build -j --target JDUpgraded_VST3 Vst3OfflineRender
+./build/Vst3OfflineRender "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3" /tmp/out.wav 0 60 100 2.0 44100
+./tests/golden/compare_vst3_offline.sh   # optional parity vs in-process OfflineRender
+```
+
+- **Why:** Validates the **shipped VST3 wrapper** (parameter layout, bus config, factory) separately from linking `JDUpgraded` directly.
+- **Build:** `add_dependencies(Vst3OfflineRender JDUpgraded_VST3)` so the bundle exists before the tool is used.
 
 ## SpectralDiff
 

@@ -26,6 +26,21 @@ cmake --build build -j
 
 Arguments: `output.wav [program] [midiNote] [velocity] [seconds] [sampleRate]`.
 
+## Headless render via VST3 bundle (`Vst3OfflineRender`)
+
+Same defaults as `OfflineRender`, but loads the built `.vst3` through JUCE's VST3 host:
+
+```bash
+cmake --build build -j --target JDUpgraded_VST3 Vst3OfflineRender
+./build/Vst3OfflineRender "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3" /tmp/jdupg-vst3.wav 0 60 100 2.0 44100
+```
+
+Optional parity check (first manifest row):
+
+```bash
+./tests/golden/compare_vst3_offline.sh
+```
+
 ## Spectral diff (`SpectralDiff`)
 
 Compare two WAV files (peak-normalized mono):
