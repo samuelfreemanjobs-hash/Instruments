@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TRAP-FORGE Studio — Atlanta Trap Drum Architect</title>
+  <link rel="stylesheet" href="css/trap-forge.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <h1>TRAP-FORGE STUDIO</h1>
+      <p class="subtitle">TR-808 trap synthesis · Jeezy · Gucci · Shawty Redd · Cardo · Mike Will · Drumma Boy · EST Gee</p>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn" id="btn-play">PLAY [SPACE]</button>
+      <button type="button" class="btn btn-ghost" id="btn-export-one">Export Sound</button>
+      <button type="button" class="btn btn-ghost" id="btn-export-kit">Export Full Kit</button>
+      <button type="button" class="btn btn-ghost" id="btn-export-vel">Export 3-Velocity Pack</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="tabs" id="drum-tabs" aria-label="Drum types"></nav>
+
+    <main class="editor">
+      <section class="panel drum-panel" data-drum="kick">
+        <h2>Punch Kick</h2>
+        <div class="grid-2">
+          <label>Root Hz <input type="range" data-param="rootHz" min="35" max="80" step="1" value="50" /><span class="val">50</span></label>
+          <label>Pitch mod <input type="range" data-param="pitchMod" min="0" max="60" step="1" value="38" /><span class="val">38</span></label>
+          <label>Pitch decay <input type="range" data-param="pitchDecay" min="0.008" max="0.05" step="0.001" value="0.02" /><span class="val">0.02</span></label>
+          <label>Transient punch <input type="range" data-param="transAttack" min="0" max="1" step="0.01" value="0" /><span class="val">0</span></label>
+        </div>
+      </section>
+
+      <section class="panel drum-panel hidden" data-drum="sub808">
+        <h2>Trap 808 Sub</h2>
+        <div class="grid-2">
+          <label>Root note
+            <select data-param="rootNote">
+              <option value="C">C</option><option value="C#">C#</option><option value="D">D</option>
+              <option value="D#">D#</option><option value="E">E</option><option value="F">F</option>
+              <option value="F#">F#</option><option value="G" selected>G</option><option value="G#">G#</option>
+              <option value="A">A</option><option value="A#">A#</option><option value="B">B</option>
+            </select>
+          </label>
+          <label>Root Hz <input type="range" data-param="rootHz" min="30" max="90" step="1" value="55" /><span class="val">55</span></label>
+          <label>2nd harmonic <input type="range" data-param="harm2" min="0" max="0.8" step="0.01" value="0.38" /><span class="val">0.38</span></label>
+          <label>3rd harmonic <input type="range" data-param="harm3" min="0" max="0.6" step="0.01" value="0.24" /><span class="val">0.24</span></label>
+          <label>Glide ms <input type="range" data-param="glideMs" min="0" max="450" step="5" value="0" /><span class="val">0</span></label>
+          <label>Glide interval (semi)
+            <select data-param="glideInterval">
+              <option value="0">None</option><option value="7">+7th</option><option value="12">Octave</option><option value="-12">Drop octave</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="panel drum-panel hidden" data-drum="snare">
+        <h2>Crack Snare + Cardo Reverb</h2>
+        <div class="grid-2">
+          <label>Pitch (semi) <input type="range" data-param="pitchSemi" min="-12" max="12" step="1" value="0" /><span class="val">0</span></label>
+          <label>Snap intensity <input type="range" data-param="snap" min="0" max="1" step="0.01" value="0.68" /><span class="val">0.68</span></label>
+          <label>Snap bite / tension <input type="range" data-param="snapBite" min="0" max="1" step="0.01" value="0.55" /><span class="val">0.55</span></label>
+          <label>Reverb mix <input type="range" data-param="reverbMix" min="0" max="0.7" step="0.01" value="0.28" /><span class="val">0.28</span></label>
+          <label>Reverb decay <input type="range" data-param="reverbDecay" min="0.2" max="0.95" step="0.01" value="0.58" /><span class="val">0.58</span></label>
+          <label>Reverb damp <input type="range" data-param="reverbDamp" min="0.2" max="0.9" step="0.01" value="0.52" /><span class="val">0.52</span></label>
+          <label>Pre-delay ms <input type="range" data-param="reverbPre" min="0" max="80" step="1" value="14" /><span class="val">14</span></label>
+        </div>
+      </section>
+
+      <section class="panel drum-panel hidden" data-drum="clap">
+        <h2>Dirty Clap + Cardo Reverb</h2>
+        <div class="grid-2">
+          <label>Flam ms <input type="range" data-param="flamMs" min="0.01" max="0.04" step="0.001" value="0.022" /><span class="val">0.022</span></label>
+          <label>Reverb mix <input type="range" data-param="reverbMix" min="0" max="0.7" step="0.01" value="0.24" /><span class="val">0.24</span></label>
+          <label>Reverb decay <input type="range" data-param="reverbDecay" min="0.2" max="0.95" step="0.01" value="0.55" /><span class="val">0.55</span></label>
+          <label>Pre-delay ms <input type="range" data-param="reverbPre" min="0" max="80" step="1" value="18" /><span class="val">18</span></label>
+        </div>
+      </section>
+
+      <section class="panel drum-panel hidden" data-drum="hatClosed">
+        <h2>Closed Hat (808 cluster)</h2>
+        <div class="grid-2">
+          <label>Dispersion <input type="range" data-param="dispersion" min="0" max="0.03" step="0.001" value="0.01" /><span class="val">0.01</span></label>
+          <label>Filter cutoff <input type="range" data-param="fCut" min="3000" max="12000" step="50" value="7800" /><span class="val">7800</span></label>
+        </div>
+        <div class="panel" style="margin-top:0.75rem">
+          <h2>Hat roll generator</h2>
+          <div class="grid-4">
+            <label>Division
+              <select id="hat-roll-div">
+                <option value="8">1/8</option><option value="16" selected>1/16</option><option value="32">1/32</option><option value="64">1/64</option>
+              </select>
+            </label>
+            <label>Ramp
+              <select id="hat-roll-ramp">
+                <option value="flat">Flat</option><option value="crescendo">Crescendo</option><option value="decrescendo">Decrescendo</option><option value="jitter">Humanize</option>
+              </select>
+            </label>
+            <label>Hits <input type="number" id="hat-roll-count" min="4" max="32" value="8" /></label>
+            <button type="button" class="btn" id="btn-hat-roll">Audition Roll</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel drum-panel hidden" data-drum="hatOpen">
+        <h2>Open Hat</h2>
+        <label>Filter cutoff <input type="range" data-param="fCut" min="2500" max="10000" step="50" value="5200" /><span class="val">5200</span></label>
+      </section>
+
+      <section class="panel drum-panel hidden" data-drum="perc">
+        <h2>Perc / 808 Cowbell</h2>
+        <label>Tone Hz <input type="range" data-param="rootHz" min="400" max="900" step="5" value="540" /><span class="val">540</span></label>
+      </section>
+
+      <section class="panel">
+        <h2>Amp &amp; Filter ADSR (active drum)</h2>
+        <div class="grid-4">
+          <label>A attack <input type="range" data-param="aA" min="0" max="0.05" step="0.0005" value="0.001" /></label>
+          <label>A decay <input type="range" data-param="aD" min="0.01" max="0.8" step="0.005" value="0.1" /></label>
+          <label>A sustain <input type="range" data-param="aS" min="0" max="1" step="0.01" value="0" /></label>
+          <label>A release <input type="range" data-param="aR" min="0.01" max="0.5" step="0.005" value="0.05" /></label>
+          <label>F attack <input type="range" data-param="fA" min="0" max="0.05" step="0.0005" value="0.002" /></label>
+          <label>F decay <input type="range" data-param="fD" min="0.01" max="0.5" step="0.005" value="0.08" /></label>
+          <label>F sustain <input type="range" data-param="fS" min="0" max="1" step="0.01" value="0.15" /></label>
+          <label>F release <input type="range" data-param="fR" min="0.01" max="0.4" step="0.005" value="0.06" /></label>
+          <label>Filter cutoff <input type="range" data-param="fCut" min="80" max="14000" step="20" value="7500" /></label>
+          <label>Filter env amt <input type="range" data-param="fEnvAmt" min="0" max="48" step="1" value="18" /></label>
+          <label>Filter Q <input type="range" data-param="fQ" min="0.3" max="2" step="0.05" value="0.85" /></label>
+          <label>Filter type
+            <select data-param="filterMode"><option value="lp12">12dB LP</option><option value="lp24">24dB LP</option></select>
+          </label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Lo-Fi &amp; transient shaper</h2>
+        <div class="grid-4">
+          <label>Bit depth <input type="range" data-param="bits" min="6" max="16" step="1" value="12" /></label>
+          <label>Sample rate <input type="range" data-param="lofiSr" min="8000" max="44100" step="500" value="26040" /></label>
+          <label>Drive <input type="range" data-param="drive" min="0" max="1.2" step="0.02" value="0.42" /></label>
+          <label>Attack punch <input type="range" data-param="transAttack" min="0" max="1" step="0.02" value="0" /></label>
+          <label>Body sustain <input type="range" data-param="transSustain" min="0" max="1" step="0.02" value="0" /></label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Producer presets</h2>
+        <select id="preset-select">
+          <option value="">— Load preset —</option>
+          <option value="jeezyKick">Jeezy Snowman Kick</option>
+          <option value="drummaKick">Drumma Boy Punch</option>
+          <option value="shawty808">Shawty Redd 808</option>
+          <option value="mike808">Mike Will Trunk Glide</option>
+          <option value="gucciSnare">Gucci So Icy Snap</option>
+          <option value="cardoSnare">Cardo Space Snare</option>
+          <option value="drummaClap">Drumma Trap Clap</option>
+          <option value="cardoHat">Cardo Silk Hat</option>
+          <option value="sledgrenHat">Sledgren Roll Hat</option>
+          <option value="estPerc">EST Gee Rim Block</option>
+        </select>
+      </section>
+    </main>
+
+    <aside class="right">
+      <div class="visual-wrap">
+        <canvas id="scope" width="600" height="90" aria-label="Oscilloscope"></canvas>
+      </div>
+      <div class="visual-wrap">
+        <canvas id="fft" width="600" height="90" aria-label="Spectrum"></canvas>
+      </div>
+      <p class="subtitle">Keys 1–7 select drums · Space replays active sound</p>
+      <div class="pad-row" id="pads"></div>
+
+      <div class="panel sequencer">
+        <h2>TR-808 / FL step sequencer</h2>
+        <div class="seq-head">
+          <label>BPM <input type="range" id="bpm" min="50" max="185" value="140" /> <span id="bpm-val">140</span></label>
+          <button type="button" class="btn" id="btn-seq-play">▶ Seq</button>
+          <button type="button" class="btn btn-ghost" id="btn-seq-clear">Clear</button>
+        </div>
+        <div class="led-bar" id="led-bar">
+          <!-- filled by JS -->
+        </div>
+        <div id="sequencer-rows"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Master bus</h2>
+        <label>Ceiling dBFS <input type="range" id="master-ceiling" min="-1.2" max="0" step="0.1" value="-0.3" /></label>
+        <label>Soft-clip drive <input type="range" id="master-drive" min="0" max="0.5" step="0.02" value="0.15" /></label>
+        <div class="meter"><div class="meter-fill" id="peak-meter"></div></div>
+      </div>
+    </aside>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

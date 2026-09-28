@@ -13,6 +13,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Disklordz** (package index) | [disklordz/ARCHITECTURE.md](disklordz/ARCHITECTURE.md) · [docs/ROADMAP.md](docs/ROADMAP.md) | `./scripts/run-agent-fleet-now.sh` |
 | **Disklordz Drum SaaS** (web) | [disklordz/website/ARCHITECTURE.md](disklordz/website/ARCHITECTURE.md) · [docs/DISKLORDZ_SAAS_V0.md](docs/DISKLORDZ_SAAS_V0.md) · [docs/DISKLORDZ_GO_LIVE.md](docs/DISKLORDZ_GO_LIVE.md) | `npm run build` in `disklordz/website/` |
 | **Disklordz sound factory** | [disklordz/sound-factory/ARCHITECTURE.md](disklordz/sound-factory/ARCHITECTURE.md) | `python3 disklordz/sound-factory/scripts/generate_kit.py` |
+| **TRAP-FORGE Studio** (browser trap drum synth) | [disklordz/trap-forge/ARCHITECTURE.md](disklordz/trap-forge/ARCHITECTURE.md) | `cd disklordz/trap-forge && python3 -m http.server 8765` |
 | **Disklordz DAW inbox** (WO-016) | [disklordz/daw-inbox/ARCHITECTURE.md](disklordz/daw-inbox/ARCHITECTURE.md) | `npm start` in `disklordz/daw-inbox/` |
 | **Disklordz RAG** (prompt knowledge) | [disklordz/rag/ARCHITECTURE.md](disklordz/rag/ARCHITECTURE.md) · [docs/RAG_AND_INTELLIGENT_AUTOMATION.md](docs/RAG_AND_INTELLIGENT_AUTOMATION.md) | `python3 disklordz/rag/scripts/chunk_corpus.py` |
 | **Disklordz integrations** (35 OSS refs) | [disklordz/integrations/ARCHITECTURE.md](disklordz/integrations/ARCHITECTURE.md) · [docs/DISKLORDZ_OPEN_SOURCE_REFERENCES.md](docs/DISKLORDZ_OPEN_SOURCE_REFERENCES.md) | `./scripts/setup-open-source-integrations.sh` |
