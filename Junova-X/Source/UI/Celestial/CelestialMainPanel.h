@@ -27,7 +27,8 @@ private:
     juce::Label titleLabel_ { {}, {} };
 };
 
-class CelestialMainPanel final : public juce::Component
+class CelestialMainPanel final : public juce::Component,
+                                 private juce::Timer
 {
 public:
     explicit CelestialMainPanel (JunovaXAudioProcessor& processor);
@@ -35,6 +36,8 @@ public:
 
     void paint (juce::Graphics& g) override;
     void resized() override;
+
+    void refreshPresetLabel();
 
 private:
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
@@ -50,8 +53,12 @@ private:
     juce::Label tagline_ { {}, "Celestial Polyphonic Synthesizer" };
     juce::Label hostBar_ { {}, "HOST: STANDALONE | BPM: 120.00 | 4/4 | CPU: -- | 48 kHz" };
     juce::Label presetLabel_ { {}, "J-106 CELESTIAL PAD" };
+    juce::TextButton presetPrev_ { "<" };
+    juce::TextButton presetNext_ { ">" };
 
     OscMonitorComponent oscMonitor_;
+
+    void timerCallback() override;
 
     ModuleShell lfoModule_ { "LFO / PORTA", Theme::glowBlue(), Theme::panelBlue() };
     ModuleShell dcoModule_ { "ORBIT DCO MODULE", Theme::glowBlue(), Theme::panelBlue() };

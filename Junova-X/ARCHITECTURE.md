@@ -2,7 +2,7 @@
 
 ## Purpose
 
-**Junova-X** is a Juno-class analog poly synth plugin (`JunovaX.vst3` / `JunovaX.clap`) for Disklordz. MVP: JUCE port from iPlug2 reference, VST3+CLAP, 48 factory presets (WO-2026-003).
+**Junova-X** is a Juno-class analog poly synth plugin (`JunovaX.vst3` / `JunovaX.clap`) for Disklordz. MVP: JUCE VST3+CLAP+Standalone, Celestial UI, analog-style poly DSP, **48 factory presets** (WO-2026-003). iPlug2 remains reference for future parity.
 
 ## Build & run
 
@@ -20,7 +20,7 @@ Plugin IDs: manufacturer `SmFr`, code `JnvX`.
 ## Data flow
 
 ```text
-MIDI → SynthEngine (voices + filter/chorus stub) → master gain → outputs
+MIDI → SynthEngine (8-voice poly, DCO, VCF, BBD-style chorus, HPF) → master gain → outputs
          ↑ APVTS parameters (dual ADSR, HPF, chorus, diag test tone)
 UI: MainPanel / DiagPanel ←→ APVTS attachments
 ```
@@ -41,6 +41,7 @@ UI: MainPanel / DiagPanel ←→ APVTS attachments
 | `Source/UI/DiagPanel.*` | Test tone + Panic |
 | `Source/UI/UiLayout.h` | Design dimensions (Hermes GUI seat) |
 | `Source/Parameters/ParameterIds.h` | Stable parameter IDs |
+| `Source/Presets/FactoryPresets.cpp` | 48 MVP factory programs |
 
 ## Extension points
 

@@ -25,6 +25,8 @@ WAVE909_VST3_BUNDLE = (
     REPO_ROOT / "build/Wave909/Wave909_artefacts/Release/VST3/WAVE-909.vst3"
 )
 WAVE909_VST3_DISCOVER = REPO_ROOT / "build/Wave909/Wave909_artefacts/Release/VST3"
+JUNOVA_VST3_BUNDLE = REPO_ROOT / "build/Junova-X/JunovaX_artefacts/Release/VST3/Junova-X.vst3"
+JUNOVA_CLAP_BUNDLE = REPO_ROOT / "build/Junova-X/JunovaX_artefacts/Release/CLAP/Junova-X.clap"
 
 
 class StageId(str, Enum):
@@ -155,6 +157,9 @@ def stage_artefacts() -> StageResult:
         REPO_ROOT / "build/JDUpgraded_artefacts/Release/CLAP/JD Upgraded.clap",
         REPO_ROOT / "build/JDUpgraded_artefacts/Release/Standalone/JD Upgraded",
         WAVE909_VST3_BUNDLE,
+        JUNOVA_VST3_BUNDLE,
+        JUNOVA_CLAP_BUNDLE,
+        REPO_ROOT / "build/Junova-X/JunovaX_artefacts/Release/Standalone/Junova-X",
     ]
     lines: list[str] = []
     ok = True
@@ -224,6 +229,7 @@ def stage_pluginval() -> StageResult:
     bundles = [
         REPO_ROOT / "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3",
         WAVE909_VST3_BUNDLE,
+        JUNOVA_VST3_BUNDLE,
     ]
     chunks: list[str] = []
     for bundle in bundles:

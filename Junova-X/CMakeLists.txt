@@ -24,6 +24,7 @@ target_sources (JunovaX
         Source/UI/Celestial/OscMonitorComponent.cpp
         Source/DSP/SynthEngine.cpp
         Source/DSP/DiagTone.cpp
+        Source/Presets/FactoryPresets.cpp
 )
 
 target_compile_definitions (JunovaX

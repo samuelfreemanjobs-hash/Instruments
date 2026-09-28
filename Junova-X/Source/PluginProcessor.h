@@ -38,6 +38,7 @@ public:
     juce::AudioProcessorValueTreeState& getApvts() noexcept { return apvts_; }
 
     void panicAllNotes();
+    void applyFactoryPreset (int index);
 
     void copyScopeSamples (float* dest, int numSamples) const noexcept
     {

@@ -4,7 +4,7 @@
 
 ## Executive summary
 
-Junova-X has a **real iPlug2 scaffold** (DSP, Main+Diag, VST3 project, QA docs) but **zero DAW verification**. Disklordz standard is **JUCE + VST3/CLAP**. **Decision: port to JUCE** under `Junova-X/` — iPlug2 remains reference only. **AU:** out of scope (no Apple). **CLAP:** MVP-hard (WO-2026-002). **Presets:** **48** factory for MVP; **more banks later**.
+**JUCE MVP shipped in monorepo** (`Junova-X/`): VST3 + CLAP + Standalone, Celestial UI, poly DSP, **48 factory presets**, pluginval green. iPlug2 remains reference for future parity. **AU:** out of scope. **DAW smoke:** manual checklist in [QA_HOST_SMOKE.md](QA_HOST_SMOKE.md). **Presets:** expand banks post-MVP.
 
 ## Gap table
 

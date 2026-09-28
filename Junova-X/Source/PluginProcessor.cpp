@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "Presets/PresetParams.h"
 
 namespace
 {
@@ -78,6 +79,7 @@ JunovaXAudioProcessor::JunovaXAudioProcessor()
 #endif
       apvts_ (*this, nullptr, "JunovaX", createParameterLayout())
 {
+    applyFactoryPreset (0);
 }
 
 JunovaXAudioProcessor::~JunovaXAudioProcessor() = default;
@@ -93,17 +95,88 @@ bool JunovaXAudioProcessor::isMidiEffect() const { return false; }
 double JunovaXAudioProcessor::getTailLengthSeconds() const { return 0.5; }
 bool JunovaXAudioProcessor::hasEditor() const { return true; }
 
-int JunovaXAudioProcessor::getNumPrograms() { return 1; }
+int JunovaXAudioProcessor::getNumPrograms()
+{
+    return static_cast<int> (junovax::presets::getFactoryPresets().size());
+}
+
 int JunovaXAudioProcessor::getCurrentProgram() { return currentProgram_; }
-void JunovaXAudioProcessor::setCurrentProgram (int index) { currentProgram_ = index; }
+
+void JunovaXAudioProcessor::setCurrentProgram (int index)
+{
+    applyFactoryPreset (index);
+}
+
 const juce::String JunovaXAudioProcessor::getProgramName (int index)
 {
-    juce::ignoreUnused (index);
-    return "Init";
+    const auto& presets = junovax::presets::getFactoryPresets();
+    if (index >= 0 && index < static_cast<int> (presets.size()))
+        return juce::String (presets[static_cast<std::size_t> (index)].name.data());
+    return {};
 }
+
 void JunovaXAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
     juce::ignoreUnused (index, newName);
+}
+
+void JunovaXAudioProcessor::applyFactoryPreset (int index)
+{
+    const auto& presets = junovax::presets::getFactoryPresets();
+    if (index < 0 || index >= static_cast<int> (presets.size()))
+        return;
+
+    currentProgram_ = index;
+    const auto& p = presets[static_cast<std::size_t> (index)].params;
+
+    auto setF = [this] (const char* id, float v)
+    {
+        if (auto* param = apvts_.getParameter (id))
+            param->setValueNotifyingHost (param->convertTo0to1 (v));
+    };
+    auto setB = [this] (const char* id, bool v)
+    {
+        if (auto* param = apvts_.getParameter (id))
+            param->setValueNotifyingHost (v ? 1.0f : 0.0f);
+    };
+    auto setC = [this] (const char* id, int choiceIndex, int numChoices)
+    {
+        if (auto* param = apvts_.getParameter (id))
+            param->setValueNotifyingHost (static_cast<float> (choiceIndex) / static_cast<float> (numChoices - 1));
+    };
+
+    setF (PID::masterGain, p.masterGain);
+    setF (PID::ampAttack, p.ampAttack);
+    setF (PID::ampDecay, p.ampDecay);
+    setF (PID::ampSustain, p.ampSustain);
+    setF (PID::ampRelease, p.ampRelease);
+    setF (PID::filtAttack, p.filtAttack);
+    setF (PID::filtDecay, p.filtDecay);
+    setF (PID::filtSustain, p.filtSustain);
+    setF (PID::filtRelease, p.filtRelease);
+    setF (PID::filterCutoff, p.filterCutoff);
+    setF (PID::filterRes, p.filterRes);
+    setB (PID::hpfEnabled, p.hpfEnabled);
+    setF (PID::hpfCutoff, p.hpfCutoff);
+    setC (PID::chorusMode, p.chorusMode, 4);
+    setC (PID::voiceMode, p.voiceMode, 4);
+    setF (PID::lfoRate, p.lfoRate);
+    setF (PID::lfoDelay, p.lfoDelay);
+    setF (PID::glide, p.glide);
+    setF (PID::dcoLfoMod, p.dcoLfoMod);
+    setF (PID::dcoPwm, p.dcoPwm);
+    setF (PID::dcoSubLvl, p.dcoSubLvl);
+    setF (PID::dcoNoise, p.dcoNoise);
+    setF (PID::vcfEnv, p.vcfEnv);
+    setF (PID::vcfLfo, p.vcfLfo);
+    setF (PID::vcfKey, p.vcfKey);
+    setF (PID::drift, p.drift);
+    setF (PID::detune, p.detune);
+    setF (PID::width, p.width);
+    setF (PID::arpRange, p.arpRange);
+    setF (PID::arpRate, p.arpRate);
+
+    pushParamsToEngine();
 }
 
 void JunovaXAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
@@ -154,10 +227,37 @@ junovax::dsp::RuntimeParams JunovaXAudioProcessor::readParamsFromApvts() const n
     };
 
     p.masterGainDb = f (PID::masterGain);
+    p.ampAttack = f (PID::ampAttack);
+    p.ampDecay = f (PID::ampDecay);
+    p.ampSustain = f (PID::ampSustain);
+    p.ampRelease = f (PID::ampRelease);
+    p.filtAttack = f (PID::filtAttack);
+    p.filtDecay = f (PID::filtDecay);
+    p.filtSustain = f (PID::filtSustain);
+    p.filtRelease = f (PID::filtRelease);
     p.filterCutoff = f (PID::filterCutoff);
     p.filterRes = f (PID::filterRes);
     p.hpfEnabled = f (PID::hpfEnabled) > 0.5f;
-    p.chorusMode = static_cast<int> (f (PID::chorusMode));
+    p.hpfCutoff = f (PID::hpfCutoff);
+    if (auto* chorus = dynamic_cast<juce::AudioParameterChoice*> (apvts_.getParameter (PID::chorusMode)))
+        p.chorusMode = chorus->getIndex();
+    if (auto* voice = dynamic_cast<juce::AudioParameterChoice*> (apvts_.getParameter (PID::voiceMode)))
+        p.voiceMode = voice->getIndex();
+    p.lfoRate = f (PID::lfoRate);
+    p.lfoDelay = f (PID::lfoDelay);
+    p.glideMs = f (PID::glide);
+    p.dcoLfoMod = f (PID::dcoLfoMod);
+    p.dcoPwm = f (PID::dcoPwm);
+    p.dcoSubLvl = f (PID::dcoSubLvl);
+    p.dcoNoise = f (PID::dcoNoise);
+    p.vcfEnv = f (PID::vcfEnv);
+    p.vcfLfo = f (PID::vcfLfo);
+    p.vcfKey = f (PID::vcfKey);
+    p.drift = f (PID::drift);
+    p.detune = f (PID::detune);
+    p.width = f (PID::width);
+    p.arpRange = f (PID::arpRange);
+    p.arpRate = f (PID::arpRate);
     p.diagTestTone = f (PID::diagTestTone) > 0.5f;
     p.diagToneFreqHz = f (PID::diagToneFreq);
     return p;
@@ -170,15 +270,25 @@ void JunovaXAudioProcessor::pushParamsToEngine() noexcept
 
 void JunovaXAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    if (auto state = apvts_.copyState().createXml())
-        copyXmlToBinary (*state, destData);
+    auto state = apvts_.copyState();
+    state.setProperty ("currentProgram", currentProgram_, nullptr);
+    if (auto xml = state.createXml())
+        copyXmlToBinary (*xml, destData);
 }
 
 void JunovaXAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     if (auto xml = getXmlFromBinary (data, sizeInBytes))
+    {
         if (xml->hasTagName (apvts_.state.getType()))
-            apvts_.replaceState (juce::ValueTree::fromXml (*xml));
+        {
+            auto tree = juce::ValueTree::fromXml (*xml);
+            apvts_.replaceState (tree);
+            const int prog = static_cast<int> (tree.getProperty ("currentProgram", 0));
+            currentProgram_ = prog;
+            pushParamsToEngine();
+        }
+    }
 }
 
 juce::AudioProcessorEditor* JunovaXAudioProcessor::createEditor()

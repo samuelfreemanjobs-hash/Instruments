@@ -63,6 +63,31 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
     addAndMakeVisible (tagline_);
     addAndMakeVisible (hostBar_);
     addAndMakeVisible (presetLabel_);
+    addAndMakeVisible (presetPrev_);
+    addAndMakeVisible (presetNext_);
+    presetPrev_.onClick = [this]
+    {
+        const int n = processor_.getNumPrograms();
+        if (n <= 0)
+            return;
+        int idx = processor_.getCurrentProgram() - 1;
+        if (idx < 0)
+            idx = n - 1;
+        processor_.setCurrentProgram (idx);
+        refreshPresetLabel();
+    };
+    presetNext_.onClick = [this]
+    {
+        const int n = processor_.getNumPrograms();
+        if (n <= 0)
+            return;
+        int idx = (processor_.getCurrentProgram() + 1) % n;
+        processor_.setCurrentProgram (idx);
+        refreshPresetLabel();
+    };
+    refreshPresetLabel();
+    startTimerHz (4);
+
     addAndMakeVisible (oscMonitor_);
 
     for (auto* m : { &lfoModule_, &dcoModule_, &hpfModule_, &vcfModule_, &envModule_,
@@ -113,7 +138,21 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
 
 CelestialMainPanel::~CelestialMainPanel()
 {
+    stopTimer();
     setLookAndFeel (nullptr);
+}
+
+void CelestialMainPanel::timerCallback()
+{
+    refreshPresetLabel();
+}
+
+void CelestialMainPanel::refreshPresetLabel()
+{
+    const int idx = processor_.getCurrentProgram();
+    const auto name = processor_.getProgramName (idx);
+    presetLabel_.setText (juce::String (idx + 1) + " / " + juce::String (processor_.getNumPrograms()) + "  " + name,
+                          juce::dontSendNotification);
 }
 
 juce::Slider& CelestialMainPanel::addVerticalFader (juce::Component& parent, const char* paramId, juce::String name)
@@ -179,7 +218,9 @@ void CelestialMainPanel::resized()
     hostBar_.setBounds (8, 4, w - 16, 20);
     brand_.setBounds (16, 34, 220, 30);
     tagline_.setBounds (16, 58, 280, 18);
-    presetLabel_.setBounds (w / 2 - 120, 36, 240, 22);
+    presetPrev_.setBounds (w / 2 - 168, 34, 28, 24);
+    presetLabel_.setBounds (w / 2 - 136, 36, 272, 22);
+    presetNext_.setBounds (w / 2 + 140, 34, 28, 24);
 
     oscMonitor_.setBounds (w / 2 - 180, 64, 360, 88);
 

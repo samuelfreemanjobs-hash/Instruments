@@ -15,11 +15,12 @@
 | Stack | **JUCE** + VST3 + CLAP (CMake, same factory as JD Upgraded CI patterns) |
 | JD Upgraded kernel | **No shared kernel** |
 
-## Status (honest)
+## Status (MVP complete in monorepo)
 
-- iPlug2 reference: scaffold + Main/Diag UI + DSP modules exist elsewhere; **not DAW-tested**
-- **JUCE port:** in progress via Work Orders `WO-2026-001` … `003`
-- GTM: **$29 → $49**, **Windows demo** required at launch; landing repo `junova-x-landing` (separate)
+- **JUCE:** VST3 + CLAP + Standalone; Celestial Main + Diag; poly synth DSP (DCO/VCF/chorus stub); **48 factory presets** (WO-2026-003).
+- **QA:** pluginval on VST3 via `vst-testing-ops`; host smoke checklist in [docs/QA_HOST_SMOKE.md](docs/QA_HOST_SMOKE.md).
+- **Not in MVP:** iPlug2 bit-perfect parity, Windows demo installer, `junova-x-landing` repo.
+- GTM: **$29 → $49** at launch.
 
 ## Target layout
 
