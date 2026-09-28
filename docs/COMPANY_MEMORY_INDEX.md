@@ -25,7 +25,7 @@ If a rule seems “missing,” check this table and [`AGENTS.md`](../AGENTS.md) 
 | TRAP-FORGE | [disklordz/trap-forge/ARCHITECTURE.md](../disklordz/trap-forge/ARCHITECTURE.md) | PWA + VST shell |
 | Serum Forge | [tools/serum-forge/ARCHITECTURE.md](../tools/serum-forge/ARCHITECTURE.md) | Symbolic Serum pipeline |
 | SynthForge | [tools/synth-forge/ARCHITECTURE.md](../tools/synth-forge/ARCHITECTURE.md) | Hardware presets |
-| Drum blueprint | [tools/drum-synth-blueprint/ARCHITECTURE.md](../tools/drum-synth-blueprint/ARCHITECTURE.md) | NumPy kick/808 |
+| Drum blueprint | [tools/drum-synth-blueprint/ARCHITECTURE.md](../tools/drum-synth-blueprint/ARCHITECTURE.md) | NumPy 808 + mel loss · [juce_onnx_pipeline_guide.txt](../tools/drum-synth-blueprint/docs/juce_onnx_pipeline_guide.txt) |
 | Memphis Architect | [disklordz/memphis-architect/ARCHITECTURE.md](../disklordz/memphis-architect/ARCHITECTURE.md) | Phonk kick/snare UI |
 | **V-Voyager VST** | [products/VOYAGER_VST.md](products/VOYAGER_VST.md) | Explorer synth program (restored index) |
 | Disklordz SaaS | [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md) | WO-SAAS-* |

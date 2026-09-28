@@ -1,12 +1,8 @@
-# Drum synth blueprint (NumPy)
+# Drum synth blueprint (NumPy + DDSP reference)
 
 ## Purpose
 
-Reference **vectorized** Trap kick and 808 curves for:
-
-- **DDSP / ML Engineer** training targets and feature-loss baselines
-- **TrapForge / Memphis** parity checks
-- **Serum Forge** text-to-preset prompt validation (pitch envelope semantics)
+Reference **vectorized** Trap kick and **phonk 808** curves plus **mel feature-loss** training targets for the **ddsp-ml-engineer** agent and future JUCE/ONNX ports.
 
 ## Build & run
 
@@ -15,14 +11,30 @@ cd tools/drum-synth-blueprint
 pip install -r requirements.txt
 pip install -e .
 pytest tests -v
-python -m drum_synth_blueprint
+python -m drum_synth_blueprint.synth_808_generator
 ```
+
+## Pure math core
+
+| Module | Role |
+|--------|------|
+| `synth_808_generator.py` | Exp pitch **350→45 Hz**, integrated phase, **np.tanh** drive |
+| `trap_kick_808.py` | Layered trap kick + glide 808 (legacy API) |
+| `mel_loss.py` | Log-mel **feature difference loss** (phase-robust) |
+| `encoder_stub.py` | Sample → `[pitch_decay, amp_decay, drive]` (numpy; optional torch MLP) |
+
+## DDSP → ONNX → JUCE
+
+See [`docs/juce_onnx_pipeline_guide.txt`](docs/juce_onnx_pipeline_guide.txt).
+
+Agent prompts: [`docs/DDSP_TRAP_PHONK_AGENT_PROMPTS.md`](../../docs/DDSP_TRAP_PHONK_AGENT_PROMPTS.md).
 
 ## Data flow
 
 ```text
-parameters → render_trap_kick / render_trap_808 (NumPy)
-          → normalize_peak → WAV export (consumer scripts) or torch tensors (DDSP)
+acoustic WAV → encoder_stub → synth params
+            → synthesize_808 → mel_loss vs target
+            → (export) ONNX encoder + C++ oscillator in JUCE
 ```
 
 ## Related

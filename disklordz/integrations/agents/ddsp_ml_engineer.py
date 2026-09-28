@@ -23,6 +23,11 @@ def main() -> int:
             cwd=BLUEPRINT,
             check=True,
         )
+        subprocess.run(
+            [sys.executable, "-m", "drum_synth_blueprint.synth_808_generator"],
+            cwd=BLUEPRINT,
+            check=True,
+        )
         print("ddsp-ml-engineer: ok")
         return 0
     print(f"Run: cd {BLUEPRINT} && pytest tests -v")
