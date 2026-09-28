@@ -1,0 +1,7 @@
+pydantic>=2.7.0
+
+# Optional headless render / optimization stack:
+# pedalboard
+# numpy
+# torch torchaudio
+# laion-clap

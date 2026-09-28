@@ -71,3 +71,7 @@ Local **command center** (drop-in folder + AI-friendly `error_log.txt`): [vst-te
 ## SynthForge (Python)
 
 Preset batching, cloning, and hardware export staging: [synth-forge/ARCHITECTURE.md](synth-forge/ARCHITECTURE.md). Not part of CMake; CI via [`.github/workflows/synth-forge.yml`](../.github/workflows/synth-forge.yml).
+
+## Serum Forge (Python)
+
+Serum `.SerumPreset` symbolic ParamSpec, guardrails, packager hooks: [serum-forge/ARCHITECTURE.md](serum-forge/ARCHITECTURE.md). `python3 tools/serum-forge/scripts/smoke.py`.
