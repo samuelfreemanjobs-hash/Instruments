@@ -19,6 +19,7 @@
 | `hermes-gui` | JUCE editors + **GUI Agent** |
 | `hermes-web` | `disklordz/website/` Next.js |
 | `hermes-qa` | pluginval, CI, smoke checklists |
+| `hermes-research` | **Hyperresearch** — briefs + draft WOs ([HERMES_HYPERRESEARCH.md](HERMES_HYPERRESEARCH.md)) |
 
 Invoke in Cursor: **Task** with description `hermes-dsp: …` and prompt “Read the seat skill in SKILLS_REGISTRY first.”
 

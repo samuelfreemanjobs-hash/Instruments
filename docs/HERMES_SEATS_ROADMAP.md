@@ -48,7 +48,7 @@ Use Tier 3 when Grok + Marketing bandwidth is the bottleneck; otherwise Grok clo
 | Seat | When it pays off |
 |------|------------------|
 | **hermes-security** | On-demand review before ship (secrets, API authZ, RLS) — use explicit `/security review` or subagent |
-| **hermes-research** | ILLUGEN 007+, Colab spikes, competitor matrices → WO drafts only |
+| **hermes-research** | ✅ **Hyperresearch** installed — `disklordz/research/scripts/hyperresearch.py` |
 | **hermes-data** | Supabase migrations, pgvector RAG schema — overlaps `web` until DB work is heavy |
 
 ## Decision rule

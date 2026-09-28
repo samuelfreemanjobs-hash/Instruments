@@ -12,6 +12,7 @@ All **implementation** work in this repo uses the **Hermes seat team** unless th
    - JUCE plugins (`Junova-X/`, `Wave909/`, `Source/`) → architect, dsp, gui, qa skills
    - SaaS (`disklordz/website/`) → web skill (+ qa as needed)
    - RAG / automation (`disklordz/rag/`, `disklordz/automation/`) → web or lead + WO from Airtable
+   - Research / competitive / phase planning → **hermes-research** (Hyperresearch CLI)
    - HISE lane → Antigravity handoff; Cursor only on JUCE port WOs
 3. **Each seat reads its skill** under `.cursor/skills/hermes-elite-*/SKILL.md` before coding.
 4. **Evidence:** tests + walkthrough artifacts; GUI Agent for plugin UI; browser for SaaS UI.

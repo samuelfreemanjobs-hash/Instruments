@@ -17,9 +17,12 @@
 | `hermes-gui` | JUCE UI engineer | Editors, design handoff, GUI Agent | `hermes-elite-gui` |
 | `hermes-web` | SaaS engineer | `disklordz/website/`, Supabase APIs | `hermes-elite-web` |
 | `hermes-qa` | QA | pluginval, CI, smoke matrices | `hermes-elite-qa` |
+| `hermes-research` | **Hyperresearch** | Corpus + RAG briefs, draft WOs | `hermes-elite-research` |
 | `hermes-grokgate` | Spec ↔ WO (Grok side) | WO drafts, acceptance criteria | Grok docs (not Cursor seat) |
 
 **Planned (Tier 2):** `hermes-devops`, `hermes-handoff`, `hermes-ops` — see [HERMES_SEATS_ROADMAP.md](HERMES_SEATS_ROADMAP.md).
+
+Hyperresearch: [HERMES_HYPERRESEARCH.md](HERMES_HYPERRESEARCH.md) · CLI `disklordz/research/scripts/hyperresearch.py`
 
 Full registry: [.cursor/hermes/SKILLS_REGISTRY.md](../.cursor/hermes/SKILLS_REGISTRY.md)
 

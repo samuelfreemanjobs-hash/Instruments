@@ -10,6 +10,7 @@
 | hermes-gui | hermes-elite-gui | `.cursor/skills/hermes-elite-gui/SKILL.md` |
 | hermes-web | hermes-elite-web | `.cursor/skills/hermes-elite-web/SKILL.md` |
 | hermes-qa | hermes-elite-qa | `.cursor/skills/hermes-elite-qa/SKILL.md` |
+| hermes-research | hermes-elite-research (Hyperresearch) | `.cursor/skills/hermes-elite-research/SKILL.md` |
 
 Charters: `.cursor/hermes/seats/<seat>.md`
 
