@@ -2,6 +2,8 @@
 
 Command-line binaries built from `tools/` and registered in the root `CMakeLists.txt`. They support ROM generation, headless audio capture, and regression comparison. They are **not** loaded by the DAW; they link JUCE (and `OfflineRender` links the plugin target).
 
+**Python (not CMake):** [rompler-factory/](rompler-factory/) — ASR-class wave batches and third-party library fetch helpers for [content/asr-class-v0/](../content/asr-class-v0/).
+
 ## Targets
 
 | Target | Source | Role |

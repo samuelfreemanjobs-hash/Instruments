@@ -18,6 +18,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **META LLM charter** | [disklordz/agents/charter/ARCHITECTURE.md](disklordz/agents/charter/ARCHITECTURE.md) · [CLAUDE.md](CLAUDE.md) | `./scripts/sync-meta-llm-charter.sh` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-909** (sampleless trap wavetable synth) | [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md) | `Wave909_VST3`, `Wave909_Standalone`, `Wave909Tests` |
+| **Ensoniq-class romplers** (planned: EPS + ASR B+C) | [docs/ENSONIQ_CLASS_SAMPLER_PLATFORM.md](docs/ENSONIQ_CLASS_SAMPLER_PLATFORM.md) · [EPS](docs/EPS_CLASS_ROMPLER.md) · [ASR](docs/ASR_CLASS_ROMPLER.md) | Phase 1: HISE local VST3 · Phase 2: shared `EnsoniqClass` JUCE targets after port WO |
 
 ## Repository layout
 
