@@ -24,7 +24,7 @@ def main() -> int:
             check=True,
         )
         subprocess.run(
-            [sys.executable, "-m", "drum_synth_blueprint.synth_808_generator"],
+            [sys.executable, str(BLUEPRINT / "drum_synth_blueprint" / "synth_808_generator.py")],
             cwd=BLUEPRINT,
             check=True,
         )
