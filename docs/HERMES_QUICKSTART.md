@@ -36,6 +36,10 @@ Invoke in Cursor: **Task** with description `hermes-dsp: …` and prompt “Read
 - Always-on: [.cursor/rules/hermes-default.mdc](../.cursor/rules/hermes-default.mdc)
 - Junova-X: [.cursor/rules/hermes-junova-x.mdc](../.cursor/rules/hermes-junova-x.mdc)
 
+## Expanding the team
+
+See [HERMES_SEATS_ROADMAP.md](HERMES_SEATS_ROADMAP.md) for business ops, IDE handoff, GitHub/CI, and other recommended seats.
+
 ## Related
 
 - [AGENTS.md](../AGENTS.md) — build commands

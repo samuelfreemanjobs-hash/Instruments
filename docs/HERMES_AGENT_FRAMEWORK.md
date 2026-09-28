@@ -19,6 +19,8 @@
 | `hermes-qa` | QA | pluginval, CI, smoke matrices | `hermes-elite-qa` |
 | `hermes-grokgate` | Spec ↔ WO (Grok side) | WO drafts, acceptance criteria | Grok docs (not Cursor seat) |
 
+**Planned (Tier 2):** `hermes-devops`, `hermes-handoff`, `hermes-ops` — see [HERMES_SEATS_ROADMAP.md](HERMES_SEATS_ROADMAP.md).
+
 Full registry: [.cursor/hermes/SKILLS_REGISTRY.md](../.cursor/hermes/SKILLS_REGISTRY.md)
 
 Invoke via Cursor **Task** with `description` prefixed by seat ID, e.g. `hermes-gui: Celestial polish`.
