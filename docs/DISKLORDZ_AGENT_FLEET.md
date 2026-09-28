@@ -39,6 +39,7 @@ Repo-wide companion to [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) and [PM ADD
 | `audio-plugin-coder` | Audio Plugin Coder (APC) | `manual_doc` | `TBD` | `.github/skills/disklordz-audio-plugin-coder/SKILL.md` |
 | `code-project-planner` | Code Project Planner (PRD) | `manual_doc` | `TBD` | `.github/skills/disklordz-code-project-planner/SKILL.md` |
 | `ddsp-ml-engineer` | DDSP / ML Engineer (PyTorch) | `ci_on_pr` | `TBD` | `.github/skills/disklordz-ddsp-ml-engineer/SKILL.md` |
+| `audio-rd` | Audio R&D | `manual_doc` | `TBD` | `.github/skills/disklordz-audio-rd/SKILL.md` |
 
 ### Activation legend
 

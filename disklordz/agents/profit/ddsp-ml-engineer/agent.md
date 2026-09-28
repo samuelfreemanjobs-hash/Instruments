@@ -30,25 +30,24 @@ Differentiable DSP and PyTorch training loops: feature-loss cloning of drums/808
 - Serum perceptual stubs: `tools/serum-forge/serum_forge/perceptual.py`
 - CLI: `python3 disklordz/integrations/agents/ddsp_ml_engineer.py --self-test`
 
+## Partner agents
+
+| Agent | Role |
+|-------|------|
+| **audio-rd** | Hypothesis, ablations, `docs/RD_EXPERIMENT_LOG.md` — you implement approved plans |
+| **audio-plugin-coder** | JUCE/APC ship, C++ synth + ONNX threading |
+| **golden-wav-qa** | Promotion requires golden/regression evidence |
+
 ## Query loop
 
-Follow `loop.md` in this directory. Push complexity to boundaries (MCP, hooks, permissions); keep the loop typed and testable.
+Follow `loop.md` in this directory.
 
 ## Charter
 
-[`disklordz/agents/charter/META_CHARTER.md`](../../charter/META_CHARTER.md) binds all turns. Deviations: `OVERRIDE(R#): reason` (META-0); never override R10 on prod/Stripe/schema.
-
-## Sub-agents
-
-See `subagents.md`. Delegate exploration and verification; you synthesize.
-
-## Memory & soul
-
-Load `memory.md` layout at session start. Obey `soul.md` non-negotiables.
+[`disklordz/agents/charter/META_CHARTER.md`](../../charter/META_CHARTER.md)
 
 ## Output format
 
-1. **Finding** (1–3 bullets)
-2. **Actions taken** (commands / files)
-3. **Profit impact** (conversion, MRR, cost, or risk)
-4. **Next automation** (script or workflow name)
+1. **Finding** (metrics, loss values [executed])
+2. **Actions** (files, pytest logs)
+3. **Handoff** to audio-plugin-coder when params frozen for C++ port

@@ -10,7 +10,7 @@
     "workflow-automation",
     "pm-agent"
   ],
-  "agent_count": 35,
+  "agent_count": 36,
   "agents": [
     {
       "id": "workflow-automation",
@@ -617,6 +617,16 @@
       "profit_entry": "disklordz/agents/profit/ddsp-ml-engineer/agent.md",
       "copilot_skill": ".github/skills/disklordz-ddsp-ml-engineer/SKILL.md",
       "automation_path": "disklordz/agents/workflows/agents/ddsp-ml-engineer/automation.yaml"
+    },
+    {
+      "id": "audio-rd",
+      "title": "Audio R&D",
+      "activation": "manual_doc",
+      "announcement": "I'm **Audio R&D** \u2014 I design experiments and ablations for ML-backed drums, log promote/kill decisions, and hand off training to DDSP and shipping to the JUCE (APC) agent.",
+      "automation": {},
+      "profit_entry": "disklordz/agents/profit/audio-rd/agent.md",
+      "copilot_skill": ".github/skills/disklordz-audio-rd/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/audio-rd/automation.yaml"
     }
   ],
   "ci_workflows": [
@@ -666,7 +676,7 @@
     },
     {
       "path": ".github/workflows/drum-synth-blueprint.yml",
-      "serves": "ddsp-ml-engineer"
+      "serves": "ddsp-ml-engineer, audio-rd"
     }
   ]
 }

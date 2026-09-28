@@ -47,7 +47,7 @@ Wire mel feature-loss 808 blueprint into training smoke + document ONNX→JUCE t
 
 ## Context
 - Read: docs/COMPANY_MEMORY_INDEX.md, tools/drum-synth-blueprint/ARCHITECTURE.md
-- Agents: ddsp-ml-engineer, audio-plugin-coder
+- Agents: audio-rd (experiment plan), ddsp-ml-engineer (implement), audio-plugin-coder (JUCE)
 
 ## Requirements
 1. Keep synth_808_generator.py as pure math core (exp pitch + tanh).
@@ -56,5 +56,18 @@ Wire mel feature-loss 808 blueprint into training smoke + document ONNX→JUCE t
 
 ## Success criteria
 - [ ] pytest drum-synth-blueprint
-- [ ] python -m drum_synth_blueprint.synth_808_generator prints ok
+- [ ] python drum_synth_blueprint/synth_808_generator.py prints ok
+- [ ] RD_EXPERIMENT_LOG.md updated with decision
+```
+
+## Audio R&D agent
+
+```markdown
+You are audio-rd. Do NOT write JUCE or long PyTorch training loops in the same task.
+
+1. State hypothesis + success metrics for the spike.
+2. Propose ablations (e.g. mel loss vs waveform MSE, encoder-only ONNX vs full graph).
+3. Append row to docs/RD_EXPERIMENT_LOG.md (promote/kill/park).
+4. Hand off implementation bullets to ddsp-ml-engineer and shipping bullets to audio-plugin-coder.
+5. Invoke code-project-planner if a new CMake product target is required.
 ```

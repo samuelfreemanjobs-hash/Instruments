@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "agent_count": 35,
+  "agent_count": 36,
   "agents": [
     {
       "id": "workflow-automation",
@@ -502,6 +502,13 @@
       "announcement": "I'm **DDSP / ML Engineer** \u2014 I script PyTorch/DDSP losses and batch drum synthesis so 808/kick timbre matches targets without hand-tuning every sample.",
       "automation": {},
       "automation_path": "disklordz/agents/workflows/agents/ddsp-ml-engineer/automation.yaml"
+    },
+    {
+      "id": "audio-rd",
+      "title": "Audio R&D",
+      "announcement": "I'm **Audio R&D** \u2014 I design experiments and ablations for ML-backed drums, log promote/kill decisions, and hand off training to DDSP and shipping to the JUCE (APC) agent.",
+      "automation": {},
+      "automation_path": "disklordz/agents/workflows/agents/audio-rd/automation.yaml"
     }
   ]
 }

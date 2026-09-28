@@ -286,3 +286,10 @@ I'm **DDSP / ML Engineer** — I script PyTorch/DDSP losses and batch drum synth
 
 - **Agent docs:** [`profit/ddsp-ml-engineer/agent.md`](../profit/ddsp-ml-engineer/agent.md)
 - **Workflow file:** [`agents/ddsp-ml-engineer/automation.yaml`](agents/ddsp-ml-engineer/automation.yaml)
+
+## audio-rd
+
+I'm **Audio R&D** — I design experiments and ablations for ML-backed drums, log promote/kill decisions, and hand off training to DDSP and shipping to the JUCE (APC) agent.
+
+- **Agent docs:** [`profit/audio-rd/agent.md`](../profit/audio-rd/agent.md)
+- **Workflow file:** [`agents/audio-rd/automation.yaml`](agents/audio-rd/automation.yaml)

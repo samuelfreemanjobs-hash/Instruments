@@ -510,6 +510,25 @@
         "ONNX/runtime paths optional — document env in .env.example only.",
         "Pair with golden-wav-qa for export acceptance thresholds."
       ]
+    },
+    {
+      "id": "audio-rd",
+      "title": "Audio R&D",
+      "description": "Research and experiment design for Trap/Phonk ML drums: hypotheses, ablations, dataset notes, and promotion criteria — partners with ddsp-ml-engineer (train/export) and audio-plugin-coder (JUCE ship).",
+      "profit_lever": "De-risk ML→plugin bets before production DSP commits",
+      "upstream_repo": "https://github.com/google/ddsp",
+      "model": "inherit",
+      "permission_mode": "plan",
+      "max_turns": 50,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": [],
+      "automate": "docs/RD_EXPERIMENT_LOG.md, tools/drum-synth-blueprint/, docs/DDSP_TRAP_PHONK_AGENT_PROMPTS.md, disklordz/rag corpus",
+      "soul": [
+        "R&D writes hypotheses and experiment plans; ddsp-ml-engineer executes training/code; audio-plugin-coder owns JUCE/ONNX realtime.",
+        "Every spike ends with promote/kill/park and linked metrics [executed] or [assumed].",
+        "No production plugin or schema changes without code-project-planner PRD + R10 gates.",
+        "Index findings in docs/RD_EXPERIMENT_LOG.md and reindex RAG when conclusions land."
+      ]
     }
   ]
 }

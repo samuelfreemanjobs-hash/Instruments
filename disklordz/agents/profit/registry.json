@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "agent_count": 35,
+  "agent_count": 36,
   "agents": [
     {
       "id": "workflow-automation",
@@ -315,6 +315,15 @@
       "path": "disklordz/agents/profit/ddsp-ml-engineer",
       "entry": "disklordz/agents/profit/ddsp-ml-engineer/agent.md",
       "skill": "disklordz/agents/profit/ddsp-ml-engineer/skill.md",
+      "upstream_repo": "https://github.com/google/ddsp"
+    },
+    {
+      "id": "audio-rd",
+      "title": "Audio R&D",
+      "profit_lever": "De-risk ML\u2192plugin bets before production DSP commits",
+      "path": "disklordz/agents/profit/audio-rd",
+      "entry": "disklordz/agents/profit/audio-rd/agent.md",
+      "skill": "disklordz/agents/profit/audio-rd/skill.md",
       "upstream_repo": "https://github.com/google/ddsp"
     }
   ]

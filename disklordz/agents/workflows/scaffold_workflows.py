@@ -53,6 +53,7 @@ ACTIVATION: dict[str, str] = {
     "audio-plugin-coder": "manual_doc",
     "code-project-planner": "manual_doc",
     "ddsp-ml-engineer": "ci_on_pr",
+    "audio-rd": "manual_doc",
 }
 
 CI_WORKFLOWS = [
@@ -67,7 +68,7 @@ CI_WORKFLOWS = [
     (".github/workflows/build.yml", "golden-wav-qa"),
     (".github/workflows/synth-forge.yml", "hardware-preset-designer"),
     (".github/workflows/serum-forge.yml", "hardware-preset-designer, ddsp-ml-engineer"),
-    (".github/workflows/drum-synth-blueprint.yml", "ddsp-ml-engineer"),
+    (".github/workflows/drum-synth-blueprint.yml", "ddsp-ml-engineer, audio-rd"),
 ]
 
 # First-person announcements + one-line help for Disklordz
@@ -211,6 +212,10 @@ ANNOUNCE: dict[str, str] = {
     "ddsp-ml-engineer": (
         "I'm **DDSP / ML Engineer** — I script PyTorch/DDSP losses and batch drum synthesis "
         "so 808/kick timbre matches targets without hand-tuning every sample."
+    ),
+    "audio-rd": (
+        "I'm **Audio R&D** — I design experiments and ablations for ML-backed drums, log promote/kill "
+        "decisions, and hand off training to DDSP and shipping to the JUCE (APC) agent."
     ),
 }
 

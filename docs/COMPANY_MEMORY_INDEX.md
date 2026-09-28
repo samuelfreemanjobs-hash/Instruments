@@ -30,11 +30,11 @@ If a rule seems “missing,” check this table and [`AGENTS.md`](../AGENTS.md) 
 | **V-Voyager VST** | [products/VOYAGER_VST.md](products/VOYAGER_VST.md) | Explorer synth program (restored index) |
 | Disklordz SaaS | [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md) | WO-SAAS-* |
 
-## Agent fleet (35)
+## Agent fleet (36)
 
 - Index: [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md)
 - Registry: [`disklordz/agents/profit/_specs.json`](../disklordz/agents/profit/_specs.json)
-- **New audio lane:** `audio-plugin-coder`, `code-project-planner`, `ddsp-ml-engineer`
+- **Audio ML lane:** `audio-rd` (experiments) · `ddsp-ml-engineer` (train/export) · `audio-plugin-coder` (JUCE/APC)
 
 ## Automation & handoff
 
