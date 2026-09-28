@@ -14,6 +14,7 @@ Each subdirectory is a **dedicated workspace** for one seat to improve over time
 | hermes-devops | [hermes-devops/](hermes-devops/) |
 | hermes-handoff | [hermes-handoff/](hermes-handoff/) |
 | hermes-ops | [hermes-ops/](hermes-ops/) |
+| hermes-sop | [hermes-sop/](hermes-sop/) |
 | hermes-gtm | [hermes-gtm/](hermes-gtm/) |
 | hermes-presets | [hermes-presets/](hermes-presets/) |
 | hermes-support | [hermes-support/](hermes-support/) |

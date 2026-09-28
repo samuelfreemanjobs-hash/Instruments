@@ -11,7 +11,7 @@
 
 ## All seats
 
-[HERMES_SEATS.md](HERMES_SEATS.md) — 15 Cursor seats (lead, architect, dsp, gui, web, qa, research, devops, handoff, ops, gtm, presets, support, security, data).
+[HERMES_SEATS.md](HERMES_SEATS.md) — 16 Cursor seats (lead, architect, dsp, gui, web, qa, research, devops, handoff, ops, **sop**, gtm, presets, support, security, data).
 
 ## Toolkit
 

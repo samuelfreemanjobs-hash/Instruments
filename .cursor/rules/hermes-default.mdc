@@ -13,6 +13,7 @@ All **implementation** work in this repo uses the **Hermes seat team** unless th
    - SaaS → web, data, qa
    - CI / workflows → devops (`hermes_tool.py devops`)
    - Airtable / WIP / dispatch → ops
+   - SOPs / procedures / operating system → sop (`hermes_tool.py sop audit`)
    - Antigravity / local IDE → handoff
    - Research → research (Hyperresearch)
    - Store copy drafts → gtm (Marketing approves)

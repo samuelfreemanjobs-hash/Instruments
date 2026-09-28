@@ -35,3 +35,6 @@ jobs:
           PYTHONUNBUFFERED: "1"
           CI: true
         run: xvfb-run -a python3 -u vst-testing-ops/run_business.py --profile ci-verify
+
+      - name: Disklordz SOP registry audit
+        run: python3 disklordz/hermes/scripts/hermes_tool.py sop audit

@@ -12,6 +12,7 @@
 | `hermes-devops` | 2 | `hermes-elite-devops` | `hermes_tool.py devops` |
 | `hermes-handoff` | 2 | `hermes-elite-handoff` | `hermes_tool.py handoff` |
 | `hermes-ops` | 2 | `hermes-elite-ops` | `hermes_tool.py ops` |
+| `hermes-sop` | 2 | `hermes-elite-sop` | `hermes_tool.py sop audit` · [HERMES_SOP_OPERATIONS.md](HERMES_SOP_OPERATIONS.md) |
 | `hermes-gtm` | 3 | `hermes-elite-gtm` | `hermes_tool.py gtm` |
 | `hermes-presets` | 3 | `hermes-elite-presets` | `hermes_tool.py presets` |
 | `hermes-support` | 3 | `hermes-elite-support` | `hermes_tool.py support` |

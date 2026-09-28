@@ -1,11 +1,12 @@
 # Hermes platform toolkit
 
-CLI helpers for **Tier 2 + Tier 3** Hermes seats (ops, devops, handoff, gtm, presets, support, security, data).
+CLI helpers for **Tier 2 + Tier 3** Hermes seats (ops, **sop**, devops, handoff, gtm, presets, support, security, data).
 
 ## Build & run
 
 ```bash
 python3 disklordz/hermes/scripts/hermes_tool.py --help
+python3 disklordz/hermes/scripts/hermes_tool.py sop audit
 python3 disklordz/hermes/scripts/hermes_tool.py ops checklist
 python3 disklordz/hermes/scripts/hermes_tool.py devops summary
 python3 disklordz/hermes/scripts/hermes_tool.py handoff draft --wo WO-2026-HISE-001 --title "HISE bootstrap"

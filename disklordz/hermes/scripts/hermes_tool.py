@@ -15,6 +15,9 @@ HERMES_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = HERMES_ROOT.parents[1]
 OUTBOX = HERMES_ROOT / "outbox"
 AGENT_REPOS = HERMES_ROOT / "agent-repos"
+OPS_ROOT = REPO_ROOT / "disklordz" / "ops"
+SOPS_ROOT = OPS_ROOT / "sops"
+SOP_INDEX = SOPS_ROOT / "INDEX.json"
 ANTIGRAVITY_INBOX = REPO_ROOT / "disklordz" / "antigravity" / "inbox"
 
 AGENT_SEATS = (
@@ -33,6 +36,7 @@ AGENT_SEATS = (
     "hermes-support",
     "hermes-security",
     "hermes-data",
+    "hermes-sop",
 )
 
 
@@ -306,6 +310,127 @@ def cmd_agent_record_run(args: argparse.Namespace) -> int:
     return 0
 
 
+def _load_sop_index() -> dict:
+    if not SOP_INDEX.is_file():
+        return {"version": 0, "sops": []}
+    return json.loads(SOP_INDEX.read_text(encoding="utf-8"))
+
+
+def cmd_sop_index(_: argparse.Namespace) -> int:
+    data = _load_sop_index()
+    print(f"# Disklordz SOP index (v{data.get('version', '?')})\n")
+    print(f"Registry: `{SOP_INDEX.relative_to(REPO_ROOT)}`\n")
+    for row in data.get("sops", []):
+        print(
+            f"- **{row['id']}** — {row['title']} · owner `{row['owner_seat']}` · "
+            f"`{row['path']}`"
+        )
+    print("\nDocs: `docs/HERMES_SOP_OPERATIONS.md`")
+    return 0
+
+
+def cmd_sop_audit(_: argparse.Namespace) -> int:
+    data = _load_sop_index()
+    errors: list[str] = []
+    ids: set[str] = set()
+    for row in data.get("sops", []):
+        sid = row.get("id", "")
+        if not sid:
+            errors.append("SOP row missing id")
+            continue
+        if sid in ids:
+            errors.append(f"Duplicate SOP id: {sid}")
+        ids.add(sid)
+        rel = row.get("path", "")
+        path = OPS_ROOT / rel
+        if not path.is_file():
+            errors.append(f"{sid}: missing file `{path.relative_to(REPO_ROOT)}`")
+        owner = row.get("owner_seat", "")
+        if owner and owner not in AGENT_SEATS:
+            errors.append(f"{sid}: unknown owner_seat {owner!r}")
+    readme = SOPS_ROOT / "README.md"
+    if not readme.is_file():
+        errors.append("Missing sops/README.md")
+    skill = REPO_ROOT / ".cursor/skills/hermes-elite-sop/SKILL.md"
+    if not skill.is_file():
+        errors.append("Missing hermes-elite-sop skill")
+    print("# SOP audit\n")
+    if errors:
+        for e in errors:
+            print(f"FAIL: {e}")
+        print(f"\n**{len(errors)}** error(s)")
+        return 1
+    print(f"OK — {len(data.get('sops', []))} SOPs indexed; all files present.")
+    return 0
+
+
+def cmd_sop_coverage(args: argparse.Namespace) -> int:
+    data = _load_sop_index()
+    by_owner: dict[str, list[str]] = {}
+    by_consumer: dict[str, list[str]] = {}
+    for row in data.get("sops", []):
+        sid = row["id"]
+        by_owner.setdefault(row["owner_seat"], []).append(sid)
+        for seat in row.get("consumer_seats", []):
+            by_consumer.setdefault(seat, []).append(sid)
+    if args.seat:
+        if args.seat not in AGENT_SEATS:
+            print(f"Unknown seat {args.seat!r}", file=sys.stderr)
+            return 1
+        print(f"# SOP coverage — {args.seat}\n")
+        print("## Owns\n")
+        for sid in by_owner.get(args.seat, []):
+            print(f"- {sid}")
+        print("\n## Consumes\n")
+        for sid in by_consumer.get(args.seat, []):
+            print(f"- {sid}")
+        if args.seat not in by_owner and args.seat not in by_consumer:
+            print("(no SOP rows — hermes-sop should add coverage or document N/A)")
+        return 0
+    print("# SOP coverage — all seats\n")
+    uncovered = []
+    for seat in AGENT_SEATS:
+        owns = by_owner.get(seat, [])
+        consumes = by_consumer.get(seat, [])
+        if not owns and not consumes and seat not in ("hermes-lead",):
+            uncovered.append(seat)
+        print(f"- **{seat}** — owns {len(owns)}, consumes {len(consumes)}")
+    if uncovered:
+        print("\n## Seats with zero SOP links (consider adding)\n")
+        for s in uncovered:
+            print(f"- {s}")
+    return 0
+
+
+def cmd_sop_draft(args: argparse.Namespace) -> int:
+    tpl = _read(HERMES_ROOT / "templates" / "sop-procedure.md")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    consumers = args.consumer or [args.owner]
+    body = (
+        tpl.replace("{{SOP_ID}}", args.id)
+        .replace("{{TITLE}}", args.title)
+        .replace("{{OWNER_SEAT}}", args.owner)
+        .replace("{{CONSUMER_SEATS}}", ", ".join(consumers))
+        .replace("{{CADENCE}}", args.cadence or "on_demand")
+        .replace("{{DATE}}", today)
+        .replace("{{PURPOSE}}", args.purpose or "(describe purpose)")
+        .replace("{{SKILL_PATH}}", f".cursor/skills/hermes-elite-{args.owner.replace('hermes-', '')}/SKILL.md")
+        .replace("{{RELATED_SOPS}}", args.related or "SOP-HERMES-002")
+    )
+    slug = re.sub(r"[^a-z0-9]+", "-", args.title.lower())[:48].strip("-")
+    filename = f"{args.id}-{slug}.md"
+    path = SOPS_ROOT / filename
+    if path.exists() and not args.force:
+        print(f"Exists: {path.relative_to(REPO_ROOT)} (use --force)", file=sys.stderr)
+        return 1
+    if args.write:
+        path.write_text(body, encoding="utf-8")
+        print(f"wrote {path.relative_to(REPO_ROOT)}", file=sys.stderr)
+        print("Next: add row to sops/INDEX.json and README.md; run sop audit", file=sys.stderr)
+    print(body)
+    return 0
+
+
 def cmd_data_checklist(_: argparse.Namespace) -> int:
     web = REPO_ROOT / "disklordz" / "website"
     print("# Hermes data — Supabase / storage checklist\n")
@@ -383,6 +508,25 @@ def main() -> int:
     data_sub.add_parser("checklist", help="Supabase migration checklist").set_defaults(
         func=cmd_data_checklist
     )
+
+    sop = sub.add_parser("sop", help="hermes-sop — procedures OS")
+    sop_sub = sop.add_subparsers(dest="sop_cmd", required=True)
+    sop_sub.add_parser("index", help="Print SOP catalog").set_defaults(func=cmd_sop_index)
+    sop_sub.add_parser("audit", help="Validate INDEX.json and files").set_defaults(func=cmd_sop_audit)
+    cov = sop_sub.add_parser("coverage", help="Map seats to SOPs")
+    cov.add_argument("--seat", default="", help="Single seat detail")
+    cov.set_defaults(func=cmd_sop_coverage)
+    dr = sop_sub.add_parser("draft", help="Draft new SOP from template")
+    dr.add_argument("--id", required=True, help="e.g. SOP-WEB-002")
+    dr.add_argument("--title", required=True)
+    dr.add_argument("--owner", required=True, help="owner_seat e.g. hermes-web")
+    dr.add_argument("--consumer", action="append", help="consumer seat (repeatable)")
+    dr.add_argument("--cadence", default="on_demand")
+    dr.add_argument("--purpose", default="")
+    dr.add_argument("--related", default="")
+    dr.add_argument("--write", action="store_true")
+    dr.add_argument("--force", action="store_true")
+    dr.set_defaults(func=cmd_sop_draft)
 
     agent = sub.add_parser("agent", help="Per-seat agent repos (self-improvement)")
     agent_sub = agent.add_subparsers(dest="agent_cmd", required=True)

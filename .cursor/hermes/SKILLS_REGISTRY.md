@@ -23,6 +23,7 @@ Full catalog: [docs/HERMES_SEATS.md](../../docs/HERMES_SEATS.md)
 | hermes-devops | hermes-elite-devops | `python3 disklordz/hermes/scripts/hermes_tool.py devops summary` |
 | hermes-handoff | hermes-elite-handoff | `… handoff draft --wo … --title …` |
 | hermes-ops | hermes-elite-ops | `… ops checklist` |
+| hermes-sop | hermes-elite-sop | `… sop audit` · [HERMES_SOP_OPERATIONS.md](../../docs/HERMES_SOP_OPERATIONS.md) |
 
 ## Tier 3 — Revenue & quality
 

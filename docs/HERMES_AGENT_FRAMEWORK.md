@@ -7,14 +7,14 @@
 
 **Grok Bot** runs the **closed-loop** spec/WO layer ([GROK_CLOSED_LOOP_ENGINE.md](GROK_CLOSED_LOOP_ENGINE.md)). **Hermes + Cursor** runs **code + proof**.
 
-## Seats (full team — 15 Cursor seats + Grok)
+## Seats (full team — 16 Cursor seats + Grok)
 
 **Catalog:** [HERMES_SEATS.md](HERMES_SEATS.md) · **Registry:** [.cursor/hermes/SKILLS_REGISTRY.md](../.cursor/hermes/SKILLS_REGISTRY.md)
 
 | Tier | Seats |
 |------|--------|
 | **1 Implement** | lead, architect, dsp, gui, web, qa, research (Hyperresearch) |
-| **2 Platform** | devops, handoff, ops |
+| **2 Platform** | devops, handoff, ops, **sop** (procedures OS) |
 | **3 Revenue / quality** | gtm, presets, support, security, data |
 
 **Toolkit CLI** (Tier 2–3 helpers): `python3 disklordz/hermes/scripts/hermes_tool.py --help`
@@ -46,6 +46,7 @@ Observe → Decide → Dispatch → Verify → Record (same as Grok closed-loop;
 | **Wave909** | dsp, gui, qa |
 | **Drum SaaS** | web, qa |
 | **RAG / automation** | web or lead |
+| **SOPs / operating procedures** | **sop** (+ owner seat per SOP) |
 | **HISE sketch** | Antigravity (Windows); Cursor on **JUCE port WO** only |
 
 ### Junova-X (P0 example)

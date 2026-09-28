@@ -15,6 +15,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Disklordz DAW inbox** (WO-016) | [disklordz/daw-inbox/ARCHITECTURE.md](disklordz/daw-inbox/ARCHITECTURE.md) | `npm start` in `disklordz/daw-inbox/` |
 | **Disklordz RAG** (prompt knowledge) | [disklordz/rag/ARCHITECTURE.md](disklordz/rag/ARCHITECTURE.md) · [docs/RAG_AND_INTELLIGENT_AUTOMATION.md](docs/RAG_AND_INTELLIGENT_AUTOMATION.md) | `python3 disklordz/rag/scripts/chunk_corpus.py` |
 | **Hermes toolkit** (agent seats CLI) | [disklordz/hermes/ARCHITECTURE.md](disklordz/hermes/ARCHITECTURE.md) · [docs/HERMES_SEATS.md](docs/HERMES_SEATS.md) | `python3 disklordz/hermes/scripts/hermes_tool.py` |
+| **Disklordz OS / SOPs** | [disklordz/ops/ARCHITECTURE.md](disklordz/ops/ARCHITECTURE.md) · [docs/HERMES_SOP_OPERATIONS.md](docs/HERMES_SOP_OPERATIONS.md) | `python3 disklordz/hermes/scripts/hermes_tool.py sop audit` |
 | **Hyperresearch** | [docs/HERMES_HYPERRESEARCH.md](docs/HERMES_HYPERRESEARCH.md) | `python3 disklordz/research/scripts/hyperresearch.py` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-909** (sampleless trap wavetable synth) | [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md) | `Wave909_VST3`, `Wave909_Standalone`, `Wave909Tests` |

@@ -13,7 +13,9 @@ We develop and code projects with the **Hermes seat team** (Cursor agents + skil
 | Skills | [.cursor/hermes/SKILLS_REGISTRY.md](.cursor/hermes/SKILLS_REGISTRY.md) |
 | Grok WOs | [docs/GROK_CLOSED_LOOP_ENGINE.md](docs/GROK_CLOSED_LOOP_ENGINE.md) |
 
-**Seats (15):** [docs/HERMES_SEATS.md](docs/HERMES_SEATS.md) — lead, architect, dsp, gui, web, qa, research, devops, handoff, ops, gtm, presets, support, security, data
+**Seats (16):** [docs/HERMES_SEATS.md](docs/HERMES_SEATS.md) — lead, architect, dsp, gui, web, qa, research, devops, handoff, ops, **sop**, gtm, presets, support, security, data
+
+**Operating procedures:** [docs/HERMES_SOP_OPERATIONS.md](docs/HERMES_SOP_OPERATIONS.md) · `python3 disklordz/hermes/scripts/hermes_tool.py sop audit`
 
 ```bash
 python3 disklordz/hermes/scripts/hermes_tool.py --help

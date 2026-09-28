@@ -26,6 +26,7 @@ SEATS: dict[str, tuple[str, str]] = {
     "hermes-support": ("hermes-elite-support", "support-engineer.md"),
     "hermes-security": ("hermes-elite-security", "security-engineer.md"),
     "hermes-data": ("hermes-elite-data", "data-engineer.md"),
+    "hermes-sop": ("hermes-elite-sop", "sop-procedures.md"),
 }
 
 
