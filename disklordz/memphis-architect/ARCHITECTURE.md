@@ -2,46 +2,45 @@
 
 ## Purpose
 
-Browser-based **Engine B** phonk drum designer for Disklordz / Instruments producers: mathematically synthesize Memphis phonk **kicks** and **snares**, preview in real time, export **24-bit / 44.1 kHz mono WAV** without a DAW. Complements Gemini Gem **Engine A** (Serum/Vital patch sheets).
+Single-page **Engine B** phonk drum designer: in-browser DSP for Memphis **kick** and **snare** one-shots, CRT/brutalist UI (Tailwind), SVF filter modes, amp/filter ADSR, 24-bit WAV export.
 
 ## Build & run
 
-Static ES modules — no build step.
+No build step. Requires network for Tailwind CDN + Google Fonts on first load.
 
 ```bash
 cd disklordz/memphis-architect
 python3 -m http.server 8765
 ```
 
-Open `http://127.0.0.1:8765/` (required for module imports; `file://` may block).
+Open `http://127.0.0.1:8765/`
 
 ## Data flow
 
 ```text
-UI sliders → kick-engine.js / snare-engine.js (Float32 DSP)
-  → canvas waveform + Web Audio preview
-  → encodeWav24Mono → download
+index.html (inline JS)
+  → synthesizeKick / synthesizeSnare @ 44.1 kHz
+  → canvas oscilloscope (click = preview)
+  → downloadWav (24-bit mono PCM)
 ```
 
-Kick chain: pitch-mod sine → amp ADSR → filter preset × filter ADSR → SP-1200 decimate → tape LP → tanh clip → −0.3 dBFS normalize.
+**Kick chain:** pitch-mod sine → amp ADSR → ZOH decimate + quantize → tape LP or 12 dB SVF (LP/BP/HP) with filter ADSR → tanh clip → −0.3 dBFS normalize.
 
-Snare chain: membrane (sine/tri) + BP noise + flam clap → decimate → HPF 105 Hz → tape LP → clip → normalize.
+**Snare chain:** membrane + BP noise + flam clap → decimate/quantize → 105 Hz HPF → 11.5 kHz LP → tanh → normalize.
 
 ## Key modules
 
 | Path | Role |
 |------|------|
-| `js/dsp-utils.js` | ADSR, decimation, filters, WAV24 export |
-| `js/kick-engine.js` | MEMPHIS-660 kick renderer + style presets |
-| `js/snare-engine.js` | DR-660 tri-layer snare + styles |
-| `js/app.js` | Navigation, UI, preview, export |
-| `index.html` | Kick + Snare pages |
+| `index.html` | UI, DSP, WAV encoder (self-contained) |
+
+Legacy modular `js/` split removed in favor of this Gemini reference build.
 
 ## Extension points
 
-- Add hat/cowbell pages mirroring snare pattern.
-- Optional Python mirror under `scripts/` for CI parity with Gemini Gem output.
-- Host under `disklordz/website` static route when productized.
+- Extract `synthesizeKick` / `synthesizeSnare` to shared module for unit tests.
+- Host under `disklordz/website/public/memphis-architect/` for production.
+- Engine A patch sheets remain a separate Gemini Gem workflow.
 
 ## Related docs
 

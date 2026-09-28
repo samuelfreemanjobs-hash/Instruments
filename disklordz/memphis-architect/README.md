@@ -1,6 +1,6 @@
 # Memphis Phonk Architect
 
-Engine B — browser phonk kick & snare WAV generator.
+Single-file **MEMPHIS-660** kick + snare WAV studio (Tailwind UI, SVF filters, ADSR).
 
 ```bash
 cd disklordz/memphis-architect && python3 -m http.server 8765
