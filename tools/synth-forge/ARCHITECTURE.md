@@ -30,6 +30,8 @@ Prompt / batch request → semantic_engine / generator → safety.clamp_for_hard
 
 Clone path: WAV upload → `cloner.analyze_wav` (FFT, ADSR, f0) → seed parameters → `generate_batch` variations.
 
+**Serum (Xfer):** use [../serum-forge/ARCHITECTURE.md](../serum-forge/ARCHITECTURE.md) for `.SerumPreset` binary pipelines — not DX7 SysEx and not the hardware adapters in this package.
+
 ## Threading / realtime
 
 FastAPI serves HTTP; audio preview synthesis is offline NumPy (no realtime audio thread). Optional `sounddevice` capture is not required for CI.
