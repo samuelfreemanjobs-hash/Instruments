@@ -51,7 +51,7 @@ Committed under `tests/golden/` with **`manifest.tsv`** (program, note, duration
 ```bash
 cmake --build build -j --target JDUpgraded_VST3
 python3 scripts/vst/run_pluginval.py --plugin "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3"
-# or validate all default monorepo artefacts (JD Upgraded, Wave909 when built):
+# or validate all default monorepo artefacts (JD Upgraded, Wave9090 when built):
 python3 scripts/vst/run_pluginval.py --default-artefacts
 # watch build output after incremental compiles:
 python3 scripts/vst/run_pluginval.py --watch build/JDUpgraded_artefacts/Release/VST3

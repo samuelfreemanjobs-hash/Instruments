@@ -30,7 +30,7 @@ Single place to see **where we are going** and **what is done**. PM Agent refres
 | **Agent fleet (31)** | Repo-wide docs + autopilot CI | **Shipped** — scheduled CI on `main` |
 | **OSS integrations (35)** | manifest + website wiring | **15 integrated**, 19 partial |
 | **JD Upgraded plugin** | Phase 5 | See [PHASE5.md](PHASE5.md) |
-| **WAVE-909** | Trap wavetable synth | Active product — [Wave909/ARCHITECTURE.md](../Wave909/ARCHITECTURE.md) |
+| **WAVE-9090** | Trap wavetable synth | Active product — [Wave9090/ARCHITECTURE.md](../Wave9090/ARCHITECTURE.md) |
 
 ---
 
@@ -44,7 +44,7 @@ Every product must have `ARCHITECTURE.md` ([policy](../.cursor/rules/architectur
 | Offline tools | [tools/ARCHITECTURE.md](../tools/ARCHITECTURE.md) | Yes | ROM, render, spectral diff |
 | VST testing ops | [vst-testing-ops/ARCHITECTURE.md](../vst-testing-ops/ARCHITECTURE.md) | Yes | pluginval / CI dashboard |
 | HISE sketch | [hise-sketch/ARCHITECTURE.md](../hise-sketch/ARCHITECTURE.md) | Yes | Antigravity lane |
-| WAVE-909 | [Wave909/ARCHITECTURE.md](../Wave909/ARCHITECTURE.md) | Yes | Sampleless trap synth |
+| WAVE-9090 | [Wave9090/ARCHITECTURE.md](../Wave9090/ARCHITECTURE.md) | Yes | Sampleless trap synth |
 | **Disklordz (umbrella)** | [disklordz/ARCHITECTURE.md](../disklordz/ARCHITECTURE.md) | Yes | Package index |
 | Disklordz website | [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md) | Yes | Next.js SaaS |
 | Sound factory | [disklordz/sound-factory/ARCHITECTURE.md](../disklordz/sound-factory/ARCHITECTURE.md) | Via disklordz index | Kit scripts |
