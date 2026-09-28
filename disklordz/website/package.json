@@ -11,13 +11,17 @@
     "go-live": "bash scripts/go-live.sh --sync-vercel"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.116.0",
+    "ai": "^5.0.0",
+    "inngest": "^3.40.1",
     "jszip": "^3.10.2",
     "next": "15.5.25",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "stripe": "^17.7.0"
+    "stripe": "^17.7.0",
+    "tone": "^15.1.22"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

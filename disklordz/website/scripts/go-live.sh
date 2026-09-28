@@ -8,16 +8,18 @@ SYNC_VERCEL=false
 DEPLOY=true
 SMOKE=true
 STRIPE_WEBHOOK=false
+INTEGRATIONS=false
 
 while [ $# -gt 0 ]; do
   case "$1" in
     --no-migrate) RUN_MIGRATE=false ;;
     --sync-vercel) SYNC_VERCEL=true ;;
+    --integrations) INTEGRATIONS=true ;;
     --no-deploy) DEPLOY=false ;;
     --no-smoke) SMOKE=false ;;
     --stripe-webhook) STRIPE_WEBHOOK=true ;;
     -h|--help)
-      echo "Usage: $0 [--sync-vercel] [--stripe-webhook] [--no-migrate] [--no-deploy] [--no-smoke]"
+      echo "Usage: $0 [--sync-vercel] [--integrations] [--stripe-webhook] [--no-migrate] [--no-deploy] [--no-smoke]"
       echo "Requires env vars; see docs/DISKLORDZ_GO_LIVE_SECRETS.md"
       exit 0
       ;;
@@ -36,6 +38,11 @@ fi
 
 if $SYNC_VERCEL; then
   bash scripts/sync-vercel-env.sh
+  bash scripts/sync-integration-env-vercel.sh
+fi
+
+if $INTEGRATIONS; then
+  bash ../../integrations/scripts/activate-integrations.sh --rag --inngest --verify --no-build
 fi
 
 if $DEPLOY; then
