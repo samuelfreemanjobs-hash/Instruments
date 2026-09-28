@@ -18,6 +18,13 @@ Source: five analyzed reference loops (2026-09-28). Use as **QC targets** for ge
 
 ## Cross-file DNA (Memphis Phonk signature)
 
+**What the five loops teach (operator notes, 2026-09-28):**
+
+- **Sub bass is the instrument.** ~65–83% of energy below 80 Hz; the 808 glide is the drum, not garnish (doomshop @ 160 BPM ≈ 82.5% sub).
+- **Memphis lives in limiting.** ~10.5 dB dynamic range on the hard-compressed loop vs ~54 dB on the open breakbeat — target the squashed lo-fi pocket in post.
+- **BPM tiers:** 85 boom-bap/break · 130–140 standard phonk · 160 aggressive drift.
+- **Cowbell is its own layer.** Centroid jumps (~5 kHz) vs 1.7–3.5 kHz on non-cowbell material — slice and label separately.
+
 | Dimension | Typical range | Notes |
 |-----------|---------------|--------|
 | Sub / 808 energy | 65–83% below 80 Hz | Cowbell reference is outlier |
@@ -30,9 +37,11 @@ Source: five analyzed reference loops (2026-09-28). Use as **QC targets** for ge
 
 ## How this connects to DDSP
 
-1. **Kick/808 lane:** train [`DDSP808Encoder`](../../drum_synth_blueprint/torch_ddsp/encoder.py) on sliced kicks; spectral loss already favors sub + transient shape.
-2. **Post chain:** match **Dyn range** and **centroid** per kit tier (doomshop vs compressed Memphis).
-3. **Memphis Architect:** manual kick/snare design for golden references — [memphis-architect/ARCHITECTURE.md](../../../disklordz/memphis-architect/ARCHITECTURE.md).
+1. **Step 1 — Slicer:** `python scripts/slice_phonk_loops.py --input ./reference-loops --output ./drums/sliced` → labeled folders + `slice_manifest.json`.
+2. **Step 2 — Ingest:** `python disklordz/integrations/agents/phonk_sample_ingest_agent.py --download-urls urls.txt` (robots.txt gate; you confirm license).
+3. **Kick/808 lane:** train [`DDSP808Encoder`](../../drum_synth_blueprint/torch_ddsp/encoder.py) on sliced kicks under `drums/sliced/kick/`.
+4. **Post chain:** match **Dyn range** and **centroid** per kit tier (doomshop vs compressed Memphis).
+5. **Memphis Architect:** manual kick/snare golden refs — [memphis-architect/ARCHITECTURE.md](../../../disklordz/memphis-architect/ARCHITECTURE.md).
 
 ## Next analysis artifacts (Phase 0)
 

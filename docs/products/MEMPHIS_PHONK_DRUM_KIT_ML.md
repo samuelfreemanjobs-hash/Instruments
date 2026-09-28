@@ -55,17 +55,17 @@ Store licensed reference WAVs outside git or under `disklordz/memphis-architect/
 
 | Phase | Work |
 |-------|------|
-| **0** | Finish one-shot slicer spike; store features in SQLite |
-| **1** | Royalty-free sample ingest policy + manual/semi-auto download SOP |
-| **2** | Auto-labeler (kick, snare, clap, hat, cowbell, perc) |
-| **3** | Train on labeled library (DDSP first; diffusion/VAE bake-off) |
+| **0** | ~~Slicer spike~~ **shipped** — [`slice_phonk_loops.py`](../../tools/drum-synth-blueprint/scripts/slice_phonk_loops.py) |
+| **1** | Curated URL ingest — [`phonk_sample_ingest_agent.py`](../../disklordz/integrations/agents/phonk_sample_ingest_agent.py) (robots-aware; no blind crawl) |
+| **2** | Auto-label QC + SQLite feature store |
+| **3** | Train on labeled library (DDSP kicks; diffusion/VAE for snare/hat/cowbell) |
 | **4** | Post chain to match fingerprint (compression, saturation, limiter) |
 | **5** | Kit packager + branding + first storefront listing |
 
 Checklist (original):
 
-- [ ] Browser/download agent for royalty-free phonk one-shots
-- [ ] One-shot slicer: onset detection → per-hit WAV
+- [x] One-shot slicer: onset detection → per-hit WAV + heuristic label
+- [ ] Sample download — **URL list + robots.txt** (Looperman crawl: operator extends after ToS review)
 - [ ] Auto-labeler + feature database (SQLite or Airtable)
 - [ ] ML approach decision (DDSP vs diffusion vs VAE)
 - [ ] Train on labeled one-shots
@@ -78,8 +78,8 @@ Checklist (original):
 
 | Planned role | Existing / path |
 |--------------|------------------|
-| Sample download | **Research** — legal SOP first; no scraper without license review (`security-baseline`) |
-| Slicer + label | **audio-rd** (spike) → **ddsp-ml-engineer** (batch tools) |
+| Sample download | **[`phonk_sample_ingest_agent.py`](../../disklordz/integrations/agents/phonk_sample_ingest_agent.py)** — robots-aware URL list; extend Looperman after license review |
+| Slicer + label | **[`slice_phonk_loops.py`](../../tools/drum-synth-blueprint/scripts/slice_phonk_loops.py)** + **phonk_kit/slicer.py** |
 | ML training | **ddsp-ml-engineer** — [`ddsp_ml_engineer.py`](../../disklordz/integrations/agents/ddsp_ml_engineer.py) |
 | JUCE / realtime | **audio-plugin-coder** |
 | PRD / kit SKU | **code-project-planner** |
@@ -92,6 +92,8 @@ New profit agents require [`PM_ADD.md`](../../disklordz/agents/workflows/PM_ADD.
 | Artifact | Path |
 |----------|------|
 | Folder training CLI | `tools/drum-synth-blueprint/scripts/ddsp_training_loop.py` |
+| Loop slicer | `tools/drum-synth-blueprint/scripts/slice_phonk_loops.py` |
+| Sample ingest agent | `disklordz/integrations/agents/phonk_sample_ingest_agent.py` |
 | Dataset | `drum_synth_blueprint/torch_ddsp/dataset.py` |
 | ONNX export | `artifacts/ddsp_808_encoder.onnx` (under drum-synth-blueprint) |
 | R&D log | [docs/RD_EXPERIMENT_LOG.md](../RD_EXPERIMENT_LOG.md) |
