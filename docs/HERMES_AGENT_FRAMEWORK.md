@@ -40,6 +40,8 @@ hermes-qa → pluginval smoke post-build
 
 | Path | Purpose |
 |------|---------|
+| `.cursor/hermes/SKILLS_REGISTRY.md` | Installed elite skills per seat |
+| `.cursor/skills/hermes-elite-*/SKILL.md` | Seat SOPs (read at task start) |
 | `.cursor/hermes/seats/*.md` | Seat charters (paste into Task prompts) |
 | `.cursor/rules/hermes-junova-x.mdc` | Auto-context for `Junova-X/**` |
 | `Junova-X/docs/UI_DESIGN_HANDOFF.md` | GUI asset integration |

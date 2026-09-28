@@ -37,8 +37,34 @@ juce::AudioProcessorValueTreeState::ParameterLayout JunovaXAudioProcessor::creat
 
     layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID { PID::chorusMode, 1 },
                                                               "Chorus",
-                                                              juce::StringArray { "Off", "I", "II" },
+                                                              juce::StringArray { "Off", "I", "II", "I+II" },
                                                               0));
+    layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID { PID::voiceMode, 1 },
+                                                              "Voice",
+                                                              juce::StringArray { "Poly 1", "Poly 2", "Unison", "Mono" },
+                                                              0));
+
+    addFloat (layout, PID::lfoRate, "LFO Rate", { 0.01f, 20.0f, 0.001f, 0.4f }, 4.2f);
+    addFloat (layout, PID::lfoDelay, "LFO Delay", { 0.0f, 2.0f, 0.001f }, 0.15f);
+    addFloat (layout, PID::glide, "Glide", { 0.0f, 500.0f, 0.1f }, 12.0f);
+
+    addFloat (layout, PID::dcoLfoMod, "DCO LFO Mod", { 0.0f, 100.0f, 0.1f }, 30.0f);
+    addFloat (layout, PID::dcoPwm, "PWM", { 0.0f, 100.0f, 0.1f }, 65.0f);
+    addFloat (layout, PID::dcoSubLvl, "Sub Level", { 0.0f, 100.0f, 0.1f }, 80.0f);
+    addFloat (layout, PID::dcoNoise, "Noise", { 0.0f, 100.0f, 0.1f }, 10.0f);
+
+    addFloat (layout, PID::hpfCutoff, "HPF Cutoff", { 0.0f, 1.0f, 0.0001f }, 0.2f);
+
+    addFloat (layout, PID::vcfEnv, "VCF Env", { 0.0f, 100.0f, 0.1f }, 55.0f);
+    addFloat (layout, PID::vcfLfo, "VCF LFO", { 0.0f, 100.0f, 0.1f }, 33.0f);
+    addFloat (layout, PID::vcfKey, "VCF Key", { 0.0f, 100.0f, 0.1f }, 85.0f);
+
+    addFloat (layout, PID::drift, "Drift", { 0.0f, 100.0f, 0.1f }, 14.0f);
+    addFloat (layout, PID::detune, "Detune", { -50.0f, 50.0f, 0.01f }, 6.0f);
+    addFloat (layout, PID::width, "Width", { 0.0f, 200.0f, 0.1f }, 100.0f);
+
+    addFloat (layout, PID::arpRange, "Arp Range", { 1.0f, 4.0f, 1.0f }, 2.0f);
+    addFloat (layout, PID::arpRate, "Arp Rate", { 0.0f, 1.0f, 0.001f }, 0.25f);
 
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::diagTestTone, 1 }, "Diag Test Tone", false));
     addFloat (layout, PID::diagToneFreq, "Diag Freq", { 55.0f, 880.0f, 0.01f, 0.5f }, 440.0f);
@@ -101,6 +127,13 @@ void JunovaXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     juce::ScopedNoDenormals noDenormals;
     pushParamsToEngine();
     engine_.render (buffer, midi);
+
+    if (buffer.getNumChannels() > 0)
+    {
+        const auto* mono = buffer.getReadPointer (0);
+        for (int i = 0; i < buffer.getNumSamples(); ++i)
+            scopeFifo_.pushSample (mono[i]);
+    }
 }
 
 void JunovaXAudioProcessor::panicAllNotes()

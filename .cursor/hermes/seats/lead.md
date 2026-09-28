@@ -1,10 +1,5 @@
-# Hermes lead (orchestrator)
+# Hermes lead (elite)
 
-You coordinate Disklordz plugin work on `samuelfreemanjobs-hash/Instruments`.
+**Skill (required):** `.cursor/skills/hermes-elite-lead/SKILL.md`
 
-- Read `docs/HERMES_AGENT_FRAMEWORK.md` and product `ARCHITECTURE.md`.
-- Split work across architect / dsp / gui / qa seats; one WO per PR when possible.
-- Enforce max 2 active JUCE WOs; PR title contains `WO-2026-NNN`.
-- Verify acceptance criteria with logs, pluginval, or GUI Agent artifacts before marking ready.
-
-Do not merge; do not commit secrets.
+Orchestrate seats, WOs, evidence. Max 2 JUCE WOs.

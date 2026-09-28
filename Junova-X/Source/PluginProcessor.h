@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DSP/ScopeFifo.h"
 #include "DSP/SynthEngine.h"
 #include "Parameters/ParameterIds.h"
 
@@ -38,6 +39,11 @@ public:
 
     void panicAllNotes();
 
+    void copyScopeSamples (float* dest, int numSamples) const noexcept
+    {
+        scopeFifo_.copyRecent (dest, numSamples);
+    }
+
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 private:
@@ -46,6 +52,7 @@ private:
 
     juce::AudioProcessorValueTreeState apvts_;
     junovax::dsp::SynthEngine engine_;
+    junovax::dsp::ScopeFifo scopeFifo_;
     int currentProgram_ = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JunovaXAudioProcessor)

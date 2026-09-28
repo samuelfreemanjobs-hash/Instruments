@@ -19,8 +19,9 @@ target_sources (JunovaX
     PRIVATE
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
-        Source/UI/MainPanel.cpp
         Source/UI/DiagPanel.cpp
+        Source/UI/Celestial/CelestialMainPanel.cpp
+        Source/UI/Celestial/OscMonitorComponent.cpp
         Source/DSP/SynthEngine.cpp
         Source/DSP/DiagTone.cpp
 )

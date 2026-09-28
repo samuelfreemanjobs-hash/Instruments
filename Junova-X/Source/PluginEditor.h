@@ -1,7 +1,7 @@
 #pragma once
 
+#include "UI/Celestial/CelestialMainPanel.h"
 #include "UI/DiagPanel.h"
-#include "UI/MainPanel.h"
 
 #include <JuceHeader.h>
 
@@ -19,7 +19,7 @@ public:
 private:
     JunovaXAudioProcessor& processor_;
     juce::TabbedComponent tabs_ { juce::TabbedButtonBar::TabsAtTop };
-    junovax::ui::MainPanel mainPanel_;
+    junovax::ui::celestial::CelestialMainPanel celestialPanel_;
     junovax::ui::DiagPanel diagPanel_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JunovaXAudioProcessorEditor)
