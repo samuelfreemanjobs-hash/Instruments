@@ -13,9 +13,10 @@ We develop and code projects with the **Hermes seat team** (Cursor agents + skil
 | Skills | [.cursor/hermes/SKILLS_REGISTRY.md](.cursor/hermes/SKILLS_REGISTRY.md) |
 | Grok WOs | [docs/GROK_CLOSED_LOOP_ENGINE.md](docs/GROK_CLOSED_LOOP_ENGINE.md) |
 
-**Seats:** lead · architect · dsp · gui · web · qa · **research (Hyperresearch)** — see `.cursor/hermes/seats/`
+**Seats (14):** [docs/HERMES_SEATS.md](docs/HERMES_SEATS.md) — lead, architect, dsp, gui, web, qa, research, devops, handoff, ops, gtm, presets, support, security, data
 
 ```bash
+python3 disklordz/hermes/scripts/hermes_tool.py --help
 python3 disklordz/research/scripts/hyperresearch.py --topic "your question" --product junova --write
 ```
 

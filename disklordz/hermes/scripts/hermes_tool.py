@@ -1,0 +1,317 @@
+#!/usr/bin/env python3
+"""Hermes seat toolkit — ops, devops, handoff, gtm, presets, support, security, data."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+HERMES_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = HERMES_ROOT.parents[1]
+OUTBOX = HERMES_ROOT / "outbox"
+ANTIGRAVITY_INBOX = REPO_ROOT / "disklordz" / "antigravity" / "inbox"
+
+
+def _read(path: Path) -> str:
+    return path.read_text(encoding="utf-8", errors="replace")
+
+
+def cmd_ops_checklist(_: argparse.Namespace) -> int:
+    tpl = HERMES_ROOT / "templates" / "ops-dispatch-checklist.md"
+    print(_read(tpl))
+    print("\n# Seed commands (human runs with credentials)\n")
+    print("python3 disklordz/automation/scripts/seed_work_orders.py  # dry-run first")
+    print("python3 disklordz/automation/scripts/seed_airtable_bundle.py --dry-run")
+    return 0
+
+
+def cmd_ops_validate_pr(args: argparse.Namespace) -> int:
+    title = args.title or ""
+    pattern = re.compile(r"WO-(?:SAAS-\d{3}|2026-\d{3})", re.I)
+    ok = bool(pattern.search(title))
+    print(f"PR title: {title!r}")
+    print(f"WO id in title: {'YES' if ok else 'NO — add WO-2026-NNN or WO-SAAS-NNN'}")
+    return 0 if ok or args.allow_missing else 1
+
+
+def cmd_devops_summary(_: argparse.Namespace) -> int:
+    wf = REPO_ROOT / ".github" / "workflows"
+    print("# Hermes devops — CI surface\n")
+    if wf.is_dir():
+        for p in sorted(wf.glob("*.yml")):
+            print(f"- `{p.relative_to(REPO_ROOT)}`")
+    print("\n## Local parity\n")
+    print("```bash")
+    print("cmake --build build -j")
+    print("python3 vst-testing-ops/run_business.py --profile ci-verify")
+    print("cd disklordz/website && npm ci && npm run build")
+    print("```")
+    if shutil_which("gh"):
+        print("\n## gh PR checks (when on a PR branch)\n")
+        print("```bash")
+        print("gh pr checks")
+        print("gh run list --limit 5")
+        print("```")
+    else:
+        print("\n(gh not installed — skip live PR checks)")
+    return 0
+
+
+def shutil_which(cmd: str) -> bool:
+    from shutil import which
+
+    return which(cmd) is not None
+
+
+def cmd_handoff_draft(args: argparse.Namespace) -> int:
+    day = datetime.now(timezone.utc).strftime("%Y%m%d")
+    hid = f"HO-{day}-HERM"
+    doc = {
+        "handoff_id": hid,
+        "direction": "cursor_to_antigravity",
+        "from_agent": "hermes-handoff",
+        "to_agent": "antigravity-hise",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "work_order": {
+            "id": args.wo,
+            "title": args.title,
+            "acceptance_criteria": args.criteria or "",
+            "branch": args.branch,
+        },
+        "context_paths": args.path or ["docs/HISE_ANTIGRAVITY_LANE.md"],
+        "artifacts": [],
+        "status": "open",
+        "notes": args.notes or "Created by hermes_tool handoff draft — review before push.",
+    }
+    OUTBOX.mkdir(parents=True, exist_ok=True)
+    out = OUTBOX / f"{hid}.json"
+    out.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+    print(f"Draft handoff: {out.relative_to(REPO_ROOT)}")
+    print("Prefer production send:")
+    print(
+        f"  ./scripts/antigravity-bridge/antigravity-bridge.sh send --wo {args.wo} "
+        f"--title {json.dumps(args.title)} --push"
+    )
+    return 0
+
+
+def cmd_gtm_brief(args: argparse.Namespace) -> int:
+    products = {
+        "junova": {
+            "positioning": "Juno-class poly synth — Celestial UI, VST3+CLAP, $29→$49 ladder.",
+            "early": "$29",
+            "standard": "$49",
+            "cross": "Disklordz sample lanes + SaaS kits; landing `junova-x-landing`.",
+        },
+        "saas": {
+            "positioning": "Text/spec → parametric drum kits; ILLUGEN-shaped orchestration.",
+            "early": "Free tier + credits",
+            "standard": "Pro subscription",
+            "cross": "Plugin demos → SaaS signup; A&R lane presets.",
+        },
+        "novadrum": {
+            "positioning": "Circuit-class 808 (NovaDrum) — not sample ROMs.",
+            "early": "TBD",
+            "standard": "TBD",
+            "cross": "Junova-X brand trust.",
+        },
+    }
+    p = products.get(args.product, products["junova"])
+    tpl = _read(HERMES_ROOT / "templates" / "gtm-brief.md")
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    body = (
+        tpl.replace("{{PRODUCT}}", args.product)
+        .replace("{{TIMESTAMP}}", ts)
+        .replace("{{POSITIONING}}", p["positioning"])
+        .replace("{{PRICE_EARLY}}", p["early"])
+        .replace("{{PRICE_STANDARD}}", p["standard"])
+        .replace("{{CROSS_SELL}}", p["cross"])
+    )
+    if args.write:
+        OUTBOX.mkdir(parents=True, exist_ok=True)
+        slug = args.product
+        path = OUTBOX / f"GTM-{slug}-{datetime.now(timezone.utc).strftime('%Y%m%d')}.md"
+        path.write_text(body, encoding="utf-8")
+        print(f"wrote {path.relative_to(REPO_ROOT)}", file=sys.stderr)
+    print(body)
+    return 0
+
+
+def cmd_presets_audit(args: argparse.Namespace) -> int:
+    targets = {
+        "junova": REPO_ROOT / "Junova-X",
+        "wave909": REPO_ROOT / "Wave909",
+        "jd": REPO_ROOT / "Source",
+    }
+    root = targets.get(args.product, REPO_ROOT / args.product)
+    try:
+        rel = root.relative_to(REPO_ROOT)
+    except ValueError:
+        rel = root
+    print(f"# Presets audit — {rel}\n")
+    if not root.is_dir():
+        print("Path missing.")
+        return 1
+    patterns = list(root.rglob("*.json")) + list(root.rglob("*Preset*")) + list(root.rglob("presets/*"))
+    files = sorted({p for p in patterns if p.is_file()})[:50]
+    print(f"Found {len(files)} candidate preset-related files (cap 50 shown).")
+    for f in files:
+        print(f"- `{f.relative_to(REPO_ROOT)}`")
+    mvp = 48 if args.product == "junova" else 0
+    if mvp:
+        print(f"\nJunova MVP target: **{mvp}** factory presets (WO-2026-003).")
+    return 0
+
+
+def cmd_support_rag_status(_: argparse.Namespace) -> int:
+    chunks = REPO_ROOT / "disklordz" / "rag" / "data" / "chunks.jsonl"
+    manifest = REPO_ROOT / "disklordz" / "rag" / "corpus" / "manifest.json"
+    print("# Support / RAG status\n")
+    print(f"- manifest: `{manifest.relative_to(REPO_ROOT)}` — {'OK' if manifest.is_file() else 'MISSING'}")
+    if chunks.is_file():
+        n = sum(1 for _ in chunks.open(encoding="utf-8"))
+        print(f"- chunks: `{chunks.relative_to(REPO_ROOT)}` — **{n}** lines")
+    else:
+        print("- chunks: MISSING — run `python3 disklordz/rag/scripts/chunk_corpus.py`")
+    print("\nQuery demo:")
+    print('  python3 disklordz/rag/scripts/query_local.py "lane DL006 phonk"')
+    return 0
+
+
+SECRET_PATTERNS = [
+    re.compile(r"sk_live_[a-zA-Z0-9]+"),
+    re.compile(r"sk_test_[a-zA-Z0-9]+"),
+    re.compile(r"SUPABASE_SERVICE_ROLE_KEY\s*=\s*['\"]?[a-zA-Z0-9._-]{20,}"),
+    re.compile(r"BEGIN (?:RSA )?PRIVATE KEY"),
+    re.compile(r"pat[a-zA-Z0-9]{10,}"),  # Airtable PAT-ish
+]
+
+
+def cmd_security_scan(args: argparse.Namespace) -> int:
+    print("# Hermes security scan (heuristic)\n")
+    if args.staged:
+        proc = subprocess.run(
+            ["git", "diff", "--cached", "--name-only"],
+            capture_output=True,
+            text=True,
+            cwd=REPO_ROOT,
+        )
+        files = [REPO_ROOT / ln for ln in proc.stdout.splitlines() if ln.strip()]
+    else:
+        files = [
+            p
+            for p in REPO_ROOT.rglob("*")
+            if p.is_file()
+            and ".git" not in p.parts
+            and "node_modules" not in p.parts
+            and "build" not in p.parts
+            and p.suffix in {".ts", ".tsx", ".js", ".py", ".md", ".json", ".env", ".yml"}
+        ][:500]
+    hits = 0
+    for path in files:
+        try:
+            text = path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        if ".env.example" in str(path):
+            continue
+        for pat in SECRET_PATTERNS:
+            if pat.search(text):
+                print(f"ALERT `{path.relative_to(REPO_ROOT)}` matched {pat.pattern}")
+                hits += 1
+    if hits == 0:
+        print("No heuristic secret patterns in scanned files.")
+    else:
+        print(f"\n**{hits}** alert(s) — rotate/revert before merge.")
+    return 1 if hits else 0
+
+
+def cmd_data_checklist(_: argparse.Namespace) -> int:
+    web = REPO_ROOT / "disklordz" / "website"
+    print("# Hermes data — Supabase / storage checklist\n")
+    mig = web / "supabase" / "migrations"
+    if mig.is_dir():
+        for p in sorted(mig.glob("*.sql")):
+            print(f"- `{p.relative_to(REPO_ROOT)}`")
+    else:
+        print("- No `disklordz/website/supabase/migrations` directory found.")
+    print("\nDocs:")
+    print("- `disklordz/website/ARCHITECTURE.md`")
+    print("- WO-SAAS-012 pgvector when enabled")
+    print("\nNever commit service role keys; use `.env.example` names only.")
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Hermes seat toolkit")
+    sub = parser.add_subparsers(dest="seat", required=True)
+
+    ops = sub.add_parser("ops", help="hermes-ops")
+    ops_sub = ops.add_subparsers(dest="ops_cmd", required=True)
+    ops_sub.add_parser("checklist", help="Print dispatch checklist").set_defaults(
+        func=cmd_ops_checklist
+    )
+    p_val = ops_sub.add_parser("validate-pr", help="Check WO in PR title")
+    p_val.add_argument("--title", required=True)
+    p_val.add_argument("--allow-missing", action="store_true")
+    p_val.set_defaults(func=cmd_ops_validate_pr)
+
+    devops = sub.add_parser("devops", help="hermes-devops")
+    devops_sub = devops.add_subparsers(dest="devops_cmd", required=True)
+    devops_sub.add_parser("summary", help="CI workflows + local commands").set_defaults(
+        func=cmd_devops_summary
+    )
+
+    handoff = sub.add_parser("handoff", help="hermes-handoff")
+    handoff_sub = handoff.add_subparsers(dest="handoff_cmd", required=True)
+    hd = handoff_sub.add_parser("draft", help="Draft HO-*.json in hermes/outbox")
+    hd.add_argument("--wo", required=True)
+    hd.add_argument("--title", required=True)
+    hd.add_argument("--criteria", default="")
+    hd.add_argument("--branch", default="main")
+    hd.add_argument("--path", action="append")
+    hd.add_argument("--notes", default="")
+    hd.set_defaults(func=cmd_handoff_draft)
+
+    gtm = sub.add_parser("gtm", help="hermes-gtm")
+    gtm_sub = gtm.add_subparsers(dest="gtm_cmd", required=True)
+    gb = gtm_sub.add_parser("brief", help="GTM draft brief")
+    gb.add_argument("--product", choices=["junova", "saas", "novadrum"], default="junova")
+    gb.add_argument("--write", action="store_true")
+    gb.set_defaults(func=cmd_gtm_brief)
+
+    presets = sub.add_parser("presets", help="hermes-presets")
+    presets_sub = presets.add_subparsers(dest="presets_cmd", required=True)
+    pa = presets_sub.add_parser("audit", help="List preset-related files")
+    pa.add_argument("--product", choices=["junova", "wave909", "jd"], default="junova")
+    pa.set_defaults(func=cmd_presets_audit)
+
+    support = sub.add_parser("support", help="hermes-support")
+    support_sub = support.add_subparsers(dest="support_cmd", required=True)
+    support_sub.add_parser("rag-status", help="RAG corpus health").set_defaults(
+        func=cmd_support_rag_status
+    )
+
+    security = sub.add_parser("security", help="hermes-security")
+    security_sub = security.add_subparsers(dest="security_cmd", required=True)
+    sc = security_sub.add_parser("scan", help="Heuristic secret scan")
+    sc.add_argument("--staged", action="store_true", help="Staged files only")
+    sc.set_defaults(func=cmd_security_scan)
+
+    data = sub.add_parser("data", help="hermes-data")
+    data_sub = data.add_subparsers(dest="data_cmd", required=True)
+    data_sub.add_parser("checklist", help="Supabase migration checklist").set_defaults(
+        func=cmd_data_checklist
+    )
+
+    args = parser.parse_args()
+    return args.func(args)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

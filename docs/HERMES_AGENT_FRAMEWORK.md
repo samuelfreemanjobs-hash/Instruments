@@ -7,24 +7,21 @@
 
 **Grok Bot** runs the **closed-loop** spec/WO layer ([GROK_CLOSED_LOOP_ENGINE.md](GROK_CLOSED_LOOP_ENGINE.md)). **Hermes + Cursor** runs **code + proof**.
 
-## Seats (senior team)
+## Seats (full team — 14 Cursor seats + Grok)
 
-| Seat ID | Role | Scope | Skill |
-|---------|------|-------|--------|
-| `hermes-lead` | Orchestrator | WOs, PRs, loop closure | `hermes-elite-lead` |
-| `hermes-architect` | Plugin architect | CMake, APVTS, formats, modules | `hermes-elite-architect` |
-| `hermes-dsp` | DSP engineer | Realtime C++ audio | `hermes-elite-dsp` |
-| `hermes-gui` | JUCE UI engineer | Editors, design handoff, GUI Agent | `hermes-elite-gui` |
-| `hermes-web` | SaaS engineer | `disklordz/website/`, Supabase APIs | `hermes-elite-web` |
-| `hermes-qa` | QA | pluginval, CI, smoke matrices | `hermes-elite-qa` |
-| `hermes-research` | **Hyperresearch** | Corpus + RAG briefs, draft WOs | `hermes-elite-research` |
-| `hermes-grokgate` | Spec ↔ WO (Grok side) | WO drafts, acceptance criteria | Grok docs (not Cursor seat) |
+**Catalog:** [HERMES_SEATS.md](HERMES_SEATS.md) · **Registry:** [.cursor/hermes/SKILLS_REGISTRY.md](../.cursor/hermes/SKILLS_REGISTRY.md)
 
-**Planned (Tier 2):** `hermes-devops`, `hermes-handoff`, `hermes-ops` — see [HERMES_SEATS_ROADMAP.md](HERMES_SEATS_ROADMAP.md).
+| Tier | Seats |
+|------|--------|
+| **1 Implement** | lead, architect, dsp, gui, web, qa, research (Hyperresearch) |
+| **2 Platform** | devops, handoff, ops |
+| **3 Revenue / quality** | gtm, presets, support, security, data |
 
-Hyperresearch: [HERMES_HYPERRESEARCH.md](HERMES_HYPERRESEARCH.md) · CLI `disklordz/research/scripts/hyperresearch.py`
+**Toolkit CLI** (Tier 2–3 helpers): `python3 disklordz/hermes/scripts/hermes_tool.py --help`
 
-Full registry: [.cursor/hermes/SKILLS_REGISTRY.md](../.cursor/hermes/SKILLS_REGISTRY.md)
+**Grok** (`hermes-grokgate`): closed-loop specs/WOs — not a Cursor seat ([GROK_CLOSED_LOOP_ENGINE.md](GROK_CLOSED_LOOP_ENGINE.md)).
+
+Hyperresearch: [HERMES_HYPERRESEARCH.md](HERMES_HYPERRESEARCH.md) · `disklordz/research/scripts/hyperresearch.py`
 
 Invoke via Cursor **Task** with `description` prefixed by seat ID, e.g. `hermes-gui: Celestial polish`.
 

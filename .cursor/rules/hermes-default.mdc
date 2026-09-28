@@ -8,12 +8,19 @@ alwaysApply: true
 All **implementation** work in this repo uses the **Hermes seat team** unless the user explicitly opts out.
 
 1. **Lead:** Read `docs/HERMES_AGENT_FRAMEWORK.md` and `.cursor/hermes/SKILLS_REGISTRY.md` at task start.
-2. **Route by product:**
-   - JUCE plugins (`Junova-X/`, `Wave909/`, `Source/`) → architect, dsp, gui, qa skills
-   - SaaS (`disklordz/website/`) → web skill (+ qa as needed)
-   - RAG / automation (`disklordz/rag/`, `disklordz/automation/`) → web or lead + WO from Airtable
-   - Research / competitive / phase planning → **hermes-research** (Hyperresearch CLI)
-   - HISE lane → Antigravity handoff; Cursor only on JUCE port WOs
+2. **Route by work type** (see [HERMES_SEATS.md](../docs/HERMES_SEATS.md)):
+   - JUCE plugins → architect, dsp, gui, qa
+   - SaaS → web, data, qa
+   - CI / workflows → devops (`hermes_tool.py devops`)
+   - Airtable / WIP / dispatch → ops
+   - Antigravity / local IDE → handoff
+   - Research → research (Hyperresearch)
+   - Store copy drafts → gtm (Marketing approves)
+   - Preset banks → presets + dsp/gui
+   - RAG / FAQ → support
+   - Pre-ship review → security
+   - Supabase schema → data + web
+   - HISE lane → handoff + Antigravity; Cursor on JUCE port WO only
 3. **Each seat reads its skill** under `.cursor/skills/hermes-elite-*/SKILL.md` before coding.
 4. **Evidence:** tests + walkthrough artifacts; GUI Agent for plugin UI; browser for SaaS UI.
 5. **Work orders:** PR titles include `WO-…` when Airtable WOs apply (plugins + SaaS).
