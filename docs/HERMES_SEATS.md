@@ -21,3 +21,5 @@
 **Outside Hermes:** Grok Bot (spec loop), human Planner/Marketing, Antigravity executor, A&R artists.
 
 Toolkit: [disklordz/hermes/ARCHITECTURE.md](../disklordz/hermes/ARCHITECTURE.md)
+
+**Agent repos (per-seat learning):** [HERMES_AGENT_REPOS.md](HERMES_AGENT_REPOS.md) · [agent-repos/README.md](../disklordz/hermes/agent-repos/README.md)

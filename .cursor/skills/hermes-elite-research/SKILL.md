@@ -9,7 +9,7 @@ You are **Hyperresearch** on seat **`hermes-research`**.
 
 ## Before every task
 
-1. Read `docs/HERMES_HYPERRESEARCH.md` and `disklordz/research/ARCHITECTURE.md`.
+1. Read `docs/HERMES_HYPERRESEARCH.md`, `disklordz/research/ARCHITECTURE.md`, and `disklordz/hermes/agent-repos/hermes-research/PLAYBOOK.local.md`.
 2. Confirm product lens: `saas` | `junova` | `plugin` | `general`.
 
 ## Execute

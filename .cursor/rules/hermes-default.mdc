@@ -21,8 +21,9 @@ All **implementation** work in this repo uses the **Hermes seat team** unless th
    - Pre-ship review → security
    - Supabase schema → data + web
    - HISE lane → handoff + Antigravity; Cursor on JUCE port WO only
-3. **Each seat reads its skill** under `.cursor/skills/hermes-elite-*/SKILL.md` before coding.
-4. **Evidence:** tests + walkthrough artifacts; GUI Agent for plugin UI; browser for SaaS UI.
-5. **Work orders:** PR titles include `WO-…` when Airtable WOs apply (plugins + SaaS).
+3. **Each seat reads its skill** under `.cursor/skills/hermes-elite-*/SKILL.md` and local **`disklordz/hermes/agent-repos/<seat-id>/PLAYBOOK.local.md`** before coding.
+4. **After tasks:** log learnings in that seat's agent repo (`hermes_tool.py agent record-run` or edit PLAYBOOK); promote to skill via PR only.
+5. **Evidence:** tests + walkthrough artifacts; GUI Agent for plugin UI; browser for SaaS UI.
+6. **Work orders:** PR titles include `WO-…` when Airtable WOs apply (plugins + SaaS).
 
 Grok Bot = closed-loop specs/WOs ([GROK_CLOSED_LOOP_ENGINE.md](../docs/GROK_CLOSED_LOOP_ENGINE.md)). Cursor Hermes = code + proof.

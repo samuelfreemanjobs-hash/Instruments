@@ -14,7 +14,26 @@ from pathlib import Path
 HERMES_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = HERMES_ROOT.parents[1]
 OUTBOX = HERMES_ROOT / "outbox"
+AGENT_REPOS = HERMES_ROOT / "agent-repos"
 ANTIGRAVITY_INBOX = REPO_ROOT / "disklordz" / "antigravity" / "inbox"
+
+AGENT_SEATS = (
+    "hermes-lead",
+    "hermes-architect",
+    "hermes-dsp",
+    "hermes-gui",
+    "hermes-web",
+    "hermes-qa",
+    "hermes-research",
+    "hermes-devops",
+    "hermes-handoff",
+    "hermes-ops",
+    "hermes-gtm",
+    "hermes-presets",
+    "hermes-support",
+    "hermes-security",
+    "hermes-data",
+)
 
 
 def _read(path: Path) -> str:
@@ -231,6 +250,62 @@ def cmd_security_scan(args: argparse.Namespace) -> int:
     return 1 if hits else 0
 
 
+def cmd_agent_init(_: argparse.Namespace) -> int:
+    script = HERMES_ROOT / "scripts" / "scaffold_agent_repos.py"
+    proc = subprocess.run([sys.executable, str(script)], cwd=str(REPO_ROOT))
+    return proc.returncode
+
+
+def cmd_agent_status(_: argparse.Namespace) -> int:
+    print("# Hermes agent repos\n")
+    print(f"Index: `disklordz/hermes/agent-repos/README.md`\n")
+    for seat in AGENT_SEATS:
+        root = AGENT_REPOS / seat
+        ok = root.is_dir() and (root / "README.md").is_file()
+        runs = list((root / "runs").glob("*.md")) if ok else []
+        props = list((root / "proposals").glob("*.md")) if ok else []
+        playbook_lines = 0
+        if ok and (root / "PLAYBOOK.local.md").is_file():
+            playbook_lines = sum(
+                1
+                for ln in (root / "PLAYBOOK.local.md").read_text(encoding="utf-8").splitlines()
+                if ln.startswith("### ")
+            )
+        status = "OK" if ok else "MISSING — run: hermes_tool.py agent init"
+        print(
+            f"- **{seat}** — {status} · playbook entries: {playbook_lines} · "
+            f"runs: {len(runs)} · proposals: {len(props)}"
+        )
+    return 0
+
+
+def cmd_agent_record_run(args: argparse.Namespace) -> int:
+    if args.seat not in AGENT_SEATS:
+        print(f"Unknown seat {args.seat!r}", file=sys.stderr)
+        return 1
+    root = AGENT_REPOS / args.seat
+    if not root.is_dir():
+        print("Agent repo missing; run: python3 disklordz/hermes/scripts/hermes_tool.py agent init", file=sys.stderr)
+        return 1
+    runs = root / "runs"
+    runs.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M")
+    slug = re.sub(r"[^a-z0-9]+", "-", (args.wo or "run").lower())[:32].strip("-")
+    path = runs / f"{stamp}-{slug}.md"
+    body = (
+        f"# Run — {args.seat}\n\n"
+        f"- **UTC:** {datetime.now(timezone.utc).isoformat()}\n"
+        f"- **WO:** {args.wo or 'n/a'}\n"
+        f"- **Branch:** {args.branch or 'n/a'}\n\n"
+        f"## Summary\n\n{args.summary}\n\n"
+        f"## Evidence\n\n{args.evidence or '(none logged)'}\n\n"
+        f"## Learnings (promote to PLAYBOOK.local.md?)\n\n{args.learnings or '(none)'}\n"
+    )
+    path.write_text(body, encoding="utf-8")
+    print(path.relative_to(REPO_ROOT))
+    return 0
+
+
 def cmd_data_checklist(_: argparse.Namespace) -> int:
     web = REPO_ROOT / "disklordz" / "website"
     print("# Hermes data — Supabase / storage checklist\n")
@@ -308,6 +383,19 @@ def main() -> int:
     data_sub.add_parser("checklist", help="Supabase migration checklist").set_defaults(
         func=cmd_data_checklist
     )
+
+    agent = sub.add_parser("agent", help="Per-seat agent repos (self-improvement)")
+    agent_sub = agent.add_subparsers(dest="agent_cmd", required=True)
+    agent_sub.add_parser("init", help="Scaffold all agent repos").set_defaults(func=cmd_agent_init)
+    agent_sub.add_parser("status", help="List agent repo health").set_defaults(func=cmd_agent_status)
+    ar = agent_sub.add_parser("record-run", help="Append run log under agent-repos/<seat>/runs/")
+    ar.add_argument("--seat", required=True, choices=AGENT_SEATS)
+    ar.add_argument("--wo", default="")
+    ar.add_argument("--branch", default="")
+    ar.add_argument("--summary", required=True)
+    ar.add_argument("--evidence", default="")
+    ar.add_argument("--learnings", default="")
+    ar.set_defaults(func=cmd_agent_record_run)
 
     args = parser.parse_args()
     return args.func(args)

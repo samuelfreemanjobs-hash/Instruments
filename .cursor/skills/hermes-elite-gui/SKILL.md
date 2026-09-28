@@ -5,7 +5,7 @@ description: Elite JUCE GUI for Junova-X Celestial neon-noir layout. Figma/refer
 
 # Hermes elite GUI
 
-1. Read `Junova-X/docs/UI_DESIGN_HANDOFF.md` and `Resources/design-reference-celestial.png`.
+1. Read `Junova-X/docs/UI_DESIGN_HANDOFF.md`, `Resources/design-reference-celestial.png`, and `disklordz/hermes/agent-repos/hermes-gui/PLAYBOOK.local.md`.
 2. Layout truth: `Source/UI/UiLayout.h` — artboard 1280×840, module grid matching reference.
 3. Style: dark `#0a0a12`, blue modules (LFO/DCO), red (VCF/ENV), grey (HPF/Master), glow borders.
 4. Controls: vertical faders primary; segmented buttons for chorus/voice/arp; OSC monitor from processor FIFO.

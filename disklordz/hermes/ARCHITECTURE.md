@@ -20,6 +20,14 @@ python3 disklordz/hermes/scripts/hermes_tool.py data checklist
 
 Each subcommand prints or writes **seat artifacts** under `disklordz/hermes/outbox/` — commit when WO-worthy.
 
+## Agent repos (self-improvement)
+
+Per-seat workspaces: [agent-repos/](agent-repos/README.md) · [docs/HERMES_AGENT_REPOS.md](../../docs/HERMES_AGENT_REPOS.md)
+
+```bash
+python3 disklordz/hermes/scripts/hermes_tool.py agent status
+```
+
 ## Related
 
 - [docs/HERMES_AGENT_FRAMEWORK.md](../../docs/HERMES_AGENT_FRAMEWORK.md)
