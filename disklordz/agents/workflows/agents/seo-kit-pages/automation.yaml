@@ -1,0 +1,15 @@
+# Automation — SEO Kit Pages (`seo-kit-pages`)
+
+platform: vercel
+trigger: build
+primary: disklordz/website/next build
+
+## Steps
+1. Static/ISR kit pages TBD
+2. sitemap
+
+## Invoke agent
+Read: disklordz/agents/profit/seo-kit-pages/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#seo-kit-pages

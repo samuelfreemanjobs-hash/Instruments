@@ -2,6 +2,20 @@
   "version": 2,
   "agents": [
     {
+      "id": "workflow-automation",
+      "title": "Workflow Automation",
+      "description": "Generate PM_ADD roster and per-agent automation.yaml; maintain agent-fleet-health and scaffold-agent-workflows CI.",
+      "profit_lever": "Agents run without manual babysitting",
+      "upstream_repo": "https://github.com/inngest/inngest",
+      "model": "inherit",
+      "permission_mode": "acceptEdits",
+      "max_turns": 50,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": [],
+      "automate": "scaffold_workflows.py, scaffold-agent-workflows.yml",
+      "soul": ["Every profit agent gets a trigger and a file path.", "Regenerate PM_ADD from code, not hand-edits.", "Stubs before secrets — document env in ARCHITECTURE.md."]
+    },
+    {
       "id": "conversion-qa",
       "title": "Conversion QA",
       "description": "Protect generate → preview → checkout funnel; run Playwright MCP and verify-go-live.",

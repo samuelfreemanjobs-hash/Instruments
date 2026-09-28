@@ -1,0 +1,15 @@
+# Automation — Analytics Interpreter (`analytics-interpreter`)
+
+platform: n8n
+trigger: weekly Monday
+primary: disklordz/agents/workflows/n8n/analytics-weekly-stub.json
+
+## Steps
+1. Stripe + Supabase export
+2. Slack summary
+
+## Invoke agent
+Read: disklordz/agents/profit/analytics-interpreter/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#analytics-interpreter

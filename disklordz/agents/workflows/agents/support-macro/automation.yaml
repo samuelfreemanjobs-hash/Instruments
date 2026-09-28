@@ -1,0 +1,15 @@
+# Automation — Support Macro (`support-macro`)
+
+platform: api
+trigger: POST /api/rag/suggest
+primary: disklordz/website/src/app/api/rag/suggest/route.ts
+
+## Steps
+1. hybrid retrieve
+2. optional AI polish
+
+## Invoke agent
+Read: disklordz/agents/profit/support-macro/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#support-macro

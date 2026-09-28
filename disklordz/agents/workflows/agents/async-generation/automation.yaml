@@ -1,0 +1,15 @@
+# Automation — Async Generation (`async-generation`)
+
+platform: inngest
+trigger: disklordz/generate.requested
+primary: disklordz/website/src/inngest/functions.ts
+
+## Steps
+1. POST /api/generate/async
+2. buildVariationBatch step
+
+## Invoke agent
+Read: disklordz/agents/profit/async-generation/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#async-generation

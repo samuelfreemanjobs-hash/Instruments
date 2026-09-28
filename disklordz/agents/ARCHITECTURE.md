@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Twenty-nine **profit agents** with Claude-Code-style file trees, bound by **META v3.1** ([charter/](charter/ARCHITECTURE.md)). (`agent.md`, `skill.md`, `subagents.md`, `soul.md`, …) for Cursor, Claude Code, Copilot skills, and Cloud Agents working on Disklordz.
+Thirty **profit agents** (including **Workflow Automation**) with Claude-Code-style file trees, bound by **META v3.1** ([charter/](charter/ARCHITECTURE.md)). (`agent.md`, `skill.md`, `subagents.md`, `soul.md`, …) for Cursor, Claude Code, Copilot skills, and Cloud Agents working on Disklordz.
 
 ## Build & run
 
@@ -32,7 +32,8 @@ User / WO / CI event
 
 | Path | Role |
 |------|------|
-| [`profit/`](profit/) | 15 profit agents, one directory each |
+| [`profit/`](profit/) | Profit agents, one directory each |
+| [`workflows/`](workflows/) | PM ADD roster, `scaffold_workflows.py`, per-agent `automation.yaml` |
 | [`profit/registry.json`](profit/registry.json) | Machine index |
 | [`profit/scaffold_agents.py`](profit/scaffold_agents.py) | Generator (source of truth: `_specs.json`) |
 | [docs/DISKLORDZ_PROFIT_AGENTS.md](../../docs/DISKLORDZ_PROFIT_AGENTS.md) | Human guide |

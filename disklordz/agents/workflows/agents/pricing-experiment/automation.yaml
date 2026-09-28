@@ -1,0 +1,15 @@
+# Automation — Pricing Experiment (`pricing-experiment`)
+
+platform: manual
+trigger: /premortem
+primary: .claude/skills/premortem/SKILL.md
+
+## Steps
+1. Cohort flag
+2. Stripe price swap
+
+## Invoke agent
+Read: disklordz/agents/profit/pricing-experiment/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#pricing-experiment

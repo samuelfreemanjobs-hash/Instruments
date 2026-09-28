@@ -1,0 +1,21 @@
+{
+  "name": "Disklordz Churn Win-back (stub)",
+  "nodes": [
+    {
+      "parameters": { "rule": { "interval": [{ "field": "weeks", "weeksInterval": 1 }] } },
+      "name": "Weekly",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": { "content": "Query lapsed Pro in Supabase; send opt-in email + credit (human approve writes)." },
+      "name": "Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, 0]
+    }
+  ],
+  "connections": {},
+  "meta": { "agent": "churn-winback" }
+}

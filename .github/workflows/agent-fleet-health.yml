@@ -1,0 +1,23 @@
+# Integration Health agent — daily verify against production (optional URL)
+name: Agent fleet health
+
+on:
+  schedule:
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+
+jobs:
+  integration-health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Workflow manifest smoke
+        run: |
+          python3 -c "import json; m=json.load(open('disklordz/agents/workflows/manifest.json')); assert m['agent_count'] >= 30, m"
+
+      - name: Remote integration verify
+        if: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL != '' }}
+        run: bash disklordz/integrations/scripts/verify-integrations.sh
+        env:
+          DISKLORDZ_URL: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL }}

@@ -1,0 +1,32 @@
+# Workflow Automation agent — regenerate PM_ADD + automation.yaml
+name: Scaffold agent workflows
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "disklordz/agents/workflows/scaffold_workflows.py"
+      - "disklordz/agents/profit/_specs.json"
+      - "disklordz/agents/profit/registry.json"
+
+jobs:
+  scaffold:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Regenerate workflow artifacts
+        run: python3 disklordz/agents/workflows/scaffold_workflows.py
+
+      - name: Check for drift
+        run: |
+          git diff --exit-code disklordz/agents/workflows/PM_ADD.md \
+            disklordz/agents/workflows/manifest.json \
+            disklordz/agents/workflows/agents/ || {
+            echo "::error::Run python3 disklordz/agents/workflows/scaffold_workflows.py and commit"
+            exit 1
+          }

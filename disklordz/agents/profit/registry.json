@@ -1,7 +1,16 @@
 {
   "version": 2,
-  "agent_count": 29,
+  "agent_count": 30,
   "agents": [
+    {
+      "id": "workflow-automation",
+      "title": "Workflow Automation",
+      "profit_lever": "Agents run without manual babysitting",
+      "path": "disklordz/agents/profit/workflow-automation",
+      "entry": "disklordz/agents/profit/workflow-automation/agent.md",
+      "skill": "disklordz/agents/profit/workflow-automation/skill.md",
+      "upstream_repo": "https://github.com/inngest/inngest"
+    },
     {
       "id": "conversion-qa",
       "title": "Conversion QA",

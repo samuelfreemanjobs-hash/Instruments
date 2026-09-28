@@ -1,0 +1,15 @@
+# Automation — Onboarding Concierge (`onboarding-concierge`)
+
+platform: inngest
+trigger: auth signup
+primary: disklordz/website/src/inngest/functions.ts
+
+## Steps
+1. Event TBD user.signed_up
+2. RAG suggest drip
+
+## Invoke agent
+Read: disklordz/agents/profit/onboarding-concierge/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#onboarding-concierge
