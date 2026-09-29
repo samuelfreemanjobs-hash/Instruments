@@ -1,0 +1,49 @@
+# Mirror drum-loop-factory/ to the Memphis GitHub repo (one-click after secret is set).
+name: Publish drum-loop-factory mirror
+
+on:
+  workflow_dispatch:
+    inputs:
+      remote_url:
+        description: "Push target (default Memphis factory repo)"
+        required: false
+        default: "https://github.com/samuelfreemanjobs-hash/instruments-Memphis-Drum-Loop-Factory.git"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Instruments
+        uses: actions/checkout@v4
+
+      - name: Require push token
+        env:
+          PUSH_TOKEN: ${{ secrets.MEMPHIS_DRUM_LOOP_FACTORY_PUSH_TOKEN }}
+        run: |
+          if [[ -z "$PUSH_TOKEN" ]]; then
+            echo "::error::Add repository secret MEMPHIS_DRUM_LOOP_FACTORY_PUSH_TOKEN (fine-grained PAT with contents:write on instruments-Memphis-Drum-Loop-Factory)."
+            exit 1
+          fi
+
+      - name: Publish drum-loop-factory tree
+        env:
+          PUSH_TOKEN: ${{ secrets.MEMPHIS_DRUM_LOOP_FACTORY_PUSH_TOKEN }}
+          REMOTE_URL: ${{ github.event.inputs.remote_url }}
+        run: |
+          set -euo pipefail
+          WORK="$(mktemp -d)"
+          git clone --depth 1 "$REMOTE_URL" "$WORK/remote" 2>/dev/null || {
+            mkdir -p "$WORK/remote"
+            git -C "$WORK/remote" init -b main
+          }
+          cp -a drum-loop-factory/. "$WORK/remote/"
+          cd "$WORK/remote"
+          git add -A
+          git diff --staged --quiet && echo "No changes to publish." && exit 0
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "chore(ci): mirror drum-loop-factory from Instruments@${GITHUB_SHA}"
+          host_path="${REMOTE_URL#https://}"
+          git push "https://x-access-token:${PUSH_TOKEN}@${host_path}" HEAD:main
