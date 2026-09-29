@@ -1,0 +1,9 @@
+{
+  "name": "Drum Loop Factory OS",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "user": "ubuntu",
+  "install": "bash scripts/cloud-agent-install.sh"
+}

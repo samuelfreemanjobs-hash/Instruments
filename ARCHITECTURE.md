@@ -21,6 +21,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **META LLM charter** | [disklordz/agents/charter/ARCHITECTURE.md](disklordz/agents/charter/ARCHITECTURE.md) · [CLAUDE.md](CLAUDE.md) | `./scripts/sync-meta-llm-charter.sh` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-9090** (sampleless trap wavetable synth) | [Wave9090/ARCHITECTURE.md](Wave9090/ARCHITECTURE.md) | `Wave9090_VST3`, `Wave9090_Standalone`, `Wave9090Tests` |
+| **Drum Loop Factory OS** (Memphis phonk ML; separate GitHub repo) | [docs/DRUM_LOOP_FACTORY_CLOUD.md](docs/DRUM_LOOP_FACTORY_CLOUD.md) · [drum-loop-factory/README.md](drum-loop-factory/README.md) | Cloud: `instruments-Memphis-Drum-Loop-Factory`; mirror in `drum-loop-factory/` |
 
 ## Repository layout
 
