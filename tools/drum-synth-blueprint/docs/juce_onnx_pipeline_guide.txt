@@ -1,0 +1,166 @@
+Differentiable DSP (DDSP) → ONNX → JUCE real-time pipeline
+Instruments / Disklordz — ddsp-ml-engineer agent reference
+================================================================================
+
++-----------------------------------+
+|  Acoustic Drum Sample Input       |
++-----------------------------------+
+                  |
+                  v
++-----------------------------------+
+|  PyTorch Encoder Network          |
+|  (mel stats or learned MLP)       |
++-----------------------------------+
+                  |
+                  v  (Outputs Synth Parameters)
++-----------------------------------+
+| [Pitch Decay, Amp Decay, Drive]   |
+|  + pitch_start/end (350→45 Hz)    |
++-----------------------------------+
+                  |
+                  v
++-----------------------------------+
+|  synth_808_generator.py (NumPy)   |
+|  exp pitch + np.tanh saturation   |
++-----------------------------------+
+                  |
+                  v
++-----------------------------------+
+|  Feature Difference Loss Tracker  | <--- Compares Mel-Spectrograms
+|  mel_loss.feature_difference_loss |
++-----------------------------------+
+                  |
+                  v  (Export via ONNX Runtime)
++-----------------------------------+
+|  Real-time JUCE C++ VST Engine    |
++-----------------------------------+
+
+--------------------------------------------------------------------------------
+1. FEATURE DIFFERENCE LOSS (why not raw waveform MSE?)
+--------------------------------------------------------------------------------
+
+Phase misalignment makes sample-by-sample L2 unstable. Convert both target and
+synthetic audio to log-mel spectrograms and minimize mean squared mel error:
+
+  loss = mean( (log_mel(target) - log_mel(synth(params)))^2 )
+
+Implementation: tools/drum-synth-blueprint/drum_synth_blueprint/mel_loss.py
+
+Training loop (PyTorch, offline — `torch_ddsp/pipeline.py`):
+
+  wav_tgt = load_or_teacher_batch()
+  params = encoder(wav_tgt)
+  wav_syn = Differentiable808Synth(params)   # torch tensors, grad-enabled
+  loss = SpectralDistanceLoss()(wav_syn, wav_tgt)  # FFT 512/1024/2048 mel
+  loss.backward()
+
+Export encoder only as **`ddsp_808_encoder.onnx`** (waveform in → params out):
+
+  python tools/drum-synth-blueprint/scripts/train_ddsp_808.py --steps 60
+
+For NumPy-only baselines, render is non-diff; use CMA-ES / grid search on
+[pitch_decay, amp_decay, drive] with mel_loss.loss_for_synth_params(), then
+distill encoder labels from optimal params.
+
+--------------------------------------------------------------------------------
+2. PURE MATH CORE (Python)
+--------------------------------------------------------------------------------
+
+File: drum_synth_blueprint/synth_808_generator.py
+
+  - Pitch: f(t) = f_end + (f_start - f_end) * exp(-t / pitch_decay_sec)
+  - Phase: cumsum(2*pi*f(t)/sr)  — continuous integration, not linear dots
+  - Amp: exponential decay envelope (amp_decay_sec)
+  - Drive: np.tanh(signal * drive) for phonk upper harmonics
+
+Default phonk sweep: 350 Hz → 45 Hz.
+
+CLI smoke:
+
+  cd tools/drum-synth-blueprint && python -m drum_synth_blueprint.synth_808_generator
+
+--------------------------------------------------------------------------------
+3. ONNX EXPORT (encoder head only in v1)
+--------------------------------------------------------------------------------
+
+Export the conv encoder that maps mel spectrogram → 4 normalized floats (repo default):
+
+  cd tools/drum-synth-blueprint
+  python scripts/train_ddsp_808.py --export artifacts/ddsp_808_encoder.onnx
+
+  torch.onnx.export(
+      encoder,
+      dummy_mel,                             # [batch, 1, 128, time_frames]
+      "ddsp_808_encoder.onnx",
+      input_names=["mel_input"],
+      output_names=["synth_parameters"],
+      dynamic_axes={"mel_input": {0: "batch", 3: "time_frames"}, "synth_parameters": {0: "batch"}},
+  )
+
+Denormalize in C++ (matches `Differentiable808Synth`):
+
+  pitch_decay = 10 + p0 * 90
+  amp_decay   = 1 + p1 * 9
+  drive       = 0.1 + p2 * 4.9
+  base_freq   = 40 + p3 * 25
+
+Keep the oscillator + tanh in C++ (deterministic, low CPU) and only run ONNX
+for parameter inference — smaller graph, easier realtime bounds.
+
+Optional full-graph export only for offline batch tools, not DAW audio thread.
+
+--------------------------------------------------------------------------------
+4. JUCE + ONNX RUNTIME (real-time safety)
+--------------------------------------------------------------------------------
+
+Threading model (required):
+
+  [Audio thread — processBlock]
+    - Read atomic Synth808Params paramsLatest;
+    - Render 808 via C++ port of synth_808_generator (sin + tanh);
+    - NEVER call Ort::Session::Run here.
+
+  [Background / FIFO thread]
+    - On new reference sample or UI "analyze":
+        mel = computeMel(inputWav);          // 128 bands, same n_fft as training
+        params = onnxSession.Run(mel_input);
+        paramsLatest.store(denormalize808(params));
+
+Memory:
+
+  - Pre-allocate Ort arena + single IO binding at prepareToPlay().
+  - Reuse input/output OrtValue buffers; no std::vector growth per block.
+
+Underrun prevention:
+
+  - If ONNX still running, keep previous params (hold last good).
+  - Bound inference to ≤ 50 ms; show UI spinner, not audio glitches.
+
+CMake (sketch):
+
+  find_package(onnxruntime CONFIG)
+  target_link_libraries(YourPlugin PRIVATE onnxruntime::onnxruntime)
+
+Place .onnx in BinaryData or install alongside .vst3 Resources/.
+
+--------------------------------------------------------------------------------
+5. REPO WIRING
+--------------------------------------------------------------------------------
+
+  Python reference : tools/drum-synth-blueprint/
+  Agent            : disklordz/agents/profit/ddsp-ml-engineer/
+  JUCE bootstrap   : docs/JUCE_APC_AGENT_BOOTSTRAP.md
+  Plugin CI        : python3 vst-testing-ops/run_business.py --profile ci
+  Verify           : python3 disklordz/integrations/agents/ddsp_ml_engineer.py --self-test
+
+--------------------------------------------------------------------------------
+6. ONNX → C++ PARAMETER MAPPING
+
+  pitch_decay_sec  → float (seconds, tau in exp pitch law)
+  amp_decay_sec    → float (envelope tau)
+  drive            → float (tanh pre-gain)
+
+Port exponential_pitch_hz + synthesize_808 to a header-only C++ inline in
+Source/DSP/Synth808.h when adding a product target (V-Voyager / TrapForge).
+
+================================================================================

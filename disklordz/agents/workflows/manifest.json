@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "agent_count": 32,
+  "agent_count": 36,
   "agents": [
     {
       "id": "workflow-automation",
@@ -481,6 +481,34 @@
         ]
       },
       "automation_path": "disklordz/agents/workflows/agents/hardware-preset-designer/automation.yaml"
+    },
+    {
+      "id": "audio-plugin-coder",
+      "title": "Audio Plugin Coder (APC)",
+      "announcement": "I'm **Audio Plugin Coder (APC)** \u2014 I drive the Noizefield APC Dream\u2192Ship workflow and wire it to this monorepo's JUCE CMake targets so VST3s ship with tested DSP.",
+      "automation": {},
+      "automation_path": "disklordz/agents/workflows/agents/audio-plugin-coder/automation.yaml"
+    },
+    {
+      "id": "code-project-planner",
+      "title": "Code Project Planner (PRD)",
+      "announcement": "I'm **Code Project Planner** \u2014 I write PRDs and phase gates (Audio Programmer style) before any agent touches code, and I keep product memory in docs/RAG.",
+      "automation": {},
+      "automation_path": "disklordz/agents/workflows/agents/code-project-planner/automation.yaml"
+    },
+    {
+      "id": "ddsp-ml-engineer",
+      "title": "DDSP / ML Engineer (PyTorch)",
+      "announcement": "I'm **DDSP / ML Engineer** \u2014 I script PyTorch/DDSP losses and batch drum synthesis so 808/kick timbre matches targets without hand-tuning every sample.",
+      "automation": {},
+      "automation_path": "disklordz/agents/workflows/agents/ddsp-ml-engineer/automation.yaml"
+    },
+    {
+      "id": "audio-rd",
+      "title": "Audio R&D",
+      "announcement": "I'm **Audio R&D** \u2014 I design experiments and ablations for ML-backed drums, log promote/kill decisions, and hand off training to DDSP and shipping to the JUCE (APC) agent.",
+      "automation": {},
+      "automation_path": "disklordz/agents/workflows/agents/audio-rd/automation.yaml"
     }
   ]
 }

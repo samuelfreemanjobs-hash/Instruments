@@ -1,0 +1,13 @@
+# Automation — Audio R&D (`audio-rd`)
+
+platform: manual
+trigger: manual
+primary: TBD
+
+## Steps
+
+## Invoke agent
+Read: disklordz/agents/profit/audio-rd/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#audio-rd

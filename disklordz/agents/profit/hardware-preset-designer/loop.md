@@ -1,40 +1,40 @@
 # Loop SOP — Hardware Preset Designer
 
-## Primary verify commands
-
-```bash
-cd tools/synth-forge
-pip install -r requirements.txt && pip install -e .
-python3 -m pytest tests -v
-python3 ../../disklordz/integrations/agents/hardware_preset_designer.py --self-test
-python3 ../../disklordz/integrations/agents/hardware_preset_designer.py \
-  --prompt "Cardo luxury cruising pad" --synth-id minilogue_xd --count 4
-```
-
-Optional studio smoke:
-
-```bash
-uvicorn synth_forge.main:app --host 127.0.0.1 --port 8000
-curl -s http://127.0.0.1:8000/api/health
-```
-
-## Control loop
+AsyncGenerator control plane for this agent (pseudocode).
 
 ```text
-READ tools/synth-forge/ARCHITECTURE.md + user brief
-→ choose synth_id + category or prompt
-→ generate (generator / semantic_engine / cloner)
-→ clamp_for_hardware on every export path
-→ verify (pytest | self-test | preview metrics)
-→ report JSON + file paths; disclose stub adapters
+async function* query(state):
+  while not done:
+    state = compress(state)     # snip → microcompact → collapse → autocompact
+    response = await stream(model, state)
+    yield response.messages
+    if not response.tool_calls:
+      if stop_hook_allows: return completed
+      continue
+    batches = partition(response.tool_calls)  # per-invocation safety
+    for batch in batches:
+      results = await execute_batch(batch)    # 14-step pipeline
+      yield results.messages
+      state += results
 ```
 
-## Terminals
+## Terminals (discriminated)
 
-`completed` | `unsafe_params_rejected` | `adapter_stub_only` | `tests_failed`
+`completed` | `max_turns` | `aborted_tools` | `prompt_too_long` | `permission_denied` | `hook_stopped`
+
+## Compression budget
+
+Trigger autocompact at `window - 13000` tokens; hard stop at `window - 3000`.
 
 ## Invariants
 
-- No SysEx/binary export without `clamp_for_hardware`.
-- Every deliverable cites [executed] command output.
-- MiniFreak/Zenology exports must say **stub** in the user-facing summary.
+- Every `tool_use` paired with `tool_result` before next model call.
+- Cancel: synthetic results for queued tools.
+- Cost: track per-turn; sub-agents roll up to parent session.
+
+## Primary verify command
+
+```bash
+bash disklordz/integrations/scripts/verify-integrations.sh
+# or agent-specific checks in skill.md
+```

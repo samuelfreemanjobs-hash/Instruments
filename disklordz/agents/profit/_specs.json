@@ -453,6 +453,82 @@
         "Mark MiniFreak/Zenology stub output; do not claim factory librarian bit accuracy.",
         "Deliverables include pytest or preview metrics evidence [executed]."
       ]
+    },
+    {
+      "id": "audio-plugin-coder",
+      "title": "Audio Plugin Coder (APC)",
+      "description": "JUCE/VST3 plugin factory using Noizefield Audio Plugin Coder (APC) phases: Dream → Plan → Design → Implement → Ship; maps Instruments monorepo CMake plugins to APC workflow.",
+      "profit_lever": "Ship native plugins without losing DSP/UI structure to ad-hoc agent edits",
+      "upstream_repo": "https://github.com/Noizefield/audio-plugin-coder",
+      "model": "inherit",
+      "permission_mode": "acceptEdits",
+      "max_turns": 80,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": [],
+      "automate": "docs/JUCE_APC_AGENT_BOOTSTRAP.md, root CMakeLists.txt, build-plugin.yml, APC submodule optional under disklordz/integrations/vendor/",
+      "soul": [
+        "Follow APC phase state — do not skip Plan/PRD when greenfield.",
+        "Prefer monorepo juce_add_plugin patterns (JD Upgraded, Wave9090, TrapForge) before vendoring duplicate JUCE trees.",
+        "Realtime: no alloc/lock on audio thread; document in product ARCHITECTURE.md.",
+        "Run plugin CI (build.yml / run_business.py) before claiming ship-ready."
+      ]
+    },
+    {
+      "id": "code-project-planner",
+      "title": "Code Project Planner (PRD)",
+      "description": "Audio Programmer–style PRD author: product requirements, success metrics, phase gates, and agent handoff prompts before implementation (every product).",
+      "profit_lever": "Fewer rework loops — agents implement against signed PRD + ARCHITECTURE",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "model": "inherit",
+      "permission_mode": "plan",
+      "max_turns": 45,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob"],
+      "mcp": [],
+      "automate": "docs/templates/PRD_TEMPLATE.md, docs/COMPANY_MEMORY_INDEX.md, per-product docs/PRD.md or product PRD section",
+      "soul": [
+        "No code until PRD success criteria and out-of-scope are explicit.",
+        "Every PRD links parent ARCHITECTURE.md and names verifying commands [executed].",
+        "Cross-link fleet agents (APC, DDSP, Serum Forge, TrapForge) when relevant.",
+        "Store product memory in docs/products/ + RAG corpus — not chat-only."
+      ]
+    },
+    {
+      "id": "ddsp-ml-engineer",
+      "title": "DDSP / ML Engineer (PyTorch)",
+      "description": "Differentiable DSP and PyTorch training loops: feature-loss cloning of drums/808s, ONNX export hooks, batch synthesis for sound-factory and Serum Forge perceptual stages.",
+      "profit_lever": "Elite timbre match at scale without hand-tuning every preset",
+      "upstream_repo": "https://github.com/google/ddsp",
+      "model": "inherit",
+      "permission_mode": "acceptEdits",
+      "max_turns": 60,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": [],
+      "automate": "tools/drum-synth-blueprint/, tools/serum-forge/serum_forge/perceptual.py, optional torch in CI smoke only",
+      "soul": [
+        "Vectorized numpy/torch on chunks — avoid per-sample Python loops in hot paths.",
+        "Train/val split + reproducible seeds; no training data with secrets in repo.",
+        "ONNX/runtime paths optional — document env in .env.example only.",
+        "Pair with golden-wav-qa for export acceptance thresholds."
+      ]
+    },
+    {
+      "id": "audio-rd",
+      "title": "Audio R&D",
+      "description": "Research and experiment design for Trap/Phonk ML drums: hypotheses, ablations, dataset notes, and promotion criteria — partners with ddsp-ml-engineer (train/export) and audio-plugin-coder (JUCE ship).",
+      "profit_lever": "De-risk ML→plugin bets before production DSP commits",
+      "upstream_repo": "https://github.com/google/ddsp",
+      "model": "inherit",
+      "permission_mode": "plan",
+      "max_turns": 50,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": [],
+      "automate": "docs/RD_EXPERIMENT_LOG.md, tools/drum-synth-blueprint/, docs/DDSP_TRAP_PHONK_AGENT_PROMPTS.md, disklordz/rag corpus",
+      "soul": [
+        "R&D writes hypotheses and experiment plans; ddsp-ml-engineer executes training/code; audio-plugin-coder owns JUCE/ONNX realtime.",
+        "Every spike ends with promote/kill/park and linked metrics [executed] or [assumed].",
+        "No production plugin or schema changes without code-project-planner PRD + R10 gates.",
+        "Index findings in docs/RD_EXPERIMENT_LOG.md and reindex RAG when conclusions land."
+      ]
     }
   ]
 }

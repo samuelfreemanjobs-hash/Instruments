@@ -1,0 +1,31 @@
+name: Drum synth blueprint
+
+on:
+  push:
+    paths:
+      - "tools/drum-synth-blueprint/**"
+      - ".github/workflows/drum-synth-blueprint.yml"
+  pull_request:
+    paths:
+      - "tools/drum-synth-blueprint/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/drum-synth-blueprint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            tools/drum-synth-blueprint/requirements.txt
+            tools/drum-synth-blueprint/requirements-train.txt
+      - run: pip install -r requirements.txt
+      - run: pip install -r requirements-analysis.txt
+      - run: pip install -e .
+      - run: pip install -r requirements-train.txt
+      - run: pytest tests -v

@@ -36,6 +36,10 @@ Repo-wide companion to [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) and [PM ADD
 | `analytics-interpreter` | Analytics Interpreter | `manual_stub` | `disklordz/agents/workflows/n8n/analytics-weekly-stub.json` | `.github/skills/disklordz-analytics-interpreter/SKILL.md` |
 | `release-notes` | Release Notes | `ci_script` | `disklordz/agents/workflows/scripts/release-notes-from-prs.sh` | `.github/skills/disklordz-release-notes/SKILL.md` |
 | `hardware-preset-designer` | Hardware Preset Designer | `ci_on_pr` | `.github/workflows/synth-forge.yml` | `.github/skills/disklordz-hardware-preset-designer/SKILL.md` |
+| `audio-plugin-coder` | Audio Plugin Coder (APC) | `manual_doc` | `TBD` | `.github/skills/disklordz-audio-plugin-coder/SKILL.md` |
+| `code-project-planner` | Code Project Planner (PRD) | `manual_doc` | `TBD` | `.github/skills/disklordz-code-project-planner/SKILL.md` |
+| `ddsp-ml-engineer` | DDSP / ML Engineer (PyTorch) | `ci_on_pr` | `TBD` | `.github/skills/disklordz-ddsp-ml-engineer/SKILL.md` |
+| `audio-rd` | Audio R&D | `manual_doc` | `TBD` | `.github/skills/disklordz-audio-rd/SKILL.md` |
 
 ### Activation legend
 

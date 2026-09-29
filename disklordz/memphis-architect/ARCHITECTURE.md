@@ -46,3 +46,5 @@ Legacy modular `js/` split removed in favor of this Gemini reference build.
 
 - [disklordz/sound-factory/ARCHITECTURE.md](../sound-factory/ARCHITECTURE.md)
 - [disklordz/ARCHITECTURE.md](../ARCHITECTURE.md)
+- [docs/products/MEMPHIS_PHONK_DRUM_KIT_ML.md](../../docs/products/MEMPHIS_PHONK_DRUM_KIT_ML.md) — sellable kit ML program (Phase 0)
+- [tools/drum-synth-blueprint/docs/memphis_phonk_fingerprint.md](../../tools/drum-synth-blueprint/docs/memphis_phonk_fingerprint.md)

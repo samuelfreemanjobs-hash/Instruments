@@ -2,6 +2,8 @@
 
 Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the area you edit.
 
+**Company memory (all agents):** [docs/COMPANY_MEMORY_INDEX.md](docs/COMPANY_MEMORY_INDEX.md) — products, rules, fleet, V-Voyager index.
+
 ## Disklordz agent fleet (repo-wide)
 
 All profit agents are **company-wide** in this monorepo — not only under `disklordz/agents/`.
@@ -41,7 +43,7 @@ Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md
 
 Integrations hub: [disklordz/integrations/ARCHITECTURE.md](disklordz/integrations/ARCHITECTURE.md) · `./scripts/setup-open-source-integrations.sh`
 
-Profit agents (31): [DISKLORDZ_AGENTS.md](DISKLORDZ_AGENTS.md) · [docs/DISKLORDZ_PROFIT_AGENTS.md](docs/DISKLORDZ_PROFIT_AGENTS.md) · `disklordz/agents/profit/<id>/agent.md`
+Profit agents (36): [DISKLORDZ_AGENTS.md](DISKLORDZ_AGENTS.md) · [docs/DISKLORDZ_PROFIT_AGENTS.md](docs/DISKLORDZ_PROFIT_AGENTS.md) · `disklordz/agents/profit/<id>/agent.md`
 
 **Roadmap & progress:** [docs/ROADMAP.md](docs/ROADMAP.md)  
 **SOPs & templates:** [docs/disklordz/README.md](docs/disklordz/README.md)

@@ -1,0 +1,13 @@
+# Automation — DDSP / ML Engineer (PyTorch) (`ddsp-ml-engineer`)
+
+platform: manual
+trigger: manual
+primary: TBD
+
+## Steps
+
+## Invoke agent
+Read: disklordz/agents/profit/ddsp-ml-engineer/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#ddsp-ml-engineer

@@ -30,6 +30,7 @@ Single place to see **where we are going** and **what is done**. PM Agent refres
 | **Agent fleet (31)** | Repo-wide docs + autopilot CI | **Shipped** — scheduled CI on `main` |
 | **OSS integrations (35)** | manifest + website wiring | **34 integrated**, 1 external (Bytebot) — run `promote-integrations.py` after new stubs |
 | **JD Upgraded plugin** | Phase 5 | See [PHASE5.md](PHASE5.md) |
+| **Memphis Phonk Drum Kit ML** | Phase 0 fingerprint + DDSP train | **5%** — [products/MEMPHIS_PHONK_DRUM_KIT_ML.md](products/MEMPHIS_PHONK_DRUM_KIT_ML.md) |
 | **WAVE-9090** | Trap wavetable synth | Active product — [Wave9090/ARCHITECTURE.md](../Wave9090/ARCHITECTURE.md) |
 
 ---

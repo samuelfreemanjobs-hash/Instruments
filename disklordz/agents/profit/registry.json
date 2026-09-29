@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "agent_count": 32,
+  "agent_count": 36,
   "agents": [
     {
       "id": "workflow-automation",
@@ -289,6 +289,42 @@
       "entry": "disklordz/agents/profit/hardware-preset-designer/agent.md",
       "skill": "disklordz/agents/profit/hardware-preset-designer/skill.md",
       "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "audio-plugin-coder",
+      "title": "Audio Plugin Coder (APC)",
+      "profit_lever": "Ship native plugins without losing DSP/UI structure to ad-hoc agent edits",
+      "path": "disklordz/agents/profit/audio-plugin-coder",
+      "entry": "disklordz/agents/profit/audio-plugin-coder/agent.md",
+      "skill": "disklordz/agents/profit/audio-plugin-coder/skill.md",
+      "upstream_repo": "https://github.com/Noizefield/audio-plugin-coder"
+    },
+    {
+      "id": "code-project-planner",
+      "title": "Code Project Planner (PRD)",
+      "profit_lever": "Fewer rework loops \u2014 agents implement against signed PRD + ARCHITECTURE",
+      "path": "disklordz/agents/profit/code-project-planner",
+      "entry": "disklordz/agents/profit/code-project-planner/agent.md",
+      "skill": "disklordz/agents/profit/code-project-planner/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "ddsp-ml-engineer",
+      "title": "DDSP / ML Engineer (PyTorch)",
+      "profit_lever": "Elite timbre match at scale without hand-tuning every preset",
+      "path": "disklordz/agents/profit/ddsp-ml-engineer",
+      "entry": "disklordz/agents/profit/ddsp-ml-engineer/agent.md",
+      "skill": "disklordz/agents/profit/ddsp-ml-engineer/skill.md",
+      "upstream_repo": "https://github.com/google/ddsp"
+    },
+    {
+      "id": "audio-rd",
+      "title": "Audio R&D",
+      "profit_lever": "De-risk ML\u2192plugin bets before production DSP commits",
+      "path": "disklordz/agents/profit/audio-rd",
+      "entry": "disklordz/agents/profit/audio-rd/agent.md",
+      "skill": "disklordz/agents/profit/audio-rd/skill.md",
+      "upstream_repo": "https://github.com/google/ddsp"
     }
   ]
 }

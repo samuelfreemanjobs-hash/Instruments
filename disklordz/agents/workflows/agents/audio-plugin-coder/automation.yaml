@@ -1,0 +1,13 @@
+# Automation — Audio Plugin Coder (APC) (`audio-plugin-coder`)
+
+platform: manual
+trigger: manual
+primary: TBD
+
+## Steps
+
+## Invoke agent
+Read: disklordz/agents/profit/audio-plugin-coder/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#audio-plugin-coder

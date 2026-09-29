@@ -1,0 +1,13 @@
+# Automation — Code Project Planner (PRD) (`code-project-planner`)
+
+platform: manual
+trigger: manual
+primary: TBD
+
+## Steps
+
+## Invoke agent
+Read: disklordz/agents/profit/code-project-planner/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#code-project-planner

@@ -50,6 +50,10 @@ ACTIVATION: dict[str, str] = {
     "analytics-interpreter": "manual_stub",
     "release-notes": "ci_script",
     "hardware-preset-designer": "ci_on_pr",
+    "audio-plugin-coder": "manual_doc",
+    "code-project-planner": "manual_doc",
+    "ddsp-ml-engineer": "ci_on_pr",
+    "audio-rd": "manual_doc",
 }
 
 CI_WORKFLOWS = [
@@ -63,6 +67,8 @@ CI_WORKFLOWS = [
     (".github/workflows/airtable-antigravity-handoff.yml", "ship-velocity, airtable-wo-triage"),
     (".github/workflows/build.yml", "golden-wav-qa"),
     (".github/workflows/synth-forge.yml", "hardware-preset-designer"),
+    (".github/workflows/serum-forge.yml", "hardware-preset-designer, ddsp-ml-engineer"),
+    (".github/workflows/drum-synth-blueprint.yml", "ddsp-ml-engineer, audio-rd"),
 ]
 
 # First-person announcements + one-line help for Disklordz
@@ -194,6 +200,22 @@ ANNOUNCE: dict[str, str] = {
     "hardware-preset-designer": (
         "I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches from "
         "prompts and samples, with safety clamps and librarian-ready export staging."
+    ),
+    "audio-plugin-coder": (
+        "I'm **Audio Plugin Coder (APC)** — I drive the Noizefield APC Dream→Ship workflow and "
+        "wire it to this monorepo's JUCE CMake targets so VST3s ship with tested DSP."
+    ),
+    "code-project-planner": (
+        "I'm **Code Project Planner** — I write PRDs and phase gates (Audio Programmer style) "
+        "before any agent touches code, and I keep product memory in docs/RAG."
+    ),
+    "ddsp-ml-engineer": (
+        "I'm **DDSP / ML Engineer** — I script PyTorch/DDSP losses and batch drum synthesis "
+        "so 808/kick timbre matches targets without hand-tuning every sample."
+    ),
+    "audio-rd": (
+        "I'm **Audio R&D** — I design experiments and ablations for ML-backed drums, log promote/kill "
+        "decisions, and hand off training to DDSP and shipping to the JUCE (APC) agent."
     ),
 }
 
