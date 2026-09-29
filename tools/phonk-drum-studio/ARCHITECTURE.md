@@ -8,7 +8,9 @@ Phonk Drum Studio is a standalone desktop app for Memphis phonk producers. It tr
 
 ```bash
 cd tools/phonk-drum-studio
-python3 -m venv .venv && source .venv/bin/activate
+python -m venv venv
+# Windows: venv\Scripts\activate
+# macOS/Linux: source venv/bin/activate
 pip install -r requirements.txt
 python app.py
 ```

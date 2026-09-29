@@ -6,6 +6,22 @@ Train a lightweight 1D convolutional Audio VAE on your Memphis phonk drum folder
 
 ```bash
 cd tools/phonk-drum-studio
+python -m venv venv
+```
+
+Activate the virtual environment:
+
+```bash
+# On Windows:
+venv\Scripts\activate
+
+# On macOS/Linux:
+source venv/bin/activate
+```
+
+Then install and run:
+
+```bash
 pip install -r requirements.txt
 python app.py
 ```
