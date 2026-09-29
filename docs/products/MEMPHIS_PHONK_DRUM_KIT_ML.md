@@ -42,7 +42,7 @@ Five reference loops characterized in Phase 0 — full table and cross-file DNA:
 
 → **[memphis_phonk_fingerprint.md](../../tools/drum-synth-blueprint/docs/memphis_phonk_fingerprint.md)**
 
-Store licensed reference WAVs outside git or under `disklordz/memphis-architect/artifacts/reference-loops/` (not committed unless cleared for redistribution).
+Store licensed reference WAVs in **`tools/drum-synth-blueprint/reference-loops/`** (flat folder; see that README). Do not commit copyrighted third-party loops without rights.
 
 ## Done
 
