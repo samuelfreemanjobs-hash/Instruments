@@ -29,6 +29,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 Source/          Plugin processor, DSP, assets, preset import
 hise-sketch/     HISE / Antigravity projects (optional imports)
 disklordz/       Drum SaaS (`website/`) and sound-factory scripts
+drum-loop-factory/  Drum Loop Factory OS mirror + Cloud Agent bootstrap (canonical remote on GitHub)
 tools/           CLI binaries (link JUCE / plugin static lib)
 tools/synth-forge/  Python SynthForge preset workstation (FastAPI)
 docs/            User and agent docs (SYSEX, ROM, phases, handoff)
