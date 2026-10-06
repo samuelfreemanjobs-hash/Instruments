@@ -21,11 +21,13 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **META LLM charter** | [disklordz/agents/charter/ARCHITECTURE.md](disklordz/agents/charter/ARCHITECTURE.md) · [CLAUDE.md](CLAUDE.md) | `./scripts/sync-meta-llm-charter.sh` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-9090** (sampleless trap wavetable synth) | [Wave9090/ARCHITECTURE.md](Wave9090/ARCHITECTURE.md) | `Wave9090_VST3`, `Wave9090_Standalone`, `Wave9090Tests` |
+| **SP-1200 Drumulator** (standalone + VST3 sampler) | [SP1200/ARCHITECTURE.md](SP1200/ARCHITECTURE.md) · [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md) | `SP1200_Standalone`, `SP1200_VST3`, `ctest -R SP1200` |
 
 ## Repository layout
 
 ```
 Source/          Plugin processor, DSP, assets, preset import
+SP1200/          SP-1200-style standalone sampler (JUCE)
 hise-sketch/     HISE / Antigravity projects (optional imports)
 disklordz/       Drum SaaS (`website/`) and sound-factory scripts
 tools/           CLI binaries (link JUCE / plugin static lib)
