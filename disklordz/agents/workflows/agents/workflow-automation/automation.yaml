@@ -1,0 +1,15 @@
+# Automation — Workflow Automation (`workflow-automation`)
+
+platform: github
+trigger: workflow_dispatch
+primary: .github/workflows/scaffold-agent-workflows.yml
+
+## Steps
+1. Run scaffold_workflows.py
+2. Open PR if manifest diff
+
+## Invoke agent
+Read: disklordz/agents/profit/workflow-automation/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#workflow-automation

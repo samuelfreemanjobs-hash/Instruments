@@ -1,0 +1,29 @@
+{
+  "name": "Disklordz Marketing Glue (stub)",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Cron",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR_SITE/api/webhooks/lead",
+        "method": "POST"
+      },
+      "name": "Lead webhook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [220, 0]
+    }
+  ],
+  "connections": {
+    "Cron": { "main": [[{ "node": "Lead webhook", "type": "main", "index": 0 }]] }
+  },
+  "meta": {
+    "agent": "marketing-glue",
+    "doc": "disklordz/agents/workflows/agents/marketing-glue/automation.yaml"
+  }
+}

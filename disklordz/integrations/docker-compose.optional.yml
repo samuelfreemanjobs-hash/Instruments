@@ -1,0 +1,36 @@
+# Optional glue services (profile-gated). Not required for website build.
+services:
+  disklordz-audiocraft-stub:
+    profiles: ["engines"]
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./engines/audiocraft:/app
+    command: ["python3", "server.py", "8765"]
+    ports:
+      - "8765:8765"
+
+  disklordz-stable-audio-stub:
+    profiles: ["engines"]
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./engines/stable-audio:/app
+    command: ["python3", "server.py", "8766"]
+    ports:
+      - "8766:8766"
+
+  n8n:
+    profiles: ["n8n"]
+    image: docker.n8n.io/n8nio/n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:

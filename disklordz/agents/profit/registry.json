@@ -1,0 +1,294 @@
+{
+  "version": 2,
+  "agent_count": 32,
+  "agents": [
+    {
+      "id": "workflow-automation",
+      "title": "Workflow Automation",
+      "profit_lever": "Agents run without manual babysitting",
+      "path": "disklordz/agents/profit/workflow-automation",
+      "entry": "disklordz/agents/profit/workflow-automation/agent.md",
+      "skill": "disklordz/agents/profit/workflow-automation/skill.md",
+      "upstream_repo": "https://github.com/inngest/inngest"
+    },
+    {
+      "id": "pm-agent",
+      "title": "PM Agent (Fleet ADD)",
+      "profit_lever": "No hidden agents \u2014 fleet is discoverable and running",
+      "path": "disklordz/agents/profit/pm-agent",
+      "entry": "disklordz/agents/profit/pm-agent/agent.md",
+      "skill": "disklordz/agents/profit/pm-agent/skill.md",
+      "upstream_repo": "https://github.com/github/github-mcp-server"
+    },
+    {
+      "id": "conversion-qa",
+      "title": "Conversion QA",
+      "profit_lever": "Fewer broken flows \u2192 more Pro upgrades",
+      "path": "disklordz/agents/profit/conversion-qa",
+      "entry": "disklordz/agents/profit/conversion-qa/agent.md",
+      "skill": "disklordz/agents/profit/conversion-qa/skill.md",
+      "upstream_repo": "https://github.com/microsoft/playwright-mcp"
+    },
+    {
+      "id": "billing-ops",
+      "title": "Billing Ops",
+      "profit_lever": "MRR recovery and correct credit ledger",
+      "path": "disklordz/agents/profit/billing-ops",
+      "entry": "disklordz/agents/profit/billing-ops/agent.md",
+      "skill": "disklordz/agents/profit/billing-ops/skill.md",
+      "upstream_repo": "https://github.com/stripe/agent-toolkit"
+    },
+    {
+      "id": "ship-velocity",
+      "title": "Ship Velocity",
+      "profit_lever": "Shorter cycle time = faster revenue features",
+      "path": "disklordz/agents/profit/ship-velocity",
+      "entry": "disklordz/agents/profit/ship-velocity/agent.md",
+      "skill": "disklordz/agents/profit/ship-velocity/skill.md",
+      "upstream_repo": "https://github.com/github/github-mcp-server"
+    },
+    {
+      "id": "async-generation",
+      "title": "Async Generation",
+      "profit_lever": "Completed paid jobs without serverless timeouts",
+      "path": "disklordz/agents/profit/async-generation",
+      "entry": "disklordz/agents/profit/async-generation/agent.md",
+      "skill": "disklordz/agents/profit/async-generation/skill.md",
+      "upstream_repo": "https://github.com/inngest/inngest"
+    },
+    {
+      "id": "prompt-coach",
+      "title": "Prompt Coach",
+      "profit_lever": "Free tier quality \u2192 sign-up and Pro",
+      "path": "disklordz/agents/profit/prompt-coach",
+      "entry": "disklordz/agents/profit/prompt-coach/agent.md",
+      "skill": "disklordz/agents/profit/prompt-coach/skill.md",
+      "upstream_repo": "https://github.com/vercel/ai"
+    },
+    {
+      "id": "product-factory",
+      "title": "Product Factory",
+      "profit_lever": "Higher AOV catalog SKUs",
+      "path": "disklordz/agents/profit/product-factory",
+      "entry": "disklordz/agents/profit/product-factory/agent.md",
+      "skill": "disklordz/agents/profit/product-factory/skill.md",
+      "upstream_repo": "https://github.com/crewAIInc/crewAI"
+    },
+    {
+      "id": "spec-validator",
+      "title": "Spec Validator",
+      "profit_lever": "Fewer bad gens and refunds",
+      "path": "disklordz/agents/profit/spec-validator",
+      "entry": "disklordz/agents/profit/spec-validator/agent.md",
+      "skill": "disklordz/agents/profit/spec-validator/skill.md",
+      "upstream_repo": "https://github.com/pydantic/pydantic-ai"
+    },
+    {
+      "id": "lane-workflow",
+      "title": "Lane Workflow",
+      "profit_lever": "Consistent multi-candidate quality",
+      "path": "disklordz/agents/profit/lane-workflow",
+      "entry": "disklordz/agents/profit/lane-workflow/agent.md",
+      "skill": "disklordz/agents/profit/lane-workflow/skill.md",
+      "upstream_repo": "https://github.com/langchain-ai/langgraph"
+    },
+    {
+      "id": "ops-schema",
+      "title": "Ops Schema",
+      "profit_lever": "Uptime and safe schema evolution",
+      "path": "disklordz/agents/profit/ops-schema",
+      "entry": "disklordz/agents/profit/ops-schema/agent.md",
+      "skill": "disklordz/agents/profit/ops-schema/skill.md",
+      "upstream_repo": "https://github.com/supabase/mcp"
+    },
+    {
+      "id": "marketing-glue",
+      "title": "Marketing Glue",
+      "profit_lever": "Retention and top-of-funnel",
+      "path": "disklordz/agents/profit/marketing-glue",
+      "entry": "disklordz/agents/profit/marketing-glue/agent.md",
+      "skill": "disklordz/agents/profit/marketing-glue/skill.md",
+      "upstream_repo": "https://github.com/n8n-io/n8n"
+    },
+    {
+      "id": "support-macro",
+      "title": "Support Macro",
+      "profit_lever": "Lower support cost per user",
+      "path": "disklordz/agents/profit/support-macro",
+      "entry": "disklordz/agents/profit/support-macro/agent.md",
+      "skill": "disklordz/agents/profit/support-macro/skill.md",
+      "upstream_repo": "https://github.com/anthropics/skills"
+    },
+    {
+      "id": "desktop-ops",
+      "title": "Desktop Ops",
+      "profit_lever": "Founder time back to product",
+      "path": "disklordz/agents/profit/desktop-ops",
+      "entry": "disklordz/agents/profit/desktop-ops/agent.md",
+      "skill": "disklordz/agents/profit/desktop-ops/skill.md",
+      "upstream_repo": "https://github.com/bytebot-ai/bytebot"
+    },
+    {
+      "id": "factory-batch-gpu",
+      "title": "Factory Batch GPU",
+      "profit_lever": "SKU velocity for storefront",
+      "path": "disklordz/agents/profit/factory-batch-gpu",
+      "entry": "disklordz/agents/profit/factory-batch-gpu/agent.md",
+      "skill": "disklordz/agents/profit/factory-batch-gpu/skill.md",
+      "upstream_repo": "https://github.com/triggerdotdev/trigger.dev"
+    },
+    {
+      "id": "engine-swap",
+      "title": "Engine Swap",
+      "profit_lever": "Pro retention via premium sound",
+      "path": "disklordz/agents/profit/engine-swap",
+      "entry": "disklordz/agents/profit/engine-swap/agent.md",
+      "skill": "disklordz/agents/profit/engine-swap/skill.md",
+      "upstream_repo": "https://github.com/facebookresearch/audiocraft"
+    },
+    {
+      "id": "integration-health",
+      "title": "Integration Health",
+      "profit_lever": "Prevent revenue leaks from misconfig",
+      "path": "disklordz/agents/profit/integration-health",
+      "entry": "disklordz/agents/profit/integration-health/agent.md",
+      "skill": "disklordz/agents/profit/integration-health/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "churn-winback",
+      "title": "Churn Win-back",
+      "profit_lever": "Reactivate lapsed Pro users",
+      "path": "disklordz/agents/profit/churn-winback",
+      "entry": "disklordz/agents/profit/churn-winback/agent.md",
+      "skill": "disklordz/agents/profit/churn-winback/skill.md",
+      "upstream_repo": "https://github.com/n8n-io/n8n"
+    },
+    {
+      "id": "seo-kit-pages",
+      "title": "SEO Kit Pages",
+      "profit_lever": "Organic traffic \u2192 signups",
+      "path": "disklordz/agents/profit/seo-kit-pages",
+      "entry": "disklordz/agents/profit/seo-kit-pages/agent.md",
+      "skill": "disklordz/agents/profit/seo-kit-pages/skill.md",
+      "upstream_repo": "https://github.com/vercel/next.js"
+    },
+    {
+      "id": "referral-affiliate",
+      "title": "Referral & Affiliate",
+      "profit_lever": "Lower CAC",
+      "path": "disklordz/agents/profit/referral-affiliate",
+      "entry": "disklordz/agents/profit/referral-affiliate/agent.md",
+      "skill": "disklordz/agents/profit/referral-affiliate/skill.md",
+      "upstream_repo": "https://github.com/stripe/agent-toolkit"
+    },
+    {
+      "id": "fraud-abuse",
+      "title": "Fraud & Abuse",
+      "profit_lever": "Protect free-tier margin",
+      "path": "disklordz/agents/profit/fraud-abuse",
+      "entry": "disklordz/agents/profit/fraud-abuse/agent.md",
+      "skill": "disklordz/agents/profit/fraud-abuse/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "pricing-experiment",
+      "title": "Pricing Experiment",
+      "profit_lever": "ARPU / Stripe A/B",
+      "path": "disklordz/agents/profit/pricing-experiment",
+      "entry": "disklordz/agents/profit/pricing-experiment/agent.md",
+      "skill": "disklordz/agents/profit/pricing-experiment/skill.md",
+      "upstream_repo": "https://github.com/stripe/agent-toolkit"
+    },
+    {
+      "id": "onboarding-concierge",
+      "title": "Onboarding Concierge",
+      "profit_lever": "Time-to-first-kit",
+      "path": "disklordz/agents/profit/onboarding-concierge",
+      "entry": "disklordz/agents/profit/onboarding-concierge/agent.md",
+      "skill": "disklordz/agents/profit/onboarding-concierge/skill.md",
+      "upstream_repo": "https://github.com/inngest/inngest"
+    },
+    {
+      "id": "daw-inbox-copilot",
+      "title": "DAW Inbox Copilot",
+      "profit_lever": "Producer stickiness",
+      "path": "disklordz/agents/profit/daw-inbox-copilot",
+      "entry": "disklordz/agents/profit/daw-inbox-copilot/agent.md",
+      "skill": "disklordz/agents/profit/daw-inbox-copilot/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "airtable-wo-triage",
+      "title": "Airtable WO Triage",
+      "profit_lever": "PM throughput",
+      "path": "disklordz/agents/profit/airtable-wo-triage",
+      "entry": "disklordz/agents/profit/airtable-wo-triage/agent.md",
+      "skill": "disklordz/agents/profit/airtable-wo-triage/skill.md",
+      "upstream_repo": "https://github.com/github/github-mcp-server"
+    },
+    {
+      "id": "golden-wav-qa",
+      "title": "Golden WAV QA",
+      "profit_lever": "Plugin cross-sell quality",
+      "path": "disklordz/agents/profit/golden-wav-qa",
+      "entry": "disklordz/agents/profit/golden-wav-qa/agent.md",
+      "skill": "disklordz/agents/profit/golden-wav-qa/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "competitive-intel",
+      "title": "Competitive Intel",
+      "profit_lever": "vs ILLUGEN positioning",
+      "path": "disklordz/agents/profit/competitive-intel",
+      "entry": "disklordz/agents/profit/competitive-intel/agent.md",
+      "skill": "disklordz/agents/profit/competitive-intel/skill.md",
+      "upstream_repo": "https://github.com/entropyvortex/meta-llm-charter"
+    },
+    {
+      "id": "license-compliance",
+      "title": "License & Compliance",
+      "profit_lever": "Engine licensing gates",
+      "path": "disklordz/agents/profit/license-compliance",
+      "entry": "disklordz/agents/profit/license-compliance/agent.md",
+      "skill": "disklordz/agents/profit/license-compliance/skill.md",
+      "upstream_repo": "https://github.com/facebookresearch/audiocraft"
+    },
+    {
+      "id": "social-clip-factory",
+      "title": "Social Clip Factory",
+      "profit_lever": "Top-of-funnel clips",
+      "path": "disklordz/agents/profit/social-clip-factory",
+      "entry": "disklordz/agents/profit/social-clip-factory/agent.md",
+      "skill": "disklordz/agents/profit/social-clip-factory/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "analytics-interpreter",
+      "title": "Analytics Interpreter",
+      "profit_lever": "Weekly MRR/gen metrics",
+      "path": "disklordz/agents/profit/analytics-interpreter",
+      "entry": "disklordz/agents/profit/analytics-interpreter/agent.md",
+      "skill": "disklordz/agents/profit/analytics-interpreter/skill.md",
+      "upstream_repo": "https://github.com/stripe/agent-toolkit"
+    },
+    {
+      "id": "release-notes",
+      "title": "Release Notes",
+      "profit_lever": "Trust + upgrades",
+      "path": "disklordz/agents/profit/release-notes",
+      "entry": "disklordz/agents/profit/release-notes/agent.md",
+      "skill": "disklordz/agents/profit/release-notes/skill.md",
+      "upstream_repo": "https://github.com/github/github-mcp-server"
+    },
+    {
+      "id": "hardware-preset-designer",
+      "title": "Hardware Preset Designer",
+      "profit_lever": "Hardware preset velocity \u2014 cross-sell Instruments + producer kits",
+      "path": "disklordz/agents/profit/hardware-preset-designer",
+      "entry": "disklordz/agents/profit/hardware-preset-designer/agent.md",
+      "skill": "disklordz/agents/profit/hardware-preset-designer/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    }
+  ]
+}

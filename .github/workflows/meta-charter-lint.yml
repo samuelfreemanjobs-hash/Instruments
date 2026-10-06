@@ -1,0 +1,30 @@
+name: META charter lint
+
+on:
+  push:
+    paths:
+      - "CLAUDE.md"
+      - "disklordz/agents/charter/**"
+      - ".claude/skills/**"
+  pull_request:
+    paths:
+      - "CLAUDE.md"
+      - "disklordz/agents/charter/**"
+      - ".claude/skills/**"
+
+jobs:
+  charter-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Core byte budget
+        run: |
+          test -f CLAUDE.md
+          bytes=$(wc -c < CLAUDE.md | tr -d ' ')
+          echo "CLAUDE.md bytes: $bytes"
+          test "$bytes" -le 2400
+      - name: Mirror matches core
+        run: |
+          cmp -s CLAUDE.md disklordz/agents/charter/META_CHARTER.md
+      - name: Profit agent trees
+        run: python3 disklordz/agents/profit/scaffold_agents.py --check

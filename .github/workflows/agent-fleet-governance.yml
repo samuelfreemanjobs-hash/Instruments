@@ -1,0 +1,41 @@
+# PM Agent — repo-wide fleet registry must match specs (DISKLORDZ_AGENTS.md, fleet.json)
+name: Agent fleet governance
+
+on:
+  schedule:
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "DISKLORDZ_AGENTS.md"
+      - "docs/DISKLORDZ_AGENT_FLEET.md"
+      - ".github/agents/fleet.json"
+      - "disklordz/agents/**"
+      - "scripts/sync-disklordz-agent-fleet.sh"
+      - ".github/workflows/agent-fleet-*.yml"
+
+jobs:
+  pm-agent-governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Sync fleet (generate + check)
+        run: bash scripts/sync-disklordz-agent-fleet.sh
+
+      - name: Fail on uncommitted fleet artifacts
+        run: |
+          git diff --exit-code DISKLORDZ_AGENTS.md \
+            docs/DISKLORDZ_AGENT_FLEET.md \
+            .github/agents/fleet.json \
+            disklordz/agents/workflows/PM_ADD.md \
+            disklordz/agents/workflows/manifest.json \
+            disklordz/agents/workflows/agents/ \
+            disklordz/agents/profit/registry.json || {
+            echo "::error::Fleet drift — commit output of scripts/sync-disklordz-agent-fleet.sh"
+            exit 1
+          }

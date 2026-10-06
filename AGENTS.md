@@ -2,6 +2,23 @@
 
 Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the area you edit.
 
+## Disklordz agent fleet (repo-wide)
+
+All profit agents are **company-wide** in this monorepo — not only under `disklordz/agents/`.
+
+| Start here | Role |
+|------------|------|
+| **[DISKLORDZ_AGENTS.md](DISKLORDZ_AGENTS.md)** | Root fleet index + active CI |
+| **[disklordz/agents/workflows/PM_ADD.md](disklordz/agents/workflows/PM_ADD.md)** | PM ADD roster (announcements) |
+| **[`.github/agents/fleet.json`](.github/agents/fleet.json)** | Machine registry |
+| **Orchestration** | `workflow-automation` (scaffold workflows) · **`pm-agent`** (governance + execute CI) |
+
+```bash
+./scripts/run-agent-fleet-now.sh          # sync + execute all local agent roles now
+./scripts/complete-roadmap-automation.sh  # integrations promote + 007 smoke + stub blockers
+./scripts/sync-disklordz-agent-fleet.sh   # regenerate fleet docs after _specs.json edits
+```
+
 ## Standards
 
 - [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts  
@@ -21,6 +38,15 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 **Stripe MCP (Cursor):** [disklordz/website/docs/STRIPE_MCP.md](disklordz/website/docs/STRIPE_MCP.md) — install Stripe plugin or OAuth **stripe** server; optional `STRIPE_RESTRICTED_KEY` for agents.
 
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
+
+Integrations hub: [disklordz/integrations/ARCHITECTURE.md](disklordz/integrations/ARCHITECTURE.md) · `./scripts/setup-open-source-integrations.sh`
+
+Profit agents (31): [DISKLORDZ_AGENTS.md](DISKLORDZ_AGENTS.md) · [docs/DISKLORDZ_PROFIT_AGENTS.md](docs/DISKLORDZ_PROFIT_AGENTS.md) · `disklordz/agents/profit/<id>/agent.md`
+
+**Roadmap & progress:** [docs/ROADMAP.md](docs/ROADMAP.md)  
+**SOPs & templates:** [docs/disklordz/README.md](docs/disklordz/README.md)
+
+META charter (all agents): [CLAUDE.md](CLAUDE.md) · sync: `./scripts/sync-meta-llm-charter.sh` · skills `/zero-pause` `/weave` `/premortem`
 
 ## RAG (prompt knowledge)
 
@@ -52,9 +78,21 @@ python3 vst-testing-ops/test_runner.py                     # single-VST pluginva
 streamlit run vst-testing-ops/app.py                       # operations dashboard
 ```
 
-**After editing plugin C++ (`Source/`, `Wave909/`, etc.):** run `run_business.py --profile ci` before pushing; on failure read `vst-testing-ops/error_log.txt` and fix until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit updated WAVs.
+**After editing plugin C++ (`Source/`, `Wave9090/`, etc.):** run `run_business.py --profile ci` before pushing; on failure read `vst-testing-ops/error_log.txt` and fix until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit updated WAVs.
 
 - [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
+
+## SynthForge (preset workstation)
+
+```bash
+cd tools/synth-forge && python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt && pip install -e . && pytest tests -v
+uvicorn synth_forge.main:app --reload --port 8000
+```
+
+See [tools/synth-forge/ARCHITECTURE.md](tools/synth-forge/ARCHITECTURE.md).
+
+**Fleet agent:** `hardware-preset-designer` — read `disklordz/agents/profit/hardware-preset-designer/agent.md` or skill `disklordz-hardware-preset-designer`. CLI: `python3 disklordz/integrations/agents/hardware_preset_designer.py --help`.
 
 ## Git
 

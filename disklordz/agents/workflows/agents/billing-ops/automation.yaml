@@ -1,0 +1,15 @@
+# Automation — Billing Ops (`billing-ops`)
+
+platform: manual
+trigger: weekly + stripe webhook
+primary: disklordz/agents/workflows/n8n/billing-ops-stub.json
+
+## Steps
+1. Stripe MCP read
+2. Human approve writes
+
+## Invoke agent
+Read: disklordz/agents/profit/billing-ops/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#billing-ops

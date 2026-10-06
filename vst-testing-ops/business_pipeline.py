@@ -20,11 +20,11 @@ BUILD_LOG = OPS_ROOT / "last_build.log"
 REPORT_JSON = OPS_ROOT / "last_run_report.json"
 ORCHESTRATOR = REPO_ROOT / "scripts" / "vst" / "run_pluginval.py"
 
-# Wave909 uses a nested build dir (see Wave909/ARCHITECTURE.md)
-WAVE909_VST3_BUNDLE = (
-    REPO_ROOT / "build/Wave909/Wave909_artefacts/Release/VST3/WAVE-909.vst3"
+# Wave9090 uses a nested build dir (see Wave9090/ARCHITECTURE.md)
+WAVE9090_VST3_BUNDLE = (
+    REPO_ROOT / "build/Wave9090/Wave9090_artefacts/Release/VST3/WAVE-9090.vst3"
 )
-WAVE909_VST3_DISCOVER = REPO_ROOT / "build/Wave909/Wave909_artefacts/Release/VST3"
+WAVE9090_VST3_DISCOVER = REPO_ROOT / "build/Wave9090/Wave9090_artefacts/Release/VST3"
 
 
 class StageId(str, Enum):
@@ -33,7 +33,7 @@ class StageId(str, Enum):
     ARTEFACTS = "artefacts"
     DETERMINISM = "determinism"
     GOLDEN = "golden"
-    WAVE909_TESTS = "wave909_tests"
+    WAVE9090_TESTS = "wave9090_tests"
     PLUGINVAL = "pluginval"
     DISKLORDZ_WEB = "disklordz_web"
 
@@ -58,7 +58,7 @@ class PipelineConfig:
     check_artefacts: bool = True
     determinism: bool = True
     golden: bool = True
-    wave909_tests: bool = True
+    wave9090_tests: bool = True
     pluginval: bool = True
     disklordz_web: bool = False
     build_jobs: int | None = None
@@ -154,7 +154,7 @@ def stage_artefacts() -> StageResult:
         REPO_ROOT / "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3",
         REPO_ROOT / "build/JDUpgraded_artefacts/Release/CLAP/JD Upgraded.clap",
         REPO_ROOT / "build/JDUpgraded_artefacts/Release/Standalone/JD Upgraded",
-        WAVE909_VST3_BUNDLE,
+        WAVE9090_VST3_BUNDLE,
     ]
     lines: list[str] = []
     ok = True
@@ -196,21 +196,21 @@ def stage_golden() -> StageResult:
     return StageResult(StageId.GOLDEN, code == 0, time.time() - t0, out)
 
 
-def stage_wave909_tests() -> StageResult:
+def stage_wave9090_tests() -> StageResult:
     t0 = time.time()
-    tests_bin = REPO_ROOT / "build/Wave909Tests"
+    tests_bin = REPO_ROOT / "build/Wave9090/Wave9090Tests"
     if tests_bin.is_file() and os.access(tests_bin, os.X_OK):
         code, out = _run([str(tests_bin)])
-        return StageResult(StageId.WAVE909_TESTS, code == 0, time.time() - t0, out)
-    code, out = _run(["ctest", "--test-dir", "build", "-R", "Wave909", "--output-on-failure"])
+        return StageResult(StageId.WAVE9090_TESTS, code == 0, time.time() - t0, out)
+    code, out = _run(["ctest", "--test-dir", "build", "-R", "Wave9090", "--output-on-failure"])
     if code != 0 and "No tests were found" in out:
         return StageResult(
-            StageId.WAVE909_TESTS,
+            StageId.WAVE9090_TESTS,
             False,
             time.time() - t0,
-            "Wave909 tests not registered — run a full build (cmake --build build -j).\n" + out,
+            "Wave9090 tests not registered — run a full build (cmake --build build -j).\n" + out,
         )
-    return StageResult(StageId.WAVE909_TESTS, code == 0, time.time() - t0, out)
+    return StageResult(StageId.WAVE9090_TESTS, code == 0, time.time() - t0, out)
 
 
 def stage_pluginval() -> StageResult:
@@ -223,7 +223,7 @@ def stage_pluginval() -> StageResult:
         env["PLUGINVAL_BIN"] = str(bin_pv)
     bundles = [
         REPO_ROOT / "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3",
-        WAVE909_VST3_BUNDLE,
+        WAVE9090_VST3_BUNDLE,
     ]
     chunks: list[str] = []
     for bundle in bundles:
@@ -271,7 +271,7 @@ STAGE_RUNNERS: dict[StageId, Callable[[], StageResult]] = {
     StageId.ARTEFACTS: stage_artefacts,
     StageId.DETERMINISM: stage_determinism,
     StageId.GOLDEN: stage_golden,
-    StageId.WAVE909_TESTS: stage_wave909_tests,
+    StageId.WAVE9090_TESTS: stage_wave9090_tests,
     StageId.PLUGINVAL: stage_pluginval,
     StageId.DISKLORDZ_WEB: stage_disklordz_web,
 }
@@ -289,7 +289,7 @@ PROFILES: dict[str, PipelineConfig] = {
         check_artefacts=True,
         determinism=True,
         golden=True,
-        wave909_tests=True,
+        wave9090_tests=True,
         pluginval=True,
         disklordz_web=False,
     ),
@@ -300,7 +300,7 @@ PROFILES: dict[str, PipelineConfig] = {
         check_artefacts=False,
         determinism=False,
         golden=False,
-        wave909_tests=False,
+        wave9090_tests=False,
         pluginval=True,
     ),
     "dsp-only": PipelineConfig(
@@ -309,7 +309,7 @@ PROFILES: dict[str, PipelineConfig] = {
         check_artefacts=False,
         determinism=True,
         golden=True,
-        wave909_tests=False,
+        wave9090_tests=False,
         pluginval=False,
         disklordz_web=False,
     ),
@@ -328,8 +328,8 @@ def resolve_stages(config: PipelineConfig) -> list[tuple[StageId, Callable[[], S
         stages.append((StageId.DETERMINISM, STAGE_RUNNERS[StageId.DETERMINISM]))
     if config.golden:
         stages.append((StageId.GOLDEN, STAGE_RUNNERS[StageId.GOLDEN]))
-    if config.wave909_tests:
-        stages.append((StageId.WAVE909_TESTS, STAGE_RUNNERS[StageId.WAVE909_TESTS]))
+    if config.wave9090_tests:
+        stages.append((StageId.WAVE9090_TESTS, STAGE_RUNNERS[StageId.WAVE9090_TESTS]))
     if config.pluginval:
         stages.append((StageId.PLUGINVAL, STAGE_RUNNERS[StageId.PLUGINVAL]))
     if config.disklordz_web:
@@ -381,7 +381,7 @@ def fleet_status() -> dict[str, bool]:
         "JD Upgraded VST3": REPO_ROOT / "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3",
         "JD Upgraded CLAP": REPO_ROOT / "build/JDUpgraded_artefacts/Release/CLAP/JD Upgraded.clap",
         "OfflineRender": REPO_ROOT / "build/OfflineRender",
-        "Wave909 VST3": WAVE909_VST3_BUNDLE,
+        "Wave9090 VST3": WAVE9090_VST3_BUNDLE,
         "pluginval cached": OPS_ROOT / "bin/pluginval",
     }
     return {name: p.is_dir() or p.is_file() for name, p in paths.items()}

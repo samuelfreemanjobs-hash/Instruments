@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEMPHIS-660 // Phonk Drum Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #050505;
+            color: #e0e0e0;
+            background-image: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #050505 50%);
+            min-height: 100vh;
+        }
+
+        .mono {
+            font-family: 'Space Mono', monospace;
+        }
+
+        .crt-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.4;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            background: #ff0055;
+            cursor: pointer;
+            border-radius: 0;
+            box-shadow: 0 0 10px #ff0055;
+            margin-top: -6px;
+        }
+        .snare-theme input[type=range]::-webkit-slider-thumb {
+            background: #00ffcc;
+            box-shadow: 0 0 10px #00ffcc;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #333;
+            border-radius: 2px;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        
+        .panel {
+            background: rgba(20, 20, 25, 0.8);
+            border: 1px solid #333;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-glitch {
+            transition: all 0.1s ease;
+            position: relative;
+        }
+        .btn-glitch:active {
+            transform: translate(2px, 2px);
+        }
+        
+        canvas {
+            image-rendering: pixelated;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: grid; }
+        .nav-btn { opacity: 0.5; transition: all 0.2s; }
+        .nav-btn.active { opacity: 1; border-bottom: 2px solid; }
+        .nav-btn.active-kick { border-color: #ff0055; color: #ff0055; }
+        .nav-btn.active-snare { border-color: #00ffcc; color: #00ffcc; }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex flex-col items-center">
+    <div class="crt-overlay"></div>
+
+    <header class="w-full max-w-5xl mb-6 border-b-2 border-gray-800 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-end z-10 relative">
+        <div>
+            <h1 class="text-4xl sm:text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-purple-500 uppercase">
+                MEMPHIS-660
+            </h1>
+            <p class="mono text-sm sm:text-base text-gray-400 mt-2 tracking-widest">DSP PHONK DRUM ARCHITECT</p>
+        </div>
+        <nav class="flex gap-6 mt-4 sm:mt-0 mono text-lg tracking-widest font-bold">
+            <button id="nav-kick" class="nav-btn active active-kick pb-1" onclick="switchTab('kick')">ENGINE A: KICK</button>
+            <button id="nav-snare" class="nav-btn pb-1 hover:text-[#00ffcc]" onclick="switchTab('snare')">ENGINE B: SNARE</button>
+        </nav>
+    </header>
+
+    <main id="view-kick" class="w-full max-w-5xl grid-cols-1 lg:grid-cols-12 gap-8 z-10 relative tab-content active">
+        <section class="panel p-6 col-span-1 lg:col-span-5 rounded flex flex-col gap-6">
+            <h2 class="text-xl font-bold tracking-widest border-b border-gray-700 pb-2 mb-2 text-red-500">KICK PARAMETERS</h2>
+            
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between mono text-sm">
+                    <label>ROOT FREQ (F1 = 43.65)</label>
+                    <span id="val_root_freq" class="text-red-400">43.65 Hz</span>
+                </div>
+                <input type="range" id="root_freq" min="30" max="80" step="0.01" value="43.65">
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between mono text-sm">
+                    <label>DURATION</label>
+                    <span id="val_duration" class="text-red-400">250 ms</span>
+                </div>
+                <input type="range" id="duration" min="50" max="600" step="10" value="250">
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between mono text-sm">
+                    <label>PITCH MOD (TRANSIENT)</label>
+                    <span id="val_pitch_mod" class="text-red-400">48.0 st</span>
+                </div>
+                <input type="range" id="pitch_mod" min="12" max="96" step="1" value="48">
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between mono text-sm">
+                    <label>PITCH DECAY</label>
+                    <span id="val_pitch_decay" class="text-red-400">22 ms</span>
+                </div>
+                <input type="range" id="pitch_decay" min="5" max="80" step="1" value="22">
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between mono text-sm">
+                    <label>DOWNSAMPLE (SP-1200)</label>
+                    <span id="val_lofi_sr" class="text-red-400">26040 Hz</span>
+                </div>
+                <input type="range" id="lofi_sr" min="8000" max="44100" step="100" value="26040">
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between mono text-sm">
+                    <label>QUANTIZATION</label>
+                    <span id="val_bit_depth" class="text-red-400">12 Bit</span>
+                </div>
+                <input type="range" id="bit_depth" min="4" max="24" step="1" value="12">
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between mono text-sm">
+                    <label>SOFT CLIP DRIVE</label>
+                    <span id="val_clip_drive" class="text-red-400">4.0 dB</span>
+                </div>
+                <input type="range" id="clip_drive" min="0" max="24" step="0.5" value="4.0">
+            </div>
+
+            <div class="border-t border-gray-700 pt-4 mt-2 flex flex-col gap-4">
+                <h3 class="text-sm font-bold tracking-widest text-red-500">AMP ADSR</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>ATTACK</label><span id="val_amp_a">0 ms</span></div>
+                        <input type="range" id="amp_a" min="0" max="200" step="1" value="0">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>DECAY</label><span id="val_amp_d">140 ms</span></div>
+                        <input type="range" id="amp_d" min="0" max="500" step="1" value="140">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>SUSTAIN</label><span id="val_amp_s">0 %</span></div>
+                        <input type="range" id="amp_s" min="0" max="100" step="1" value="0">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>RELEASE</label><span id="val_amp_r">50 ms</span></div>
+                        <input type="range" id="amp_r" min="0" max="500" step="1" value="50">
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 pt-4 mt-2 flex flex-col gap-4">
+                <h3 class="text-sm font-bold tracking-widest text-red-500">FILTER & ENVELOPE</h3>
+                <div class="flex flex-col gap-2">
+                    <div class="flex justify-between mono text-xs">
+                        <label>FILTER TYPE</label>
+                    </div>
+                    <select id="flt_type" class="bg-black border border-gray-600 text-red-400 mono p-1 text-sm outline-none">
+                        <option value="tape">Cassette Tape (6dB LP)</option>
+                        <option value="lp">Fat Lowpass (12dB SVF)</option>
+                        <option value="bp">Telephone Bandpass (12dB SVF)</option>
+                        <option value="hp">Click Highpass (12dB SVF)</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>BASE CUTOFF</label><span id="val_flt_cut">12000 Hz</span></div>
+                        <input type="range" id="flt_cut" min="20" max="20000" step="10" value="12000">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-1">
+                            <div class="flex justify-between mono text-[10px] text-gray-400"><label>RESONANCE (Q)</label><span id="val_flt_res">0.7</span></div>
+                            <input type="range" id="flt_res" min="0.1" max="10" step="0.1" value="0.7">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex justify-between mono text-[10px] text-gray-400"><label>ENV AMOUNT</label><span id="val_flt_env">0 st</span></div>
+                            <input type="range" id="flt_env" min="-120" max="120" step="1" value="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-2">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>F. ATTACK</label><span id="val_flt_a">0 ms</span></div>
+                        <input type="range" id="flt_a" min="0" max="200" step="1" value="0">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>F. DECAY</label><span id="val_flt_d">100 ms</span></div>
+                        <input type="range" id="flt_d" min="0" max="500" step="1" value="100">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>F. SUSTAIN</label><span id="val_flt_s">0 %</span></div>
+                        <input type="range" id="flt_s" min="0" max="100" step="1" value="0">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>F. RELEASE</label><span id="val_flt_r">50 ms</span></div>
+                        <input type="range" id="flt_r" min="0" max="500" step="1" value="50">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="col-span-1 lg:col-span-7 flex flex-col gap-6">
+            <div class="panel p-4 h-64 rounded border border-gray-700 relative flex items-center justify-center">
+                <div class="absolute top-4 left-4 mono text-xs text-gray-500 z-10">KICK OSCILLOSCOPE // 44.1kHz</div>
+                <canvas id="visualizer-kick" class="w-full h-full cursor-pointer transition-opacity hover:opacity-80" title="Click to play preview"></canvas>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button id="btn-preview-kick" class="btn-glitch panel p-4 text-center font-bold text-lg border-red-600 border-2 hover:bg-red-600 hover:text-black transition-colors rounded">
+                    PREVIEW KICK
+                </button>
+                <button id="btn-download-kick" class="btn-glitch panel p-4 text-center font-bold text-lg border-purple-600 border-2 hover:bg-purple-600 hover:text-black transition-colors rounded">
+                    DOWNLOAD 24-BIT WAV
+                </button>
+            </div>
+            <div class="panel p-6 mt-2 rounded border border-gray-800 text-sm text-gray-400">
+                <h3 class="text-red-500 font-bold mb-2 uppercase tracking-widest border-b border-gray-800 pb-1">Kick Signal Chain</h3>
+                <ol class="list-decimal list-inside space-y-1 mono text-xs">
+                    <li>Sine Gen with Exp Pitch Env & ADSR Amp</li>
+                    <li>Sample Rate Reduction (Zero-Order Hold)</li>
+                    <li>Bit-Depth Quantization</li>
+                    <li>Multi-mode Filter with independent ADSR Envelope</li>
+                    <li>Hyperbolic Tangent (tanh) Soft Clipper</li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <main id="view-snare" class="w-full max-w-5xl grid-cols-1 lg:grid-cols-12 gap-8 z-10 relative tab-content snare-theme">
+        <section class="panel p-6 col-span-1 lg:col-span-5 rounded flex flex-col gap-6">
+            <h2 class="text-xl font-bold tracking-widest border-b border-gray-700 pb-2 mb-2 text-[#00ffcc]">SNARE PARAMETERS</h2>
+            
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between mono text-sm">
+                    <label>MEMBRANE ROOT (D3 = 220)</label>
+                    <span id="val_s_root" class="text-[#00ffcc]">220.0 Hz</span>
+                </div>
+                <input type="range" id="s_root" min="100" max="400" step="0.5" value="220.0">
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between mono text-sm">
+                    <label>TOTAL DURATION</label>
+                    <span id="val_s_dur" class="text-[#00ffcc]">350 ms</span>
+                </div>
+                <input type="range" id="s_dur" min="100" max="600" step="10" value="350">
+            </div>
+
+            <div class="border-t border-gray-700 pt-4 mt-2 flex flex-col gap-4">
+                <h3 class="text-sm font-bold tracking-widest text-[#00ffcc]">MEMBRANE & ENVELOPES</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>PITCH MOD</label><span id="val_s_pmod">24 st</span></div>
+                        <input type="range" id="s_pmod" min="12" max="48" step="1" value="24">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>PITCH DECAY</label><span id="val_s_pdec">18 ms</span></div>
+                        <input type="range" id="s_pdec" min="5" max="50" step="1" value="18">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>NOISE DECAY</label><span id="val_s_ndec">190 ms</span></div>
+                        <input type="range" id="s_ndec" min="50" max="400" step="5" value="190">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between mono text-[10px] text-gray-400"><label>FLAM DELAY</label><span id="val_s_flam">4.0 ms</span></div>
+                        <input type="range" id="s_flam" min="0" max="15" step="0.5" value="4.0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 pt-4 mt-2 flex flex-col gap-4">
+                <h3 class="text-sm font-bold tracking-widest text-[#00ffcc]">DEGRADATION (DR-660)</h3>
+                <div class="flex flex-col gap-2">
+                    <div class="flex justify-between mono text-sm">
+                        <label>DOWNSAMPLE (SP-1200)</label>
+                        <span id="val_s_sr" class="text-[#00ffcc]">26040 Hz</span>
+                    </div>
+                    <input type="range" id="s_sr" min="8000" max="44100" step="100" value="26040">
+                </div>
+                <div class="flex flex-col gap-2">
+                    <div class="flex justify-between mono text-sm">
+                        <label>QUANTIZATION</label>
+                        <span id="val_s_bit" class="text-[#00ffcc]">12 Bit</span>
+                    </div>
+                    <input type="range" id="s_bit" min="4" max="24" step="1" value="12">
+                </div>
+                <div class="flex flex-col gap-2">
+                    <div class="flex justify-between mono text-sm">
+                        <label>SOFT CLIP DRIVE</label>
+                        <span id="val_s_drive" class="text-[#00ffcc]">5.5 dB</span>
+                    </div>
+                    <input type="range" id="s_drive" min="0" max="24" step="0.5" value="5.5">
+                </div>
+            </div>
+        </section>
+
+        <section class="col-span-1 lg:col-span-7 flex flex-col gap-6">
+            <div class="panel p-4 h-64 rounded border border-gray-700 relative flex items-center justify-center">
+                <div class="absolute top-4 left-4 mono text-xs text-gray-500 z-10">SNARE OSCILLOSCOPE // 44.1kHz</div>
+                <canvas id="visualizer-snare" class="w-full h-full cursor-pointer transition-opacity hover:opacity-80" title="Click to play preview"></canvas>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button id="btn-preview-snare" class="btn-glitch panel p-4 text-center font-bold text-lg border-[#00ffcc] border-2 hover:bg-[#00ffcc] hover:text-black transition-colors rounded">
+                    PREVIEW SNARE
+                </button>
+                <button id="btn-download-snare" class="btn-glitch panel p-4 text-center font-bold text-lg border-purple-600 border-2 hover:bg-purple-600 hover:text-black transition-colors rounded">
+                    DOWNLOAD 24-BIT WAV
+                </button>
+            </div>
+            <div class="panel p-6 mt-2 rounded border border-gray-800 text-sm text-gray-400">
+                <h3 class="text-[#00ffcc] font-bold mb-2 uppercase tracking-widest border-b border-gray-800 pb-1">Snare Acoustic Triad</h3>
+                <ol class="list-decimal list-inside space-y-1 mono text-xs">
+                    <li>Membrane: Sine/Triangle Blend + Fast Env</li>
+                    <li>Wires: Pink Noise via 2.4kHz Bandpass + Delayed Env</li>
+                    <li>Offset Flam: 3x Clap impulses delayed by 4ms</li>
+                    <li>Summation & Decimation (26.04kHz / 12-bit)</li>
+                    <li>Tape Roll-off (105Hz HPF, 11.5kHz LPF) & Soft Clip</li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let audioCtx = null;
+        let floatDataKick = null;
+        let floatDataSnare = null;
+
+        const canvasKick = document.getElementById('visualizer-kick');
+        const ctxKick = canvasKick.getContext('2d');
+        const canvasSnare = document.getElementById('visualizer-snare');
+        const ctxSnare = canvasSnare.getContext('2d');
+
+        function switchTab(tabId) {
+            document.getElementById('view-kick').classList.remove('active');
+            document.getElementById('view-snare').classList.remove('active');
+            document.getElementById('nav-kick').classList.remove('active', 'active-kick');
+            document.getElementById('nav-snare').classList.remove('active', 'active-snare');
+
+            if (tabId === 'kick') {
+                document.getElementById('view-kick').classList.add('active');
+                document.getElementById('nav-kick').classList.add('active', 'active-kick');
+            } else {
+                document.getElementById('view-snare').classList.add('active');
+                document.getElementById('nav-snare').classList.add('active', 'active-snare');
+            }
+            resizeCanvas();
+        }
+
+        function resizeCanvas() {
+            if (document.getElementById('view-kick').classList.contains('active')) {
+                canvasKick.width = canvasKick.parentElement.clientWidth - 32;
+                canvasKick.height = canvasKick.parentElement.clientHeight - 32;
+                if (floatDataKick) drawWaveform(floatDataKick, ctxKick, canvasKick, '#ff0055');
+            }
+            if (document.getElementById('view-snare').classList.contains('active')) {
+                canvasSnare.width = canvasSnare.parentElement.clientWidth - 32;
+                canvasSnare.height = canvasSnare.parentElement.clientHeight - 32;
+                if (floatDataSnare) drawWaveform(floatDataSnare, ctxSnare, canvasSnare, '#00ffcc');
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function getADSR(t, a, d, s, r, gateLength) {
+            if (t < a) return a > 0 ? t / a : 1.0;
+            else if (t < a + d) return d > 0 ? 1.0 - (1.0 - s) * ((t - a) / d) : s;
+            else if (t < gateLength) return s;
+            else if (t < gateLength + r) return r > 0 ? s * (1.0 - (t - gateLength) / r) : 0.0;
+            else return 0.0;
+        }
+
+        function randn_bm() {
+            let u = 0, v = 0;
+            while(u === 0) u = Math.random();
+            while(v === 0) v = Math.random();
+            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+
+        function drawWaveform(data, ctx, canvas, color) {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            ctx.beginPath();
+            const step = Math.ceil(data.length / canvas.width);
+            const midY = canvas.height / 2;
+            const amp = midY * 0.9;
+            for (let i = 0; i < canvas.width; i++) {
+                let min = 1.0, max = -1.0;
+                for (let j = 0; j < step; j++) {
+                    const idx = i * step + j;
+                    if (idx < data.length) {
+                        const val = data[idx];
+                        if (val < min) min = val;
+                        if (val > max) max = val;
+                    }
+                }
+                ctx.moveTo(i, midY - (max * amp));
+                ctx.lineTo(i, midY - (min * amp));
+            }
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        async function playAudio(dataArray) {
+            if (!dataArray) return;
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') await audioCtx.resume();
+            const buffer = audioCtx.createBuffer(1, dataArray.length, 44100);
+            buffer.copyToChannel(dataArray, 0);
+            const source = audioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioCtx.destination);
+            source.start();
+        }
+
+        function downloadWav(samples, filename) {
+            const sampleRate = 44100;
+            const buffer = new ArrayBuffer(44 + samples.length * 3);
+            const view = new DataView(buffer);
+            const writeString = (v, offset, str) => { for (let i = 0; i < str.length; i++) v.setUint8(offset + i, str.charCodeAt(i)); };
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + samples.length * 3, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 3, true);
+            view.setUint16(32, 3, true);
+            view.setUint16(34, 24, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, samples.length * 3, true);
+
+            let offset = 44;
+            for (let i = 0; i < samples.length; i++) {
+                let s = Math.max(-1, Math.min(1, samples[i]));
+                let val = s < 0 ? s * 8388608 : s * 8388607;
+                val = Math.round(val);
+                view.setUint8(offset, val & 0xFF);
+                view.setUint8(offset + 1, (val >> 8) & 0xFF);
+                view.setUint8(offset + 2, (val >> 16) & 0xFF);
+                offset += 3;
+            }
+
+            const blob = new Blob([view], { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+        }
+
+        const pKick = {
+            root_freq: document.getElementById('root_freq'),
+            duration: document.getElementById('duration'),
+            pitch_mod: document.getElementById('pitch_mod'),
+            pitch_decay: document.getElementById('pitch_decay'),
+            lofi_sr: document.getElementById('lofi_sr'),
+            bit_depth: document.getElementById('bit_depth'),
+            clip_drive: document.getElementById('clip_drive'),
+            amp_a: document.getElementById('amp_a'),
+            amp_d: document.getElementById('amp_d'),
+            amp_s: document.getElementById('amp_s'),
+            amp_r: document.getElementById('amp_r'),
+            flt_type: document.getElementById('flt_type'),
+            flt_cut: document.getElementById('flt_cut'),
+            flt_res: document.getElementById('flt_res'),
+            flt_env: document.getElementById('flt_env'),
+            flt_a: document.getElementById('flt_a'),
+            flt_d: document.getElementById('flt_d'),
+            flt_s: document.getElementById('flt_s'),
+            flt_r: document.getElementById('flt_r')
+        };
+        const lKick = {
+            root_freq: document.getElementById('val_root_freq'), duration: document.getElementById('val_duration'),
+            pitch_mod: document.getElementById('val_pitch_mod'), pitch_decay: document.getElementById('val_pitch_decay'),
+            lofi_sr: document.getElementById('val_lofi_sr'), bit_depth: document.getElementById('val_bit_depth'),
+            clip_drive: document.getElementById('val_clip_drive'), amp_a: document.getElementById('val_amp_a'),
+            amp_d: document.getElementById('val_amp_d'), amp_s: document.getElementById('val_amp_s'),
+            amp_r: document.getElementById('val_amp_r'), flt_cut: document.getElementById('val_flt_cut'),
+            flt_res: document.getElementById('val_flt_res'), flt_env: document.getElementById('val_flt_env'),
+            flt_a: document.getElementById('val_flt_a'), flt_d: document.getElementById('val_flt_d'),
+            flt_s: document.getElementById('val_flt_s'), flt_r: document.getElementById('val_flt_r')
+        };
+
+        Object.keys(pKick).forEach(key => {
+            if (key === 'flt_type') { pKick[key].addEventListener('change', synthesizeKick); return; }
+            pKick[key].addEventListener('input', (e) => {
+                let unit = '';
+                if(['root_freq','lofi_sr','flt_cut'].includes(key)) unit = ' Hz';
+                if(key.endsWith('_a') || key.endsWith('_d') || key.endsWith('_r') || key === 'duration' || key === 'pitch_decay') unit = ' ms';
+                if(key.endsWith('_s')) unit = ' %';
+                if(['pitch_mod','flt_env'].includes(key)) unit = ' st';
+                if(key === 'bit_depth') unit = ' Bit';
+                if(key === 'clip_drive') unit = ' dB';
+                lKick[key].innerText = e.target.value + unit;
+                synthesizeKick();
+            });
+        });
+
+        function synthesizeKick() {
+            const sr = 44100;
+            const rootFreq = parseFloat(pKick.root_freq.value);
+            const gateLengthSec = parseFloat(pKick.duration.value) / 1000.0;
+            const pitchModDepth = parseFloat(pKick.pitch_mod.value);
+            const pitchDecay = parseFloat(pKick.pitch_decay.value) / 1000.0;
+            const lofiSr = parseFloat(pKick.lofi_sr.value);
+            const bitDepth = parseFloat(pKick.bit_depth.value);
+            const clipDriveDb = parseFloat(pKick.clip_drive.value);
+
+            const ampA = parseFloat(pKick.amp_a.value) / 1000.0;
+            const ampD = parseFloat(pKick.amp_d.value) / 1000.0;
+            const ampS = parseFloat(pKick.amp_s.value) / 100.0;
+            const ampR = parseFloat(pKick.amp_r.value) / 1000.0;
+
+            const fltType = pKick.flt_type.value;
+            const fltCut = parseFloat(pKick.flt_cut.value);
+            const fltRes = parseFloat(pKick.flt_res.value);
+            const fltEnvAmt = parseFloat(pKick.flt_env.value);
+            const fltA = parseFloat(pKick.flt_a.value) / 1000.0;
+            const fltD = parseFloat(pKick.flt_d.value) / 1000.0;
+            const fltS = parseFloat(pKick.flt_s.value) / 100.0;
+            const fltR = parseFloat(pKick.flt_r.value) / 1000.0;
+
+            const totalDurationSec = gateLengthSec + ampR;
+            const totalSamples = Math.floor(sr * totalDurationSec);
+            let rawSignal = new Float32Array(totalSamples);
+            floatDataKick = new Float32Array(totalSamples);
+
+            let phase = 0;
+            for (let i = 0; i < totalSamples; i++) {
+                let t = i / sr;
+                let pitchEnv = Math.exp(-t / pitchDecay);
+                let instFreq = rootFreq * Math.pow(2.0, (pitchModDepth * pitchEnv / 12.0));
+                phase += 2.0 * Math.PI * instFreq / sr;
+                let ampEnv = getADSR(t, ampA, ampD, ampS, ampR, gateLengthSec);
+                rawSignal[i] = Math.sin(phase) * ampEnv;
+            }
+
+            const step = sr / lofiSr;
+            const qLevels = Math.pow(2, bitDepth - 1);
+            const driveLinear = Math.pow(10.0, clipDriveDb / 20.0);
+            let prevFiltered = 0, peak = 0;
+            let ic1eq = 0, ic2eq = 0;
+
+            for (let i = 0; i < totalSamples; i++) {
+                let t = i / sr;
+                let idx = Math.floor(Math.floor(i / step) * step);
+                if (idx >= totalSamples) idx = totalSamples - 1;
+                let resampled = rawSignal[idx];
+                let quantized = Math.round(resampled * qLevels) / qLevels;
+
+                let fltEnvVal = getADSR(t, fltA, fltD, fltS, fltR, gateLengthSec);
+                let currentCutoff = fltCut * Math.pow(2.0, (fltEnvAmt * fltEnvVal) / 12.0);
+                currentCutoff = Math.max(20, Math.min(currentCutoff, sr / 2.1));
+
+                let filtered = quantized;
+                if (fltType === 'tape') {
+                    let alpha = Math.exp(-2.0 * Math.PI * currentCutoff / sr);
+                    filtered = (1 - alpha) * quantized + alpha * prevFiltered;
+                    prevFiltered = filtered;
+                } else {
+                    let g = Math.tan(Math.PI * currentCutoff / sr);
+                    let k = 1.0 / fltRes;
+                    let a1 = 1.0 / (1.0 + g * (g + k));
+                    let a2 = g * a1;
+                    let a3 = g * a2;
+                    let v3 = quantized - ic2eq;
+                    let v1 = a1 * ic1eq + a2 * v3;
+                    let v2 = ic2eq + a2 * ic1eq + a3 * v3;
+                    ic1eq = 2.0 * v1 - ic1eq;
+                    ic2eq = 2.0 * v2 - ic2eq;
+                    if (fltType === 'lp') filtered = v2;
+                    else if (fltType === 'bp') filtered = v1;
+                    else if (fltType === 'hp') filtered = quantized - k * v1 - v2;
+                }
+
+                let clipped = Math.tanh(filtered * driveLinear);
+                floatDataKick[i] = clipped;
+                if (Math.abs(clipped) > peak) peak = Math.abs(clipped);
+            }
+
+            const targetPeak = Math.pow(10, -0.3 / 20.0);
+            const normFactor = peak > 0 ? targetPeak / peak : 1;
+            for (let i = 0; i < totalSamples; i++) floatDataKick[i] *= normFactor;
+            
+            drawWaveform(floatDataKick, ctxKick, canvasKick, '#ff0055');
+        }
+
+        const pSnare = {
+            s_root: document.getElementById('s_root'), s_dur: document.getElementById('s_dur'),
+            s_pmod: document.getElementById('s_pmod'), s_pdec: document.getElementById('s_pdec'),
+            s_ndec: document.getElementById('s_ndec'), s_flam: document.getElementById('s_flam'),
+            s_sr: document.getElementById('s_sr'), s_bit: document.getElementById('s_bit'),
+            s_drive: document.getElementById('s_drive')
+        };
+        const lSnare = {
+            s_root: document.getElementById('val_s_root'), s_dur: document.getElementById('val_s_dur'),
+            s_pmod: document.getElementById('val_s_pmod'), s_pdec: document.getElementById('val_s_pdec'),
+            s_ndec: document.getElementById('val_s_ndec'), s_flam: document.getElementById('val_s_flam'),
+            s_sr: document.getElementById('val_s_sr'), s_bit: document.getElementById('val_s_bit'),
+            s_drive: document.getElementById('val_s_drive')
+        };
+
+        Object.keys(pSnare).forEach(key => {
+            pSnare[key].addEventListener('input', (e) => {
+                let unit = '';
+                if(key === 's_root' || key === 's_sr') unit = ' Hz';
+                if(key === 's_dur' || key === 's_pdec' || key === 's_ndec' || key === 's_flam') unit = ' ms';
+                if(key === 's_pmod') unit = ' st';
+                if(key === 's_bit') unit = ' Bit';
+                if(key === 's_drive') unit = ' dB';
+                lSnare[key].innerText = e.target.value + unit;
+                synthesizeSnare();
+            });
+        });
+
+        function synthesizeSnare() {
+            const sr = 44100;
+            const durationSec = parseFloat(pSnare.s_dur.value) / 1000.0;
+            const rootFreq = parseFloat(pSnare.s_root.value);
+            const pitchModSt = parseFloat(pSnare.s_pmod.value);
+            const pitchDecay = parseFloat(pSnare.s_pdec.value) / 1000.0;
+            const noiseDecay = parseFloat(pSnare.s_ndec.value) / 1000.0;
+            const flamDelaySec = parseFloat(pSnare.s_flam.value) / 1000.0;
+            
+            const lofiSr = parseFloat(pSnare.s_sr.value);
+            const bitDepth = parseFloat(pSnare.s_bit.value);
+            const clipDriveDb = parseFloat(pSnare.s_drive.value);
+
+            const totalSamples = Math.floor(sr * durationSec);
+            let composite = new Float32Array(totalSamples);
+            floatDataSnare = new Float32Array(totalSamples);
+
+            let phase = 0;
+            for (let i = 0; i < totalSamples; i++) {
+                let t = i / sr;
+                let pEnv = Math.exp(-t / pitchDecay);
+                let instFreq = rootFreq * Math.pow(2.0, (pitchModSt * pEnv / 12.0));
+                phase += 2.0 * Math.PI * instFreq / sr;
+                
+                let osc = 0.8 * Math.sin(phase) + 0.2 * Math.asin(Math.sin(phase)) * (2.0 / Math.PI);
+                let bodyAmp = (t <= 0.003) ? 1.0 : Math.exp(-(t - 0.003) / 0.085);
+                composite[i] += osc * bodyAmp * 0.75;
+            }
+
+            const cf = 2400.0, bw = 1800.0;
+            const w0 = 2.0 * Math.PI * cf / sr;
+            const alpha_bp = Math.sin(w0) * Math.sinh(Math.LN2 / 2.0 * (bw / cf) * w0 / Math.sin(w0));
+            const b0 = alpha_bp, b1 = 0, b2 = -alpha_bp;
+            const a0 = 1 + alpha_bp, a1 = -2 * Math.cos(w0), a2 = 1 - alpha_bp;
+            let d1 = 0, d2 = 0;
+
+            const att_time = 0.0025;
+            for (let i = 0; i < totalSamples; i++) {
+                let t = i / sr;
+                let raw_noise = randn_bm();
+                let y = (b0 * raw_noise) + d1;
+                d1 = (b1 * raw_noise) - (a1 * y) / a0 + d2;
+                d2 = (b2 * raw_noise) - (a2 * y) / a0;
+                let noise_bp = y / a0;
+
+                let noise_amp = (t < att_time) ? (t / att_time) : Math.exp(-(t - att_time) / noiseDecay);
+                composite[i] += noise_bp * noise_amp * 0.55;
+            }
+
+            for (let i = 0; i < totalSamples; i++) {
+                let t = i / sr;
+                let clap_raw = (Math.random() * 2.0 - 1.0);
+                
+                let t_clap = t - flamDelaySec;
+                let clap_amp = 0;
+                
+                if (t_clap >= 0) {
+                    clap_amp += 0.6 * Math.exp(-t_clap / 0.035);
+                    if (t_clap >= 0.002) clap_amp += 0.8 * Math.exp(-(t_clap - 0.002) / 0.035);
+                    if (t_clap >= flamDelaySec) clap_amp += 1.0 * Math.exp(-(t_clap - flamDelaySec) / 0.035);
+                }
+                
+                composite[i] += clap_raw * clap_amp * 0.45;
+            }
+
+            const dec_step = sr / lofiSr;
+            const qLevels = Math.pow(2, bitDepth - 1);
+            const driveGain = Math.pow(10.0, clipDriveDb / 20.0);
+            
+            const hp_alpha = Math.exp(-2.0 * Math.PI * 105.0 / sr);
+            const lp_alpha = Math.exp(-2.0 * Math.PI * 11500.0 / sr);
+            
+            let hp_prev = 0, quant_prev = 0;
+            let tape_colored = 0;
+            let peak = 0;
+
+            for (let i = 0; i < totalSamples; i++) {
+                let idx = Math.floor(Math.floor(i / dec_step) * dec_step);
+                if (idx >= totalSamples) idx = totalSamples - 1;
+                let resampled = composite[idx];
+                
+                let quantized = Math.round(resampled * qLevels) / qLevels;
+
+                let hp_sig = hp_alpha * (hp_prev + quantized - quant_prev);
+                quant_prev = quantized;
+                hp_prev = hp_sig;
+
+                tape_colored = (1 - lp_alpha) * hp_sig + lp_alpha * tape_colored;
+
+                let clipped = Math.tanh(tape_colored * driveGain);
+                floatDataSnare[i] = clipped;
+                
+                if (Math.abs(clipped) > peak) peak = Math.abs(clipped);
+            }
+
+            const targetPeak = Math.pow(10, -0.3 / 20.0);
+            const normFactor = peak > 0 ? targetPeak / peak : 1;
+            for (let i = 0; i < totalSamples; i++) floatDataSnare[i] *= normFactor;
+
+            drawWaveform(floatDataSnare, ctxSnare, canvasSnare, '#00ffcc');
+        }
+
+        document.getElementById('btn-preview-kick').addEventListener('click', () => playAudio(floatDataKick));
+        document.getElementById('btn-download-kick').addEventListener('click', () => {
+            downloadWav(floatDataKick, `MEMPHIS_KICK_${Math.floor(pKick.root_freq.value)}HZ.wav`);
+        });
+        canvasKick.addEventListener('click', () => playAudio(floatDataKick));
+
+        document.getElementById('btn-preview-snare').addEventListener('click', () => playAudio(floatDataSnare));
+        document.getElementById('btn-download-snare').addEventListener('click', () => {
+            downloadWav(floatDataSnare, `MEMPHIS_SNARE_${Math.floor(pSnare.s_root.value)}HZ.wav`);
+        });
+        canvasSnare.addEventListener('click', () => playAudio(floatDataSnare));
+
+        window.onload = () => {
+            resizeCanvas();
+            synthesizeKick();
+            synthesizeSnare();
+        };
+    </script>
+</body>
+</html>

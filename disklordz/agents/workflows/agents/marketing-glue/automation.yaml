@@ -1,0 +1,15 @@
+# Automation — Marketing Glue (`marketing-glue`)
+
+platform: n8n
+trigger: cron
+primary: disklordz/agents/workflows/n8n/marketing-glue-stub.json
+
+## Steps
+1. Lead webhook
+2. Email sequence
+
+## Invoke agent
+Read: disklordz/agents/profit/marketing-glue/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#marketing-glue

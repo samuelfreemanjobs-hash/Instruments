@@ -1,0 +1,15 @@
+# Automation — Competitive Intel (`competitive-intel`)
+
+platform: manual
+trigger: monthly
+primary: docs/DISKLORDZ_ILLUGEN_RESEARCH.md
+
+## Steps
+1. Research append
+2. R8 tags
+
+## Invoke agent
+Read: disklordz/agents/profit/competitive-intel/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#competitive-intel

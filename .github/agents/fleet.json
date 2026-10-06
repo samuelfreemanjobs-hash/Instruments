@@ -1,0 +1,634 @@
+{
+  "version": 2,
+  "scope": "repo-wide",
+  "entrypoints": {
+    "human": "DISKLORDZ_AGENTS.md",
+    "pm_add": "disklordz/agents/workflows/PM_ADD.md",
+    "architecture": "disklordz/agents/ARCHITECTURE.md"
+  },
+  "orchestration": [
+    "workflow-automation",
+    "pm-agent"
+  ],
+  "agent_count": 32,
+  "agents": [
+    {
+      "id": "workflow-automation",
+      "title": "Workflow Automation",
+      "activation": "ci_on_push",
+      "announcement": "I'm **Workflow Automation** \u2014 I wire GitHub Actions, Inngest, and n8n stubs so every profit agent runs on a schedule or event without you babysitting scripts.",
+      "automation": {
+        "platform": "github",
+        "trigger": "workflow_dispatch",
+        "workflow_file": ".github/workflows/scaffold-agent-workflows.yml",
+        "steps": [
+          "Run scaffold_workflows.py",
+          "Open PR if manifest diff"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/workflow-automation/agent.md",
+      "copilot_skill": ".github/skills/disklordz-workflow-automation/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/workflow-automation/automation.yaml"
+    },
+    {
+      "id": "pm-agent",
+      "title": "PM Agent (Fleet ADD)",
+      "activation": "ci_scheduled",
+      "announcement": "I'm **PM Agent (Fleet ADD)** \u2014 I publish the company-wide roster at repo root (`DISKLORDZ_AGENTS.md`, `.github/agents/fleet.json`) and CI proves the fleet is registered and executing.",
+      "automation": {
+        "platform": "github",
+        "trigger": "daily + push fleet docs",
+        "workflow_file": ".github/workflows/agent-fleet-governance.yml",
+        "steps": [
+          "sync-disklordz-agent-fleet.sh",
+          "scaffold_agents.py --check",
+          "Fail if DISKLORDZ_AGENTS.md drift"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/pm-agent/agent.md",
+      "copilot_skill": ".github/skills/disklordz-pm-agent/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/pm-agent/automation.yaml"
+    },
+    {
+      "id": "conversion-qa",
+      "title": "Conversion QA",
+      "activation": "ci_manual",
+      "announcement": "I'm **Conversion QA** \u2014 I run go-live smoke and Playwright checks so generate \u2192 preview \u2192 checkout never silently breaks after a deploy.",
+      "automation": {
+        "platform": "github",
+        "trigger": "schedule + post-deploy",
+        "workflow_file": ".github/workflows/disklordz-go-live.yml",
+        "steps": [
+          "verify-go-live.sh",
+          "Optional Playwright MCP job"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/conversion-qa/agent.md",
+      "copilot_skill": ".github/skills/disklordz-conversion-qa/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/conversion-qa/automation.yaml"
+    },
+    {
+      "id": "billing-ops",
+      "title": "Billing Ops",
+      "activation": "manual_stub",
+      "announcement": "I'm **Billing Ops** \u2014 I watch Stripe credits, failed payments, and Pro status so revenue leaks get flagged before users churn.",
+      "automation": {
+        "platform": "manual",
+        "trigger": "weekly + stripe webhook",
+        "workflow_file": "disklordz/agents/workflows/n8n/billing-ops-stub.json",
+        "steps": [
+          "Stripe MCP read",
+          "Human approve writes"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/billing-ops/agent.md",
+      "copilot_skill": ".github/skills/disklordz-billing-ops/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/billing-ops/automation.yaml"
+    },
+    {
+      "id": "ship-velocity",
+      "title": "Ship Velocity",
+      "activation": "ci_event",
+      "announcement": "I'm **Ship Velocity** \u2014 I turn Airtable WOs into issues and PRs fast so SaaS features reach production while the idea is still hot.",
+      "automation": {
+        "platform": "github",
+        "trigger": "repository_dispatch",
+        "workflow_file": ".github/workflows/airtable-antigravity-handoff.yml",
+        "steps": [
+          "Airtable WO",
+          "Issue + inbox JSON"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/ship-velocity/agent.md",
+      "copilot_skill": ".github/skills/disklordz-ship-velocity/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/ship-velocity/automation.yaml"
+    },
+    {
+      "id": "async-generation",
+      "title": "Async Generation",
+      "activation": "runtime_inngest",
+      "announcement": "I'm **Async Generation** \u2014 I queue long kit jobs through Inngest so paid generations finish even when Vercel would time out.",
+      "automation": {
+        "platform": "inngest",
+        "trigger": "disklordz/generate.requested",
+        "workflow_file": "disklordz/website/src/inngest/functions.ts",
+        "steps": [
+          "POST /api/generate/async",
+          "buildVariationBatch step"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/async-generation/agent.md",
+      "copilot_skill": ".github/skills/disklordz-async-generation/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/async-generation/automation.yaml"
+    },
+    {
+      "id": "prompt-coach",
+      "title": "Prompt Coach",
+      "activation": "ci_on_push",
+      "announcement": "I'm **Prompt Coach** \u2014 I use RAG and lane docs to sharpen prompts and specs so free users hear their vibe in the WAVs and upgrade.",
+      "automation": {
+        "platform": "github",
+        "trigger": "push docs/**",
+        "workflow_file": ".github/workflows/rag-reindex.yml",
+        "steps": [
+          "chunk_corpus",
+          "embed_and_upsert optional"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/prompt-coach/agent.md",
+      "copilot_skill": ".github/skills/disklordz-prompt-coach/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/prompt-coach/automation.yaml"
+    },
+    {
+      "id": "product-factory",
+      "title": "Product Factory",
+      "activation": "runtime_api",
+      "announcement": "I'm **Product Factory** \u2014 I batch storefront packs (KICKS/PERC folders) so you ship SKUs with metadata, not one-off ZIPs.",
+      "automation": {
+        "platform": "api",
+        "trigger": "POST /api/factory/batch",
+        "workflow_file": "disklordz/website/src/app/api/factory/batch/route.ts",
+        "steps": [
+          "buildProductPack",
+          "ZIP download"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/product-factory/agent.md",
+      "copilot_skill": ".github/skills/disklordz-product-factory/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/product-factory/automation.yaml"
+    },
+    {
+      "id": "spec-validator",
+      "title": "Spec Validator",
+      "activation": "runtime_api",
+      "announcement": "I'm **Spec Validator** \u2014 I reject bad GenerationSpec JSON before generate runs so you don't burn credits on nonsense BPM/key combos.",
+      "automation": {
+        "platform": "api",
+        "trigger": "pre-generate",
+        "workflow_file": "disklordz/integrations/agents/pydantic_spec_agent.py",
+        "steps": [
+          "parseGenerationSpec",
+          "402/400 on invalid"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/spec-validator/agent.md",
+      "copilot_skill": ".github/skills/disklordz-spec-validator/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/spec-validator/automation.yaml"
+    },
+    {
+      "id": "lane-workflow",
+      "title": "Lane Workflow",
+      "activation": "cli",
+      "announcement": "I'm **Lane Workflow** \u2014 I drive prompt \u2192 spec \u2192 variations so phonk/drift/cyber lanes stay consistent across candidates.",
+      "automation": {
+        "platform": "script",
+        "trigger": "cli",
+        "workflow_file": "disklordz/integrations/agents/langgraph_spec_flow.py",
+        "steps": [
+          "prompt in",
+          "GenerationSpec JSON out"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/lane-workflow/agent.md",
+      "copilot_skill": ".github/skills/disklordz-lane-workflow/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/lane-workflow/automation.yaml"
+    },
+    {
+      "id": "ops-schema",
+      "title": "Ops Schema",
+      "activation": "ci_manual",
+      "announcement": "I'm **Ops Schema** \u2014 I apply and verify Supabase migrations safely so auth, kits, and pgvector stay up while you ship schema.",
+      "automation": {
+        "platform": "github",
+        "trigger": "workflow_dispatch",
+        "workflow_file": ".github/workflows/activate-integrations.yml",
+        "steps": [
+          "supabase db push",
+          "migration list in DEPLOY.md"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/ops-schema/agent.md",
+      "copilot_skill": ".github/skills/disklordz-ops-schema/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/ops-schema/automation.yaml"
+    },
+    {
+      "id": "marketing-glue",
+      "title": "Marketing Glue",
+      "activation": "manual_stub",
+      "announcement": "I'm **Marketing Glue** \u2014 I connect n8n flows for leads and email so traffic comes back without manual copy-paste.",
+      "automation": {
+        "platform": "n8n",
+        "trigger": "cron",
+        "workflow_file": "disklordz/agents/workflows/n8n/marketing-glue-stub.json",
+        "steps": [
+          "Lead webhook",
+          "Email sequence"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/marketing-glue/agent.md",
+      "copilot_skill": ".github/skills/disklordz-marketing-glue/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/marketing-glue/automation.yaml"
+    },
+    {
+      "id": "support-macro",
+      "title": "Support Macro",
+      "activation": "runtime_api",
+      "announcement": "I'm **Support Macro** \u2014 I draft answers from your lane corpus so support is fast, accurate, and cheap.",
+      "automation": {
+        "platform": "api",
+        "trigger": "POST /api/rag/suggest",
+        "workflow_file": "disklordz/website/src/app/api/rag/suggest/route.ts",
+        "steps": [
+          "hybrid retrieve",
+          "optional AI polish"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/support-macro/agent.md",
+      "copilot_skill": ".github/skills/disklordz-support-macro/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/support-macro/automation.yaml"
+    },
+    {
+      "id": "desktop-ops",
+      "title": "Desktop Ops",
+      "activation": "manual_external",
+      "announcement": "I'm **Desktop Ops** \u2014 I handle browser/vendor chores via Bytebot while you keep code changes in git where they belong.",
+      "automation": {
+        "platform": "external",
+        "trigger": "manual",
+        "workflow_file": "docs/BYTEBOT_SETUP.md",
+        "steps": [
+          "Local Docker Bytebot",
+          "No repo auto-commit"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/desktop-ops/agent.md",
+      "copilot_skill": ".github/skills/disklordz-desktop-ops/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/desktop-ops/automation.yaml"
+    },
+    {
+      "id": "factory-batch-gpu",
+      "title": "Factory Batch GPU",
+      "activation": "manual_external",
+      "announcement": "I'm **Factory Batch GPU** \u2014 I orchestrate heavy catalog batches off the serverless path so big drops don't choke the site.",
+      "automation": {
+        "platform": "trigger.dev",
+        "trigger": "long batch",
+        "workflow_file": "disklordz/integrations/engines/README.md",
+        "steps": [
+          "GPU worker",
+          "Storage upload"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/factory-batch-gpu/agent.md",
+      "copilot_skill": ".github/skills/disklordz-factory-batch-gpu/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/factory-batch-gpu/automation.yaml"
+    },
+    {
+      "id": "engine-swap",
+      "title": "Engine Swap",
+      "activation": "runtime_env",
+      "announcement": "I'm **Engine Swap** \u2014 I manage remote AudioCraft/Stable workers with parametric fallback so Pro sound improves without bricking generate.",
+      "automation": {
+        "platform": "docker",
+        "trigger": "DISKLORDZ_ENGINE=remote",
+        "workflow_file": "disklordz/integrations/docker-compose.optional.yml",
+        "steps": [
+          "Engine stubs :8765/:8766",
+          "remote-wav.ts fallback"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/engine-swap/agent.md",
+      "copilot_skill": ".github/skills/disklordz-engine-swap/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/engine-swap/automation.yaml"
+    },
+    {
+      "id": "integration-health",
+      "title": "Integration Health",
+      "activation": "ci_scheduled",
+      "announcement": "I'm **Integration Health** \u2014 I hit `/api/integrations/status` and verify scripts so misconfigured env vars don't eat revenue overnight.",
+      "automation": {
+        "platform": "github",
+        "trigger": "daily",
+        "workflow_file": ".github/workflows/agent-fleet-health.yml",
+        "steps": [
+          "verify-integrations.sh",
+          "Slack optional"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/integration-health/agent.md",
+      "copilot_skill": ".github/skills/disklordz-integration-health/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/integration-health/automation.yaml"
+    },
+    {
+      "id": "churn-winback",
+      "title": "Churn Win-back",
+      "activation": "manual_stub",
+      "announcement": "I'm **Churn Win-back** \u2014 I find lapsed Pro users and trigger opt-in win-back with credits so MRR recovers.",
+      "automation": {
+        "platform": "n8n",
+        "trigger": "weekly",
+        "workflow_file": "disklordz/agents/workflows/n8n/churn-winback-stub.json",
+        "steps": [
+          "Query lapsed Pro",
+          "Opt-in email + credit"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/churn-winback/agent.md",
+      "copilot_skill": ".github/skills/disklordz-churn-winback/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/churn-winback/automation.yaml"
+    },
+    {
+      "id": "seo-kit-pages",
+      "title": "SEO Kit Pages",
+      "activation": "runtime_build",
+      "announcement": "I'm **SEO Kit Pages** \u2014 I turn factory metadata into indexable pages so organic search feeds signups.",
+      "automation": {
+        "platform": "vercel",
+        "trigger": "build",
+        "workflow_file": "disklordz/website/next build",
+        "steps": [
+          "Static/ISR kit pages TBD",
+          "sitemap"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/seo-kit-pages/agent.md",
+      "copilot_skill": ".github/skills/disklordz-seo-kit-pages/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/seo-kit-pages/automation.yaml"
+    },
+    {
+      "id": "referral-affiliate",
+      "title": "Referral & Affiliate",
+      "activation": "runtime_stripe",
+      "announcement": "I'm **Referral & Affiliate** \u2014 I design referral hooks in manifests and Stripe coupons so customers bring customers.",
+      "automation": {
+        "platform": "stripe",
+        "trigger": "checkout",
+        "workflow_file": "STRIPE_PRO_PRICE_ID + coupon",
+        "steps": [
+          "Referral code in manifest",
+          "Webhook ledger"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/referral-affiliate/agent.md",
+      "copilot_skill": ".github/skills/disklordz-referral-affiliate/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/referral-affiliate/automation.yaml"
+    },
+    {
+      "id": "fraud-abuse",
+      "title": "Fraud & Abuse",
+      "activation": "runtime_api",
+      "announcement": "I'm **Fraud & Abuse** \u2014 I tighten rate limits and guest abuse heuristics so free tier doesn't become a free CDN for bots.",
+      "automation": {
+        "platform": "api",
+        "trigger": "every POST /api/generate",
+        "workflow_file": "disklordz/website/src/lib/rate-limit.ts",
+        "steps": [
+          "IP cap",
+          "429 guest tier"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/fraud-abuse/agent.md",
+      "copilot_skill": ".github/skills/disklordz-fraud-abuse/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/fraud-abuse/automation.yaml"
+    },
+    {
+      "id": "pricing-experiment",
+      "title": "Pricing Experiment",
+      "activation": "manual_skill",
+      "announcement": "I'm **Pricing Experiment** \u2014 I structure Stripe price tests with /premortem discipline so ARPU moves with evidence.",
+      "automation": {
+        "platform": "manual",
+        "trigger": "/premortem",
+        "workflow_file": ".claude/skills/premortem/SKILL.md",
+        "steps": [
+          "Cohort flag",
+          "Stripe price swap"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/pricing-experiment/agent.md",
+      "copilot_skill": ".github/skills/disklordz-pricing-experiment/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/pricing-experiment/automation.yaml"
+    },
+    {
+      "id": "onboarding-concierge",
+      "title": "Onboarding Concierge",
+      "activation": "runtime_inngest",
+      "announcement": "I'm **Onboarding Concierge** \u2014 I guide magic-link \u2192 first kit so new users hear value in minutes, not days.",
+      "automation": {
+        "platform": "inngest",
+        "trigger": "auth signup",
+        "workflow_file": "disklordz/website/src/inngest/functions.ts",
+        "steps": [
+          "Event TBD user.signed_up",
+          "RAG suggest drip"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/onboarding-concierge/agent.md",
+      "copilot_skill": ".github/skills/disklordz-onboarding-concierge/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/onboarding-concierge/automation.yaml"
+    },
+    {
+      "id": "daw-inbox-copilot",
+      "title": "DAW Inbox Copilot",
+      "activation": "cli_local",
+      "announcement": "I'm **DAW Inbox Copilot** \u2014 I keep Downloads \u2192 inbox \u2192 DAW smooth so kits land where producers actually work.",
+      "automation": {
+        "platform": "cli",
+        "trigger": "local watch",
+        "workflow_file": "disklordz/daw-inbox/package.json",
+        "steps": [
+          "inbox-watch",
+          "Browser save to folder"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/daw-inbox-copilot/agent.md",
+      "copilot_skill": ".github/skills/disklordz-daw-inbox-copilot/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/daw-inbox-copilot/automation.yaml"
+    },
+    {
+      "id": "airtable-wo-triage",
+      "title": "Airtable WO Triage",
+      "activation": "ci_event",
+      "announcement": "I'm **Airtable WO Triage** \u2014 I route work orders to GitHub and Antigravity inbox JSON so PM and eng stay in sync.",
+      "automation": {
+        "platform": "github",
+        "trigger": "repository_dispatch",
+        "workflow_file": ".github/workflows/airtable-antigravity-handoff.yml",
+        "steps": [
+          "wo_to_antigravity_handoff.py"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/airtable-wo-triage/agent.md",
+      "copilot_skill": ".github/skills/disklordz-airtable-wo-triage/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/airtable-wo-triage/automation.yaml"
+    },
+    {
+      "id": "golden-wav-qa",
+      "title": "Golden WAV QA",
+      "activation": "ci_on_pr",
+      "announcement": "I'm **Golden WAV QA** \u2014 I run DSP golden regression so plugin quality backs your brand when you cross-sell Instruments.",
+      "automation": {
+        "platform": "github",
+        "trigger": "pull_request paths Source/**",
+        "workflow_file": ".github/workflows/build.yml",
+        "steps": [
+          "run_business.py ci profile"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/golden-wav-qa/agent.md",
+      "copilot_skill": ".github/skills/disklordz-golden-wav-qa/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/golden-wav-qa/automation.yaml"
+    },
+    {
+      "id": "competitive-intel",
+      "title": "Competitive Intel",
+      "activation": "manual_doc",
+      "announcement": "I'm **Competitive Intel** \u2014 I map ILLUGEN-shaped gaps to your WO backlog with tagged evidence, not hype.",
+      "automation": {
+        "platform": "manual",
+        "trigger": "monthly",
+        "workflow_file": "docs/DISKLORDZ_ILLUGEN_RESEARCH.md",
+        "steps": [
+          "Research append",
+          "R8 tags"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/competitive-intel/agent.md",
+      "copilot_skill": ".github/skills/disklordz-competitive-intel/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/competitive-intel/automation.yaml"
+    },
+    {
+      "id": "license-compliance",
+      "title": "License & Compliance",
+      "activation": "manual_gate",
+      "announcement": "I'm **License & Compliance** \u2014 I gate engine swaps on model licenses so commercial launch doesn't inherit NC surprises.",
+      "automation": {
+        "platform": "gate",
+        "trigger": "pre-engine-swap",
+        "workflow_file": "disklordz/agents/profit/license-compliance/agent.md",
+        "steps": [
+          "Checklist sign-off",
+          "Block remote engine"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/license-compliance/agent.md",
+      "copilot_skill": ".github/skills/disklordz-license-compliance/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/license-compliance/automation.yaml"
+    },
+    {
+      "id": "social-clip-factory",
+      "title": "Social Clip Factory",
+      "activation": "cli_script",
+      "announcement": "I'm **Social Clip Factory** \u2014 I cut short previews from kits for social so top-of-funnel content scales.",
+      "automation": {
+        "platform": "script",
+        "trigger": "manual",
+        "workflow_file": "disklordz/agents/workflows/scripts/social-clip-stub.sh",
+        "steps": [
+          "ffmpeg 15s",
+          "Upload to marketing bucket TBD"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/social-clip-factory/agent.md",
+      "copilot_skill": ".github/skills/disklordz-social-clip-factory/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/social-clip-factory/automation.yaml"
+    },
+    {
+      "id": "analytics-interpreter",
+      "title": "Analytics Interpreter",
+      "activation": "manual_stub",
+      "announcement": "I'm **Analytics Interpreter** \u2014 I summarize weekly MRR, gen volume, and credit burn from Stripe + Supabase with [executed] numbers.",
+      "automation": {
+        "platform": "n8n",
+        "trigger": "weekly Monday",
+        "workflow_file": "disklordz/agents/workflows/n8n/analytics-weekly-stub.json",
+        "steps": [
+          "Stripe + Supabase export",
+          "Slack summary"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/analytics-interpreter/agent.md",
+      "copilot_skill": ".github/skills/disklordz-analytics-interpreter/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/analytics-interpreter/automation.yaml"
+    },
+    {
+      "id": "release-notes",
+      "title": "Release Notes",
+      "activation": "ci_script",
+      "announcement": "I'm **Release Notes** \u2014 I turn merged PRs into customer-facing changelog lines so upgrades feel trustworthy.",
+      "automation": {
+        "platform": "github",
+        "trigger": "release published",
+        "workflow_file": "disklordz/agents/workflows/scripts/release-notes-from-prs.sh",
+        "steps": [
+          "gh pr list merged",
+          "Customer-facing MD"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/release-notes/agent.md",
+      "copilot_skill": ".github/skills/disklordz-release-notes/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/release-notes/automation.yaml"
+    },
+    {
+      "id": "hardware-preset-designer",
+      "title": "Hardware Preset Designer",
+      "activation": "ci_on_pr",
+      "announcement": "I'm **Hardware Preset Designer** \u2014 I run SynthForge to batch hardware patches from prompts and samples, with safety clamps and librarian-ready export staging.",
+      "automation": {
+        "platform": "github",
+        "trigger": "pull_request paths tools/synth-forge/**",
+        "workflow_file": ".github/workflows/synth-forge.yml",
+        "steps": [
+          "pytest tools/synth-forge/tests",
+          "hardware_preset_designer.py --self-test",
+          "Optional uvicorn studio smoke"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/hardware-preset-designer/agent.md",
+      "copilot_skill": ".github/skills/disklordz-hardware-preset-designer/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/hardware-preset-designer/automation.yaml"
+    }
+  ],
+  "ci_workflows": [
+    {
+      "path": ".github/workflows/agent-fleet-governance.yml",
+      "serves": "pm-agent, workflow-automation"
+    },
+    {
+      "path": ".github/workflows/agent-fleet-health.yml",
+      "serves": "integration-health, pm-agent"
+    },
+    {
+      "path": ".github/workflows/agent-fleet-execute.yml",
+      "serves": "pm-agent + executable fleet roles"
+    },
+    {
+      "path": ".github/workflows/scaffold-agent-workflows.yml",
+      "serves": "workflow-automation"
+    },
+    {
+      "path": ".github/workflows/disklordz-go-live.yml",
+      "serves": "conversion-qa, ops-schema"
+    },
+    {
+      "path": ".github/workflows/rag-reindex.yml",
+      "serves": "prompt-coach"
+    },
+    {
+      "path": ".github/workflows/activate-integrations.yml",
+      "serves": "ops-schema, integration-health"
+    },
+    {
+      "path": ".github/workflows/airtable-antigravity-handoff.yml",
+      "serves": "ship-velocity, airtable-wo-triage"
+    },
+    {
+      "path": ".github/workflows/build.yml",
+      "serves": "golden-wav-qa"
+    },
+    {
+      "path": ".github/workflows/synth-forge.yml",
+      "serves": "hardware-preset-designer"
+    }
+  ]
+}

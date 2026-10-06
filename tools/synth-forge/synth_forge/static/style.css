@@ -1,0 +1,155 @@
+:root {
+  color-scheme: dark;
+  --bg: #0f1115;
+  --panel: #1a1f2a;
+  --accent: #6ee7b7;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #1f2937, var(--bg));
+  color: var(--text);
+  min-height: 100vh;
+}
+
+header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #374151;
+}
+
+.tagline {
+  color: var(--muted);
+  margin: 0.25rem 0 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  padding: 1rem 2rem 2rem;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid #374151;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.panel.wide {
+  grid-column: 1 / -1;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+input,
+select,
+textarea,
+button {
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #4b5563;
+  background: #111827;
+  color: var(--text);
+}
+
+button {
+  cursor: pointer;
+  background: linear-gradient(135deg, #065f46, #047857);
+  border: none;
+  margin-top: 0.75rem;
+  font-weight: 600;
+}
+
+button:hover {
+  filter: brightness(1.1);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.chip {
+  width: auto;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+pre {
+  background: #0b0f14;
+  padding: 0.75rem;
+  border-radius: 8px;
+  overflow: auto;
+  font-size: 0.75rem;
+  max-height: 180px;
+}
+
+.dropzone {
+  border: 2px dashed #4b5563;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.dropzone.dragover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+#vault {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#vault li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #374151;
+  font-size: 0.85rem;
+}
+
+.keyboard {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.key {
+  flex: 1;
+  min-width: 28px;
+  height: 80px;
+  background: #f3f4f6;
+  color: #111;
+  border-radius: 0 0 6px 6px;
+  border: none;
+}
+
+.key.black {
+  background: #374151;
+  color: #fff;
+  height: 50px;
+  margin-left: -10px;
+  margin-right: -10px;
+  z-index: 1;
+}

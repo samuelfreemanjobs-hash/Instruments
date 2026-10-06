@@ -37,7 +37,7 @@ Indexing is **offline/CI**; query is **request-scoped** (<500ms target with pgve
 
 ## Extension points
 
-- Add `embed_and_upsert.py` + Supabase migration  
+- `scripts/embed_and_upsert.py` + migration `20260928110000_prompt_knowledge_pgvector.sql`  
 - Wire `KitGenerator` “Random” / “Improve prompt” to `/api/rag/suggest`  
 - GitHub Action: re-index on `docs/**` change  
 

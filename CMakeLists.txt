@@ -179,5 +179,5 @@ target_compile_definitions(SpectralDiff
         JUCE_USE_CURL=0
 )
 
-add_subdirectory(Wave909)
+add_subdirectory(Wave9090)
 add_subdirectory(SP1200)

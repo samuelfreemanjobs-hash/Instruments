@@ -4,7 +4,7 @@ Operations hub for the **Instruments** monorepo: one pipeline matches [`.github/
 
 ## Purpose
 
-Run the whole product QA loop without manual DAW checks — configure/build, artefact gates, DSP determinism, golden WAV regression, Wave909 unit tests, pluginval, and (optionally) `disklordz/website` + daw-inbox syntax checks.
+Run the whole product QA loop without manual DAW checks — configure/build, artefact gates, DSP determinism, golden WAV regression, Wave9090 unit tests, pluginval, and (optionally) `disklordz/website` + daw-inbox syntax checks.
 
 ## Layout
 
@@ -27,7 +27,7 @@ Run the whole product QA loop without manual DAW checks — configure/build, art
 3. **artefacts** — JD Upgraded VST3, CLAP, Standalone exist
 4. **determinism** — dual `OfflineRender` + `SpectralDiff`
 5. **golden** — `tests/golden/verify_golden.sh`
-6. **wave909_tests** — `Wave909Tests` or `ctest -R Wave909`
+6. **wave9090_tests** — `Wave9090Tests` or `ctest -R Wave9090`
 7. **pluginval** — `scripts/vst/run_pluginval.py --default-artefacts`
 
 Profile **`full`** adds **disklordz_web** (`npm ci` / `npm run build` + daw-inbox `node --check`).
