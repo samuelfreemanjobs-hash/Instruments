@@ -13,6 +13,7 @@
 #include <optional>
 
 class SP1200AudioProcessorEditor : public juce::AudioProcessorEditor,
+                                   public juce::FileDragAndDropTarget,
                                    private juce::Timer,
                                    private juce::Button::Listener,
                                    private juce::KeyListener
@@ -24,6 +25,9 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
     bool keyPressed (const juce::KeyPress& key, juce::Component*) override;
+
+    bool isInterestedInFileDrag (const juce::StringArray& files) override;
+    void filesDropped (const juce::StringArray& files, int, int) override;
 
 private:
     enum class ViewMode
@@ -49,6 +53,8 @@ private:
     void refreshSeqInfo();
     void triggerPad (int padIndex);
     void importSample();
+    void importSampleFromFile (const juce::File& file);
+    void applyImportedSegment (std::size_t segmentIndex);
     void toggleRecordInput();
     void setView (ViewMode mode);
     void runAutoChop16();
