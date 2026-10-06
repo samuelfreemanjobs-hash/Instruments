@@ -1,6 +1,10 @@
 # SP-1200 Drumulator — QA checklist (v1)
 
-Manual pass against [SP1200_STANDALONE_SPEC.md](SP1200_STANDALONE_SPEC.md). Automated: `ctest --test-dir build -R SP1200`.
+Manual pass against [SP1200_STANDALONE_SPEC.md](SP1200_STANDALONE_SPEC.md).
+
+**Automated (CI + local):** `ctest --test-dir build -R SP1200` — memory pool, sequencer (96 PPQN swing, song END, MIDI clock), `.sp12p` project file.
+
+**Implementation complete for P0–P3;** P4 = run this checklist once before calling v1 shipped. See [SP1200_HANDOFF.md](SP1200_HANDOFF.md).
 
 ## Audio & memory
 

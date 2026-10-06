@@ -15,12 +15,13 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Disklordz RAG** (prompt knowledge) | [disklordz/rag/ARCHITECTURE.md](disklordz/rag/ARCHITECTURE.md) · [docs/RAG_AND_INTELLIGENT_AUTOMATION.md](docs/RAG_AND_INTELLIGENT_AUTOMATION.md) | `python3 disklordz/rag/scripts/chunk_corpus.py` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-909** (sampleless trap wavetable synth) | [Wave909/ARCHITECTURE.md](Wave909/ARCHITECTURE.md) | `Wave909_VST3`, `Wave909_Standalone`, `Wave909Tests` |
-| **SP-1200 Drumulator** (standalone sampler) | [SP1200/ARCHITECTURE.md](SP1200/ARCHITECTURE.md) | `SP1200_Standalone`, `SP1200Tests` |
+| **SP-1200 Drumulator** (standalone + VST3 sampler) | [SP1200/ARCHITECTURE.md](SP1200/ARCHITECTURE.md) · [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md) | `SP1200_Standalone`, `SP1200_VST3`, `ctest -R SP1200` |
 
 ## Repository layout
 
 ```
 Source/          Plugin processor, DSP, assets, preset import
+SP1200/          SP-1200-style standalone sampler (JUCE)
 hise-sketch/     HISE / Antigravity projects (optional imports)
 disklordz/       Drum SaaS (`website/`) and sound-factory scripts
 tools/           CLI binaries (link JUCE / plugin static lib)

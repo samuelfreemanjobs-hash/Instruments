@@ -109,6 +109,7 @@ MIDI / UI pad → SamplerEngine → 16× SampleVoice (drop-sample pitch) → Ssm
 ## QA
 
 - [docs/SP1200_QA_CHECKLIST.md](../docs/SP1200_QA_CHECKLIST.md)
+- [docs/SP1200_HANDOFF.md](../docs/SP1200_HANDOFF.md) — phase status, merge checklist, deferred items
 
 ## Extension points
 

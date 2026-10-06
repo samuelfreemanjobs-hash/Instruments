@@ -31,6 +31,16 @@ python3 disklordz/rag/scripts/query_local.py "your query"
 
 Colab: [docs/COLAB_ZERO_INSTALL_TESTING.md](docs/COLAB_ZERO_INSTALL_TESTING.md).
 
+## SP-1200 Drumulator
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+cmake --build build -j --target SP1200_Standalone SP1200_VST3 SP1200MemoryTests SP1200SequencerTests SP1200ProjectFileTests
+ctest --test-dir build -R SP1200 --output-on-failure
+```
+
+Handoff: [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md). Spec: [docs/SP1200_STANDALONE_SPEC.md](docs/SP1200_STANDALONE_SPEC.md).
+
 ## JUCE plugin (default Cloud install)
 
 ```bash
