@@ -52,10 +52,10 @@ Monorepo **Build / cmake** job builds all targets (including SP1200 VST3) and ru
 ## Post-merge checklist (human)
 
 1. ~~Review PR #50 and merge to `main`~~ **Done** (2026-10-06)  
-2. Confirm **Build / cmake** green on `main` (SP1200 ctest step)  
-3. Run manual pass on [SP1200_QA_CHECKLIST.md](SP1200_QA_CHECKLIST.md) (1–2 h)  
-4. Optional: tag release `sp1200-v0.1.0`  
-5. Close obsolete combine PR [#68](https://github.com/samuelfreemanjobs-hash/Instruments/pull/68) after doc deltas land  
+2. ~~Confirm **Build / cmake** green on `main`~~ **Done** — run [37502018473](https://github.com/samuelfreemanjobs-hash/Instruments/actions/runs/37502018473) (Build + **SP1200 unit tests** success)  
+3. Manual pass on [SP1200_QA_CHECKLIST.md](SP1200_QA_CHECKLIST.md) (1–2 h) — **partial smoke 2026-10-06** ([report](SP1200_SMOKE_TEST_2026-10-06.md)): standalone launch; tabs 10/11/12–14/20/24/15/SETUP; Space transport; keys 1–4 banks (no sample import / MIDI hardware in smoke pass)  
+4. Optional: tag release `sp1200-v0.1.0` (after full P4 checklist)  
+5. Close obsolete combine PR [#68](https://github.com/samuelfreemanjobs-hash/Instruments/pull/68) after doc PR [#89](https://github.com/samuelfreemanjobs-hash/Instruments/pull/89) merges  
 
 ## Branch hygiene
 
