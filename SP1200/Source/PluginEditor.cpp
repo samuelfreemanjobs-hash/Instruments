@@ -27,7 +27,7 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     : AudioProcessorEditor (&p), processor_ (p)
 {
     setResizeLimits (900, 640, 1600, 1000);
-    setSize (1100, 720);
+    setSize (1100, 748);
     setWantsKeyboardFocus (true);
     addKeyListener (this);
 
@@ -823,15 +823,19 @@ void SP1200AudioProcessorEditor::resized()
     auto bar = r.removeFromTop (32);
     if (view_ == ViewMode::console)
     {
-        vinylImportButton_.setBounds (bar.removeFromLeft (140).reduced (2));
-        mod30CombineButton_.setBounds (bar.removeFromLeft (115).reduced (2));
-        mod30MoveBankButton_.setBounds (bar.removeFromLeft (85).reduced (2));
         importButton_.setBounds (bar.removeFromLeft (95).reduced (2));
         recordButton_.setBounds (bar.removeFromLeft (100).reduced (2));
         mod11Button_.setBounds (bar.removeFromLeft (110).reduced (2));
         chopButton_.setBounds (bar.removeFromLeft (150).reduced (2));
         saveProjectButton_.setBounds (bar.removeFromLeft (90).reduced (2));
         loadProjectButton_.setBounds (bar.removeFromLeft (90).reduced (2));
+
+        auto bar2 = r.removeFromTop (28);
+        vinylImportButton_.setBounds (bar2.removeFromLeft (140).reduced (2));
+        mod30CombineButton_.setBounds (bar2.removeFromLeft (115).reduced (2));
+        mod30MoveBankButton_.setBounds (bar2.removeFromLeft (85).reduced (2));
+        multiPitchButton_.setBounds (bar2.removeFromLeft (150).reduced (2));
+        faderModeButton_.setBounds (bar2.removeFromLeft (120).reduced (2));
     }
     else if (view_ == ViewMode::program)
     {
@@ -841,13 +845,7 @@ void SP1200AudioProcessorEditor::resized()
         programHelpLabel_.setBounds (bar.reduced (2));
     }
 
-    if (view_ == ViewMode::console)
-    {
-        auto filterBar = r.removeFromTop (28);
-        multiPitchButton_.setBounds (filterBar.removeFromLeft (150).reduced (2));
-        faderModeButton_.setBounds (filterBar.removeFromLeft (120).reduced (2));
-    }
-    else if (view_ == ViewMode::sequencer)
+    if (view_ == ViewMode::sequencer)
     {
         patternSlider_.setBounds (bar.removeFromLeft (140).reduced (2));
         barsSlider_.setBounds (bar.removeFromLeft (100).reduced (2));
@@ -1005,11 +1003,11 @@ void SP1200AudioProcessorEditor::resized()
 void SP1200AudioProcessorEditor::layoutConsolePadsAndFaders (juce::Rectangle<int> area)
 {
     auto padArea = area.removeFromBottom (160);
-    auto faderArea = area;
+    const auto faderArea = area;
     const int cols = 8;
     const int rows = 2;
     const int cellW = padArea.getWidth() / cols;
-    const int fCellH = faderArea.getHeight() / rows;
+    const int fCellH = juce::jlimit (36, 140, (faderArea.getHeight() - 8) / rows);
     const int pCellH = padArea.getHeight() / rows;
 
     for (int row = 0; row < rows; ++row)
@@ -1017,16 +1015,23 @@ void SP1200AudioProcessorEditor::layoutConsolePadsAndFaders (juce::Rectangle<int
         for (int col = 0; col < cols; ++col)
         {
             const int idx = row * cols + col;
-            faders_[static_cast<std::size_t> (idx)].setBounds (col * cellW + 8,
-                                                                 row * fCellH + 4,
+            faders_[static_cast<std::size_t> (idx)].setBounds (faderArea.getX() + col * cellW + 8,
+                                                                 faderArea.getY() + row * fCellH + 4,
                                                                  cellW - 16,
                                                                  fCellH - 8);
-            padButtons_[static_cast<std::size_t> (idx)].setBounds (col * cellW + 4,
+            padButtons_[static_cast<std::size_t> (idx)].setBounds (padArea.getX() + col * cellW + 4,
                                                                      padArea.getY() + row * pCellH + 4,
                                                                      cellW - 8,
                                                                      pCellH - 8);
         }
     }
+
+    if (lcdPanel_ != nullptr)
+        lcdPanel_->toFront (false);
+    if (keypad_ != nullptr)
+        keypad_->toFront (false);
+    for (auto* b : { &lcdMinusButton_, &lcdPlusButton_, &lcdNoButton_, &lcdYesButton_ })
+        b->toFront (false);
 }
 
 void SP1200AudioProcessorEditor::timerCallback()

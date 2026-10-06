@@ -6,12 +6,17 @@ KeypadComponent::KeypadComponent()
     {
         auto& b = digitButtons_[static_cast<std::size_t> (d)];
         b.setButtonText (juce::String (d));
-        b.setColour (juce::TextButton::buttonColourId, juce::Colour (0xffc8c0b8));
+        b.setColour (juce::TextButton::buttonColourId, juce::Colour (0xfff2efe8));
+        b.setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xffd4cfc6));
+        b.setColour (juce::TextButton::textColourOffId, juce::Colours::black);
+        b.setColour (juce::TextButton::textColourOnId, juce::Colours::black);
         b.onClick = [this, d] { if (onDigit) onDigit (d); };
         addAndMakeVisible (b);
     }
     enterButton_.setColour (juce::TextButton::buttonColourId, juce::Colour (0xff7cb87c));
+    enterButton_.setColour (juce::TextButton::textColourOffId, juce::Colours::black);
     cancelButton_.setColour (juce::TextButton::buttonColourId, juce::Colour (0xffc08080));
+    cancelButton_.setColour (juce::TextButton::textColourOffId, juce::Colours::black);
     enterButton_.onClick = [this] { if (onEnter) onEnter(); };
     cancelButton_.onClick = [this] { if (onCancel) onCancel(); };
     addAndMakeVisible (enterButton_);
@@ -20,8 +25,10 @@ KeypadComponent::KeypadComponent()
 
 void KeypadComponent::paint (juce::Graphics& g)
 {
-    g.setColour (juce::Colour (0xff3a3632));
+    g.setColour (juce::Colour (0xff5c5650));
     g.fillRoundedRectangle (getLocalBounds().toFloat(), 4.0f);
+    g.setColour (juce::Colours::black.withAlpha (0.25f));
+    g.drawRoundedRectangle (getLocalBounds().toFloat().reduced (0.5f), 4.0f, 1.0f);
 }
 
 void KeypadComponent::resized()
