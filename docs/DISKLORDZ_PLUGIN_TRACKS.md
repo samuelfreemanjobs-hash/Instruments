@@ -9,6 +9,7 @@
 | Track | Product | Path | Stack | Priority |
 |-------|---------|------|-------|----------|
 | **C** | **JD Upgraded** | `Source/` | JUCE VST3 + CLAP | Maintenance + CI |
+| **C2** | **SP-1200 Drumulator** | [SP1200/](../SP1200/) | JUCE Standalone + VST3 | Disklordz grit / screw lane; spec [SP1200_STANDALONE_SPEC.md](SP1200_STANDALONE_SPEC.md) |
 | **D** | **HISE sketch** (rompler / sampler SKUs) | [hise-sketch/](../hise-sketch/) | HISE → VST3 (local) | **P3** — Antigravity; does not consume Cursor WIP unless port WO |
 
 Junova-X and NovaDrum (JUCE / iPlug2 factory tracks A–B) are documented on the Junova handoff branch / open PRs — merge those before expecting paths under `Junova-X/` and `vst-tr808/`.
