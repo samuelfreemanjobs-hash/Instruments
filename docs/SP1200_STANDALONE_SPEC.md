@@ -1,6 +1,8 @@
 # SP-1200-style standalone sampler — product spec (v0)
 
-Planning document for a **standalone** performance sampler/sequencer modeled on the **E-mu SP-1200** workflow, UI, and sonic constraints, with deliberate **extended** limits (memory, voices, pads). Implementation target: new product in the Instruments monorepo (likely **JUCE standalone**); not started in code yet.
+**Single product track:** this spec is the acceptance contract for **SP-1200 Drumulator** in [`SP1200/`](../SP1200/). Implementation is JUCE **standalone + VST3** on `main`; runtime architecture is [SP1200/ARCHITECTURE.md](../SP1200/ARCHITECTURE.md). QA: [SP1200_QA_CHECKLIST.md](SP1200_QA_CHECKLIST.md). Handoff: [SP1200_HANDOFF.md](SP1200_HANDOFF.md).
+
+Performance sampler/sequencer modeled on the **E-mu SP-1200** workflow, UI, and sonic constraints, with deliberate **extended** limits (memory, voices, pads).
 
 **Concept UI reference:**
 

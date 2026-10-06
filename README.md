@@ -1,6 +1,6 @@
 # Instruments
 
-This monorepo hosts **JD Upgraded** (Roland JD-style synth) and the **MyFirstPlugin** JUCE starter templates.
+This monorepo hosts **JD Upgraded** (Roland JD-style synth), **SP-1200 Drumulator** ([SP1200/](SP1200/) standalone + VST3 sampler), and the **MyFirstPlugin** JUCE starter templates.
 
 ---
 

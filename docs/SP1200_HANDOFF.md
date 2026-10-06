@@ -15,7 +15,7 @@ Manual QA: [SP1200_QA_CHECKLIST.md](SP1200_QA_CHECKLIST.md)
 | **P3** | MOD 15 SSM; MOD 30; LCD/keypad scrub | **Done** |
 | **P4** | QA checklist; optional VST3 | **Automated QA in CI**; manual checklist open; **VST3 built** |
 
-PR: **#50** (`cursor/sp1200-standalone-build-1a4f` → `main`).
+**Shipped on `main`:** merged **2026-10-06** via PR [#50](https://github.com/samuelfreemanjobs-hash/Instruments/pull/50) (merge commit `0a32432879c2a8f691758a72cd31ece89ae316b2`).
 
 ## Build & verify
 
@@ -49,13 +49,14 @@ Monorepo **Build / cmake** job builds all targets (including SP1200 VST3) and ru
 - Windows VST3 packaging (Linux standalone + VST3 validated in CI build)  
 - pluginval harness for SP1200 (JD Upgraded uses `ci-verify`; SP1200 uses unit tests only)
 
-## Merge checklist (human)
+## Post-merge checklist (human)
 
-1. Review PR #50 diff + `SP1200/ARCHITECTURE.md`  
-2. Run manual pass on [SP1200_QA_CHECKLIST.md](SP1200_QA_CHECKLIST.md) (1–2 h)  
-3. Merge to `main`; tag release optional (`sp1200-v0.1.0`)  
-4. Close tracking issue if any  
+1. ~~Review PR #50 and merge to `main`~~ **Done** (2026-10-06)  
+2. ~~Confirm **Build / cmake** green on `main`~~ **Done** — run [37502018473](https://github.com/samuelfreemanjobs-hash/Instruments/actions/runs/37502018473) (Build + **SP1200 unit tests** success)  
+3. Manual pass on [SP1200_QA_CHECKLIST.md](SP1200_QA_CHECKLIST.md) (1–2 h) — **partial smoke 2026-10-06** ([report](SP1200_SMOKE_TEST_2026-10-06.md)): standalone launch; tabs 10/11/12–14/20/24/15/SETUP; Space transport; keys 1–4 banks (no sample import / MIDI hardware in smoke pass)  
+4. Optional: tag release `sp1200-v0.1.0` (after full P4 checklist)  
+5. Close obsolete combine PR [#68](https://github.com/samuelfreemanjobs-hash/Instruments/pull/68) after doc PR [#89](https://github.com/samuelfreemanjobs-hash/Instruments/pull/89) merges  
 
-## Related docs branch
+## Branch hygiene
 
-Spec-only updates may live on `cursor/sp1200-standalone-spec-1a4f`; merge or cherry-pick into `main` after build PR lands if still diverged.
+Legacy implementation branches `cursor/sp1200-standalone-build-*` and spec branches `cursor/sp1200-standalone-spec-*` are superseded by **`main`** + `SP1200/`. Cherry-pick doc-only commits from open PRs if still useful; do not re-merge full feature branches.
