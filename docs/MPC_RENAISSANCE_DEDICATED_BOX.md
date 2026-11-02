@@ -16,7 +16,7 @@ You **cannot** flash a new OS onto the Renaissance itself. Custom features belon
 | **Fully custom app** (no MPC Software) | **Linux or Windows** | Run **`RenaissanceHost_Standalone`** (JUCE); USB audio/MIDI via Renaissance class drivers. |
 | **Both** | Windows primary + Linux dev/test partition, or second cheap SBC for experiments | Keep production box on Windows for Akai support. |
 
-Your **main Windows machine** stays the dev desk (Cursor, builds, MIDI sniffing). The **box** should be a **Windows mini PC** (N100/N305 class, 16 GB RAM, NVMe) unless you explicitly choose the Linux-only custom-engine path.
+**Dedicated box = Windows mini PC** — see [WINDOWS_MINI_PC.md](../renaissance-box/docs/WINDOWS_MINI_PC.md) (N100/N305, 16 GB RAM, NVMe). Your main Windows desk can stay for Cursor/dev; the hidden unit runs v1 MPC Software, then **Renaissance Host** when you switch to JUCE.
 
 ## Hardware checklist
 

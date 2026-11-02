@@ -1,4 +1,6 @@
-# Box v1 checklist (Windows + MPC Software)
+# Box v1 checklist (Windows mini PC + MPC Software)
+
+Full mini PC guide: [WINDOWS_MINI_PC.md](WINDOWS_MINI_PC.md).
 
 Complete this **before** sidecar or custom engines. Goal: power-on → pads and audio work with **only** Akai MPC Software.
 
