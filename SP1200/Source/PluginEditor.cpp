@@ -365,7 +365,14 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
         processor_.engine().midiMapping().resetToDefaults();
         refreshLearnStatus();
     };
-    for (auto* b : { &learnNoteButton_, &learnCcButton_, &resetMidiMapButton_ })
+    renaissanceMapButton_.onClick = [this]
+    {
+        processor_.engine().applyMpcRenaissanceController();
+        refreshLearnStatus();
+        midiChannelSlider_.setValue (processor_.engine().midiChannel(), juce::dontSendNotification);
+        midiOmniButton_.setToggleState (processor_.engine().midiOmni(), juce::dontSendNotification);
+    };
+    for (auto* b : { &learnNoteButton_, &learnCcButton_, &resetMidiMapButton_, &renaissanceMapButton_ })
         addAndMakeVisible (*b);
 
     learnStatusLabel_.setText ("MIDI learn idle", juce::dontSendNotification);
@@ -703,7 +710,7 @@ void SP1200AudioProcessorEditor::setView (ViewMode mode)
     midiOmniButton_.setVisible (setup);
     clockModeBox_.setVisible (setup);
     learnPadBox_.setVisible (setup);
-    for (auto* b : { &learnNoteButton_, &learnCcButton_, &resetMidiMapButton_ })
+    for (auto* b : { &learnNoteButton_, &learnCcButton_, &resetMidiMapButton_, &renaissanceMapButton_ })
         b->setVisible (setup);
     learnStatusLabel_.setVisible (setup);
     for (auto& box : chokeGroupBoxes_)
@@ -926,6 +933,7 @@ void SP1200AudioProcessorEditor::resized()
         learnNoteButton_.setBounds (learnBar.removeFromLeft (100).reduced (2));
         learnCcButton_.setBounds (learnBar.removeFromLeft (100).reduced (2));
         resetMidiMapButton_.setBounds (learnBar.removeFromLeft (120).reduced (2));
+        renaissanceMapButton_.setBounds (learnBar.removeFromLeft (150).reduced (2));
         learnStatusLabel_.setBounds (learnBar);
 
         setupInfoLabel_.setBounds (r.removeFromTop (48).reduced (4));

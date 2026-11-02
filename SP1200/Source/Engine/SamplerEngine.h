@@ -44,6 +44,9 @@ public:
     [[nodiscard]] int midiChannel() const noexcept { return midiChannel_; }
     [[nodiscard]] bool midiOmni() const noexcept { return midiOmni_; }
 
+    /** Pad notes 36–51, Q-Link CC 1–16, omni on, channel 1 — Linux/custom-engine path with Renaissance. */
+    void applyMpcRenaissanceController();
+
     MidiMapping& midiMapping() noexcept { return midiMapping_; }
     [[nodiscard]] const MidiMapping& midiMapping() const noexcept { return midiMapping_; }
 

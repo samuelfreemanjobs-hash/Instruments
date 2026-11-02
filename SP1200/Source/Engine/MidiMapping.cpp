@@ -18,6 +18,15 @@ void MidiMapping::resetToDefaults()
     }
 }
 
+void MidiMapping::applyMpcRenaissanceProfile()
+{
+    for (int i = 0; i < kNumPads; ++i)
+    {
+        padNotes_[static_cast<std::size_t> (i)] = kPadNoteStart + i;
+        faderCc_[static_cast<std::size_t> (i)] = 1 + i;
+    }
+}
+
 int MidiMapping::padNote (int padIndex) const
 {
     if (padIndex < 0 || padIndex >= kNumPads)

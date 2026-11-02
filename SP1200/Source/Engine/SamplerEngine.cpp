@@ -193,6 +193,13 @@ void SamplerEngine::setMidiOmni (bool omni)
     midiOmni_ = omni;
 }
 
+void SamplerEngine::applyMpcRenaissanceController()
+{
+    midiMapping_.applyMpcRenaissanceProfile();
+    setMidiChannel (1);
+    setMidiOmni (true);
+}
+
 PadAssignment SamplerEngine::getPad (int padIndex) const
 {
     if (padIndex >= 0 && padIndex < kNumPads)

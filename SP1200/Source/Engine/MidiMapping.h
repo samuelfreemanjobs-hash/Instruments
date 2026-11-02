@@ -35,6 +35,9 @@ public:
 
     void resetToDefaults();
 
+    /** MPC Renaissance starting map (notes 36–51). Q-Link CCs 1–16 — verify with Learn on hardware. */
+    void applyMpcRenaissanceProfile();
+
     void beginLearnPad (int padIndex);
     void beginLearnFader (int padIndex);
     void cancelLearn();

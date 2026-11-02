@@ -27,6 +27,15 @@ Your **main Windows machine** stays the dev desk (Cursor, builds, MIDI sniffing)
 - **Keyboard/mouse**: wireless dongle stored inside the enclosure for maintenance  
 - Surge protection; label “Renaissance box — do not unplug USB during power-on”
 
+## Recommended path: **1 + 4** (box v1 now, custom engine later)
+
+| Step | When | What |
+|------|------|------|
+| **1 — Box v1** | First | Windows mini PC + MPC Software only — [BOX_V1_CHECKLIST.md](../renaissance-box/docs/BOX_V1_CHECKLIST.md) |
+| **4 — Custom engine** | When you want owned code | Linux (same or second disk) + **SP1200_Standalone** + **Setup → MPC Renaissance map** |
+
+You can keep **v1 on Windows** for daily Akai workflow and add a **Linux boot** (dual-boot or spare SSD) for SP1200 + Renaissance without removing MPC Software from the box.
+
 ## Software stack (Mode A — recommended)
 
 1. **Windows** — clean install, auto-login (maintenance account only; see security note below).  
@@ -49,8 +58,9 @@ Details: [`renaissance-box/scripts/windows/README.md`](../renaissance-box/script
 
 1. **Linux** (Ubuntu 22.04+ or similar) + **PipeWire**.  
 2. Build **`SP1200_Standalone`** from this repo; set JACK/PipeWire device to Renaissance USB.  
-3. Map pads via SP1200 MIDI learn or [`midi-map.local.json`](../renaissance-box/config/midi-map.template.json).  
-4. No MPC Software — you trade Akai project format for full source ownership.
+3. Open **Setup** view → click **MPC Renaissance map** (pads 36–51, Q-Link CC 1–16, MIDI omni). Re-learn any pad/CC that differs on your unit.  
+4. Map pads via SP1200 MIDI learn or [`midi-map.local.json`](../renaissance-box/config/midi-map.template.json).  
+5. No MPC Software — you trade Akai project format for full source ownership.
 
 Details: [`renaissance-box/scripts/linux/README.md`](../renaissance-box/scripts/linux/README.md).
 

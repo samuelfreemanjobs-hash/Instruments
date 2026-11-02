@@ -4,7 +4,7 @@ Standalone **12-bit / 26.040 kHz** sampler inspired by the E-mu SP-1200 workflow
 
 ## Purpose
 
-Performance sampler with **16 pads**, **16 voices**, **7:00** embedded sample RAM, WAV import, audio input record, **SQ-1 default MIDI map** (ch 10, notes 36–51, CC 20–35), keyboard transport (Space/Esc/R/Tab, Q–I / A–K pads).
+Performance sampler with **16 pads**, **16 voices**, **7:00** embedded sample RAM, WAV import, audio input record, **SQ-1 default MIDI map** (ch 10, notes 36–51, CC 20–35), optional **MPC Renaissance map** (Setup → omni, ch 1, Q-Link CC 1–16), keyboard transport (Space/Esc/R/Tab, Q–I / A–K pads).
 
 ## Build and run
 

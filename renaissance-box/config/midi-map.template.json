@@ -24,6 +24,21 @@
     { "id": 1, "cc": 1, "channel": 0 },
     { "id": 2, "cc": 2, "channel": 0 },
     { "id": 3, "cc": 3, "channel": 0 },
-    { "id": 4, "cc": 4, "channel": 0 }
-  ]
+    { "id": 4, "cc": 4, "channel": 0 },
+    { "id": 5, "cc": 5, "channel": 0 },
+    { "id": 6, "cc": 6, "channel": 0 },
+    { "id": 7, "cc": 7, "channel": 0 },
+    { "id": 8, "cc": 8, "channel": 0 },
+    { "id": 9, "cc": 9, "channel": 0 },
+    { "id": 10, "cc": 10, "channel": 0 },
+    { "id": 11, "cc": 11, "channel": 0 },
+    { "id": 12, "cc": 12, "channel": 0 },
+    { "id": 13, "cc": 13, "channel": 0 },
+    { "id": 14, "cc": 14, "channel": 0 },
+    { "id": 15, "cc": 15, "channel": 0 },
+    { "id": 16, "cc": 16, "channel": 0 }
+  ],
+  "sp1200Profile": {
+    "notes": "Matches SP1200 Setup → MPC Renaissance map (applyMpcRenaissanceProfile + omni + ch 1)"
+  }
 }
