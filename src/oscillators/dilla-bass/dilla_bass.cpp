@@ -142,7 +142,7 @@ void dilla_bass_reset(void) {
   s_phase_sub = 0U;
   s_lfo_a = 0U;
   s_lfo_b = 881233U;
-  s_rng = 0xD1LLA123U;
+  s_rng = 0xD11A123U;
   s_w_cur = 0.0f;
   s_w_tgt = 0.0f;
   s_drift = 0.0f;

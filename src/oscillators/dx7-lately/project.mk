@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_dx7_lately
 
-UCSRC =
 
-UCXXSRC = lately_bass.cc
+UCXXSRC = lately_bass.cpp
 
 UINCDIR = ../../shared
 

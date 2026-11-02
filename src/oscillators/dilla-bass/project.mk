@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_dilla_bass
 
-UCSRC =
 
-UCXXSRC = dilla_bass.cc
+UCXXSRC = dilla_bass.cpp
 
 UINCDIR = ../../shared
 

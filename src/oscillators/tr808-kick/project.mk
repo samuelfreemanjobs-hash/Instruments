@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_tr808_kick
 
-UCSRC =
 
-UCXXSRC = kick808.cc
+UCXXSRC = kick808.cpp
 
 UINCDIR = ../../shared
 

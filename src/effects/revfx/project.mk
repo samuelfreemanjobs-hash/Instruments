@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_revfx
 
-UCSRC =
 
-UCXXSRC = revfx.cc
+UCXXSRC = revfx.cpp
 
 UINCDIR = ../../shared
 

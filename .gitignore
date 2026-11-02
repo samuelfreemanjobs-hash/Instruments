@@ -1,4 +1,8 @@
 .deps/
+**/*.ntkdigunit
+**/*.nts1mkiiunit
+src/**/build/
+src/**/tpl
 apc.config.json
 release/
 plugins/*/build/

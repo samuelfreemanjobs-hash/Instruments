@@ -40,9 +40,14 @@ Supporting folders: `template`, `wavetable` (learning / starters).
 ## Build all bass units
 
 ```bash
-export LOGUE_SDK=/path/to/logue-sdk
+./tools/mkii-automate.sh bootstrap   # clones .deps/logue-sdk once
+export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
 ./tools/build-all-bass.sh nutekt-digital
+./tools/build-all-bass-mkii.sh       # NTS-1 mkII
+./tools/package-nts1.sh              # release/nts1-custom-oscillators/
 ```
+
+Same-day install steps: [NTS1_INSTALL_TODAY.md](NTS1_INSTALL_TODAY.md).
 
 Outputs appear in each unit’s build directory per the logue SDK (`.prg` / loader
 artifacts — see SDK docs).

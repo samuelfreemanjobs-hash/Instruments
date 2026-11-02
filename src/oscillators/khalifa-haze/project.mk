@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_khalifa_haze
 
-UCSRC =
 
-UCXXSRC = khalifa_bass.cc
+UCXXSRC = khalifa_bass.cpp
 
 UINCDIR = ../../shared
 

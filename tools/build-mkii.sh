@@ -85,5 +85,8 @@ fi
 
 export LOGUE_SDK
 cd "${UNIT_DIR}"
+GCC_BIN_PATH="${GCC_BIN_PATH:-$(dirname "$(command -v arm-none-eabi-gcc 2>/dev/null)")/}"
+export GCC_BIN_PATH
 make -j"$(nproc 2>/dev/null || echo 2)"
+make install 2>/dev/null || true
 echo "Product: ${UNIT_DIR}/*.nts1mkiiunit (or build/*.nts1mkiiunit)"

@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_delfx
 
-UCSRC =
 
-UCXXSRC = delfx.cc
+UCXXSRC = delfx.cpp
 
 UINCDIR = ../../shared
 

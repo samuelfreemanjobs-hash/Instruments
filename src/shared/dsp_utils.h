@@ -43,6 +43,20 @@ static inline int32_t dsp_lerp_q31(int32_t a, int32_t b, float t) {
   return (int32_t)(fa + (fb - fa) * t);
 }
 
+/**
+ * Phase increment for v1.1.0-style oscillators (uint32 per sample).
+ * Include userosc.h before this header so osc_w0f_for_note is visible.
+ */
+static inline uint32_t osc_w0(uint16_t pitch) {
+  const float w0f =
+      osc_w0f_for_note((uint8_t)(pitch >> 8), (uint8_t)(pitch & 0xFF));
+  float scaled = w0f * 4294967296.0f;
+  if (scaled > 4294967295.0f) {
+    return 4294967295U;
+  }
+  return (uint32_t)scaled;
+}
+
 #ifdef __cplusplus
 }
 #endif

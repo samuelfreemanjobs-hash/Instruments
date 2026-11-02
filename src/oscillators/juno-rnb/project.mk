@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_juno_rnb
 
-UCSRC =
 
-UCXXSRC = juno_rnb.cc
+UCXXSRC = juno_rnb.cpp
 
 UINCDIR = ../../shared
 

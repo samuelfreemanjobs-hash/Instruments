@@ -6,7 +6,7 @@ Scaffold only — `osc.h` plays a placeholder tone until you port DSP.
 
 ## Finish the port
 
-1. Open v1 source: `src/oscillators/sub-phatty/sub_phatty.cc`
+1. Open v1 source: `src/oscillators/sub-phatty/*.cc`
 2. Copy float math from `OSC_CYCLE` into `Osc::process()` in `osc.h` (mkII uses **float** mono out, stereo `in`).
 3. Map `OSC_PARAM` cases to `setParameter()` (0–100 v1 → use `param_10bit_to_f32` for 0–1023).
 4. Map `OSC_NOTEON` / `OSC_NOTEOFF` to `noteOn` / `noteOff` overrides if needed.

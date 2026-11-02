@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_west_coast_moog
 
-UCSRC =
 
-UCXXSRC = funk_moog.cc
+UCXXSRC = funk_moog.cpp
 
 UINCDIR = ../../shared
 

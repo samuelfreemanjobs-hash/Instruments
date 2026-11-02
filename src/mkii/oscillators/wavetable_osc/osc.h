@@ -1,5 +1,5 @@
 #pragma once
-/* mkII oscillator — PORT DSP from v1: oscillators/wavetable/wavetable.cc
+/* mkII oscillator — PORT DSP from v1: oscillators/wavetable/*.cc
  * Replace process() body with your mkI OSC_CYCLE logic (float out, osc_w0f pitch).
  */
 #include "processor.h"

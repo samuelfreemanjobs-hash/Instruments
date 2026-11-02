@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_cardo_gfunk
 
-UCSRC =
 
-UCXXSRC = cardo_bass.cc
+UCXXSRC = cardo_bass.cpp
 
 UINCDIR = ../../shared
 

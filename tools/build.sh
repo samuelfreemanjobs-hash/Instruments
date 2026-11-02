@@ -40,5 +40,15 @@ if [[ ! -d "${PLAT_PATH}" ]]; then
 fi
 
 export PLATFORMDIR="${PLAT_PATH}"
+
+# SDK dummy-osc template (tpl/_unit.c) is required per unit directory.
+if [[ "${PLATFORM}" == "nutekt-digital" ]]; then
+  TPL_SRC="${PLAT_PATH}/dummy-osc/tpl"
+  if [[ -d "${TPL_SRC}" && ! -e "${UNIT_DIR}/tpl" ]]; then
+    ln -sfn "${TPL_SRC}" "${UNIT_DIR}/tpl"
+  fi
+fi
+
 cd "${UNIT_DIR}"
 make -j"$(nproc 2>/dev/null || echo 2)"
+make install

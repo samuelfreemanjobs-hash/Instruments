@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_wavetable_osc
 
-UCSRC =
 
-UCXXSRC = wavetable.cc
+UCXXSRC = wavetable.cpp
 
 UINCDIR = ../../shared
 

@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_sh101_babyface
 
-UCSRC =
 
-UCXXSRC = sh101_bass.cc
+UCXXSRC = sh101_bass.cpp
 
 UINCDIR = ../../shared
 

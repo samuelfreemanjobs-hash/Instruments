@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_voyager_se
 
-UCSRC =
 
-UCXXSRC = voyager_se.cc
+UCXXSRC = voyager_se.cpp
 
 UINCDIR = ../../shared
 

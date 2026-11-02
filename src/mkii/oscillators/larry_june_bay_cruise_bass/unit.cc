@@ -113,8 +113,6 @@ __unit_callback void unit_render(const float *in, float *out, uint32_t frames)
 {
   s_osc_instance.setPitch(osc_w0f_for_note((context->pitch) >> 8, context->pitch & 0xFF));
   s_osc_instance.setShapeLfo(q31_to_f32(context->shape_lfo));
-  s_osc_instance.setHostCutoffRes(static_cast<float>(context->cutoff) * (1.0f / 8191.0f),
-                                  static_cast<float>(context->resonance) * (1.0f / 8191.0f));
   s_osc_instance.process(in, out, frames);
 }
 

@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_sub_phatty
 
-UCSRC =
 
-UCXXSRC = sub_phatty.cc
+UCXXSRC = sub_phatty.cpp
 
 UINCDIR = ../../shared
 

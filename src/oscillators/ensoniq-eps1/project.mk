@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_ensoniq_eps1
 
-UCSRC =
 
-UCXXSRC = eps_bass.cc
+UCXXSRC = eps_bass.cpp
 
 UINCDIR = ../../shared
 

@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_modfx
 
-UCSRC =
 
-UCXXSRC = modfx.cc
+UCXXSRC = modfx.cpp
 
 UINCDIR = ../../shared
 

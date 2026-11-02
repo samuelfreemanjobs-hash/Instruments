@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_prophet_funk
 
-UCSRC =
 
-UCXXSRC = prophet_bass.cc
+UCXXSRC = prophet_bass.cpp
 
 UINCDIR = ../../shared
 

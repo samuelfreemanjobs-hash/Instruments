@@ -1,9 +1,2 @@
-ifndef PLATFORMDIR
-  ifdef LOGUE_SDK
-    PLATFORMDIR := $(LOGUE_SDK)/platform/nutekt-digital
-  else
-    PLATFORMDIR := ../../../../logue-sdk/platform/nutekt-digital
-  endif
-endif
-
-include $(PLATFORMDIR)/Makefile.inc
+UNIT_MK_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+include $(UNIT_MK_DIR)/../../shared/logue-v1-unit.mk

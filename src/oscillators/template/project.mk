@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_template_osc
 
-UCSRC =
 
-UCXXSRC = oscillator.cc
+UCXXSRC = oscillator.cpp
 
 UINCDIR = ../../shared
 

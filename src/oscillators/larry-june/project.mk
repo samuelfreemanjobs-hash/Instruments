@@ -1,8 +1,8 @@
+UCSRC += ../../shared/logue_syscalls.c
 PROJECT = nts1_larry_june
 
-UCSRC =
 
-UCXXSRC = larry_bass.cc
+UCXXSRC = larry_bass.cpp
 
 UINCDIR = ../../shared
 
