@@ -1,0 +1,52 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "Lately Bass",
+    "num_param": 9,
+    "params": [
+      ["Vibe", 0, 100, "%"],
+      ["Index", 0, 100, "%"],
+      ["Bite", 0, 100, "%"],
+      ["Ratio", 0, 100, "%"],
+      ["Glide", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"],
+      ["Tone", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "dx7_lately_bass",
+    "type": "osc",
+    "collection": "nts1-multi-bass",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "DX7 Lately Bass style FM electric bass: fast mod index decay (Bite), dual mod ratios, multifunction Vibe. Panel cutoff brightens output.",
+    "presets": [
+      {
+        "name": "Lately Bass (classic)",
+        "midi_hint": "E2-G2, staccato 16ths",
+        "values": [52, 62, 58, 48, 22, 6, 44, 36, 55]
+      },
+      {
+        "name": "House pluck",
+        "midi_hint": "F2-A2, short notes",
+        "values": [65, 70, 72, 55, 12, 4, 35, 28, 62]
+      },
+      {
+        "name": "Soft FM electric",
+        "midi_hint": "D2-F2, legato",
+        "values": [28, 45, 38, 35, 35, 14, 52, 48, 42]
+      },
+      {
+        "name": "Hard harmonic",
+        "midi_hint": "G2, high Index",
+        "values": [78, 82, 65, 62, 18, 5, 30, 32, 68]
+      }
+    ]
+  }
+}
