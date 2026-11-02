@@ -30,4 +30,4 @@ Complete this **before** sidecar or custom engines. Goal: power-on → pads and 
 
 ## Sign-off
 
-When every box above is checked, label the unit **Box v1 OK** with date. Next: optional [sidecar](../host/README.md) (v2) or [Linux + SP1200 custom path](../../docs/MPC_RENAISSANCE_DEDICATED_BOX.md#software-stack-mode-b--all-custom-code) (v4 profile).
+When every box above is checked, label the unit **Box v1 OK** with date. Next: build [Renaissance Host (JUCE)](../../docs/JUCE_RENAISSANCE_HOST.md) or optional [Python sidecar](../host/README.md) for MIDI sniffing.

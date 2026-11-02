@@ -38,7 +38,7 @@
     { "id": 15, "cc": 15, "channel": 0 },
     { "id": 16, "cc": 16, "channel": 0 }
   ],
-  "sp1200Profile": {
-    "notes": "Matches SP1200 Setup → MPC Renaissance map (applyMpcRenaissanceProfile + omni + ch 1)"
+  "juceHostProfile": {
+    "notes": "Matches renaissance-box/juce-host RenaissanceSurfaceMap (omni, pads 36-51, CC 1-16)"
   }
 }

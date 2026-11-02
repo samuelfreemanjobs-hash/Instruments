@@ -1,6 +1,6 @@
 # Linux — custom-engine box (no MPC Software)
 
-Use when the dedicated box runs **your** JUCE app (e.g. **SP1200_Standalone**) instead of Akai MPC Software.
+Use when the dedicated box runs **Renaissance Host** (JUCE) instead of Akai MPC Software.
 
 ## PipeWire
 
@@ -32,6 +32,6 @@ WantedBy=default.target
 systemctl --user enable --now renaissance-sidecar.service
 ```
 
-## SP1200 autostart
+## JUCE host autostart
 
-Point `ExecStart` at `build/SP1200/SP1200_artefacts/Release/Standalone/SP-1200 Drumulator` after building from repo root.
+Point `ExecStart` at `build/renaissance-box/juce-host/RenaissanceHost_artefacts/Release/Standalone/Renaissance Host` after building from repo root.

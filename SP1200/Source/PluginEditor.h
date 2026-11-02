@@ -180,7 +180,6 @@ private:
     juce::TextButton learnNoteButton_ { "Learn NOTE" };
     juce::TextButton learnCcButton_ { "Learn CC" };
     juce::TextButton resetMidiMapButton_ { "Reset MIDI maps" };
-    juce::TextButton renaissanceMapButton_ { "MPC Renaissance map" };
     juce::Label learnStatusLabel_;
     std::array<juce::ComboBox, sp1200::kNumPads> chokeGroupBoxes_;
     juce::ToggleButton vinylImportButton_ { "VINYL 33→45 import" };

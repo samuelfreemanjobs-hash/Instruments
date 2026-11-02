@@ -13,7 +13,7 @@ You **cannot** flash a new OS onto the Renaissance itself. Custom features belon
 | Goal | Mini PC OS | Why |
 |------|------------|-----|
 | **Official Akai workflow** (pads, plugins, projects, Renaissance driver) | **Windows 10/11** | MPC Software and Renaissance drivers are **Windows/macOS only** — not Linux. |
-| **Fully custom app** (no MPC Software) | **Linux** | Run repo **`SP1200_Standalone`** or your own JUCE binary; USB audio/MIDI via class drivers. |
+| **Fully custom app** (no MPC Software) | **Linux or Windows** | Run **`RenaissanceHost_Standalone`** (JUCE); USB audio/MIDI via Renaissance class drivers. |
 | **Both** | Windows primary + Linux dev/test partition, or second cheap SBC for experiments | Keep production box on Windows for Akai support. |
 
 Your **main Windows machine** stays the dev desk (Cursor, builds, MIDI sniffing). The **box** should be a **Windows mini PC** (N100/N305 class, 16 GB RAM, NVMe) unless you explicitly choose the Linux-only custom-engine path.
@@ -32,9 +32,9 @@ Your **main Windows machine** stays the dev desk (Cursor, builds, MIDI sniffing)
 | Step | When | What |
 |------|------|------|
 | **1 — Box v1** | First | Windows mini PC + MPC Software only — [BOX_V1_CHECKLIST.md](../renaissance-box/docs/BOX_V1_CHECKLIST.md) |
-| **4 — Custom engine** | When you want owned code | Linux (same or second disk) + **SP1200_Standalone** + **Setup → MPC Renaissance map** |
+| **4 — Custom engine** | When you want owned code | **Renaissance Host** (JUCE) — [JUCE_RENAISSANCE_HOST.md](JUCE_RENAISSANCE_HOST.md) |
 
-You can keep **v1 on Windows** for daily Akai workflow and add a **Linux boot** (dual-boot or spare SSD) for SP1200 + Renaissance without removing MPC Software from the box.
+You can keep **v1 on Windows** for daily Akai workflow and add a **Linux boot** (dual-boot or spare SSD) for the JUCE host without removing MPC Software from the box.
 
 ## Software stack (Mode A — recommended)
 
@@ -54,13 +54,13 @@ You can keep **v1 on Windows** for daily Akai workflow and add a **Linux boot** 
 
 Details: [`renaissance-box/scripts/windows/README.md`](../renaissance-box/scripts/windows/README.md).
 
-## Software stack (Mode B — all custom code)
+## Software stack (Mode B — JUCE custom engine)
 
-1. **Linux** (Ubuntu 22.04+ or similar) + **PipeWire**.  
-2. Build **`SP1200_Standalone`** from this repo; set JACK/PipeWire device to Renaissance USB.  
-3. Open **Setup** view → click **MPC Renaissance map** (pads 36–51, Q-Link CC 1–16, MIDI omni). Re-learn any pad/CC that differs on your unit.  
-4. Map pads via SP1200 MIDI learn or [`midi-map.local.json`](../renaissance-box/config/midi-map.template.json).  
-5. No MPC Software — you trade Akai project format for full source ownership.
+1. **Linux or Windows** on the box + Renaissance as default audio device.  
+2. Build **`RenaissanceHost_Standalone`** — see [JUCE_RENAISSANCE_HOST.md](JUCE_RENAISSANCE_HOST.md).  
+3. Surface map: pads **36–51**, Q-Link CC **1–16**, MIDI **omni** (adjust in `RenaissanceSurfaceMap` after hardware verify).  
+4. Replace **`PadVoiceEngine`** with your sampler/sequencer logic.  
+5. Implement **`LcdBridge`** SysEx when you capture messages from MPC Software.
 
 Details: [`renaissance-box/scripts/linux/README.md`](../renaissance-box/scripts/linux/README.md).
 
@@ -68,7 +68,7 @@ Details: [`renaissance-box/scripts/linux/README.md`](../renaissance-box/scripts/
 
 | Feature type | Where to build | Example |
 |--------------|----------------|---------|
-| Pad/sequencer logic | Sidecar Python or future JUCE app | Custom swing table, note repeat |
+| Pad/sequencer logic | **JUCE `PadVoiceEngine` + processor** | Custom swing, sampler, note repeat |
 | Sample workflow | Disklordz inbox + sidecar extension | Auto-import new kit folder |
 | LCD text | Future SysEx module after capture | Show project name from your app |
 | DAW control | Keep on dev PC | Ableton/Bitwig scripts |
@@ -102,6 +102,6 @@ A box with auto-login and always-on USB is **physically secured** (home studio),
 1. v0 sidecar + config (this branch)  
 2. Verified default MIDI map (community capture on real hardware)  
 3. SysEx LCD subset  
-4. SP1200 “Renaissance profile” optional UI layout  
+4. Renaissance Host UI layout matching hardware (transport, Q-Link rings)  
 
 Track work in [`renaissance-box/ARCHITECTURE.md`](../renaissance-box/ARCHITECTURE.md).
