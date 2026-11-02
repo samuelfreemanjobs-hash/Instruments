@@ -81,6 +81,10 @@ public:
 
   void setPitch(float w0) { w0_ = w0; }
   void setShapeLfo(float lfo) { (void)lfo; }
+  void setHostCutoffRes(float cut, float res) {
+    (void)cut;
+    (void)res;
+  }
 
   void noteOn(uint8_t note, uint8_t velo) override final {
     (void)note;
