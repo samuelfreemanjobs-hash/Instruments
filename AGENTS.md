@@ -1,68 +1,116 @@
-# Instruments — Audio Plugin Coder (APC) agent guidance
+# Agents — Instruments monorepo
 
-Compatible with the **Noizefield APC** workflow
-([audio-plugin-coder](https://github.com/Noizefield/audio-plugin-coder)) as shown in the
-walkthrough series (Setup → Dream → Plan → Design → Implement → Test → Ship).
+Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the area you edit.
 
-Canonical APC files in **this** repo:
+## Disklordz agent fleet (repo-wide)
 
-| Area | Path |
-|------|------|
-| Workflows (slash commands) | `.agents/workflows/apc-*.md` |
-| Phase skills | `.agents/skills/` |
-| Rules | `.agents/rules/` |
-| DSP architecture (extended) | `docs/dsp-architecture-specification.md` |
-| User guide | `docs/apc-workflow.md` |
+All profit agents are **company-wide** in this monorepo — not only under `disklordz/agents/`.
 
-## First run
+| Start here | Role |
+|------------|------|
+| **[DISKLORDZ_AGENTS.md](DISKLORDZ_AGENTS.md)** | Root fleet index + active CI |
+| **[disklordz/agents/workflows/PM_ADD.md](disklordz/agents/workflows/PM_ADD.md)** | PM ADD roster (announcements) |
+| **[`.github/agents/fleet.json`](.github/agents/fleet.json)** | Machine registry |
+| **Orchestration** | `workflow-automation` (scaffold workflows) · **`pm-agent`** (governance + execute CI) |
 
-1. Run **`/apc-setup`** (or `bash bin/apc setup`).
-2. Creates `apc.config.json` from `apc.config.example.json`.
-3. Then **`/apc-dream MyPlugin`**.
+```bash
+./scripts/run-agent-fleet-now.sh          # sync + execute all local agent roles now
+./scripts/complete-roadmap-automation.sh  # integrations promote + 007 smoke + stub blockers
+./scripts/sync-disklordz-agent-fleet.sh   # regenerate fleet docs after _specs.json edits
+```
 
-## Mandatory VST lifecycle
+## Standards
 
-Every VST/VSTi: **Dream → Plan → Design → Implement → Test → Ship**.  
-See `docs/vst-lifecycle.md` and `.cursor/rules/10-vst-lifecycle-mandatory.mdc`.  
-Ship = `tools/package-vst.sh` (not build-only).
+- [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts  
+- [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
+- `.cursor/rules/*.mdc` — always-on architecture and security  
 
-## Slash commands (Cursor / any agent)
+## Disklordz SaaS (web)
 
-| Command | Phase |
-|---------|--------|
-| `/apc-setup` | Toolchain, paths, JUCE submodule |
-| `/apc-dream [Name]` | Creative brief + parameter spec |
-| `/apc-plan [Name]` | Architecture + complexity + UI path |
-| `/apc-design [Name]` | GUI spec / mockup notes |
-| `/apc-impl [Name]` | JUCE code under `vst/[Name]/` |
-| `/apc-test [Name]` | Build + smoke validation |
-| `/apc-debug [Name]` | Fix build/runtime issues |
-| `/apc-ship [Name]` | Package to `release/` |
-| `/apc-status [Name]` | Read `status.json` |
-| `/apc-resume [Name]` | Continue last incomplete phase |
-| `/apc-new [Name]` | Full pipeline with confirmations |
+```bash
+cd disklordz/website && npm ci && npm run build && npm test  # if tests exist
+```
 
-Short aliases (`/dream`, `/plan`, …) mean the same as `/apc-dream`, etc.
+Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_PUBLIC_SUPABASE_*`, `SUPABASE_SERVICE_ROLE_KEY` (prod kits), optional `SAAS_DAILY_GEN_LIMIT`.
 
-## Required context before editing a plugin
+**Supabase MCP (Cursor):** [disklordz/website/docs/SUPABASE_MCP.md](disklordz/website/docs/SUPABASE_MCP.md) — `.cursor/mcp.json`, set `SUPABASE_PROJECT_REF` (+ optional `SUPABASE_ACCESS_TOKEN`), then Connect in Cursor MCP settings.
 
-1. Read `plugins/<Name>/status.json`.
-2. Resolve paths via `source scripts/lib/apc-paths.sh && apc_load_paths && apc_plugin_path <Name>`.
-3. Load the workflow file for the current phase under `.agents/workflows/`.
-4. Execute the matching skill under `.agents/skills/`.
+**Stripe MCP (Cursor):** [disklordz/website/docs/STRIPE_MCP.md](disklordz/website/docs/STRIPE_MCP.md) — install Stripe plugin or OAuth **stripe** server; optional `STRIPE_RESTRICTED_KEY` for agents.
 
-## Phase gates
+Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
-- Complete **only** the requested phase; update `status.json` when done.
-- Do not start the next phase unless the user asks.
-- If `setup.completed` is false, warn once and suggest `/apc-setup`.
+Integrations hub: [disklordz/integrations/ARCHITECTURE.md](disklordz/integrations/ARCHITECTURE.md) · `./scripts/setup-open-source-integrations.sh`
 
-## Build (this repo)
+Profit agents (31): [DISKLORDZ_AGENTS.md](DISKLORDZ_AGENTS.md) · [docs/DISKLORDZ_PROFIT_AGENTS.md](docs/DISKLORDZ_PROFIT_AGENTS.md) · `disklordz/agents/profit/<id>/agent.md`
 
-- Prefer: `bash bin/apc build <Name>` or `./tools/build-vst.sh <Name>` when present.
-- JUCE lives at `vst/JUCE` (submodule).
-- Implementation output: `vst/<Name>/` (created in **impl** phase via `tools/new-vst.sh`).
+**Roadmap & progress:** [docs/ROADMAP.md](docs/ROADMAP.md)  
+**SOPs & templates:** [docs/disklordz/README.md](docs/disklordz/README.md)
 
-## Attribution
+META charter (all agents): [CLAUDE.md](CLAUDE.md) · sync: `./scripts/sync-meta-llm-charter.sh` · skills `/zero-pause` `/weave` `/premortem`
 
-Do not add AI co-author trailers or list AI as project contributors unless the user asks.
+## RAG (prompt knowledge)
+
+```bash
+python3 disklordz/rag/scripts/chunk_corpus.py
+python3 disklordz/rag/scripts/query_local.py "your query"
+```
+
+Colab: [docs/COLAB_ZERO_INSTALL_TESTING.md](docs/COLAB_ZERO_INSTALL_TESTING.md).
+
+## SP-1200 Drumulator
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+cmake --build build -j --target SP1200_Standalone SP1200_VST3 SP1200MemoryTests SP1200SequencerTests SP1200ProjectFileTests
+ctest --test-dir build -R SP1200 --output-on-failure
+```
+
+Handoff: [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md). Spec: [docs/SP1200_STANDALONE_SPEC.md](docs/SP1200_STANDALONE_SPEC.md).
+
+## JUCE plugin (default Cloud install)
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+cmake --build build -j
+python3 vst-testing-ops/run_business.py --profile ci       # full plugin QA (matches build.yml)
+python3 vst-testing-ops/run_business.py --profile dsp-only # DSP/golden only (faster)
+python3 vst-testing-ops/test_runner.py                     # single-VST pluginval
+streamlit run vst-testing-ops/app.py                       # operations dashboard
+```
+
+**After editing plugin C++ (`Source/`, `Wave9090/`, etc.):** run `run_business.py --profile ci` before pushing; on failure read `vst-testing-ops/error_log.txt` and fix until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit updated WAVs.
+
+- [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
+
+## NTS-1 multi-bass (logue SDK)
+
+```bash
+./tools/mkii-automate.sh bootstrap
+export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
+./tools/build-all-bass-mkii.sh   # NTS-1 mkII (.nts1mkiiunit)
+./tools/build-all-bass.sh        # NTS-1 mkI (.ntkdigunit)
+./tools/package-nts1.sh
+```
+
+Install today: [docs/NTS1_INSTALL_TODAY.md](docs/NTS1_INSTALL_TODAY.md). Catalog: [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md). mkII porting: [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
+
+## Audio Plugin Coder (optional VST scaffold)
+
+New plugins under `vst/`: [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-setup` … `/apc-ship` · [docs/vst-lifecycle.md](docs/vst-lifecycle.md).
+
+## SynthForge (preset workstation)
+
+```bash
+cd tools/synth-forge && python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt && pip install -e . && pytest tests -v
+uvicorn synth_forge.main:app --reload --port 8000
+```
+
+See [tools/synth-forge/ARCHITECTURE.md](tools/synth-forge/ARCHITECTURE.md).
+
+**Fleet agent:** `hardware-preset-designer` — read `disklordz/agents/profit/hardware-preset-designer/agent.md` or skill `disklordz-hardware-preset-designer`. CLI: `python3 disklordz/integrations/agents/hardware_preset_designer.py --help`.
+
+## Git
+
+- Do not force-push or deploy production unless the user asks.  
+- Cloud feature branches: `cursor/<description>-<suffix>` when required by environment.  

@@ -1,0 +1,7 @@
+# Minimal config for `supabase link` + `supabase db push` (CI and local).
+# See https://supabase.com/docs/guides/cli/config
+
+project_id = ""
+
+[db]
+major_version = 15

@@ -1,0 +1,15 @@
+# Automation — Social Clip Factory (`social-clip-factory`)
+
+platform: script
+trigger: manual
+primary: disklordz/agents/workflows/scripts/social-clip-stub.sh
+
+## Steps
+1. ffmpeg 15s
+2. Upload to marketing bucket TBD
+
+## Invoke agent
+Read: disklordz/agents/profit/social-clip-factory/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#social-clip-factory

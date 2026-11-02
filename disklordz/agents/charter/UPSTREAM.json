@@ -1,0 +1,14 @@
+{
+  "repo": "https://github.com/entropyvortex/meta-llm-charter",
+  "branch": "main",
+  "pinned_commit": "7a814b1152ae",
+  "license": "See upstream LICENSE (BSD-style + branding clause for white-label at scale)",
+  "core_file": "META_CHARTER.md",
+  "core_bytes_target": 2400,
+  "skills": [
+    "zero-pause",
+    "weave",
+    "premortem"
+  ],
+  "core_bytes": 2399
+}

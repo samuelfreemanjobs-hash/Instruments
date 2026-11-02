@@ -1,0 +1,15 @@
+# Automation — Factory Batch GPU (`factory-batch-gpu`)
+
+platform: trigger.dev
+trigger: long batch
+primary: disklordz/integrations/engines/README.md
+
+## Steps
+1. GPU worker
+2. Storage upload
+
+## Invoke agent
+Read: disklordz/agents/profit/factory-batch-gpu/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#factory-batch-gpu

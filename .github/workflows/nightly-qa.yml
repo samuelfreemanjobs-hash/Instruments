@@ -1,0 +1,35 @@
+# Nightly full monorepo QA (plugins + Disklordz web smoke).
+name: Nightly QA
+
+on:
+  schedule:
+    - cron: "0 11 * * *" # 11:00 UTC daily
+  workflow_dispatch:
+
+jobs:
+  full-business:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: |
+            disklordz/website/package-lock.json
+            disklordz/daw-inbox/package-lock.json
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential g++-12 libstdc++-12-dev \
+            libasound2-dev libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev \
+            libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev \
+            libcurl4-openssl-dev unzip
+
+      - name: Full business pipeline
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python3 -u vst-testing-ops/run_business.py --profile full

@@ -1,0 +1,23 @@
+{
+  "name": "Disklordz Billing Ops (stub)",
+  "nodes": [
+    {
+      "parameters": { "rule": { "interval": [{ "field": "weeks", "weeksInterval": 1 }] } },
+      "name": "Weekly",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "content": "Stripe MCP read: failed payments, credit balance. Writes require human approval (billing-ops soul)."
+      },
+      "name": "Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [220, 0]
+    }
+  ],
+  "connections": {},
+  "meta": { "agent": "billing-ops", "doc": "disklordz/agents/workflows/agents/billing-ops/automation.yaml" }
+}

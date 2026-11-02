@@ -1,4 +1,10 @@
+node_modules/
+
 .deps/
+_deps/
+build/
+cmake-build-*/
+
 **/*.ntkdigunit
 **/*.nts1mkiiunit
 src/**/build/

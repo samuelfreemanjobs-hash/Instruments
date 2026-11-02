@@ -1,0 +1,15 @@
+# Automation — Conversion QA (`conversion-qa`)
+
+platform: github
+trigger: schedule + post-deploy
+primary: .github/workflows/disklordz-go-live.yml
+
+## Steps
+1. verify-go-live.sh
+2. Optional Playwright MCP job
+
+## Invoke agent
+Read: disklordz/agents/profit/conversion-qa/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#conversion-qa

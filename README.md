@@ -1,121 +1,100 @@
-# Instruments — VST boilerplate + NTS-1 multi-bass
+# Instruments
 
-This repo supports **three** related workflows: APC/VST plugins from `vst/template/`, the standalone **MyFirstPlugin** JUCE starter (from `main`), and **logue SDK** oscillators for NTS-1.
-
-## VST / VSTi (start here for new plugins)
-
-**Every new plugin starts from `vst/template/`** (JUCE, VST3 + Standalone).
-Cursor rule: `.cursor/rules/06-vst-vsti-template.mdc`.
-
-```bash
-git submodule update --init vst/JUCE   # once
-./tools/new-vst.sh MySynth
-cd vst/MySynth && cmake -B build && cmake --build build --config Release
-```
-
-Details: [vst/README.md](vst/README.md).
-
-**VST lifecycle (required):** [docs/vst-lifecycle.md](docs/vst-lifecycle.md) — Dream → Plan → Design → Implement → Ship (`tools/package-vst.sh`)
-
-**APC commands:** [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-dream` … `/apc-ship`
-
-**DSP architecture:** [docs/dsp-architecture-specification.md](docs/dsp-architecture-specification.md) · `.agents/skills/` + `.cursor/skills/`
+This monorepo hosts **JD Upgraded** (Roland JD-style synth), **SP-1200 Drumulator** ([SP1200/](SP1200/) standalone + VST3 sampler), **NTS-1 multi-bass** custom oscillators ([docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md)), and the **MyFirstPlugin** JUCE starter templates.
 
 ---
 
-## MyFirstPlugin (JUCE starter + Windows CI)
+# JD Upgraded
 
-CMake-native [JUCE](https://juce.com/) tutorial project at repo root. Use it for a self-contained effect/VSTi reference (`PluginProcessor`, `MyFirstSynth`), Visual Studio menus, and CI — **without** replacing `vst/template/` for new repo plugins.
+Clean-room JUCE **VST3**, **CLAP**, and **standalone** synthesizer inspired by the Roland JD-800 / JD-990: four tones per voice, PCM ROM playback, ZDF TVF, tone coupling, Group A/B effects, and 128 factory programs.
 
-| Tool | Role |
-|------|------|
-| **Cursor / agents** | Edit sources; run `MyFirstPlugin/build.sh` or `build.ps1` |
-| **CMake + compiler** | Builds `.vst3` (MSVC on Windows, Xcode CLT on macOS, GCC/Clang on Linux) |
+**Legal:** Sound comes from **`jdupg_cleanroom.rom`** — 256 procedurally synthesized waves ([docs/ROM.md](docs/ROM.md)). No Roland ROM ships with the project. Optional dev override: [docs/USER_ROM.md](docs/USER_ROM.md).
+
+## Build
 
 ```bash
-cd MyFirstPlugin
-chmod +x build.sh && ./build.sh          # macOS / Linux
-# Windows: Build Plugin.bat or .\build.ps1 — see MyFirstPlugin/VISUAL_STUDIO.md
+cmake -B build -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+cmake --build build -j
 ```
 
-JUCE version pin: [`JUCE_VERSION`](JUCE_VERSION). Workflow notes: `MyFirstPlugin/CURSOR_COMPOSER_PROMPT.md`, fork checklist: `MyFirstPlugin/NEW_PLUGIN.md`. CI: `.github/workflows/build-plugin.yml`.
+| Target | Output |
+|--------|--------|
+| `JDUpgraded_VST3` | VST3 plugin |
+| `JDUpgraded_CLAP` | CLAP plugin |
+| `JDUpgraded_Standalone` | Desktop app |
+| `OfflineRender` | Headless WAV render (see [docs/AB_HARNESS.md](docs/AB_HARNESS.md)) |
+| `SpectralDiff` | Compare two WAVs for regression / A/B |
+| `GenerateCleanroomRom` | Rebuild ROM at compile time |
+| `ExportPreset` | Write `.jdpreset` for a factory program index |
+
+AU (macOS): see [docs/INTEGRATION.md](docs/INTEGRATION.md).
+
+## Features (current)
+
+- 32-voice pool, 4 tones per voice, zero heap allocation on the audio thread
+- 256-wave clean-room ROM with 24 multisample sets (8 zones each)
+- 128 factory patches (EP, pad, bass, vapor, R&B, elite categories)
+- Global and per-tone Amp/Filter ADSR, wave palette by category
+- Roland JD patch SysEx import (partial APVTS mapping) — [docs/SYSEX.md](docs/SYSEX.md)
+- AVX2 SIMD tone sum (independent coupling path); NEON on ARM when AVX2 is unavailable
+
+## Docs
+
+- [Repository architecture index](ARCHITECTURE.md) (required reading for agents)
+- [JD Upgraded architecture](docs/ARCHITECTURE.md)
+- [Offline tools architecture](tools/ARCHITECTURE.md)
+- [UI](docs/UI.md) · [Installer policy](docs/INSTALLER_POLICY.md)
+- [Presets](docs/PRESETS.md)
+- [Agent handoff](docs/HANDOFF.md)
+- [Phase 5 roadmap](docs/PHASE5.md)
+
+## Environment
+
+`JDUPGRADED_ROM_PATH` — load a validated `JDUPGROM` file instead of the embedded ROM (development).
 
 ---
 
-## NTS-1 multi-bass (logue SDK)
+# NTS-1 multi-bass (logue SDK)
 
-A **logue SDK** project and Cursor agent scaffold for building **genre bass and
-kick user oscillators** on the Korg **NTS-1** (also builds for Minilogue XD /
-Prologue). Each oscillator is a separate unit you load when you need that sound.
+Genre **bass and kick user oscillators** for **NTS-1 mkI** and **NTS-1 mkII** (`.ntkdigunit` / `.nts1mkiiunit`). One custom osc loaded at a time.
 
-## Bass collection
-
-| Unit | Name | Use |
-|------|------|-----|
-| [`tr808-kick`](src/oscillators/tr808-kick/) | **Phonk 808** | 808 kick / sub (phonk) |
-| [`west-coast-moog`](src/oscillators/west-coast-moog/) | **P-Funk WC** | Funk · Moog · West Coast |
-| [`juno-rnb`](src/oscillators/juno-rnb/) | **Juno R&B** | 80s R&B / Juno-106 bass |
-| [`dilla-bass`](src/oscillators/dilla-bass/) | **Dilla Bass** | J Dilla–style wobble / glide / warm MPC tone |
-| [`sub-phatty`](src/oscillators/sub-phatty/) | **Sub Phatty** | Moog Sub Phatty dual osc, sub, Multidrive |
-| [`prophet-funk`](src/oscillators/prophet-funk/) | **P5 Funk RB** | Prophet-5 70s funk / 80s R&B bass |
-| [`dx7-lately`](src/oscillators/dx7-lately/) | **Lately Bass** | DX7 FM electric bass (Lately Bass) |
-| [`sh101-babyface`](src/oscillators/sh101-babyface/) | **SH-101 BF** | Warm PWM pulse, sub, hollow FM bass |
-| [`moog-voyager-se`](src/oscillators/moog-voyager-se/) | **Voyager SE** | Model D / SE-1 fat stack + glide squelch |
-| [`cardo-gfunk`](src/oscillators/cardo-gfunk/) | **Cardo GF** | Sub + warm mid late-night G-funk bass |
-| [`larry-june`](src/oscillators/larry-june/) | **Larry June** | Laid-back rubbery PWM Bay cruise bass |
-| [`khalifa-haze`](src/oscillators/khalifa-haze/) | **Khalifa Haze** | Warm floating cloud sub for stoner-rap |
-| [`memphis-juicy`](src/oscillators/memphis-juicy/) | **Juicy 36** | Memphis trunk sub + tape (layer under kick) |
-| [`ensoniq-eps1`](src/oscillators/ensoniq-eps1/) | **EPS-1 MEM** | Ensoniq-style dark wavetable Memphis sub |
-
-Each unit is **multifunction** (mainly **Vibe**) and ships **presets** in
-`manifest.json` → `_agent.presets` (knob values 0–100).
-
-Full guide: [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md)
-
-### NTS-1 mkII (SDK v2)
-
-mkI units above use logue SDK **v1.1.0**. For **NTS-1 mkII**, scaffold and build
-`.nts1mkiiunit` files from `src/mkii/oscillators/`:
+| Unit folder | Panel name |
+|-------------|------------|
+| `tr808-kick` | Phonk 808 |
+| `west-coast-moog` | P-Funk WC |
+| `juno-rnb` | Juno R&B |
+| `dilla-bass` | Dilla Bass |
+| `sub-phatty` | Sub Phatty |
+| `prophet-funk` | P5 Funk RB |
+| `dx7-lately` | Lately Bass |
+| `sh101-babyface` | SH-101 BF |
+| `moog-voyager-se` | Voyager SE |
+| `cardo-gfunk` | Cardo GF |
+| `larry-june` | Larry June |
+| `khalifa-haze` | Khalifa Haze |
+| `memphis-juicy` | Juicy 36 |
+| `ensoniq-eps1` | EPS-1 MEM |
 
 ```bash
-chmod +x tools/mkii-automate.sh
-./tools/mkii-automate.sh all                    # clone SDK, gcc, scaffold, build all
-./tools/mkii-automate.sh bootstrap              # SDK + toolchain only
-./tools/mkii-automate.sh build tr808_kick_phonk # one unit
+./tools/mkii-automate.sh bootstrap
+export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
+./tools/build-all-bass-mkii.sh    # mkII
+./tools/build-all-bass.sh         # mkI
+./tools/package-nts1.sh
 ```
 
-Manual steps (custom `LOGUE_SDK`): `python3 tools/mkii/scaffold-mkii.py --all-bass`, `./tools/build-mkii.sh <slug>`.
+Install: [docs/NTS1_INSTALL_TODAY.md](docs/NTS1_INSTALL_TODAY.md). mkII porting notes: [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
 
-See [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
+Optional **VST/APC** workflow for new JUCE plugins: [vst/README.md](vst/README.md), [docs/apc-workflow.md](docs/apc-workflow.md).
 
-## Quick start (mkI logue)
+---
 
-1. Clone [logue-sdk](https://github.com/korginc/logue-sdk) and set `LOGUE_SDK`.
-2. Build one unit or the whole bass set:
+# MyFirstPlugin (starter)
 
-```bash
-export LOGUE_SDK=/path/to/logue-sdk
-chmod +x tools/build.sh tools/build-all-bass.sh
+CMake-native [JUCE](https://juce.com/) effect and synth templates under [`MyFirstPlugin/`](MyFirstPlugin/). JUCE version is pinned in [`JUCE_VERSION`](JUCE_VERSION) (fetched on first configure for that subproject).
 
-./tools/build.sh oscillators/juno-rnb nutekt-digital
-./tools/build-all-bass.sh nutekt-digital
-./tools/build.sh oscillators/dilla-bass nutekt-digital
-./tools/build.sh oscillators/dx7-lately nutekt-digital
-```
+**Windows:** `MyFirstPlugin/Build Plugin.bat` or see [`MyFirstPlugin/VISUAL_STUDIO.md`](MyFirstPlugin/VISUAL_STUDIO.md).  
+**macOS / Linux:** `cd MyFirstPlugin && ./build.sh`
 
-3. Load the resulting user osc on the NTS-1 with the Korg logue workflow.
-
-## Layout
-
-- `.cursor/rules/` — SDK + **multi-bass** conventions (`05-multi-bass.mdc`)
-- `src/oscillators/` — bass units above + `template` / `wavetable`
-- `src/effects/` — starter mod/del/rev FX
-- `src/shared/` — DSP helpers (logue units)
-- `shared/dsp/` — header-only DSP shared by `vst/*` templates
-- `vst/template/`, `vst/template-effect/` — canonical new-plugin boilerplate
-- `MyFirstPlugin/` — standalone JUCE starter (effect + MyFirstSynth)
-- `tools/build-all-bass.sh` — build all catalog bass oscs
-
-## License
-
-Example DSP is a starting point; align with Korg SDK terms for distribution.
+CI for the starter: [`.github/workflows/build-plugin.yml`](.github/workflows/build-plugin.yml).

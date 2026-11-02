@@ -1,0 +1,48 @@
+{
+  "base_id_hint": "Disklordz OS — seed lane metadata + example sketch product; run after Product Families exist",
+  "product_families_note": "Create DL-FAMILY-ROMPLER in bootstrap if romplers are a distinct ladder; else link products to DL-FAMILY-DIGITAL-SAMPLER",
+  "products": [
+    {
+      "product_id": "DL-LANE-HISE-SKETCH",
+      "name": "HISE Sketch Lane (process)",
+      "division": "Plugin",
+      "status": "Active",
+      "brief": "Parallel R&D: Antigravity + HISE on Windows. Sample-based / rompler SKUs only. Not Junova/NovaDrum. VST3 export; CLAP only after JUCE port WO. See docs/HISE_SKETCH_LANE.md.",
+      "github_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "price_tier": "n/a",
+      "ladder_tier": "process",
+      "sonic_problem": "Fast sampler/rompler experiments without blocking JUCE factory WIP",
+      "family_id": "DL-FAMILY-DIGITAL-SAMPLER",
+      "compile_targets": "[\"vst3\",\"hise_local\"]"
+    }
+  ],
+  "projects": [
+    {
+      "project_id": "PRJ-2026-HISE-SKETCH",
+      "name": "HISE sketch lane — Antigravity",
+      "product_id": "DL-LANE-HISE-SKETCH",
+      "phase": "0-Explore",
+      "status": "Active",
+      "owner_agent": "antigravity-hise"
+    }
+  ],
+  "work_orders": [
+    {
+      "work_order_id": "WO-2026-HISE-001",
+      "project_id": "PRJ-2026-HISE-SKETCH",
+      "title": "[Plugin][HISE] Lane bootstrap — Antigravity tools + one demo VST3",
+      "status": "Backlog",
+      "priority": "P3",
+      "owner_agent": "antigravity-hise",
+      "acceptance_criteria": "Windows: HISE_EXE + HISE_SRC + PROJECT_DIR documented in Antigravity config (not in git). Tools write_hisescript + compile_hise_vst run export_ci with relative XmlPresetBackups path and batchCompile.bat; demo Interface.js (Attack 0–2000 ms, Master Volume -100–0 dB) produces loadable .vst3 in Reaper. Attach log tail + path to artifact. Business Planner: no new customer-facing SKU until Marketing brief exists. Does not consume Cursor Cloud WIP."
+    }
+  ],
+  "marketing_planner_checklist": [
+    "Product fits rompler/sample lane — not Junova analog poly or NovaDrum circuit story",
+    "Unique product_id and customer-facing name approved",
+    "price_tier and ladder_tier set ($29 demo / Windows-first if plugin)",
+    "sonic_problem one-liner for store and Grok",
+    "Explicit: ship VST3-only (HISE) vs schedule JUCE+CLAP port",
+    "Landing/demo owner assigned (may differ from junova-x-landing)"
+  ]
+}

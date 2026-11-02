@@ -1,0 +1,15 @@
+# Automation — Engine Swap (`engine-swap`)
+
+platform: docker
+trigger: DISKLORDZ_ENGINE=remote
+primary: disklordz/integrations/docker-compose.optional.yml
+
+## Steps
+1. Engine stubs :8765/:8766
+2. remote-wav.ts fallback
+
+## Invoke agent
+Read: disklordz/agents/profit/engine-swap/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#engine-swap

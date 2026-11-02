@@ -1,0 +1,11 @@
+# Optional Python stacks for disklordz/integrations (install in a venv)
+# Audio engines (check licenses before production use)
+# audiocraft @ git+https://github.com/facebookresearch/audiocraft.git
+# stable-audio-tools @ git+https://github.com/Stability-AI/stable-audio-tools.git
+markitdown[all]>=0.1.0
+pydantic-ai>=0.0.14
+langgraph>=0.2.0
+langchain-openai>=0.2.0
+crewai>=0.80.0
+basic-pitch>=0.4.0
+modal>=0.73.0

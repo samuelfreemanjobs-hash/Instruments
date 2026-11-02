@@ -1,0 +1,15 @@
+# Automation — Lane Workflow (`lane-workflow`)
+
+platform: script
+trigger: cli
+primary: disklordz/integrations/agents/langgraph_spec_flow.py
+
+## Steps
+1. prompt in
+2. GenerationSpec JSON out
+
+## Invoke agent
+Read: disklordz/agents/profit/lane-workflow/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#lane-workflow

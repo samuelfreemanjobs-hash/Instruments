@@ -1,0 +1,52 @@
+# Apply Disklordz website SQL migrations to your Supabase project.
+# One-time setup: add GitHub repo secrets (Settings → Secrets → Actions):
+#   SUPABASE_ACCESS_TOKEN  — from https://supabase.com/dashboard/account/tokens
+#   SUPABASE_PROJECT_REF   — project id (subdomain), e.g. abcdefghijklmnop
+#
+# Run: Actions → "Disklordz Supabase migrations" → Run workflow
+
+name: Disklordz Supabase migrations
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "List migrations only (no push)"
+        type: boolean
+        default: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: disklordz/website
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link project
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_PROJECT_REF" ]; then
+            echo "::error::Add SUPABASE_ACCESS_TOKEN and SUPABASE_PROJECT_REF repository secrets."
+            exit 1
+          fi
+          supabase link --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: Push migrations
+        if: ${{ inputs.dry_run != true }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase db push
+
+      - name: Migration status (dry run)
+        if: ${{ inputs.dry_run == true }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase migration list
