@@ -31,6 +31,11 @@ Rotate **one family per week** in producer review so the catalog stays elite eve
 | **Rage** | RAGE-TRAP | Short 808 + frantic hat loop stems |
 | **Cash Money / NO** | MANNIE-FRESH, MASTER-P, BEATS-BY-THE-POUND | Bounce loops + clap stack; 92–108 BPM week |
 | **Drake archetype** | DRAKE-TYPE | Polished kick-less tops + tight 808; hook-ready space |
+| **Trap producer** | 808-MAFIA-SOUTHSIDE, PURPZ, JOHNNY-JULIANO, CARDO | Dark vs melodic vs cinematic A/B |
+| **Jetlife / smooth** | JETLIFE, CURRENSY-JAZZ-RAP, WIZ, LARRY-JUNE, INVESTMENT-RAP | Low aggression KPI; rim/jazz contracts |
+| **West / Bay** | DJ-QUIK, NIPSEY, BAY-HUSTLER, DOM-KENNEDY | Pocket + funk shuffle checks |
+| **Strip anthem** | STRIP-CLUB-ANTHEM | clapWide + 2-bar loop mandatory |
+| **909 hardware** | TR-909 | Pair with TR-808-CLONE A/B same session |
 | **Core** | GANGSTA-TRAP, PHONK-TRAP (`midnight-circuit`) | Hard menace vs phonk dirt |
 
 Full preset ids: [LANES.md](LANES.md) · code: `disklordz/website/src/lib/spark-le/lane-registry.ts`.

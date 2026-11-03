@@ -206,6 +206,40 @@ export function resolveDrumParams(
     snareSnap *= 1.1;
     kickDecay *= 0.95;
   }
+  if (/\b(808 mafia|southside|dark trap producer)\b/.test(p)) {
+    kickPitch -= 3;
+    snareSnap *= 1.1;
+  }
+  if (/\b(purpz|purpz on the beat)\b/.test(p)) snareSnap *= 1.06;
+  if (/\b(johnny juliano|juliano)\b/.test(p)) kickDecay *= 1.05;
+  if (/\b(cardo|cardo got wings|cinematic)\b/.test(p)) {
+    kickDecay *= 1.06;
+    clapWide *= 1.05;
+  }
+  if (/\b(wiz khalifa|wiz|sledgren|jetlife)\b/.test(p)) {
+    snareSnap *= 0.94;
+    hatDecay *= 1.04;
+  }
+  if (/\b(tr-909|909 machine|roland 909)\b/.test(p)) kickDecay *= 0.88;
+  if (/\b(dom kennedy|dom kenndy)\b/.test(p)) snareBody *= 1.05;
+  if (/\b(polyester the saint|polyester)\b/.test(p)) hatBright *= 0.92;
+  if (/\b(larry june|larry)\b/.test(p)) hatBright *= 1.04;
+  if (/\b(investment rap|boss talk|portfolio)\b/.test(p)) {
+    snareSnap *= 0.94;
+    hatBright *= 1.05;
+  }
+  if (/\b(bay hustler|hustler rap|bay street)\b/.test(p)) hatBright *= 1.08;
+  if (/\b(le\$|les houston)\b/.test(p)) kickDecay *= 1.06;
+  if (/\b(currensy|curren\$y|jazz rap|smoke smooth)\b/.test(p)) {
+    rimMetal *= 1.08;
+    snareSnap *= 0.92;
+  }
+  if (/\b(dj quik|quik funk)\b/.test(p)) rimMetal *= 1.1;
+  if (/\b(nipsey|marathon)\b/.test(p)) {
+    clapWide *= 1.05;
+    snareBody *= 1.04;
+  }
+  if (/\b(strip club|spend that shit|club anthem)\b/.test(p)) clapWide *= 1.12;
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;

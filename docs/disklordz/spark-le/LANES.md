@@ -59,6 +59,7 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 |---------|-----------|----------|--------|
 | **DR-660** | `lane-dr-660` | 90–120 | Machine punch, short decay |
 | **TR-808-CLONE** | `lane-tr-808-clone` | any | Align with **repo 808 clone** voice (SP-1200 / factory 808 path) |
+| **TR-909** | `lane-tr-909` | 115–130 | Roland 909 punch — tight kick, crisp machine hats |
 
 ## Cash Money / New Orleans (old school)
 
@@ -75,6 +76,45 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **DRAKE-TYPE** | `lane-drake-type` | 70–95 / 140–150 | Polished 808, crisp hats, vocal space; prompt **hard drake** for trophy energy |
 
 *Not affiliated with Drake, Cash Money, or listed artists — procedural style targets only.*
+
+## Trap producers (808 Mafia / ATL)
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **808-MAFIA-SOUTHSIDE** | `lane-808-mafia-southside` | 130–160 | Dark long 808, violent snap |
+| **PURPZ** | `lane-purpz` | 130–155 | Purpz on the beat — club pressure |
+| **JOHNNY-JULIANO** | `lane-johnny-juliano` | 130–150 | Melodic trap producer pocket |
+| **CARDO** | `lane-cardo` | 65–85 / double | Cardo cinematic — space + anthem clap |
+
+## Jetlife / smooth / jazz rap
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **WIZ-KHALIFA** | `lane-wiz-khalifa` | 80–98 | Loose stoner-smooth hats |
+| **SLEDGREN** | `lane-sledgren` | 85–100 | Bouncy jet-era pocket |
+| **DOM-KENNEDY** | `lane-dom-kennedy` | 88–102 | West coast cool clap |
+| **POLYESTER-THE-SAINT** | `lane-polyester-the-saint` | 82–96 | Dusty underground smooth |
+| **LARRY-JUNE** | `lane-larry-june` | 88–104 | Oakland smooth jack |
+| **INVESTMENT-RAP** | `lane-investment-rap` | 85–100 | Boss-talk clean drums |
+| **LE-DOLLAR** | `lane-le-dollar` | 78–92 | Houston chopped smooth |
+| **JETLIFE** | `lane-jetlife` | 80–94 | Cruise groove, low aggression |
+| **CURRENSY-JAZZ-RAP** | `lane-currensy-jazz-rap` | 78–92 | Rim-forward jazz-rap feel |
+
+## West coast / Bay
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **BAY-HUSTLER-RAP** | `lane-bay-hustler-rap` | 90–108 | Bay street hustle (distinct from hyphy trap pack) |
+| **DJ-QUIK** | `lane-dj-quik` | 92–108 | Funk pocket, shuffle rim |
+| **NIPSEY-HUSSLE** | `lane-nipsey-hussle` | 85–100 | Triumphant polished west |
+
+## Strip / club anthems
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **STRIP-CLUB-ANTHEM** | `lane-strip-club-anthem` | 95–115 | Spend-that-shit / alt strip energy — wide clap loops |
+
+*All named lanes are procedural style archetypes — not affiliated with artists or labels.*
 
 ## Regional trap & rage
 
@@ -98,5 +138,9 @@ See `artistLane` on each preset in `lane-registry.ts` (e.g. `DL-TOOMP`, `DL-DJPA
 | Hardware | Short KNOCK decay; DR-660 vs 808-CLONE peak bands |
 | Rage | Minimal hatDecay; low 808 sustain |
 | Bay vs Detroit | Bay brighter hats; Detroit harder snap |
+| Trap producer | 808-MAFIA low pitch; CARDO longer decay |
+| Smooth / jetlife | Lower snareSnap; higher rim on jazz lane |
+| Strip anthem | clapWide max; loop-forward |
+| TR-909 vs 808 | 909 shorter decay band vs 808-CLONE sub |
 
 Details: [SOP-014](../sops/SOP-014-spark-le-phase-2-trust-contracts.md) · [ELITE-PERFORMANCE.md](ELITE-PERFORMANCE.md)

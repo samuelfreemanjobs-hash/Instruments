@@ -82,4 +82,19 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
     text: "Drake-type beat preset lane-drake-type: polished 808, crisp hats, hook-ready space 70–95 or 140–150. Prompt hard drake or trophy for aggressive variant. Style archetype not affiliated.",
     tags: ["lane-drake-type", "drake type", "drake beat", "ovo", "polished trap"],
   },
+  {
+    id: "lane-trap-producers-ext",
+    text: "Trap producer lanes: 808 Mafia/Southside lane-808-mafia-southside; Purpz lane-purpz; Johnny Juliano lane-johnny-juliano; Cardo lane-cardo. Archetypes only.",
+    tags: ["lane-808-mafia-southside", "lane-purpz", "lane-johnny-juliano", "lane-cardo", "808 mafia", "southside", "cardo"],
+  },
+  {
+    id: "lane-jetlife-smooth-ext",
+    text: "Jetlife/smooth lanes: Wiz lane-wiz-khalifa, Sledgren lane-sledgren, Dom Kennedy lane-dom-kennedy, Polyester lane-polyester-the-saint, Larry June lane-larry-june, investment rap lane-investment-rap, Le$ lane-le-dollar, Jetlife lane-jetlife, Curren$y jazz lane-currensy-jazz-rap. Archetypes only.",
+    tags: ["lane-wiz-khalifa", "lane-jetlife", "lane-currensy-jazz-rap", "lane-larry-june", "jetlife", "smooth"],
+  },
+  {
+    id: "lane-west-strip-909",
+    text: "West/Bay/strip/hardware: DJ Quik lane-dj-quik, Nipsey lane-nipsey-hussle, Bay hustler lane-bay-hustler-rap, strip anthem lane-strip-club-anthem, TR-909 lane-tr-909. Archetypes only.",
+    tags: ["lane-dj-quik", "lane-nipsey-hussle", "lane-strip-club-anthem", "lane-tr-909", "strip club"],
+  },
 ];

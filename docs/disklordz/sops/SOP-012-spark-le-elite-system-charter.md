@@ -31,6 +31,11 @@ This is the **north star** document. Each maturity **phase** has its own SOP (01
 | **Rage** | RAGE-TRAP |
 | **Cash Money / NO** | MANNIE-FRESH, MASTER-P, BEATS-BY-THE-POUND |
 | **Drake archetype** | DRAKE-TYPE (charts-forward; not artist samples) |
+| **Trap producer** | 808-MAFIA-SOUTHSIDE, PURPZ, JOHNNY-JULIANO, CARDO |
+| **Jetlife / smooth** | WIZ, SLEDGREN, DOM-KENNEDY, POLYESTER, LARRY-JUNE, INVESTMENT-RAP, LE$, JETLIFE, CURRENSY-JAZZ-RAP |
+| **West / Bay** | DJ-QUIK, NIPSEY-HUSSLE, BAY-HUSTLER-RAP |
+| **Strip anthem** | STRIP-CLUB-ANTHEM |
+| **909** | TR-909 (hardware) |
 
 All lanes share: **8-pad SparkLE map**, **manifest**, **inbox discipline**, **review scores**, **family rotation** (elite performance doc).
 
