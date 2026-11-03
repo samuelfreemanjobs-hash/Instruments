@@ -30,7 +30,7 @@ Living plan for building and running SparkLE elite lanes — ordered work with *
 |---|-----------|--------|
 | 1.1 | Starter manifests (gangsta, screw, smooth jazz) | ✅ |
 | 1.2 | 12-week rotation calendar | ✅ |
-| 1.3 | First 10 keeper sessions | ⏳ Sprint **2/5 done** ([SPRINT-PROGRESS.md](SPRINT-PROGRESS.md)) |
+| 1.3 | First 10 keeper sessions | ⏳ Sprint **3/5 packs complete** ([SPRINT-PROGRESS.md](SPRINT-PROGRESS.md)); keepers pending |
 
 ### Phase 2 — Trust ✅ (baseline CI)
 

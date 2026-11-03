@@ -1,44 +1,39 @@
 # 5-session sprint — progress log
 
-**Stack:** **MPC500** (foundation) + **SparkLE** (PC control) + **PC** (engines) — locked 2026-11-03. [MPC500-SPARKLE-PC-STACK.md](MPC500-SPARKLE-PC-STACK.md) · Sprint kits may still use SparkLE standalone.
+**Stack:** **MPC500** (foundation) + **SparkLE** (PC control) + **PC** (engines) — [MPC500-SPARKLE-PC-STACK.md](MPC500-SPARKLE-PC-STACK.md)
 
-Update after each session. Scores/tags feed [MEMORY-AND-CI.md](MEMORY-AND-CI.md) weekly fix.
+**Sprint 1–3 status:** **Complete (factory packs + reviews + CI)** — 2026-11-03 America/Detroit.  
+Producer sign-off: scores, keepers, and 30s exports in [reviews/](reviews/) when ready.
 
-| Session | Status | Date (America/Detroit) | Preset used | Keeper? |
-|---------|--------|------------------------|-------------|---------|
-| 1 Gangsta trap | **Complete** | 2026-11-03 | _(fill preset)_ | Y / N |
-| 2 Screw / slowed | **Complete** | 2026-11-03 | `lane-dj-screw` / slowed A/B | Y / N |
-| 3 Smooth jazz rap | **Complete (pack + review)** | 2026-11-03 | `lane-smooth-jazz-rap` @ 86 | N _(until scores)_ |
-| 4 Southern trunk | Pending | — | — | — |
-| 5 Stretch grid | Pending | — | — | — |
+| Session | Status | Date | Preset | Batch | Keeper? |
+|---------|--------|------|--------|-------|---------|
+| 1 Gangsta trap | **Complete** | 2026-11-03 | `lane-trap-or-die` @ 140 | `sprint-export-14031103` | N |
+| 2 Screw / slowed | **Complete** | 2026-11-03 | `lane-dj-screw` @ 72 | `sprint-export-72031103` | N |
+| 3 Smooth jazz rap | **Complete** | 2026-11-03 | `lane-smooth-jazz-rap` @ 86 | `sprint-export-86031103` | N |
+| 4 Southern trunk | Pending | — | `lane-fat-pat` / `lane-nola-bounce-classic` | — | — |
+| 5 Stretch grid | Pending | — | drill / jersey / electro | — | — |
 
-**Session 3 load pack:** [sprint-kits/session-3-smooth-jazz-rap/](sprint-kits/session-3-smooth-jazz-rap/) · Review: [reviews/2026-11-03_SMOOTH-JAZZ-RAP_sprint3.md](reviews/2026-11-03_SMOOTH-JAZZ-RAP_sprint3.md)
+**Load packs:** [sprint-kits/README.md](sprint-kits/README.md)
 
-## Session 1 notes (fill in)
-
-- **Scores (1–5):** Sonic __ · Groove __ · Workflow __ · Vibe __
-- **Tags:** _(e.g. hat-roll, kick-bleed, pocket-pull)_
-- **One-line why:** 
-- **Weekly fix candidate:** _(top tag → one change)_
-
----
-
-## Session 2 notes (fill in)
-
-- **Scores:** Sonic __ · Groove __ · Workflow __ · Vibe __
-- **Half-time winner (72 vs 144):** 
-- **Tags:** 
-- **vs Session 1:** sub/knock less aggressive? 
+| Session | Pack | Review |
+|---------|------|--------|
+| 1 | [session-1-gangsta-trap/](sprint-kits/session-1-gangsta-trap/) | [sprint1 review](reviews/2026-11-03_TRAP-OR-DIE_sprint1.md) |
+| 2 | [session-2-dj-screw/](sprint-kits/session-2-dj-screw/) | [sprint2 review](reviews/2026-11-03_DJ-SCREW_sprint2.md) |
+| 3 | [session-3-smooth-jazz-rap/](sprint-kits/session-3-smooth-jazz-rap/) | [sprint3 review](reviews/2026-11-03_SMOOTH-JAZZ-RAP_sprint3.md) |
 
 ---
 
-## Session 3 notes
+## Sessions 1–3 summary
 
-- **Factory batch:** `sprint-export-86031103` · DNA **`smooth-jazz-8ths`**
-- **Scores (1–5):** Sonic __ · Groove __ · Workflow __ · Vibe __ _(fill after SparkLE play)_
-- **Tags:** _(watch `perc-clutter`, `hat-mud`, `kick-bleed`)_
-- **Keeper:** N until Vibe ≥ 4 and Groove ≥ 4 — then copy to [KEEPERS.md](KEEPERS.md) layout
-- **CI:** `npm run verify:spark` green on export
+| # | DNA / focus | Weekly fix candidate (fill after ears) |
+|---|-------------|----------------------------------------|
+| 1 | `metro-roll-bar4` · KNOCK + HAT-CLARITY | _(top tag from review)_ |
+| 2 | Screw trunk · half-time A/B | _(pocket-pull vs kick-bleed)_ |
+| 3 | `smooth-jazz-8ths` · no rolls | _(perc-clutter / hat-mud)_ |
+
+**After 3 sessions:** pick **one** dominant tag → [MEMORY-AND-CI.md](MEMORY-AND-CI.md) engineering fix before Session 4.
+
+**CI:** `npm run verify:spark` green after export (`npm run export:sprint-1-3` in website).
 
 ---
 
@@ -46,9 +41,9 @@ Update after each session. Scores/tags feed [MEMORY-AND-CI.md](MEMORY-AND-CI.md)
 
 | Step | Action |
 |------|--------|
-| 1 | Pick **`lane-fat-pat`** or **`lane-nola-bounce-classic`** |
-| 2 | BPM **76–92** (write chosen value) |
-| 3 | Log keeper rate for southern family in review |
-| 4 | Before closing SparkLE: note **Session 5** preset in review |
+| 1 | **`lane-fat-pat`** or **`lane-nola-bounce-classic`** |
+| 2 | BPM **76–92** |
+| 3 | Log keeper rate for southern family |
+| 4 | Note Session 5 preset before closing session |
 
-**Leadership (Phase 5):** decide stretch lane early — `lane-uk-drill` | `lane-jersey-club` | `lane-classic-electro-808`.
+**Stretch (Session 5):** `lane-uk-drill` | `lane-jersey-club` | `lane-classic-electro-808`.

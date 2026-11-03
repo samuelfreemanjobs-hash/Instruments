@@ -12,7 +12,8 @@ import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 
 import { renderSampleForEngine } from "../src/lib/generation/engine-render";
-import { defaultGenerationSpec } from "../src/lib/generation/generation-spec";
+import { defaultGenerationSpec, type GenerationSpec } from "../src/lib/generation/generation-spec";
+import { renderDrumLoop } from "../src/lib/generation/loop-render";
 import { resolveDrumParams } from "../src/lib/generation/prompt-params";
 import type { DrumParams } from "../src/lib/generation/prompt-params";
 import { encodeWav } from "../src/lib/generation/wav";
@@ -23,10 +24,12 @@ import {
 
 const SAMPLE_RATE = 44100;
 
+type LoopProfile = "trap" | "screw" | "smooth-jazz";
+
 type SparkManifest = {
   preset_id: string;
   bpm: number;
-  dna_template_id?: string;
+  dna_template_id?: string | null;
   spark_le: {
     pads: Record<
       string,
@@ -154,6 +157,106 @@ function renderSmoothJazzLoop(
   return normalizeExportPeak(out);
 }
 
+function loopProfile(manifest: SparkManifest): LoopProfile {
+  if (manifest.dna_template_id === "smooth-jazz-8ths") return "smooth-jazz";
+  if (manifest.preset_id === "lane-dj-screw" || manifest.bpm <= 80) return "screw";
+  return "trap";
+}
+
+/** Trap / gangsta: 4/4 with optional kick (kickless tops export). */
+function renderTrapStyleLoop(
+  params: DrumParams,
+  bpm: number,
+  bars: number,
+  engine: "studio",
+  includeKick: boolean,
+): Float32Array {
+  const spec: GenerationSpec = {
+    mode: "loop",
+    engine,
+    key: "C",
+    bpm,
+    bars,
+    length: "short",
+    stereo: 0,
+    wildness: 0,
+  };
+  if (includeKick) {
+    return renderDrumLoop(params, spec, engine);
+  }
+  const beats = bars * 4;
+  const seconds = (60 / bpm) * beats;
+  const n = Math.floor(SAMPLE_RATE * seconds);
+  const out = new Float32Array(n);
+  const snare = renderSampleForEngine("snare", params, engine);
+  const hat = renderSampleForEngine("hat_closed", params, engine);
+  const spb = seconds / beats;
+  const beatSamples = Math.floor(spb * SAMPLE_RATE);
+  for (let beat = 0; beat < beats; beat++) {
+    const offset = Math.floor(beat * beatSamples);
+    if (beat % 4 === 1 || beat % 4 === 3) {
+      mixAt(out, offset, snare, 0.75);
+    }
+    mixAt(out, offset, hat, 0.35);
+    if (beat % 2 === 1) {
+      mixAt(out, offset + Math.floor(beatSamples / 2), hat, 0.25);
+    }
+  }
+  return normalizeExportPeak(out);
+}
+
+/** Screw / slowed: sparse hats, trunk kick on 1 & 3. */
+function renderScrewStyleLoop(
+  params: DrumParams,
+  bpm: number,
+  bars: number,
+  engine: "studio",
+  includeKick: boolean,
+): Float32Array {
+  const beats = bars * 4;
+  const seconds = (60 / bpm) * beats;
+  const n = Math.floor(SAMPLE_RATE * seconds);
+  const out = new Float32Array(n);
+  const kick = renderSampleForEngine("kick", params, engine);
+  const snare = renderSampleForEngine("snare", params, engine);
+  const hat = renderSampleForEngine("hat_closed", params, engine);
+  const spb = seconds / beats;
+  const beatSamples = Math.floor(spb * SAMPLE_RATE);
+  for (let beat = 0; beat < beats; beat++) {
+    const offset = Math.floor(beat * beatSamples);
+    if (includeKick && (beat % 4 === 0 || beat % 4 === 2)) {
+      mixAt(out, offset, kick, 0.88);
+    }
+    if (beat % 4 === 1 || beat % 4 === 3) {
+      mixAt(out, offset, snare, 0.65);
+    }
+    if (beat % 2 === 0) {
+      mixAt(out, offset, hat, 0.22);
+    }
+  }
+  return normalizeExportPeak(out);
+}
+
+function renderLoopForManifest(
+  manifest: SparkManifest,
+  params: DrumParams,
+  loopId: string,
+  bars: number,
+  engine: "studio",
+): Float32Array {
+  const includeKick = loopId !== "tops_kickless";
+  const profile = loopProfile(manifest);
+  const bpm = manifest.bpm;
+  switch (profile) {
+    case "smooth-jazz":
+      return renderSmoothJazzLoop(params, bpm, bars, engine, includeKick);
+    case "screw":
+      return renderScrewStyleLoop(params, bpm, bars, engine, includeKick);
+    default:
+      return renderTrapStyleLoop(params, bpm, bars, engine, includeKick);
+  }
+}
+
 function writeWav(outDir: string, relFile: string, pcm: Float32Array): void {
   const full = join(outDir, relFile);
   mkdirSync(dirname(full), { recursive: true });
@@ -184,10 +287,11 @@ for (const [, pad] of Object.entries(manifest.spark_le.pads)) {
 }
 
 for (const loop of manifest.loops ?? []) {
-  const includeKick = loop.id !== "tops_kickless";
-  const pcm = renderSmoothJazzLoop(params, manifest.bpm, loop.bars, "studio", includeKick);
+  const pcm = renderLoopForManifest(manifest, params, loop.id, loop.bars, "studio");
   for (const v of evaluateLoopGridContract(presetId, pcm)) {
-    console.error(`export-spark-sprint-kit: loop contract fail: ${v.message}`);
+    console.error(
+      `export-spark-sprint-kit: loop contract fail (${loop.id}): ${v.message} metric=${v.metric} bound=${v.bound}`,
+    );
     process.exit(1);
   }
   writeWav(outDir, loop.file, pcm);

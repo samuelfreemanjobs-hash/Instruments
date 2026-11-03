@@ -11,6 +11,7 @@
     "verify:spark-audio-contracts": "npx --yes tsx scripts/verify-spark-audio-contracts.ts",
     "verify:spark": "npm run verify:spark-lanes && npm run verify:spark-audio-contracts",
     "export:spark-sprint-kit": "npx --yes tsx scripts/export-spark-sprint-kit.ts",
+    "export:sprint-1-3": "bash scripts/export-sprint-1-3.sh",
     "verify:go-live": "bash scripts/verify-go-live.sh",
     "go-live": "bash scripts/go-live.sh --sync-vercel"
   },

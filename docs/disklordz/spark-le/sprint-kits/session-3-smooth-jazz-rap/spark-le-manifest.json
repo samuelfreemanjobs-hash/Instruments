@@ -68,7 +68,7 @@
   "batch_id": "sprint-export-86031103",
   "factory": {
     "seed": 86031103,
-    "prompt": "smooth jazz rap smoky cruise no rolls",
+    "prompt": "smooth jazz rap smoky cruise",
     "preset_id": "lane-smooth-jazz-rap",
     "engine": "studio"
   }

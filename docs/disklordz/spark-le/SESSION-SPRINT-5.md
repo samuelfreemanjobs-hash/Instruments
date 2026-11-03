@@ -18,6 +18,8 @@
 
 **Done:** Review filed; tag any `hat-roll` or `kick-bleed`. Run `npm run verify:spark` after any registry tweak.
 
+**Load pack:** [sprint-kits/session-1-gangsta-trap/](sprint-kits/session-1-gangsta-trap/) · Review: [reviews/2026-11-03_TRAP-OR-DIE_sprint1.md](reviews/2026-11-03_TRAP-OR-DIE_sprint1.md)
+
 Track completion: [SPRINT-PROGRESS.md](SPRINT-PROGRESS.md)
 
 ---
@@ -31,6 +33,8 @@ Track completion: [SPRINT-PROGRESS.md](SPRINT-PROGRESS.md)
 | **Manifest** | [examples/manifest-dj-screw.json](examples/manifest-dj-screw.json) |
 | **Half-time** | [HALF-TIME-AB.md](HALF-TIME-AB.md) — note winner |
 | **Lineage** | Set `parent_seed` if mutating from a keeper |
+
+**Load pack:** [sprint-kits/session-2-dj-screw/](sprint-kits/session-2-dj-screw/) · Review: [reviews/2026-11-03_DJ-SCREW_sprint2.md](reviews/2026-11-03_DJ-SCREW_sprint2.md)
 
 ---
 
