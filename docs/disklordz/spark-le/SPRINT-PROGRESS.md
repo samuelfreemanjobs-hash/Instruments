@@ -1,5 +1,7 @@
 # 5-session sprint — progress log
 
+**Controller:** Arturia **SparkLE** (standalone) — locked 2026-11-03. See [SPARKLE-MIDI-AND-CONTROLLER.md](SPARKLE-MIDI-AND-CONTROLLER.md).
+
 Update after each session. Scores/tags feed [MEMORY-AND-CI.md](MEMORY-AND-CI.md) weekly fix.
 
 | Session | Status | Date (America/Detroit) | Preset used | Keeper? |

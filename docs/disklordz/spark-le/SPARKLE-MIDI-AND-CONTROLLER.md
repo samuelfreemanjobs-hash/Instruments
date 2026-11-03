@@ -1,6 +1,14 @@
 # SparkLE as controller vs DIY hardware
 
-**Version:** 1.0 · Companion to [808-LAB-HYBRID.md](808-LAB-HYBRID.md) and [phonk-box/ARCHITECTURE.md](../../../disklordz/phonk-box/ARCHITECTURE.md).
+**Version:** 1.1 · Companion to [808-LAB-HYBRID.md](808-LAB-HYBRID.md) and [phonk-box/ARCHITECTURE.md](../../../disklordz/phonk-box/ARCHITECTURE.md).
+
+## Decision (locked)
+
+**Controller: Arturia SparkLE** — standalone primary; USB MIDI to the PC engine when needed. **No DIY Phonk Box build** unless SparkLE limits block a specific workflow (document the gap first).
+
+| Date | Decision |
+|------|----------|
+| 2026-11-03 (America/Detroit) | SparkLE is the 808 Lab hands; phonk-box tree = optional PC engine + deferred DIY only |
 
 ## Short answer
 
@@ -18,7 +26,7 @@ You already have **8 velocity pads**, **knobs**, **USB**, and **standalone playb
 | **B. SparkLE USB MIDI → PC engine** | SparkLE sends pad/knob MIDI; **phonk_engine** (or DAW) makes sound | Custom sequencer, lane DSP, experiments beyond SparkLE UI |
 | **C. DIY Phonk Box USB MIDI** | Teensy/RP2040 → same PC engine | No SparkLE at gig; learn hardware; extreme custom layout |
 
-**Recommendation:** Master **A** first. Add **B** only when you outgrow SparkLE’s pattern tools. Treat **C** as optional ([ENCLOSURE doc](../../../disklordz/phonk-box/docs/ENCLOSURE-AND-CONNECTORS.md) can stay **deferred indefinitely** if you stay on SparkLE).
+**Operating plan:** Run **A** for Sessions 1–5 and keepers. Add **B** only when you outgrow SparkLE’s pattern tools. **C** is out of scope unless you reopen hardware ([ENCLOSURE doc](../../../disklordz/phonk-box/docs/ENCLOSURE-AND-CONNECTORS.md) stays deferred).
 
 ---
 

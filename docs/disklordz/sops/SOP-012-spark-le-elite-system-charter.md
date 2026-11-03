@@ -1,6 +1,6 @@
 # SOP-012 — SparkLE elite lanes system charter
 
-**Version:** 1.2 · **Improve this SOP:** after each phase retrospective; bump version in footer.
+**Version:** 1.3 · **Improve this SOP:** after each phase retrospective; bump version in footer.
 
 ## Purpose
 
@@ -72,6 +72,10 @@ All lanes share: **8-pad SparkLE map**, **manifest**, **inbox discipline**, **re
 
 Overflow samples live outside pads; manifest documents swaps.
 
+## Hardware controller
+
+**Arturia SparkLE** is the only planned controller for 808 Lab (2026-11-03). Standalone load + play is default; USB MIDI to the optional PC engine is secondary. DIY phonk-box firmware/enclosure is **not** on the roadmap unless a documented SparkLE gap requires it — see [SPARKLE-MIDI-AND-CONTROLLER.md](../spark-le/SPARKLE-MIDI-AND-CONTROLLER.md).
+
 ## Confidence without casualties (“no one dies”)
 
 Operational safety is **non-negotiable**. Speed never outranks these gates ([META R10](../../../CLAUDE.md), [security baseline](../../../.cursor/rules/security-baseline.mdc)).
@@ -117,5 +121,6 @@ When uncertain: **stop**, log in `humanpending.md` or issue, take the **defensib
 - [ ] Every pack has manifest + lane + BPM
 - [ ] Safety table respected on last 5 changes
 - [ ] Phase SOP linked in PR when touching spark-le tooling
+- [x] **SparkLE** locked as controller (no DIY box unless gap documented)
 
-**SOP-012 v1.2**
+**SOP-012 v1.3**

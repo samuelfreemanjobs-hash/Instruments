@@ -103,7 +103,7 @@ Add to pack copy: *“Built in DiskLordz 808 Lab — SparkLE-ready manifest incl
 2. **Inbox → SparkLE** smoke doc + watch path for your OS ([daw-inbox/ARCHITECTURE.md](../../../disklordz/daw-inbox/ARCHITECTURE.md)).
 3. **808 analyzer script** (mono sub ratio, decay time) reusing `audio-contracts.ts` on **your** exported WAVs post-session.
 4. **TR-808 clone alignment** session: SP-1200/clone plugin A/B vs `lane-tr-808-clone` one-shots.
-5. **Phonk Box hardware** — PC engine + USB MIDI controller under $100 ([phonk-box/ARCHITECTURE.md](../../../disklordz/phonk-box/ARCHITECTURE.md)); same 8-pad kits as SparkLE.
+5. **Phonk Box / SparkLE MIDI** — **prefer SparkLE** as controller ([SPARKLE-MIDI-AND-CONTROLLER.md](SPARKLE-MIDI-AND-CONTROLLER.md)); optional DIY under $100 ([phonk-box/ARCHITECTURE.md](../../../disklordz/phonk-box/ARCHITECTURE.md)).
 
 ---
 

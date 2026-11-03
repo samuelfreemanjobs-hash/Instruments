@@ -4,7 +4,7 @@
 
 Optional **DIY USB MIDI controller** + **Windows PC sound engine** for phonk/808 experiments.
 
-**Default controller: Arturia SparkLE** (standalone + USB MIDI) — see [SPARKLE-MIDI-AND-CONTROLLER.md](../../docs/disklordz/spark-le/SPARKLE-MIDI-AND-CONTROLLER.md). **Do not build DIY hardware** until SparkLE + PC engine limits are clear.
+**Selected controller: Arturia SparkLE** (standalone + USB MIDI) — see [SPARKLE-MIDI-AND-CONTROLLER.md](../../docs/disklordz/spark-le/SPARKLE-MIDI-AND-CONTROLLER.md). **DIY hardware deferred**; this tree is PC engine + optional R&D firmware only.
 
 **Users:** You · same kits as SparkLE / 808 Lab hybrid.
 
@@ -59,14 +59,23 @@ SparkLE hybrid: same 8 one-shots can load in SparkLE OR phonk-box engine
 3. **Firmware:** Add step buttons (notes 48–63) without changing engine API.
 4. **Phase 2:** Replace Python engine with `PhonkBox_Standalone` JUCE app sharing SP1200 sequencer code.
 
+## Controller strategy
+
+| Priority | Hardware | Software |
+|----------|----------|----------|
+| **1** | **SparkLE standalone** | Load DiskLordz kits; SOP-013 / sprint |
+| **2** | **SparkLE USB MIDI** | `phonk_engine.py --midi Spark` |
+| **3** | DIY Phonk Box (Teensy) | Same engine; optional |
+
 ## Phases
 
 | Phase | Deliverable |
 |-------|-------------|
 | **0** | Python engine + MIDI map + self-test (this tree) |
-| **1** | Teensy/RP2040 8-pad USB MIDI + transport + 1 encoder |
+| **0b** | SparkLE MIDI note map verified on Windows ([spark-le doc](../../docs/disklordz/spark-le/SPARKLE-MIDI-AND-CONTROLLER.md)) |
+| **1** | *Optional* Teensy/RP2040 only if SparkLE is insufficient |
 | **2** | Windows standalone (JUCE) + disk streaming + MIDI learn |
-| **3** | Sync with 808 Lab keepers + `verify:spark` kit import wizard |
+| **3** | Sync with 808 Lab keepers + manifest → kit import |
 
 ## Related docs
 
