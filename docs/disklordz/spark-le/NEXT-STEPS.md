@@ -1,8 +1,11 @@
 # 808 Lab — next steps (complete checklist)
 
-**Updated:** 2026-11-03 · **Branch:** `cursor/spark-le-elite-sops-2496` · **PR:** [#95](https://github.com/samuelfreemanjobs-hash/Instruments/pull/95)
+**Updated:** 2026-11-03 · **Delivery:** on `main` (PR [#95](https://github.com/samuelfreemanjobs-hash/Instruments/pull/95) merged)
 
-Repo sprint is **5/5 complete**. What remains is **merge**, **MPC ears**, **keepers**, then **one engineering fix** from tags.
+| Layer | Status |
+|-------|--------|
+| Repo / automation / MPC500 card exports | **Done** |
+| Your MPC pass + `verify:producer-signoff` | **Remaining** |
 
 ---
 
@@ -23,17 +26,7 @@ Pre-built MPC500 card folders: `sprint-kits/session-*/MPC500/<code>/` — copy t
 
 ---
 
-## A. Merge (5 min)
-
-| Step | Action |
-|------|--------|
-| 1 | Confirm **Disklordz website** CI green on latest PR commit |
-| 2 | Merge **PR #95** into `main` |
-| 3 | Ignore root **cmake / Windows VST3** red unless you need JUCE builds today (known `clap_juce_extensions` fetch issue on `main`) |
-
----
-
-## B. MPC500 producer pass (your critical path)
+## A. MPC500 producer pass (your finish line)
 
 **Print:** [MPC500-BENCH-CARD.md](MPC500-BENCH-CARD.md) · **CF export:** [MPC500-CARD-EXPORT.md](MPC500-CARD-EXPORT.md)
 
@@ -66,7 +59,7 @@ Optional reel (no PC): sequences A→B→C @ 140→72→86 — see bench card.
 
 ---
 
-## C. After ears (one engineering cycle)
+## B. After ears (one engineering cycle)
 
 | Step | Action |
 |------|--------|
@@ -78,7 +71,7 @@ Optional reel (no PC): sequences A→B→C @ 140→72→86 — see bench card.
 
 ---
 
-## D. Optional PC hybrid (same kits)
+## C. Optional PC hybrid (same kits)
 
 ```powershell
 cd disklordz\phonk-box\engine
@@ -89,7 +82,7 @@ MPC **MIDI out** → PC **MIDI in**; audio from PC speakers separately.
 
 ---
 
-## E. Later (pick when ready)
+## D. Later (pick when ready)
 
 | Priority | Item | Doc |
 |----------|------|-----|

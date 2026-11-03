@@ -2,15 +2,18 @@
 
 **Rig:** **MPC500 + PC only** — [MPC500-PC-ONLY.md](MPC500-PC-ONLY.md)
 
-## Sprint status: **5/5 complete (repo)**
+## Sprint status
 
-**Date closed (factory + reviews + CI):** 2026-11-03 America/Detroit  
+| Phase | Status |
+|-------|--------|
+| **Repo / factory / CI** | **FINISHED** — merged PR [#95](https://github.com/samuelfreemanjobs-hash/Instruments/pull/95) → `main` (2026-11-03) |
+| **Producer (MPC500)** | **OPEN** — scores, keepers, Session 5 catalog note → `npm run verify:producer-signoff` |
+
+**Date closed (repo):** 2026-11-03 America/Detroit  
 
 All load packs exported; `npm run export:sprint-1-5` · `npm run verify:spark` green.  
-**Repo automation:** `./scripts/automate-808-lab.sh` · MPC500 folders under each `sprint-kits/session-*/MPC500/`.
-
-**Producer sign-off still open:** MPC scores, 30s exports, keepers, Session 5 **catalog keep/drop** paragraph.  
-**Full checklist:** [NEXT-STEPS.md](NEXT-STEPS.md)
+**Automation:** `./scripts/automate-808-lab.sh` · MPC500 card trees in `sprint-kits/session-*/MPC500/` (copy to CF).  
+**Checklist:** [NEXT-STEPS.md](NEXT-STEPS.md)
 
 | Session | Status | Preset | BPM | Batch | Keeper? |
 |---------|--------|--------|-----|-------|---------|
@@ -48,4 +51,4 @@ All load packs exported; `npm run export:sprint-1-5` · `npm run verify:spark` g
 1. **MPC:** run all five packs; fill reviews + catalog paragraph on Session 5.  
 2. **Engineering:** manifest import → `phonk_engine --manifest` / `--kit` (sprint folder) — **done** ([MPC500-PC-ONLY.md](MPC500-PC-ONLY.md)).  
 3. **MPC card export:** `npm run export:mpc500` — [MPC500-CARD-EXPORT.md](MPC500-CARD-EXPORT.md).  
-4. **Merge PR #95** — branch current with `main`; website build + `verify:spark` green locally.
+4. ~~**Merge PR #95**~~ — **done** (on `main`).
