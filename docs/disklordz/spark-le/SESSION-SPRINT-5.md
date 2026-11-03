@@ -68,6 +68,8 @@ Copy first keeper to [KEEPERS.md](KEEPERS.md) layout. Review: [reviews/2026-11-0
 
 Review: [reviews/2026-11-03_TRUNK-SERMON_sprint4.md](reviews/2026-11-03_TRUNK-SERMON_sprint4.md)
 
+**Done (repo):** pack + manifest + DNA + CI — [SPRINT-PROGRESS.md](SPRINT-PROGRESS.md) Session 4 complete.
+
 ---
 
 ## Session 5 — Stretch lane (Phase 5 + backlog)

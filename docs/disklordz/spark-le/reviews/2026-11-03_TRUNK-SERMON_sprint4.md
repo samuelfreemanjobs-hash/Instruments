@@ -27,7 +27,10 @@
 - [x] Manifest [manifest-trunk-sermon.json](../examples/manifest-trunk-sermon.json)
 - [x] Load pack `sprint-kits/session-4-trunk-sermon/`
 - [x] DNA `southern-trunk-lazy` in [TRAP-HAT-LOOP-DNA.md](../TRAP-HAT-LOOP-DNA.md)
-- [ ] MPC mix + scores below
+- [x] `npm run verify:spark` green (Session 4 in CI)
+- [x] Sprint log updated — Session 4 **Complete (pack + review)**
+- [ ] Producer: MPC mix + scores + 30s export
+- [ ] Producer: confirm Session 5 preset below
 
 ## Scores (1–5)
 
