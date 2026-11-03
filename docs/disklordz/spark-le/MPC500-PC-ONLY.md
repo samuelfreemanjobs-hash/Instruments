@@ -90,6 +90,10 @@ Rename kit files to `kick.wav`, `snare.wav`, … if needed — see [MIDI-MAP.md]
 
 ---
 
+## Music (MPC500 only)
+
+Creative prompts and session blends — no PC running: [MPC500-ONLY-MUSIC-IDEAS.md](MPC500-ONLY-MUSIC-IDEAS.md)
+
 ## Related
 
 [808-LAB.md](../808-LAB.md) · [SPRINT-PROGRESS.md](SPRINT-PROGRESS.md) · [SOP-013](../sops/SOP-013-spark-le-phase-1-feed-spark.md)
