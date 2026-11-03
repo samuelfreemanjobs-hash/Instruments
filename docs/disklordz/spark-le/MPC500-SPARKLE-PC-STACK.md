@@ -1,9 +1,10 @@
-# MPC500 + SparkLE + PC stack (DiskLordz workstation)
+# MPC500 + PC workstation (SparkLE optional)
 
-**Version:** 1.0 · **Status:** **Locked plan** (2026-11-03, America/Detroit)  
+**Version:** 1.1 · **Status:** **Locked plan** (2026-11-03, America/Detroit)  
+**Your active rig:** **MPC500 + PC only** → [MPC500-PC-ONLY.md](MPC500-PC-ONLY.md)  
 **Index:** [808-LAB.md](../808-LAB.md) · **808 Lab hybrid:** [808-LAB-HYBRID.md](808-LAB-HYBRID.md)
 
-We are **building around a device**, not picking “the best box out of the box.” You own **Akai MPC500** and **Arturia SparkLE**; custom DiskLordz software runs on **Windows**.
+We are **building around a device**, not picking “the best box out of the box.” **Required:** **Akai MPC500** + **Windows PC**. **Optional:** Arturia SparkLE as extra USB MIDI knobs/pads for PC engines.
 
 ---
 
@@ -12,10 +13,10 @@ We are **building around a device**, not picking “the best box out of the box.
 | Device | Role | DiskLordz use |
 |--------|------|----------------|
 | **Akai MPC500** | **Foundation instrument** | Sample chop, pad performance, drum programming, 48-track sequencer, pad banks, classic standalone MPC workflow. **Cannot** host our firmware — stays Akai OS. |
-| **Arturia SparkLE** | **Companion control surface** | USB MIDI into PC: phonk drum engine params, future chop UI macros, 808/cowbell synth, soul chord engine, screw/tape FX. Custom maps via Arturia MIDI Control Center. Optional: still load 808 Lab kits **standalone** for portable sprint sessions. |
+| **Arturia SparkLE** *(optional)* | **Companion control surface** | If owned: USB MIDI into PC for params/FX. **Not required** — use MPC500 MIDI + PC UI. |
 | **Windows PC** | **Sound engine & intelligence** | `phonk_engine`, factory/`lane-registry`, future Chop Machine, synths, effects. Same manifests and 8-pad law as SaaS. |
 
-**DIY Phonk Box (Teensy):** still **deferred** — MPC500 + SparkLE already cover pads and sequencing.
+**DIY Phonk Box (Teensy):** **deferred** — MPC500 covers pads and sequencing.
 
 ---
 
@@ -35,27 +36,18 @@ Documented MPC500 strengths (see Akai reference manual):
 ## Signal flow
 
 ```text
-                    ┌─────────────────────────────────┐
-                    │ Windows PC                       │
-                    │  phonk_engine / Chop / synths   │
-                    │  screw-tape FX / soul chords     │
-                    └────────▲───────────────▲────────┘
-                             │ USB MIDI      │ audio out
-                             │ (notes, CC,   │ (interface →
-                             │  clock)       │  mixer / MPC in)
-              ┌──────────────┴───┐       ┌───┴──────────────┐
-              │ Arturia SparkLE   │       │ Audio interface   │
-              │ knobs + 8 pads    │       │ (plan explicitly) │
-              │ → PC parameters   │       └───────────────────┘
-              └───────────────────┘
-                             │
-                    MIDI clock / notes
-                             │
-              ┌──────────────▼──────────────┐
-              │ Akai MPC500                  │
-              │ chop · sequence · sample play  │
-              │ MIDI out → PC (optional)       │
-              └───────────────────────────────┘
+┌──────────────────────────────────────┐
+│ Windows PC                            │
+│  export:sprint-1-3 · phonk_engine    │
+│  chop / synth / screw-tape (future)  │
+└───────────────▲──────────────────────┘
+                │ MIDI in (notes, clock)     audio out → monitors
+                │                            (interface when you add one)
+     ┌──────────┴──────────┐
+     │ Akai MPC500          │     optional: SparkLE USB → PC (CC/pads)
+     │ chop · seq · samples │
+     │ MIDI out ────────────┘
+     └──────────────────────┘
 ```
 
 **Critical:** MIDI does **not** carry audio. To hear PC instruments in an MPC-centric session, route **PC audio** into your mixer, MPC inputs, or DAW — document your path once and reuse ([SOP-013](../sops/SOP-013-spark-le-phase-1-feed-spark.md) export proof still applies for Lab reviews).
@@ -66,9 +58,9 @@ Documented MPC500 strengths (see Akai reference manual):
 
 | Step | Deliverable | Hardware |
 |------|-------------|----------|
-| **1** | Memphis **sample-chopping app** on PC (start from [memphis-architect](../../../disklordz/memphis-architect/ARCHITECTURE.md) or dedicated Chop Machine) | MPC500 triggers chops; SparkLE maps chop length / start / filter |
-| **2** | **Custom 808 + cowbell** synth on PC (`phonk_engine` + lane kits) | SparkLE CC 70–73; MPC sequences MIDI notes to engine |
-| **3** | **Soul chord engine** + **screw/tape** pitch-drop FX | SparkLE knobs; MPC mutes/sends via MIDI or audio mix |
+| **1** | Memphis **sample-chopping app** on PC ([memphis-architect](../../../disklordz/memphis-architect/ARCHITECTURE.md)) | MPC500 triggers; PC UI for chop params |
+| **2** | **Custom 808 + cowbell** on PC (`phonk_engine` + lane kits) | MPC MIDI notes → engine; params via PC or optional SparkLE CC |
+| **3** | **Soul chord engine** + **screw/tape** FX | PC + MPC mutes; optional SparkLE knobs |
 | **4** | **MIDI clock** — MPC500 master or slave vs PC/DAW | Verify stable tempo before long screw sets |
 | **5** | Manifest import (`spark-le-manifest.json` → kit paths) + keeper sync | Same 808 Lab folders for MPC samples and PC engine |
 
@@ -82,8 +74,8 @@ One catalog, one CI gate:
 
 ```text
 Brief → lane-resolve → factory WAV → verify:spark → manifest
-  → load samples on MPC500 (performance) and/or SparkLE (portable)
-  → SparkLE MIDI → PC when using custom engines
+  → load samples on **MPC500** (primary)
+  → MPC MIDI → PC engines when hybrid playback needed
   → session review → keepers → registry/RAG
 ```
 
@@ -107,10 +99,10 @@ See [SPARKLE-MIDI-AND-CONTROLLER.md](SPARKLE-MIDI-AND-CONTROLLER.md).
 1. Export **OneShots/** + manifest from 808 Lab (factory or [sprint-kits](sprint-kits/)).  
 2. Import into MPC500 sample pool; assign **pads 1–8** to manifest roles.  
 3. Set sequence BPM from manifest; program drums on MPC sequencer.  
-4. PC: start engine with same kit folder; SparkLE on correct MIDI port.  
-5. Clock: choose **one master** (usually MPC for live, PC for screw FX sync tests).  
-6. Audio: PC out → interface → monitors (and MPC mix if sampling PC output).  
-7. File review with `batch_id` + note **MPC** vs **SparkLE standalone** in template.
+4. PC (optional): `phonk_engine` with same kit; **MPC MIDI out → PC MIDI in**.  
+5. Clock: one master (usually **MPC** for live).  
+6. Audio: PC speakers/interface; MPC mix for sample-only sessions.  
+7. Review: note **MPC500 + PC** in template ([MPC500-PC-ONLY.md](MPC500-PC-ONLY.md)).
 
 ---
 

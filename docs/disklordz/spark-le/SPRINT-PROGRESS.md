@@ -1,6 +1,6 @@
 # 5-session sprint — progress log
 
-**Stack:** **MPC500** (foundation) + **SparkLE** (PC control) + **PC** (engines) — [MPC500-SPARKLE-PC-STACK.md](MPC500-SPARKLE-PC-STACK.md)
+**Rig:** **MPC500 + PC only** — [MPC500-PC-ONLY.md](MPC500-PC-ONLY.md) (SparkLE not required)
 
 **Sprint 1–3 status:** **Complete (factory packs + reviews + CI)** — 2026-11-03 America/Detroit.  
 Producer sign-off: scores, keepers, and 30s exports in [reviews/](reviews/) when ready.

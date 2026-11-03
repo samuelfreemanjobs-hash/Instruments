@@ -1,6 +1,6 @@
 # 808 Lab sprint load packs (Sessions 1–3)
 
-Factory-exported **SparkLE / MPC500** folders: 8 `OneShots/`, loops, `spark-le-manifest.json`. Regenerate with [export script](../../../disklordz/website/scripts/export-spark-sprint-kit.ts) or `npm run export:sprint-1-3` in `disklordz/website`.
+Factory-exported **MPC500-ready** folders: 8 `OneShots/`, loops, `spark-le-manifest.json` (pad map format name). Regenerate with [export script](../../../disklordz/website/scripts/export-spark-sprint-kit.ts) or `npm run export:sprint-1-3` in `disklordz/website`.
 
 | Session | Folder | Preset | BPM | Batch seed |
 |---------|--------|--------|-----|------------|

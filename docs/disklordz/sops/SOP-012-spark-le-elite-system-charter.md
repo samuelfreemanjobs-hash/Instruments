@@ -1,6 +1,6 @@
 # SOP-012 — SparkLE elite lanes system charter
 
-**Version:** 1.4 · **Improve this SOP:** after each phase retrospective; bump version in footer.
+**Version:** 1.5 · **Improve this SOP:** after each phase retrospective; bump version in footer.
 
 ## Purpose
 
@@ -74,13 +74,13 @@ Overflow samples live outside pads; manifest documents swaps.
 
 ## Hardware stack
 
-**Locked (2026-11-03):** [MPC500-SPARKLE-PC-STACK.md](../spark-le/MPC500-SPARKLE-PC-STACK.md)
+**Active rig:** [MPC500-PC-ONLY.md](../spark-le/MPC500-PC-ONLY.md) · **Optional SparkLE:** [MPC500-SPARKLE-PC-STACK.md](../spark-le/MPC500-SPARKLE-PC-STACK.md)
 
 | Piece | Role |
 |-------|------|
 | **Akai MPC500** | Foundation: chop, sequence, sample performance |
-| **Arturia SparkLE** | Companion USB MIDI for PC engines; optional standalone for portable Lab sprints |
-| **Windows PC** | DiskLordz chop, phonk/808 synth, soul chords, screw/tape FX |
+| **Windows PC** | Kit factory/export, phonk_engine, chop/synth/screw (build-out) |
+| **Arturia SparkLE** | *Optional* — USB MIDI for PC params if owned |
 
 Manifest **8-pad law** applies to DiskLordz exports; MPC may use additional pads/banks with overflow documented. DIY phonk-box hardware remains **deferred**.
 
@@ -129,6 +129,6 @@ When uncertain: **stop**, log in `humanpending.md` or issue, take the **defensib
 - [ ] Every pack has manifest + lane + BPM
 - [ ] Safety table respected on last 5 changes
 - [ ] Phase SOP linked in PR when touching spark-le tooling
-- [x] **MPC500 + SparkLE + PC** stack documented ([808-LAB.md](../808-LAB.md))
+- [x] **MPC500 + PC** rig documented ([808-LAB.md](../808-LAB.md))
 
-**SOP-012 v1.4**
+**SOP-012 v1.5**

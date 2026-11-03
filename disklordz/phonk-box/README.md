@@ -1,6 +1,6 @@
 # DiskLordz Phonk Box
 
-**PC sound engine** for 808 Lab — **MPC500** chops/sequences, **SparkLE** USB MIDI controls params ([MPC500 + SparkLE + PC stack](../docs/disklordz/spark-le/MPC500-SPARKLE-PC-STACK.md)). DIY USB box deferred.
+**PC sound engine** for 808 Lab — **MPC500** chops/sequences; trigger via **MPC MIDI → PC** ([MPC500 + PC](../docs/disklordz/spark-le/MPC500-PC-ONLY.md)). SparkLE optional. DIY USB box deferred.
 
 Read **[ARCHITECTURE.md](ARCHITECTURE.md)** first.
 

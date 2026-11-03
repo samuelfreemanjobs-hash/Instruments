@@ -59,7 +59,8 @@ lane-registry.ts (drum bases + metadata)
 
 - [808-LAB.md](../808-LAB.md) — public index  
 - [808-LAB-HYBRID.md](808-LAB-HYBRID.md) — one pipeline, not a second app  
-- [MPC500-SPARKLE-PC-STACK.md](MPC500-SPARKLE-PC-STACK.md) — hardware stack (locked)  
+- [MPC500-PC-ONLY.md](MPC500-PC-ONLY.md) — **your rig** (MPC500 + PC)  
+- [MPC500-SPARKLE-PC-STACK.md](MPC500-SPARKLE-PC-STACK.md) — full stack (SparkLE optional)  
 - [SPARKLE-MIDI-AND-CONTROLLER.md](SPARKLE-MIDI-AND-CONTROLLER.md) — SparkLE modes (standalone vs PC MIDI)  
 - [SYSTEM-PLAN.md](SYSTEM-PLAN.md) — phased build plan  
 - [LANE-BACKLOG.md](LANE-BACKLOG.md) — candidate lanes  

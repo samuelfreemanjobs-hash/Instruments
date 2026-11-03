@@ -86,7 +86,7 @@ Follow [SOP-017](../sops/SOP-017-spark-le-phase-5-elite-leadership.md) weekly/mo
 |----------|-----------|
 | `verify:spark` = lanes + audio | Single CI gate for Phase 2 |
 | Screw LOOP-GRID min 0 | Slow loops fail naive onset counter; tighten when loop-render improves |
-| **MPC500 + SparkLE + PC** | MPC = chop/seq foundation; SparkLE = PC param surface; PC = engines — [MPC500-SPARKLE-PC-STACK.md](MPC500-SPARKLE-PC-STACK.md) |
+| **MPC500 + PC only** | Active producer rig — [MPC500-PC-ONLY.md](MPC500-PC-ONLY.md); SparkLE optional in stack doc |
 | [808-LAB.md](../808-LAB.md) index | One public name, no second codebase |
 
 ---
