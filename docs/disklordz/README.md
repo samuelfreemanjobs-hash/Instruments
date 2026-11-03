@@ -35,6 +35,8 @@ Operational playbooks for **Cursor Cloud**, **IDE Agent**, and **profit-agent fl
 | [TEMPLATE-pm-add-agent-entry.md](templates/TEMPLATE-pm-add-agent-entry.md) | New agent announcement (then regen) |
 | [TEMPLATE-incident-debug.md](templates/TEMPLATE-incident-debug.md) | Broken generate / checkout / CI |
 | [TEMPLATE-integration-manifest-row.md](templates/TEMPLATE-integration-manifest-row.md) | New row in integrations manifest |
+| [TEMPLATE-spark-le-session-review.md](templates/TEMPLATE-spark-le-session-review.md) | Phase 3 keeper / scoring session |
+| [TEMPLATE-spark-le-manifest.json](templates/TEMPLATE-spark-le-manifest.json) | 8-pad SparkLE pack metadata |
 
 ---
 
