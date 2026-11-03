@@ -82,6 +82,22 @@ streamlit run vst-testing-ops/app.py                       # operations dashboar
 
 - [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
 
+## NTS-1 multi-bass (logue SDK)
+
+```bash
+./tools/mkii-automate.sh bootstrap
+export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
+./tools/build-all-bass-mkii.sh   # NTS-1 mkII (.nts1mkiiunit)
+./tools/build-all-bass.sh        # NTS-1 mkI (.ntkdigunit)
+./tools/package-nts1.sh
+```
+
+Install today: [docs/NTS1_INSTALL_TODAY.md](docs/NTS1_INSTALL_TODAY.md). Catalog: [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md). mkII porting: [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
+
+## Audio Plugin Coder (optional VST scaffold)
+
+New plugins under `vst/`: [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-setup` … `/apc-ship` · [docs/vst-lifecycle.md](docs/vst-lifecycle.md).
+
 ## SynthForge (preset workstation)
 
 ```bash
