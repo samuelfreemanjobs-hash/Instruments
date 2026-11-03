@@ -240,6 +240,35 @@ export function resolveDrumParams(
     snareBody *= 1.04;
   }
   if (/\b(strip club|spend that shit|club anthem)\b/.test(p)) clapWide *= 1.12;
+  if (/\b(big krit|krit|mississippi soul)\b/.test(p)) snareBody *= 1.06;
+  if (/\b(90s houston|h-town classic)\b/.test(p)) {
+    kickDecay *= 1.08;
+    rimMetal *= 1.05;
+  }
+  if (/\b(lex luger|luger|brass trap)\b/.test(p)) snareSnap *= 1.12;
+  if (/\b(dj screw|chop screw|screwed)\b/.test(p)) {
+    kickDecay *= 1.15;
+    hatBright *= 0.75;
+    snareSnap *= 0.85;
+  }
+  if (/\b(mike dean|n\.o\. joe|nojoe|texas psych)\b/.test(p)) kickDecay *= 1.08;
+  if (/\b(cloud trap|cloud rap|airy trap)\b/.test(p)) {
+    hatBright *= 1.1;
+    snareSnap *= 0.92;
+  }
+  if (/\b(super smoker|super smoke)\b/.test(p)) {
+    snareSnap *= 0.88;
+    hatDecay *= 1.1;
+  }
+  if (/\b(helluva)\b/.test(p)) snareSnap *= 1.06;
+  if (/\b(doughboyz|cashout)\b/.test(p)) snareBody *= 1.08;
+  if (/\b(dej loaf|dej)\b/.test(p)) {
+    snareSnap *= 0.94;
+    hatBright *= 1.05;
+  }
+  if (/\b(top side|topside)\b/.test(p)) snareSnap *= 1.04;
+  if (/\b(angry beats|engry beats|aggressive trap)\b/.test(p)) snareSnap *= 1.12;
+  if (/\b(big germz|germz)\b/.test(p)) snareSnap *= 1.08;
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;

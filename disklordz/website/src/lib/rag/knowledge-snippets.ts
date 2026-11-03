@@ -97,4 +97,14 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
     text: "West/Bay/strip/hardware: DJ Quik lane-dj-quik, Nipsey lane-nipsey-hussle, Bay hustler lane-bay-hustler-rap, strip anthem lane-strip-club-anthem, TR-909 lane-tr-909. Archetypes only.",
     tags: ["lane-dj-quik", "lane-nipsey-hussle", "lane-strip-club-anthem", "lane-tr-909", "strip club"],
   },
+  {
+    id: "lane-houston-screw-ext",
+    text: "Houston: 90s lane-houston-90s, DJ Screw lane-dj-screw (matches disklordz-screw), Mike Dean/N.O. Joe lane-mike-dean-nojoe. Archetypes only.",
+    tags: ["lane-houston-90s", "lane-dj-screw", "lane-mike-dean-nojoe", "dj screw", "houston"],
+  },
+  {
+    id: "lane-detroit-cloud-ext",
+    text: "Detroit: Helluva lane-helluva, Doughboyz lane-doughboyz-cashout, Dej Loaf lane-dej-loaf, Top side lane-top-side, Big Germz lane-big-germz. Cloud/lex/angry: lane-cloud-trap, lane-lex-luger, lane-angry-beats (alias lane-engry-beats), Big Krit lane-big-krit, Super smoker lane-super-smoker. Archetypes only.",
+    tags: ["lane-helluva", "lane-doughboyz-cashout", "lane-dej-loaf", "lane-cloud-trap", "lane-lex-luger", "lane-big-krit", "detroit"],
+  },
 ];

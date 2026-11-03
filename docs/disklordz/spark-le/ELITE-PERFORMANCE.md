@@ -36,6 +36,10 @@ Rotate **one family per week** in producer review so the catalog stays elite eve
 | **West / Bay** | DJ-QUIK, NIPSEY, BAY-HUSTLER, DOM-KENNEDY | Pocket + funk shuffle checks |
 | **Strip anthem** | STRIP-CLUB-ANTHEM | clapWide + 2-bar loop mandatory |
 | **909 hardware** | TR-909 | Pair with TR-808-CLONE A/B same session |
+| **Houston** | HOUSTON-90S, DJ-SCREW, MIKE-DEAN-NOJOE | Screw week: slow BPM + thick mids |
+| **Detroit street** | HELLUVA, DOUGHBOYZ, DEJ-LOAF, TOP-SIDE, BIG-GERMZ | Snap vs smooth (Dej) A/B |
+| **Cloud / lex / angry** | CLOUD-TRAP, LEX-LUGER, ANGRY-BEATS | Contrast cloud vs angry same BPM |
+| **MS soul** | BIG-KRIT | Body snare + rim week |
 | **Core** | GANGSTA-TRAP, PHONK-TRAP (`midnight-circuit`) | Hard menace vs phonk dirt |
 
 Full preset ids: [LANES.md](LANES.md) · code: `disklordz/website/src/lib/spark-le/lane-registry.ts`.

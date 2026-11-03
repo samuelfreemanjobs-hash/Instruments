@@ -36,6 +36,10 @@ This is the **north star** document. Each maturity **phase** has its own SOP (01
 | **West / Bay** | DJ-QUIK, NIPSEY-HUSSLE, BAY-HUSTLER-RAP |
 | **Strip anthem** | STRIP-CLUB-ANTHEM |
 | **909** | TR-909 (hardware) |
+| **Houston** | HOUSTON-90S, DJ-SCREW, MIKE-DEAN-NOJOE |
+| **Detroit street** | HELLUVA, DOUGHBOYZ-CASHOUT, DEJ-LOAF, TOP-SIDE, BIG-GERMZ |
+| **Cloud / aggressive** | CLOUD-TRAP, LEX-LUGER, ANGRY-BEATS, SUPER-SMOKER |
+| **MS soul** | BIG-KRIT |
 
 All lanes share: **8-pad SparkLE map**, **manifest**, **inbox discipline**, **review scores**, **family rotation** (elite performance doc).
 

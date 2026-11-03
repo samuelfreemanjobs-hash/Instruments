@@ -116,6 +116,39 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 
 *All named lanes are procedural style archetypes — not affiliated with artists or labels.*
 
+## Houston / screw / psych
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **HOUSTON-90S** | `lane-houston-90s` | 70–88 | Classic H-town trunk |
+| **DJ-SCREW** | `lane-dj-screw` | 60–95 | Chop-screw; also factory `disklordz-screw` |
+| **MIKE-DEAN-NOJOE** | `lane-mike-dean-nojoe` | 75–98 | Texas psychedelic trunk |
+
+## Mississippi / soul south
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **BIG-KRIT** | `lane-big-krit` | 75–95 | Soulful southern trunk |
+
+## Detroit street
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **HELLUVA** | `lane-helluva` | 130–155 | Bounce producer snap |
+| **DOUGHBOYZ-CASHOUT** | `lane-doughboyz-cashout` | 130–150 | Raw block anthem |
+| **DEJ-LOAF** | `lane-dej-loaf` | 85–100 | Smooth-hard melodic space |
+| **TOP-SIDE** | `lane-top-side` | 130–150 | Top-side bounce trap |
+| **BIG-GERMZ** | `lane-big-germz` | 130–155 | Hard distorted edge |
+
+## Cloud / smoker / aggressive producers
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **LEX-LUGER** | `lane-lex-luger` | 130–160 | Brass-era cannon trap |
+| **CLOUD-TRAP** | `lane-cloud-trap` | 130–160 | Airy cloud rap |
+| **SUPER-SMOKER** | `lane-super-smoker` | 78–92 | Ultra-laid stoner pocket |
+| **ANGRY-BEATS** | `lane-angry-beats` | 130–160 | Engry/aggressive trap (`lane-engry-beats` alias) |
+
 ## Regional trap & rage
 
 | Lane ID | Preset id | BPM hint | Notes |
@@ -142,5 +175,9 @@ See `artistLane` on each preset in `lane-registry.ts` (e.g. `DL-TOOMP`, `DL-DJPA
 | Smooth / jetlife | Lower snareSnap; higher rim on jazz lane |
 | Strip anthem | clapWide max; loop-forward |
 | TR-909 vs 808 | 909 shorter decay band vs 808-CLONE sub |
+| Houston / screw | DJ-SCREW long decay; low hatBright |
+| Detroit street | Snap-forward; DOUGHBOYZ body snare |
+| Cloud | High hatBright; lower snareSnap |
+| Lex Luger | SNARE-STACK near max snap |
 
 Details: [SOP-014](../sops/SOP-014-spark-le-phase-2-trust-contracts.md) · [ELITE-PERFORMANCE.md](ELITE-PERFORMANCE.md)
