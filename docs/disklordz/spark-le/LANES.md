@@ -164,7 +164,7 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | Lane ID | Preset id | BPM hint | Notes |
 |---------|-----------|----------|--------|
 | **SKINNY-PIMP** | `lane-skinny-pimp` | 65–90 | Kingpin / Skinny Pimp cadence |
-| **KING-LOGIE** | `lane-king-logie` | 130–160 | Underground Memphis pocket |
+| **KING-LOUIE** | `lane-king-louie` | 130–150 | Chicago drill (`lane-king-logie` alias) |
 
 ## Phonk / wave
 
@@ -181,6 +181,40 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 |---------|-----------|----------|--------|
 | **PLAYBOI-CARTI** | `lane-playboi-carti` | 130–160 | Minimal hypnotic (vs `RAGE-TRAP` mosh) |
 | **PIERRE-BOURNE** | `lane-pierre-bourne` | 130–160 | Bouncy dreamy melodic trap |
+
+## Producers (Metro / Future / London / TM88)
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **METRO-BOOMIN** | `lane-metro-boomin` | 130–160 | Dark modern trap |
+| **FUTURE** | `lane-future` | 130–160 | Toxic bounce / monster sub |
+| **ORGANIZED-NOIZE** | `lane-organized-noize` | 85–105 | Live south funk pocket |
+| **LONDON-ON-DA-TRACK** | `lane-london-on-da-track` | 130–155 | Melodic clap bounce |
+| **TM88** | `lane-tm88` | 130–160 | Nightmare trap |
+
+## Plugg / pluggnb / modern NO
+
+| Lane ID | Preset id | Notes |
+|---------|-----------|--------|
+| **PLUGG-OPIUM** | `lane-plugg-opium` | Dark minimal plugg |
+| **PLUGGNB** | `lane-pluggnb` | Soft R&B trap |
+| **MODERN-NO-BOUNCE** | `lane-modern-no-bounce` | Post–Cash Money NOLA |
+
+## Repo / pack / experimental
+
+| Lane ID | Preset id | Notes |
+|---------|-----------|--------|
+| **SP1200-CHAIN** | `lane-sp1200-chain` | Instruments SP-1200 grit |
+| **RNB-90S-SMOOTH-PHONK** | `lane-rnb-90s-smooth-phonk` | 90s R&B × smooth phonk |
+| **PLAYA-PIMP** | `lane-playa-pimp` | Playa / pimp rap smooth |
+| **SPACEGHOST-PURRP** | `lane-spaceghost-purrp` | Cloudy Memphis plugg |
+| **DJ-SHADOW** | `lane-dj-shadow` | Sample-chop instrumental |
+| **JUDGEMENT-G** | `lane-judgement-g` | Underground Memphis snap |
+| **VAPORWAVE** | `lane-vaporwave` | Soft bright slowed |
+| **VAPORTAPE** | `lane-vaportape` | Cassette-smeared slow |
+| **CAPSUN-TRAP** | `lane-capsun-trap` | Clean pack-style trap |
+| **ORIGIN-SOUNDS** | `lane-origin-sounds` | Polished EDM-trap pack |
+| **SPLICE-TRAP** | `lane-splice-trap` | Modern stock trap aesthetic |
 
 **Future lanes:** [LANE-BACKLOG.md](LANE-BACKLOG.md)
 

@@ -283,6 +283,7 @@ export function resolveDrumParams(
     snareSnap *= 1.06;
     hatBright *= 0.9;
   }
+  if (/\b(king louie|king louie chicago)\b/.test(p)) snareSnap *= 1.08;
   if (/\b(king logie|logie)\b/.test(p)) snareSnap *= 1.06;
   if (/\b(skinny pimp|kingpin skinny)\b/.test(p)) {
     kickDecay *= 1.1;
@@ -303,6 +304,41 @@ export function resolveDrumParams(
     snareSnap *= 0.94;
     hatBright *= 1.06;
   }
+  if (/\b(metro boomin|metro)\b/.test(p)) {
+    snareSnap *= 1.08;
+    kickDecay *= 1.04;
+  }
+  if (/\b(future type|future beat|toxic trap)\b/.test(p)) kickDecay *= 1.05;
+  if (/\b(organized noize|organised noize|outkast drums)\b/.test(p)) snareBody *= 1.08;
+  if (/\b(london on da track|london on the track)\b/.test(p)) clapWide *= 1.06;
+  if (/\b(tm88|nightmare trap)\b/.test(p)) snareSnap *= 1.08;
+  if (/\b(plugg|opium sound)\b/.test(p)) {
+    kickDecay *= 0.9;
+    hatDecay *= 0.88;
+  }
+  if (/\b(pluggnb|plugg nb)\b/.test(p)) {
+    snareSnap *= 0.9;
+    hatBright *= 1.06;
+  }
+  if (/\b(modern bounce|nola modern)\b/.test(p)) clapWide *= 1.08;
+  if (/\b(sp1200|sp-1200|12-bit chain)\b/.test(p)) {
+    snareBody *= 1.06;
+    hatBright *= 0.92;
+  }
+  if (/\b(90s rnb phonk|smooth phonk rnb)\b/.test(p)) snareSnap *= 0.9;
+  if (/\b(playa pimp|pimp rap)\b/.test(p)) snareSnap *= 0.92;
+  if (/\b(spaceghost purrp|purrp)\b/.test(p)) {
+    hatBright *= 0.88;
+    snareSnap *= 1.06;
+  }
+  if (/\b(dj shadow|sample chop)\b/.test(p)) kickDecay *= 0.92;
+  if (/\b(judgement g|judgment g|judge g)\b/.test(p)) snareSnap *= 1.06;
+  if (/\b(vaporwave)\b/.test(p)) {
+    hatBright *= 1.08;
+    snareSnap *= 0.88;
+  }
+  if (/\b(vaportape)\b/.test(p)) kickDecay *= 1.1;
+  if (/\b(capsun|origin sounds|splice trap|stock trap)\b/.test(p)) hatBright *= 1.05;
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;

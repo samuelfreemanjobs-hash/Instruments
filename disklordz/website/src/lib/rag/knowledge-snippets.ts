@@ -103,6 +103,11 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
     tags: ["lane-houston-90s", "lane-dj-screw", "lane-mike-dean-nojoe", "dj screw", "houston"],
   },
   {
+    id: "lane-producer-plugg-pack",
+    text: "Producers/pack: Metro lane-metro-boomin, Future lane-future, Organized Noize lane-organized-noize, London lane-london-on-da-track, TM88 lane-tm88, plugg lane-plugg-opium, pluggnb lane-pluggnb, modern NO lane-modern-no-bounce, SP1200 lane-sp1200-chain, King Louie Chicago lane-king-louie, Capsun/Origin/Splice lane-capsun-trap lane-origin-sounds lane-splice-trap. Archetypes only.",
+    tags: ["lane-metro-boomin", "lane-future", "lane-king-louie", "lane-sp1200-chain", "lane-splice-trap", "pluggnb"],
+  },
+  {
     id: "lane-boss-phonk-plug",
     text: "Boss/phonk/plug: Rick Ross lane-rick-ross, BMF lane-bmf-meech, trap or die lane-trap-or-die, Jeezy mixtape lane-jeezy-mixtape, DJ Cannon lane-dj-cannon, Skinny Pimp lane-skinny-pimp, OG phonk lane-og-phonk, drift phonk lane-drift-phonk (midnight-circuit alias), wave lane-wave, wave phonk lane-wave-phonk, Carti lane-playboi-carti, Pierre lane-pierre-bourne. Archetypes only.",
     tags: ["lane-rick-ross", "lane-trap-or-die", "lane-drift-phonk", "lane-playboi-carti", "lane-pierre-bourne", "phonk", "wave"],
