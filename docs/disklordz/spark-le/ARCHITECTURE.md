@@ -35,6 +35,10 @@ lane-registry.ts (drum bases + metadata)
 | Path | Role |
 |------|------|
 | [LANES.md](LANES.md) | Human lane catalog by family |
+| [TRAP-HAT-LOOP-DNA.md](TRAP-HAT-LOOP-DNA.md) | Hi-hat / perc / top-loop pattern formulas |
+| [PRODUCER-LANE-INDEX.md](PRODUCER-LANE-INDEX.md) | Chart producers → preset ids |
+| [SUBAGENTS.md](SUBAGENTS.md) | Cursor subagent delegation |
+| [MEMORY-AND-CI.md](MEMORY-AND-CI.md) | Keepers, tags, weekly CI |
 | [ELITE-PERFORMANCE.md](ELITE-PERFORMANCE.md) | KPIs, rotation, pro checklist |
 | [../sops/SOP-012-spark-le-elite-system-charter.md](../sops/SOP-012-spark-le-elite-system-charter.md) | Charter + safety |
 | `disklordz/website/src/lib/spark-le/lane-registry.ts` | Source of truth for lane presets |

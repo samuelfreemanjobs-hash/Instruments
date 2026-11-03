@@ -43,6 +43,11 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
     tags: ["memphis", "phonk", "distorted", "cowbell"],
   },
   {
+    id: "trap-hat-loop-dna",
+    text: "Trap hat/perc/top-loop DNA: docs/disklordz/spark-le/TRAP-HAT-LOOP-DNA.md — Metro roll bar4, Southside 32nd rolls, Tay staccato 8ths, Wheezy dropouts, Mustard ratchet. Producers map via PRODUCER-LANE-INDEX.md. Skills: spark-trap-loop-architect, spark-le-memory-ci.",
+    tags: ["trap hat", "top loop", "dna", "metro", "southside", "tay keith", "wheezy"],
+  },
+  {
     id: "spark-le-index",
     text: "SparkLE elite lanes (archetypes): Memphis, Atlanta, South, Chicago, Cash Money NO (Mannie Fresh, Master P, Beats by the Pound), Drake-type polished beats, hardware DR-660/TR-808 clone, Bay/Detroit trap, rage. Registry: lane-registry.ts. Gangsta trap = hard street trap not trap house.",
     tags: ["spark-le", "lanes", "gangsta trap", "memphis", "atlanta", "registry"],

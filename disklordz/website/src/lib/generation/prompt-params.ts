@@ -344,6 +344,21 @@ export function resolveDrumParams(
   if (/\b(tone capone|capone mob)\b/.test(p)) rimMetal *= 1.06;
   if (/\b(wheezy)\b/.test(p)) snareSnap *= 1.06;
   if (/\b(tay keith|first take)\b/.test(p)) snareSnap *= 1.12;
+  if (/\b(atl jacob|atl jacob type)\b/.test(p)) kickDecay *= 1.05;
+  if (/\b(mustard on the beat|mustard)\b/.test(p)) clapWide *= 1.08;
+  if (/\b(hit-boy|hit boy)\b/.test(p)) snareBody *= 1.05;
+  if (/\b(alchemist|the alchemist)\b/.test(p)) rimMetal *= 1.08;
+  if (/\b(cash cobain|sample drill)\b/.test(p)) snareSnap *= 1.05;
+  if (/\b(wondagurl|wonda gurl)\b/.test(p)) snareSnap *= 1.04;
+  if (/\b(decap|drums that knock|dtk)\b/.test(p)) snareBody *= 1.04;
+  if (/\b(pvlace)\b/.test(p)) rimMetal *= 1.06;
+  if (/\b(outtatown|rage top)\b/.test(p)) hatDecay *= 0.88;
+  if (/\b(gezin)\b/.test(p)) hatBright *= 0.92;
+  if (/\b(griselda|craven|daringer)\b/.test(p)) {
+    hatBright *= 0.9;
+    rimMetal *= 1.08;
+  }
+  if (/\b(southside|808 mafia)\b/.test(p)) snareSnap *= 1.06;
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;

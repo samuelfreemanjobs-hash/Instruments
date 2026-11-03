@@ -3,6 +3,7 @@
 **Date:** YYYY-MM-DD  
 **Lane ID:** (from [LANES.md](../spark-le/LANES.md) — e.g. `DJ-TOOMP`, `SHAWTY-REDD`, `TR-808-CLONE`, `RAGE-TRAP`)  
 **Family:** memphis | atlanta | south-texas | chicago | hardware | regional-trap | rage  
+**dna_template_id:** (from [TRAP-HAT-LOOP-DNA.md](../spark-le/TRAP-HAT-LOOP-DNA.md) if loop session)  
 **BPM:**  
 **batch_id:**  
 **generator_version:**  
