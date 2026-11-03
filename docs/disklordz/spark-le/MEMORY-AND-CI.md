@@ -23,7 +23,7 @@ Use in review + RAG:
 1. Read last 7 reviews — count tags.  
 2. Pick **dominant tag** → one change: DNA doc, registry `drum` base, or contract threshold.  
 3. If **hat-roll** wins: edit [TRAP-HAT-LOOP-DNA.md](TRAP-HAT-LOOP-DNA.md) for that producer row.  
-4. Run `npm run verify:spark-lanes` and `npm run build` if TS touched.  
+4. Run `npm run verify:spark` and `npm run build` if TS touched.  
 5. Log line in ROADMAP or team notes: `[executed] lane X: tag Y → change Z`.
 
 ## Monthly

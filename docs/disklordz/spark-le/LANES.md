@@ -279,6 +279,9 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **BAY-AREA-TRAP** | `lane-bay-area-trap` | 85–110 / 170+ | Bay Area trap / hyphy-adjacent (alias: `lane-bay-trap`) |
 | **DETROIT-TRAP** | `lane-detroit-trap` | 130–160 | Industrial street snap |
 | **FLINT-MICHIGAN** | `lane-flint-michigan` | 130–155 | Flint / Michigan punch-minimal |
+| **UK-DRILL** | `lane-uk-drill` | 140–150 | UK drill slide + dark snap |
+| **JERSEY-CLUB** | `lane-jersey-club` | 130–145 | Jersey / Baltimore club kick grid |
+| **CLASSIC-ELECTRO-808** | `lane-classic-electro-808` | 115–128 | 80s 808 electro funk |
 | **RAGE-TRAP** | `lane-rage-trap` | 140–160 | Short 808, frantic hats |
 
 ## artistLane codes

@@ -470,6 +470,18 @@ export function resolveDrumParams(
   }
   if (/\b(flint|michigan rap|flint michigan)\b/.test(p)) snareSnap *= 1.08;
   if (/\b(bay area trap)\b/.test(p)) hatBright *= 1.06;
+  if (/\b(uk drill|british drill)\b/.test(p)) {
+    snareSnap *= 1.08;
+    hatDecay *= 0.9;
+  }
+  if (/\b(jersey club|baltimore club)\b/.test(p)) {
+    snareSnap *= 1.06;
+    clapWide *= 1.05;
+  }
+  if (/\b(classic electro|808 electro|80s electro)\b/.test(p)) {
+    hatBright *= 1.06;
+    kickDecay *= 0.92;
+  }
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;

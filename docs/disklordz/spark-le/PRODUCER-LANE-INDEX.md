@@ -104,11 +104,21 @@ See [LANES.md](LANES.md) — gangsta trap, Memphis, Atlanta, Cash Money, Drake-t
 | Curren$y jazz rap | `lane-currensy-jazz-rap` |
 | Pluggnb | `lane-pluggnb` |
 
-## DNA + CI
+## Stretch grids
+
+| Vibe | Preset |
+|------|--------|
+| UK drill | `lane-uk-drill` |
+| Jersey club | `lane-jersey-club` |
+| Classic 808 electro | `lane-classic-electro-808` |
+
+## Ops — all phases
 
 | Resource | Path |
 |----------|------|
+| 5-session sprint | [SESSION-SPRINT-5.md](SESSION-SPRINT-5.md) |
+| Keepers | [KEEPERS.md](KEEPERS.md) |
+| System plan | [SYSTEM-PLAN.md](SYSTEM-PLAN.md) |
 | Pattern formulas | [TRAP-HAT-LOOP-DNA.md](TRAP-HAT-LOOP-DNA.md) |
-| Half-time A/B workflow | [HALF-TIME-AB.md](HALF-TIME-AB.md) |
-| Registry verify | `cd disklordz/website && npm run verify:spark-lanes` |
+| CI | `cd disklordz/website && npm run verify:spark` |
 | Memory loop | [MEMORY-AND-CI.md](MEMORY-AND-CI.md) |

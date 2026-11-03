@@ -68,6 +68,25 @@ Full preset ids: [LANES.md](LANES.md) · code: `disklordz/website/src/lib/spark-
 | Review sessions / month | ≥4 |
 | Lane family coverage / quarter | All families audited once |
 
+## 12-week family rotation (2026 baseline)
+
+| Week | Family focus | Flagship presets |
+|------|----------------|------------------|
+| 1 | Gangsta / trap | TRAP-OR-DIE, JEEZY, METRO-BOOMIN |
+| 2 | Memphis / phonk | THREE-SIX-MAFIA, OG-PHONK, THREE-SIX-SLOW-DRAG |
+| 3 | Houston / screw | DJ-SCREW, SLOWED-RNB, FAT-PAT |
+| 4 | Smooth / jazz rap | SMOOTH-JAZZ-RAP, KNXWLEDGE, NEO-SOUL-LIVE |
+| 5 | NOLA / Cash Money | NOLA-BOUNCE-CLASSIC, MANNIE-FRESH, BEATS-BY-THE-POUND |
+| 6 | West / G-funk | SNOOP-90S, DRE-DAY-90S, DJ-BATTLECAT |
+| 7 | Trap soul / chill | BRYSON-TILLER, TRAP-SOUL, MAJESTIC-CASUAL |
+| 8 | Regional punch | FLINT-MICHIGAN, BAY-AREA-TRAP, UK-DRILL |
+| 9 | Club grids | JERSEY-CLUB, CRUNK, SNAP-MUSIC |
+| 10 | Hardware / electro | TR-808-CLONE, CLASSIC-ELECTRO-808, TR-909 |
+| 11 | Producer architect | TAY-KEITH, WHEEZY, 808-MAFIA-SOUTHSIDE |
+| 12 | Audit + revert week | Blind A/B; demote 2 keepers; `npm run verify:spark` |
+
+Sprint shortcut: [SESSION-SPRINT-5.md](SESSION-SPRINT-5.md)
+
 ## Continuous improvement (elite)
 
 1. **Registry-first** — new lane = one row in `lane-registry.ts` + LANES.md family table + one RAG snippet.

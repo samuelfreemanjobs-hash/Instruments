@@ -35,7 +35,9 @@ export type SparkLaneFamily =
   | "g-funk-west"
   | "trap-soul-rnb"
   | "crunk-club"
-  | "boogie-funk";
+  | "boogie-funk"
+  | "uk-drill"
+  | "club-grid";
 
 export type SparkLaneDrumBase = {
   kickPitch: number;
@@ -1767,6 +1769,42 @@ export const SPARK_LANE_REGISTRY: SparkLaneDef[] = [
     ["flint", "michigan rap", "flint michigan", "bfb type", "archetype"],
     { kickPitch: 40, kickDecay: 0.27, snareBody: 0.24, snareSnap: 0.56, hatDecay: 0.014, hatBright: 0.48, rimMetal: 0.44, clapWide: 0.4 },
     { snareSnap: 1.08, kickDecay: 0.94 },
+  ),
+  d(
+    "lane-uk-drill",
+    "UK-DRILL",
+    "UK drill lane",
+    "DL-UKDRILL",
+    "uk-drill",
+    "140–150",
+    "UK drill — sliding 808 feel, tight hats, dark snap (not Chicago drill).",
+    ["uk drill", "british drill", "drill uk", "archetype"],
+    { kickPitch: 38, kickDecay: 0.3, snareBody: 0.22, snareSnap: 0.52, hatDecay: 0.012, hatBright: 0.44, rimMetal: 0.42, clapWide: 0.4 },
+    { snareSnap: 1.06, hatDecay: 0.92 },
+  ),
+  d(
+    "lane-jersey-club",
+    "JERSEY-CLUB",
+    "Jersey club lane",
+    "DL-JERSEY",
+    "club-grid",
+    "130–145",
+    "Jersey club — kick shuffle patterns, bed-squeak energy, not trap 16th default.",
+    ["jersey club", "baltimore club", "club bounce", "archetype"],
+    { kickPitch: 41, kickDecay: 0.25, snareBody: 0.28, snareSnap: 0.5, hatDecay: 0.014, hatBright: 0.52, rimMetal: 0.46, clapWide: 0.48 },
+    { snareSnap: 1.05, clapWide: 1.04 },
+  ),
+  d(
+    "lane-classic-electro-808",
+    "CLASSIC-ELECTRO-808",
+    "Classic 808 electro lane",
+    "DL-ELECTRO808",
+    "boogie-funk",
+    "115–128",
+    "80s 808 electro — machine funk transients, not modern trap grid.",
+    ["classic electro", "808 electro", "80s electro", "electro funk 808", "archetype"],
+    { kickPitch: 54, kickDecay: 0.2, snareBody: 0.3, snareSnap: 0.35, hatDecay: 0.014, hatBright: 0.5, rimMetal: 0.55, clapWide: 0.42 },
+    { hatBright: 1.05, kickDecay: 0.94 },
   ),
 ];
 

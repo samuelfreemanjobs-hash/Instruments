@@ -44,7 +44,8 @@ lane-registry.ts (drum bases + metadata)
 | [../sops/SOP-012-spark-le-elite-system-charter.md](../sops/SOP-012-spark-le-elite-system-charter.md) | Charter + safety |
 | `disklordz/website/src/lib/spark-le/lane-registry.ts` | Source of truth for lane presets |
 | `disklordz/website/src/lib/spark-le/lane-resolve.ts` | Prompt inference + `coalesceSparkPreset` |
-| `disklordz/website/scripts/verify-spark-lanes.ts` | Registry contract CI (`npm run verify:spark-lanes`) |
+| `disklordz/website/src/lib/spark-le/audio-contracts.ts` | Phase 2 PCM + manifest contract metrics |
+| `disklordz/website/scripts/verify-spark-*.ts` | CI: `npm run verify:spark` |
 | Repo TR-808 / SP-1200 | Hardware reference for `lane-tr-808-clone` tuning ([ARCHITECTURE.md](../../../ARCHITECTURE.md)) |
 
 ## Extension points

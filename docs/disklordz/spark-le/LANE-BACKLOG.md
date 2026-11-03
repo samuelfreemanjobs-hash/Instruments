@@ -16,10 +16,10 @@ Style **archetypes** only. Add via `lane-registry.ts` + [LANES.md](LANES.md) + R
 | **TM88 + Southside combo lane** | Optional single “tag” lane |
 | **Ethiopian jazz / Knxwledge** | Curren$y-adjacent sample drums |
 | **Griselda (Alchemist / Daringer)** | Boom bap grime drums for rap |
-| **UK drill / NY drill** | Distinct from Young Chop |
+| ~~UK drill~~ | ✅ `lane-uk-drill` (NY drill still open) |
 | **Afrobeat × trap** | Per your future lanes |
 | **Reggaeton dembow clave** | Latin trap crossover |
-| **Jersey club / Baltimore** | Kick patterns unlike trap 808 |
+| ~~Jersey club / Baltimore~~ | ✅ `lane-jersey-club` |
 | **Footwork / juke** | Chicago 160 |
 | ~~Plugg / opium~~ | ✅ `lane-plugg-opium` · pluggnb ✅ |
 | ~~Horrorcore / Three 6 slow~~ | ✅ `lane-three-six-slow-drag` |

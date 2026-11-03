@@ -1,8 +1,8 @@
 # SparkLE system plan (develop & operate)
 
-**Version:** 1.0 · **Charter:** [SOP-012](../sops/SOP-012-spark-le-elite-system-charter.md) · **Architecture:** [ARCHITECTURE.md](ARCHITECTURE.md)
+**Version:** 1.1 · **Charter:** [SOP-012](../sops/SOP-012-spark-le-elite-system-charter.md) · **Architecture:** [ARCHITECTURE.md](ARCHITECTURE.md)
 
-This is the **living plan** for building and running the SparkLE elite lane system — not a calendar timeline, but ordered work with clear done criteria.
+Living plan for building and running SparkLE elite lanes — ordered work with **done criteria**.
 
 ---
 
@@ -10,81 +10,85 @@ This is the **living plan** for building and running the SparkLE elite lane syst
 
 | Layer | Status | Artifact |
 |-------|--------|----------|
-| Lane catalog | **141** presets (`npm run verify:spark-lanes`) | `lane-registry.ts` |
-| Prompt → lane | Neutral preset + brief infers lane | `lane-resolve.ts` |
-| Generation | Drum params → factory WAV + manifest | `prompt-params.ts`, `factory.ts` |
-| Docs / SOPs | Phases 1–5, DNA, index, half-time | `docs/disklordz/sops/SOP-013`–`017` |
-| Memory | Review template, weekly CI doc | [MEMORY-AND-CI.md](MEMORY-AND-CI.md) |
-| Audio contracts | Spec in SOP-014; **automated WAV tests pending** | — |
+| Lane catalog | **144** presets | `lane-registry.ts` · `npm run verify:spark-lanes` |
+| Prompt → lane | Shipped | `lane-resolve.ts` |
+| Audio contracts | **CI** | `audio-contracts.ts` · `npm run verify:spark-audio-contracts` |
+| Combined verify | **CI** | `npm run verify:spark` |
+| Example manifests | Gangsta, screw, smooth jazz | [examples/](examples/) |
+| Keeper SOP | Documented | [KEEPERS.md](KEEPERS.md) |
+| 5-session sprint | Ready | [SESSION-SPRINT-5.md](SESSION-SPRINT-5.md) |
+| 12-week rotation | Ready | [ELITE-PERFORMANCE.md](ELITE-PERFORMANCE.md) |
+| Your keeper WAVs | **You** | `keepers/<presetId>/` per KEEPERS.md |
 
 ---
 
-## Phase map (what to build next)
+## Phase map
 
-### Now — Phase 1 hardening (Feed Spark)
+### Phase 1 — Feed Spark ✅ (process ready)
 
-**Goal:** Every session ends with loadable SparkLE assets + one review row.
+| # | Work item | Status |
+|---|-----------|--------|
+| 1.1 | Starter manifests (gangsta, screw, smooth jazz) | ✅ |
+| 1.2 | 12-week rotation calendar | ✅ |
+| 1.3 | First 10 keeper sessions | ⏳ **Your sprint** ([SESSION-SPRINT-5.md](SESSION-SPRINT-5.md)) |
 
-| # | Work item | Done when |
-|---|-----------|-----------|
-| 1.1 | **Starter pack manifest** per flagship lane (8 pads + 2-bar top stem path) | [examples/manifest-smooth-jazz-rap.json](examples/manifest-smooth-jazz-rap.json) + base [template](../templates/TEMPLATE-spark-le-manifest.json) |
-| 1.2 | **Family rotation calendar** (12 weeks) in ELITE-PERFORMANCE | Each family has assigned week + KPI |
-| 1.3 | **First 10 keeper sessions** logged with tags | Reviews in your store; at least 3 lanes with keeper Y |
+### Phase 2 — Trust ✅ (baseline CI)
 
-### Next — Phase 2 (Trust / contracts)
+| # | Work item | Status |
+|---|-----------|--------|
+| 2.1 | `verify:spark-lanes` in CI | ✅ |
+| 2.2 | Audio contract harness | ✅ `verify:spark-audio-contracts` |
+| 2.3 | Tighten thresholds from keepers | ⏳ After Phase 3 data |
 
-**Goal:** Regressions caught before merge.
+### Phase 3 — Taste ⏳
 
-| # | Work item | Done when |
-|---|-----------|-----------|
-| 2.1 | **`verify:spark-lanes` in CI** on `disklordz/website` path changes | GitHub workflow step green |
-| 2.2 | **Contract test harness** for generated WAV (peak, mono sub, hat band) | Script fails on bad fixture; passes on golden kit |
-| 2.3 | Map contracts → lanes in SOP-014 threshold table | 808-SUB, HAT-CLARITY rows per family |
+| # | Work item | Status |
+|---|-----------|--------|
+| 3.1 | Keeper folder convention | ✅ [KEEPERS.md](KEEPERS.md) |
+| 3.2 | Blind A/B procedure | ✅ [SOP-016](../sops/SOP-016-spark-le-phase-4-lineage.md) + half-time doc |
+| 3.3 | RAG from keeper notes | ⏳ After first 3 keepers |
 
-### Then — Phase 3 (Taste / keepers)
+### Phase 4 — Lineage ⏳
 
-**Goal:** Params move only with evidence.
+| # | Work item | Status |
+|---|-----------|--------|
+| 4.1 | Manifest `lineage` in template | ✅ |
+| 4.2 | Variation from parent seed in API | ⏳ Future factory field |
 
-| # | Work item | Done when |
-|---|-----------|-----------|
-| 3.1 | Keeper folder convention `keepers/<presetId>/` documented + one example | README in template or MEMORY-AND-CI |
-| 3.2 | **Blind A/B** procedure default for param changes | SOP-016 checklist used once |
-| 3.3 | RAG snippets fed from top 3 keeper notes | `knowledge-snippets.ts` PR with [executed] |
+### Phase 5 — Leadership ⏳
 
-### Later — Phase 4 (Lineage)
-
-| # | Work item | Done when |
-|---|-----------|-----------|
-| 4.1 | Manifest `lineage` + `dna_template_id` required on keeper promote | Schema bump in template |
-| 4.2 | Variation batch from keeper parent seed | factory batch API uses parent seed field |
-
-### Steady — Phase 5 (Leadership)
-
-Follow [SOP-017](../sops/SOP-017-spark-le-phase-5-elite-leadership.md) weekly/monthly/quarterly cadence.
+Follow [SOP-017](../sops/SOP-017-spark-le-phase-5-elite-leadership.md) weekly/monthly/quarterly.
 
 ---
 
-## Your sonic pillars (rotation priority)
+## Fast path to top-level (your order)
 
-Use these when choosing **which lane to session** each week:
-
-1. **Hard gangsta trap** — Jeezy / Mike Will / trap-or-die family  
-2. **Phonk / Memphis / screw** — OG phonk, slow drag, DJ Screw, slowed R&B  
-3. **Southern trunk** — Houston eras, NOLA bounce, UGK pocket  
-4. **Smooth & jazz rap** — `lane-smooth-jazz-rap`, Curren$y, Knxwledge, neo-soul, lo-fi jazz trap  
-5. **West / G-funk / strip** — DPG, Snoop, Dre Day, strip anthem  
+1. Run **[SESSION-SPRINT-5.md](SESSION-SPRINT-5.md)** — 5 sessions, 5 reviews.
+2. Promote **≥3 keepers** → [KEEPERS.md](KEEPERS.md).
+3. Weekly: dominant tag → one fix; run `npm run verify:spark`.
+4. Week 12 rotation: blind A/B + demote weak keepers.
 
 ---
 
-## Decision log (fill as you go)
+## Sonic pillars (rotation)
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| — | Generic **smooth jazz rap** lane vs Curren$y-only tags | Broader brief inference without losing artist lane |
-| — | Prompt inference only on neutral factory presets | Explicit lane choice stays authoritative |
+1. Hard gangsta trap  
+2. Phonk / Memphis / screw  
+3. Southern trunk  
+4. Smooth & jazz rap  
+5. West / G-funk / strip  
+
+---
+
+## Decision log
+
+| Decision | Rationale |
+|----------|-----------|
+| `verify:spark` = lanes + audio | Single CI gate for Phase 2 |
+| Screw LOOP-GRID min 0 | Slow loops fail naive onset counter; tighten when loop-render improves |
 
 ---
 
 ## Related
 
-- [LANE-BACKLOG.md](LANE-BACKLOG.md) · [SUBAGENTS.md](SUBAGENTS.md) · [TRAP-HAT-LOOP-DNA.md](TRAP-HAT-LOOP-DNA.md)
+[LANE-BACKLOG.md](LANE-BACKLOG.md) · [SUBAGENTS.md](SUBAGENTS.md) · [TRAP-HAT-LOOP-DNA.md](TRAP-HAT-LOOP-DNA.md)
