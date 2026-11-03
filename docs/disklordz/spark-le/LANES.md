@@ -105,7 +105,8 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **INVESTMENT-RAP** | `lane-investment-rap` | 85–100 | Boss-talk clean drums |
 | **LE-DOLLAR** | `lane-le-dollar` | 78–92 | Houston chopped smooth |
 | **JETLIFE** | `lane-jetlife` | 80–94 | Cruise groove, low aggression |
-| **CURRENSY-JAZZ-RAP** | `lane-currensy-jazz-rap` | 78–92 | Rim-forward jazz-rap feel |
+| **CURRENSY-JAZZ-RAP** | `lane-currensy-jazz-rap` | 78–92 | Curren$y-style jazz-rap |
+| **SMOOTH-JAZZ-RAP** | `lane-smooth-jazz-rap` | 76–94 | Generic smooth jazz rap pocket |
 
 ## West coast / Bay
 

@@ -207,6 +207,7 @@ Kick/snare on separate stems for layering (Shawty Redd / strip anthem rule).
 | `trap-soul-sparse` | TRAP-SOUL / SZA |
 | `chill-trap-8ths` | CHILL-TRAP |
 | `majestic-broken` | MAJESTIC-CASUAL |
+| `smooth-jazz-8ths` | SMOOTH-JAZZ-RAP |
 
 ### Trap soul / chill (`lane-trap-soul`, `lane-bryson-tiller`, `lane-sza`)
 
@@ -216,6 +217,15 @@ Kick/snare on separate stems for layering (Shawty Redd / strip anthem rule).
 | Pocket | Straight or light swing; leave **808 tail** audible |
 | Perc | Rim on 2 & 4 or single ghost on beat 3 |
 | Rule | Vocals-first — if hats fight the hook, drop to 8ths |
+
+### Smooth jazz rap (`lane-smooth-jazz-rap`, `lane-currensy-jazz-rap`)
+
+| Element | Formula |
+|---------|---------|
+| Hats | Bar1–2: `x...x...x...` (8ths) with **ghost** velocity on 2nd and 4th eighth |
+| OH | Rare — one soft open per 2 bars max |
+| Perc | Rim on backbeats; optional light shaker on pad 7 |
+| Rule | **No trap rolls** unless fill bar; vocals and keys need space |
 
 ### Majestic Casual (`lane-majestic-casual`)
 

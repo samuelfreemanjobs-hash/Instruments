@@ -231,7 +231,12 @@ export function resolveDrumParams(
   }
   if (/\b(bay hustler|hustler rap|bay street)\b/.test(p)) hatBright *= 1.08;
   if (/\b(le\$|les houston)\b/.test(p)) kickDecay *= 1.06;
-  if (/\b(currensy|curren\$y|jazz rap|smoke smooth)\b/.test(p)) {
+  if (/\b(smooth jazz rap|smooth jazz hip hop|jazz rap smooth|smoky jazz rap)\b/.test(p)) {
+    rimMetal *= 1.1;
+    snareSnap *= 0.88;
+    hatBright *= 0.92;
+  }
+  if (/\b(currensy|curren\$y|currensy jazz|smoke smooth)\b/.test(p)) {
     rimMetal *= 1.08;
     snareSnap *= 0.92;
   }

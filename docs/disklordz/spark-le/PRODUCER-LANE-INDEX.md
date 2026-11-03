@@ -96,6 +96,12 @@ See [LANES.md](LANES.md) — gangsta trap, Memphis, Atlanta, Cash Money, Drake-t
 | Chill trap | `lane-chill-trap` |
 | Chillwave | `lane-chillwave` |
 | Majestic Casual (not house 4×4) | `lane-majestic-casual` |
+| Neo-soul live pocket | `lane-neo-soul-live` |
+| Lo-fi jazz trap | `lane-lofi-jazz-trap` |
+| Knxwledge type | `lane-knxwledge` |
+| Jazz-funk fusion | `lane-jazz-funk-fusion` |
+| Smooth jazz rap (generic) | `lane-smooth-jazz-rap` |
+| Curren$y jazz rap | `lane-currensy-jazz-rap` |
 | Pluggnb | `lane-pluggnb` |
 
 ## DNA + CI

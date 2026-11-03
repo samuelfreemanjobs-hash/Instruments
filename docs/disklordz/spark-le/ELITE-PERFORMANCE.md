@@ -32,7 +32,7 @@ Rotate **one family per week** in producer review so the catalog stays elite eve
 | **Cash Money / NO** | MANNIE-FRESH, MASTER-P, BEATS-BY-THE-POUND | Bounce loops + clap stack; 92–108 BPM week |
 | **Drake archetype** | DRAKE-TYPE | Polished kick-less tops + tight 808; hook-ready space |
 | **Trap producer** | 808-MAFIA-SOUTHSIDE, PURPZ, JOHNNY-JULIANO, CARDO | Dark vs melodic vs cinematic A/B |
-| **Jetlife / smooth** | JETLIFE, CURRENSY-JAZZ-RAP, WIZ, LARRY-JUNE, INVESTMENT-RAP | Low aggression KPI; rim/jazz contracts |
+| **Jetlife / smooth** | SMOOTH-JAZZ-RAP, JETLIFE, CURRENSY-JAZZ-RAP, KNXWLEDGE, NEO-SOUL-LIVE, WIZ, LARRY-JUNE | Low aggression KPI; rim/jazz contracts; no hat rolls |
 | **West / Bay** | DJ-QUIK, NIPSEY, BAY-HUSTLER, DOM-KENNEDY | Pocket + funk shuffle checks |
 | **Strip anthem** | STRIP-CLUB-ANTHEM | clapWide + 2-bar loop mandatory |
 | **909 hardware** | TR-909 | Pair with TR-808-CLONE A/B same session |

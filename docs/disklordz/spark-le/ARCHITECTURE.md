@@ -56,5 +56,6 @@ lane-registry.ts (drum bases + metadata)
 
 ## Related docs
 
+- [SYSTEM-PLAN.md](SYSTEM-PLAN.md) — phased build plan  
 - [LANE-BACKLOG.md](LANE-BACKLOG.md) — candidate lanes  
 - [../README.md](../README.md) · [../../ROADMAP.md](../../ROADMAP.md)

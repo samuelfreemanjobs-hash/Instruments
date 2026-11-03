@@ -47,6 +47,7 @@ const inferenceCases: [string, string][] = [
   ["lofi jazz trap dusty beat", "lane-lofi-jazz-trap"],
   ["classic nola bounce triggerman", "lane-nola-bounce-classic"],
   ["flint michigan street rap", "lane-flint-michigan"],
+  ["smooth jazz rap smoky cruise", "lane-smooth-jazz-rap"],
 ];
 
 for (const [prompt, expected] of inferenceCases) {

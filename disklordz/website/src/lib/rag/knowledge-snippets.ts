@@ -136,7 +136,13 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
       "lane-jazz-funk-fusion",
       "lane-nola-bounce-classic",
       "lane-flint-michigan",
+      "lane-smooth-jazz-rap",
     ],
+  },
+  {
+    id: "lane-smooth-jazz-rap",
+    text: "Smooth jazz rap: lane-smooth-jazz-rap (generic smoky cruise pocket). Curren$y-specific: lane-currensy-jazz-rap. Pair with TRAP-HAT-LOOP-DNA smooth-jazz-8ths. Archetype only.",
+    tags: ["lane-smooth-jazz-rap", "lane-currensy-jazz-rap", "smooth jazz rap", "jazz rap"],
   },
   {
     id: "lane-trap-soul-rnb",
