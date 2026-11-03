@@ -18,6 +18,8 @@
 
 **Done:** Review filed; tag any `hat-roll` or `kick-bleed`. Run `npm run verify:spark` after any registry tweak.
 
+Track completion: [SPRINT-PROGRESS.md](SPRINT-PROGRESS.md)
+
 ---
 
 ## Session 2 — Screw / slowed soul (Phase 1 + 4)
