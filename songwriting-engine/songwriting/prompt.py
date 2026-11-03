@@ -9,8 +9,21 @@ from .generator import DEFAULT_SECTIONS, STYLE_PROFILES
 from .theory import parse_chord, pitch_class
 
 _PITCH_NAMES = ("C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B")
-_KEY_MODE = re.compile(r"\b(?:in\s+)?([A-G](?:#|b)?)\s+(natural\s+)?(minor|major|dorian|mixolydian|blues)\b", re.I)
-_CHORD_TOKEN = re.compile(r"\b[A-G](?:#|b)?(?:maj|min|m|dim|aug|sus2|sus4)?(?:13|11|9|7|6)?(?:add9)?(?:[#b]\d+)?\b")
+_KEY_MODE = re.compile(
+    r"\b(?:in\s+)?([A-G](?:#|b)?)\s+(natural\s+)?"
+    r"(minor|major|dorian|phrygian|lydian|mixolydian|locrian|blues)\b",
+    re.I,
+)
+_CHORD_TOKEN = re.compile(r"(?<![\w#])[A-G][^\s,|;]*")
+_REHARM_KEYWORDS = {
+    "passing_chords": ("passing chord", "passing dim", "walk-up", "walkup"),
+    "tritone_subs": ("tritone",),
+    "secondary_dominants": ("secondary dominant",),
+}
+_STYLE_REHARM = {
+    "gospel_rnb": ("secondary_dominants", "tritone_subs", "passing_chords"),
+    "quiet_storm": ("tritone_subs",),
+}
 
 
 def _default_progression(style: str, key: str) -> list[str]:
@@ -85,13 +98,20 @@ def config_from_prompt(brief: str, seed: int = 48127) -> dict[str, Any]:
     actual_seed = int(seed_match.group(1)) if seed_match else seed
 
     progression: list[str] = []
-    progression_match = re.search(r"(?:progression|chords?)\s*[:=]\s*(.+?)(?:\.|;|\n|$)", text, re.I)
+    progression_match = re.search(r"(?:progression|chords?)\s*[:=]\s*(.+?)(?:\.(?:\s|$)|;|\n|$)", text, re.I)
     if progression_match:
         progression = _CHORD_TOKEN.findall(progression_match.group(1))
         for chord in progression:
             parse_chord(chord)
     if not progression:
         progression = _default_progression(style, key)
+
+    reharm = {name: name in _STYLE_REHARM.get(style, ()) for name in ("secondary_dominants", "tritone_subs", "passing_chords")}
+    for name, keywords in _REHARM_KEYWORDS.items():
+        if any(keyword in lowered for keyword in keywords):
+            reharm[name] = True
+    if any(phrase in lowered for phrase in ("no reharm", "straight changes")):
+        reharm = {name: False for name in reharm}
 
     if not 20 <= tempo <= 300:
         raise ValueError("brief tempo must be between 20 and 300 BPM")
@@ -104,7 +124,7 @@ def config_from_prompt(brief: str, seed: int = 48127) -> dict[str, Any]:
         "project": {"title": title, "schema_version": 1, "seed": actual_seed},
         "music": {"tempo_bpm": tempo, "time_signature": [4, 4], "key": key, "scale": scale, "swing": 0.12},
         "style": {"profile": style, "harmonic_density": 0.7, "melodic_density": 0.4, "rhythmic_density": 0.5},
-        "harmony": {"progression": progression, "bars_per_chord": 1, "voice_leading": True},
+        "harmony": {"progression": progression, "bars_per_chord": 1, "voice_leading": True, "reharm": reharm},
         "arrangement": {"sections": _sections_for_bars(total_bars)},
         "tracks": {"pad": True, "electric_piano": True, "bass": True, "lead": True},
         "export": {"format": 1, "midi_ppq": 960, "include_tempo": True, "include_markers": True},

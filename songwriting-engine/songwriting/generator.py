@@ -7,11 +7,13 @@ import random
 from pathlib import Path
 from typing import Any
 
+from .harmony import harmonic_cycle, validate_reharm
 from .models import ChordEvent, Note, Project, Section, Track
 from .theory import (
     SCALES,
     choose_voicings,
     parse_chord,
+    parse_chord_spec,
     pitch_class,
     scale_pitch_classes,
     voicing_candidates,
@@ -96,6 +98,7 @@ def validate_config(config: dict[str, Any]) -> None:
     bars_per_chord = config["harmony"].get("bars_per_chord", 1)
     if not isinstance(bars_per_chord, int) or bars_per_chord < 1:
         raise ValueError("harmony.bars_per_chord must be a positive integer")
+    validate_reharm(config["harmony"].get("reharm"))
     sections = config["arrangement"].get("sections", DEFAULT_SECTIONS)
     if not sections or any(not isinstance(section.get("bars"), int) or section["bars"] <= 0 for section in sections):
         raise ValueError("arrangement.sections must contain positive integer bar lengths")
@@ -139,30 +142,39 @@ def generate_project(config: dict[str, Any]) -> Project:
     beats_per_bar = numerator * 4 / denominator
     progression = tuple(harmony["progression"])
     bars_per_chord = harmony.get("bars_per_chord", 1)
+    reharm = validate_reharm(harmony.get("reharm"))
     pad_low, pad_high = profile["pad_range"]
-    voicing_path, transition_costs, _ = choose_voicings(progression, pad_low, pad_high)
+    total_beats = total_bars * beats_per_bar
+    cycle = harmonic_cycle(
+        progression, bars_per_chord, beats_per_bar, reharm, gospel=style_config["profile"] == "gospel_rnb"
+    )
+    cycle_beats = len(progression) * bars_per_chord * beats_per_bar
+    voicing_path, transition_costs, _ = choose_voicings(tuple(c.symbol for c in cycle), pad_low, pad_high)
+    candidates_by_symbol = {c.symbol: voicing_candidates(c.symbol, pad_low, pad_high) for c in cycle}
 
     chord_events: list[ChordEvent] = []
-    for bar in range(0, total_bars, bars_per_chord):
-        index = (bar // bars_per_chord) % len(progression)
-        symbol = progression[index]
-        root, pcs = parse_chord(symbol)
-        duration_bars = min(bars_per_chord, total_bars - bar)
-        candidates = voicing_candidates(symbol, pad_low, pad_high)
-        chord_events.append(
-            ChordEvent(
-                symbol=symbol,
-                start_beats=bar * beats_per_bar,
-                duration_beats=duration_bars * beats_per_bar,
-                root_pitch_class=root,
-                pitch_classes=pcs,
-                voicing=voicing_path[index],
-                alternative_voicings=tuple(candidates[:8]),
-                voice_leading_cost=transition_costs[index],
+    cycle_start = 0.0
+    while cycle_start < total_beats:
+        for index, item in enumerate(cycle):
+            start = cycle_start + item.offset_beats
+            if start >= total_beats:
+                break
+            spec = parse_chord_spec(item.symbol)
+            chord_events.append(
+                ChordEvent(
+                    symbol=item.symbol,
+                    start_beats=start,
+                    duration_beats=min(item.duration_beats, total_beats - start),
+                    root_pitch_class=spec.root,
+                    pitch_classes=spec.pitch_classes,
+                    voicing=voicing_path[index],
+                    alternative_voicings=tuple(candidates_by_symbol[item.symbol][:8]),
+                    voice_leading_cost=transition_costs[index],
+                    bass_pitch_class=spec.bass,
+                    function=item.function,
+                )
             )
-        )
-
-    total_beats = total_bars * beats_per_bar
+        cycle_start += cycle_beats
     scale_pcs = set(scale_pitch_classes(music["key"], music["scale"]))
     density = float(style_config.get("rhythmic_density", 0.5))
     ep_density = profile["ep_density"] * density * 2
@@ -206,7 +218,8 @@ def generate_project(config: dict[str, Any]) -> Project:
     if config["tracks"].get("bass", True):
         notes = []
         for chord in chord_events:
-            root_pitch = _nearest_pitch(chord.root_pitch_class, 30, 48, 38)
+            bass_pc = chord.root_pitch_class if chord.bass_pitch_class is None else chord.bass_pitch_class
+            root_pitch = _nearest_pitch(bass_pc, 30, 48, 38)
             notes.append(Note(root_pitch, chord.start_beats, min(1.65, chord.duration_beats), rng.randint(82, 105)))
             if chord.duration_beats >= beats_per_bar and rng.random() < profile["bass_fifth_probability"]:
                 fifth = (chord.root_pitch_class + 7) % 12

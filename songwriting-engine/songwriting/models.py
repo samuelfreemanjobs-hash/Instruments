@@ -33,6 +33,8 @@ class ChordEvent:
     voicing: tuple[int, ...]
     alternative_voicings: tuple[tuple[int, ...], ...]
     voice_leading_cost: float
+    bass_pitch_class: int | None = None
+    function: str = "chord"
 
 
 @dataclass(frozen=True, slots=True)
