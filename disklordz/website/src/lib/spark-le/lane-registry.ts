@@ -31,7 +31,8 @@ export type SparkLaneFamily =
   | "experimental"
   | "sp1200-chain"
   | "organised-noize"
-  | "future-trap";
+  | "future-trap"
+  | "g-funk-west";
 
 export type SparkLaneDrumBase = {
   kickPitch: number;
@@ -1403,6 +1404,54 @@ export const SPARK_LANE_REGISTRY: SparkLaneDef[] = [
     ["dj squeaky", "squeaky", "memphis dj", "archetype"],
     { kickPitch: 45, kickDecay: 0.28, snareBody: 0.3, snareSnap: 0.48, hatDecay: 0.019, hatBright: 0.52, rimMetal: 0.5, clapWide: 0.51 },
     { hatBright: 1.06, clapWide: 1.05 },
+  ),
+  d(
+    "lane-dogg-pound",
+    "DOGG-POUND",
+    "Dogg Pound gangsta lane",
+    "DL-DPG",
+    "g-funk-west",
+    "88–98",
+    "DPG gangsta G-funk — deep trunk, lazy swing hats, hard clap.",
+    ["dogg pound", "dpg", "dogg pound gangsta", "archetype"],
+    { kickPitch: 47, kickDecay: 0.3, snareBody: 0.37, snareSnap: 0.42, hatDecay: 0.026, hatBright: 0.39, rimMetal: 0.53, clapWide: 0.48 },
+    { snareBody: 1.05, clapWide: 1.04 },
+  ),
+  d(
+    "lane-snoop-90s",
+    "SNOOP-90S",
+    "90s Snoop Dogg lane",
+    "DL-SNOOP90",
+    "g-funk-west",
+    "88–96",
+    "90s Snoop pocket — ultra-laid 16ths, smooth knock, funk rim.",
+    ["snoop dogg", "90s snoop", "snoop type", "archetype"],
+    { kickPitch: 49, kickDecay: 0.31, snareBody: 0.35, snareSnap: 0.36, hatDecay: 0.028, hatBright: 0.38, rimMetal: 0.56, clapWide: 0.45 },
+    { hatDecay: 1.05, snareSnap: 0.94 },
+  ),
+  d(
+    "lane-dre-day-90s",
+    "DRE-DAY-90S",
+    "90s Dre Day lane",
+    "DL-DREDAY",
+    "g-funk-west",
+    "90–100",
+    "Chronic-era knock — tight funk kick, crisp snare, West Coast clean hit.",
+    ["dre day", "90s dre", "chronic drums", "g-funk", "archetype"],
+    { kickPitch: 48, kickDecay: 0.26, snareBody: 0.36, snareSnap: 0.4, hatDecay: 0.022, hatBright: 0.42, rimMetal: 0.55, clapWide: 0.46 },
+    { kickDecay: 0.96, snareBody: 1.04 },
+  ),
+  d(
+    "lane-dj-battlecat",
+    "DJ-BATTLECAT",
+    "DJ Battlecat lane",
+    "DL-BATTLECAT",
+    "g-funk-west",
+    "88–102",
+    "Battlecat G-funk — DJ scratch space, funk shuffle hats, trunk clap.",
+    ["dj battlecat", "battlecat", "battle cat", "archetype"],
+    { kickPitch: 50, kickDecay: 0.28, snareBody: 0.38, snareSnap: 0.38, hatDecay: 0.024, hatBright: 0.41, rimMetal: 0.58, clapWide: 0.47 },
+    { rimMetal: 1.06 },
   ),
 ];
 

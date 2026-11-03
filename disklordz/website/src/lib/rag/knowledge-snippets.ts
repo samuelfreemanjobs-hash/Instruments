@@ -113,6 +113,11 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
     tags: ["lane-metro-boomin", "lane-future", "lane-king-louie", "lane-sp1200-chain", "lane-splice-trap", "pluggnb"],
   },
   {
+    id: "lane-gfunk-west",
+    text: "G-funk west: Dogg Pound lane-dogg-pound, 90s Snoop lane-snoop-90s, Dre Day lane-dre-day-90s, DJ Battlecat lane-dj-battlecat. Archetypes only.",
+    tags: ["lane-dogg-pound", "lane-snoop-90s", "lane-dre-day-90s", "lane-dj-battlecat", "g-funk", "west coast"],
+  },
+  {
     id: "lane-memphis-south-ext",
     text: "Memphis/south: Playa Fly lane-playa-fly, Three 6 lane-three-six-mafia, Project Pat lane-project-pat, 8Ball MJG lane-8ball-mjg, Trae lane-trae, DJ Squeaky lane-dj-squeaky. Archetypes only.",
     tags: ["lane-playa-fly", "lane-three-six-mafia", "lane-project-pat", "lane-8ball-mjg", "lane-trae", "lane-dj-squeaky"],

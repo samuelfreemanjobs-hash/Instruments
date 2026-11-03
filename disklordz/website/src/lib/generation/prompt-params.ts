@@ -374,6 +374,19 @@ export function resolveDrumParams(
     clapWide *= 1.05;
   }
   if (/\b(three 6 mafia|36 mafia|three six)\b/.test(p)) snareSnap *= 1.08;
+  if (/\b(dogg pound|dpg gangsta)\b/.test(p)) {
+    clapWide *= 1.06;
+    snareBody *= 1.05;
+  }
+  if (/\b(90s snoop|snoop dogg type|snoop pocket)\b/.test(p)) {
+    hatDecay *= 1.06;
+    snareSnap *= 0.92;
+  }
+  if (/\b(dre day|90s dre|chronic beat)\b/.test(p)) {
+    kickDecay *= 0.94;
+    snareBody *= 1.05;
+  }
+  if (/\b(battlecat|dj battlecat|battle cat)\b/.test(p)) rimMetal *= 1.08;
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;

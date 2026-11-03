@@ -115,6 +115,15 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **DJ-QUIK** | `lane-dj-quik` | 92–108 | Funk pocket, shuffle rim |
 | **NIPSEY-HUSSLE** | `lane-nipsey-hussle` | 85–100 | Triumphant polished west |
 
+## G-funk / 90s West (Snoop / Dre / DPG)
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **DOGG-POUND** | `lane-dogg-pound` | 88–98 | DPG gangsta G-funk |
+| **SNOOP-90S** | `lane-snoop-90s` | 88–96 | Laid-back 90s Snoop pocket |
+| **DRE-DAY-90S** | `lane-dre-day-90s` | 90–100 | Chronic / Dre Day knock |
+| **DJ-BATTLECAT** | `lane-dj-battlecat` | 88–102 | Battlecat funk + DJ shuffle |
+
 ## Strip / club anthems
 
 | Lane ID | Preset id | BPM hint | Notes |
