@@ -15,6 +15,7 @@
 | **Integrations (35 OSS)** | [integrations/ARCHITECTURE.md](integrations/ARCHITECTURE.md) | `./scripts/setup-open-source-integrations.sh` |
 | **Agent fleet (31)** | [agents/ARCHITECTURE.md](agents/ARCHITECTURE.md) · [../DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) | `./scripts/run-agent-fleet-now.sh` |
 | **DAW inbox** | [daw-inbox/ARCHITECTURE.md](daw-inbox/ARCHITECTURE.md) | `cd daw-inbox && npm start` |
+| **Phonk Box** (808 Lab hardware) | [phonk-box/ARCHITECTURE.md](phonk-box/ARCHITECTURE.md) | `python phonk_engine.py --self-test` in `phonk-box/engine/` |
 | **Antigravity bridge** | [antigravity/ARCHITECTURE.md](antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **META charter** | [agents/charter/ARCHITECTURE.md](agents/charter/ARCHITECTURE.md) | `./scripts/sync-meta-llm-charter.sh` |
 
