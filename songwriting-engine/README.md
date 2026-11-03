@@ -1,6 +1,6 @@
 # Antigravity Songwriting Engine
 
-An isolated MIDI-first composition engine inside the APC checkout. The engine is independent of APC's JUCE plugin templates and currently provides a deterministic four-track generator, canonical JSON projects, chord voicing selection, and Type 0/Type 1 MIDI export with re-import validation.
+An isolated MIDI-first composition engine, developed alongside the DiskLordz 808 Lab and MPC500 tooling in this repo. It currently provides a deterministic four-track generator, canonical JSON projects, chord voicing selection, and Type 0/Type 1 MIDI export with re-import validation.
 
 ## Quick start on Windows
 
