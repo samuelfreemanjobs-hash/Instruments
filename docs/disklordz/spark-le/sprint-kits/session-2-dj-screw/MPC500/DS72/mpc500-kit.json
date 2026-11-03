@@ -1,0 +1,80 @@
+{
+  "format": "DISKLORDZ_MPC500_KIT",
+  "version": 1,
+  "lane": "DJ-SCREW",
+  "bpm": 72,
+  "code": "DS72",
+  "pads": [
+    {
+      "pad": "A01",
+      "role": "808_sub",
+      "sampleName": "DS72_01SUB",
+      "source": "OneShots/01_Sub_Thick.wav",
+      "targetLufs": -16
+    },
+    {
+      "pad": "A02",
+      "role": "808_knock",
+      "sampleName": "DS72_02KNK",
+      "source": "OneShots/02_Knock_Soft.wav",
+      "targetLufs": -17
+    },
+    {
+      "pad": "A03",
+      "role": "snare_body",
+      "sampleName": "DS72_03SNR",
+      "source": "OneShots/03_Snare_Body.wav",
+      "targetLufs": -15
+    },
+    {
+      "pad": "A04",
+      "role": "snare_snap_clap",
+      "sampleName": "DS72_04CLP",
+      "source": "OneShots/04_Clap_Dusty.wav",
+      "targetLufs": -16
+    },
+    {
+      "pad": "A05",
+      "role": "hat_closed",
+      "sampleName": "DS72_05CHH",
+      "source": "OneShots/05_Hat_Dull.wav",
+      "targetLufs": -18
+    },
+    {
+      "pad": "A06",
+      "role": "hat_open",
+      "sampleName": "DS72_06OHH",
+      "source": "OneShots/06_Hat_Air.wav",
+      "targetLufs": -18
+    },
+    {
+      "pad": "A07",
+      "role": "rim_perc",
+      "sampleName": "DS72_07RIM",
+      "source": "OneShots/07_Rim.wav",
+      "targetLufs": -17
+    },
+    {
+      "pad": "A08",
+      "role": "cowbell_fx",
+      "sampleName": "DS72_08FX",
+      "source": "OneShots/08_FX.wav",
+      "targetLufs": -17
+    }
+  ],
+  "loops": [
+    {
+      "sampleName": "DS72_L1TOPS",
+      "source": "Loops/Tops_Kickless_2bar.wav",
+      "bars": 2
+    },
+    {
+      "sampleName": "DS72_L2SLOW",
+      "source": "Loops/Slowed_RNB_2bar.wav",
+      "bars": 2
+    }
+  ],
+  "totalBytes": 1318002,
+  "ramBudgetBytes": 16777216,
+  "warnings": []
+}
