@@ -27,7 +27,13 @@ firmware/
 
 Until sketches land, use **virtual MIDI** (loopMIDI on Windows) + a second keyboard or [sendmidi](https://github.com/gbevin/SendMIDI) for engine dev.
 
+## Wiring & enclosure
+
+- Prototype on **breadboard** first; **enclosure + connectors** when layout is stable ([docs/ENCLOSURE-AND-CONNECTORS.md](../docs/ENCLOSURE-AND-CONNECTORS.md), budget **$8–15**).
+- Prefer **JST-XH** or screw terminals between MCU board and button harness before gluing anything into a box.
+
 ## Safety
 
 - 3.3 V logic; arcade buttons to GND with `INPUT_PULLUP`.
 - No mains; USB bus power only.
+- Panel-mount **USB extension** so the MCU socket is not flexed when plugging/unplugging.

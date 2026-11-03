@@ -8,12 +8,22 @@ Approximate prices (2026 retail); shop sales vary.
 | 8 | Arcade buttons 24mm | Drum pads | 12–18 |
 | 1 | Rotary encoder + knob | BPM / param | 4–8 |
 | 3 | Tact switches | Play / stop / mode | 2 |
-| 1 | USB cable (micro/B) | Power + data | 5 |
 | 1 | Protoboard or perf PCB | Wiring | 5–10 |
-| 1 | Enclosure (1590BB drill or 3D print) | Hands | 10–25 |
 | — | Wire, resistors (10k pull-ups) | Debounce | 5 |
 
-**Total:** ~**$65–95** if you skip LEDs; add **16 LEDs** for step display → ~+$15 (still near $100).
+**5. Enclosure + connectors (defer until stable)** | See [ENCLOSURE-AND-CONNECTORS.md](ENCLOSURE-AND-CONNECTORS.md) | **$8–15** |
+
+| Item | Notes | ~$ |
+|------|--------|-----|
+| Project box or reused shell | Drill after cardboard mock | 0–8 |
+| USB cable / panel pigtail | Only if not using cable you own | 0–5 |
+| JST-XH or screw terminals | Button harness, serviceability | 3–7 |
+
+**Phase 1 desk total (no box):** ~**$45–70** + PC.  
+**With item 5 enclosed:** add **$8–15** → still under **~$100** for core hardware.  
+Add **16 step LEDs** → ~+$15.
+
+**Total (full enclosed, no LEDs):** ~**$55–85** typical.
 
 ## Not in BOM (you already have)
 
