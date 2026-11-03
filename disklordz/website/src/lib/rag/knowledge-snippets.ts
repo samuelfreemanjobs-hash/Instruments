@@ -108,6 +108,11 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
     tags: ["lane-metro-boomin", "lane-future", "lane-king-louie", "lane-sp1200-chain", "lane-splice-trap", "pluggnb"],
   },
   {
+    id: "lane-zeek-wheezy-tay-bay",
+    text: "DJ Zeek lane-dj-zeek; Celly Cel lane-celly-cel; Tone Capone lane-tone-capone; Wheezy lane-wheezy; Tay Keith lane-tay-keith. Style archetypes only.",
+    tags: ["lane-dj-zeek", "lane-celly-cel", "lane-tone-capone", "lane-wheezy", "lane-tay-keith", "tay keith", "wheezy"],
+  },
+  {
     id: "lane-boss-phonk-plug",
     text: "Boss/phonk/plug: Rick Ross lane-rick-ross, BMF lane-bmf-meech, trap or die lane-trap-or-die, Jeezy mixtape lane-jeezy-mixtape, DJ Cannon lane-dj-cannon, Skinny Pimp lane-skinny-pimp, OG phonk lane-og-phonk, drift phonk lane-drift-phonk (midnight-circuit alias), wave lane-wave, wave phonk lane-wave-phonk, Carti lane-playboi-carti, Pierre lane-pierre-bourne. Archetypes only.",
     tags: ["lane-rick-ross", "lane-trap-or-die", "lane-drift-phonk", "lane-playboi-carti", "lane-pierre-bourne", "phonk", "wave"],

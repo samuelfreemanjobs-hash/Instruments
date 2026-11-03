@@ -105,6 +105,8 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | Lane ID | Preset id | BPM hint | Notes |
 |---------|-----------|----------|--------|
 | **BAY-HUSTLER-RAP** | `lane-bay-hustler-rap` | 90–108 | Bay street hustle (distinct from hyphy trap pack) |
+| **CELLY-CEL** | `lane-celly-cel` | 85–102 | Bay mob heat |
+| **TONE-CAPONE** | `lane-tone-capone` | 88–104 | South bay mob grit |
 | **DJ-QUIK** | `lane-dj-quik` | 92–108 | Funk pocket, shuffle rim |
 | **NIPSEY-HUSSLE** | `lane-nipsey-hussle` | 85–100 | Triumphant polished west |
 
@@ -158,6 +160,7 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **TRAP-OR-DIE** | `lane-trap-or-die` | 68–76 | Extreme trap-or-die (vs `lane-jeezy` album polish) |
 | **JEEZY-MIXTAPE** | `lane-jeezy-mixtape` | 130–150 | Raw mixtape-era grit |
 | **DJ-CANNON** | `lane-dj-cannon` | 95–115 | Southern club bounce |
+| **DJ-ZEEK** | `lane-dj-zeek` | 95–115 | Southern DJ party bounce |
 
 ## Memphis OG / underground
 
@@ -191,6 +194,8 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **ORGANIZED-NOIZE** | `lane-organized-noize` | 85–105 | Live south funk pocket |
 | **LONDON-ON-DA-TRACK** | `lane-london-on-da-track` | 130–155 | Melodic clap bounce |
 | **TM88** | `lane-tm88` | 130–160 | Nightmare trap |
+| **WHEEZY** | `lane-wheezy` | 130–160 | Atl slime bounce |
+| **TAY-KEITH** | `lane-tay-keith` | 130–160 | Memphis cannon snap |
 
 ## Plugg / pluggnb / modern NO
 

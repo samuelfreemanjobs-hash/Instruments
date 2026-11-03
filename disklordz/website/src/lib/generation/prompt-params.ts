@@ -339,6 +339,11 @@ export function resolveDrumParams(
   }
   if (/\b(vaportape)\b/.test(p)) kickDecay *= 1.1;
   if (/\b(capsun|origin sounds|splice trap|stock trap)\b/.test(p)) hatBright *= 1.05;
+  if (/\b(dj zeek|zeek)\b/.test(p)) clapWide *= 1.07;
+  if (/\b(celly cel|celly|heat in the bay)\b/.test(p)) snareBody *= 1.06;
+  if (/\b(tone capone|capone mob)\b/.test(p)) rimMetal *= 1.06;
+  if (/\b(wheezy)\b/.test(p)) snareSnap *= 1.06;
+  if (/\b(tay keith|first take)\b/.test(p)) snareSnap *= 1.12;
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;
