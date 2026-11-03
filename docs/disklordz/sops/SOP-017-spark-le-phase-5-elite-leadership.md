@@ -28,7 +28,7 @@ The business **leads ahead of demand** — predictable elite drops, clear roadma
 
 | Step | Action |
 |------|--------|
-| 1 | Lane audit: core lanes + rotating producer lane (JEEZY, GUCCI-MANE, MIKE-WILL, DRUMMA-BOY, ZAYTOVEN, TI, DJ-DOOMP) @ same BPM — see [LANES.md](../spark-le/LANES.md) |
+| 1 | **Family audit** per [ELITE-PERFORMANCE.md](../spark-le/ELITE-PERFORMANCE.md) — one family/week; 2 lanes @ same BPM |
 | 2 | Rotate keepers (demote bottom 2 if corpus full) |
 | 3 | Update [ROADMAP.md](../../ROADMAP.md) spark-le bullet ([SOP-008](SOP-008-roadmap-and-progress.md)) |
 | 4 | Retrospective: revise one phase SOP if repeated friction |

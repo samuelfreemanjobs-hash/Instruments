@@ -1,0 +1,64 @@
+# SparkLE elite performance standard
+
+**Version:** 1.0 · Companion to [SOP-012](../sops/SOP-012-spark-le-elite-system-charter.md) and phase SOPs 013–017.
+
+## Purpose
+
+Define **professional-grade** outcomes for hard **gangsta trap**, phonk, Memphis, southern, regional trap, and hardware lanes on **SparkLE** — loops and one-shots that hold up in real sessions, not just in a catalog.
+
+## Performance tiers
+
+| Tier | Scope | Elite bar |
+|------|--------|-----------|
+| **P0 — Session** | One SparkLE sit | 8 pads mapped; beat in ≤20 min; 30s export; review template filed |
+| **P1 — Pack** | One zip / batch | Manifest + lineage; contracts green; ≥1 keeper or tagged learnings |
+| **P2 — Lane** | One registry lane | 3+ keepers; stable params; blind A/B wins vs last default |
+| **P3 — Family** | Memphis / ATL / South / Hardware / Regional / Rage | Monthly audit @ fixed BPM; keeper rate ≥35% |
+| **P4 — System** | Full registry | Weekly cadence ([SOP-017](../sops/SOP-017-spark-le-phase-5-elite-leadership.md)); no red CI; RAG synced |
+
+## Lane families (rotation)
+
+Rotate **one family per week** in producer review so the catalog stays elite everywhere, not only Atlanta.
+
+| Family | Lane IDs (manifest) | Loop priority |
+|--------|---------------------|---------------|
+| **Memphis** | DJ-PAUL, THREE-SIX-MAFIA, JUICY-J, SHAWTY-PIMP, EST-G, YOUNG-DOLPH | Crunch loops + cowbell tops |
+| **Atlanta** | DJ-TOOMP, ZAYTOVEN, D-RICH, SHAWTY-REDD, GUCCI-MANE, MIKE-WILL, JEEZY | Trunk bounce + hat flutter loops |
+| **South / Texas** | UGK, PIMP-C, DRUMMA-BOY, TI | Pocket loops, rim rides |
+| **Chicago** | YOUNG-CHOP | Drill snap loops, kick-less tops |
+| **Hardware** | DR-660, TR-808-CLONE | One-shot fidelity; align TR-808-CLONE with repo clone voice |
+| **Regional trap** | BAY-AREA-TRAP, DETROIT-TRAP | Bright vs industrial loop stems |
+| **Rage** | RAGE-TRAP | Short 808 + frantic hat loop stems |
+| **Core** | GANGSTA-TRAP, PHONK-TRAP (`midnight-circuit`) | Hard menace vs phonk dirt |
+
+Full preset ids: [LANES.md](LANES.md) · code: `disklordz/website/src/lib/spark-le/lane-registry.ts`.
+
+## Professional checklist (every pack)
+
+- [ ] **Legal:** procedural/original only; keepers cleared
+- [ ] **808:** sub mono-compatible; clone lane matches `lane-tr-808-clone` contract
+- [ ] **Gangsta trap:** knock (pad 2) audibly separate from sub on phone speaker
+- [ ] **Loops:** 2-bar minimum; kick-less stem included for Shawty Redd–style stacking
+- [ ] **Manifest:** `lane`, `family`, `generator_version`, `lineage`
+- [ ] **SparkLE:** overflow folder for 660/808 rim/cowbell alternates
+
+## KPI targets (Phase 5 operating)
+
+| KPI | Target |
+|-----|--------|
+| Median time-to-first-beat | ≤15 min |
+| Keeper rate (kits) | ≥35% rising toward 50% on flagship lanes |
+| Contract failures / merge | 0 on main |
+| Review sessions / month | ≥4 |
+| Lane family coverage / quarter | All families audited once |
+
+## Continuous improvement (elite)
+
+1. **Registry-first** — new lane = one row in `lane-registry.ts` + LANES.md family table + one RAG snippet.
+2. **One fix per week** — highest tag count from reviews ([SOP-015](../sops/SOP-015-spark-le-phase-3-taste-keepers.md)).
+3. **A/B before default swap** ([SOP-016](../sops/SOP-016-spark-le-phase-4-lineage.md)).
+4. **Bump** `schema_version` in manifest when pad law or family taxonomy changes.
+
+## Related
+
+- [ARCHITECTURE.md](ARCHITECTURE.md) · [SOP-014](../sops/SOP-014-spark-le-phase-2-trust-contracts.md)

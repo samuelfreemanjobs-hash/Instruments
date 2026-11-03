@@ -1,51 +1,86 @@
 # SparkLE lane reference (style archetypes)
 
-**Disclaimer:** These are **original procedural drum archetypes** inspired by well-known southern/trap production *styles*. They are **not** affiliated with, endorsed by, or samples of any artist or producer. Use for internal lane IDs, manifests, and generation params only.
+**Disclaimer:** Original procedural drum **archetypes** inspired by regional styles. **Not** affiliated with, endorsed by, or samples of any artist, producer, or brand.
+
+**Source of truth (generation):** `disklordz/website/src/lib/spark-le/lane-registry.ts`  
+**Elite standard:** [ELITE-PERFORMANCE.md](ELITE-PERFORMANCE.md)
 
 All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-elite-system-charter.md).
 
 ## Core lanes (genre)
 
-| Lane ID | Preset id (SaaS) | BPM hint | Sonic focus |
-|---------|------------------|----------|-------------|
-| **GANGSTA-TRAP** | *(use producer lanes below or `mpc-ready-808`)* | 130–160 | Hard knock, clap stack, menace |
-| **PHONK-TRAP** | `midnight-circuit` | 140–160 | Dirt, cowbell, memphis snap |
-| **VINTAGE-SOUTH** | `lane-ti`, `lane-drumma-boy` | 72–104 | Rim, bounce, body snare |
+| Lane ID | Preset id | BPM hint | Sonic focus |
+|---------|-----------|----------|-------------|
+| **GANGSTA-TRAP** | `lane-mike-will`, `lane-jeezy`, etc. | 130–160 | Hard knock, clap stack, menace |
+| **PHONK-TRAP** | `midnight-circuit` | 140–160 | Dirt, cowbell, Memphis snap |
+| **VINTAGE-SOUTH** | `lane-ti`, `lane-drumma-boy`, `lane-ugk` | 72–104 | Rim, bounce, body snare |
 
-## Producer / artist archetype lanes
+## Memphis
 
-| Lane ID | Preset id | BPM hint | Pad emphasis | Loop / groove notes |
-|---------|-----------|----------|--------------|---------------------|
-| **JEEZY** | `lane-jeezy` | 68–76 / 136–152 | Long 808 (1), dark knock (2), anthem snare (3–4) | Slow march or double-time; space for ad-libs |
-| **GUCCI-MANE** | `lane-gucci-mane` | 70–78 / 140–156 | Bouncy sub, quirky perc (7–8), wide clap (4) | Swung bounce; odd percussion on 8 |
-| **MIKE-WILL** | `lane-mike-will` | 130–160 | Tight tick (2), hard snap (4), FX/tag slot (8) | Minimal hat grid, heavy downbeats |
-| **DRUMMA-BOY** | `lane-drumma-boy` | 72–88 / 144–176 | Crack snare (4), rim (7), orchestral hit / FX (8) | Anthem builds; snare cracks |
-| **ZAYTOVEN** | `lane-zaytoven` | 130–155 | Lighter knock (2), flutter hats (5–6), shaker-like (7) | Fast hat patterns; ATL pocket |
-| **TI** | `lane-ti` | 80–100 / 160–200 | Clean stack (3–4), confident clap width, crisp hats | King-of-the-South swagger; less mud |
-| **DJ-DOOMP** | `lane-dj-doomp` | 65–90 / 130–180 | Low muddy sub (1), crushed snare (3–4), dark hats | Slow Memphis crunch / strip cadence *(label as you use it; adjust brief if this is a different reference)* |
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **DJ-PAUL** | `lane-dj-paul` | 65–90 / 130–180 | Horror-crunch, dark hats |
+| **THREE-SIX-MAFIA** | `lane-three-six-mafia` | 65–95 | Hypnotic crush, perc on 8 |
+| **JUICY-J** | `lane-juicy-j` | 130–160 | Dark bounce, triplet hat space |
+| **SHAWTY-PIMP** | `lane-shawty-pimp` | 60–85 | Slow underground strip |
+| **EST-G** | `lane-est-g` | 130–155 | Hard street trap |
+| **YOUNG-DOLPH** | `lane-young-dolph` | 130–160 | Hard Memphis bounce |
 
-## Mapping to Disklordz `artistLane` codes
+## Atlanta
 
-| artistLane | Lanes |
-|------------|--------|
-| `DL-JEEZY` | JEEZY |
-| `DL-GUCCI` | GUCCI-MANE |
-| `DL-MIKEWILL` | MIKE-WILL |
-| `DL-DRUMMA` | DRUMMA-BOY |
-| `DL-ZAYTOVEN` | ZAYTOVEN |
-| `DL-TI` | TI |
-| `DL-DOOMP` | DJ-DOOMP |
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **DJ-TOOMP** | `lane-dj-toomp` | 65–80 / 130–160 | Trunk ATL 808 *(alias: `lane-dj-doomp` → toomp)* |
+| **ZAYTOVEN** | `lane-zaytoven` | 130–155 | Flutter hats, pocket |
+| **D-RICH** | `lane-d-rich` | 130–155 | Trunk club weight (Zaytoven-adjacent) |
+| **SHAWTY-REDD** | `lane-shawty-redd` | 70–88 / 140–176 | Dirty south **loops**, swing clap stack |
+| **GUCCI-MANE** | `lane-gucci-mane` | 70–78 / 140–156 | Bounce, wide clap |
+| **MIKE-WILL** | `lane-mike-will` | 130–160 | Minimal hats, hard snap |
+| **JEEZY** | `lane-jeezy` | 68–76 / 136–152 | Anthem 808 weight |
+| **DRUMMA-BOY** | `lane-drumma-boy` | 72–88 / 144–176 | Anthem crack *(also south)* |
+
+## South / Texas
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **UGK** | `lane-ugk` | 70–90 / 140–180 | Houston pocket |
+| **PIMP-C** | `lane-pimp-c` | 68–88 | Texas trunk, body snare |
+| **TI** | `lane-ti` | 80–100 | Swagger, clean stack |
+
+## Chicago
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **YOUNG-CHOP** | `lane-young-chop` | 130–150 | Drill-era pressure |
+
+## Hardware
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **DR-660** | `lane-dr-660` | 90–120 | Machine punch, short decay |
+| **TR-808-CLONE** | `lane-tr-808-clone` | any | Align with **repo 808 clone** voice (SP-1200 / factory 808 path) |
+
+## Regional trap & rage
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **BAY-AREA-TRAP** | `lane-bay-area-trap` | 85–110 / 170+ | Hyphy-adjacent brightness |
+| **DETROIT-TRAP** | `lane-detroit-trap` | 130–160 | Industrial street snap |
+| **RAGE-TRAP** | `lane-rage-trap` | 140–160 | Short 808, frantic hats |
+
+## artistLane codes
+
+See `artistLane` on each preset in `lane-registry.ts` (e.g. `DL-TOOMP`, `DL-DJPAUL`, `DL-TR808`).
 
 ## Contract hints (Phase 2)
 
-See [SOP-014](../sops/SOP-014-spark-le-phase-2-trust-contracts.md). Producer lanes inherit core contracts with offsets:
+| Family | Emphasis |
+|--------|----------|
+| Memphis | SNARE-STACK dirt; dark HAT-CLARITY |
+| Atlanta / gangsta | KNOCK vs SUB separation; clapWide on trunk lanes |
+| Shawty Redd | LOOP-GRID swing; body snare |
+| Hardware | Short KNOCK decay; DR-660 vs 808-CLONE peak bands |
+| Rage | Minimal hatDecay; low 808 sustain |
+| Bay vs Detroit | Bay brighter hats; Detroit harder snap |
 
-- **JEEZY / DRUMMA-BOY:** longer 808 decay band; snare crack peak on pad 4  
-- **ZAYTOVEN:** HAT-CLARITY on 5–6 (flutter) stricter grid  
-- **MIKE-WILL:** KNOCK transient shorter; less sub on pad 2  
-- **GUCCI-MANE:** clapWide manifest target higher  
-- **DJ-DOOMP:** SNARE-STACK dirt allowed; HAT-CLARITY relaxed vs TI  
-
-## Related
-
-- [SOP-012](../sops/SOP-012-spark-le-elite-system-charter.md) · [prompt-params.ts](../../../disklordz/website/src/lib/generation/prompt-params.ts) · [presets.ts](../../../disklordz/website/src/lib/presets.ts)
+Details: [SOP-014](../sops/SOP-014-spark-le-phase-2-trust-contracts.md) · [ELITE-PERFORMANCE.md](ELITE-PERFORMANCE.md)

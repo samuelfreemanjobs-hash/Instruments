@@ -3,6 +3,11 @@ import { createHash } from "crypto";
 import type { GenerationSpec } from "@/lib/generation/generation-spec";
 import { wildnessJitterScale } from "@/lib/generation/generation-spec";
 import { getPreset } from "@/lib/presets";
+import {
+  applySparkLaneNudges,
+  resolveSparkPresetId,
+  sparkLanePresetBases,
+} from "@/lib/spark-le/lane-registry";
 
 export type DrumParams = {
   kickPitch: number;
@@ -67,76 +72,7 @@ const PRESET_BASE: Record<string, Partial<DrumParams>> = {
     rimMetal: 0.5,
     clapWide: 0.42,
   },
-  "lane-jeezy": {
-    kickPitch: 39,
-    kickDecay: 0.38,
-    snareBody: 0.42,
-    snareSnap: 0.38,
-    hatDecay: 0.028,
-    hatBright: 0.32,
-    rimMetal: 0.4,
-    clapWide: 0.38,
-  },
-  "lane-gucci-mane": {
-    kickPitch: 42,
-    kickDecay: 0.3,
-    snareBody: 0.28,
-    snareSnap: 0.48,
-    hatDecay: 0.02,
-    hatBright: 0.48,
-    rimMetal: 0.55,
-    clapWide: 0.52,
-  },
-  "lane-mike-will": {
-    kickPitch: 44,
-    kickDecay: 0.24,
-    snareBody: 0.22,
-    snareSnap: 0.52,
-    hatDecay: 0.016,
-    hatBright: 0.5,
-    rimMetal: 0.45,
-    clapWide: 0.44,
-  },
-  "lane-drumma-boy": {
-    kickPitch: 46,
-    kickDecay: 0.32,
-    snareBody: 0.38,
-    snareSnap: 0.5,
-    hatDecay: 0.024,
-    hatBright: 0.42,
-    rimMetal: 0.62,
-    clapWide: 0.48,
-  },
-  "lane-zaytoven": {
-    kickPitch: 48,
-    kickDecay: 0.26,
-    snareBody: 0.26,
-    snareSnap: 0.42,
-    hatDecay: 0.012,
-    hatBright: 0.46,
-    rimMetal: 0.48,
-    clapWide: 0.4,
-  },
-  "lane-ti": {
-    kickPitch: 47,
-    kickDecay: 0.29,
-    snareBody: 0.32,
-    snareSnap: 0.44,
-    hatDecay: 0.02,
-    hatBright: 0.52,
-    rimMetal: 0.58,
-    clapWide: 0.5,
-  },
-  "lane-dj-doomp": {
-    kickPitch: 35,
-    kickDecay: 0.48,
-    snareBody: 0.45,
-    snareSnap: 0.58,
-    hatDecay: 0.035,
-    hatBright: 0.22,
-    rimMetal: 0.38,
-    clapWide: 0.32,
-  },
+  ...sparkLanePresetBases(),
 };
 
 function hashSeed(prompt: string, presetId: string): number {
@@ -160,14 +96,15 @@ export function resolveDrumParams(
   spec?: GenerationSpec,
   variation?: VariationContext,
 ): DrumParams {
-  const base = PRESET_BASE[presetId] ?? PRESET_BASE["mpc-ready-808"];
+  const resolvedPresetId = resolveSparkPresetId(presetId);
+  const base = PRESET_BASE[resolvedPresetId] ?? PRESET_BASE["mpc-ready-808"];
   let seedInput = spec
-    ? `${presetId}::${prompt}::${spec.bpm}::${spec.key}::${spec.wildness}::${spec.engine}`
+    ? `${resolvedPresetId}::${prompt}::${spec.bpm}::${spec.key}::${spec.wildness}::${spec.engine}`
     : prompt;
   if (variation) {
     seedInput += `::batch=${variation.batchId}::v=${variation.variationIndex}`;
   }
-  const seed = hashSeed(seedInput, presetId);
+  const seed = hashSeed(seedInput, resolvedPresetId);
   const jitterScale = spec ? wildnessJitterScale(spec) : 1;
   const jitter = (i: number) =>
     (((seed >> (i * 4)) & 0xf) / 0xf - 0.5) * jitterScale;
@@ -211,10 +148,42 @@ export function resolveDrumParams(
     hatBright *= 1.08;
     clapWide *= 1.05;
   }
-  if (/\b(doomp|doom|memphis crunch|strip)\b/.test(p)) {
-    kickDecay *= 1.15;
-    hatBright *= 0.8;
+  if (/\b(toomp|dj toomp|trunk|memphis crunch|strip)\b/.test(p)) {
+    kickDecay *= 1.12;
+    hatBright *= 0.82;
+    snareSnap *= 1.08;
+  }
+  if (/\b(dj paul|three 6|36 mafia|hypnotize)\b/.test(p)) {
+    snareSnap *= 1.12;
+    hatBright *= 0.85;
+  }
+  if (/\b(juicy j|triplet|dark memphis)\b/.test(p)) snareSnap *= 1.06;
+  if (/\b(shawty pimp|underground memphis)\b/.test(p)) kickDecay *= 1.12;
+  if (/\b(shawty redd|dirty south loop|swing loop)\b/.test(p)) {
+    snareBody *= 1.08;
+    clapWide *= 1.06;
+  }
+  if (/\b(young chop|chicago drill|drill)\b/.test(p)) {
     snareSnap *= 1.1;
+    hatDecay *= 0.88;
+  }
+  if (/\b(est g|est gee|memphis street)\b/.test(p)) snareSnap *= 1.08;
+  if (/\b(d-rich|d rich|trunk bounce)\b/.test(p)) {
+    kickDecay *= 1.05;
+    snareSnap *= 1.05;
+  }
+  if (/\b(ugk|houston|pimp c|texas trunk)\b/.test(p)) {
+    rimMetal *= 1.08;
+    kickDecay *= 1.05;
+  }
+  if (/\b(young dolph|dolph|paper route)\b/.test(p)) snareSnap *= 1.05;
+  if (/\b(dr-660|dr660|drum machine)\b/.test(p)) kickDecay *= 0.9;
+  if (/\b(tr-808|808 clone|real 808)\b/.test(p)) kickPitch -= 2;
+  if (/\b(bay area|hyphy|oakland|sf trap)\b/.test(p)) hatBright *= 1.1;
+  if (/\b(detroit trap|detroit street|industrial trap)\b/.test(p)) snareSnap *= 1.08;
+  if (/\b(rage|rage trap|hyper trap)\b/.test(p)) {
+    hatDecay *= 0.85;
+    kickDecay *= 0.92;
   }
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
@@ -225,15 +194,26 @@ export function resolveDrumParams(
   const preset = getPreset(presetId);
   if (preset?.artistLane === "DL002") snareSnap *= 1.05;
   if (preset?.artistLane === "DL006") kickDecay *= 1.1;
-  if (preset?.artistLane === "DL-JEEZY") kickDecay *= 1.05;
-  if (preset?.artistLane === "DL-GUCCI") clapWide *= 1.06;
-  if (preset?.artistLane === "DL-MIKEWILL") hatDecay *= 0.92;
-  if (preset?.artistLane === "DL-DRUMMA") snareSnap *= 1.04;
-  if (preset?.artistLane === "DL-ZAYTOVEN") hatDecay *= 0.88;
-  if (preset?.artistLane === "DL-DOOMP") {
-    kickDecay *= 1.08;
-    hatBright *= 0.9;
-  }
+
+  const laneState = {
+    kickPitch,
+    kickDecay,
+    snareBody,
+    snareSnap,
+    hatDecay,
+    hatBright,
+    rimMetal,
+    clapWide,
+  };
+  applySparkLaneNudges(presetId, laneState);
+  kickPitch = laneState.kickPitch;
+  kickDecay = laneState.kickDecay;
+  snareBody = laneState.snareBody;
+  snareSnap = laneState.snareSnap;
+  hatDecay = laneState.hatDecay;
+  hatBright = laneState.hatBright;
+  rimMetal = laneState.rimMetal;
+  clapWide = laneState.clapWide;
 
   if (spec) {
     const bpmFactor = spec.bpm / 120;

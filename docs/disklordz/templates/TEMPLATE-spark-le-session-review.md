@@ -1,7 +1,8 @@
 # SparkLE session review (copy per session)
 
 **Date:** YYYY-MM-DD  
-**Lane:** `GANGSTA-TRAP` | `PHONK-TRAP` | `VINTAGE-SOUTH` | `JEEZY` | `GUCCI-MANE` | `MIKE-WILL` | `DRUMMA-BOY` | `ZAYTOVEN` | `TI` | `DJ-DOOMP` (see [LANES.md](../spark-le/LANES.md))  
+**Lane ID:** (from [LANES.md](../spark-le/LANES.md) — e.g. `DJ-TOOMP`, `SHAWTY-REDD`, `TR-808-CLONE`, `RAGE-TRAP`)  
+**Family:** memphis | atlanta | south-texas | chicago | hardware | regional-trap | rage  
 **BPM:**  
 **batch_id:**  
 **generator_version:**  

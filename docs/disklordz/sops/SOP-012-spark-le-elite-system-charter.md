@@ -1,6 +1,6 @@
 # SOP-012 — SparkLE elite lanes system charter
 
-**Version:** 1.1 · **Improve this SOP:** after each phase retrospective; bump version in footer.
+**Version:** 1.2 · **Improve this SOP:** after each phase retrospective; bump version in footer.
 
 ## Purpose
 
@@ -16,21 +16,21 @@ This is the **north star** document. Each maturity **phase** has its own SOP (01
 | **PHONK-TRAP** | Memphis dirt, cowbell, distorted snap, drift energy | Generic lo-fi |
 | **VINTAGE-SOUTH** | 90s–00s southern rap pocket, rim, fat snare, bounce | Modern cyber-only hats |
 
-### Producer archetype lanes (original drums; not affiliated)
+### Lane registry (families)
 
-Full BPM/pad notes: **[spark-le/LANES.md](../spark-le/LANES.md)**
+**Catalog:** [spark-le/LANES.md](../spark-le/LANES.md) · **Elite KPIs:** [spark-le/ELITE-PERFORMANCE.md](../spark-le/ELITE-PERFORMANCE.md) · **Code:** `lane-registry.ts`
 
-| Lane ID | Archetype focus |
-|---------|-----------------|
-| **JEEZY** | Trap-or-die weight: long dark 808, anthem snare, march / double-time |
-| **GUCCI-MANE** | Bouncy ATL trap, wide clap, quirky perc on pad 8 |
-| **MIKE-WILL** | Modern hard trap: tight knock, minimal hats, FX/tag pad 8 |
-| **DRUMMA-BOY** | Southern anthem cracks, rim, big FX/orchestral hit slot |
-| **ZAYTOVEN** | Flutter hats, lighter knock, ATL pocket |
-| **TI** | Swagger bounce, clean clap stack, crisp south (less mud) |
-| **DJ-DOOMP** | Slow Memphis crunch, crushed snare, dark tops *(your label — tune brief in LANES.md if needed)* |
+| Family | Examples (lane IDs) |
+|--------|---------------------|
+| **Memphis** | DJ-PAUL, THREE-SIX-MAFIA, JUICY-J, SHAWTY-PIMP, EST-G, YOUNG-DOLPH |
+| **Atlanta** | **DJ-TOOMP**, ZAYTOVEN, D-RICH, SHAWTY-REDD, GUCCI-MANE, MIKE-WILL, JEEZY, DRUMMA-BOY |
+| **South / Texas** | UGK, PIMP-C, TI |
+| **Chicago** | YOUNG-CHOP |
+| **Hardware** | DR-660, **TR-808-CLONE** (repo 808 voice) |
+| **Regional trap** | BAY-AREA-TRAP, DETROIT-TRAP |
+| **Rage** | RAGE-TRAP |
 
-All lanes share: **8-pad SparkLE map**, **manifest**, **inbox discipline**, **review scores**.
+All lanes share: **8-pad SparkLE map**, **manifest**, **inbox discipline**, **review scores**, **family rotation** (elite performance doc).
 
 ## Maturity phases (which SOP to run)
 
@@ -95,8 +95,8 @@ When uncertain: **stop**, log in `humanpending.md` or issue, take the **defensib
 
 - Session template: [TEMPLATE-spark-le-session-review.md](../templates/TEMPLATE-spark-le-session-review.md)
 - Manifest example: [TEMPLATE-spark-le-manifest.json](../templates/TEMPLATE-spark-le-manifest.json)
-- Lane catalog: [spark-le/LANES.md](../spark-le/LANES.md)
-- Repo presets: `lane-jeezy`, `lane-gucci-mane`, `lane-mike-will`, `lane-drumma-boy`, `lane-zaytoven`, `lane-ti`, `lane-dj-doomp` + core packs in `disklordz/website/src/lib/presets.ts`
+- [spark-le/ARCHITECTURE.md](../spark-le/ARCHITECTURE.md) · [LANES.md](../spark-le/LANES.md) · [ELITE-PERFORMANCE.md](../spark-le/ELITE-PERFORMANCE.md)
+- All `lane-*` presets from `disklordz/website/src/lib/spark-le/lane-registry.ts`
 
 ## Success criteria (charter)
 
@@ -105,4 +105,4 @@ When uncertain: **stop**, log in `humanpending.md` or issue, take the **defensib
 - [ ] Safety table respected on last 5 changes
 - [ ] Phase SOP linked in PR when touching spark-le tooling
 
-**SOP-012 v1.1**
+**SOP-012 v1.2**
