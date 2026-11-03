@@ -104,8 +104,17 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
   },
   {
     id: "lane-houston-screw-ext",
-    text: "Houston: 90s lane-houston-90s, DJ Screw lane-dj-screw (matches disklordz-screw), Mike Dean/N.O. Joe lane-mike-dean-nojoe. Archetypes only.",
-    tags: ["lane-houston-90s", "lane-dj-screw", "lane-mike-dean-nojoe", "dj screw", "houston"],
+    text: "Houston eras: lane-houston-90s, lane-houston-1990s, lane-houston-2000s, lane-houston-modern, Fat Pat lane-fat-pat (alias lane-fat-phat). Screw lane-dj-screw, Mike Dean lane-mike-dean-nojoe. Archetypes only.",
+    tags: [
+      "lane-houston-90s",
+      "lane-houston-1990s",
+      "lane-houston-2000s",
+      "lane-houston-modern",
+      "lane-fat-pat",
+      "lane-dj-screw",
+      "lane-mike-dean-nojoe",
+      "houston",
+    ],
   },
   {
     id: "lane-producer-plugg-pack",

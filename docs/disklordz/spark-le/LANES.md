@@ -137,6 +137,10 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | Lane ID | Preset id | BPM hint | Notes |
 |---------|-----------|----------|--------|
 | **HOUSTON-90S** | `lane-houston-90s` | 70–88 | Classic H-town trunk |
+| **HOUSTON-1990S** | `lane-houston-1990s` | 68–86 | Early 90s SUC / trunk era |
+| **HOUSTON-2000S** | `lane-houston-2000s` | 72–92 | 2000s chopped-mainstream bounce |
+| **HOUSTON-MODERN** | `lane-houston-modern` | 130–160 | Modern H-town trap hybrid |
+| **FAT-PAT** | `lane-fat-pat` | 70–88 | Fat Pat type pocket (alias: `lane-fat-phat`) |
 | **DJ-SCREW** | `lane-dj-screw` | 60–95 | Chop-screw; also factory `disklordz-screw` |
 | **MIKE-DEAN-NOJOE** | `lane-mike-dean-nojoe` | 75–98 | Texas psychedelic trunk |
 

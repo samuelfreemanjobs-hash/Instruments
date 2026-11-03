@@ -245,6 +245,22 @@ export function resolveDrumParams(
     kickDecay *= 1.08;
     rimMetal *= 1.05;
   }
+  if (/\b(1990s houston|houston 1990s|early h-?town)\b/.test(p)) {
+    kickDecay *= 1.1;
+    rimMetal *= 1.08;
+  }
+  if (/\b(2000s houston|houston 2000s)\b/.test(p)) {
+    snareSnap *= 1.06;
+    clapWide *= 1.05;
+  }
+  if (/\b(modern houston|houston trap|new h-?town)\b/.test(p)) {
+    snareSnap *= 1.08;
+    hatDecay *= 0.9;
+  }
+  if (/\b(fat pat|fat phat|pat type)\b/.test(p)) {
+    rimMetal *= 1.1;
+    snareBody *= 1.06;
+  }
   if (/\b(lex luger|luger|brass trap)\b/.test(p)) snareSnap *= 1.12;
   if (/\b(dj screw|chop screw|screwed)\b/.test(p)) {
     kickDecay *= 1.15;
