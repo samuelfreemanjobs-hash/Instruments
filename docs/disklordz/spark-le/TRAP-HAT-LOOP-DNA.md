@@ -204,6 +204,26 @@ Kick/snare on separate stems for layering (Shawty Redd / strip anthem rule).
 | `wheezy-dropout` | WHEEZY |
 | `mustard-ratchet` | MUSTARD |
 | `outtatown-rage-16` | OUTTATOWN |
+| `trap-soul-sparse` | TRAP-SOUL / SZA |
+| `chill-trap-8ths` | CHILL-TRAP |
+| `majestic-broken` | MAJESTIC-CASUAL |
+
+### Trap soul / chill (`lane-trap-soul`, `lane-bryson-tiller`, `lane-sza`)
+
+| Element | Formula |
+|---------|---------|
+| Hats | Bar1–2: `x...x...x...x...` (8ths) or sparse 16ths; **no** rapid roll unless accent bar 2 |
+| Pocket | Straight or light swing; leave **808 tail** audible |
+| Perc | Rim on 2 & 4 or single ghost on beat 3 |
+| Rule | Vocals-first — if hats fight the hook, drop to 8ths |
+
+### Majestic Casual (`lane-majestic-casual`)
+
+| Element | Formula |
+|---------|---------|
+| Grid | **Broken beat** — syncopated 16ths, not kick on every quarter (not house 4×4) |
+| Hats | `x.x..x.x..x.x..` with velocity ghosts |
+| OH | One open hat per bar max, offbeat |
 
 ---
 

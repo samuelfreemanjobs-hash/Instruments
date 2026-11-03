@@ -32,7 +32,8 @@ export type SparkLaneFamily =
   | "sp1200-chain"
   | "organised-noize"
   | "future-trap"
-  | "g-funk-west";
+  | "g-funk-west"
+  | "trap-soul-rnb";
 
 export type SparkLaneDrumBase = {
   kickPitch: number;
@@ -1501,6 +1502,102 @@ export const SPARK_LANE_REGISTRY: SparkLaneDef[] = [
     { kickPitch: 50, kickDecay: 0.28, snareBody: 0.38, snareSnap: 0.38, hatDecay: 0.024, hatBright: 0.41, rimMetal: 0.58, clapWide: 0.47 },
     { rimMetal: 1.06 },
   ),
+  d(
+    "lane-cool-dre",
+    "COOL-DRE",
+    "Cool & Dre type lane",
+    "DL-COOLDRE",
+    "trap-soul-rnb",
+    "65–88 / 130–176",
+    "Polished Miami soul-trap — clean knock, wide clap, radio-ready pocket.",
+    ["cool and dre", "cool dre", "cool & dre", "archetype"],
+    { kickPitch: 43, kickDecay: 0.32, snareBody: 0.36, snareSnap: 0.42, hatDecay: 0.02, hatBright: 0.45, rimMetal: 0.48, clapWide: 0.5 },
+    { clapWide: 1.05, snareBody: 1.04 },
+  ),
+  d(
+    "lane-sza",
+    "SZA",
+    "SZA type lane",
+    "DL-SZA",
+    "trap-soul-rnb",
+    "70–92 / 140–184",
+    "Alt-R&B sparse drums — soft sub bloom, minimal tops, moody space.",
+    ["sza", "sza type", "alt rnb", "archetype"],
+    { kickPitch: 47, kickDecay: 0.38, snareBody: 0.28, snareSnap: 0.32, hatDecay: 0.026, hatBright: 0.52, rimMetal: 0.42, clapWide: 0.4 },
+    { snareSnap: 0.9, hatBright: 1.04 },
+  ),
+  d(
+    "lane-alina-baraz",
+    "ALINA-BARAZ",
+    "Alina Baraz type lane",
+    "DL-ALINA",
+    "trap-soul-rnb",
+    "75–98",
+    "Electronic chill R&B — flutter hats, silk snap, no club four-on-floor.",
+    ["alina baraz", "alina", "chill rnb electronic", "archetype"],
+    { kickPitch: 48, kickDecay: 0.34, snareBody: 0.26, snareSnap: 0.3, hatDecay: 0.018, hatBright: 0.55, rimMetal: 0.44, clapWide: 0.38 },
+    { hatBright: 1.06, snareSnap: 0.88 },
+  ),
+  d(
+    "lane-bryson-tiller",
+    "BRYSON-TILLER",
+    "Bryson Tiller type lane",
+    "DL-BRYSON",
+    "trap-soul-rnb",
+    "65–88 / 130–176",
+    "Trap soul pioneer pocket — 808 warmth, rim tick, late-night swing.",
+    ["bryson tiller", "bryson", "tiller type", "archetype"],
+    { kickPitch: 44, kickDecay: 0.36, snareBody: 0.34, snareSnap: 0.36, hatDecay: 0.024, hatBright: 0.44, rimMetal: 0.52, clapWide: 0.43 },
+    { rimMetal: 1.06, kickDecay: 1.03 },
+  ),
+  d(
+    "lane-trap-soul",
+    "TRAP-SOUL",
+    "Trap soul lane",
+    "DL-TRAPSOUL",
+    "trap-soul-rnb",
+    "65–90 / 130–180",
+    "Trap soul core — singing-ready 808, gentle snap, head-nod grid.",
+    ["trap soul", "soul trap", "rnb trap soul", "archetype"],
+    { kickPitch: 45, kickDecay: 0.35, snareBody: 0.33, snareSnap: 0.37, hatDecay: 0.023, hatBright: 0.46, rimMetal: 0.5, clapWide: 0.44 },
+    { snareBody: 1.04 },
+  ),
+  d(
+    "lane-chill-trap",
+    "CHILL-TRAP",
+    "Chill trap lane",
+    "DL-CHILLTRAP",
+    "trap-soul-rnb",
+    "130–155 / 65–82",
+    "Chill trap — softer snap, open hat air, low aggression tops.",
+    ["chill trap", "mellow trap", "soft trap", "archetype"],
+    { kickPitch: 46, kickDecay: 0.33, snareBody: 0.29, snareSnap: 0.35, hatDecay: 0.022, hatBright: 0.5, rimMetal: 0.45, clapWide: 0.41 },
+    { snareSnap: 0.92, hatBright: 1.05 },
+  ),
+  d(
+    "lane-chillwave",
+    "CHILLWAVE",
+    "Chillwave lane",
+    "DL-CHILLWAVE",
+    "trap-soul-rnb",
+    "75–105",
+    "Chillwave drums — hazy tops, warm lo-fi knock, indie-electronic sway (not house 4x4).",
+    ["chillwave", "chill wave", "indie chill", "archetype"],
+    { kickPitch: 51, kickDecay: 0.36, snareBody: 0.27, snareSnap: 0.29, hatDecay: 0.028, hatBright: 0.47, rimMetal: 0.43, clapWide: 0.37 },
+    { kickDecay: 1.04, snareSnap: 0.9 },
+  ),
+  d(
+    "lane-majestic-casual",
+    "MAJESTIC-CASUAL",
+    "Majestic Casual type lane",
+    "DL-MAJESTIC",
+    "trap-soul-rnb",
+    "78–98",
+    "Majestic Casual aesthetic — hip-hop / electronic chill loops, broken beat; explicitly not house four-on-the-floor.",
+    ["majestic casual", "majestic", "youtube chill hip hop", "not house", "archetype"],
+    { kickPitch: 49, kickDecay: 0.3, snareBody: 0.3, snareSnap: 0.34, hatDecay: 0.021, hatBright: 0.48, rimMetal: 0.5, clapWide: 0.42 },
+    { rimMetal: 1.04, hatDecay: 1.03 },
+  ),
 ];
 
 export const SPARK_PRESET_ALIASES: Record<string, string> = {
@@ -1514,6 +1611,7 @@ export const SPARK_PRESET_ALIASES: Record<string, string> = {
   "lane-36-mafia": "lane-three-six-mafia",
   "lane-fat-phat": "lane-fat-pat",
   "lane-houston-90s-era": "lane-houston-1990s",
+  "lane-cool-and-dre": "lane-cool-dre",
 };
 
 export function resolveSparkPresetId(presetId: string): string {

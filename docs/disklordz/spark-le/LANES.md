@@ -124,6 +124,19 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **DRE-DAY-90S** | `lane-dre-day-90s` | 90–100 | Chronic / Dre Day knock |
 | **DJ-BATTLECAT** | `lane-dj-battlecat` | 88–102 | Battlecat funk + DJ shuffle |
 
+## Trap soul / alt R&B / chill (not house 4×4)
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **COOL-DRE** | `lane-cool-dre` | 65–88 | Cool & Dre type — polished soul-trap |
+| **SZA** | `lane-sza` | 70–92 | Sparse alt-R&B drums |
+| **ALINA-BARAZ** | `lane-alina-baraz` | 75–98 | Electronic chill R&B tops |
+| **BRYSON-TILLER** | `lane-bryson-tiller` | 65–88 | Trap soul rim + 808 swing |
+| **TRAP-SOUL** | `lane-trap-soul` | 65–90 | Generic trap soul pocket |
+| **CHILL-TRAP** | `lane-chill-trap` | 130–155 | Mellow trap, soft aggression |
+| **CHILLWAVE** | `lane-chillwave` | 75–105 | Hazy indie chillwave (≠ vaporwave) |
+| **MAJESTIC-CASUAL** | `lane-majestic-casual` | 78–98 | YouTube chill hip-hop/electronic — **no** four-on-the-floor house |
+
 ## Strip / club anthems
 
 | Lane ID | Preset id | BPM hint | Notes |

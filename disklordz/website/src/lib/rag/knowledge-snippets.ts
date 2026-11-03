@@ -122,6 +122,22 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
     tags: ["lane-metro-boomin", "lane-future", "lane-king-louie", "lane-sp1200-chain", "lane-splice-trap", "pluggnb"],
   },
   {
+    id: "lane-trap-soul-rnb",
+    text: "Trap soul / chill: Cool & Dre lane-cool-dre, SZA lane-sza, Alina Baraz lane-alina-baraz, Bryson Tiller lane-bryson-tiller, trap soul lane-trap-soul, chill trap lane-chill-trap, chillwave lane-chillwave, Majestic Casual lane-majestic-casual (hip-hop chill, not house 4x4). Archetypes only.",
+    tags: [
+      "lane-cool-dre",
+      "lane-sza",
+      "lane-alina-baraz",
+      "lane-bryson-tiller",
+      "lane-trap-soul",
+      "lane-chill-trap",
+      "lane-chillwave",
+      "lane-majestic-casual",
+      "trap soul",
+      "chill",
+    ],
+  },
+  {
     id: "lane-gfunk-west",
     text: "G-funk west: Dogg Pound lane-dogg-pound, 90s Snoop lane-snoop-90s, Dre Day lane-dre-day-90s, DJ Battlecat lane-dj-battlecat. Archetypes only.",
     tags: ["lane-dogg-pound", "lane-snoop-90s", "lane-dre-day-90s", "lane-dj-battlecat", "g-funk", "west coast"],

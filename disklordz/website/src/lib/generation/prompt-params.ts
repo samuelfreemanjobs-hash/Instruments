@@ -403,6 +403,35 @@ export function resolveDrumParams(
     snareBody *= 1.05;
   }
   if (/\b(battlecat|dj battlecat|battle cat)\b/.test(p)) rimMetal *= 1.08;
+  if (/\b(cool and dre|cool & dre|cool dre)\b/.test(p)) {
+    clapWide *= 1.06;
+    snareBody *= 1.04;
+  }
+  if (/\b(sza type|\bsza\b)\b/.test(p)) {
+    snareSnap *= 0.88;
+    hatBright *= 1.06;
+  }
+  if (/\b(alina baraz|alina type)\b/.test(p)) {
+    hatBright *= 1.08;
+    snareSnap *= 0.9;
+  }
+  if (/\b(bryson tiller|tiller type|bryson)\b/.test(p)) {
+    rimMetal *= 1.08;
+    kickDecay *= 1.04;
+  }
+  if (/\b(trap soul|soul trap)\b/.test(p)) snareBody *= 1.05;
+  if (/\b(chill trap|mellow trap|soft trap)\b/.test(p)) {
+    snareSnap *= 0.9;
+    hatBright *= 1.05;
+  }
+  if (/\b(chillwave|chill wave)\b/.test(p)) {
+    kickDecay *= 1.05;
+    snareSnap *= 0.9;
+  }
+  if (/\b(majestic casual|majestic type|youtube chill hip hop)\b/.test(p)) {
+    rimMetal *= 1.05;
+    hatDecay *= 1.04;
+  }
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;
