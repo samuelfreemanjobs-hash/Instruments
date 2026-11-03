@@ -21,6 +21,7 @@ Operational playbooks for **Cursor Cloud**, **IDE Agent**, and **profit-agent fl
 | Make fleet repo-wide | [sops/SOP-009-repo-wide-fleet-governance.md](sops/SOP-009-repo-wide-fleet-governance.md) |
 | Open-source batch (35 refs) | [sops/SOP-010-open-source-integration-batch.md](sops/SOP-010-open-source-integration-batch.md) |
 | Roadmap backlog automation | [sops/SOP-011-roadmap-automation.md](sops/SOP-011-roadmap-automation.md) · `./scripts/complete-roadmap-automation.sh` |
+| **SparkLE elite lanes** (gangsta trap / phonk / vintage south) | [sops/SOP-012-spark-le-elite-system-charter.md](sops/SOP-012-spark-le-elite-system-charter.md) → phases [013](sops/SOP-013-spark-le-phase-1-feed-spark.md)–[017](sops/SOP-017-spark-le-phase-5-elite-leadership.md) |
 
 ---
 
