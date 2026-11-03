@@ -4,7 +4,7 @@
 
 Optional **DIY USB MIDI controller** + **Windows PC sound engine** for phonk/808 experiments.
 
-**Selected controller: Arturia SparkLE** (standalone + USB MIDI) — see [SPARKLE-MIDI-AND-CONTROLLER.md](../../docs/disklordz/spark-le/SPARKLE-MIDI-AND-CONTROLLER.md). **DIY hardware deferred**; this tree is PC engine + optional R&D firmware only.
+**Workstation:** [MPC500-SPARKLE-PC-STACK.md](../../docs/disklordz/spark-le/MPC500-SPARKLE-PC-STACK.md) — MPC500 performs; **SparkLE** USB MIDI controls this PC engine; **DIY hardware deferred**.
 
 **Users:** You · same kits as SparkLE / 808 Lab hybrid.
 
@@ -63,9 +63,10 @@ SparkLE hybrid: same 8 one-shots can load in SparkLE OR phonk-box engine
 
 | Priority | Hardware | Software |
 |----------|----------|----------|
-| **1** | **SparkLE standalone** | Load DiskLordz kits; SOP-013 / sprint |
-| **2** | **SparkLE USB MIDI** | `phonk_engine.py --midi Spark` |
-| **3** | DIY Phonk Box (Teensy) | Same engine; optional |
+| **1** | **MPC500** + PC audio/MIDI | Chop, sequence, sample playback |
+| **2** | **SparkLE USB MIDI** | `phonk_engine.py` + future chop/synth/FX params |
+| **3** | SparkLE standalone | Portable 808 Lab sprint |
+| **4** | DIY Phonk Box (Teensy) | Deferred |
 
 ## Phases
 

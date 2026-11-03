@@ -1,6 +1,6 @@
 # SOP-012 — SparkLE elite lanes system charter
 
-**Version:** 1.3 · **Improve this SOP:** after each phase retrospective; bump version in footer.
+**Version:** 1.4 · **Improve this SOP:** after each phase retrospective; bump version in footer.
 
 ## Purpose
 
@@ -72,9 +72,17 @@ All lanes share: **8-pad SparkLE map**, **manifest**, **inbox discipline**, **re
 
 Overflow samples live outside pads; manifest documents swaps.
 
-## Hardware controller
+## Hardware stack
 
-**Arturia SparkLE** is the only planned controller for 808 Lab (2026-11-03). Standalone load + play is default; USB MIDI to the optional PC engine is secondary. DIY phonk-box firmware/enclosure is **not** on the roadmap unless a documented SparkLE gap requires it — see [SPARKLE-MIDI-AND-CONTROLLER.md](../spark-le/SPARKLE-MIDI-AND-CONTROLLER.md).
+**Locked (2026-11-03):** [MPC500-SPARKLE-PC-STACK.md](../spark-le/MPC500-SPARKLE-PC-STACK.md)
+
+| Piece | Role |
+|-------|------|
+| **Akai MPC500** | Foundation: chop, sequence, sample performance |
+| **Arturia SparkLE** | Companion USB MIDI for PC engines; optional standalone for portable Lab sprints |
+| **Windows PC** | DiskLordz chop, phonk/808 synth, soul chords, screw/tape FX |
+
+Manifest **8-pad law** applies to DiskLordz exports; MPC may use additional pads/banks with overflow documented. DIY phonk-box hardware remains **deferred**.
 
 ## Confidence without casualties (“no one dies”)
 
@@ -121,6 +129,6 @@ When uncertain: **stop**, log in `humanpending.md` or issue, take the **defensib
 - [ ] Every pack has manifest + lane + BPM
 - [ ] Safety table respected on last 5 changes
 - [ ] Phase SOP linked in PR when touching spark-le tooling
-- [x] **SparkLE** locked as controller (no DIY box unless gap documented)
+- [x] **MPC500 + SparkLE + PC** stack documented ([808-LAB.md](../808-LAB.md))
 
-**SOP-012 v1.3**
+**SOP-012 v1.4**

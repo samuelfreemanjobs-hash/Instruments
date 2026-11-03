@@ -1,6 +1,6 @@
 # 5-session sprint — progress log
 
-**Controller:** Arturia **SparkLE** (standalone) — locked 2026-11-03. See [SPARKLE-MIDI-AND-CONTROLLER.md](SPARKLE-MIDI-AND-CONTROLLER.md).
+**Stack:** **MPC500** (foundation) + **SparkLE** (PC control) + **PC** (engines) — locked 2026-11-03. [MPC500-SPARKLE-PC-STACK.md](MPC500-SPARKLE-PC-STACK.md) · Sprint kits may still use SparkLE standalone.
 
 Update after each session. Scores/tags feed [MEMORY-AND-CI.md](MEMORY-AND-CI.md) weekly fix.
 

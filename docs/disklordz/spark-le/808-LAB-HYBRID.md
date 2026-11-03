@@ -1,6 +1,6 @@
 # DiskLordz 808 Lab ↔ SparkLE hybrid (architecture review)
 
-**Version:** 1.0 · **Status:** Recommended **single product surface** — not a second parallel app.
+**Version:** 1.1 · **Status:** Recommended **single product surface** — not a second parallel app. **Hardware:** [MPC500-SPARKLE-PC-STACK.md](MPC500-SPARKLE-PC-STACK.md) · [808-LAB.md](../808-LAB.md).
 
 You asked whether a **SparkLE hybrid system** already covers (or beats) a standalone **DiskLordz 808 Lab**. **Yes — if “808 Lab” means your end-to-end 808/sub/knock/screw/southern workflow.** The hybrid stack is the Lab; SparkLE is the **hands-on bench**, Disklordz generation is the **factory floor**.
 
@@ -90,7 +90,8 @@ So: **conceptually the hybrid is the 808 Lab.** Separate “808 Lab” app only 
 | Public name | Internal |
 |-------------|----------|
 | **DiskLordz 808 Lab** | Product/marketing umbrella for you + packs |
-| **SparkLE hybrid** | Operating model: factory + standalone + SOPs |
+| **SparkLE hybrid** | Operating model: factory + manifests + SOPs |
+| **MPC500 + SparkLE + PC** | Performance + control + engines ([stack doc](MPC500-SPARKLE-PC-STACK.md)) |
 | **SparkLE elite lanes** | `lane-registry.ts` catalog |
 
 Add to pack copy: *“Built in DiskLordz 808 Lab — SparkLE-ready manifest included.”*
@@ -103,7 +104,7 @@ Add to pack copy: *“Built in DiskLordz 808 Lab — SparkLE-ready manifest incl
 2. **Inbox → SparkLE** smoke doc + watch path for your OS ([daw-inbox/ARCHITECTURE.md](../../../disklordz/daw-inbox/ARCHITECTURE.md)).
 3. **808 analyzer script** (mono sub ratio, decay time) reusing `audio-contracts.ts` on **your** exported WAVs post-session.
 4. **TR-808 clone alignment** session: SP-1200/clone plugin A/B vs `lane-tr-808-clone` one-shots.
-5. **Phonk Box / SparkLE MIDI** — **prefer SparkLE** as controller ([SPARKLE-MIDI-AND-CONTROLLER.md](SPARKLE-MIDI-AND-CONTROLLER.md)); optional DIY under $100 ([phonk-box/ARCHITECTURE.md](../../../disklordz/phonk-box/ARCHITECTURE.md)).
+5. **MPC500 stack** — chop/seq on MPC, SparkLE → PC params, MIDI clock + audio routing ([MPC500-SPARKLE-PC-STACK.md](MPC500-SPARKLE-PC-STACK.md)); manifest import on [phonk-box](../../../disklordz/phonk-box/ARCHITECTURE.md).
 
 ---
 

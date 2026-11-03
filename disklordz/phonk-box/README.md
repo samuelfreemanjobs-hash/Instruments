@@ -1,6 +1,6 @@
 # DiskLordz Phonk Box
 
-**Optional** phonk PC engine + DIY USB MIDI — **your primary controller should be Arturia SparkLE** ([SparkLE MIDI guide](../docs/disklordz/spark-le/SPARKLE-MIDI-AND-CONTROLLER.md)).
+**PC sound engine** for 808 Lab — **MPC500** chops/sequences, **SparkLE** USB MIDI controls params ([MPC500 + SparkLE + PC stack](../docs/disklordz/spark-le/MPC500-SPARKLE-PC-STACK.md)). DIY USB box deferred.
 
 Read **[ARCHITECTURE.md](ARCHITECTURE.md)** first.
 
