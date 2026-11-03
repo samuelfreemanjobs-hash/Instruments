@@ -8,7 +8,8 @@
 
 All load packs exported; `npm run export:sprint-1-5` · `npm run verify:spark` green.
 
-**Producer sign-off still open:** MPC scores, 30s exports, keepers, Session 5 **catalog keep/drop** paragraph.
+**Producer sign-off still open:** MPC scores, 30s exports, keepers, Session 5 **catalog keep/drop** paragraph.  
+**Full checklist:** [NEXT-STEPS.md](NEXT-STEPS.md)
 
 | Session | Status | Preset | BPM | Batch | Keeper? |
 |---------|--------|--------|-----|-------|---------|
