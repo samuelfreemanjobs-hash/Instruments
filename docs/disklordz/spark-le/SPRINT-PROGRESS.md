@@ -19,19 +19,23 @@ Update after each session. Scores/tags feed [MEMORY-AND-CI.md](MEMORY-AND-CI.md)
 
 ---
 
-## Session 2 — start here
+## Session 2 notes (fill in)
 
-Copy into SparkLE before you load samples:
+- **Scores:** Sonic __ · Groove __ · Workflow __ · Vibe __
+- **Half-time winner (72 vs 144):** 
+- **Tags:** 
+- **vs Session 1:** sub/knock less aggressive? 
+
+---
+
+## Session 3 — start here
 
 | Step | Action |
 |------|--------|
-| 1 | BPM **72** (not 140) |
-| 2 | Preset **`lane-dj-screw`** — optional A/B **`lane-slowed-rnb`** same pads |
-| 3 | Manifest [manifest-dj-screw.json](examples/manifest-dj-screw.json) |
-| 4 | Pads **1 + 5** first — long decay on 1; dull hats OK |
-| 5 | Export kick-less 2-bar top + 30s mix |
-| 6 | [Half-time note](HALF-TIME-AB.md): if 72 feels wrong, try **144** same kit once |
+| 1 | BPM **86** |
+| 2 | Preset **`lane-smooth-jazz-rap`** |
+| 3 | Manifest [manifest-smooth-jazz-rap.json](examples/manifest-smooth-jazz-rap.json) |
+| 4 | DNA **`smooth-jazz-8ths`** — no rolls |
+| 5 | Promote keeper only if Vibe ≥ 4 and Groove ≥ 4 |
 
-**Listen for:** sub mud vs knock separation; hat dullness vs screw aesthetic (not trap brightness).
-
-**Done when:** Review template saved; tag `kick-bleed` or `pocket-pull` if applicable.
+**Listen for:** rim vs hat clutter; sub too loud for jazz rap pocket.
