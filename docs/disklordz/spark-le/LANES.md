@@ -149,6 +149,41 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **SUPER-SMOKER** | `lane-super-smoker` | 78–92 | Ultra-laid stoner pocket |
 | **ANGRY-BEATS** | `lane-angry-beats` | 130–160 | Engry/aggressive trap (`lane-engry-beats` alias) |
 
+## Boss / trap-or-die
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **RICK-ROSS** | `lane-rick-ross` | 68–80 / double | Super hard luxury boss trap |
+| **BMF-MEECH** | `lane-bmf-meech` | 130–155 | Big Meech / Hoover street-empire march |
+| **TRAP-OR-DIE** | `lane-trap-or-die` | 68–76 | Extreme trap-or-die (vs `lane-jeezy` album polish) |
+| **JEEZY-MIXTAPE** | `lane-jeezy-mixtape` | 130–150 | Raw mixtape-era grit |
+| **DJ-CANNON** | `lane-dj-cannon` | 95–115 | Southern club bounce |
+
+## Memphis OG / underground
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **SKINNY-PIMP** | `lane-skinny-pimp` | 65–90 | Kingpin / Skinny Pimp cadence |
+| **KING-LOGIE** | `lane-king-logie` | 130–160 | Underground Memphis pocket |
+
+## Phonk / wave
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **OG-PHONK** | `lane-og-phonk` | 130–150 | Early dirty phonk |
+| **DRIFT-PHONK** | `lane-drift-phonk` | 140–160 | Same spirit as `midnight-circuit` (aliased) |
+| **WAVE** | `lane-wave` | 130–150 | Icy wave trap |
+| **WAVE-PHONK** | `lane-wave-phonk` | 140–160 | Hybrid (`lane-wavephonk` alias) |
+
+## Plug / melodic
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **PLAYBOI-CARTI** | `lane-playboi-carti` | 130–160 | Minimal hypnotic (vs `RAGE-TRAP` mosh) |
+| **PIERRE-BOURNE** | `lane-pierre-bourne` | 130–160 | Bouncy dreamy melodic trap |
+
+**Future lanes:** [LANE-BACKLOG.md](LANE-BACKLOG.md)
+
 ## Regional trap & rage
 
 | Lane ID | Preset id | BPM hint | Notes |
@@ -179,5 +214,8 @@ See `artistLane` on each preset in `lane-registry.ts` (e.g. `DL-TOOMP`, `DL-DJPA
 | Detroit street | Snap-forward; DOUGHBOYZ body snare |
 | Cloud | High hatBright; lower snareSnap |
 | Lex Luger | SNARE-STACK near max snap |
+| Boss trap | Long kickDecay; Ross body snare |
+| Phonk/wave | DRIFT-PHONK cowbell; WAVE hatBright |
+| Carti vs Pierre | Carti shorter decay; Pierre softer snap |
 
 Details: [SOP-014](../sops/SOP-014-spark-le-phase-2-trust-contracts.md) · [ELITE-PERFORMANCE.md](ELITE-PERFORMANCE.md)

@@ -49,4 +49,5 @@ lane-registry.ts (drum bases + metadata)
 
 ## Related docs
 
+- [LANE-BACKLOG.md](LANE-BACKLOG.md) — candidate lanes  
 - [../README.md](../README.md) · [../../ROADMAP.md](../../ROADMAP.md)

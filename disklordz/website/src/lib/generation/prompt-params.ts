@@ -269,6 +269,40 @@ export function resolveDrumParams(
   if (/\b(top side|topside)\b/.test(p)) snareSnap *= 1.04;
   if (/\b(angry beats|engry beats|aggressive trap)\b/.test(p)) snareSnap *= 1.12;
   if (/\b(big germz|germz)\b/.test(p)) snareSnap *= 1.08;
+  if (/\b(rick ross|ross|boss trap|luxury trap)\b/.test(p)) {
+    kickDecay *= 1.08;
+    snareBody *= 1.05;
+  }
+  if (/\b(big meech|bmf|larry hoover|hoover)\b/.test(p)) {
+    snareSnap *= 1.06;
+    kickDecay *= 1.04;
+  }
+  if (/\b(trap or die)\b/.test(p)) kickDecay *= 1.1;
+  if (/\b(dj cannon|cannon bounce)\b/.test(p)) clapWide *= 1.08;
+  if (/\b(jeezy mixtape|raw jeezy)\b/.test(p)) {
+    snareSnap *= 1.06;
+    hatBright *= 0.9;
+  }
+  if (/\b(king logie|logie)\b/.test(p)) snareSnap *= 1.06;
+  if (/\b(skinny pimp|kingpin skinny)\b/.test(p)) {
+    kickDecay *= 1.1;
+    hatBright *= 0.85;
+  }
+  if (/\b(og phonk)\b/.test(p)) snareSnap *= 1.1;
+  if (/\b(drift phonk|drift)\b/.test(p)) snareSnap *= 1.05;
+  if (/\b(wave phonk|wavephonk)\b/.test(p)) {
+    hatBright *= 1.08;
+    snareSnap *= 1.04;
+  }
+  if (/\b(^wave\b|wave music)\b/.test(p)) hatBright *= 1.06;
+  if (/\b(playboi carti|carti)\b/.test(p)) {
+    kickDecay *= 0.92;
+    hatDecay *= 0.88;
+  }
+  if (/\b(pierre bourne|pierre)\b/.test(p)) {
+    snareSnap *= 0.94;
+    hatBright *= 1.06;
+  }
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;

@@ -103,6 +103,11 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
     tags: ["lane-houston-90s", "lane-dj-screw", "lane-mike-dean-nojoe", "dj screw", "houston"],
   },
   {
+    id: "lane-boss-phonk-plug",
+    text: "Boss/phonk/plug: Rick Ross lane-rick-ross, BMF lane-bmf-meech, trap or die lane-trap-or-die, Jeezy mixtape lane-jeezy-mixtape, DJ Cannon lane-dj-cannon, Skinny Pimp lane-skinny-pimp, OG phonk lane-og-phonk, drift phonk lane-drift-phonk (midnight-circuit alias), wave lane-wave, wave phonk lane-wave-phonk, Carti lane-playboi-carti, Pierre lane-pierre-bourne. Archetypes only.",
+    tags: ["lane-rick-ross", "lane-trap-or-die", "lane-drift-phonk", "lane-playboi-carti", "lane-pierre-bourne", "phonk", "wave"],
+  },
+  {
     id: "lane-detroit-cloud-ext",
     text: "Detroit: Helluva lane-helluva, Doughboyz lane-doughboyz-cashout, Dej Loaf lane-dej-loaf, Top side lane-top-side, Big Germz lane-big-germz. Cloud/lex/angry: lane-cloud-trap, lane-lex-luger, lane-angry-beats (alias lane-engry-beats), Big Krit lane-big-krit, Super smoker lane-super-smoker. Archetypes only.",
     tags: ["lane-helluva", "lane-doughboyz-cashout", "lane-dej-loaf", "lane-cloud-trap", "lane-lex-luger", "lane-big-krit", "detroit"],
