@@ -6,6 +6,8 @@ import argparse
 import json
 import re
 import sys
+from dataclasses import replace
+from datetime import datetime, timezone
 from importlib.metadata import version
 from pathlib import Path
 
@@ -21,11 +23,11 @@ def _slug(value: str) -> str:
 
 
 def _generate_from_config(config: dict, output_dir: Path, formats: list[int]) -> int:
-    project = generate_project(config)
+    created_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    project = generate_project(config, created_at=created_at)
     output_dir.mkdir(parents=True, exist_ok=True)
     stem = _slug(project.title)
     project_path = save_path = output_dir / f"{stem}.json"
-    save_project(project, project_path)
     reports = {}
     for midi_type in formats:
         midi_path = output_dir / f"{stem}_Type{midi_type}.mid"
@@ -33,7 +35,10 @@ def _generate_from_config(config: dict, output_dir: Path, formats: list[int]) ->
         report = validate_midi(midi_path, project, midi_type)
         reports[str(midi_type)] = report
         if not report["valid"]:
+            save_project(replace(project, export=replace(project.export, validation_status="invalid")), project_path)
             raise ValueError(f"MIDI validation failed for {midi_path}: {report['failures']}")
+    project = replace(project, export=replace(project.export, validation_status="valid"))
+    save_project(project, project_path)
     report_path = output_dir / f"{stem}_validation.json"
     report_path.write_text(json.dumps(reports, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({
@@ -53,6 +58,8 @@ def _generate_from_config(config: dict, output_dir: Path, formats: list[int]) ->
             for section in project.sections
         ],
         "tracks": [{"name": track.name, "notes": len(track.notes)} for track in project.tracks],
+        "id": project.id,
+        "warnings": list(project.export.warnings),
     }, indent=2))
     return 0
 

@@ -65,6 +65,8 @@ class ChordSpec:
     pitch_classes: tuple[int, ...]
     intervals: frozenset[int]
     bass: int | None
+    quality: str
+    extensions: tuple[str, ...]
 
     @property
     def is_dominant(self) -> bool:
@@ -137,13 +139,34 @@ def parse_chord_spec(symbol: str) -> ChordSpec:
             intervals.add(additions[alteration])
 
     bass = match.group("bass")
+    pcs = frozenset(interval % 12 for interval in intervals)
     return ChordSpec(
         symbol=symbol,
         root=root,
         pitch_classes=tuple(sorted({(root + interval) % 12 for interval in intervals})),
-        intervals=frozenset(interval % 12 for interval in intervals),
+        intervals=pcs,
         bass=pitch_class(bass) if bass else None,
+        quality=_quality_name(quality, suspension, pcs),
+        extensions=tuple(([("6/9" if extension == "69" else extension)] if extension else []) + alterations),
     )
+
+
+def _quality_name(quality: str, suspension: str | None, intervals: frozenset[int]) -> str:
+    if quality == "ø" or (quality in _MINOR and {3, 6, 10} <= intervals and 7 not in intervals):
+        return "half_diminished"
+    if quality in _DIMINISHED:
+        return "diminished"
+    if quality in ("aug", "+"):
+        return "augmented"
+    if quality in ("mMaj", "mmaj"):
+        return "minor_major"
+    if quality in _MINOR:
+        return "minor"
+    if suspension or quality.startswith("sus"):
+        return "suspended"
+    if quality in _MAJOR_SEVENTH:
+        return "major"
+    return "dominant" if 10 in intervals else "major"
 
 
 def parse_chord(symbol: str) -> tuple[int, tuple[int, ...]]:

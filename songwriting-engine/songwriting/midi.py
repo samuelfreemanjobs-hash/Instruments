@@ -10,6 +10,7 @@ from typing import Any
 import mido
 
 from .models import Project
+from .timing import beats_to_ticks
 
 
 def save_project(project: Project, path: str | Path) -> None:
@@ -36,7 +37,7 @@ def _conductor_events(project: Project) -> list[tuple[int, int, mido.Message | m
     ]
     beats_per_bar = project.time_signature[0] * 4 / project.time_signature[1]
     for section in project.sections:
-        tick = round(section.start_bar * beats_per_bar * project.ppq)
+        tick = beats_to_ticks(section.start_bar * beats_per_bar, project.ppq)
         events.append((tick, -1, mido.MetaMessage("marker", text=section.kind.title())))
     return events
 
@@ -50,10 +51,17 @@ def _track_events(
         events.append((0, -2, mido.MetaMessage("track_name", name=track.name)))
     events.append((0, -1, mido.Message("program_change", channel=track.channel, program=track.program)))
     for note in track.notes:
-        start_tick = round(note.start_beats * project.ppq)
-        end_tick = round((note.start_beats + note.duration_beats) * project.ppq)
+        start_tick = beats_to_ticks(note.start_beats, project.ppq)
+        end_tick = beats_to_ticks(note.start_beats + note.duration_beats, project.ppq)
         events.append((start_tick, 1, mido.Message("note_on", channel=track.channel, note=note.pitch, velocity=note.velocity)))
         events.append((end_tick, 0, mido.Message("note_off", channel=track.channel, note=note.pitch, velocity=0)))
+    for event in track.controllers:
+        tick = beats_to_ticks(event.start_beats, project.ppq)
+        if event.kind == "cc":
+            message = mido.Message("control_change", channel=track.channel, control=event.number, value=event.value)
+        else:
+            message = mido.Message("pitchwheel", channel=track.channel, pitch=event.value)
+        events.append((tick, 0, message))
     return events
 
 
@@ -147,7 +155,7 @@ def validate_midi(path: str | Path, project: Project, midi_type: int) -> dict[st
     failures = []
     if report["type"] != midi_type:
         failures.append(f"expected MIDI type {midi_type}, got {report['type']}")
-    if report["ticks_per_beat"] != project.ppq:
+    if report["ticks_per_beat"] != project.export.ppq:
         failures.append("MIDI PPQ does not match project")
     if report["note_count"] != expected_note_count:
         failures.append(f"expected {expected_note_count} notes, got {report['note_count']}")

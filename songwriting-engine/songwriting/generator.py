@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import json
 import random
+import uuid
 from pathlib import Path
 from typing import Any
 
 from .harmony import harmonic_cycle, validate_reharm
-from .models import ChordEvent, Note, Project, Section, Track
+from .models import SCHEMA_VERSION, ChordEvent, ExportInfo, Note, Project, Section, Track
+from .timing import beats_to_ticks, ticks_to_beats
 from .theory import (
     SCALES,
     choose_voicings,
@@ -46,6 +48,14 @@ STYLE_PROFILES = {
         "rootless_ep": False,
     },
 }
+
+TRACK_LAYOUT = {
+    "pad": ("Poly Pad", "DX7-style poly pad"),
+    "electric_piano": ("Electric Piano", "FM electric piano (DX7 E.Piano)"),
+    "bass": ("Synth Bass", "Moog-style sub bass"),
+    "lead": ("Lead", "Poly brass / FM bell lead"),
+}
+_PROJECT_NAMESPACE = uuid.UUID("6f1f4a52-2d0e-4a8e-9a43-4b9c5a7e1d10")
 
 DEFAULT_SECTIONS = [
     {"type": "intro", "bars": 8},
@@ -127,7 +137,26 @@ def _make_sections(config: dict[str, Any]) -> tuple[Section, ...]:
     return tuple(result)
 
 
-def generate_project(config: dict[str, Any]) -> Project:
+def project_id(config: dict[str, Any]) -> str:
+    """Same configuration (including seed) → same id."""
+    return str(uuid.uuid5(_PROJECT_NAMESPACE, json.dumps(config, sort_keys=True, separators=(",", ":"))))
+
+
+def _on_tick_grid(notes: list[Note], ppq: int) -> tuple[Note, ...]:
+    snapped = []
+    for note in notes:
+        start = beats_to_ticks(note.start_beats, ppq)
+        end = max(start + 1, beats_to_ticks(note.start_beats + note.duration_beats, ppq))
+        snapped.append(Note(note.pitch, ticks_to_beats(start, ppq), ticks_to_beats(end - start, ppq), note.velocity))
+    return tuple(sorted(snapped, key=lambda n: (n.start_beats, n.pitch)))
+
+
+def _track(role: str, channel: int, program: int, notes: list[Note], ppq: int) -> Track:
+    name, hint = TRACK_LAYOUT[role]
+    return Track(name, role, channel, program, _on_tick_grid(notes, ppq), id=role, instrument_hint=hint)
+
+
+def generate_project(config: dict[str, Any], *, created_at: str | None = None) -> Project:
     validate_config(config)
     project_config = config["project"]
     music = config["music"]
@@ -172,9 +201,18 @@ def generate_project(config: dict[str, Any]) -> Project:
                     voice_leading_cost=transition_costs[index],
                     bass_pitch_class=spec.bass,
                     function=item.function,
+                    quality=spec.quality,
+                    extensions=spec.extensions,
                 )
             )
         cycle_start += cycle_beats
+    ppq = export.get("midi_ppq", 960)
+    warnings = []
+    if total_beats % cycle_beats:
+        warnings.append(
+            f"arrangement of {total_bars} bars ends mid-progression "
+            f"({len(progression) * bars_per_chord}-bar chord loop)"
+        )
     scale_pcs = set(scale_pitch_classes(music["key"], music["scale"]))
     density = float(style_config.get("rhythmic_density", 0.5))
     ep_density = profile["ep_density"] * density * 2
@@ -188,7 +226,7 @@ def generate_project(config: dict[str, Any]) -> Project:
             duration = chord.duration_beats * (0.94 if chord.duration_beats <= beats_per_bar else 0.97)
             for pitch in chord.voicing:
                 notes.append(Note(pitch, chord.start_beats, duration, rng.randint(58, 76)))
-        track_data.append(Track("Poly Pad", "pad", 0, 89, tuple(notes)))
+        track_data.append(_track("pad", 0, 89, notes, ppq))
 
     if config["tracks"].get("electric_piano", True):
         notes = []
@@ -213,7 +251,7 @@ def generate_project(config: dict[str, Any]) -> Project:
                         if ep_pitch > 96:
                             ep_pitch = pitch
                         notes.append(Note(ep_pitch, start, min(0.42, remaining), rng.randint(62, 96)))
-        track_data.append(Track("Electric Piano", "electric_piano", 1, 4, tuple(sorted(notes, key=lambda n: (n.start_beats, n.pitch)))))
+        track_data.append(_track("electric_piano", 1, 4, notes, ppq))
 
     if config["tracks"].get("bass", True):
         notes = []
@@ -226,7 +264,7 @@ def generate_project(config: dict[str, Any]) -> Project:
                 fifth_pitch = _nearest_pitch(fifth, 30, 48, 38)
                 bass_start = chord.start_beats + min(2.0, beats_per_bar / 2)
                 notes.append(Note(fifth_pitch, bass_start, min(0.72, chord.start_beats + chord.duration_beats - bass_start), rng.randint(72, 94)))
-        track_data.append(Track("Synth Bass", "bass", 2, 38, tuple(sorted(notes, key=lambda n: n.start_beats))))
+        track_data.append(_track("bass", 2, 38, notes, ppq))
 
     if config["tracks"].get("lead", True):
         notes = []
@@ -248,11 +286,13 @@ def generate_project(config: dict[str, Any]) -> Project:
                     remaining = min(0.62, chord.start_beats + chord.duration_beats - start)
                     if remaining > 0:
                         notes.append(Note(pitch, start, remaining, rng.randint(55, 88)))
-        track_data.append(Track("Lead", "lead", 3, 81, tuple(sorted(notes, key=lambda n: (n.start_beats, n.pitch)))))
+        track_data.append(_track("lead", 3, 81, notes, ppq))
 
     result = Project(
-        schema_version=1,
+        schema_version=SCHEMA_VERSION,
+        id=project_id(config),
         title=project_config["title"],
+        created_at=created_at,
         seed=project_config["seed"],
         tempo_bpm=music["tempo_bpm"],
         time_signature=(numerator, denominator),
@@ -260,10 +300,10 @@ def generate_project(config: dict[str, Any]) -> Project:
         scale=music["scale"],
         swing=swing,
         style=style_config["profile"],
-        ppq=export.get("midi_ppq", 960),
         sections=sections,
         chords=tuple(chord_events),
         tracks=tuple(track_data),
+        export=ExportInfo(midi_format=export.get("format", 1), ppq=ppq, warnings=tuple(warnings)),
     )
     result.validate()
     return result

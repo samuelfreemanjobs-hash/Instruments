@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
+import mido
 import pytest
 
+from songwriting.cli import main as cli_main
 from songwriting.generator import generate_project, load_config
+from songwriting.models import ControllerEvent
+from songwriting.timing import beats_to_ticks, ticks_to_beats
 from songwriting.harmony import harmonic_cycle
 from songwriting.midi import export_midi, load_project, save_project, validate_midi
 from songwriting.prompt import config_from_prompt
@@ -180,7 +185,7 @@ def test_reharm_off_matches_plain_progression():
     config = load_config(SAMPLE)
     plain = generate_project(config)
     config["harmony"]["reharm"] = {"secondary_dominants": False, "tritone_subs": False, "passing_chords": False}
-    assert generate_project(config).to_dict() == plain.to_dict()
+    assert {**generate_project(config).to_dict(), "id": None} == {**plain.to_dict(), "id": None}
 
 
 def test_gospel_prompt_reharmonizes_and_exports(tmp_path):
@@ -219,6 +224,75 @@ def test_prompt_accepts_altered_chords():
     config = config_from_prompt("95 BPM D minor smoker. Chords: Dm9, G13, Bbmaj7#11, A7b9. 16 bars.")
     assert config["harmony"]["progression"] == ["Dm9", "G13", "Bbmaj7#11", "A7b9"]
     assert generate_project(config).total_bars == 16
+
+
+def test_project_metadata_is_deterministic_and_complete():
+    config = load_config(SAMPLE)
+    first, second = generate_project(config), generate_project(config)
+    assert first.id == second.id and first.created_at is None
+    assert first.schema_version == 2 and first.export.ppq == 960
+    assert first.export.validation_status == "unvalidated"
+    other = json.loads(json.dumps(config))
+    other["project"]["seed"] += 1
+    assert generate_project(other).id != first.id
+    assert [track.id for track in first.tracks] == ["pad", "electric_piano", "bass", "lead"]
+    assert all(track.instrument_hint and not track.muted and not track.solo for track in first.tracks)
+    assert all(section.material == "main" and section.variation.density == 1.0 for section in first.sections)
+
+
+def test_chord_events_carry_quality_and_extensions():
+    assert (parse_chord_spec("A7b9").quality, parse_chord_spec("A7b9").extensions) == ("dominant", ("7", "b9"))
+    assert parse_chord_spec("Bm7b5").quality == "half_diminished"
+    assert parse_chord_spec("C6/9").extensions == ("6/9",)
+    assert parse_chord_spec("Cmaj7#11").quality == "major"
+    chord = generate_project(load_config(SAMPLE)).chords[0]
+    assert (chord.symbol, chord.quality, chord.extensions) == ("Dm9", "minor", ("9",))
+
+
+def test_notes_sit_exactly_on_the_tick_grid():
+    project = generate_project(load_config(SAMPLE))
+    for track in project.tracks:
+        for note in track.notes:
+            for beats in (note.start_beats, note.duration_beats):
+                assert ticks_to_beats(beats_to_ticks(beats, project.ppq), project.ppq) == beats
+
+
+def test_schema_v1_documents_migrate(tmp_path):
+    project = generate_project(load_config(SAMPLE))
+    legacy = project.to_dict()
+    for key in ("id", "created_at", "export"):
+        legacy.pop(key)
+    legacy.update(schema_version=1, ppq=480)
+    for track in legacy["tracks"]:
+        for key in ("id", "instrument_hint", "muted", "solo", "controllers"):
+            track.pop(key)
+    path = tmp_path / "legacy.json"
+    path.write_text(json.dumps(legacy), encoding="utf-8")
+    migrated = load_project(path)
+    assert migrated.schema_version == 2 and migrated.ppq == 480
+    assert [track.id for track in migrated.tracks] == ["pad", "electric_piano", "bass", "lead"]
+
+
+def test_controller_events_export(tmp_path):
+    project = generate_project(load_config(SAMPLE))
+    lead = replace(
+        project.tracks[3],
+        controllers=(ControllerEvent("cc", 0.0, 64, 1), ControllerEvent("pitch_bend", 2.0, -4096)),
+    )
+    project = replace(project, tracks=project.tracks[:3] + (lead,))
+    path = export_midi(project, tmp_path / "cc.mid", 1)
+    messages = [message for message in mido.MidiFile(path).tracks[4]]
+    assert any(m.type == "control_change" and m.control == 1 and m.value == 64 for m in messages)
+    assert any(m.type == "pitchwheel" and m.pitch == -4096 for m in messages)
+    assert validate_midi(path, project, 1)["valid"]
+    with pytest.raises(ValueError, match="invalid CC"):
+        replace(project, tracks=project.tracks[:3] + (replace(lead, controllers=(ControllerEvent("cc", 0.0, 200, 1),)),)).validate()
+
+
+def test_cli_records_creation_time_and_validation_status(tmp_path):
+    assert cli_main(["generate", "--config", str(SAMPLE), "--output-dir", str(tmp_path)]) == 0
+    saved = load_project(tmp_path / "Smoker_Sketch_001.json")
+    assert saved.created_at and saved.export.validation_status == "valid"
 
 
 def test_prompt_preserves_flat_key_spelling():
