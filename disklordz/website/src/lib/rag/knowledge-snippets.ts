@@ -44,7 +44,7 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
   },
   {
     id: "spark-le-index",
-    text: "SparkLE elite lanes (archetypes): Memphis DJ Paul, Three 6, Juicy J, Shawty Pimp, EST G, Young Dolph; Atlanta DJ Toomp, Zaytoven, D-Rich, Shawty Redd loops, Gucci, Mike Will, Jeezy; South UGK, Pimp C, TI, Drumma Boy; Chicago Young Chop; hardware DR-660 and TR-808 clone; Bay Area and Detroit trap; rage trap. Registry: lane-registry.ts. Gangsta trap = hard street trap not trap house.",
+    text: "SparkLE elite lanes (archetypes): Memphis, Atlanta, South, Chicago, Cash Money NO (Mannie Fresh, Master P, Beats by the Pound), Drake-type polished beats, hardware DR-660/TR-808 clone, Bay/Detroit trap, rage. Registry: lane-registry.ts. Gangsta trap = hard street trap not trap house.",
     tags: ["spark-le", "lanes", "gangsta trap", "memphis", "atlanta", "registry"],
   },
   {
@@ -71,5 +71,15 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
     id: "lane-regional-rage",
     text: "Bay Area trap lane-bay-area-trap (bright hyphy-adjacent); Detroit trap lane-detroit-trap (industrial snap); rage lane-rage-trap (short 808, frantic hats).",
     tags: ["lane-bay-area-trap", "lane-detroit-trap", "lane-rage-trap", "rage", "detroit", "bay area"],
+  },
+  {
+    id: "lane-cash-money-no",
+    text: "Cash Money / NO old school: Mannie Fresh lane-mannie-fresh (bounce, Triggerman clap); Master P lane-master-p (90s No Limit); Beats by the Pound lane-beats-by-the-pound (BBTP swing). Archetypes only.",
+    tags: ["lane-mannie-fresh", "lane-master-p", "lane-beats-by-the-pound", "cash money", "mannie fresh", "new orleans"],
+  },
+  {
+    id: "lane-drake-type",
+    text: "Drake-type beat preset lane-drake-type: polished 808, crisp hats, hook-ready space 70–95 or 140–150. Prompt hard drake or trophy for aggressive variant. Style archetype not affiliated.",
+    tags: ["lane-drake-type", "drake type", "drake beat", "ovo", "polished trap"],
   },
 ];

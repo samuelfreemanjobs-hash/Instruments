@@ -29,6 +29,8 @@ Rotate **one family per week** in producer review so the catalog stays elite eve
 | **Hardware** | DR-660, TR-808-CLONE | One-shot fidelity; align TR-808-CLONE with repo clone voice |
 | **Regional trap** | BAY-AREA-TRAP, DETROIT-TRAP | Bright vs industrial loop stems |
 | **Rage** | RAGE-TRAP | Short 808 + frantic hat loop stems |
+| **Cash Money / NO** | MANNIE-FRESH, MASTER-P, BEATS-BY-THE-POUND | Bounce loops + clap stack; 92–108 BPM week |
+| **Drake archetype** | DRAKE-TYPE | Polished kick-less tops + tight 808; hook-ready space |
 | **Core** | GANGSTA-TRAP, PHONK-TRAP (`midnight-circuit`) | Hard menace vs phonk dirt |
 
 Full preset ids: [LANES.md](LANES.md) · code: `disklordz/website/src/lib/spark-le/lane-registry.ts`.

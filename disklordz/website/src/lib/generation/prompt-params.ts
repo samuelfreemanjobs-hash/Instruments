@@ -185,6 +185,27 @@ export function resolveDrumParams(
     hatDecay *= 0.85;
     kickDecay *= 0.92;
   }
+  if (/\b(mannie fresh|mannie|cash money|triggerman|nola bounce|orleans bounce)\b/.test(p)) {
+    clapWide *= 1.1;
+    snareBody *= 1.05;
+  }
+  if (/\b(master p|no limit|make em say ugh|90s south)\b/.test(p)) {
+    snareBody *= 1.06;
+    hatBright *= 0.95;
+  }
+  if (/\b(beats by the pound|bbtp|beats by pound)\b/.test(p)) {
+    rimMetal *= 1.08;
+    clapWide *= 1.06;
+  }
+  if (/\b(drake type|drake beat|ovo|toronto|charts|hook ready|melodic trap)\b/.test(p)) {
+    hatBright *= 1.06;
+    snareSnap *= 0.96;
+    kickDecay *= 1.02;
+  }
+  if (/\b(trophy|nonstop|hard drake|aggressive drake)\b/.test(p)) {
+    snareSnap *= 1.1;
+    kickDecay *= 0.95;
+  }
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;

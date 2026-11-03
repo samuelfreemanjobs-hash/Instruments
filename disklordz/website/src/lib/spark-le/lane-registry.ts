@@ -11,7 +11,9 @@ export type SparkLaneFamily =
   | "chicago"
   | "hardware"
   | "regional-trap"
-  | "rage";
+  | "rage"
+  | "cash-money-no"
+  | "drake-archetype";
 
 export type SparkLaneDrumBase = {
   kickPitch: number;
@@ -336,6 +338,54 @@ export const SPARK_LANE_REGISTRY: SparkLaneDef[] = [
     ["rage", "rage trap", "hyper", "archetype"],
     { kickPitch: 40, kickDecay: 0.22, snareBody: 0.2, snareSnap: 0.48, hatDecay: 0.01, hatBright: 0.54, rimMetal: 0.42, clapWide: 0.4 },
     { hatDecay: 0.88, kickDecay: 0.94 },
+  ),
+  d(
+    "lane-mannie-fresh",
+    "MANNIE-FRESH",
+    "Mannie Fresh / Cash Money lane",
+    "DL-MANNIE",
+    "cash-money-no",
+    "92–110 / 184–220",
+    "Old-school Cash Money bounce — Triggerman energy, handclap stack, NO pocket.",
+    ["mannie fresh", "cash money", "bounce", "new orleans", "archetype"],
+    { kickPitch: 49, kickDecay: 0.28, snareBody: 0.36, snareSnap: 0.42, hatDecay: 0.022, hatBright: 0.45, rimMetal: 0.54, clapWide: 0.56 },
+    { clapWide: 1.06, snareBody: 1.04 },
+  ),
+  d(
+    "lane-master-p",
+    "MASTER-P",
+    "Master P lane",
+    "DL-MASTERP",
+    "cash-money-no",
+    "88–105 / 176–210",
+    "Old-school No Limit era — simple hard kick, street clap, 90s south grit.",
+    ["master p", "no limit", "90s south", "archetype"],
+    { kickPitch: 47, kickDecay: 0.31, snareBody: 0.38, snareSnap: 0.4, hatDecay: 0.026, hatBright: 0.4, rimMetal: 0.5, clapWide: 0.48 },
+    { snareBody: 1.05 },
+  ),
+  d(
+    "lane-beats-by-the-pound",
+    "BEATS-BY-THE-POUND",
+    "Beats by the Pound lane",
+    "DL-BBTOP",
+    "cash-money-no",
+    "90–108 / 180–216",
+    "NO production team raw bounce — trunk kick, rim, clap layer, strip-club swing.",
+    ["beats by the pound", "bbtp", "new orleans", "cash money", "archetype"],
+    { kickPitch: 48, kickDecay: 0.29, snareBody: 0.34, snareSnap: 0.44, hatDecay: 0.024, hatBright: 0.42, rimMetal: 0.58, clapWide: 0.52 },
+    { rimMetal: 1.05, clapWide: 1.04 },
+  ),
+  d(
+    "lane-drake-type",
+    "DRAKE-TYPE",
+    "Drake-type beat lane",
+    "DL-DRAKE",
+    "drake-archetype",
+    "70–95 / 140–150",
+    "Charts-forward archetype — polished 808, crisp hats, space for melody/vocal; hard when prompted.",
+    ["drake type", "drake beat", "ovo", "polished trap", "archetype"],
+    { kickPitch: 46, kickDecay: 0.3, snareBody: 0.3, snareSnap: 0.45, hatDecay: 0.018, hatBright: 0.52, rimMetal: 0.46, clapWide: 0.48 },
+    { hatBright: 1.03, snareSnap: 0.98 },
   ),
 ];
 

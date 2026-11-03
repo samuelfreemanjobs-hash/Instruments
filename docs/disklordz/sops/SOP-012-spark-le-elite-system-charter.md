@@ -29,6 +29,8 @@ This is the **north star** document. Each maturity **phase** has its own SOP (01
 | **Hardware** | DR-660, **TR-808-CLONE** (repo 808 voice) |
 | **Regional trap** | BAY-AREA-TRAP, DETROIT-TRAP |
 | **Rage** | RAGE-TRAP |
+| **Cash Money / NO** | MANNIE-FRESH, MASTER-P, BEATS-BY-THE-POUND |
+| **Drake archetype** | DRAKE-TYPE (charts-forward; not artist samples) |
 
 All lanes share: **8-pad SparkLE map**, **manifest**, **inbox discipline**, **review scores**, **family rotation** (elite performance doc).
 

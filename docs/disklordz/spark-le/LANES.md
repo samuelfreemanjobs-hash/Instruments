@@ -60,6 +60,22 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **DR-660** | `lane-dr-660` | 90–120 | Machine punch, short decay |
 | **TR-808-CLONE** | `lane-tr-808-clone` | any | Align with **repo 808 clone** voice (SP-1200 / factory 808 path) |
 
+## Cash Money / New Orleans (old school)
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **MANNIE-FRESH** | `lane-mannie-fresh` | 92–110 / double | Cash Money bounce, Triggerman clap stack |
+| **MASTER-P** | `lane-master-p` | 88–105 | No Limit era — simple hard 90s south |
+| **BEATS-BY-THE-POUND** | `lane-beats-by-the-pound` | 90–108 | BBTP raw NO swing, rim + clap |
+
+## Drake-type (charts archetype)
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **DRAKE-TYPE** | `lane-drake-type` | 70–95 / 140–150 | Polished 808, crisp hats, vocal space; prompt **hard drake** for trophy energy |
+
+*Not affiliated with Drake, Cash Money, or listed artists — procedural style targets only.*
+
 ## Regional trap & rage
 
 | Lane ID | Preset id | BPM hint | Notes |
