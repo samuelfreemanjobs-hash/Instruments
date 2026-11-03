@@ -44,5 +44,6 @@ All load packs exported; `npm run export:sprint-1-5` · `npm run verify:spark` g
 ## Next system (post-sprint)
 
 1. **MPC:** run all five packs; fill reviews + catalog paragraph on Session 5.  
-2. **Engineering:** manifest import → `phonk_engine --kit` ([MPC500-PC-ONLY.md](MPC500-PC-ONLY.md)).  
-3. **Merge PR #95** when ready (resolve conflicts + CI).
+2. **Engineering:** manifest import → `phonk_engine --manifest` / `--kit` (sprint folder) — **done** ([MPC500-PC-ONLY.md](MPC500-PC-ONLY.md)).  
+3. **MPC card export:** `npm run export:mpc500` — [MPC500-CARD-EXPORT.md](MPC500-CARD-EXPORT.md).  
+4. **Merge PR #95** when ready (conflicts resolved; CI).

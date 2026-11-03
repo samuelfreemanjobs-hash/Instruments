@@ -15,7 +15,8 @@ cd disklordz/phonk-box/engine
 python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python phonk_engine.py --self-test
-python phonk_engine.py --kit /path/to/OneShots --midi "Phonk Box"
+python phonk_engine.py --manifest /path/to/spark-le-manifest.json --midi "Phonk Box"
+python phonk_engine.py --kit /path/to/sprint-kit-folder --midi "Phonk Box"
 ```
 
 Firmware: see [firmware/README.md](firmware/README.md) (Teensy / RP2040 USB MIDI).

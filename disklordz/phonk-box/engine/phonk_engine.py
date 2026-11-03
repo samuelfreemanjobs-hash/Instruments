@@ -7,6 +7,7 @@ SparkLE pad law file names: kick, knock optional merged in kick, snare, clap, ha
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import threading
 import time
@@ -53,6 +54,23 @@ class EngineState:
     last_step_time: float = 0.0
 
 
+def load_wav_normalized(path: Path) -> np.ndarray:
+    data, sr = sf.read(path, dtype="float32", always_2d=False)
+    if data.ndim > 1:
+        data = data.mean(axis=1)
+    if sr != SAMPLE_RATE:
+        ratio = SAMPLE_RATE / sr
+        x = np.arange(int(len(data) * ratio))
+        xp = np.linspace(0, len(data) - 1, len(data))
+        data = np.interp(x, xp, data).astype(np.float32)
+    peak = np.max(np.abs(data)) or 1.0
+    return (data / peak * 0.85).astype(np.float32)
+
+
+def silent_pad_placeholder() -> np.ndarray:
+    return np.zeros(int(SAMPLE_RATE * 0.05), dtype=np.float32)
+
+
 def load_kit(kit_dir: Path) -> list[np.ndarray]:
     pads: list[np.ndarray] = []
     for name in PAD_FILES:
@@ -61,20 +79,48 @@ def load_kit(kit_dir: Path) -> list[np.ndarray]:
             alt = kit_dir / name.replace("_", "")
             path = alt if alt.is_file() else path
         if not path.is_file():
-            # 50 ms silence placeholder
-            pads.append(np.zeros(int(SAMPLE_RATE * 0.05), dtype=np.float32))
+            pads.append(silent_pad_placeholder())
             continue
-        data, sr = sf.read(path, dtype="float32", always_2d=False)
-        if data.ndim > 1:
-            data = data.mean(axis=1)
-        if sr != SAMPLE_RATE:
-            ratio = SAMPLE_RATE / sr
-            x = np.arange(int(len(data) * ratio))
-            xp = np.linspace(0, len(data) - 1, len(data))
-            data = np.interp(x, xp, data).astype(np.float32)
-        peak = np.max(np.abs(data)) or 1.0
-        pads.append((data / peak * 0.85).astype(np.float32))
+        pads.append(load_wav_normalized(path))
     return pads
+
+
+def load_kit_from_manifest(manifest_path: Path) -> tuple[list[np.ndarray], float, str]:
+    """Load pads 1–8 from an 808 Lab spark-le-manifest.json (paths relative to manifest dir)."""
+    manifest_path = manifest_path.resolve()
+    base = manifest_path.parent
+    with manifest_path.open(encoding="utf-8") as f:
+        doc = json.load(f)
+    bpm = float(doc.get("bpm") or 140.0)
+    preset_id = str(doc.get("preset_id") or "")
+    pad_map = (doc.get("spark_le") or {}).get("pads") or {}
+    pads: list[np.ndarray] = []
+    for i in range(1, 9):
+        entry = pad_map.get(str(i))
+        if not entry or not entry.get("file"):
+            pads.append(silent_pad_placeholder())
+            continue
+        wav_path = (base / str(entry["file"])).resolve()
+        if not wav_path.is_file():
+            pads.append(silent_pad_placeholder())
+            continue
+        pads.append(load_wav_normalized(wav_path))
+    return pads, bpm, preset_id
+
+
+def resolve_kit_load(
+    kit_dir: Path | None, manifest_path: Path | None, default_bpm: float
+) -> tuple[list[np.ndarray], float, str | None]:
+    if manifest_path is not None:
+        pads, bpm, preset = load_kit_from_manifest(manifest_path)
+        return pads, bpm, preset
+    if kit_dir is not None:
+        auto = kit_dir / "spark-le-manifest.json"
+        if auto.is_file():
+            pads, bpm, preset = load_kit_from_manifest(auto)
+            return pads, bpm, preset
+        return load_kit(kit_dir), default_bpm, None
+    return synthesize_beep(), default_bpm, None
 
 
 def synthesize_beep() -> list[np.ndarray]:
@@ -185,12 +231,13 @@ def run_midi_loop(port_name: str | None, state: EngineState) -> None:
 
 
 def self_test(state: EngineState, dry_run: bool = False) -> None:
-    state.pads = synthesize_beep()
+    if len(state.pads) != 8:
+        state.pads = synthesize_beep()
     assert len(state.pads) == 8
     for i, pad in enumerate(state.pads):
         assert len(pad) > 0, f"pad {i} empty"
     if dry_run:
-        print("phonk_engine: dry-run self-test OK (8 pads synthesized, no audio device)")
+        print("phonk_engine: dry-run self-test OK (8 pads, no audio device)")
         return
     for i in range(8):
         state.pending_hits.append((i, 0.8))
@@ -210,18 +257,24 @@ def self_test(state: EngineState, dry_run: bool = False) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="DiskLordz Phonk Box engine")
-    ap.add_argument("--kit", type=Path, help="Folder with 8 pad WAVs")
+    ap.add_argument("--kit", type=Path, help="Folder with 8 pad WAVs or sprint kit root (auto manifest)")
+    ap.add_argument(
+        "--manifest",
+        type=Path,
+        help="808 Lab spark-le-manifest.json (pad files + BPM)",
+    )
     ap.add_argument("--midi", type=str, default="", help="Substring match MIDI port name")
     ap.add_argument("--self-test", action="store_true")
     ap.add_argument("--dry-run", action="store_true", help="Self-test without audio device")
-    ap.add_argument("--bpm", type=float, default=140.0)
+    ap.add_argument("--bpm", type=float, default=None, help="Override manifest BPM")
     args = ap.parse_args()
 
-    state = EngineState(bpm=args.bpm)
-    if args.kit:
-        state.pads = load_kit(args.kit)
-    else:
-        state.pads = synthesize_beep()
+    default_bpm = 140.0 if args.bpm is None else args.bpm
+    pads, manifest_bpm, preset_id = resolve_kit_load(args.kit, args.manifest, default_bpm)
+    state = EngineState(bpm=args.bpm if args.bpm is not None else manifest_bpm)
+    state.pads = pads
+    if preset_id and (args.manifest or args.kit):
+        print(f"Kit: {preset_id} @ {state.bpm} BPM ({len(state.pads)} pads)")
 
     if args.self_test:
         self_test(state, dry_run=args.dry_run)

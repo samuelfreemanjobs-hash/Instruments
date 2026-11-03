@@ -77,10 +77,16 @@ python phonk_engine.py --self-test
 **Trigger from MPC500:** connect **MIDI out (MPC) → MIDI in (PC interface)**, enable MIDI track on MPC to send notes, run:
 
 ```powershell
-python phonk_engine.py --kit C:\path\to\sprint-kits\session-1-gangsta-trap\OneShots --midi "Your MIDI In Port Name"
+python phonk_engine.py --manifest C:\path\to\session-1-gangsta-trap\spark-le-manifest.json --midi "Your MIDI In Port Name"
 ```
 
-Rename kit files to `kick.wav`, `snare.wav`, … if needed — see [MIDI-MAP.md](../../../disklordz/phonk-box/protocol/MIDI-MAP.md). Long-term: manifest import so names match automatically.
+Or pass the **sprint kit folder** (auto-detects manifest):
+
+```powershell
+python phonk_engine.py --kit C:\path\to\session-1-gangsta-trap --midi "Your MIDI In Port Name"
+```
+
+Legacy folder of renamed WAVs still works: `--kit …\OneShots` with `kick.wav`, … — see [MIDI-MAP.md](../../../disklordz/phonk-box/protocol/MIDI-MAP.md).
 
 **Parameters (no SparkLE knobs):** edit lane in factory prompt, or add PC UI later; CC 70–73 can come from MPC Q-Link only if you map them in a DAW — not required for sprint.
 

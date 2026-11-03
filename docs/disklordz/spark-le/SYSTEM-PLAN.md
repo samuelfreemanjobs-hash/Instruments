@@ -89,6 +89,8 @@ Follow [SOP-017](../sops/SOP-017-spark-le-phase-5-elite-leadership.md) weekly/mo
 | **MPC500 + PC only** | Active producer rig — [MPC500-PC-ONLY.md](MPC500-PC-ONLY.md); SparkLE optional in stack doc |
 | [808-LAB.md](../808-LAB.md) index | One public name, no second codebase |
 | Session 5 stretch | `lane-uk-drill` @ 144 · manifest-stretch-uk-drill.json |
+| `phonk_engine --manifest` | Sprint kits load by manifest path; BPM from JSON unless `--bpm` |
+| MPC500 card export | `npm run export:mpc500` · [MPC500-CARD-EXPORT.md](MPC500-CARD-EXPORT.md) |
 
 ---
 
