@@ -359,6 +359,21 @@ export function resolveDrumParams(
     rimMetal *= 1.08;
   }
   if (/\b(southside|808 mafia)\b/.test(p)) snareSnap *= 1.06;
+  if (/\b(playa fly)\b/.test(p)) {
+    snareSnap *= 1.08;
+    hatBright *= 0.88;
+  }
+  if (/\b(project pat|choppa pat)\b/.test(p)) snareSnap *= 1.1;
+  if (/\b(8ball|mjg|8ball and mjg)\b/.test(p)) {
+    snareBody *= 1.06;
+    kickDecay *= 1.04;
+  }
+  if (/\b(trae tha truth|^trae\b)\b/.test(p)) kickDecay *= 1.06;
+  if (/\b(dj squeaky|squeaky)\b/.test(p)) {
+    hatBright *= 1.1;
+    clapWide *= 1.05;
+  }
+  if (/\b(three 6 mafia|36 mafia|three six)\b/.test(p)) snareSnap *= 1.08;
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;

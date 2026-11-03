@@ -161,6 +161,21 @@ Kick/snare on separate stems for layering (Shawty Redd / strip anthem rule).
 | Hats | Dark **mid-hats** 16ths low velocity |
 | Perc | Metallic tick + reverse swell |
 
+### Three 6 / Project Pat (`lane-three-six-mafia`, `lane-project-pat`)
+
+| Element | Formula |
+|---------|---------|
+| Hats | Dark 16ths with **stop** before snare |
+| Perc | Cowbell / FX on pad 8 downbeat bar 2 |
+| Snap | Heavy unquantized backbeat |
+
+### DJ Squeaky (`lane-dj-squeaky`)
+
+| Element | Formula |
+|---------|---------|
+| Hats | Bright **16ths** + open on 4 |
+| Perc | DJ-style party hits on & of 2 |
+
 ### Lunch77 / pack clean (`lane-splice-trap`, `lane-origin-sounds`)
 
 | Element | Formula |

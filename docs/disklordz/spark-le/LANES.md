@@ -20,11 +20,15 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | Lane ID | Preset id | BPM hint | Notes |
 |---------|-----------|----------|--------|
 | **DJ-PAUL** | `lane-dj-paul` | 65–90 / 130–180 | Horror-crunch, dark hats |
-| **THREE-SIX-MAFIA** | `lane-three-six-mafia` | 65–95 | Hypnotic crush, perc on 8 |
+| **THREE-SIX-MAFIA** | `lane-three-six-mafia` | 65–95 | Hypnotic crush; aliases `lane-three-6-mafia`, `lane-36-mafia` |
 | **JUICY-J** | `lane-juicy-j` | 130–160 | Dark bounce, triplet hat space |
 | **SHAWTY-PIMP** | `lane-shawty-pimp` | 60–85 | Slow underground strip |
 | **EST-G** | `lane-est-g` | 130–155 | Hard street trap |
 | **YOUNG-DOLPH** | `lane-young-dolph` | 130–160 | Hard Memphis bounce |
+| **PLAYA-FLY** | `lane-playa-fly` | 130–160 | Psychedelic Memphis bounce |
+| **PROJECT-PAT** | `lane-project-pat` | 130–155 | Choppa / Pat anthem snap |
+| **8BALL-MJG** | `lane-8ball-mjg` | 85–100 | Smooth southern crunk soul |
+| **DJ-SQUEAKY** | `lane-dj-squeaky` | 95–115 | Memphis DJ party perc |
 
 ## Atlanta
 
@@ -46,6 +50,7 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **UGK** | `lane-ugk` | 70–90 / 140–180 | Houston pocket |
 | **PIMP-C** | `lane-pimp-c` | 68–88 | Texas trunk, body snare |
 | **TI** | `lane-ti` | 80–100 | Swagger, clean stack |
+| **TRAE** | `lane-trae` | 130–160 | Houston trunk, screwed-ready |
 
 ## Chicago
 
