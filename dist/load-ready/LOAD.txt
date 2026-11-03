@@ -1,0 +1,26 @@
+﻿Nu:Tekt NTS-1 digital kit — your oscillators
+
+These are .ntkdigunit files for the original NTS-1, not the mkII.
+The minilogue xd Sound Librarian will not load them.
+Only one oscillator plays at a time. Pick it on the panel after the send.
+
+Slot  File  Sound
+   0  nts1_tr808_kick.ntkdigunit  Phonk 808 kick
+   1  nts1_west_coast_moog.ntkdigunit  P-Funk / West Coast
+   2  nts1_juno_rnb.ntkdigunit  Juno 80s R&B
+   3  nts1_dilla_bass.ntkdigunit  Dilla hip-hop bass
+   4  nts1_sub_phatty.ntkdigunit  Sub Phatty
+   5  nts1_prophet_funk.ntkdigunit  Prophet funk / R&B
+   6  nts1_dx7_lately.ntkdigunit  DX7 Lately Bass
+   7  nts1_sh101_babyface.ntkdigunit  SH-101 pulse bass
+   8  nts1_voyager_se.ntkdigunit  Voyager / SE squelch
+   9  nts1_cardo_gfunk.ntkdigunit  Cardo G-funk
+  10  nts1_larry_june.ntkdigunit  Larry June cruise
+  11  nts1_khalifa_haze.ntkdigunit  Hazy stoner sub
+  12  nts1_memphis_juicy.ntkdigunit  Three 6 / Memphis trunk
+  13  nts1_ensoniq_eps1.ntkdigunit  Ensoniq EPS Memphis
+
+On the NTS-1: USB connected, power on.
+Then from this repo run:
+  powershell -ExecutionPolicy Bypass -File tools\load-nts1.ps1
+Turn the oscillator TYPE control to the user slot you want.

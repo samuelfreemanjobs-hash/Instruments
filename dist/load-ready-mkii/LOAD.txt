@@ -1,0 +1,28 @@
+﻿NTS-1 mkII — your 14 oscillators
+
+Load these .nts1mkiiunit files. Do not load the .ntkdigunit folder.
+Firmware must be 1.0.0 or newer.
+Only one oscillator plays at a time. Pick the user slot on the panel after the send.
+
+Official loader: KORG KONTROL Editor
+https://www.korg.com/us/support/download/software/0/933/1354/
+Open NTS-1 mkII, drag a file from this folder onto an oscillator slot, press SEND.
+
+Slot  File  Sound
+   0  tr808_kick_phonk.nts1mkiiunit  Phonk 808 kick
+   1  west_coast_moog_funk.nts1mkiiunit  P-Funk / West Coast
+   2  juno_106_rnb_bass.nts1mkiiunit  Juno 80s R&B
+   3  dilla_type_bass.nts1mkiiunit  Dilla hip-hop bass
+   4  moog_sub_phatty_bass.nts1mkiiunit  Sub Phatty
+   5  prophet5_funk_rnb_bass.nts1mkiiunit  Prophet funk / R&B
+   6  dx7_lately_bass.nts1mkiiunit  DX7 Lately Bass
+   7  sh101_babyface_bass.nts1mkiiunit  SH-101 pulse bass
+   8  moog_voyager_se1_squelch.nts1mkiiunit  Voyager / SE squelch
+   9  cardo_got_wings_gfunk.nts1mkiiunit  Cardo G-funk
+  10  larry_june_bay_cruise_bass.nts1mkiiunit  Larry June cruise
+  11  khalifa_haze_stoner_bass.nts1mkiiunit  Hazy stoner sub
+  12  juicy_j_three6_memphis_bass.nts1mkiiunit  Three 6 / Memphis trunk
+  13  ensoniq_eps1_memphis_bass.nts1mkiiunit  Ensoniq EPS Memphis
+
+Or, with the mkII plugged in:
+  powershell -ExecutionPolicy Bypass -File tools\load-nts1-mkii.ps1
