@@ -391,7 +391,10 @@ const presetId = manifest.preset_id;
 const spec = defaultGenerationSpec(presetId);
 spec.mode = "one_shot";
 spec.bpm = manifest.bpm;
-const params = resolveDrumParams(prompt, presetId, spec, { seed });
+const params = resolveDrumParams(prompt, presetId, spec, {
+  variationIndex: 0,
+  batchId: String(seed),
+});
 
 mkdirSync(outDir, { recursive: true });
 
