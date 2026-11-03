@@ -92,7 +92,7 @@ Rename kit files to `kick.wav`, `snare.wav`, … if needed — see [MIDI-MAP.md]
 
 ## Music (MPC500 only)
 
-Creative prompts and session blends — no PC running: [MPC500-ONLY-MUSIC-IDEAS.md](MPC500-ONLY-MUSIC-IDEAS.md)
+Creative prompts and session blends — no PC running: [MPC500-ONLY-MUSIC-IDEAS.md](MPC500-ONLY-MUSIC-IDEAS.md) · **Print:** [MPC500-BENCH-CARD.md](MPC500-BENCH-CARD.md)
 
 ## Related
 

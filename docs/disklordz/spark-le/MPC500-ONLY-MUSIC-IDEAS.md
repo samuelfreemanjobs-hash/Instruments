@@ -2,6 +2,8 @@
 
 **Version:** 1.0 · **Rig:** [MPC500-PC-ONLY.md](MPC500-PC-ONLY.md) — **music happens on the MPC**; PC only exports kits.
 
+**Print / bench:** [MPC500-BENCH-CARD.md](MPC500-BENCH-CARD.md) — reel walkthrough, pad table, session checklist.
+
 Use [sprint-kits/](sprint-kits/) sessions 1–3 or any 808 Lab **OneShots/** + manifest. Pad law: [SOP-012](../sops/SOP-012-spark-le-elite-system-charter.md) (pads 1–8).
 
 ---
