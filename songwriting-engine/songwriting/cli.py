@@ -15,6 +15,7 @@ import mido
 
 from .generator import generate_project, load_config
 from .midi import export_midi, inspect_midi, load_project, save_project, validate_midi
+from .mpc import export_mpc500
 from .prompt import config_from_prompt
 
 
@@ -22,7 +23,7 @@ def _slug(value: str) -> str:
     return re.sub(r"[^A-Za-z0-9_-]+", "_", value).strip("_") or "song"
 
 
-def _generate_from_config(config: dict, output_dir: Path, formats: list[int]) -> int:
+def _generate_from_config(config: dict, output_dir: Path, formats: list[int], mpc500_dir: Path | None = None) -> int:
     created_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
     project = generate_project(config, created_at=created_at)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -41,6 +42,7 @@ def _generate_from_config(config: dict, output_dir: Path, formats: list[int]) ->
     save_project(project, project_path)
     report_path = output_dir / f"{stem}_validation.json"
     report_path.write_text(json.dumps(reports, indent=2) + "\n", encoding="utf-8")
+    mpc500 = export_mpc500(project, mpc500_dir) if mpc500_dir else None
     print(json.dumps({
         "valid": True,
         "project": str(save_path.resolve()),
@@ -60,17 +62,24 @@ def _generate_from_config(config: dict, output_dir: Path, formats: list[int]) ->
         "tracks": [{"name": track.name, "notes": len(track.notes)} for track in project.tracks],
         "id": project.id,
         "warnings": list(project.export.warnings),
+        "mpc500": None if mpc500 is None else {"dir": str(mpc500_dir.resolve()), "code": mpc500["code"], "files": len(mpc500["files"])},
     }, indent=2))
     return 0
 
 
 def _generate(args: argparse.Namespace) -> int:
-    return _generate_from_config(load_config(args.config), args.output_dir, args.formats)
+    return _generate_from_config(load_config(args.config), args.output_dir, args.formats, args.mpc500_dir)
 
 
 def _generate_prompt(args: argparse.Namespace) -> int:
     config = config_from_prompt(args.prompt, args.seed)
-    return _generate_from_config(config, args.output_dir, args.formats)
+    return _generate_from_config(config, args.output_dir, args.formats, args.mpc500_dir)
+
+
+def _export_mpc500(args: argparse.Namespace) -> int:
+    manifest = export_mpc500(load_project(args.project), args.out, args.code)
+    print(json.dumps({"valid": True, "dir": str(args.out.resolve()), "code": manifest["code"], "files": [f["file"] for f in manifest["files"]]}, indent=2))
+    return 0
 
 
 def _validate_midi(args: argparse.Namespace) -> int:
@@ -95,13 +104,20 @@ def main(argv: list[str] | None = None) -> int:
     generate.add_argument("--config", required=True, type=Path)
     generate.add_argument("--output-dir", default=Path("artifacts"), type=Path)
     generate.add_argument("--formats", nargs="+", type=int, choices=(0, 1), default=(0, 1))
+    generate.add_argument("--mpc500-dir", type=Path, help="also write an MPC500 sequence package here")
     generate.set_defaults(handler=_generate)
     prompt_generate = commands.add_parser("generate-prompt", help="generate a composition from a natural-language brief")
     prompt_generate.add_argument("--prompt", required=True)
     prompt_generate.add_argument("--seed", type=int, default=48127)
     prompt_generate.add_argument("--output-dir", default=Path("artifacts"), type=Path)
     prompt_generate.add_argument("--formats", nargs="+", type=int, choices=(0, 1), default=(0, 1))
+    prompt_generate.add_argument("--mpc500-dir", type=Path, help="also write an MPC500 sequence package here")
     prompt_generate.set_defaults(handler=_generate_prompt)
+    mpc500 = commands.add_parser("export-mpc500", help="write MPC500 sequences (96 PPQ, section loops, per-track files) from a project")
+    mpc500.add_argument("--project", required=True, type=Path)
+    mpc500.add_argument("--out", required=True, type=Path)
+    mpc500.add_argument("--code", help="file name prefix, up to 8 letters/digits")
+    mpc500.set_defaults(handler=_export_mpc500)
     validate = commands.add_parser("validate-midi", help="inspect MIDI events and note pairing")
     validate.add_argument("path", type=Path)
     validate.add_argument("--project", type=Path)
