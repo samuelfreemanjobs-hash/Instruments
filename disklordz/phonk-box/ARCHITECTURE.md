@@ -46,6 +46,7 @@ SparkLE hybrid: same 8 one-shots can load in SparkLE OR phonk-box engine
 | [engine/phonk_engine.py](engine/phonk_engine.py) | Phase 0 MIDI-in sampler + step sequencer |
 | [firmware/README.md](firmware/README.md) | BOM, Teensy/RP2040 USB MIDI device |
 | [docs/BOM-100USD.md](docs/BOM-100USD.md) | Parts list under ~$100 |
+| [docs/ENCLOSURE-AND-CONNECTORS.md](docs/ENCLOSURE-AND-CONNECTORS.md) | Item 5: box, USB, JST ($8–15, when stable) |
 | [../website/src/lib/spark-le/lane-registry.ts](../website/src/lib/spark-le/lane-registry.ts) | Phonk lane presets (`midnight-circuit`, OG phonk, etc.) |
 | [../../SP1200/ARCHITECTURE.md](../../SP1200/ARCHITECTURE.md) | Future Phase 2: native JUCE engine reuse (sequencer, MIDI clock) |
 

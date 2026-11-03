@@ -12,7 +12,7 @@ cd engine && pip install -r requirements.txt && python phonk_engine.py --self-te
 
 ## Hardware
 
-[BOM ~$100](docs/BOM-100USD.md) · [Firmware notes](firmware/README.md) · [MIDI map](protocol/MIDI-MAP.md)
+[BOM ~$100](docs/BOM-100USD.md) · [Enclosure & connectors](docs/ENCLOSURE-AND-CONNECTORS.md) · [Firmware](firmware/README.md) · [MIDI map](protocol/MIDI-MAP.md)
 
 ## Software stack
 
