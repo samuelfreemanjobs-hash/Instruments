@@ -1,8 +1,18 @@
 {
   "schema_version": "1.0",
   "generator_version": "0.0.0",
-  "lane": "GANGSTA-TRAP",
-  "lane_alt": ["PHONK-TRAP", "VINTAGE-SOUTH"],
+  "lane": "JEEZY",
+  "lane_alt": [
+    "GANGSTA-TRAP",
+    "PHONK-TRAP",
+    "VINTAGE-SOUTH",
+    "GUCCI-MANE",
+    "MIKE-WILL",
+    "DRUMMA-BOY",
+    "ZAYTOVEN",
+    "TI",
+    "DJ-DOOMP"
+  ],
   "bpm": 140,
   "swing_note": "Document 16th swing % if used; VINTAGE-SOUTH often higher",
   "spark_le": {

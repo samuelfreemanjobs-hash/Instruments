@@ -67,6 +67,76 @@ const PRESET_BASE: Record<string, Partial<DrumParams>> = {
     rimMetal: 0.5,
     clapWide: 0.42,
   },
+  "lane-jeezy": {
+    kickPitch: 39,
+    kickDecay: 0.38,
+    snareBody: 0.42,
+    snareSnap: 0.38,
+    hatDecay: 0.028,
+    hatBright: 0.32,
+    rimMetal: 0.4,
+    clapWide: 0.38,
+  },
+  "lane-gucci-mane": {
+    kickPitch: 42,
+    kickDecay: 0.3,
+    snareBody: 0.28,
+    snareSnap: 0.48,
+    hatDecay: 0.02,
+    hatBright: 0.48,
+    rimMetal: 0.55,
+    clapWide: 0.52,
+  },
+  "lane-mike-will": {
+    kickPitch: 44,
+    kickDecay: 0.24,
+    snareBody: 0.22,
+    snareSnap: 0.52,
+    hatDecay: 0.016,
+    hatBright: 0.5,
+    rimMetal: 0.45,
+    clapWide: 0.44,
+  },
+  "lane-drumma-boy": {
+    kickPitch: 46,
+    kickDecay: 0.32,
+    snareBody: 0.38,
+    snareSnap: 0.5,
+    hatDecay: 0.024,
+    hatBright: 0.42,
+    rimMetal: 0.62,
+    clapWide: 0.48,
+  },
+  "lane-zaytoven": {
+    kickPitch: 48,
+    kickDecay: 0.26,
+    snareBody: 0.26,
+    snareSnap: 0.42,
+    hatDecay: 0.012,
+    hatBright: 0.46,
+    rimMetal: 0.48,
+    clapWide: 0.4,
+  },
+  "lane-ti": {
+    kickPitch: 47,
+    kickDecay: 0.29,
+    snareBody: 0.32,
+    snareSnap: 0.44,
+    hatDecay: 0.02,
+    hatBright: 0.52,
+    rimMetal: 0.58,
+    clapWide: 0.5,
+  },
+  "lane-dj-doomp": {
+    kickPitch: 35,
+    kickDecay: 0.48,
+    snareBody: 0.45,
+    snareSnap: 0.58,
+    hatDecay: 0.035,
+    hatBright: 0.22,
+    rimMetal: 0.38,
+    clapWide: 0.32,
+  },
 };
 
 function hashSeed(prompt: string, presetId: string): number {
@@ -105,9 +175,12 @@ export function resolveDrumParams(
   const p = prompt.toLowerCase();
   let kickPitch = base.kickPitch ?? 45;
   let kickDecay = base.kickDecay ?? 0.28;
+  let snareBody = base.snareBody ?? 0.3;
   let snareSnap = base.snareSnap ?? 0.35;
   let hatBright = base.hatBright ?? 0.4;
   let clapWide = base.clapWide ?? 0.4;
+  let hatDecay = base.hatDecay ?? 0.025;
+  let rimMetal = base.rimMetal ?? 0.5;
 
   if (/\b(808|sub|deep|low)\b/.test(p)) kickPitch -= 6;
   if (/\b(tight|punch|knock)\b/.test(p)) kickDecay *= 0.85;
@@ -117,6 +190,32 @@ export function resolveDrumParams(
     hatBright *= 0.75;
   }
   if (/\b(dirty|grit|memphis|phonk|distort)\b/.test(p)) snareSnap *= 1.2;
+  if (/\b(jeezy|snowman|anthem|march)\b/.test(p)) {
+    kickDecay *= 1.1;
+    snareBody *= 1.08;
+  }
+  if (/\b(gucci|bounce|quirky|atl)\b/.test(p)) clapWide *= 1.1;
+  if (/\b(mike will|mike will made it|minimal hat|hard trap)\b/.test(p)) {
+    hatDecay *= 0.9;
+    snareSnap *= 1.08;
+  }
+  if (/\b(drumma|anthem|crack snare|orchestral)\b/.test(p)) {
+    snareSnap *= 1.12;
+    rimMetal *= 1.1;
+  }
+  if (/\b(zaytoven|flutter|shaker|atl trap)\b/.test(p)) {
+    hatDecay *= 0.85;
+    hatBright *= 1.05;
+  }
+  if (/\b(t\.?i\.?|king of the south|swagger)\b/.test(p)) {
+    hatBright *= 1.08;
+    clapWide *= 1.05;
+  }
+  if (/\b(doomp|doom|memphis crunch|strip)\b/.test(p)) {
+    kickDecay *= 1.15;
+    hatBright *= 0.8;
+    snareSnap *= 1.1;
+  }
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;
@@ -126,6 +225,15 @@ export function resolveDrumParams(
   const preset = getPreset(presetId);
   if (preset?.artistLane === "DL002") snareSnap *= 1.05;
   if (preset?.artistLane === "DL006") kickDecay *= 1.1;
+  if (preset?.artistLane === "DL-JEEZY") kickDecay *= 1.05;
+  if (preset?.artistLane === "DL-GUCCI") clapWide *= 1.06;
+  if (preset?.artistLane === "DL-MIKEWILL") hatDecay *= 0.92;
+  if (preset?.artistLane === "DL-DRUMMA") snareSnap *= 1.04;
+  if (preset?.artistLane === "DL-ZAYTOVEN") hatDecay *= 0.88;
+  if (preset?.artistLane === "DL-DOOMP") {
+    kickDecay *= 1.08;
+    hatBright *= 0.9;
+  }
 
   if (spec) {
     const bpmFactor = spec.bpm / 120;
@@ -142,11 +250,11 @@ export function resolveDrumParams(
   return {
     kickPitch: clamp(kickPitch + jitter(0) * 4, 28, 72),
     kickDecay: clamp(kickDecay * (1 + jitter(1) * 0.08), 0.12, 0.7),
-    snareBody: clamp((base.snareBody ?? 0.3) * (1 + jitter(2) * 0.1), 0.1, 0.7),
+    snareBody: clamp(snareBody * (1 + jitter(2) * 0.1), 0.1, 0.7),
     snareSnap: clamp(snareSnap * (1 + jitter(3) * 0.1), 0.08, 0.75),
-    hatDecay: clamp((base.hatDecay ?? 0.025) * (1 + jitter(4) * 0.1), 0.01, 0.1),
+    hatDecay: clamp(hatDecay * (1 + jitter(4) * 0.1), 0.01, 0.1),
     hatBright: clamp(hatBright * (1 + jitter(5) * 0.1), 0.1, 0.75),
-    rimMetal: clamp((base.rimMetal ?? 0.5) * (1 + jitter(6) * 0.1), 0.2, 0.85),
+    rimMetal: clamp(rimMetal * (1 + jitter(6) * 0.1), 0.2, 0.85),
     clapWide: clamp(clapWide * (1 + jitter(7) * 0.1), 0.15, 0.65),
     seed,
   };

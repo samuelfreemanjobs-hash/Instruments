@@ -1,6 +1,6 @@
 # SOP-012 — SparkLE elite lanes system charter
 
-**Version:** 1.0 · **Improve this SOP:** after each phase retrospective; bump version in footer.
+**Version:** 1.1 · **Improve this SOP:** after each phase retrospective; bump version in footer.
 
 ## Purpose
 
@@ -15,6 +15,20 @@ This is the **north star** document. Each maturity **phase** has its own SOP (01
 | **GANGSTA-TRAP** | Super hard, street, aggressive trap — knock, pressure, menace | “Trap house” (soft/club party trap) |
 | **PHONK-TRAP** | Memphis dirt, cowbell, distorted snap, drift energy | Generic lo-fi |
 | **VINTAGE-SOUTH** | 90s–00s southern rap pocket, rim, fat snare, bounce | Modern cyber-only hats |
+
+### Producer archetype lanes (original drums; not affiliated)
+
+Full BPM/pad notes: **[spark-le/LANES.md](../spark-le/LANES.md)**
+
+| Lane ID | Archetype focus |
+|---------|-----------------|
+| **JEEZY** | Trap-or-die weight: long dark 808, anthem snare, march / double-time |
+| **GUCCI-MANE** | Bouncy ATL trap, wide clap, quirky perc on pad 8 |
+| **MIKE-WILL** | Modern hard trap: tight knock, minimal hats, FX/tag pad 8 |
+| **DRUMMA-BOY** | Southern anthem cracks, rim, big FX/orchestral hit slot |
+| **ZAYTOVEN** | Flutter hats, lighter knock, ATL pocket |
+| **TI** | Swagger bounce, clean clap stack, crisp south (less mud) |
+| **DJ-DOOMP** | Slow Memphis crunch, crushed snare, dark tops *(your label — tune brief in LANES.md if needed)* |
 
 All lanes share: **8-pad SparkLE map**, **manifest**, **inbox discipline**, **review scores**.
 
@@ -81,7 +95,8 @@ When uncertain: **stop**, log in `humanpending.md` or issue, take the **defensib
 
 - Session template: [TEMPLATE-spark-le-session-review.md](../templates/TEMPLATE-spark-le-session-review.md)
 - Manifest example: [TEMPLATE-spark-le-manifest.json](../templates/TEMPLATE-spark-le-manifest.json)
-- Repo lanes: `midnight-circuit`, `mpc-ready-808`, `disklordz-screw` in `disklordz/website/src/lib/generation/prompt-params.ts`
+- Lane catalog: [spark-le/LANES.md](../spark-le/LANES.md)
+- Repo presets: `lane-jeezy`, `lane-gucci-mane`, `lane-mike-will`, `lane-drumma-boy`, `lane-zaytoven`, `lane-ti`, `lane-dj-doomp` + core packs in `disklordz/website/src/lib/presets.ts`
 
 ## Success criteria (charter)
 
@@ -90,4 +105,4 @@ When uncertain: **stop**, log in `humanpending.md` or issue, take the **defensib
 - [ ] Safety table respected on last 5 changes
 - [ ] Phase SOP linked in PR when touching spark-le tooling
 
-**SOP-012 v1.0**
+**SOP-012 v1.1**

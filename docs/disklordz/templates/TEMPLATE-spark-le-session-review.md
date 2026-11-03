@@ -1,7 +1,7 @@
 # SparkLE session review (copy per session)
 
 **Date:** YYYY-MM-DD  
-**Lane:** `GANGSTA-TRAP` | `PHONK-TRAP` | `VINTAGE-SOUTH`  
+**Lane:** `GANGSTA-TRAP` | `PHONK-TRAP` | `VINTAGE-SOUTH` | `JEEZY` | `GUCCI-MANE` | `MIKE-WILL` | `DRUMMA-BOY` | `ZAYTOVEN` | `TI` | `DJ-DOOMP` (see [LANES.md](../spark-le/LANES.md))  
 **BPM:**  
 **batch_id:**  
 **generator_version:**  

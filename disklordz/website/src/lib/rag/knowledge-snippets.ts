@@ -42,4 +42,39 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
     text: "Memphis phonk stack: distorted snare snap, narrow stereo cowbell, dusty lo-fi hats, 90s sampler character.",
     tags: ["memphis", "phonk", "distorted", "cowbell"],
   },
+  {
+    id: "lane-jeezy",
+    text: "Jeezy lane (archetype): trap-or-die 808 weight 68–76 or double-time, dark knock, anthem snare body, preset lane-jeezy.",
+    tags: ["lane-jeezy", "jeezy", "dl-jeezy", "trap", "808"],
+  },
+  {
+    id: "lane-gucci",
+    text: "Gucci Mane lane (archetype): bouncy ATL sub, wide clap, quirky perc on pad 8, preset lane-gucci-mane.",
+    tags: ["lane-gucci-mane", "gucci", "atl", "bounce"],
+  },
+  {
+    id: "lane-mike-will",
+    text: "Mike Will lane (archetype): hard modern trap 130–160, tight knock, minimal hats, FX pad slot, preset lane-mike-will.",
+    tags: ["lane-mike-will", "mike will", "trap", "hard"],
+  },
+  {
+    id: "lane-drumma",
+    text: "Drumma Boy lane (archetype): southern anthem snare crack, rim, big FX hit, 72–88 or double-time, preset lane-drumma-boy.",
+    tags: ["lane-drumma-boy", "drumma", "south", "anthem"],
+  },
+  {
+    id: "lane-zaytoven",
+    text: "Zaytoven lane (archetype): ATL flutter hats, lighter knock, shaker perc, preset lane-zaytoven.",
+    tags: ["lane-zaytoven", "zaytoven", "atl", "hats"],
+  },
+  {
+    id: "lane-ti",
+    text: "T.I. lane (archetype): swagger bounce, clean clap stack, crisp southern hats, preset lane-ti.",
+    tags: ["lane-ti", "ti", "south", "bounce"],
+  },
+  {
+    id: "lane-dj-doomp",
+    text: "DJ Doomp lane (archetype): slow Memphis crunch, crushed snare, dark hats, preset lane-dj-doomp.",
+    tags: ["lane-dj-doomp", "dj doomp", "memphis", "crunch"],
+  },
 ];
