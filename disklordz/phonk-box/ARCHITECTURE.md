@@ -2,9 +2,11 @@
 
 ## Purpose
 
-A **sub-$100 DIY controller** + **Windows PC sound engine** — miniature hybrid of **MPC-style sequencing**, **808/phonk drums**, and **your DiskLordz lane presets**. The microcontroller only sends **USB MIDI**; all audio, sampling, and pattern memory live on the PC for quality and room to grow.
+Optional **DIY USB MIDI controller** + **Windows PC sound engine** for phonk/808 experiments.
 
-**Users:** You (standalone phonk/Memphis/screw sessions) · same kits as SparkLE / 808 Lab hybrid.
+**Default controller: Arturia SparkLE** (standalone + USB MIDI) — see [SPARKLE-MIDI-AND-CONTROLLER.md](../../docs/disklordz/spark-le/SPARKLE-MIDI-AND-CONTROLLER.md). **Do not build DIY hardware** until SparkLE + PC engine limits are clear.
+
+**Users:** You · same kits as SparkLE / 808 Lab hybrid.
 
 ## Build & run (Phase 0 — engine only)
 

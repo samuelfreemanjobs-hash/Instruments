@@ -1,6 +1,6 @@
 # DiskLordz Phonk Box
 
-Custom **phonk drum machine**: programmable sequencer on **Windows**, **USB DIY controller** for pads and params — target **under $100** hardware.
+**Optional** phonk PC engine + DIY USB MIDI — **your primary controller should be Arturia SparkLE** ([SparkLE MIDI guide](../docs/disklordz/spark-le/SPARKLE-MIDI-AND-CONTROLLER.md)).
 
 Read **[ARCHITECTURE.md](ARCHITECTURE.md)** first.
 
