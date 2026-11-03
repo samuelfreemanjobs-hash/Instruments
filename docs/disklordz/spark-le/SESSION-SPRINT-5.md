@@ -43,8 +43,9 @@ Track completion: [SPRINT-PROGRESS.md](SPRINT-PROGRESS.md)
 | **Manifest** | [examples/manifest-smooth-jazz-rap.json](examples/manifest-smooth-jazz-rap.json) |
 | **DNA** | `smooth-jazz-8ths` — **no rolls** |
 | **Keeper bar** | Promote only if Vibe ≥ 4 and Groove ≥ 4 |
+| **Load pack** | [sprint-kits/session-3-smooth-jazz-rap/](sprint-kits/session-3-smooth-jazz-rap/) |
 
-Copy first keeper to [KEEPERS.md](KEEPERS.md) layout.
+Copy first keeper to [KEEPERS.md](KEEPERS.md) layout. Review: [reviews/2026-11-03_SMOOTH-JAZZ-RAP_sprint3.md](reviews/2026-11-03_SMOOTH-JAZZ-RAP_sprint3.md).
 
 ---
 
