@@ -22,7 +22,7 @@ Style **archetypes** only. Add via `lane-registry.ts` + [LANES.md](LANES.md) + R
 | **Jersey club / Baltimore** | Kick patterns unlike trap 808 |
 | **Footwork / juke** | Chicago 160 |
 | ~~Plugg / opium~~ | ✅ `lane-plugg-opium` · pluggnb ✅ |
-| **Horrorcore / Three 6 slow** | Overlap DJ Paul — optional split |
+| ~~Horrorcore / Three 6 slow~~ | ✅ `lane-three-six-slow-drag` |
 | ~~Modern NO bounce~~ | ✅ `lane-modern-no-bounce` |
 | **Scary trap / Halloween phonk** | Seasonal packs |
 

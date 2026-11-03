@@ -40,7 +40,10 @@ Rotate **one family per week** in producer review so the catalog stays elite eve
 | **Detroit street** | HELLUVA, DOUGHBOYZ, DEJ-LOAF, TOP-SIDE, BIG-GERMZ | Snap vs smooth (Dej) A/B |
 | **Cloud / lex / angry** | CLOUD-TRAP, LEX-LUGER, ANGRY-BEATS | Contrast cloud vs angry same BPM |
 | **MS soul** | BIG-KRIT | Body snare + rim week |
-| **Trap soul / chill** | TRAP-SOUL, BRYSON-TILLER, SZA, MAJESTIC-CASUAL, TIMBALAND, NEPTUNES | Half-time A/B ([HALF-TIME-AB.md](HALF-TIME-AB.md)); vocals-first hat KPI |
+| **Trap soul / chill** | TRAP-SOUL, NEO-SOUL-LIVE, LOFI-JAZZ-TRAP, KNXWLEDGE, JAZZ-FUNK-FUSION | Half-time A/B; rim-forward contracts |
+| **Crunk / club** | CRUNK, SNAP-MUSIC, BOOGIE-808 | Wide clap + strip-loop DNA |
+| **Memphis slow** | THREE-SIX-SLOW-DRAG, OG-PHONK | Decay + mud tag watch |
+| **NOLA / Flint** | NOLA-BOUNCE-CLASSIC, FLINT-MICHIGAN | Bounce vs punch A/B @ 96 BPM |
 | **G-funk west** | DOGG-POUND, SNOOP-90S, DRE-DAY-90S, DJ-BATTLECAT | Swing + rim week |
 | **Core** | GANGSTA-TRAP, PHONK-TRAP (`midnight-circuit`) | Hard menace vs phonk dirt |
 

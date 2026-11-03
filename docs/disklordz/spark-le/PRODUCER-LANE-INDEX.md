@@ -71,6 +71,20 @@ See [LANES.md](LANES.md) — gangsta trap, Memphis, Atlanta, Cash Money, Drake-t
 | DJ Quik funk | `lane-dj-quik` |
 | Strip / spend-that-shit anthem | `lane-strip-club-anthem` |
 
+## Tier G — crunk / snap / boogie / regional punch
+
+| Vibe | Preset |
+|------|--------|
+| Crunk | `lane-crunk` |
+| Snap music | `lane-snap-music` |
+| Boogie / 808 funk | `lane-boogie-808` |
+| Slow Three 6 drag | `lane-three-six-slow-drag` |
+| OG phonk | `lane-og-phonk` | `lane-of-phonk` |
+| Slowed R&B / screw-soul | `lane-slowed-rnb` |
+| Classic NOLA bounce | `lane-nola-bounce-classic` |
+| Bay Area trap | `lane-bay-area-trap` | `lane-bay-trap` |
+| Flint / Michigan | `lane-flint-michigan` |
+
 ## Tier F — trap soul / chill / alt R&B
 
 | Vibe | Preset |

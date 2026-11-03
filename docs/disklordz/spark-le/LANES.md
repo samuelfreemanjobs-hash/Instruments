@@ -21,6 +21,7 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 |---------|-----------|----------|--------|
 | **DJ-PAUL** | `lane-dj-paul` | 65–90 / 130–180 | Horror-crunch, dark hats |
 | **THREE-SIX-MAFIA** | `lane-three-six-mafia` | 65–95 | Hypnotic crush; aliases `lane-three-6-mafia`, `lane-36-mafia` |
+| **THREE-SIX-SLOW-DRAG** | `lane-three-six-slow-drag` | 55–75 | Horror slow drag |
 | **JUICY-J** | `lane-juicy-j` | 130–160 | Dark bounce, triplet hat space |
 | **SHAWTY-PIMP** | `lane-shawty-pimp` | 60–85 | Slow underground strip |
 | **EST-G** | `lane-est-g` | 130–155 | Hard street trap |
@@ -71,6 +72,7 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | Lane ID | Preset id | BPM hint | Notes |
 |---------|-----------|----------|--------|
 | **MANNIE-FRESH** | `lane-mannie-fresh` | 92–110 / double | Cash Money bounce, Triggerman clap stack |
+| **NOLA-BOUNCE-CLASSIC** | `lane-nola-bounce-classic` | 90–108 | Raw classic NOLA bounce (pre-polished) |
 | **MASTER-P** | `lane-master-p` | 88–105 | No Limit era — simple hard 90s south |
 | **BEATS-BY-THE-POUND** | `lane-beats-by-the-pound` | 90–108 | BBTP raw NO swing, rim + clap |
 
@@ -138,6 +140,18 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **MAJESTIC-CASUAL** | `lane-majestic-casual` | 78–98 | YouTube chill hip-hop/electronic — **no** four-on-the-floor house |
 | **TIMBALAND** | `lane-timbaland` | 85–105 | Syncopated knock / perc bounce |
 | **NEPTUNES** | `lane-neptunes` | 90–110 | Dry skitter snap |
+| **NEO-SOUL-LIVE** | `lane-neo-soul-live` | 75–98 | Live neo-soul rim pocket |
+| **LOFI-JAZZ-TRAP** | `lane-lofi-jazz-trap` | 78–95 | Dusty jazz × trap |
+| **KNXWLEDGE** | `lane-knxwledge` | 80–100 | Sample-lo-fi crate-dig |
+| **JAZZ-FUNK-FUSION** | `lane-jazz-funk-fusion` | 88–108 | Jazz-funk fusion rap |
+
+## Crunk / snap / boogie
+
+| Lane ID | Preset id | BPM hint | Notes |
+|---------|-----------|----------|--------|
+| **CRUNK** | `lane-crunk` | 75–95 | Southern crunk clap stack |
+| **SNAP-MUSIC** | `lane-snap-music` | 85–105 | Atlanta snap bounce |
+| **BOOGIE-808** | `lane-boogie-808` | 105–120 | 80s 808 boogie funk (not house 4×4) |
 
 ## Strip / club anthems
 
@@ -157,6 +171,7 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **HOUSTON-MODERN** | `lane-houston-modern` | 130–160 | Modern H-town trap hybrid |
 | **FAT-PAT** | `lane-fat-pat` | 70–88 | Fat Pat type pocket (alias: `lane-fat-phat`) |
 | **DJ-SCREW** | `lane-dj-screw` | 60–95 | Chop-screw; also factory `disklordz-screw` |
+| **SLOWED-RNB** | `lane-slowed-rnb` | 60–85 | Screw-soul / slowed R&B |
 | **MIKE-DEAN-NOJOE** | `lane-mike-dean-nojoe` | 75–98 | Texas psychedelic trunk |
 
 ## Mississippi / soul south
@@ -206,7 +221,7 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 
 | Lane ID | Preset id | BPM hint | Notes |
 |---------|-----------|----------|--------|
-| **OG-PHONK** | `lane-og-phonk` | 130–150 | Early dirty phonk |
+| **OG-PHONK** | `lane-og-phonk` | 130–150 | Early dirty phonk (alias: `lane-of-phonk`) |
 | **DRIFT-PHONK** | `lane-drift-phonk` | 140–160 | Same spirit as `midnight-circuit` (aliased) |
 | **WAVE** | `lane-wave` | 130–150 | Icy wave trap |
 | **WAVE-PHONK** | `lane-wave-phonk` | 140–160 | Hybrid (`lane-wavephonk` alias) |
@@ -260,8 +275,9 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 
 | Lane ID | Preset id | BPM hint | Notes |
 |---------|-----------|----------|--------|
-| **BAY-AREA-TRAP** | `lane-bay-area-trap` | 85–110 / 170+ | Hyphy-adjacent brightness |
+| **BAY-AREA-TRAP** | `lane-bay-area-trap` | 85–110 / 170+ | Bay Area trap / hyphy-adjacent (alias: `lane-bay-trap`) |
 | **DETROIT-TRAP** | `lane-detroit-trap` | 130–160 | Industrial street snap |
+| **FLINT-MICHIGAN** | `lane-flint-michigan` | 130–155 | Flint / Michigan punch-minimal |
 | **RAGE-TRAP** | `lane-rage-trap` | 140–160 | Short 808, frantic hats |
 
 ## artistLane codes

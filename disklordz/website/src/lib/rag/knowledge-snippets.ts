@@ -122,6 +122,23 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
     tags: ["lane-metro-boomin", "lane-future", "lane-king-louie", "lane-sp1200-chain", "lane-splice-trap", "pluggnb"],
   },
   {
+    id: "lane-crunk-jazz-south",
+    text: "Crunk/snap/boogie: lane-crunk, lane-snap-music, lane-boogie-808. Memphis slow drag lane-three-six-slow-drag. OG phonk lane-og-phonk (alias lane-of-phonk). Slowed R&B lane-slowed-rnb. Jazz/smooth: lane-neo-soul-live, lane-lofi-jazz-trap, lane-knxwledge, lane-jazz-funk-fusion. NOLA lane-nola-bounce-classic. Flint lane-flint-michigan. Bay lane-bay-area-trap. Archetypes only.",
+    tags: [
+      "lane-crunk",
+      "lane-snap-music",
+      "lane-boogie-808",
+      "lane-three-six-slow-drag",
+      "lane-slowed-rnb",
+      "lane-neo-soul-live",
+      "lane-lofi-jazz-trap",
+      "lane-knxwledge",
+      "lane-jazz-funk-fusion",
+      "lane-nola-bounce-classic",
+      "lane-flint-michigan",
+    ],
+  },
+  {
     id: "lane-trap-soul-rnb",
     text: "Trap soul / chill: Cool & Dre lane-cool-dre, SZA lane-sza, Alina Baraz lane-alina-baraz, Bryson Tiller lane-bryson-tiller, trap soul lane-trap-soul, chill trap lane-chill-trap, chillwave lane-chillwave, Majestic Casual lane-majestic-casual (hip-hop chill, not house 4x4). Archetypes only.",
     tags: [

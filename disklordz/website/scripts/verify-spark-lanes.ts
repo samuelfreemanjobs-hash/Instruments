@@ -43,6 +43,10 @@ const inferenceCases: [string, string][] = [
   ["metro boomin dark roll", "lane-metro-boomin"],
   ["dj screw chop slow", "lane-dj-screw"],
   ["majestic casual chill hip hop", "lane-majestic-casual"],
+  ["crunk music southern club", "lane-crunk"],
+  ["lofi jazz trap dusty beat", "lane-lofi-jazz-trap"],
+  ["classic nola bounce triggerman", "lane-nola-bounce-classic"],
+  ["flint michigan street rap", "lane-flint-michigan"],
 ];
 
 for (const [prompt, expected] of inferenceCases) {

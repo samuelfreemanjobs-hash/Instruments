@@ -438,6 +438,33 @@ export function resolveDrumParams(
     hatBright *= 1.06;
     snareSnap *= 0.9;
   }
+  if (/\b(crunk|crunk music|lil jon era)\b/.test(p)) {
+    clapWide *= 1.1;
+    snareBody *= 1.05;
+  }
+  if (/\b(snap music|atl snap|d4l snap)\b/.test(p)) {
+    clapWide *= 1.08;
+    snareSnap *= 1.05;
+  }
+  if (/\b(boogie funk|808 boogie|boogie)\b/.test(p)) rimMetal *= 1.08;
+  if (/\b(slow three 6|three 6 slow drag|horrorcore slow)\b/.test(p)) {
+    kickDecay *= 1.12;
+    hatBright *= 0.85;
+  }
+  if (/\b(slowed rnb|slowed r&b|screw soul)\b/.test(p)) kickDecay *= 1.1;
+  if (/\b(neo soul|neo-soul live)\b/.test(p)) rimMetal *= 1.1;
+  if (/\b(lofi jazz trap|lo-fi jazz trap|jazz trap beat)\b/.test(p)) {
+    hatBright *= 0.92;
+    rimMetal *= 1.06;
+  }
+  if (/\b(knxwledge|knowledge type)\b/.test(p)) hatBright *= 0.9;
+  if (/\b(jazz funk fusion|jazz-funk|fusion rap)\b/.test(p)) rimMetal *= 1.1;
+  if (/\b(classic nola bounce|nola bounce classic|triggerman)\b/.test(p)) {
+    rimMetal *= 1.08;
+    clapWide *= 1.06;
+  }
+  if (/\b(flint|michigan rap|flint michigan)\b/.test(p)) snareSnap *= 1.08;
+  if (/\b(bay area trap)\b/.test(p)) hatBright *= 1.06;
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;
