@@ -1,4 +1,4 @@
-# SparkLE session review (copy per session)
+# MPC500 session review (copy per session)
 
 **Date:** YYYY-MM-DD  
 **Lane ID:** (from [LANES.md](../spark-le/LANES.md) — e.g. `DJ-TOOMP`, `SHAWTY-REDD`, `TR-808-CLONE`, `RAGE-TRAP`)  
@@ -7,7 +7,7 @@
 **BPM:**  
 **batch_id:**  
 **generator_version:**  
-**SparkLE version:**  
+**MPC500 OS / RAM:**  
 
 ## Scores (1 = weak, 5 = elite)
 
@@ -38,7 +38,7 @@ Detail:
 
 ## Time to first beat (minutes)
 
-Generate → audible in SparkLE:
+Generate → audible on the MPC500:
 
 ## Actions (one fix only this week)
 

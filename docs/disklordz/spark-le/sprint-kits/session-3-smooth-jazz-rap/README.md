@@ -1,20 +1,30 @@
-# Session 3 — smooth jazz rap (SparkLE load pack)
+# Session 3 — smooth jazz rap (MPC500 load pack)
 
 **Preset:** `lane-smooth-jazz-rap` · **BPM:** 86 · **DNA:** `smooth-jazz-8ths` (no rolls)
 
-## SparkLE standalone (≈15 min load)
+## Export to the CF card
 
-1. In SparkLE, set project **BPM to 86**.
-2. Import **OneShots/** files to pads **1→8** per `spark-le-manifest.json` roles (same order as charter).
-3. Program **8th-note closed hats** with lighter velocity on off-8ths; **no 32nd rolls**.
-4. Optional: load `Loops/Tops_Kickless_2bar.wav` as reference tops.
-5. Export **30s mix** from SparkLE when the pocket feels right.
+```powershell
+cd disklordz\website
+npm run export:mpc500 -- --kit ../../docs/disklordz/spark-le/sprint-kits/session-3-smooth-jazz-rap --out E:\DISKLORDZ\SJR86
+```
+
+Replace `E:` with your card drive. Output: `SJR86_01SUB.WAV` … `SJR86_08FX.WAV`, `SJR86_L1TOPS.WAV`, and `PADS.TXT` (≈0.6 MB total).
+
+## MPC500 session (≈15 min load)
+
+1. Load the `SJR86_*` samples from the card.
+2. New program; assign pads **A01→A08** per `PADS.TXT` (same order as the charter). **Save the program** as `SJR86`.
+3. Sequence **BPM 86**; light swing (54–58%) on 8th hats.
+4. Program **8th-note closed hats** (A05) with lighter velocity on off-8ths; **no 32nd rolls** (leave Note Repeat off for hats).
+5. Optional: `SJR86_L1TOPS` on a free pad as reference tops.
+6. Record a **30s mix** when the pocket feels right.
 
 **Folder path (this repo):**
 
 `docs/disklordz/spark-le/sprint-kits/session-3-smooth-jazz-rap/`
 
-Copy the whole folder to your machine if you generated on another host, then import into SparkLE.
+`spark-le-manifest.json` keeps its legacy name; the exporter reads it as-is.
 
 ## Regenerate factory WAVs
 

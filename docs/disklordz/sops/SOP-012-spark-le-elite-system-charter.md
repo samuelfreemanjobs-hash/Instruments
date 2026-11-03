@@ -1,10 +1,12 @@
-# SOP-012 — SparkLE elite lanes system charter
+# SOP-012 — MPC500 Lab hybrid elite lanes charter
 
-**Version:** 1.5 · **Improve this SOP:** after each phase retrospective; bump version in footer.
+**Version:** 1.6 · **Improve this SOP:** after each phase retrospective; bump version in footer.
+
+File names, `spark-le/` paths, the `spark_le` manifest key, and `verify:spark` are legacy IDs from the earlier SparkLE plan; they stay as-is so links and CI keep working.
 
 ## Purpose
 
-Run a **repeatable, improving** production system for **SparkLE standalone**: hard **gangsta trap**, **phonk/trap**, and **vintage southern rap** — elite **one-shots and drum loops** — without reckless deploys, burned quality, or operator overload.
+Run a **repeatable, improving** production system for the **Akai MPC500** (standalone): hard **gangsta trap**, **phonk/trap**, and **vintage southern rap** — elite **one-shots and drum loops** — without reckless deploys, burned quality, or operator overload.
 
 This is the **north star** document. Each maturity **phase** has its own SOP (013–017). Follow the phase that matches current capability; do not skip safety gates to “move faster.”
 
@@ -43,13 +45,13 @@ This is the **north star** document. Each maturity **phase** has its own SOP (01
 | **Cloud / aggressive** | CLOUD-TRAP, LEX-LUGER, ANGRY-BEATS, SUPER-SMOKER |
 | **MS soul** | BIG-KRIT |
 
-All lanes share: **8-pad SparkLE map**, **manifest**, **inbox discipline**, **review scores**, **family rotation** (elite performance doc).
+All lanes share: **8-pad core map** (MPC500 A01–A08), **manifest**, **inbox discipline**, **review scores**, **family rotation** (elite performance doc).
 
 ## Maturity phases (which SOP to run)
 
 | Phase | Name | SOP | Entry criterion |
 |-------|------|-----|-----------------|
-| **1** | Feed Spark | [SOP-013](SOP-013-spark-le-phase-1-feed-spark.md) | Generators or manual packs land in SparkLE reliably |
+| **1** | Feed the MPC | [SOP-013](SOP-013-spark-le-phase-1-feed-spark.md) | Generators or manual packs land on the MPC500 reliably |
 | **2** | Trust | [SOP-014](SOP-014-spark-le-phase-2-trust-contracts.md) | CI/contracts guard regressions |
 | **3** | Taste | [SOP-015](SOP-015-spark-le-phase-3-taste-keepers.md) | Keeper corpus + human scores drive params |
 | **4** | Lineage | [SOP-016](SOP-016-spark-le-phase-4-lineage.md) | Variations from keepers + A/B harness |
@@ -57,20 +59,20 @@ All lanes share: **8-pad SparkLE map**, **manifest**, **inbox discipline**, **re
 
 **Rule:** You may work in multiple phases at once (e.g. build Phase 2 while still using Phase 1 sessions), but **promote** to the next phase only when that phase’s success criteria are checked.
 
-## SparkLE 8-pad law (never fork per lane)
+## 8-pad law (never fork per lane)
 
-| Pad | Role |
+| Pad (MPC500) | Role |
 |-----|------|
-| 1 | 808 sub (mono low) |
-| 2 | 808 knock / click |
-| 3 | Snare body |
-| 4 | Snare snap / clap stack |
-| 5 | Closed hat |
-| 6 | Open hat / air |
-| 7 | Rim / stick / perc |
-| 8 | Cowbell / FX / chop |
+| 1 (A01) | 808 sub (mono low) |
+| 2 (A02) | 808 knock / click |
+| 3 (A03) | Snare body |
+| 4 (A04) | Snare snap / clap stack |
+| 5 (A05) | Closed hat |
+| 6 (A06) | Open hat / air |
+| 7 (A07) | Rim / stick / perc |
+| 8 (A08) | Cowbell / FX / chop |
 
-Overflow samples live outside pads; manifest documents swaps.
+MPC500 pads A09–A12 are optional extras (alt 808, perc 2, vox/chop, crash/riser) set via manifest `overflow[]` with `mpc_pad` — see [MPC500-CARD-EXPORT.md](../spark-le/MPC500-CARD-EXPORT.md). Other overflow samples live off-pad; manifest documents swaps.
 
 ## Hardware stack
 
@@ -112,7 +114,7 @@ When uncertain: **stop**, log in `humanpending.md` or issue, take the **defensib
 
 | Role | Responsibility |
 |------|----------------|
-| **Producer (you)** | SparkLE sessions, scores, keeper calls |
+| **Producer (you)** | MPC500 sessions, scores, keeper calls |
 | **Builder (agent/human)** | Generators, inbox, contracts, docs |
 | **Gatekeeper** | Prod, payments, schema — human only |
 
@@ -131,4 +133,4 @@ When uncertain: **stop**, log in `humanpending.md` or issue, take the **defensib
 - [ ] Phase SOP linked in PR when touching spark-le tooling
 - [x] **MPC500 + PC** rig documented ([808-LAB.md](../808-LAB.md))
 
-**SOP-012 v1.5**
+**SOP-012 v1.6**

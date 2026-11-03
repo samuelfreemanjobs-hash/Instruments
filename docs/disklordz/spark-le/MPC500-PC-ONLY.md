@@ -42,8 +42,14 @@ PC: factory / export:sprint-1-3 → WAV folders + spark-le-manifest.json
    cd disklordz/website && npm run export:sprint-1-3
    ```
 
-2. Copy each `OneShots/*.wav` into MPC500 sample memory (your usual import path).
-3. Assign **pad bank A, pads 1–8** to match manifest roles (sub, knock, snare, clap, hats, rim, FX).
+2. Export each pack to the CF card with MPC500-safe names and a pad sheet ([MPC500-CARD-EXPORT.md](MPC500-CARD-EXPORT.md)):
+
+   ```powershell
+   cd disklordz\website
+   npm run export:mpc500 -- --kit ..\..\docs\disklordz\spark-le\sprint-kits\session-1-gangsta-trap --out E:\DISKLORDZ\TOD140
+   ```
+
+3. Load the samples and assign **pad bank A, pads 1–8** per `PADS.TXT` (sub, knock, snare, clap, hats, rim, FX); save the program on the card.
 4. Set sequence **BPM** from manifest (140 / 72 / 86).
 5. Program or play; **export mix** from MPC (or resample to PC).
 6. Score sessions in [reviews/](reviews/); keepers **N** until Vibe/Groove ≥ 4.
