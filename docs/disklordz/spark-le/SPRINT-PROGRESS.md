@@ -5,7 +5,7 @@ Update after each session. Scores/tags feed [MEMORY-AND-CI.md](MEMORY-AND-CI.md)
 | Session | Status | Date (America/Detroit) | Preset used | Keeper? |
 |---------|--------|------------------------|-------------|---------|
 | 1 Gangsta trap | **Complete** | 2026-11-03 | _(fill preset)_ | Y / N |
-| 2 Screw / slowed | Next | — | `lane-dj-screw` | — |
+| 2 Screw / slowed | **Complete** | 2026-11-03 | `lane-dj-screw` / slowed A/B | Y / N |
 | 3 Smooth jazz rap | Pending | — | `lane-smooth-jazz-rap` | — |
 | 4 Southern trunk | Pending | — | — | — |
 | 5 Stretch grid | Pending | — | — | — |
