@@ -49,7 +49,7 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
   },
   {
     id: "spark-le-index",
-    text: "SparkLE elite lanes (archetypes): Memphis, Atlanta, South, Chicago, Cash Money NO (Mannie Fresh, Master P, Beats by the Pound), Drake-type polished beats, hardware DR-660/TR-808 clone, Bay/Detroit trap, rage. Registry: lane-registry.ts. Gangsta trap = hard street trap not trap house.",
+    text: "SparkLE elite lanes (archetypes): Memphis, Atlanta, Houston eras, G-funk west, trap soul/chill, Memphis, Cash Money NO, Drake-type, hardware DR-660/TR-808 clone, Bay/Detroit trap, rage. Registry: lane-registry.ts; neutral preset + brief auto-picks lane via lane-resolve.ts coalesceSparkPreset. Gangsta trap = hard street trap not trap house.",
     tags: ["spark-le", "lanes", "gangsta trap", "memphis", "atlanta", "registry"],
   },
   {
@@ -133,6 +133,8 @@ export const KNOWLEDGE_SNIPPETS: KnowledgeSnippet[] = [
       "lane-chill-trap",
       "lane-chillwave",
       "lane-majestic-casual",
+      "lane-timbaland",
+      "lane-neptunes",
       "trap soul",
       "chill",
     ],

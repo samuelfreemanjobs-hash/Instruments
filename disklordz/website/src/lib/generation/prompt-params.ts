@@ -98,6 +98,7 @@ export function resolveDrumParams(
 ): DrumParams {
   const resolvedPresetId = resolveSparkPresetId(presetId);
   const base = PRESET_BASE[resolvedPresetId] ?? PRESET_BASE["mpc-ready-808"];
+  const nudgePresetId = resolvedPresetId;
   let seedInput = spec
     ? `${resolvedPresetId}::${prompt}::${spec.bpm}::${spec.key}::${spec.wildness}::${spec.engine}`
     : prompt;
@@ -432,13 +433,18 @@ export function resolveDrumParams(
     rimMetal *= 1.05;
     hatDecay *= 1.04;
   }
+  if (/\b(timbaland|timbo|syncopated knock)\b/.test(p)) rimMetal *= 1.1;
+  if (/\b(neptunes|pharrell drums|chad hugo)\b/.test(p)) {
+    hatBright *= 1.06;
+    snareSnap *= 0.9;
+  }
   if (/\b(clean|cyber|digital|crisp)\b/.test(p)) {
     snareSnap *= 0.9;
     hatBright *= 1.1;
   }
   if (/\b(bright|open|air)\b/.test(p)) hatBright *= 1.15;
 
-  const preset = getPreset(presetId);
+  const preset = getPreset(resolvedPresetId);
   if (preset?.artistLane === "DL002") snareSnap *= 1.05;
   if (preset?.artistLane === "DL006") kickDecay *= 1.1;
 
@@ -452,7 +458,7 @@ export function resolveDrumParams(
     rimMetal,
     clapWide,
   };
-  applySparkLaneNudges(presetId, laneState);
+  applySparkLaneNudges(nudgePresetId, laneState);
   kickPitch = laneState.kickPitch;
   kickDecay = laneState.kickDecay;
   snareBody = laneState.snareBody;

@@ -7,7 +7,7 @@ Style **archetypes** only. Add via `lane-registry.ts` + [LANES.md](LANES.md) + R
 | Candidate | Why |
 |-----------|-----|
 | ~~Metro Boomin~~ | ✅ `lane-metro-boomin` |
-| **Timbaland / Neptunes** | Syncopated knock, non-trap 808 |
+| ~~Timbaland / Neptunes~~ | ✅ `lane-timbaland` · `lane-neptunes` |
 | ~~Organized Noize~~ | ✅ `lane-organized-noize` |
 | **No I.D. / Kanye chipmunk era** | Soul sample pocket drums |
 | **Mustard** | Bay ratchet 2010s |
@@ -33,7 +33,7 @@ Style **archetypes** only. Add via `lane-registry.ts` + [LANES.md](LANES.md) + R
 | ~~SP1200 sample chain~~ | ✅ `lane-sp1200-chain` |
 | **Live kit session** | Brush jazz kit for Curren$y lane |
 | **Loop-only pack** | Shawty Redd / strip anthem DNA |
-| **Half-time switch** | Same kit 140 ↔ 70 manifest |
+| ~~Half-time switch~~ | ✅ [HALF-TIME-AB.md](HALF-TIME-AB.md) workflow |
 
 ## When not to add
 

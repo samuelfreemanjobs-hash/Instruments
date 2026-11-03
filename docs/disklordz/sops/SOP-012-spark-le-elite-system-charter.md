@@ -36,7 +36,9 @@ This is the **north star** document. Each maturity **phase** has its own SOP (01
 | **West / Bay** | DJ-QUIK, NIPSEY-HUSSLE, BAY-HUSTLER-RAP |
 | **Strip anthem** | STRIP-CLUB-ANTHEM |
 | **909** | TR-909 (hardware) |
-| **Houston** | HOUSTON-90S, DJ-SCREW, MIKE-DEAN-NOJOE |
+| **Houston** | HOUSTON-90S, HOUSTON-1990S/2000S/MODERN, FAT-PAT, DJ-SCREW, MIKE-DEAN-NOJOE |
+| **G-funk west** | DOGG-POUND, SNOOP-90S, DRE-DAY-90S, DJ-BATTLECAT |
+| **Trap soul / chill** | TRAP-SOUL, BRYSON-TILLER, SZA, MAJESTIC-CASUAL, TIMBALAND, NEPTUNES |
 | **Detroit street** | HELLUVA, DOUGHBOYZ-CASHOUT, DEJ-LOAF, TOP-SIDE, BIG-GERMZ |
 | **Cloud / aggressive** | CLOUD-TRAP, LEX-LUGER, ANGRY-BEATS, SUPER-SMOKER |
 | **MS soul** | BIG-KRIT |

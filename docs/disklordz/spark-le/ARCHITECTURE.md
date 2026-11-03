@@ -23,6 +23,7 @@ python3 disklordz/sound-factory/scripts/generate_kit.py --help
 
 ```text
 lane-registry.ts (drum bases + metadata)
+  → lane-resolve.ts (prompt → preset when neutral factory preset)
   → presets.ts (STYLE_PRESETS)
   → prompt-params.ts (resolveDrumParams)
   → factory / product-factory → WAV + manifest
@@ -42,6 +43,8 @@ lane-registry.ts (drum bases + metadata)
 | [ELITE-PERFORMANCE.md](ELITE-PERFORMANCE.md) | KPIs, rotation, pro checklist |
 | [../sops/SOP-012-spark-le-elite-system-charter.md](../sops/SOP-012-spark-le-elite-system-charter.md) | Charter + safety |
 | `disklordz/website/src/lib/spark-le/lane-registry.ts` | Source of truth for lane presets |
+| `disklordz/website/src/lib/spark-le/lane-resolve.ts` | Prompt inference + `coalesceSparkPreset` |
+| `disklordz/website/scripts/verify-spark-lanes.ts` | Registry contract CI (`npm run verify:spark-lanes`) |
 | Repo TR-808 / SP-1200 | Hardware reference for `lane-tr-808-clone` tuning ([ARCHITECTURE.md](../../../ARCHITECTURE.md)) |
 
 ## Extension points

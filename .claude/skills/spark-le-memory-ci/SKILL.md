@@ -22,8 +22,9 @@ paths:
 1. Read [MEMORY-AND-CI.md](../../../docs/disklordz/spark-le/MEMORY-AND-CI.md).
 2. **Extract** — keeper Y/N, lane, tags, `dna_template_id` if any.
 3. **One fix** — single change: DNA doc line, registry `drum` or `nudge`, or RAG snippet (≤2 sentences).
-4. **Evidence** — attach review path or A/B note; tag [executed] in commit message.
-5. **Do not** skip Phase 2 contracts if implemented; log override in PR if needed.
+4. Run `cd disklordz/website && npm run verify:spark-lanes` after registry edits.
+5. **Evidence** — attach review path or A/B note; tag [executed] in commit message.
+6. **Do not** skip Phase 2 contracts if implemented; log override in PR if needed.
 
 ## Hat/loop tags (use exactly)
 

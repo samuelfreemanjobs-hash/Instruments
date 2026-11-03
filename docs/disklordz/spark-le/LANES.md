@@ -136,6 +136,8 @@ All lanes use the **8-pad SparkLE map** in [SOP-012](../sops/SOP-012-spark-le-el
 | **CHILL-TRAP** | `lane-chill-trap` | 130–155 | Mellow trap, soft aggression |
 | **CHILLWAVE** | `lane-chillwave` | 75–105 | Hazy indie chillwave (≠ vaporwave) |
 | **MAJESTIC-CASUAL** | `lane-majestic-casual` | 78–98 | YouTube chill hip-hop/electronic — **no** four-on-the-floor house |
+| **TIMBALAND** | `lane-timbaland` | 85–105 | Syncopated knock / perc bounce |
+| **NEPTUNES** | `lane-neptunes` | 90–110 | Dry skitter snap |
 
 ## Strip / club anthems
 

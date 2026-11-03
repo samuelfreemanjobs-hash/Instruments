@@ -1598,6 +1598,30 @@ export const SPARK_LANE_REGISTRY: SparkLaneDef[] = [
     { kickPitch: 49, kickDecay: 0.3, snareBody: 0.3, snareSnap: 0.34, hatDecay: 0.021, hatBright: 0.48, rimMetal: 0.5, clapWide: 0.42 },
     { rimMetal: 1.04, hatDecay: 1.03 },
   ),
+  d(
+    "lane-timbaland",
+    "TIMBALAND",
+    "Timbaland type lane",
+    "DL-TIMBO",
+    "trap-soul-rnb",
+    "85–105",
+    "Syncopated knock — off-kick space, perc-forward bounce, not default trap 808 grid.",
+    ["timbaland", "timbo", "syncopated knock", "archetype"],
+    { kickPitch: 50, kickDecay: 0.24, snareBody: 0.32, snareSnap: 0.4, hatDecay: 0.019, hatBright: 0.46, rimMetal: 0.6, clapWide: 0.44 },
+    { rimMetal: 1.08, kickDecay: 0.94 },
+  ),
+  d(
+    "lane-neptunes",
+    "NEPTUNES",
+    "Neptunes type lane",
+    "DL-NEPTUNES",
+    "trap-soul-rnb",
+    "90–110",
+    "Neptunes archetype — dry crisp snap, skitter hats, minimal sub bloom.",
+    ["neptunes", "pharrell drums", "chad hugo", "archetype"],
+    { kickPitch: 52, kickDecay: 0.22, snareBody: 0.3, snareSnap: 0.36, hatDecay: 0.016, hatBright: 0.5, rimMetal: 0.54, clapWide: 0.4 },
+    { hatBright: 1.06, snareSnap: 0.92 },
+  ),
 ];
 
 export const SPARK_PRESET_ALIASES: Record<string, string> = {

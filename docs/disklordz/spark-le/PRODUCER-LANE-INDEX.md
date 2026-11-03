@@ -1,6 +1,8 @@
 # Producer → SparkLE lane index
 
-Maps **today’s trap/rap conversation** (charts + underground) to **`presetId`** in `lane-registry.ts`. Archetypes only.
+Maps **trap/rap/R&B conversation** to **`presetId`** in `lane-registry.ts`. Archetypes only — not affiliated samples.
+
+**Prompt inference:** If you leave preset on **MPC-ready 808** (or other neutral factory preset), the generator picks a lane from your brief via `coalesceSparkPreset()` ([lane-resolve.ts](../../../disklordz/website/src/lib/spark-le/lane-resolve.ts)).
 
 ## Tier A — trap hi-hat / top-loop architects
 
@@ -36,11 +38,57 @@ Maps **today’s trap/rap conversation** (charts + underground) to **`presetId`*
 | Purpz | `lane-purpz` |
 | Johnny Juliano | `lane-johnny-juliano` |
 | Cardo | `lane-cardo` |
+| Cool & Dre | `lane-cool-dre` | `lane-cool-and-dre` |
+| Timbaland | `lane-timbaland` |
+| The Neptunes | `lane-neptunes` |
 
-## Tier C — your catalog (already registered)
+## Tier C — your core catalog (Memphis → phonk → trap)
 
-See [LANES.md](LANES.md) — Memphis, NO, Jetlife, screw, phonk, wave, pack aesthetics, etc.
+See [LANES.md](LANES.md) — gangsta trap, Memphis, Atlanta, Cash Money, Drake-type, hardware TR-808/DR-660, Bay/Detroit, rage, phonk/wave, plugg, pack aesthetics.
 
-## DNA doc
+## Tier D — Houston / screw / eras
 
-Pattern formulas: [TRAP-HAT-LOOP-DNA.md](TRAP-HAT-LOOP-DNA.md)
+| Vibe | Preset |
+|------|--------|
+| 90s Houston (general) | `lane-houston-90s` |
+| 1990s Houston / SUC | `lane-houston-1990s` |
+| 2000s Houston | `lane-houston-2000s` |
+| Modern Houston trap | `lane-houston-modern` |
+| Fat Pat type | `lane-fat-pat` | `lane-fat-phat` |
+| DJ Screw | `lane-dj-screw` | factory `disklordz-screw` |
+| Mike Dean / N.O. Joe | `lane-mike-dean-nojoe` |
+| UGK / Pimp C pocket | `lane-ugk`, `lane-pimp-c` |
+| Trae | `lane-trae` |
+
+## Tier E — West / G-funk / strip
+
+| Vibe | Preset |
+|------|--------|
+| Dogg Pound gangsta | `lane-dogg-pound` |
+| 90s Snoop pocket | `lane-snoop-90s` |
+| Dre Day / Chronic knock | `lane-dre-day-90s` |
+| DJ Battlecat | `lane-dj-battlecat` |
+| DJ Quik funk | `lane-dj-quik` |
+| Strip / spend-that-shit anthem | `lane-strip-club-anthem` |
+
+## Tier F — trap soul / chill / alt R&B
+
+| Vibe | Preset |
+|------|--------|
+| Trap soul (generic) | `lane-trap-soul` |
+| Bryson Tiller type | `lane-bryson-tiller` |
+| SZA type | `lane-sza` |
+| Alina Baraz type | `lane-alina-baraz` |
+| Chill trap | `lane-chill-trap` |
+| Chillwave | `lane-chillwave` |
+| Majestic Casual (not house 4×4) | `lane-majestic-casual` |
+| Pluggnb | `lane-pluggnb` |
+
+## DNA + CI
+
+| Resource | Path |
+|----------|------|
+| Pattern formulas | [TRAP-HAT-LOOP-DNA.md](TRAP-HAT-LOOP-DNA.md) |
+| Half-time A/B workflow | [HALF-TIME-AB.md](HALF-TIME-AB.md) |
+| Registry verify | `cd disklordz/website && npm run verify:spark-lanes` |
+| Memory loop | [MEMORY-AND-CI.md](MEMORY-AND-CI.md) |

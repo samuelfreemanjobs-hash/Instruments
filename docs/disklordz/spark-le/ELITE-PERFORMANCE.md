@@ -40,6 +40,8 @@ Rotate **one family per week** in producer review so the catalog stays elite eve
 | **Detroit street** | HELLUVA, DOUGHBOYZ, DEJ-LOAF, TOP-SIDE, BIG-GERMZ | Snap vs smooth (Dej) A/B |
 | **Cloud / lex / angry** | CLOUD-TRAP, LEX-LUGER, ANGRY-BEATS | Contrast cloud vs angry same BPM |
 | **MS soul** | BIG-KRIT | Body snare + rim week |
+| **Trap soul / chill** | TRAP-SOUL, BRYSON-TILLER, SZA, MAJESTIC-CASUAL, TIMBALAND, NEPTUNES | Half-time A/B ([HALF-TIME-AB.md](HALF-TIME-AB.md)); vocals-first hat KPI |
+| **G-funk west** | DOGG-POUND, SNOOP-90S, DRE-DAY-90S, DJ-BATTLECAT | Swing + rim week |
 | **Core** | GANGSTA-TRAP, PHONK-TRAP (`midnight-circuit`) | Hard menace vs phonk dirt |
 
 Full preset ids: [LANES.md](LANES.md) · code: `disklordz/website/src/lib/spark-le/lane-registry.ts`.

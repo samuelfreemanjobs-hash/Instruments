@@ -46,7 +46,8 @@ Each lane implements the same **contract IDs** with different thresholds:
 ### 3. CI gate
 
 1. PR must pass repo CI ([SOP-001](SOP-001-cloud-agent-task.md)).
-2. No merge on contract failure unless `OVERRIDE(R6):` with evidence in PR.
+2. SparkLE registry: `cd disklordz/website && npm run verify:spark-lanes` (unique lanes, aliases, prompt inference smoke).
+3. No merge on contract failure unless `OVERRIDE(R6):` with evidence in PR.
 
 ### 4. Version manifests
 

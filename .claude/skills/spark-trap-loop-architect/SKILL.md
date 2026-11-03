@@ -24,7 +24,7 @@ paths:
 
 ## Procedure
 
-1. **Resolve preset** — `presetId` from index (e.g. Tay Keith → `lane-tay-keith`).
+1. **Resolve preset** — index lookup (e.g. Tay Keith → `lane-tay-keith`), or neutral preset + brief → `coalesceSparkPreset()` in `lane-resolve.ts`.
 2. **Read DNA row** — grid formula for CH/OH/PERC.
 3. **Set manifest** — BPM, `lane`, `family`, optional `dna_template_id`.
 4. **Generate or render** — factory/loop-render when wired; else document MIDI grid for manual SparkLE program.
