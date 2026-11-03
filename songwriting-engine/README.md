@@ -27,6 +27,24 @@ Musical time is stored in quarter-note beats. MIDI ticks are introduced only at 
 
 The desktop's optional **Creative Brief** field accepts tempo, key/mode, style cues, a `Chords:` progression, song length in bars, and an optional `seed` value. For example: `95 BPM, D minor, smoky West Coast. Chords: Dm9, Gm9, Bbmaj7, A7. 32 bars.` The same parser is available through `generate-prompt` and does not call a remote model.
 
+## MPC500 export
+
+```powershell
+python -m songwriting.cli export-mpc500 --project .\artifacts\Smoker_Sketch_001.json --out E:\SONGS\WCS95D
+# or in one step: generate-prompt ... --mpc500-dir E:\SONGS\WCS95D
+```
+
+Writes a folder for the MPC500 CF card, re-timed to the MPC500's 96 PPQ with same-pitch overlaps trimmed and every file re-validated:
+
+| File | Use |
+|------|-----|
+| `<CODE>_SONG.MID` | Whole arrangement, Type 1, one track per part |
+| `<CODE>_S01INT.MID` … | One sequence per section, for MPC Song mode in the listed order |
+| `<CODE>_PAD.MID`, `_EP`, `_BAS`, `_LD` | Single-track Type 0 files; set the MPC track's MIDI out to the listed channel to drive an external synth |
+| `SONG.TXT`, `mpc500-export.json` | Song-mode order, channels, instrument hints |
+
+`<CODE>` is style initials + BPM + key (e.g. `WCS95D`), so names stay within the MPC500's 16 characters. Whether the MPC500 loads Type 1 files as multi-track sequences has not been checked on hardware; if it flattens them, use the per-track Type 0 files.
+
 ## Current limits
 
 The current release slice includes a deterministic brief parser, D natural minor and the listed scales, a conservative chord-symbol grammar, full chord-tone voicings with range limits, minimum-movement selection, style-dependent groove densities, scale-locked lead notes, a React/Tauri workbench, and a PyInstaller sidecar for Windows release builds. Gospel passing-chord transformations, MIDI import into the editable project model, a note-editing piano roll, audio synthesis, and verified MPC compatibility remain later phases. The MIDI has been structurally checked by reopening it with `mido`; musical quality still requires listening in a target DAW/device.
