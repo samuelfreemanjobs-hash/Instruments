@@ -209,6 +209,16 @@ Kick/snare on separate stems for layering (Shawty Redd / strip anthem rule).
 | `majestic-broken` | MAJESTIC-CASUAL |
 | `smooth-jazz-8ths` | SMOOTH-JAZZ-RAP |
 | `southern-trunk-lazy` | FAT-PAT / southern trunk |
+| `uk-drill-slide-808` | UK-DRILL (Session 5 stretch) |
+
+### UK drill slide (`lane-uk-drill`, Session 5)
+
+| Element | Formula |
+|---------|---------|
+| Kick | Short decay; **slide feel** via long 808 sample on MPC — minimal overlap mud |
+| Snare/clap | Dark snap on 2 & 4; tight, not southern fat |
+| Hats | **Tight 16ths or 8ths** — no lazy trunk, no jazz ghosts |
+| Rule | Catalog test: keep if slide + hat discipline fit your 808 Lab rotation |
 
 ### Southern trunk lazy (`lane-fat-pat`, Session 4 Trunk Sermon)
 

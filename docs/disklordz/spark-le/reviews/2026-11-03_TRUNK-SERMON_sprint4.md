@@ -20,7 +20,7 @@
 
 ## Phase 5 — Session 5 preset (write before closing MPC)
 
-**Chosen for Session 5:** _(pick one)_ `lane-uk-drill` | `lane-jersey-club` | `lane-classic-electro-808` | other: ______
+**Chosen for Session 5:** **`lane-uk-drill`** @ 144 (Stretch Grid) — sprint closed with [session-5 pack](../sprint-kits/session-5-stretch-uk-drill/)
 
 ## Repo completion
 

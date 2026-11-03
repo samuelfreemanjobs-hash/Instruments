@@ -8,8 +8,9 @@ Factory-exported **MPC500-ready** folders: 8 `OneShots/`, loops, `spark-le-manif
 | 2 Screw / slowed | [session-2-dj-screw/](session-2-dj-screw/) | `lane-dj-screw` | 72 | `72031103` |
 | 3 Smooth jazz rap | [session-3-smooth-jazz-rap/](session-3-smooth-jazz-rap/) | `lane-smooth-jazz-rap` | 86 | `86031103` |
 | 4 Trunk Sermon | [session-4-trunk-sermon/](session-4-trunk-sermon/) | `lane-fat-pat` | 84 | `84031103` |
+| 5 Stretch Grid | [session-5-stretch-uk-drill/](session-5-stretch-uk-drill/) | `lane-uk-drill` | 144 | `14431103` |
 
-Regenerate: `npm run export:sprint-1-4` (includes sessions 1–4).
+Regenerate: `npm run export:sprint-1-5` (all sessions).
 
 Reviews: [reviews/](../reviews/) · Progress: [SPRINT-PROGRESS.md](../SPRINT-PROGRESS.md)  
 **MPC500-only ideas:** [MPC500-ONLY-MUSIC-IDEAS.md](../MPC500-ONLY-MUSIC-IDEAS.md)

@@ -74,15 +74,17 @@ Review: [reviews/2026-11-03_TRUNK-SERMON_sprint4.md](reviews/2026-11-03_TRUNK-SE
 
 ## Session 5 — Stretch lane (Phase 5 + backlog)
 
-Pick one new grid:
+| Field | Value |
+|-------|--------|
+| **Preset** | `lane-uk-drill` |
+| **BPM** | 144 |
+| **DNA** | `uk-drill-slide-808` |
+| **Manifest** | [examples/manifest-stretch-uk-drill.json](examples/manifest-stretch-uk-drill.json) |
+| **Load pack** | [sprint-kits/session-5-stretch-uk-drill/](sprint-kits/session-5-stretch-uk-drill/) |
 
-| Preset | Why |
-|--------|-----|
-| `lane-uk-drill` | Slide 808 discipline |
-| `lane-jersey-club` | Non-trap kick pattern |
-| `lane-classic-electro-808` | 80s 808 heritage |
+**Done (repo):** pack + CI. **Done (producer):** one paragraph in [sprint5 review](reviews/2026-11-03_UK-DRILL_sprint5.md) — keep or drop lane for catalog.
 
-**Done:** One paragraph in review: keep or drop lane for your catalog.
+Alt stretch lanes for later: `lane-jersey-club` · `lane-classic-electro-808`
 
 ---
 

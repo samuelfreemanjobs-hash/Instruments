@@ -24,7 +24,7 @@ import {
 
 const SAMPLE_RATE = 44100;
 
-type LoopProfile = "trap" | "screw" | "smooth-jazz" | "southern-trunk";
+type LoopProfile = "trap" | "screw" | "smooth-jazz" | "southern-trunk" | "uk-drill";
 
 type SparkManifest = {
   preset_id: string;
@@ -165,6 +165,12 @@ function loopProfile(manifest: SparkManifest): LoopProfile {
   ) {
     return "southern-trunk";
   }
+  if (
+    manifest.dna_template_id === "uk-drill-slide-808" ||
+    manifest.preset_id === "lane-uk-drill"
+  ) {
+    return "uk-drill";
+  }
   if (manifest.preset_id === "lane-dj-screw" || manifest.bpm <= 80) return "screw";
   return "trap";
 }
@@ -244,6 +250,41 @@ function renderScrewStyleLoop(
 }
 
 /** Fat Pat / Trunk Sermon — lazy 8ths, rim ride, kick 1 & 3. */
+/** UK drill — tight hats, dark snap, kick 1 & 3. */
+function renderUkDrillLoop(
+  params: DrumParams,
+  bpm: number,
+  bars: number,
+  engine: "studio",
+  includeKick: boolean,
+): Float32Array {
+  const beats = bars * 4;
+  const seconds = (60 / bpm) * beats;
+  const n = Math.floor(SAMPLE_RATE * seconds);
+  const out = new Float32Array(n);
+  const kick = renderSampleForEngine("kick", params, engine);
+  const snare = renderSampleForEngine("snare", params, engine);
+  const clap = renderSampleForEngine("clap", params, engine);
+  const hat = renderSampleForEngine("hat_closed", params, engine);
+  const spb = seconds / beats;
+  const beatSamples = Math.floor(spb * SAMPLE_RATE);
+  const sixteenthSamples = Math.floor(beatSamples / 4);
+  for (let beat = 0; beat < beats; beat++) {
+    const beatOffset = Math.floor(beat * beatSamples);
+    if (includeKick && (beat % 4 === 0 || beat % 4 === 2)) {
+      mixAt(out, beatOffset, kick, 0.9);
+    }
+    if (beat % 4 === 1 || beat % 4 === 3) {
+      mixAt(out, beatOffset, snare, 0.7);
+      mixAt(out, beatOffset, clap, 0.45);
+    }
+    for (let s = 0; s < 4; s++) {
+      mixAt(out, beatOffset + s * sixteenthSamples, hat, s % 2 === 0 ? 0.32 : 0.22);
+    }
+  }
+  return normalizeExportPeak(out);
+}
+
 function renderSouthernTrunkLoop(
   params: DrumParams,
   bpm: number,
@@ -330,6 +371,8 @@ function renderLoopForManifest(
       return renderScrewStyleLoop(params, bpm, bars, engine, includeKick);
     case "southern-trunk":
       return renderSouthernTrunkLoop(params, bpm, bars, engine, includeKick);
+    case "uk-drill":
+      return renderUkDrillLoop(params, bpm, bars, engine, includeKick);
     default:
       return renderTrapStyleLoop(params, bpm, bars, engine, includeKick);
   }

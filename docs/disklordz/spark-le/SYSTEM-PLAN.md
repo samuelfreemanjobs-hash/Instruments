@@ -30,7 +30,7 @@ Living plan for building and running SparkLE elite lanes — ordered work with *
 |---|-----------|--------|
 | 1.1 | Starter manifests (gangsta, screw, smooth jazz) | ✅ |
 | 1.2 | 12-week rotation calendar | ✅ |
-| 1.3 | First 10 keeper sessions | ⏳ Sprint **4/5 packs** ([SPRINT-PROGRESS.md](SPRINT-PROGRESS.md)); Session 4 Trunk Sermon @ 84; keepers pending |
+| 1.3 | First 10 keeper sessions | ⏳ Sprint **5/5 packs complete** ([SPRINT-PROGRESS.md](SPRINT-PROGRESS.md)); MPC keepers pending |
 
 ### Phase 2 — Trust ✅ (baseline CI)
 
@@ -88,6 +88,7 @@ Follow [SOP-017](../sops/SOP-017-spark-le-phase-5-elite-leadership.md) weekly/mo
 | Screw LOOP-GRID min 0 | Slow loops fail naive onset counter; tighten when loop-render improves |
 | **MPC500 + PC only** | Active producer rig — [MPC500-PC-ONLY.md](MPC500-PC-ONLY.md); SparkLE optional in stack doc |
 | [808-LAB.md](../808-LAB.md) index | One public name, no second codebase |
+| Session 5 stretch | `lane-uk-drill` @ 144 · manifest-stretch-uk-drill.json |
 
 ---
 
