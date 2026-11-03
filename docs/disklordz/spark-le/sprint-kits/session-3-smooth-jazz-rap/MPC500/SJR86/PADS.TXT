@@ -1,0 +1,19 @@
+DISKLORDZ MPC500 KIT SJR86
+Lane: SMOOTH-JAZZ-RAP  Preset: lane-smooth-jazz-rap  BPM: 86
+Swing: Light swing 54–58% on 8th hats; no 32nd rolls
+
+PAD  ROLE              SAMPLE
+A01  808_sub           SJR86_01SUB
+A02  808_knock         SJR86_02KNK
+A03  snare_body        SJR86_03SNR
+A04  snare_snap_clap   SJR86_04CLP
+A05  hat_closed        SJR86_05CHH
+A06  hat_open          SJR86_06OHH
+A07  rim_perc          SJR86_07RIM
+A08  cowbell_fx        SJR86_08FX
+A09 A10 A11 A12  (empty: add overflow entries with mpc_pad 9-12)
+
+LOOPS (load to a free pad or bank B)
+  SJR86_L1TOPS  2 bars  (Loops/Tops_Kickless_2bar.wav)
+
+Memory: 0.60 MB of 16 MB budget

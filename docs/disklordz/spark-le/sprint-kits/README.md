@@ -10,7 +10,8 @@ Factory-exported **MPC500-ready** folders: 8 `OneShots/`, loops, `spark-le-manif
 | 4 Trunk Sermon | [session-4-trunk-sermon/](session-4-trunk-sermon/) | `lane-fat-pat` | 84 | `84031103` |
 | 5 Stretch Grid | [session-5-stretch-uk-drill/](session-5-stretch-uk-drill/) | `lane-uk-drill` | 144 | `14431103` |
 
-Regenerate: `npm run export:sprint-1-5` (all sessions).
+Regenerate: `npm run export:sprint-1-5` (all sessions).  
+**MPC500 card folders (in-repo):** `MPC500/TOD140` … `UD144` — refresh with `npm run export:mpc500-sprint-all` or `./scripts/automate-808-lab.sh`.
 
 Reviews: [reviews/](../reviews/) · Progress: [SPRINT-PROGRESS.md](../SPRINT-PROGRESS.md)  
 **MPC500-only ideas:** [MPC500-ONLY-MUSIC-IDEAS.md](../MPC500-ONLY-MUSIC-IDEAS.md)

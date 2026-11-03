@@ -6,6 +6,23 @@ Repo sprint is **5/5 complete**. What remains is **merge**, **MPC ears**, **keep
 
 ---
 
+## Automate (repo — no MPC)
+
+From repo root:
+
+```bash
+./scripts/automate-808-lab.sh              # regenerate kits + MPC500 folders + verify + build
+./scripts/automate-808-lab.sh --skip-regenerate   # when WAVs already committed
+```
+
+CI: workflow **808 Lab repo automation** (`workflow_dispatch` or PR on automation scripts).
+
+**Human finish line:** `cd disklordz/website && npm run verify:producer-signoff` (scores, ≥3 keepers, Session 5 catalog note).
+
+Pre-built MPC500 card folders: `sprint-kits/session-*/MPC500/<code>/` — copy to CF.
+
+---
+
 ## A. Merge (5 min)
 
 | Step | Action |

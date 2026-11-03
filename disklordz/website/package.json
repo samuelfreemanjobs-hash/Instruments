@@ -16,6 +16,9 @@
     "export:sprint-1-3": "bash scripts/export-sprint-1-5.sh",
     "export:sprint-1-4": "bash scripts/export-sprint-1-5.sh",
     "export:sprint-1-5": "bash scripts/export-sprint-1-5.sh",
+    "export:mpc500-sprint-all": "npx --yes tsx scripts/export-mpc500-sprint-all.ts",
+    "automate:808-lab-repo": "bash scripts/automate-808-lab-repo.sh",
+    "verify:producer-signoff": "npx --yes tsx scripts/verify-producer-signoff.ts",
     "verify:go-live": "bash scripts/verify-go-live.sh",
     "go-live": "bash scripts/go-live.sh --sync-vercel"
   },

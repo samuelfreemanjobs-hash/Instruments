@@ -6,7 +6,8 @@
 
 **Date closed (factory + reviews + CI):** 2026-11-03 America/Detroit  
 
-All load packs exported; `npm run export:sprint-1-5` · `npm run verify:spark` green.
+All load packs exported; `npm run export:sprint-1-5` · `npm run verify:spark` green.  
+**Repo automation:** `./scripts/automate-808-lab.sh` · MPC500 folders under each `sprint-kits/session-*/MPC500/`.
 
 **Producer sign-off still open:** MPC scores, 30s exports, keepers, Session 5 **catalog keep/drop** paragraph.  
 **Full checklist:** [NEXT-STEPS.md](NEXT-STEPS.md)
