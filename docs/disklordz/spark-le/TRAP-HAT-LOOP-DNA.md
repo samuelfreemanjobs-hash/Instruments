@@ -208,6 +208,17 @@ Kick/snare on separate stems for layering (Shawty Redd / strip anthem rule).
 | `chill-trap-8ths` | CHILL-TRAP |
 | `majestic-broken` | MAJESTIC-CASUAL |
 | `smooth-jazz-8ths` | SMOOTH-JAZZ-RAP |
+| `southern-trunk-lazy` | FAT-PAT / southern trunk |
+
+### Southern trunk lazy (`lane-fat-pat`, Session 4 Trunk Sermon)
+
+| Element | Formula |
+|---------|---------|
+| Kick | 1 & 3 in 4/4 — **long decay**, syrupy (not ATL knock war) |
+| Snare | **Fat body** on 2 & 4; clap stack light behind pad 3 |
+| Hats | **Lazy 8ths** — low velocity; skip every other 8th for air |
+| Rim | **Ride forward** on 2 & 4 with snare; pad 7 is hero perc |
+| Rule | **No metro 32nd rolls**; trunk pocket for vocals — Session 4 @ **84 BPM** |
 
 ### Trap soul / chill (`lane-trap-soul`, `lane-bryson-tiller`, `lane-sza`)
 

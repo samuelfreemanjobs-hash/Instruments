@@ -21,6 +21,7 @@ const FIXTURE_PRESETS = [
   { presetId: "lane-trap-or-die", prompt: "trap or die street" },
   { presetId: "lane-dj-screw", prompt: "chop screw slow" },
   { presetId: "lane-smooth-jazz-rap", prompt: "smooth jazz rap" },
+  { presetId: "lane-fat-pat", prompt: "fat pat syrupy trunk" },
   { presetId: "midnight-circuit", prompt: "drift phonk" },
 ] as const;
 
@@ -29,6 +30,7 @@ const MANIFEST_PATHS = [
   "../../docs/disklordz/spark-le/examples/manifest-smooth-jazz-rap.json",
   "../../docs/disklordz/spark-le/examples/manifest-gangsta-trap.json",
   "../../docs/disklordz/spark-le/examples/manifest-dj-screw.json",
+  "../../docs/disklordz/spark-le/examples/manifest-trunk-sermon.json",
 ];
 
 /** Match encodeWav peak scaling (SOP-014 NO-CLIP on exports). */

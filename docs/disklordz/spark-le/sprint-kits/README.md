@@ -7,5 +7,9 @@ Factory-exported **MPC500-ready** folders: 8 `OneShots/`, loops, `spark-le-manif
 | 1 Gangsta trap | [session-1-gangsta-trap/](session-1-gangsta-trap/) | `lane-trap-or-die` | 140 | `14031103` |
 | 2 Screw / slowed | [session-2-dj-screw/](session-2-dj-screw/) | `lane-dj-screw` | 72 | `72031103` |
 | 3 Smooth jazz rap | [session-3-smooth-jazz-rap/](session-3-smooth-jazz-rap/) | `lane-smooth-jazz-rap` | 86 | `86031103` |
+| 4 Trunk Sermon | [session-4-trunk-sermon/](session-4-trunk-sermon/) | `lane-fat-pat` | 84 | `84031103` |
 
-Reviews: [reviews/](../reviews/) · Progress: [SPRINT-PROGRESS.md](../SPRINT-PROGRESS.md)
+Regenerate: `npm run export:sprint-1-4` (includes sessions 1–4).
+
+Reviews: [reviews/](../reviews/) · Progress: [SPRINT-PROGRESS.md](../SPRINT-PROGRESS.md)  
+**MPC500-only ideas:** [MPC500-ONLY-MUSIC-IDEAS.md](../MPC500-ONLY-MUSIC-IDEAS.md)

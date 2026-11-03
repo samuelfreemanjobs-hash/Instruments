@@ -57,10 +57,16 @@ Copy first keeper to [KEEPERS.md](KEEPERS.md) layout. Review: [reviews/2026-11-0
 
 | Field | Value |
 |-------|--------|
-| **Preset** | `lane-fat-pat` or `lane-nola-bounce-classic` |
-| **BPM** | 76–92 |
-| **KPI** | Log keeper rate for this family in review |
-| **Leadership** | Write next session preset in notes **before** you close SparkLE |
+| **Preset** | `lane-fat-pat` |
+| **BPM** | **84** |
+| **Title** | **Trunk Sermon** |
+| **DNA** | `southern-trunk-lazy` |
+| **Manifest** | [examples/manifest-trunk-sermon.json](examples/manifest-trunk-sermon.json) |
+| **Load pack** | [sprint-kits/session-4-trunk-sermon/](sprint-kits/session-4-trunk-sermon/) |
+| **KPI** | Log keeper rate for **houston** family in review |
+| **Leadership** | Write **Session 5** preset in review **before** you close MPC |
+
+Review: [reviews/2026-11-03_TRUNK-SERMON_sprint4.md](reviews/2026-11-03_TRUNK-SERMON_sprint4.md)
 
 ---
 

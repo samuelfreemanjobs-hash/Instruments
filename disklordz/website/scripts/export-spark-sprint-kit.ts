@@ -24,7 +24,7 @@ import {
 
 const SAMPLE_RATE = 44100;
 
-type LoopProfile = "trap" | "screw" | "smooth-jazz";
+type LoopProfile = "trap" | "screw" | "smooth-jazz" | "southern-trunk";
 
 type SparkManifest = {
   preset_id: string;
@@ -159,6 +159,12 @@ function renderSmoothJazzLoop(
 
 function loopProfile(manifest: SparkManifest): LoopProfile {
   if (manifest.dna_template_id === "smooth-jazz-8ths") return "smooth-jazz";
+  if (
+    manifest.dna_template_id === "southern-trunk-lazy" ||
+    manifest.preset_id === "lane-fat-pat"
+  ) {
+    return "southern-trunk";
+  }
   if (manifest.preset_id === "lane-dj-screw" || manifest.bpm <= 80) return "screw";
   return "trap";
 }
@@ -237,6 +243,73 @@ function renderScrewStyleLoop(
   return normalizeExportPeak(out);
 }
 
+/** Fat Pat / Trunk Sermon — lazy 8ths, rim ride, kick 1 & 3. */
+function renderSouthernTrunkLoop(
+  params: DrumParams,
+  bpm: number,
+  bars: number,
+  engine: "studio",
+  includeKick: boolean,
+): Float32Array {
+  const beats = bars * 4;
+  const seconds = (60 / bpm) * beats;
+  const n = Math.floor(SAMPLE_RATE * seconds);
+  const out = new Float32Array(n);
+
+  const kick = renderSampleForEngine("kick", params, engine);
+  const snare = renderSampleForEngine("snare", params, engine);
+  const hat = renderSampleForEngine("hat_closed", params, engine);
+  const rim = renderSampleForEngine("rim", params, engine);
+
+  const spb = seconds / beats;
+  const beatSamples = Math.floor(spb * SAMPLE_RATE);
+  const eighthSamples = Math.floor(beatSamples / 2);
+
+  for (let beat = 0; beat < beats; beat++) {
+    const beatOffset = Math.floor(beat * beatSamples);
+    if (includeKick && (beat % 4 === 0 || beat % 4 === 2)) {
+      mixAt(out, beatOffset, kick, 0.82);
+    }
+    if (beat % 4 === 1 || beat % 4 === 3) {
+      mixAt(out, beatOffset, snare, 0.78);
+      mixAt(out, beatOffset, rim, 0.42);
+    }
+    for (let eighth = 0; eighth < 2; eighth++) {
+      if (beat % 2 === 0 && eighth === 1) continue;
+      const off = beatOffset + eighth * eighthSamples;
+      mixAt(out, off, hat, eighth === 0 ? 0.28 : 0.18);
+    }
+  }
+
+  return normalizeExportPeak(out);
+}
+
+function renderRimRideLoop(
+  params: DrumParams,
+  bpm: number,
+  bars: number,
+  engine: "studio",
+): Float32Array {
+  const beats = bars * 4;
+  const seconds = (60 / bpm) * beats;
+  const n = Math.floor(SAMPLE_RATE * seconds);
+  const out = new Float32Array(n);
+  const rim = renderSampleForEngine("rim", params, engine);
+  const hat = renderSampleForEngine("hat_closed", params, engine);
+  const spb = seconds / beats;
+  const beatSamples = Math.floor(spb * SAMPLE_RATE);
+  for (let beat = 0; beat < beats; beat++) {
+    const beatOffset = Math.floor(beat * beatSamples);
+    if (beat % 4 === 1 || beat % 4 === 3) {
+      mixAt(out, beatOffset, rim, 0.72);
+    }
+    if (beat % 4 === 0) {
+      mixAt(out, beatOffset, hat, 0.12);
+    }
+  }
+  return normalizeExportPeak(out);
+}
+
 function renderLoopForManifest(
   manifest: SparkManifest,
   params: DrumParams,
@@ -247,11 +320,16 @@ function renderLoopForManifest(
   const includeKick = loopId !== "tops_kickless";
   const profile = loopProfile(manifest);
   const bpm = manifest.bpm;
+  if (loopId === "rim_ride") {
+    return renderRimRideLoop(params, bpm, bars, engine);
+  }
   switch (profile) {
     case "smooth-jazz":
       return renderSmoothJazzLoop(params, bpm, bars, engine, includeKick);
     case "screw":
       return renderScrewStyleLoop(params, bpm, bars, engine, includeKick);
+    case "southern-trunk":
+      return renderSouthernTrunkLoop(params, bpm, bars, engine, includeKick);
     default:
       return renderTrapStyleLoop(params, bpm, bars, engine, includeKick);
   }

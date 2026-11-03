@@ -10,7 +10,7 @@ Producer sign-off: scores, keepers, and 30s exports in [reviews/](reviews/) when
 | 1 Gangsta trap | **Complete** | 2026-11-03 | `lane-trap-or-die` @ 140 | `sprint-export-14031103` | N |
 | 2 Screw / slowed | **Complete** | 2026-11-03 | `lane-dj-screw` @ 72 | `sprint-export-72031103` | N |
 | 3 Smooth jazz rap | **Complete** | 2026-11-03 | `lane-smooth-jazz-rap` @ 86 | `sprint-export-86031103` | N |
-| 4 Southern trunk | Pending | — | `lane-fat-pat` / `lane-nola-bounce-classic` | — | — |
+| 4 Trunk Sermon | **Pack ready** | 2026-11-03 | `lane-fat-pat` @ 84 | `sprint-export-84031103` | N |
 | 5 Stretch grid | Pending | — | drill / jersey / electro | — | — |
 
 **Load packs:** [sprint-kits/README.md](sprint-kits/README.md)
