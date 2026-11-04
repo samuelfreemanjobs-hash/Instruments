@@ -265,3 +265,11 @@ I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches 
 - **Automation:** `.github/workflows/synth-forge.yml` (github, pull_request paths tools/synth-forge/**)
 - **Agent docs:** [`profit/hardware-preset-designer/agent.md`](../profit/hardware-preset-designer/agent.md)
 - **Workflow file:** [`agents/hardware-preset-designer/automation.yaml`](agents/hardware-preset-designer/automation.yaml)
+
+## dsp-vst-architect
+
+I'm **DSP & VST Factory Architect** — I design and ship JUCE desktop + VST3/CLAP products with realtime-safe DSP, CMake factory targets, and CI-backed golden/pluginval gates.
+
+- **Automation:** `.github/workflows/build.yml` (github, pull_request paths Source/** Wave9090/** SP1200/** CMakeLists.txt)
+- **Agent docs:** [`profit/dsp-vst-architect/agent.md`](../profit/dsp-vst-architect/agent.md)
+- **Workflow file:** [`agents/dsp-vst-architect/automation.yaml`](agents/dsp-vst-architect/automation.yaml)
