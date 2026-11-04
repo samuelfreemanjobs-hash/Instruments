@@ -9,11 +9,18 @@ Copy to Compact Flash:
 [ ] Merge MPC500/BANK_A/PHONK/SAMPLES/ onto card (FAT32)
 [ ] Optional: copy COPY_CHECKLIST.txt to MPC500/README.txt on card
 
+Melodic (optional — see docs/MPC500_MELODIC_FX.md):
+[ ] Copy MELODIC/CHORDS/CH01..CH16.WAV to CF
+[ ] Pad bank A: CH01–CH12 · Pad bank B pads 1–4: CH13–CH16
+[ ] Run fx_chain.py or resample on MPC for CRUSH/TAPE/WET folders
+[ ] Reference MIDI in MELODIC/MIDI/ for bass on slave synth
+
 On the MPC (hardware):
 [ ] LOAD samples from BANK_A/PHONK/SAMPLES/ (or _INBOX for trials)
-[ ] Assign pads 1–12 per mpc500/lanes/phonk/pad-map.json
+[ ] Assign drums pads 1–12 per mpc500/lanes/phonk/pad-map.json
 [ ] Tempo 140 BPM (130–160 phonk range)
-[ ] SAVE program → BANK_A/PHONK/PGM/PHONK001.PGM
+[ ] SAVE program → BANK_A/PHONK/PGM/PHONK001.PGM (drums)
+[ ] SAVE melodic program → PHONK_MEL.PGM (chords / scale-locked)
 [ ] Build sequence → SAVE → BANK_A/PHONK/SEQ/
 
 MIDI master:

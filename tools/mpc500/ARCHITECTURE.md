@@ -10,8 +10,13 @@ Map Disklordz or DAW-exported WAVs onto **lane pad maps** (`mpc500/lanes/*/pad-m
 
 ```bash
 python3 tools/mpc500/stage_cf_inbox.py --lane phonk --from /path/to/kit/wavs --out ~/Music/Disklordz/MPC500_STAGING
-python3 tools/mpc500/stage_cf_inbox.py --lane phonk --from /path/to/kit --out /tmp/stage --dry-run
+python3 tools/mpc500/stage_cf_inbox.py --lane phonk --from /path/to/kit --out ~/staging --include-melodic --render-chords
+python3 tools/mpc500/render_chord_stabs.py --out ~/staging/MPC500/BANK_A/PHONK/MELODIC/CHORDS
+python3 tools/mpc500/fx_chain.py --in sample.wav --preset phonk_tape --out ~/staging/MPC500/BANK_A/PHONK/FX/TAPE/sample.WAV
+python3 tools/mpc500/generate_melodic_midi.py --pattern phonk_bass_140 --out ~/staging/MPC500/BANK_A/PHONK/MELODIC/MIDI/PHONK140.MID
 ```
+
+Melodic design: [docs/MPC500_MELODIC_FX.md](../../docs/MPC500_MELODIC_FX.md).
 
 Exit code **2** if required pad filenames are still missing after alias matching.
 

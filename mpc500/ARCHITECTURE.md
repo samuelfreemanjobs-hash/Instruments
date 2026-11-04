@@ -8,7 +8,7 @@ Portable **Akai MPC 500** workflow lane for **vibe coding**: sample prep, pad pr
 - **Goal:** Fast loop from idea → loaded pads → sequence → performance, with documented constraints of 12-pad / CF / classic OS workflow.
 - **Not in v0 scope:** OS patching, reverse-engineering Akai binaries, or redistributing Akai ROM/OS.
 
-Deep research index: [docs/MPC500_RESEARCH.md](../docs/MPC500_RESEARCH.md) · Brainstorm board: [MPC 500 Vibe Lab](https://cursor.com/canvas/store-c392cd47-933a-457e-a0b3-53bad03b7d82/50dde6fd-565c-4927-8aec-67391c29040d).
+Deep research index: [docs/MPC500_RESEARCH.md](../docs/MPC500_RESEARCH.md) · Melodic/FX: [docs/MPC500_MELODIC_FX.md](../docs/MPC500_MELODIC_FX.md) · Brainstorm: [MPC 500 Vibe Lab](https://cursor.com/canvas/store-c392cd47-933a-457e-a0b3-53bad03b7d82/50dde6fd-565c-4927-8aec-67391c29040d).
 
 ## Hardware snapshot (MPC 500)
 

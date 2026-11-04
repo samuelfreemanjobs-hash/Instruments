@@ -45,7 +45,29 @@ def match_cf_name(filename: str) -> str | None:
     return None
 
 
-def stage_lane(from_dir: Path, out_dir: Path, lane: str, *, dry_run: bool) -> dict:
+def ensure_melodic_tree(out_dir: Path, *, dry_run: bool, render_chords: bool) -> None:
+    base = out_dir / "MPC500" / "BANK_A" / "PHONK"
+    for sub in ("MELODIC/CHORDS", "MELODIC/BASS", "MELODIC/MIDI", "FX/CRUSH", "FX/TAPE", "FX/WET"):
+        (base / sub).mkdir(parents=True, exist_ok=True)
+    if render_chords and not dry_run:
+        import subprocess
+
+        script = REPO / "tools" / "mpc500" / "render_chord_stabs.py"
+        subprocess.run(
+            [sys.executable, str(script), "--out", str(base / "MELODIC" / "CHORDS")],
+            check=True,
+        )
+
+
+def stage_lane(
+    from_dir: Path,
+    out_dir: Path,
+    lane: str,
+    *,
+    dry_run: bool,
+    include_melodic: bool,
+    render_chords: bool,
+) -> dict:
     pad_map = load_pad_map(lane)
     cf_names = {p["cfName"] for p in pad_map["pads"]}
     samples_dest = out_dir / "MPC500" / "BANK_A" / "PHONK" / "SAMPLES"
@@ -90,6 +112,13 @@ def stage_lane(from_dir: Path, out_dir: Path, lane: str, *, dry_run: bool) -> di
             checklist_src.read_text(encoding="utf-8"), encoding="utf-8"
         )
 
+    if include_melodic:
+        ensure_melodic_tree(out_dir, dry_run=dry_run, render_chords=render_chords)
+        manifest["melodic"] = {
+            "chords": "MPC500/BANK_A/PHONK/MELODIC/CHORDS/CH01..CH16.WAV",
+            "doc": "docs/MPC500_MELODIC_FX.md",
+        }
+
     if not dry_run:
         (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
@@ -102,6 +131,16 @@ def main() -> int:
     parser.add_argument("--from", dest="from_dir", required=True, type=Path, help="Source kit folder (WAVs)")
     parser.add_argument("--out", dest="out_dir", required=True, type=Path, help="Staging output directory")
     parser.add_argument("--dry-run", action="store_true", help="Report mapping only; no copies")
+    parser.add_argument(
+        "--include-melodic",
+        action="store_true",
+        help="Create MELODIC/ + FX/ tree; optional chord render",
+    )
+    parser.add_argument(
+        "--render-chords",
+        action="store_true",
+        help="With --include-melodic, run render_chord_stabs.py (placeholder stabs)",
+    )
     args = parser.parse_args()
 
     from_dir = args.from_dir.expanduser().resolve()
@@ -110,7 +149,14 @@ def main() -> int:
         return 1
 
     out_dir = args.out_dir.expanduser().resolve()
-    manifest = stage_lane(from_dir, out_dir, args.lane, dry_run=args.dry_run)
+    manifest = stage_lane(
+        from_dir,
+        out_dir,
+        args.lane,
+        dry_run=args.dry_run,
+        include_melodic=args.include_melodic,
+        render_chords=args.render_chords,
+    )
     print(json.dumps({k: manifest[k] for k in ("lane", "assigned", "missingCfNames", "unmappedSources")}, indent=2))
     return 0 if not manifest["missingCfNames"] else 2
 

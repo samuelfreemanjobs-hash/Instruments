@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "defaultBpm": 140,
+  "patterns": [
+    {
+      "id": "phonk_bass_140",
+      "label": "Offbeat sub bass (scale degrees)",
+      "channel": 3,
+      "steps": 16,
+      "grid": [
+        { "step": 1, "degree": 1, "octave": 2, "lenSteps": 2 },
+        { "step": 5, "degree": 1, "octave": 2, "lenSteps": 2 },
+        { "step": 9, "degree": 6, "octave": 2, "lenSteps": 1 },
+        { "step": 11, "degree": 5, "octave": 2, "lenSteps": 2 },
+        { "step": 15, "degree": 1, "octave": 2, "lenSteps": 1 }
+      ]
+    },
+    {
+      "id": "phonk_motif_sparse",
+      "label": "Minor third motif (melodic)",
+      "channel": 2,
+      "steps": 16,
+      "grid": [
+        { "step": 1, "degree": 3, "octave": 4, "lenSteps": 1 },
+        { "step": 3, "degree": 5, "octave": 4, "lenSteps": 1 },
+        { "step": 7, "degree": 3, "octave": 4, "lenSteps": 2 },
+        { "step": 13, "degree": 2, "octave": 4, "lenSteps": 1 }
+      ]
+    },
+    {
+      "id": "chord_stab_8th",
+      "label": "Chord hit grid (trigger indices, not notes)",
+      "channel": 2,
+      "steps": 16,
+      "chordHits": [
+        { "step": 1, "chordIndex": 1 },
+        { "step": 5, "chordIndex": 5 },
+        { "step": 9, "chordIndex": 1 },
+        { "step": 13, "chordIndex": 11 }
+      ]
+    }
+  ]
+}

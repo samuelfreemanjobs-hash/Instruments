@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "label": "16 chord triggers · pad banks A/B",
+  "cfNamePattern": "CH{index:02d}.WAV",
+  "triggers": [
+    { "index": 1, "padBank": "A", "pad": 1, "symbol": "Cm", "notes": [48, 51, 55] },
+    { "index": 2, "padBank": "A", "pad": 2, "symbol": "Cm7", "notes": [48, 51, 55, 58] },
+    { "index": 3, "padBank": "A", "pad": 3, "symbol": "Eb", "notes": [51, 55, 58] },
+    { "index": 4, "padBank": "A", "pad": 4, "symbol": "Ebmaj7", "notes": [51, 55, 58, 62] },
+    { "index": 5, "padBank": "A", "pad": 5, "symbol": "Fm", "notes": [53, 56, 60] },
+    { "index": 6, "padBank": "A", "pad": 6, "symbol": "Fm7", "notes": [53, 56, 60, 63] },
+    { "index": 7, "padBank": "A", "pad": 7, "symbol": "Gm", "notes": [55, 58, 62] },
+    { "index": 8, "padBank": "A", "pad": 8, "symbol": "G7", "notes": [55, 59, 62, 65] },
+    { "index": 9, "padBank": "A", "pad": 9, "symbol": "Ab", "notes": [56, 60, 63] },
+    { "index": 10, "padBank": "A", "pad": 10, "symbol": "Abmaj7", "notes": [56, 60, 63, 67] },
+    { "index": 11, "padBank": "A", "pad": 11, "symbol": "Bb", "notes": [58, 62, 65] },
+    { "index": 12, "padBank": "A", "pad": 12, "symbol": "Bb7", "notes": [58, 62, 65, 68] },
+    { "index": 13, "padBank": "B", "pad": 1, "symbol": "Csus2", "notes": [48, 50, 55] },
+    { "index": 14, "padBank": "B", "pad": 2, "symbol": "Fsus2", "notes": [53, 55, 60] },
+    { "index": 15, "padBank": "B", "pad": 3, "symbol": "G5", "notes": [55, 62] },
+    { "index": 16, "padBank": "B", "pad": 4, "symbol": "Bb5", "notes": [58, 65] }
+  ]
+}

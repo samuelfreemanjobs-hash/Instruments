@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "root": "C",
+  "scale": "natural_minor",
+  "intervalsSemis": [0, 2, 3, 5, 7, 8, 10],
+  "phonkNotes": {
+    "comment": "Favor minor triads, m7, sus2, power fifths for drift phonk",
+    "allowExtensions": ["m7", "sus2", "5", "maj7"]
+  },
+  "midiChannelMelodic": 2,
+  "midiChannelBass": 3,
+  "defaultVelocity": 100
+}
