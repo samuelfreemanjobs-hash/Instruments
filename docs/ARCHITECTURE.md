@@ -74,6 +74,10 @@ Control-rate envelopes advance every `kControlRateDivisor` (32) samples inside e
 - **Golden WAVs:** `tests/golden/manifest.tsv` (6 programs) — `verify_golden.sh` in CI ([AB_HARNESS.md](AB_HARNESS.md)).
 - **VST3 host conformance:** `python3 scripts/vst/run_pluginval.py` (pluginval strictness 5) in CI after build — see [tools/ARCHITECTURE.md](../tools/ARCHITECTURE.md#headless-vst3-validation-pluginval).
 
+## Agent (fleet)
+
+For JUCE/DSP/VST3 factory work, invoke profit agent **`dsp-vst-architect`**: [disklordz/agents/profit/dsp-vst-architect/agent.md](../disklordz/agents/profit/dsp-vst-architect/agent.md) · skill `disklordz-dsp-vst-architect` · CLI `python3 disklordz/integrations/agents/dsp_vst_architect.py --self-test`.
+
 ## Extension points
 
 | Goal | Start here |

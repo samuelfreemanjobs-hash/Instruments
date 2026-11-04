@@ -10,7 +10,7 @@
     "workflow-automation",
     "pm-agent"
   ],
-  "agent_count": 32,
+  "agent_count": 33,
   "agents": [
     {
       "id": "workflow-automation",
@@ -587,6 +587,26 @@
       "profit_entry": "disklordz/agents/profit/hardware-preset-designer/agent.md",
       "copilot_skill": ".github/skills/disklordz-hardware-preset-designer/SKILL.md",
       "automation_path": "disklordz/agents/workflows/agents/hardware-preset-designer/automation.yaml"
+    },
+    {
+      "id": "dsp-vst-architect",
+      "title": "DSP & VST Factory Architect",
+      "activation": "ci_on_pr",
+      "announcement": "I'm **DSP & VST Factory Architect** \u2014 I design and ship JUCE desktop + VST3/CLAP products with realtime-safe DSP, CMake factory targets, and CI-backed golden/pluginval gates.",
+      "automation": {
+        "platform": "github",
+        "trigger": "pull_request paths Source/** Wave9090/** SP1200/** CMakeLists.txt",
+        "workflow_file": ".github/workflows/build.yml",
+        "steps": [
+          "python3 disklordz/integrations/agents/dsp_vst_architect.py --self-test",
+          "cmake configure + build plugin targets",
+          "python3 vst-testing-ops/run_business.py --profile ci-verify or ci",
+          "pluginval + golden WAV regression"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/dsp-vst-architect/agent.md",
+      "copilot_skill": ".github/skills/disklordz-dsp-vst-architect/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/dsp-vst-architect/automation.yaml"
     }
   ],
   "ci_workflows": [
@@ -624,7 +644,7 @@
     },
     {
       "path": ".github/workflows/build.yml",
-      "serves": "golden-wav-qa"
+      "serves": "golden-wav-qa, dsp-vst-architect"
     },
     {
       "path": ".github/workflows/synth-forge.yml",

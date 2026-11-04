@@ -1,4 +1,4 @@
-# Profit agents (31 implemented)
+# Profit agents (33 implemented)
 
 **Repo-wide index:** [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) · **PM ADD:** [disklordz/agents/workflows/PM_ADD.md](../disklordz/agents/workflows/PM_ADD.md)
 
@@ -70,5 +70,7 @@ Copilot skills: `.github/skills/disklordz-<id>/SKILL.md`
 | 27 | social-clip-factory | Social Clip Factory | Top-of-funnel clips |
 | 28 | analytics-interpreter | Analytics Interpreter | MRR / gen metrics |
 | 29 | release-notes | Release Notes | Trust + upgrades |
+| 30 | hardware-preset-designer | Hardware Preset Designer | SynthForge / hardware preset velocity |
+| 31 | dsp-vst-architect | DSP & VST Factory Architect | Plugin SKUs + JUCE factory pipelines |
 
 Phase 3 ideas: [DISKLORDZ_PROFIT_AGENTS_EXTENDED.md](DISKLORDZ_PROFIT_AGENTS_EXTENDED.md)
