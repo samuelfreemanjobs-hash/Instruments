@@ -37,7 +37,11 @@ cd disklordz/daw-inbox && npm start
 # https://github.com/cyriux/mpcmaid
 ```
 
-Future: `tools/mpc500/` scripts (PGM staging, slice export, CF folder layout).
+```bash
+python3 tools/mpc500/stage_cf_inbox.py --lane phonk --from /path/to/wavs --out ~/Music/Disklordz/MPC500_STAGING
+```
+
+CF layout spec: [docs/MPC500_CF_LAYOUT.md](../docs/MPC500_CF_LAYOUT.md) · Tool doc: [tools/mpc500/ARCHITECTURE.md](../tools/mpc500/ARCHITECTURE.md).
 
 ## Data flow (target vibe loop)
 
@@ -45,10 +49,9 @@ Future: `tools/mpc500/` scripts (PGM staging, slice export, CF folder layout).
 Prompt / idea
   → Disklordz generate OR local WAV chop
   → daw-inbox / staging folder (44.1 kHz mono WAV, MPC-friendly names)
-  → MPC Maid OR SampleSlice (.xpm for newer tools; .PGM for 500 via Maid)
-  → Copy to Compact Flash
+  → stage_cf_inbox.py (phonk pad names) → manual copy to Compact Flash
   → MPC 500: LOAD program → sequence → perform
-  → (optional) MIDI out → DAW / SP1200 / JD plugin for hybrid sets
+  → MIDI clock master OUT → slaves (DAW / SP1200 / synth)
 ```
 
 ## Threading / realtime
@@ -64,7 +67,8 @@ Hardware handles audio. Repo code stays **offline batch** (Python/Node/Java help
 | `disklordz/daw-inbox/` | ZIP → WAV folders for DAW/MPC drag-in |
 | `disklordz/website/` `mpc-ready-808` preset | Neutral peaks / naming aligned to MPC handoff |
 | `SP1200/` | Different machine — borrow **chop / pad** UX ideas only |
-| `tools/` (TBD) | `mpc500-pack`, slice→PGM staging |
+| `tools/mpc500/` | `stage_cf_inbox.py` — CF-shaped staging + manifest |
+| `mpc500/lanes/phonk/` | Pad map, copy checklist |
 
 ## Extension points
 
@@ -83,11 +87,14 @@ Hardware handles audio. Repo code stays **offline batch** (Python/Node/Java help
 - [SP1200/ARCHITECTURE.md](../SP1200/ARCHITECTURE.md) — sampler product patterns
 - [disklordz/agents/profit/dsp-vst-architect/agent.md](../disklordz/agents/profit/dsp-vst-architect/agent.md) — if we build pad UI / host tools
 
-## Open decisions (brainstorm)
+## Locked profile (2026-11-03)
 
-1. **OS version** on your unit (stock 1.31 vs Open500)?
-2. **Primary handoff tool:** MPC Maid vs all-manual vs future in-repo packer?
-3. **Genre lane** first: boom bap / phonk / live chops / hybrid MIDI?
-4. **Hybrid rig:** MPC500 as master vs sound module vs sync with SP1200/JD?
+| Item | Choice |
+|------|--------|
+| OS | Stock Akai |
+| CF layout | [docs/MPC500_CF_LAYOUT.md](../docs/MPC500_CF_LAYOUT.md) v1 |
+| Lane | **Phonk** — pads in [lanes/phonk/pad-map.json](lanes/phonk/pad-map.json) |
+| Clock | **MPC master** (MIDI clock out) |
+| Handoff | **Manual CF copy**; Maid optional later |
 
-Record answers in the canvas todo list or a follow-up WO.
+**Open on hardware [executed]:** CF capacity (MB/GB) and confirm Akai browser sees `MPC500/BANK_A/PHONK/`.

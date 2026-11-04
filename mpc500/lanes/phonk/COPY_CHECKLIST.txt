@@ -1,0 +1,25 @@
+MPC 500 · PHONK bank · manual CF copy (stock OS)
+================================================
+
+Before copy:
+[ ] WAVs are mono 44.1 kHz (normalize peaks in DAW if needed)
+[ ] Staging folder built: python3 tools/mpc500/stage_cf_inbox.py --lane phonk --from <kit> --out <staging>
+
+Copy to Compact Flash:
+[ ] Merge MPC500/BANK_A/PHONK/SAMPLES/ onto card (FAT32)
+[ ] Optional: copy COPY_CHECKLIST.txt to MPC500/README.txt on card
+
+On the MPC (hardware):
+[ ] LOAD samples from BANK_A/PHONK/SAMPLES/ (or _INBOX for trials)
+[ ] Assign pads 1–12 per mpc500/lanes/phonk/pad-map.json
+[ ] Tempo 140 BPM (130–160 phonk range)
+[ ] SAVE program → BANK_A/PHONK/PGM/PHONK001.PGM
+[ ] Build sequence → SAVE → BANK_A/PHONK/SEQ/
+
+MIDI master:
+[ ] MPC clock = INTERNAL
+[ ] MIDI OUT sends clock to slaves
+[ ] Slaves set to external MIDI sync
+
+After session:
+[ ] Backup PGM/SEQ from CF to computer BACKUP/ folder

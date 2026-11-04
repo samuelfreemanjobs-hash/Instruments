@@ -94,10 +94,20 @@ Constraint mindset: **small screen, finite RAM/CF**, favor **mono drums**, short
 - Open500: GPL; Akai firmware stays user-local.
 - Sample content: only user-owned or Disklordz-generated WAVs in repo fixtures.
 
-## Next session prompts (copy into chat)
+## Locked profile (2026-11-03)
 
-1. “I run OS ___ on MPC500; CF is ___ MB; I use ___ for samples.”
-2. “First vibe: ___ genre, ___ BPM, chop vs one-shots.”
-3. “Hybrid: MPC + ___ (DAW / SP1200 / synth).”
+| Item | Choice |
+|------|--------|
+| OS | Stock Akai |
+| CF layout | [MPC500_CF_LAYOUT.md](MPC500_CF_LAYOUT.md) v1 |
+| Lane | Phonk · default **140 BPM** · Disklordz **`midnight-circuit`** |
+| Clock | MPC **master** → MIDI clock out |
+| Handoff | **Manual** CF copy · `tools/mpc500/stage_cf_inbox.py` |
 
-Update this doc as we **[execute]** tests on real hardware.
+**Still [executed] on hardware:** CF size (MB/GB) and confirm sample browser path.
+
+## Next session prompts
+
+1. “CF is ___ MB — trim bank sizes?”
+2. “First sequence: ___ bars, swing ___.”
+3. “Slaves on MIDI: ___ (SP1200 / synth / DAW).”

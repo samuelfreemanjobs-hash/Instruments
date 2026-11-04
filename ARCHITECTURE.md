@@ -22,7 +22,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-9090** (sampleless trap wavetable synth) | [Wave9090/ARCHITECTURE.md](Wave9090/ARCHITECTURE.md) | `Wave9090_VST3`, `Wave9090_Standalone`, `Wave9090Tests` |
 | **SP-1200 Drumulator** (standalone + VST3 sampler) | [SP1200/ARCHITECTURE.md](SP1200/ARCHITECTURE.md) · [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md) | `SP1200_Standalone`, `SP1200_VST3`, `ctest -R SP1200` |
-| **MPC 500 vibe lane** (hardware handoff R&D) | [mpc500/ARCHITECTURE.md](mpc500/ARCHITECTURE.md) · [docs/MPC500_RESEARCH.md](docs/MPC500_RESEARCH.md) | MPC Maid / daw-inbox staging (no CMake target yet) |
+| **MPC 500 vibe lane** (hardware handoff R&D) | [mpc500/ARCHITECTURE.md](mpc500/ARCHITECTURE.md) · [docs/MPC500_CF_LAYOUT.md](docs/MPC500_CF_LAYOUT.md) | `python3 tools/mpc500/stage_cf_inbox.py` |
 
 ## Repository layout
 
