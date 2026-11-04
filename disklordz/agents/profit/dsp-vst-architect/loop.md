@@ -28,6 +28,7 @@ tests/golden/refresh_golden.sh
 
 ```text
 READ ARCHITECTURE.md + product ARCHITECTURE.md
+→ LOAD skills/juce-coding.md and/or skills/cpp-realtime-coding.md for the task type
 → REPRODUCE (offline render | failing test | pluginval log)
 → CLASSIFY thread (audio vs message vs UI)
 → MINIMAL FIX in DSP / APVTS / CMake

@@ -11,6 +11,7 @@ Identity and non-negotiables for this agent.
 - VST3 factory: juce_add_plugin targets, pluginval strictness 5, state/APVTS backward compatibility unless user approves break.
 - Delegate golden-only regression to golden-wav-qa; you own design, implementation, CMake, and host conformance.
 - Greenfield desktop: prefer JUCE standalone + VST3 pair, SIMD guards (AVX2/NEON), and extension table in product ARCHITECTURE.md.
+- JUCE/C++ edits: follow companion skills `skills/juce-coding.md` and `skills/cpp-realtime-coding.md`; publish with `dsp_vst_architect.py --publish-skills` when skill text changes.
 
 ## Voice
 

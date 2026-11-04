@@ -28,6 +28,13 @@ PLUGIN_TARGET_HINTS = (
     "JDUpgraded_Standalone",
 )
 
+AGENT_ROOT = REPO / "disklordz/agents/profit/dsp-vst-architect"
+COMPANION_SKILLS: dict[str, Path] = {
+    "disklordz-juce-coding": AGENT_ROOT / "skills/juce-coding.md",
+    "disklordz-cpp-realtime": AGENT_ROOT / "skills/cpp-realtime-coding.md",
+    "disklordz-dsp-vst-architect": AGENT_ROOT / "skill.md",
+}
+
 
 def _read_cmake_plugin_targets() -> list[str]:
     cmake = REPO / "CMakeLists.txt"
@@ -50,6 +57,31 @@ def _read_cmake_plugin_targets() -> list[str]:
     return found
 
 
+def publish_companion_skills() -> list[str]:
+    published: list[str] = []
+    for skill_id, src in COMPANION_SKILLS.items():
+        if not src.is_file():
+            continue
+        dest = REPO / ".github/skills" / skill_id / "SKILL.md"
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+        published.append(str(dest.relative_to(REPO)))
+    return published
+
+
+def _companion_skill_status() -> dict[str, str]:
+    status: dict[str, str] = {}
+    for skill_id, src in COMPANION_SKILLS.items():
+        github = REPO / ".github/skills" / skill_id / "SKILL.md"
+        if not src.is_file():
+            status[skill_id] = "missing_source"
+        elif not github.is_file():
+            status[skill_id] = "missing_published"
+        else:
+            status[skill_id] = "ok"
+    return status
+
+
 def self_test(*, quick: bool = True) -> dict[str, object]:
     missing_docs = [p for p in REQUIRED_DOCS if not (REPO / p).is_file()]
     targets = _read_cmake_plugin_targets()
@@ -58,8 +90,10 @@ def self_test(*, quick: bool = True) -> dict[str, object]:
         "g++12": shutil.which("g++-12") or shutil.which("g++"),
         "python3": shutil.which("python3"),
     }
-    agent_entry = REPO / "disklordz/agents/profit/dsp-vst-architect/agent.md"
-    ok = not missing_docs and bool(targets) and agent_entry.is_file()
+    agent_entry = AGENT_ROOT / "agent.md"
+    skill_status = _companion_skill_status()
+    skills_ok = all(v == "ok" for v in skill_status.values())
+    ok = not missing_docs and bool(targets) and agent_entry.is_file() and skills_ok
     result: dict[str, object] = {
         "ok": ok,
         "repo": str(REPO),
@@ -67,6 +101,7 @@ def self_test(*, quick: bool = True) -> dict[str, object]:
         "plugin_targets": targets,
         "toolchain": toolchain,
         "agent_entry": str(agent_entry.relative_to(REPO)) if agent_entry.is_file() else None,
+        "companion_skills": skill_status,
     }
     if quick or not ok:
         return result
@@ -95,6 +130,13 @@ def print_playbook() -> None:
                     "docs/ARCHITECTURE.md",
                     "vst-testing-ops/ARCHITECTURE.md",
                     "disklordz/agents/profit/dsp-vst-architect/agent.md",
+                    "disklordz/agents/profit/dsp-vst-architect/skills/juce-coding.md",
+                    "disklordz/agents/profit/dsp-vst-architect/skills/cpp-realtime-coding.md",
+                ],
+                "cursor_skills": [
+                    "disklordz-dsp-vst-architect",
+                    "disklordz-juce-coding",
+                    "disklordz-cpp-realtime",
                 ],
                 "build": [
                     "cmake -B build -DCMAKE_BUILD_TYPE=Release "
@@ -123,7 +165,17 @@ def main() -> int:
     )
     parser.add_argument("--playbook", action="store_true", help="JSON command playbook for agents")
     parser.add_argument("--list-targets", action="store_true", help="List detected JUCE plugin targets")
+    parser.add_argument(
+        "--publish-skills",
+        action="store_true",
+        help="Copy companion skill.md sources into .github/skills/disklordz-*/SKILL.md",
+    )
     args = parser.parse_args()
+
+    if args.publish_skills:
+        published = publish_companion_skills()
+        print(json.dumps({"published": published}, indent=2))
+        return 0 if published else 1
 
     if args.playbook:
         print_playbook()

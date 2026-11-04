@@ -73,4 +73,6 @@ Copilot skills: `.github/skills/disklordz-<id>/SKILL.md`
 | 30 | hardware-preset-designer | Hardware Preset Designer | SynthForge / hardware preset velocity |
 | 31 | dsp-vst-architect | DSP & VST Factory Architect | Plugin SKUs + JUCE factory pipelines |
 
+**DSP architect companion skills:** `disklordz-juce-coding`, `disklordz-cpp-realtime` (sources: `disklordz/agents/profit/dsp-vst-architect/skills/` · publish: `dsp_vst_architect.py --publish-skills`).
+
 Phase 3 ideas: [DISKLORDZ_PROFIT_AGENTS_EXTENDED.md](DISKLORDZ_PROFIT_AGENTS_EXTENDED.md)

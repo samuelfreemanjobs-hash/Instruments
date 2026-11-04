@@ -15,6 +15,8 @@ paths:
   - "docs/ARCHITECTURE.md"
   - "disklordz/integrations/agents/dsp_vst_architect.py"
   - "disklordz/agents/profit/dsp-vst-architect/**"
+  - ".github/skills/disklordz-juce-coding/**"
+  - ".github/skills/disklordz-cpp-realtime/**"
   - ".github/workflows/build.yml"
 ---
 
@@ -41,7 +43,10 @@ paths:
 ## Prerequisites
 
 1. Read [`agent.md`](agent.md) and product `ARCHITECTURE.md` for the tree you touch.
-2. Run fast sanity:
+2. For C++/JUCE implementation turns, load companion skills:
+   - [`skills/juce-coding.md`](skills/juce-coding.md) → Cursor skill **`disklordz-juce-coding`**
+   - [`skills/cpp-realtime-coding.md`](skills/cpp-realtime-coding.md) → Cursor skill **`disklordz-cpp-realtime`**
+3. Run fast sanity:
 
 ```bash
 python3 disklordz/integrations/agents/dsp_vst_architect.py --self-test
@@ -73,5 +78,12 @@ python3 disklordz/integrations/agents/dsp_vst_architect.py --playbook
 
 ## Invoke in Cursor
 
-- Skill: **`disklordz-dsp-vst-architect`**
-- Agent entry: **`disklordz/agents/profit/dsp-vst-architect/agent.md`**
+- Coordinator: **`disklordz-dsp-vst-architect`** · [`agent.md`](agent.md)
+- JUCE factory: **`disklordz-juce-coding`**
+- Realtime C++: **`disklordz-cpp-realtime`**
+
+After editing skill sources under `skills/`, run:
+
+```bash
+python3 disklordz/integrations/agents/dsp_vst_architect.py --publish-skills
+```

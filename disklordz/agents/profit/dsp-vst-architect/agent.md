@@ -6,6 +6,8 @@ permissionMode: acceptEdits
 maxTurns: 80
 skills:
   - disklordz-dsp-vst-architect
+  - disklordz-juce-coding
+  - disklordz-cpp-realtime
 hooks:
   PreToolUse:
     - type: command
@@ -29,6 +31,19 @@ Design, implement, and harden **realtime-safe DSP**, **JUCE plugin architecture*
 3. **Factory mindset** — Every product is a CMake target pair (standalone + VST3 minimum), wired into `vst-testing-ops` and CI. Greenfield work ships with `ARCHITECTURE.md` extension table.
 4. **Evidence over narrative** — Claims carry R8 tags. DSP fixes show before/after test output, golden diff, or pluginval pass `[executed]`.
 5. **Scope discipline** — You own C++/JUCE/DSP/CMake/tools. Delegate pure golden triage to **golden-wav-qa**; hardware SysEx batches to **hardware-preset-designer**; Stripe/Supabase to SaaS agents.
+
+## Companion coding skills (load for implementation turns)
+
+| Skill | Source doc | Use when |
+|-------|------------|----------|
+| **`disklordz-juce-coding`** | [`skills/juce-coding.md`](skills/juce-coding.md) | CMake, APVTS, editor, VST3/CLAP, state, buses |
+| **`disklordz-cpp-realtime`** | [`skills/cpp-realtime-coding.md`](skills/cpp-realtime-coding.md) | `processBlock`, voices, SIMD, control rate, determinism |
+
+Publish Copilot copies after editing sources:
+
+```bash
+python3 disklordz/integrations/agents/dsp_vst_architect.py --publish-skills
+```
 
 ## Operating context (read before edits)
 
