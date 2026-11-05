@@ -16,14 +16,13 @@ Turn a **style brief** into **raw mono WAV one-shots** (no keygroups). You load 
 
 Start here:
 
-```bash
-cmake --build build -j --target VstiOneShotRender
+**Windows:**
 
-python3 tools/vsti-one-shot/boom.py \
-  --style "YOUR STYLE HERE" \
-  --vst3 "/path/to/Plugin.vst3" \
-  --out ~/Exports/my_pack
+```powershell
+.\scripts\boom.ps1 -Style "YOUR STYLE HERE" -Vst3 "C:\Program Files\Common Files\VST3\Serum.vst3" -Out "$env:USERPROFILE\Exports\my_pack"
 ```
+
+See [docs/VSTI_ONE_SHOT_WINDOWS.md](../../../docs/VSTI_ONE_SHOT_WINDOWS.md).
 
 ## Slot anatomy
 

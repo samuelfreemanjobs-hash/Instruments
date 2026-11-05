@@ -71,11 +71,11 @@ Handoff: [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md). Spec: [docs/SP1200_ST
 
 Style brief → 100 factory one-shots from any VST3:
 
-```bash
-./scripts/boom.sh --style "YOUR STYLE" --vst3 "/path/to/Plugin.vst3" --out ~/Exports/pack
-```
+Windows: `.\scripts\boom.ps1 -Style "..." -Vst3 "C:\Program Files\Common Files\VST3\....vst3" -Out "$env:USERPROFILE\Exports\pack"`
 
-Handoff: [docs/VSTI_ONE_SHOT_HANDOFF.md](docs/VSTI_ONE_SHOT_HANDOFF.md) · [tools/vsti-one-shot/ARCHITECTURE.md](tools/vsti-one-shot/ARCHITECTURE.md)
+Linux/macOS: `./scripts/boom.sh --style "..." --vst3 "..." --out ~/Exports/pack`
+
+Handoff: [docs/VSTI_ONE_SHOT_WINDOWS.md](docs/VSTI_ONE_SHOT_WINDOWS.md) · [docs/VSTI_ONE_SHOT_HANDOFF.md](docs/VSTI_ONE_SHOT_HANDOFF.md)
 
 ## JUCE plugin (default Cloud install)
 

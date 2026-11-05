@@ -33,11 +33,15 @@ cmake --build build -j
 
 Style brief → **100 mono WAV one-shots** from any VST3 factory bank:
 
-```bash
-./scripts/boom.sh --style "dark melodic stabs" --vst3 "/path/to/Synth.vst3" --out ~/Exports/pack
+**Windows:**
+
+```powershell
+.\scripts\boom.ps1 -Style "dark melodic stabs" -Vst3 "C:\Program Files\Common Files\VST3\Serum.vst3" -Out "$env:USERPROFILE\Exports\pack"
 ```
 
-See [docs/VSTI_ONE_SHOT_HANDOFF.md](docs/VSTI_ONE_SHOT_HANDOFF.md).
+**Linux / macOS:** `./scripts/boom.sh --style "..." --vst3 "..." --out ~/Exports/pack`
+
+See [docs/VSTI_ONE_SHOT_WINDOWS.md](docs/VSTI_ONE_SHOT_WINDOWS.md) · [docs/VSTI_ONE_SHOT_HANDOFF.md](docs/VSTI_ONE_SHOT_HANDOFF.md).
 
 AU (macOS): see [docs/INTEGRATION.md](docs/INTEGRATION.md).
 

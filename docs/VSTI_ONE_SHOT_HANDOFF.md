@@ -6,24 +6,26 @@
 
 ## Start (studio)
 
-```bash
-./scripts/boom.sh \
-  --style "YOUR STYLE BRIEF" \
-  --vst3 "/path/to/Plugin.vst3" \
-  --out ~/Exports/mpc_pack
+**Windows (primary):** [docs/VSTI_ONE_SHOT_WINDOWS.md](VSTI_ONE_SHOT_WINDOWS.md)
+
+```powershell
+.\scripts\boom.ps1 `
+  -Style "YOUR STYLE BRIEF" `
+  -Vst3 "C:\Program Files\Common Files\VST3\Serum.vst3" `
+  -Out "$env:USERPROFILE\Exports\mpc_pack"
 ```
 
-Or after manual build:
+**Linux / macOS:**
 
 ```bash
-python3 tools/vsti-one-shot/boom.py --style "..." --vst3 "..." --out ~/Exports/pack
+./scripts/boom.sh --style "YOUR STYLE" --vst3 "/path/to/Plugin.vst3" --out ~/Exports/mpc_pack
 ```
 
 ## Definition of done (v1.0)
 
 | Item | Location |
 |------|----------|
-| User entry | `scripts/boom.sh`, `tools/vsti-one-shot/boom.py` |
+| User entry | `scripts/boom.ps1` (Windows), `scripts/boom.sh`, `tools/vsti-one-shot/boom.py` |
 | Recipe Author (100 slots) | `vsti_one_shot/recipe_author.py` |
 | Preset Matcher (hybrid default) | `vsti_one_shot/matcher.py`, `preview_analyze.py` |
 | Render Executor (strict) | `build/VstiOneShotRender` |

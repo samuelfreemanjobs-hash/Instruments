@@ -24,7 +24,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_RENDER_BIN = REPO_ROOT / "build" / "VstiOneShotRender"
 
 # Allow running without installing the package
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -35,6 +34,7 @@ from vsti_one_shot.matcher import (  # noqa: E402
     match_assignments_offline,
 )
 from vsti_one_shot.job_validator import validate_job  # noqa: E402
+from vsti_one_shot.paths import default_vst3_search_hints, resolve_render_bin  # noqa: E402
 from vsti_one_shot.recipe_author import SLOT_COUNT, build_recipe  # noqa: E402
 
 
@@ -51,8 +51,8 @@ def main() -> int:
     p.add_argument(
         "--render-bin",
         type=Path,
-        default=DEFAULT_RENDER_BIN,
-        help="Path to VstiOneShotRender binary",
+        default=None,
+        help="Path to VstiOneShotRender binary (auto-detected under build/)",
     )
     p.add_argument(
         "--count",
@@ -72,6 +72,7 @@ def main() -> int:
         help="Preset matcher: name heuristics, preview audio, or both (default hybrid)",
     )
     args = p.parse_args()
+    args.render_bin = resolve_render_bin(REPO_ROOT, args.render_bin)
 
     if args.job is not None:
         if not args.job.is_file():
@@ -96,6 +97,8 @@ def main() -> int:
 
     if not args.vst3.exists():
         print(f"ERROR: VST3 not found: {args.vst3}", file=sys.stderr)
+        for hint in default_vst3_search_hints():
+            print(f"  Hint: browse {hint}", file=sys.stderr)
         return 1
     if not args.dry_run and not args.render_bin.is_file():
         print(
