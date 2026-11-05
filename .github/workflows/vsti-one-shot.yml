@@ -1,0 +1,40 @@
+name: vsti-one-shot
+
+on:
+  pull_request:
+    paths:
+      - "tools/vsti-one-shot/**"
+      - "CMakeLists.txt"
+      - ".github/workflows/vsti-one-shot.yml"
+  push:
+    branches: [main]
+    paths:
+      - "tools/vsti-one-shot/**"
+      - "CMakeLists.txt"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure and build VstiOneShotRender
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+          cmake --build build -j --target VstiOneShotRender Wave9090_VST3
+
+      - name: Python tests
+        run: |
+          pip install pytest
+          python3 -m pytest tools/vsti-one-shot/tests -v
+
+      - name: Integration smoke (hybrid matcher, 3 slots)
+        run: |
+          python3 tools/vsti-one-shot/boom.py \
+            --style "ci smoke melodic" \
+            --vst3 "build/Wave9090/Wave9090_artefacts/Release/VST3/WAVE-9090.vst3" \
+            --out /tmp/vsti_ci_pack \
+            --count 3 \
+            --match-mode hybrid
+          test "$(ls /tmp/vsti_ci_pack/*.wav | wc -l)" -eq 3

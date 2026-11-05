@@ -59,6 +59,12 @@ def main() -> int:
         action="store_true",
         help="Write recipe/assignments/job only; do not render",
     )
+    p.add_argument(
+        "--match-mode",
+        choices=("names", "preview", "hybrid"),
+        default="hybrid",
+        help="Preset matcher: name heuristics, preview audio, or both (default hybrid)",
+    )
     args = p.parse_args()
 
     if not args.vst3.exists():
@@ -86,7 +92,13 @@ def main() -> int:
     if args.dry_run and not args.render_bin.is_file():
         assignments = match_assignments_offline(recipe, args.vst3)
     else:
-        assignments = match_assignments(recipe, args.vst3, args.render_bin)
+        assignments = match_assignments(
+            recipe,
+            args.vst3,
+            args.render_bin,
+            match_mode=args.match_mode,
+            work_dir=work_dir,
+        )
     assignments_path = work_dir / "assignments.json"
     assignments_path.write_text(json.dumps(assignments, indent=2), encoding="utf-8")
 
@@ -95,7 +107,10 @@ def main() -> int:
     job_path.write_text(json.dumps(job, indent=2), encoding="utf-8")
 
     print(f"Recipe Author: {len(recipe['slots'])} slots → {recipe_path}")
-    print(f"Preset Matcher: {len(assignments['assignments'])} programs → {assignments_path}")
+    mode = assignments.get("match_mode", args.match_mode)
+    print(
+        f"Preset Matcher ({mode}): {len(assignments['assignments'])} programs → {assignments_path}"
+    )
     print(f"Render job: {job_path}")
 
     if args.dry_run:

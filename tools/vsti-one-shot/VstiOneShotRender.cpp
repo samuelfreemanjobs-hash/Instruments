@@ -433,11 +433,47 @@ int runJob (const juce::File& jobFile)
     return 0;
 }
 
+int runPreview (const juce::String& outPath,
+                const juce::String& vst3Path,
+                int program,
+                int midiNote,
+                int velocity,
+                double maxCaptureSec,
+                double sampleRate)
+{
+    juce::ScopedJuceInitialiser_GUI juceInit;
+    juce::AudioPluginFormatManager formatManager;
+    addDefaultFormatsToManager (formatManager);
+
+    juce::String error;
+    auto plugin = loadPlugin (formatManager, juce::File (vst3Path), sampleRate, error);
+    if (plugin == nullptr)
+    {
+        std::cerr << error << '\n';
+        return 1;
+    }
+
+    const int numPrograms = plugin->getNumPrograms();
+    const int programIndex = numPrograms > 0 ? juce::jlimit (0, numPrograms - 1, program) : 0;
+    plugin->setCurrentProgram (programIndex);
+
+    auto captured = renderNote (*plugin, midiNote, velocity, sampleRate, maxCaptureSec);
+    auto mono = mixToMono (captured);
+    const juce::File outFile (outPath);
+    if (! writeWav (outFile, mono, sampleRate))
+    {
+        std::cerr << "Preview write failed\n";
+        return 1;
+    }
+    return 0;
+}
+
 void printUsage()
 {
     std::cerr << "VstiOneShotRender — headless VST3 one-shot WAV renderer\n"
               << "  --list-programs <path.vst3>   JSON catalog to stdout\n"
-              << "  --job <job.json>              Render all entries (strict schema)\n";
+              << "  --job <job.json>              Render all entries (strict schema)\n"
+              << "  --preview <out.wav> <vst3> <program> <midiNote> [velocity] [maxSec] [sampleRate]\n";
 }
 
 } // namespace
@@ -457,6 +493,18 @@ int main (int argc, char** argv)
 
     if (cmd == "--job" && argc >= 3)
         return runJob (juce::File (argv[2]));
+
+    if (cmd == "--preview" && argc >= 6)
+    {
+        const juce::String outPath (argv[2]);
+        const juce::String vst3Path (argv[3]);
+        const int program = std::atoi (argv[4]);
+        const int midiNote = std::atoi (argv[5]);
+        const int velocity = argc > 6 ? std::atoi (argv[6]) : 100;
+        const double maxSec = argc > 7 ? std::atof (argv[7]) : 1.5;
+        const double sampleRate = argc > 8 ? std::atof (argv[8]) : 44100.0;
+        return runPreview (outPath, vst3Path, program, midiNote, velocity, maxSec, sampleRate);
+    }
 
     printUsage();
     return 1;

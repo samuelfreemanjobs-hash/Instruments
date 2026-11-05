@@ -12,8 +12,11 @@ cmake --build build -j --target VstiOneShotRender
 python3 tools/vsti-one-shot/boom.py \
   --style "dark Memphis melodic stabs" \
   --vst3 "/path/to/Synth.vst3" \
-  --out ~/Exports/mpc_pack
+  --out ~/Exports/mpc_pack \
+  --match-mode hybrid
 ```
+
+`--match-mode`: `names` | `preview` | `hybrid` (default). Hybrid runs short preview renders per candidate program and scores audio against slot kind before the final 100 WAV batch.
 
 Dry run (recipe + assignments + job only):
 

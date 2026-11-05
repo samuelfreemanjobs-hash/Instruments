@@ -44,8 +44,9 @@ Defaults for all renders:
 ## Matcher policy (factory presets)
 
 - Factory program indices only (no preset file required for v0).
-- Score preset **names** against style + tags when the plugin exposes names.
-- If no name match, **deterministic hash** spreads slots across the bank (no duplicate bias).
+- Default **`--match-mode hybrid`**: name heuristics + **1.5 s preview renders** scored by slot kind.
+- **`names`**: fast, metadata only. **`preview`**: audio only.
+- Reuse penalty spreads programs across 100 slots (avoids one preset for the whole pack).
 - Rationale is stored in `assignments.json` for humans; **render ignores it**.
 
 ## Render executor rules (strict)
