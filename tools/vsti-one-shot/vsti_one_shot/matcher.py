@@ -243,7 +243,10 @@ def match_assignments(
     assignments: list[dict[str, Any]] = []
     used_counts: dict[int, int] = {}
 
-    for slot in recipe["slots"]:
+    total = len(recipe["slots"])
+    for n, slot in enumerate(recipe["slots"], start=1):
+        if total >= 10 and (n == 1 or n % 10 == 0 or n == total):
+            print(f"  matcher: slot {n}/{total} ({slot['id']})", flush=True)
         program, rationale = _pick_program_for_slot(
             slot,
             style,

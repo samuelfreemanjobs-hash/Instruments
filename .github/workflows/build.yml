@@ -30,6 +30,11 @@ jobs:
       - name: SP1200 unit tests
         run: ctest --test-dir build -R SP1200 --output-on-failure
 
+      - name: VSTi one-shot unit tests
+        run: |
+          pip install pytest
+          python3 -m pytest tools/vsti-one-shot/tests -v
+
       - name: Cache pluginval binary
         run: python3 scripts/vst/run_pluginval.py --install-only
 

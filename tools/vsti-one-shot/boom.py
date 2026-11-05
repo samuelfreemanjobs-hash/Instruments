@@ -34,14 +34,20 @@ from vsti_one_shot.matcher import (  # noqa: E402
     match_assignments,
     match_assignments_offline,
 )
+from vsti_one_shot.job_validator import validate_job  # noqa: E402
 from vsti_one_shot.recipe_author import SLOT_COUNT, build_recipe  # noqa: E402
 
 
 def main() -> int:
     p = argparse.ArgumentParser(description="Style → 100 VST3 one-shot WAVs for MPC")
-    p.add_argument("--style", required=True, help="Natural language style brief")
-    p.add_argument("--vst3", required=True, type=Path, help="Path to .vst3 bundle")
-    p.add_argument("--out", required=True, type=Path, help="Output directory for WAVs")
+    p.add_argument("--style", help="Natural language style brief")
+    p.add_argument("--vst3", type=Path, help="Path to .vst3 bundle")
+    p.add_argument("--out", type=Path, help="Output directory for WAVs")
+    p.add_argument(
+        "--job",
+        type=Path,
+        help="Render-only: skip recipe/matcher and use an existing job.json",
+    )
     p.add_argument(
         "--render-bin",
         type=Path,
@@ -67,6 +73,27 @@ def main() -> int:
     )
     args = p.parse_args()
 
+    if args.job is not None:
+        if not args.job.is_file():
+            print(f"ERROR: job file not found: {args.job}", file=sys.stderr)
+            return 1
+        if not args.render_bin.is_file():
+            print(f"ERROR: VstiOneShotRender not found at {args.render_bin}", file=sys.stderr)
+            return 1
+        job = json.loads(args.job.read_text(encoding="utf-8"))
+        errors = validate_job(job)
+        if errors:
+            print("ERROR: invalid job.json:", file=sys.stderr)
+            for e in errors:
+                print(f"  - {e}", file=sys.stderr)
+            return 1
+        proc = subprocess.run([str(args.render_bin), "--job", str(args.job)], check=False)
+        return proc.returncode
+
+    if not args.style or not args.vst3 or not args.out:
+        print("ERROR: --style, --vst3, and --out are required (unless --job is set).", file=sys.stderr)
+        return 1
+
     if not args.vst3.exists():
         print(f"ERROR: VST3 not found: {args.vst3}", file=sys.stderr)
         return 1
@@ -85,10 +112,12 @@ def main() -> int:
     work_dir.mkdir(parents=True, exist_ok=True)
     args.out.mkdir(parents=True, exist_ok=True)
 
+    print(f"[1/3] Recipe Author — style: {args.style!r} ({args.count} slots)")
     recipe = build_recipe(args.style, slot_count=args.count)
     recipe_path = work_dir / "recipe.json"
     recipe_path.write_text(json.dumps(recipe, indent=2), encoding="utf-8")
 
+    print(f"[2/3] Preset Matcher — mode={args.match_mode}")
     if args.dry_run and not args.render_bin.is_file():
         assignments = match_assignments_offline(recipe, args.vst3)
     else:
@@ -106,6 +135,13 @@ def main() -> int:
     job_path = work_dir / "job.json"
     job_path.write_text(json.dumps(job, indent=2), encoding="utf-8")
 
+    errors = validate_job(job)
+    if errors:
+        print("ERROR: generated job failed validation:", file=sys.stderr)
+        for e in errors:
+            print(f"  - {e}", file=sys.stderr)
+        return 1
+
     print(f"Recipe Author: {len(recipe['slots'])} slots → {recipe_path}")
     mode = assignments.get("match_mode", args.match_mode)
     print(
@@ -117,6 +153,7 @@ def main() -> int:
         print("Dry run — skipping render.")
         return 0
 
+    print(f"[3/3] Render Executor — {len(job['renders'])} WAVs → {args.out}")
     proc = subprocess.run(
         [str(args.render_bin), "--job", str(job_path)],
         check=False,

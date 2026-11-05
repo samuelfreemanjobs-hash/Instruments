@@ -27,6 +27,17 @@ cmake --build build -j
 | `SpectralDiff` | Compare two WAVs for regression / A/B |
 | `GenerateCleanroomRom` | Rebuild ROM at compile time |
 | `ExportPreset` | Write `.jdpreset` for a factory program index |
+| `VstiOneShotRender` | Any VST3 → one-shot WAVs (see [VSTi one-shot handoff](docs/VSTI_ONE_SHOT_HANDOFF.md)) |
+
+## VSTi one-shots for MPC (Boom)
+
+Style brief → **100 mono WAV one-shots** from any VST3 factory bank:
+
+```bash
+./scripts/boom.sh --style "dark melodic stabs" --vst3 "/path/to/Synth.vst3" --out ~/Exports/pack
+```
+
+See [docs/VSTI_ONE_SHOT_HANDOFF.md](docs/VSTI_ONE_SHOT_HANDOFF.md).
 
 AU (macOS): see [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
