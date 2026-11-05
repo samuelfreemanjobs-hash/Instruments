@@ -179,5 +179,26 @@ target_compile_definitions(SpectralDiff
         JUCE_USE_CURL=0
 )
 
+add_executable(VstiOneShotRender tools/vsti-one-shot/VstiOneShotRender.cpp)
+target_link_libraries(VstiOneShotRender
+    PRIVATE
+        juce::juce_audio_formats
+        juce::juce_audio_processors
+        juce::juce_audio_processors_headless
+        juce::juce_audio_utils
+        juce::juce_gui_basics
+        juce::juce_gui_extra
+)
+target_compile_definitions(VstiOneShotRender
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+        JUCE_PLUGINHOST_VST3=1
+        JUCE_PLUGINHOST_VST=0
+        JUCE_PLUGINHOST_AU=0
+        JUCE_PLUGINHOST_LADSPA=0
+        JUCE_PLUGINHOST_LV2=0
+)
+
 add_subdirectory(Wave9090)
 add_subdirectory(SP1200)

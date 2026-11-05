@@ -67,6 +67,16 @@ ctest --test-dir build -R SP1200 --output-on-failure
 
 Handoff: [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md). Spec: [docs/SP1200_STANDALONE_SPEC.md](docs/SP1200_STANDALONE_SPEC.md).
 
+## VSTi one-shot packs (MPC)
+
+Style brief → 100 factory one-shots from any VST3:
+
+Windows: `.\scripts\boom.ps1 -Style "..." -Vst3 "C:\Program Files\Common Files\VST3\....vst3" -Out "$env:USERPROFILE\Exports\pack"`
+
+Linux/macOS: `./scripts/boom.sh --style "..." --vst3 "..." --out ~/Exports/pack`
+
+Handoff: [docs/VSTI_ONE_SHOT_WINDOWS.md](docs/VSTI_ONE_SHOT_WINDOWS.md) · [docs/VSTI_ONE_SHOT_HANDOFF.md](docs/VSTI_ONE_SHOT_HANDOFF.md)
+
 ## JUCE plugin (default Cloud install)
 
 ```bash
