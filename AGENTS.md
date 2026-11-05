@@ -67,6 +67,17 @@ ctest --test-dir build -R SP1200 --output-on-failure
 
 Handoff: [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md). Spec: [docs/SP1200_STANDALONE_SPEC.md](docs/SP1200_STANDALONE_SPEC.md).
 
+## VSTi one-shot packs (MPC)
+
+Style brief → 100 factory one-shots from any VST3:
+
+```bash
+cmake --build build -j --target VstiOneShotRender
+python3 tools/vsti-one-shot/boom.py --style "YOUR STYLE" --vst3 "/path/to/Plugin.vst3" --out ~/Exports/pack
+```
+
+See [tools/vsti-one-shot/ARCHITECTURE.md](tools/vsti-one-shot/ARCHITECTURE.md).
+
 ## JUCE plugin (default Cloud install)
 
 ```bash

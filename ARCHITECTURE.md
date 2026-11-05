@@ -7,7 +7,8 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | Product | Doc | CMake targets |
 |---------|-----|----------------|
 | **JD Upgraded** (VST3 + CLAP + standalone synth) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [Source/UI/ARCHITECTURE.md](Source/UI/ARCHITECTURE.md) | `JDUpgraded_VST3`, `JDUpgraded_CLAP`, `JDUpgraded_Standalone` |
-| **Offline tooling** (ROM gen, render, regression) | [tools/ARCHITECTURE.md](tools/ARCHITECTURE.md) | `GenerateCleanroomRom`, `OfflineRender`, `SpectralDiff` |
+| **Offline tooling** (ROM gen, render, regression) | [tools/ARCHITECTURE.md](tools/ARCHITECTURE.md) | `GenerateCleanroomRom`, `OfflineRender`, `SpectralDiff`, `VstiOneShotRender` |
+| **VSTi one-shot style pack** (MPC WAV batches) | [tools/vsti-one-shot/ARCHITECTURE.md](tools/vsti-one-shot/ARCHITECTURE.md) | `python3 tools/vsti-one-shot/boom.py --style "…" --vst3 … --out …` |
 | **SynthForge** (hardware preset workstation) | [tools/synth-forge/ARCHITECTURE.md](tools/synth-forge/ARCHITECTURE.md) | `pytest tests -v` · `uvicorn synth_forge.main:app --port 8000` in `tools/synth-forge/` |
 | **VST testing ops** (pluginval command center) | [vst-testing-ops/ARCHITECTURE.md](vst-testing-ops/ARCHITECTURE.md) | `python3 vst-testing-ops/run_business.py --profile ci` · `streamlit run vst-testing-ops/app.py` |
 | **HISE sketch lane** (rompler / sampler R&D) | [docs/HISE_ANTIGRAVITY_LANE.md](docs/HISE_ANTIGRAVITY_LANE.md) · [hise-sketch/ARCHITECTURE.md](hise-sketch/ARCHITECTURE.md) | HISE local export (Antigravity); not in root CMake |
