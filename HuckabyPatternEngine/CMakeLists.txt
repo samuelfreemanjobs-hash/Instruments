@@ -18,6 +18,7 @@ juce_add_plugin(HuckabyPatternEngine
 
 target_sources(HuckabyPatternEngine
     PRIVATE
+        Source/MidiPatternLibrary.cpp
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
 )

@@ -9,6 +9,8 @@
 namespace huckaby
 {
 
+class HuckabyAudioProcessorEditor;
+
 class HuckabyAudioProcessor final : public juce::AudioProcessor
 {
 public:
@@ -52,6 +54,25 @@ public:
 
     void resetTransportCounters();
 
+    /** User patterns root: application data / HuckabyPatternEngine / MidiPatterns / track_N / ( .mid files ) */
+    void setTrackMidiPatternFolder(int trackIndex, const juce::File& folder);
+    juce::File getTrackMidiPatternFolder(int trackIndex) const;
+
+    /** File count after last scan; -1 if unknown. */
+    int getTrackMidiPatternCount(int trackIndex) const noexcept;
+    int getTrackMidiPatternIndex(int trackIndex) const noexcept;
+
+    /** Scans folder on caller thread (call from message thread). */
+    void scanTrackMidiPatternFolder(int trackIndex);
+
+    void selectNextMidiPattern(int trackIndex);
+    void selectPreviousMidiPattern(int trackIndex);
+    void reloadCurrentMidiPattern(int trackIndex);
+
+    void exportCurrentPatternToMidi(int trackIndex, const juce::File& file) const;
+
+    void syncPatternUiForTrack(int trackIndex);
+
 private:
     struct TrackParams final
     {
@@ -59,6 +80,8 @@ private:
         std::atomic<float>* mode { nullptr };
         std::atomic<float>* staticBank { nullptr };
         std::atomic<float>* modulo { nullptr };
+        std::atomic<float>* midiPatCc { nullptr };
+        std::atomic<float>* midiPatCh { nullptr };
     };
 
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -84,12 +107,29 @@ private:
 
     bool isEffectivelyPlaying() const noexcept;
 
+    void drainPendingMidiPatternDeltas();
+
+    void applyPatternCycleOnMessageThread(int trackIndex, int delta);
+    void loadMidiPatternAtIndexFromMessageThread(int trackIndex, int index);
+
+    void installPatternFromLoad(int trackIndex, uint64_t bits, const std::array<float, kMaxSteps>& v, int patternIndex);
+
     juce::AudioProcessorValueTreeState apvts;
 
     std::array<TrackParams, kNumTracks> trackParams {};
 
     std::array<TrackState, kNumTracks> tracks {};
     std::array<std::atomic<uint64_t>, kNumTracks> patternBits {};
+    std::array<std::array<std::atomic<uint64_t>, 4>, kNumTracks> velocityPacks {};
+
+    std::array<std::atomic<int>, kNumTracks> midiPatternCount {};
+
+    std::array<std::atomic<int>, kNumTracks> midiPatternIndex {};
+
+    std::array<std::atomic<int8_t>, kNumTracks> pendingPatternDelta {};
+
+    mutable juce::CriticalSection midiFolderLock;
+    std::array<juce::String, kNumTracks> midiPatternFolders;
 
     std::array<DrumVoice, kMaxVoices> voices {};
 

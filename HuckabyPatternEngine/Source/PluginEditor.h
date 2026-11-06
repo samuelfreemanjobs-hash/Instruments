@@ -15,6 +15,8 @@ public:
     void resized() override;
     void timerCallback() override;
 
+    void syncFromProcessor();
+
 private:
     HuckabyAudioProcessor& processor;
     const int trackIndex;
@@ -39,6 +41,21 @@ private:
     juce::Slider moduloSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> moduloAttach;
 
+    juce::Label patCcLabel;
+    juce::Slider patCcSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> patCcAttach;
+
+    juce::Label patChLabel;
+    juce::Slider patChSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> patChAttach;
+
+    juce::Label midiFolderLabel;
+    juce::TextButton chooseMidiFolderButton { "MIDI folder" };
+    juce::TextButton midiPrevButton { "◀ Pat" };
+    juce::TextButton midiNextButton { "Pat ▶" };
+    juce::TextButton midiReloadButton { "Reload" };
+    juce::TextButton exportMidiButton { "Export .mid" };
+
     juce::OwnedArray<juce::ToggleButton> stepButtons;
 
     juce::Label slotLabel;
@@ -52,6 +69,8 @@ private:
     void applyBitsToButtons(uint64_t bits);
     uint64_t readBitsFromButtons() const;
 
+    void updateMidiPatternStatusLabel();
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PatternGridComponent)
 };
 
@@ -62,6 +81,8 @@ public:
 
     void paint(juce::Graphics&) override;
     void resized() override;
+
+    void syncTrackPatternUi(int trackIndex);
 
 private:
     HuckabyAudioProcessor& processor;

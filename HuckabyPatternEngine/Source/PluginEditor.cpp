@@ -53,6 +53,81 @@ PatternGridComponent::PatternGridComponent(HuckabyAudioProcessor& processorIn, i
     moduloAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         apvts, trackId(trackIndex, "mod_div"), moduloSlider);
 
+    patCcLabel.setText("Pat CC", juce::dontSendNotification);
+    addAndMakeVisible(patCcLabel);
+    addAndMakeVisible(patCcSlider);
+    patCcSlider.setRange(0.0, 127.0, 1.0);
+    patCcSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    patCcSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 50, 22);
+    patCcAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        apvts, trackId(trackIndex, "pat_cc"), patCcSlider);
+
+    patChLabel.setText("Pat ch", juce::dontSendNotification);
+    addAndMakeVisible(patChLabel);
+    addAndMakeVisible(patChSlider);
+    patChSlider.setRange(0.0, 16.0, 1.0);
+    patChSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    patChSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 50, 22);
+    patChAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        apvts, trackId(trackIndex, "pat_ch"), patChSlider);
+
+    midiFolderLabel.setText("", juce::dontSendNotification);
+    midiFolderLabel.setJustificationType(juce::Justification::centredLeft);
+    midiFolderLabel.setFont(juce::FontOptions(13.0f));
+    addAndMakeVisible(midiFolderLabel);
+
+    addAndMakeVisible(chooseMidiFolderButton);
+    addAndMakeVisible(midiPrevButton);
+    addAndMakeVisible(midiNextButton);
+    addAndMakeVisible(midiReloadButton);
+    addAndMakeVisible(exportMidiButton);
+
+    chooseMidiFolderButton.onClick = [this]() {
+        auto chooser = std::make_shared<juce::FileChooser>("Select MIDI pattern folder",
+                                                           processor.getTrackMidiPatternFolder(trackIndex),
+                                                           "*");
+
+        chooser->launchAsync(juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectDirectories,
+                             [this, chooser](const juce::FileChooser& fc) mutable {
+                                 const auto f = fc.getResult();
+                                 if (!f.isDirectory())
+                                     return;
+                                 processor.setTrackMidiPatternFolder(trackIndex, f);
+                                 syncFromProcessor();
+                             });
+    };
+
+    midiPrevButton.onClick = [this]() {
+        processor.selectPreviousMidiPattern(trackIndex);
+        syncFromProcessor();
+    };
+
+    midiNextButton.onClick = [this]() {
+        processor.selectNextMidiPattern(trackIndex);
+        syncFromProcessor();
+    };
+
+    midiReloadButton.onClick = [this]() {
+        processor.reloadCurrentMidiPattern(trackIndex);
+        syncFromProcessor();
+    };
+
+    exportMidiButton.onClick = [this]() {
+        auto chooser = std::make_shared<juce::FileChooser>("Export pattern as .mid", juce::File {}, "*.mid");
+
+        chooser->launchAsync(juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles,
+                             [this, chooser](const juce::FileChooser& fc) mutable {
+                                 auto f = fc.getResult();
+                                 if (f == juce::File {})
+                                     return;
+
+                                 if (!f.getFileName().endsWithIgnoreCase(".mid"))
+                                     f = f.withFileExtension("mid");
+
+                                 processor.exportCurrentPatternToMidi(trackIndex, f);
+                             });
+    };
+
     slotLabel.setText("Load slot", juce::dontSendNotification);
     addAndMakeVisible(slotLabel);
     addAndMakeVisible(slotSlider);
@@ -77,7 +152,34 @@ PatternGridComponent::PatternGridComponent(HuckabyAudioProcessor& processorIn, i
     };
 
     rebuildFromLengthChange();
+    syncFromProcessor();
     startTimerHz(4);
+}
+
+void PatternGridComponent::syncFromProcessor()
+{
+    applyBitsToButtons(processor.getPatternBits(trackIndex));
+    updateMidiPatternStatusLabel();
+}
+
+void PatternGridComponent::updateMidiPatternStatusLabel()
+{
+    const auto folder = processor.getTrackMidiPatternFolder(trackIndex);
+    const int n = processor.getTrackMidiPatternCount(trackIndex);
+    const int idx = processor.getTrackMidiPatternIndex(trackIndex);
+
+    juce::String line;
+    if (folder.exists())
+        line << folder.getFileName() << " — ";
+    else
+        line << "(no folder) — ";
+
+    if (n <= 0)
+        line << "no .mid";
+    else
+        line << "pat " << (idx + 1) << "/" << n;
+
+    midiFolderLabel.setText(line, juce::dontSendNotification);
 }
 
 int PatternGridComponent::getSelectedSlotIndex() const noexcept
@@ -93,6 +195,7 @@ void PatternGridComponent::rebuildFromLengthChange()
         cachedLengthSteps = 16;
 
     rebuildStepButtons();
+    updateMidiPatternStatusLabel();
 }
 
 void PatternGridComponent::rebuildStepButtons()
@@ -176,6 +279,35 @@ void PatternGridComponent::resized()
 
     area.removeFromTop(8);
 
+    auto rowMidiMap = area.removeFromTop(34);
+    {
+        auto a = rowMidiMap.removeFromLeft(360);
+        patCcLabel.setBounds(a.removeFromLeft(90));
+        patCcSlider.setBounds(a);
+
+        rowMidiMap.removeFromLeft(16);
+
+        auto b = rowMidiMap.removeFromLeft(360);
+        patChLabel.setBounds(b.removeFromLeft(90));
+        patChSlider.setBounds(b);
+    }
+
+    area.removeFromTop(8);
+
+    auto rowMidiNav = area.removeFromTop(34);
+    {
+        auto lab = rowMidiNav.removeFromLeft(juce::jmin(420, rowMidiNav.getWidth() - 320));
+        midiFolderLabel.setBounds(lab);
+        rowMidiNav.removeFromLeft(8);
+        chooseMidiFolderButton.setBounds(rowMidiNav.removeFromLeft(100));
+        midiPrevButton.setBounds(rowMidiNav.removeFromLeft(56));
+        midiNextButton.setBounds(rowMidiNav.removeFromLeft(56));
+        midiReloadButton.setBounds(rowMidiNav.removeFromLeft(72));
+        exportMidiButton.setBounds(rowMidiNav.removeFromLeft(88));
+    }
+
+    area.removeFromTop(8);
+
     auto row3 = area.removeFromTop(34);
     {
         auto a = row3.removeFromLeft(360);
@@ -192,7 +324,7 @@ void PatternGridComponent::resized()
     const int rows = (stepButtons.size() + cols - 1) / cols;
 
     const int w = area.getWidth() / juce::jmax(1, cols);
-    const int h = juce::jlimit(22, 44, area.getHeight() / juce::jmax(1, rows));
+    const int h = juce::jlimit(22, 44, juce::jmax(120, area.getHeight()) / juce::jmax(1, rows));
 
     int x = area.getX();
     int y = area.getY();
@@ -221,7 +353,7 @@ HuckabyAudioProcessorEditor::HuckabyAudioProcessorEditor(HuckabyAudioProcessor& 
     , useInternalTransportAttach(p.getApvts(), "internal_transport", internalTransportToggle)
     , tabs(juce::TabbedButtonBar::TabsAtTop)
 {
-    setSize(980, 620);
+    setSize(980, 720);
 
     masterGainLabel.setText("Gain", juce::dontSendNotification);
     masterGainLabel.attachToComponent(&masterGainSlider, true);
@@ -248,6 +380,15 @@ HuckabyAudioProcessorEditor::HuckabyAudioProcessorEditor(HuckabyAudioProcessor& 
     }
 
     addAndMakeVisible(tabs);
+}
+
+void HuckabyAudioProcessorEditor::syncTrackPatternUi(int trackIndex)
+{
+    if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))
+        return;
+
+    if (grids[static_cast<size_t>(trackIndex)] != nullptr)
+        grids[static_cast<size_t>(trackIndex)]->syncFromProcessor();
 }
 
 void HuckabyAudioProcessorEditor::paint(juce::Graphics& g)

@@ -1,6 +1,11 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "ParameterIds.h"
+#include "MidiPatternLibrary.h"
+#include "VelocityPacking.h"
+
+// PluginEditor.h included for dynamic_cast in syncPatternUiForTrack
+#include <algorithm>
 #include <cmath>
 
 namespace huckaby
@@ -37,6 +42,15 @@ int countLoadedSamples(TrackState& t) noexcept
             count = i + 1;
     return count;
 }
+
+int lastSetStepIndex(uint64_t bits) noexcept
+{
+    for (int s = kMaxSteps - 1; s >= 0; --s)
+        if (((bits >> s) & 1ull) != 0)
+            return s;
+
+    return -1;
+}
 } // namespace
 
 juce::AudioProcessorValueTreeState::ParameterLayout HuckabyAudioProcessor::createParameterLayout()
@@ -71,6 +85,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout HuckabyAudioProcessor::creat
         const juce::String idMode = trackParamId(t, "mode");
         const juce::String idBankStatic = trackParamId(t, "bank_static");
         const juce::String idModDiv = trackParamId(t, "mod_div");
+        const juce::String idPatCc = trackParamId(t, "pat_cc");
+        const juce::String idPatCh = trackParamId(t, "pat_ch");
 
         layout.add(std::make_unique<juce::AudioParameterInt>(
             juce::ParameterID { idLen, 1 },
@@ -98,6 +114,20 @@ juce::AudioProcessorValueTreeState::ParameterLayout HuckabyAudioProcessor::creat
             1,
             64,
             1));
+
+        layout.add(std::make_unique<juce::AudioParameterInt>(
+            juce::ParameterID { idPatCc, 1 },
+            "Track " + juce::String(t + 1) + " MIDI pat CC",
+            0,
+            127,
+            juce::jlimit(0, 127, 20 + t)));
+
+        layout.add(std::make_unique<juce::AudioParameterInt>(
+            juce::ParameterID { idPatCh, 1 },
+            "Track " + juce::String(t + 1) + " MIDI pat chan",
+            0,
+            16,
+            10));
     }
 
     return layout;
@@ -116,6 +146,8 @@ void HuckabyAudioProcessor::refreshParameterHandles()
         trackParams[static_cast<size_t>(t)].mode = apvts.getRawParameterValue(trackParamId(t, "mode"));
         trackParams[static_cast<size_t>(t)].staticBank = apvts.getRawParameterValue(trackParamId(t, "bank_static"));
         trackParams[static_cast<size_t>(t)].modulo = apvts.getRawParameterValue(trackParamId(t, "mod_div"));
+        trackParams[static_cast<size_t>(t)].midiPatCc = apvts.getRawParameterValue(trackParamId(t, "pat_cc"));
+        trackParams[static_cast<size_t>(t)].midiPatCh = apvts.getRawParameterValue(trackParamId(t, "pat_ch"));
     }
 }
 
@@ -123,21 +155,42 @@ HuckabyAudioProcessor::HuckabyAudioProcessor()
     : AudioProcessor(BusesProperties().withOutput("Output", juce::AudioChannelSet::stereo(), true))
     , apvts(*this, nullptr, "HuckabyParams", createParameterLayout())
 {
+    for (auto& c : midiPatternCount)
+        c.store(-1, std::memory_order_relaxed);
+
     refreshParameterHandles();
+
+    ensureFactoryMidiPatternsOnDisk();
 
     installDefaultPatterns(tracks);
 
     for (int t = 0; t < kNumTracks; ++t)
         patternBits[static_cast<size_t>(t)].store(0, std::memory_order_relaxed);
 
-    // Encode the built-in demo pattern into bits for tracks 0..3 (16-step lanes).
     for (int t = 0; t < kNumTracks; ++t)
     {
         uint64_t bits = 0;
         for (int s = 0; s < kMaxSteps; ++s)
             if (tracks[static_cast<size_t>(t)].triggers[static_cast<size_t>(s)] != 0)
                 bits |= (1ull << s);
+
         patternBits[static_cast<size_t>(t)].store(bits, std::memory_order_relaxed);
+        velpack::packFrom(tracks[static_cast<size_t>(t)].velocities, velocityPacks[static_cast<size_t>(t)]);
+    }
+
+    for (int t = 0; t < kNumTracks; ++t)
+    {
+        const auto folder = getDefaultMidiPatternsRoot().getChildFile("track_" + juce::String(t + 1));
+        midiPatternFolders[static_cast<size_t>(t)] = folder.getFullPathName();
+        scanTrackMidiPatternFolder(t);
+        if (getTrackMidiPatternCount(t) > 0)
+        {
+            juce::String err;
+            uint64_t bits = 0;
+            std::array<float, kMaxSteps> v {};
+            if (applyMidiPatternFromFolder(folder, 0, bits, v, err))
+                installPatternFromLoad(t, bits, v, 0);
+        }
     }
 
     for (auto& t : tracks)
@@ -234,6 +287,9 @@ void HuckabyAudioProcessor::pullPatternBitsIntoTracks() noexcept
         tr.activeStepLength = getTrackLengthSteps(t);
         const uint64_t bits = patternBits[static_cast<size_t>(t)].load(std::memory_order_relaxed);
         bitsToTriggers(bits, tr);
+
+        velpack::unpackInto(velocityPacks[static_cast<size_t>(t)], tr.velocities);
+
         tr.numSamplesLoaded = countLoadedSamples(tr);
 
         tr.selectionMode = getTrackMode(t);
@@ -293,17 +349,133 @@ int HuckabyAudioProcessor::getModuloDivisor(int trackIndex) const noexcept
     return p != nullptr ? juce::jmax(1, juce::roundToInt(p->load())) : 1;
 }
 
+void HuckabyAudioProcessor::drainPendingMidiPatternDeltas()
+{
+    for (int t = 0; t < kNumTracks; ++t)
+    {
+        const int8_t d = pendingPatternDelta[static_cast<size_t>(t)].exchange(0, std::memory_order_acq_rel);
+        if (d == 0)
+            continue;
+
+        juce::MessageManager::callAsync([this, t, d]() {
+            applyPatternCycleOnMessageThread(t, static_cast<int>(d));
+        });
+    }
+}
+
 void HuckabyAudioProcessor::processIncomingMidi(const juce::MidiBuffer& midi) noexcept
 {
     for (const auto metadata : midi)
     {
         const auto m = metadata.getMessage();
-        if (m.isProgramChange())
+
+        if (m.isNoteOn())
         {
-            // Placeholder hook for future scene/bank automation. Values are ignored for now.
-            juce::ignoreUnused(m.getProgramChangeNumber());
+            const int note = m.getNoteNumber();
+            const int vel = m.getVelocity();
+            if (vel <= 0)
+                continue;
+
+            const int drumLane = note - 36;
+            if (!juce::isPositiveAndBelow(drumLane, kNumTracks))
+                continue;
+
+            if (trackParams[static_cast<size_t>(drumLane)].midiPatCh == nullptr)
+                continue;
+
+            const int wantCh = juce::roundToInt(trackParams[static_cast<size_t>(drumLane)].midiPatCh->load());
+            if (wantCh > 0 && m.getChannel() != wantCh)
+                continue;
+
+            pendingPatternDelta[static_cast<size_t>(drumLane)].store(1, std::memory_order_release);
+            continue;
+        }
+
+        if (m.isController())
+        {
+            for (int t = 0; t < kNumTracks; ++t)
+            {
+                const auto* ccP = trackParams[static_cast<size_t>(t)].midiPatCc;
+                const auto* chP = trackParams[static_cast<size_t>(t)].midiPatCh;
+                if (ccP == nullptr || chP == nullptr)
+                    continue;
+
+                const int cc = juce::roundToInt(ccP->load());
+                const int wantCh = juce::roundToInt(chP->load());
+
+                if (m.getControllerNumber() != cc)
+                    continue;
+
+                if (wantCh > 0 && m.getChannel() != wantCh)
+                    continue;
+
+                const int v = m.getControllerValue();
+                if (v >= 64)
+                    pendingPatternDelta[static_cast<size_t>(t)].store(1, std::memory_order_release);
+                else
+                    pendingPatternDelta[static_cast<size_t>(t)].store(-1, std::memory_order_release);
+            }
         }
     }
+}
+
+void HuckabyAudioProcessor::applyPatternCycleOnMessageThread(int trackIndex, int delta)
+{
+    if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))
+        return;
+
+    const int n = getTrackMidiPatternCount(trackIndex);
+    if (n <= 0)
+        return;
+
+    int idx = midiPatternIndex[static_cast<size_t>(trackIndex)].load(std::memory_order_relaxed);
+    idx = (idx + delta) % n;
+    if (idx < 0)
+        idx += n;
+
+    loadMidiPatternAtIndexFromMessageThread(trackIndex, idx);
+}
+
+void HuckabyAudioProcessor::installPatternFromLoad(int trackIndex,
+                                                   uint64_t bits,
+                                                   const std::array<float, kMaxSteps>& v,
+                                                   int patternIndex)
+{
+    if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))
+        return;
+
+    patternBits[static_cast<size_t>(trackIndex)].store(bits, std::memory_order_release);
+
+    for (int s = 0; s < kMaxSteps; ++s)
+        tracks[static_cast<size_t>(trackIndex)].velocities[static_cast<size_t>(s)] = v[static_cast<size_t>(s)];
+
+    velpack::packFrom(tracks[static_cast<size_t>(trackIndex)].velocities, velocityPacks[static_cast<size_t>(trackIndex)]);
+
+    midiPatternIndex[static_cast<size_t>(trackIndex)].store(patternIndex, std::memory_order_relaxed);
+
+    const int last = lastSetStepIndex(bits);
+    const int len = juce::jlimit(1, kMaxSteps, last + 1);
+
+    if (auto* p = apvts.getParameter(trackParamId(trackIndex, "len")))
+        p->setValueNotifyingHost(p->convertTo0to1(static_cast<float>(len)));
+
+    syncPatternUiForTrack(trackIndex);
+}
+
+void HuckabyAudioProcessor::loadMidiPatternAtIndexFromMessageThread(int trackIndex, int index)
+{
+    const juce::File folder = getTrackMidiPatternFolder(trackIndex);
+    if (!folder.isDirectory())
+        return;
+
+    juce::String err;
+    uint64_t bits = 0;
+    std::array<float, kMaxSteps> v {};
+
+    if (!applyMidiPatternFromFolder(folder, index, bits, v, err))
+        return;
+
+    installPatternFromLoad(trackIndex, bits, v, index);
 }
 
 void HuckabyAudioProcessor::onSequencerTick() noexcept
@@ -362,6 +534,7 @@ void HuckabyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
     juce::ScopedNoDenormals noDenormals;
 
     processIncomingMidi(midi);
+    drainPendingMidiPatternDeltas();
 
     updateTransportAndTempo();
     reconcilePlaybackStartStopEdge();
@@ -417,9 +590,24 @@ void HuckabyAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 
     juce::ValueTree patterns("Patterns");
     for (int t = 0; t < kNumTracks; ++t)
+    {
         patterns.setProperty("t" + juce::String(t),
                              static_cast<juce::int64>(patternBits[static_cast<size_t>(t)].load(std::memory_order_relaxed)),
                              nullptr);
+
+        for (int w = 0; w < 4; ++w)
+            patterns.setProperty("t" + juce::String(t) + "_v" + juce::String(w),
+                                 static_cast<juce::int64>(velocityPacks[static_cast<size_t>(t)][static_cast<size_t>(w)]
+                                                             .load(std::memory_order_relaxed)),
+                                 nullptr);
+
+        patterns.setProperty("t" + juce::String(t) + "_midipath",
+                             midiPatternFolders[static_cast<size_t>(t)],
+                             nullptr);
+        patterns.setProperty("t" + juce::String(t) + "_midiidx",
+                             midiPatternIndex[static_cast<size_t>(t)].load(std::memory_order_relaxed),
+                             nullptr);
+    }
 
     state.appendChild(patterns, nullptr);
 
@@ -438,6 +626,8 @@ void HuckabyAudioProcessor::setStateInformation(const void* data, int sizeInByte
         if (auto params = state.getChildWithName(apvts.state.getType()); params.isValid())
             apvts.replaceState(params);
 
+        refreshParameterHandles();
+
         if (auto patterns = state.getChildWithName("Patterns"); patterns.isValid())
         {
             for (int t = 0; t < kNumTracks; ++t)
@@ -445,7 +635,49 @@ void HuckabyAudioProcessor::setStateInformation(const void* data, int sizeInByte
                 const auto v = patterns.getProperty("t" + juce::String(t));
                 if (!v.isVoid())
                     patternBits[static_cast<size_t>(t)].store(static_cast<uint64_t>((juce::int64) v), std::memory_order_relaxed);
+
+                bool haveVelPacks = true;
+                for (int w = 0; w < 4; ++w)
+                {
+                    const auto vw = patterns.getProperty("t" + juce::String(t) + "_v" + juce::String(w));
+                    if (vw.isVoid())
+                        haveVelPacks = false;
+                }
+
+                if (haveVelPacks)
+                {
+                    for (int w = 0; w < 4; ++w)
+                    {
+                        const auto vw = patterns.getProperty("t" + juce::String(t) + "_v" + juce::String(w));
+                        velocityPacks[static_cast<size_t>(t)][static_cast<size_t>(w)].store(
+                            static_cast<uint64_t>((juce::int64) vw),
+                            std::memory_order_relaxed);
+                    }
+                }
+                else
+                {
+                    std::array<float, kMaxSteps> velFallback {};
+                    const uint64_t bits = patternBits[static_cast<size_t>(t)].load(std::memory_order_relaxed);
+                    velpack::applyBitsToVelocities(bits, velFallback, 0.88f);
+                    velpack::packFrom(velFallback, velocityPacks[static_cast<size_t>(t)]);
+                }
+
+                const auto path = patterns.getProperty("t" + juce::String(t) + "_midipath").toString();
+                if (path.isNotEmpty())
+                    midiPatternFolders[static_cast<size_t>(t)] = path;
+
+                const auto idx = patterns.getProperty("t" + juce::String(t) + "_midiidx");
+                if (!idx.isVoid())
+                    midiPatternIndex[static_cast<size_t>(t)].store(static_cast<int>((int) idx), std::memory_order_relaxed);
             }
+
+            juce::MessageManager::callAsync([this]() {
+                for (int t = 0; t < kNumTracks; ++t)
+                    scanTrackMidiPatternFolder(t);
+
+                for (int t = 0; t < kNumTracks; ++t)
+                    syncPatternUiForTrack(t);
+            });
         }
     }
 }
@@ -456,6 +688,10 @@ void HuckabyAudioProcessor::setPatternBits(int trackIndex, uint64_t bits) noexce
         return;
 
     patternBits[static_cast<size_t>(trackIndex)].store(bits, std::memory_order_relaxed);
+
+    std::array<float, kMaxSteps> v {};
+    velpack::applyBitsToVelocities(bits, v, 0.88f);
+    velpack::packFrom(v, velocityPacks[static_cast<size_t>(trackIndex)]);
 }
 
 uint64_t HuckabyAudioProcessor::getPatternBits(int trackIndex) const noexcept
@@ -472,6 +708,102 @@ void HuckabyAudioProcessor::resetTransportCounters()
     sampleCounter = 0.0;
     for (auto& t : tracks)
         t.resetCounters();
+}
+
+void HuckabyAudioProcessor::setTrackMidiPatternFolder(int trackIndex, const juce::File& folder)
+{
+    if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))
+        return;
+
+    {
+        const juce::ScopedLock sl(midiFolderLock);
+        midiPatternFolders[static_cast<size_t>(trackIndex)] = folder.getFullPathName();
+    }
+
+    scanTrackMidiPatternFolder(trackIndex);
+
+    if (getTrackMidiPatternCount(trackIndex) > 0)
+        loadMidiPatternAtIndexFromMessageThread(trackIndex, 0);
+}
+
+juce::File HuckabyAudioProcessor::getTrackMidiPatternFolder(int trackIndex) const
+{
+    if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))
+        return {};
+
+    const juce::ScopedLock sl(midiFolderLock);
+    return juce::File(midiPatternFolders[static_cast<size_t>(trackIndex)]);
+}
+
+int HuckabyAudioProcessor::getTrackMidiPatternCount(int trackIndex) const noexcept
+{
+    if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))
+        return 0;
+
+    return midiPatternCount[static_cast<size_t>(trackIndex)].load(std::memory_order_relaxed);
+}
+
+int HuckabyAudioProcessor::getTrackMidiPatternIndex(int trackIndex) const noexcept
+{
+    if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))
+        return 0;
+
+    return midiPatternIndex[static_cast<size_t>(trackIndex)].load(std::memory_order_relaxed);
+}
+
+void HuckabyAudioProcessor::scanTrackMidiPatternFolder(int trackIndex)
+{
+    const juce::File folder = getTrackMidiPatternFolder(trackIndex);
+    if (!folder.isDirectory())
+    {
+        midiPatternCount[static_cast<size_t>(trackIndex)].store(0, std::memory_order_relaxed);
+        return;
+    }
+
+    auto files = folder.findChildFiles(juce::File::findFiles, false, "*.mid");
+    if (files.isEmpty())
+        files = folder.findChildFiles(juce::File::findFiles, false, "*.midi");
+
+    std::sort(files.begin(), files.end(), [](const juce::File& a, const juce::File& b) {
+        return a.getFileName().compareIgnoreCase(b.getFileName()) < 0;
+    });
+
+    midiPatternCount[static_cast<size_t>(trackIndex)].store(files.size(), std::memory_order_relaxed);
+
+    const int n = files.size();
+    const int idx = n > 0 ? juce::jlimit(0, n - 1, getTrackMidiPatternIndex(trackIndex)) : 0;
+    if (n > 0)
+        midiPatternIndex[static_cast<size_t>(trackIndex)].store(idx, std::memory_order_relaxed);
+}
+
+void HuckabyAudioProcessor::selectNextMidiPattern(int trackIndex)
+{
+    applyPatternCycleOnMessageThread(trackIndex, +1);
+}
+
+void HuckabyAudioProcessor::selectPreviousMidiPattern(int trackIndex)
+{
+    applyPatternCycleOnMessageThread(trackIndex, -1);
+}
+
+void HuckabyAudioProcessor::reloadCurrentMidiPattern(int trackIndex)
+{
+    const int idx = getTrackMidiPatternIndex(trackIndex);
+    loadMidiPatternAtIndexFromMessageThread(trackIndex, idx);
+}
+
+void HuckabyAudioProcessor::exportCurrentPatternToMidi(int trackIndex, const juce::File& file) const
+{
+    if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))
+        return;
+
+    std::array<float, kMaxSteps> v {};
+    velpack::unpackInto(const_cast<HuckabyAudioProcessor*>(this)->velocityPacks[static_cast<size_t>(trackIndex)], v);
+
+    const uint64_t bits = patternBits[static_cast<size_t>(trackIndex)].load(std::memory_order_relaxed);
+
+    juce::String err;
+    exportPatternToMidiFile(file, bits, v, getTrackLengthSteps(trackIndex), err);
 }
 
 void HuckabyAudioProcessor::requestLoadSample(int trackIndex, int slotIndex, const juce::File& file)
@@ -507,6 +839,12 @@ void HuckabyAudioProcessor::requestLoadSample(int trackIndex, int slotIndex, con
             tracks[static_cast<size_t>(trackIndex)].numSamplesLoaded = countLoadedSamples(tracks[static_cast<size_t>(trackIndex)]);
         });
     });
+}
+
+void HuckabyAudioProcessor::syncPatternUiForTrack(int trackIndex)
+{
+    if (auto* ed = dynamic_cast<HuckabyAudioProcessorEditor*>(getActiveEditor()))
+        ed->syncTrackPatternUi(trackIndex);
 }
 
 } // namespace huckaby
