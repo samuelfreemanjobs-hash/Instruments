@@ -28,7 +28,7 @@ jobs:
           arch: x64
 
       - name: Configure (Ninja Release)
-        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DINSTRUMENTS_ENABLE_CLAP=OFF
 
       - name: Build Auto Sampler
         run: >
