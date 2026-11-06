@@ -1,0 +1,144 @@
+name: Instruments Windows prebuild
+
+on:
+  push:
+    branches: [main, "cursor/**"]
+    paths:
+      - "Source/**"
+      - "Wave9090/**"
+      - "SP1200/**"
+      - "CMakeLists.txt"
+      - "tools/GenerateCleanroomRom.cpp"
+      - ".github/workflows/instruments-windows-prebuild.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "Source/**"
+      - "Wave9090/**"
+      - "SP1200/**"
+      - "CMakeLists.txt"
+      - "tools/GenerateCleanroomRom.cpp"
+      - ".github/workflows/instruments-windows-prebuild.yml"
+  workflow_dispatch:
+
+jobs:
+  windows-x64:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSVC (x64)
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure (Ninja Release, VST3 + Standalone only)
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DINSTRUMENTS_ENABLE_CLAP=OFF
+
+      - name: Build JD Upgraded, WAVE-9090, SP-1200 (+ SP1200 unit test exes)
+        run: >
+          cmake --build build -j
+          --target JDUpgraded_VST3 JDUpgraded_Standalone
+          Wave9090_VST3 Wave9090_Standalone
+          SP1200_VST3 SP1200_Standalone
+          SP1200MemoryTests SP1200SequencerTests SP1200ProjectFileTests
+
+      - name: SP-1200 unit tests
+        run: ctest --test-dir build -R SP1200 --output-on-failure
+
+      - name: Stage Windows prebuild packages
+        shell: pwsh
+        run: |
+          function Stage-Product {
+            param(
+              [string]$Label,
+              [string]$Vst3Path,
+              [string]$StandaloneDir,
+              [string]$OutRoot
+            )
+            if (-not (Test-Path $Vst3Path)) { throw "Missing VST3: $Vst3Path" }
+            if (-not (Test-Path $StandaloneDir)) { throw "Missing Standalone dir: $StandaloneDir" }
+
+            $dest = Join-Path $OutRoot $Label
+            New-Item -ItemType Directory -Force -Path (Join-Path $dest "VST3") | Out-Null
+            New-Item -ItemType Directory -Force -Path (Join-Path $dest "Standalone") | Out-Null
+
+            $vstName = Split-Path $Vst3Path -Leaf
+            Copy-Item -Recurse $Vst3Path (Join-Path (Join-Path $dest "VST3") $vstName)
+            Copy-Item "$StandaloneDir/*" (Join-Path $dest "Standalone") -Recurse -Force
+          }
+
+          $bundleRoot = "dist/Instruments-Windows-x64"
+          Remove-Item -Recurse -Force $bundleRoot -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path $bundleRoot | Out-Null
+
+          Stage-Product -Label "JD-Upgraded" `
+            -Vst3Path "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3" `
+            -StandaloneDir "build/JDUpgraded_artefacts/Release/Standalone" `
+            -OutRoot $bundleRoot
+
+          Stage-Product -Label "WAVE-9090" `
+            -Vst3Path "build/Wave9090/Wave9090_artefacts/Release/VST3/WAVE-9090.vst3" `
+            -StandaloneDir "build/Wave9090/Wave9090_artefacts/Release/Standalone" `
+            -OutRoot $bundleRoot
+
+          Stage-Product -Label "SP-1200-Drumulator" `
+            -Vst3Path "build/SP1200/SP1200_artefacts/Release/VST3/SP-1200 Drumulator.vst3" `
+            -StandaloneDir "build/SP1200/SP1200_artefacts/Release/Standalone" `
+            -OutRoot $bundleRoot
+
+          @"
+          Instruments — Windows x64 prebuild
+          ==================================
+
+          Unsigned JUCE builds (no installer). Allow via SmartScreen if prompted.
+
+          VST3 (all products)
+            Copy each .vst3 folder from:
+              JD-Upgraded/VST3/
+              WAVE-9090/VST3/
+              SP-1200-Drumulator/VST3/
+            into:
+              C:\Program Files\Common Files\VST3\
+            Rescan plugins in your DAW.
+
+          Standalone
+            JD-Upgraded/Standalone/JD Upgraded.exe
+            WAVE-9090/Standalone/WAVE-9090.exe
+            SP-1200-Drumulator/Standalone/SP-1200 Drumulator.exe
+
+          SP-1200: import WAV samples or load a .sp12p before pads make sound.
+
+          Built from: https://github.com/samuelfreemanjobs-hash/Instruments
+          "@ | Set-Content -Path "$bundleRoot/README.txt" -Encoding UTF8
+
+          Compress-Archive -Path $bundleRoot -DestinationPath dist/Instruments-Windows-x64.zip -Force
+
+          foreach ($label in @("JD-Upgraded", "WAVE-9090", "SP-1200-Drumulator")) {
+            $single = "dist/$label-Windows-x64"
+            Remove-Item -Recurse -Force $single -ErrorAction SilentlyContinue
+            Copy-Item -Recurse (Join-Path $bundleRoot $label) $single
+            @"
+          $label — Windows x64 (extract from monorepo prebuild)
+          See Instruments-Windows-x64/README.txt for install paths.
+          "@ | Set-Content -Path "$single/README.txt" -Encoding UTF8
+            Compress-Archive -Path $single -DestinationPath "dist/$label-Windows-x64.zip" -Force
+          }
+
+      - name: Upload combined Windows prebuild
+        uses: actions/upload-artifact@v4
+        with:
+          name: Instruments-Windows-x64
+          path: dist/Instruments-Windows-x64.zip
+          if-no-files-found: error
+
+      - name: Upload per-product zips
+        uses: actions/upload-artifact@v4
+        with:
+          name: Instruments-Windows-x64-split
+          path: |
+            dist/JD-Upgraded-Windows-x64.zip
+            dist/WAVE-9090-Windows-x64.zip
+            dist/SP-1200-Drumulator-Windows-x64.zip
+          if-no-files-found: error
