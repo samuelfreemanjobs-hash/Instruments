@@ -1,0 +1,84 @@
+name: Auto Sampler Windows prebuild
+
+on:
+  push:
+    branches: [main, "cursor/**"]
+    paths:
+      - "AutoSampler/**"
+      - "CMakeLists.txt"
+      - ".github/workflows/autosampler-windows.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "AutoSampler/**"
+      - "CMakeLists.txt"
+      - ".github/workflows/autosampler-windows.yml"
+  workflow_dispatch:
+
+jobs:
+  windows-x64:
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure (Visual Studio 2022 x64)
+        run: cmake -B build -G "Visual Studio 17 2022" -A x64
+
+      - name: Build Auto Sampler
+        run: >
+          cmake --build build --config Release -j
+          --target AutoSampler_VST3 AutoSampler_Standalone AutoSamplerBatchExport AutoSamplerTests
+
+      - name: Unit tests
+        run: ctest --test-dir build -C Release -R AutoSampler --output-on-failure
+
+      - name: Stage prebuild package
+        shell: pwsh
+        run: |
+          $pkg = "dist/AutoSampler-Windows-x64"
+          Remove-Item -Recurse -Force $pkg -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path "$pkg/VST3", "$pkg/Standalone", "$pkg/Tools", "$pkg/examples" | Out-Null
+
+          $vst3 = "build/AutoSampler/AutoSampler_artefacts/Release/VST3/Auto Sampler.vst3"
+          if (-not (Test-Path $vst3)) { throw "Missing VST3 bundle: $vst3" }
+          Copy-Item -Recurse $vst3 "$pkg/VST3/"
+
+          $standaloneDir = "build/AutoSampler/AutoSampler_artefacts/Release/Standalone"
+          if (-not (Test-Path $standaloneDir)) { throw "Missing Standalone dir: $standaloneDir" }
+          Copy-Item "$standaloneDir/*" "$pkg/Standalone/" -Recurse -Force
+
+          $batch = Get-ChildItem -Path build/AutoSampler -Recurse -Filter AutoSamplerBatchExport.exe | Select-Object -First 1
+          if ($null -eq $batch) { throw "AutoSamplerBatchExport.exe not found under build/AutoSampler" }
+          Copy-Item $batch.FullName "$pkg/Tools/AutoSamplerBatchExport.exe"
+
+          Copy-Item AutoSampler/examples/batch_bank.example.json "$pkg/examples/"
+
+          @"
+          Auto Sampler — Windows x64 prebuild
+          ===================================
+
+          VST3
+            Copy the folder:
+              VST3/Auto Sampler.vst3
+            to:
+              C:\Program Files\Common Files\VST3\
+            Rescan plugins in your DAW.
+
+          Standalone
+            Run: Standalone/Auto Sampler.exe
+
+          Batch export (optional)
+            Tools/AutoSamplerBatchExport.exe examples/batch_bank.example.json C:\path\to\output
+
+          Built from Instruments monorepo (JUCE). No installer — unsigned; allow if SmartScreen prompts.
+          "@ | Set-Content -Path "$pkg/README.txt" -Encoding UTF8
+
+          Compress-Archive -Path $pkg -DestinationPath dist/AutoSampler-Windows-x64.zip -Force
+
+      - name: Upload Windows prebuild
+        uses: actions/upload-artifact@v4
+        with:
+          name: AutoSampler-Windows-x64
+          path: dist/AutoSampler-Windows-x64.zip
+          if-no-files-found: error

@@ -21,6 +21,16 @@ Artifacts:
 - Standalone: `build/AutoSampler/AutoSampler_artefacts/Release/Standalone/Auto Sampler`
 - Batch CLI: `build/AutoSampler/AutoSamplerBatchExport`
 
+### Windows prebuild (no local compile)
+
+GitHub Actions workflow **Auto Sampler Windows prebuild** (`.github/workflows/autosampler-windows.yml`) produces **`AutoSampler-Windows-x64.zip`**:
+
+1. Open the repo on GitHub → **Actions** → **Auto Sampler Windows prebuild**.
+2. Select the latest run for your branch (e.g. `cursor/autosampler-vst3-a429`) or use **Run workflow**.
+3. Download **AutoSampler-Windows-x64** from **Artifacts** at the bottom of a green run.
+
+Zip layout: `VST3/`, `Standalone/`, `Tools/AutoSamplerBatchExport.exe`, `examples/`, `README.txt`.
+
 ## Data flow
 
 ```text
