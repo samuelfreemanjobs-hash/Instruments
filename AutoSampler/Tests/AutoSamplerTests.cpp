@@ -1,0 +1,103 @@
+#include "../Source/Engine/AutoRecordEngine.h"
+#include "../Source/Engine/MultisampleProgram.h"
+#include "../Source/Export/MultisampleExporter.h"
+
+#include <juce_core/juce_core.h>
+
+#include <cassert>
+#include <iostream>
+
+static void testProgram()
+{
+    autosampler::MultisampleProgram program;
+
+    for (int root : { 36, 48, 60 })
+    {
+        autosampler::Zone z;
+        z.rootNote = root;
+        z.sampleRate = 44100.0;
+        z.audio.setSize (1, 128);
+        program.addZone (std::move (z));
+    }
+
+    assert (program.zoneIndexForNote (40) == 0);
+    assert (program.zoneIndexForNote (50) == 1);
+    assert (program.zoneIndexForNote (72) == 2);
+
+    const auto tree = program.toValueTree();
+    autosampler::MultisampleProgram loaded;
+    assert (loaded.loadFromValueTree (tree));
+    assert (loaded.zoneCount() == 3);
+}
+
+static void testAutoRecord()
+{
+    autosampler::AutoRecordEngine engine;
+    engine.prepare (44100.0, 512);
+
+    autosampler::AutoRecordEngine::Config cfg;
+    cfg.lowNote = 60;
+    cfg.highNote = 62;
+    cfg.noteStep = 1;
+    cfg.recordSeconds = 0.05;
+    cfg.gapSeconds = 0.01;
+    cfg.midiThru = true;
+
+    autosampler::MultisampleProgram program;
+    engine.start (cfg);
+
+    juce::AudioBuffer<float> input (2, 512);
+    juce::MidiBuffer midi;
+
+    for (int block = 0; block < 200 && engine.state() != autosampler::AutoSampleState::finished; ++block)
+    {
+        input.clear();
+        for (int i = 0; i < input.getNumSamples(); ++i)
+            input.setSample (0, i, 0.25f);
+
+        engine.process (input, midi, program);
+    }
+
+    assert (engine.state() == autosampler::AutoSampleState::finished);
+    assert (program.zoneCount() == 3);
+}
+
+static void testExporter()
+{
+    autosampler::MultisampleProgram program;
+    program.name = "TestPreset";
+
+    autosampler::Zone z;
+    z.rootNote = 60;
+    z.sampleRate = 44100.0;
+    z.audio.setSize (2, 256);
+    z.audio.clear();
+    program.addZone (std::move (z));
+
+    const juce::File out = juce::File::getSpecialLocation (juce::File::tempDirectory)
+                               .getChildFile ("autosampler_export_test");
+    out.deleteRecursively();
+
+    const auto result = autosampler::MultisampleExporter::exportPreset (program, out);
+    assert (result.ok);
+    assert (result.presetJson.existsAsFile());
+
+    autosampler::BankExportSpec bank;
+    bank.bankName = "TestBank";
+    bank.presets.push_back (program);
+
+    const auto bankResult = autosampler::MultisampleExporter::exportBank (bank, out.getChildFile ("bank_root"));
+    assert (bankResult.ok);
+
+    out.deleteRecursively();
+}
+
+int main()
+{
+    juce::ScopedJuceInitialiser_GUI juceInit;
+    testProgram();
+    testAutoRecord();
+    testExporter();
+    std::cout << "AutoSamplerTests OK\n";
+    return 0;
+}
