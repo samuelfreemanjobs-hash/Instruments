@@ -101,6 +101,7 @@ void AutoRecordEngine::finalizeCurrentZone (MultisampleProgram& destination)
     for (int ch = 0; ch < capture_.getNumChannels(); ++ch)
         z.audio.copyFrom (ch, 0, capture_, ch, 0, captureWritePos_);
 
+    SamplePostProcessor::processZone (z, config_.postProcess);
     destination.addZone (std::move (z));
     currentRootNote_ = -1;
     captureWritePos_ = 0;

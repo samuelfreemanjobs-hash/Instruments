@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MultisampleProgram.h"
+#include "SamplePostProcessor.h"
 
 #include <JuceHeader.h>
 
@@ -31,6 +32,7 @@ public:
         double gapSeconds = 0.15;
         int velocity = 100;
         bool midiThru = true;
+        PostProcessConfig postProcess {};
     };
 
     void prepare (double sampleRate, int maxBlockSize);

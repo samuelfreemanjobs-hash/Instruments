@@ -31,6 +31,9 @@ private:
     juce::Slider highNoteSlider_;
     juce::Slider recordSecSlider_;
     juce::Slider outputGainSlider_;
+    juce::ToggleButton trimButton_ { "Trim" };
+    juce::ToggleButton normalizeButton_ { "Normalize" };
+    juce::ToggleButton loopButton_ { "Sustain Loop" };
 
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
@@ -40,6 +43,9 @@ private:
     std::unique_ptr<SliderAttachment> recordSecAttachment_;
     std::unique_ptr<SliderAttachment> outputGainAttachment_;
     std::unique_ptr<ButtonAttachment> startAttachment_;
+    std::unique_ptr<ButtonAttachment> trimAttachment_;
+    std::unique_ptr<ButtonAttachment> normalizeAttachment_;
+    std::unique_ptr<ButtonAttachment> loopAttachment_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AutoSamplerAudioProcessorEditor)
 };

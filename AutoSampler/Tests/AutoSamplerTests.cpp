@@ -1,10 +1,12 @@
 #include "../Source/Engine/AutoRecordEngine.h"
 #include "../Source/Engine/MultisampleProgram.h"
+#include "../Source/Engine/SamplePostProcessor.h"
 #include "../Source/Export/MultisampleExporter.h"
 
 #include <juce_core/juce_core.h>
 
 #include <cassert>
+#include <cmath>
 #include <iostream>
 
 static void testProgram()
@@ -62,6 +64,45 @@ static void testAutoRecord()
     assert (program.zoneCount() == 3);
 }
 
+static void testPostProcessAndSfz()
+{
+    autosampler::Zone zone;
+    zone.rootNote = 60;
+    zone.sampleRate = 44100.0;
+    const int n = static_cast<int> (zone.sampleRate);
+    zone.audio.setSize (1, n);
+
+    for (int i = 0; i < n; ++i)
+    {
+        float s = 0.0f;
+        if (i > 2000 && i < n - 4000)
+            s = 0.35f * std::sin (juce::MathConstants<float>::twoPi * 220.0f * (static_cast<float> (i) / static_cast<float> (zone.sampleRate)));
+        zone.audio.setSample (0, i, s);
+    }
+
+    autosampler::PostProcessConfig cfg;
+    cfg.trimSilence = true;
+    cfg.normalize = true;
+    cfg.findSustainLoop = true;
+    autosampler::SamplePostProcessor::processZone (zone, cfg);
+
+    assert (zone.audio.getNumSamples() < n);
+    assert (zone.hasLoop());
+
+    autosampler::MultisampleProgram program;
+    program.name = "LoopPreset";
+    program.addZone (std::move (zone));
+
+    const juce::File out = juce::File::getSpecialLocation (juce::File::tempDirectory).getChildFile ("autosampler_sfz_test");
+    out.deleteRecursively();
+    const auto result = autosampler::MultisampleExporter::exportPreset (program, out);
+    assert (result.ok);
+    const juce::File sfz = result.presetJson.getParentDirectory().getChildFile ("LoopPreset.sfz");
+    assert (sfz.existsAsFile());
+    assert (sfz.loadFileAsString().contains ("loop_start="));
+    out.deleteRecursively();
+}
+
 static void testExporter()
 {
     autosampler::MultisampleProgram program;
@@ -97,6 +138,7 @@ int main()
     juce::ScopedJuceInitialiser_GUI juceInit;
     testProgram();
     testAutoRecord();
+    testPostProcessAndSfz();
     testExporter();
     std::cout << "AutoSamplerTests OK\n";
     return 0;

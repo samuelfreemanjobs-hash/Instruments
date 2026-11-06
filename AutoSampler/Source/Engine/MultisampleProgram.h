@@ -12,6 +12,11 @@ struct Zone
     int rootNote = 60;
     juce::AudioBuffer<float> audio;
     double sampleRate = 44100.0;
+    /** Inclusive loop points in samples; negative = no loop. */
+    int loopStart = -1;
+    int loopEnd = -1;
+
+    bool hasLoop() const noexcept { return loopStart >= 0 && loopEnd > loopStart; }
 };
 
 /** One playable multisample preset (MPC Auto Sampler-style program). */

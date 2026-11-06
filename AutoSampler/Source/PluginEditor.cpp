@@ -54,8 +54,13 @@ AutoSamplerAudioProcessorEditor::AutoSamplerAudioProcessorEditor (AutoSamplerAud
     recordSecAttachment_ = std::make_unique<SliderAttachment> (processor_.getApvts(), autosampler::ParameterIDs::recordSeconds, recordSecSlider_);
     outputGainAttachment_ = std::make_unique<SliderAttachment> (processor_.getApvts(), autosampler::ParameterIDs::outputGain, outputGainSlider_);
     startAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), autosampler::ParameterIDs::startAutoSample, startButton_);
+    trimAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), autosampler::ParameterIDs::trimSilence, trimButton_);
+    normalizeAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), autosampler::ParameterIDs::normalizeCapture, normalizeButton_);
+    loopAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), autosampler::ParameterIDs::sustainLoop, loopButton_);
 
     addAndMakeVisible (startButton_);
+    for (auto* b : { &trimButton_, &normalizeButton_, &loopButton_ })
+        addAndMakeVisible (*b);
     addAndMakeVisible (exportPresetButton_);
     addAndMakeVisible (exportBankButton_);
     addAndMakeVisible (chooseFolderButton_);
@@ -118,6 +123,11 @@ void AutoSamplerAudioProcessorEditor::resized()
     exportPresetButton_.setBounds (row.removeFromRight (120));
     startButton_.setBounds (row.removeFromLeft (160));
 
+    auto toggles = area.removeFromTop (28);
+    trimButton_.setBounds (toggles.removeFromLeft (90));
+    normalizeButton_.setBounds (toggles.removeFromLeft (110));
+    loopButton_.setBounds (toggles.removeFromLeft (120));
+
     auto sliders = area.removeFromTop (160);
     lowNoteSlider_.setBounds (sliders.removeFromTop (40));
     highNoteSlider_.setBounds (sliders.removeFromTop (40));
@@ -127,8 +137,18 @@ void AutoSamplerAudioProcessorEditor::resized()
 
 void AutoSamplerAudioProcessorEditor::timerCallback()
 {
+    const auto& prog = processor_.getProgram();
+    juce::String loopInfo;
+    if (prog.zoneCount() > 0)
+    {
+        const auto& z = prog.zones().front();
+        loopInfo = z.hasLoop() ? (" | Loop: " + juce::String (z.loopStart) + "-" + juce::String (z.loopEnd))
+                               : juce::String { " | Loop: none" };
+    }
+
     statusLabel_.setText ("State: " + stateToString (processor_.autoSampleState())
-                              + " | Zones: " + juce::String (static_cast<int> (processor_.getProgram().zoneCount()))
+                              + " | Zones: " + juce::String (static_cast<int> (prog.zoneCount()))
+                              + loopInfo
                               + " | Export: " + processor_.getExportRootDirectory().getFullPathName(),
                           juce::dontSendNotification);
 }

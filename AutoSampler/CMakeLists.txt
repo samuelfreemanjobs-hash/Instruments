@@ -21,6 +21,7 @@ target_sources (AutoSampler
         Source/PluginEditor.cpp
         Source/Engine/MultisampleProgram.cpp
         Source/Engine/AutoRecordEngine.cpp
+        Source/Engine/SamplePostProcessor.cpp
         Source/Engine/SamplerEngine.cpp
         Source/Export/MultisampleExporter.cpp
 )
@@ -79,6 +80,7 @@ add_executable (AutoSamplerTests
     Tests/AutoSamplerTests.cpp
     Source/Engine/MultisampleProgram.cpp
     Source/Engine/AutoRecordEngine.cpp
+    Source/Engine/SamplePostProcessor.cpp
     Source/Export/MultisampleExporter.cpp
 )
 

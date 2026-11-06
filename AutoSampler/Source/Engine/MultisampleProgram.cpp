@@ -94,6 +94,8 @@ juce::ValueTree MultisampleProgram::toValueTree() const
 
         zoneNode.setProperty ("pcm", encoded.toBase64Encoding(), nullptr);
         zoneNode.setProperty ("id", noteTag (z.rootNote), nullptr);
+        zoneNode.setProperty ("loopStart", z.loopStart, nullptr);
+        zoneNode.setProperty ("loopEnd", z.loopEnd, nullptr);
         root.appendChild (zoneNode, nullptr);
     }
 
@@ -117,6 +119,8 @@ bool MultisampleProgram::loadFromValueTree (const juce::ValueTree& tree)
         Zone z;
         z.rootNote = static_cast<int> (zoneNode.getProperty ("root", 60));
         z.sampleRate = static_cast<double> (zoneNode.getProperty ("sampleRate", 44100.0));
+        z.loopStart = static_cast<int> (zoneNode.getProperty ("loopStart", -1));
+        z.loopEnd = static_cast<int> (zoneNode.getProperty ("loopEnd", -1));
 
         const int channels = static_cast<int> (zoneNode.getProperty ("channels", 2));
         const int length = static_cast<int> (zoneNode.getProperty ("length", 0));

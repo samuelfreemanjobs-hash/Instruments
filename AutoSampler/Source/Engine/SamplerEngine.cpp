@@ -70,7 +70,14 @@ float SamplerEngine::renderSample (const Voice& v) const noexcept
     if (zone.audio.getNumSamples() < 2)
         return 0.0f;
 
-    const double pos = v.position;
+    double pos = v.position;
+    if (zone.hasLoop() && pos >= static_cast<double> (zone.loopEnd))
+    {
+        const double loopLen = static_cast<double> (zone.loopEnd - zone.loopStart);
+        pos = static_cast<double> (zone.loopStart)
+              + std::fmod (pos - static_cast<double> (zone.loopStart), loopLen);
+    }
+
     const int i0 = static_cast<int> (pos);
     const int i1 = i0 + 1;
 
@@ -125,8 +132,19 @@ void SamplerEngine::process (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
                                      * (zone.sampleRate / sampleRate_);
                 v.position += ratio;
 
-                if (v.position >= zone.audio.getNumSamples())
+                if (zone.hasLoop())
+                {
+                    const double loopLen = static_cast<double> (zone.loopEnd - zone.loopStart);
+                    if (v.position >= static_cast<double> (zone.loopEnd))
+                    {
+                        const double overshoot = v.position - static_cast<double> (zone.loopStart);
+                        v.position = static_cast<double> (zone.loopStart) + std::fmod (overshoot, loopLen);
+                    }
+                }
+                else if (v.position >= zone.audio.getNumSamples())
+                {
                     v.active = false;
+                }
             }
         }
 

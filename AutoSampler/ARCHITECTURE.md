@@ -28,7 +28,8 @@ Source synth (external) ──audio──► Auto Sampler input bus
 Auto Sampler auto-record ──MIDI──► Source synth (when MIDI out enabled)
 Captured buffers ──► MultisampleProgram (zones per root note)
 MIDI in ──► SamplerEngine (zone map + pitch playback) ──► stereo out
-Export ──► folder: preset.json + samples/*.wav  (or bank manifest)
+Export ──► folder: preset.json + `<name>.sfz` + samples/*.wav  (or bank manifest)
+Capture finalize ──► trim silence, peak normalize, zero-cross sustain loop points
 ```
 
 ## Threading / realtime
@@ -46,7 +47,8 @@ Export ──► folder: preset.json + samples/*.wav  (or bank manifest)
 | `Source/Engine/MultisampleProgram.h` | Zones, root notes, key ranges |
 | `Source/Engine/AutoRecordEngine.*` | Note schedule, input capture, MIDI thru |
 | `Source/Engine/SamplerEngine.*` | Voice playback with pitch ratio |
-| `Source/Export/MultisampleExporter.*` | Single preset + bank export JSON/WAV |
+| `Source/Engine/SamplePostProcessor.*` | Trim, normalize, sustain loop detection |
+| `Source/Export/MultisampleExporter.*` | JSON + SFZ + WAV; bank export |
 | `Source/PluginProcessor.*` | APVTS, programs (bank slots), export API |
 | `Source/PluginEditor.*` | Range controls, arm/export buttons |
 | `tools/AutoSamplerBatchExport.cpp` | Headless batch bank export |
@@ -54,8 +56,8 @@ Export ──► folder: preset.json + samples/*.wav  (or bank manifest)
 ## Extension points
 
 - Add velocity layers in `MultisampleProgram::Zone`
-- Trim silence / normalize in `AutoRecordEngine::finalizeCurrentZone`
-- Additional export targets (SFZ, EXS24) in `MultisampleExporter`
+- EXS24 export in `MultisampleExporter`
+- Smarter loop scoring (cross-correlation) in `SamplePostProcessor`
 - Host automation: `startAutoSample` and `exportPreset` bool parameters (momentary)
 
 ## Related docs

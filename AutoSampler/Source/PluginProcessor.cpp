@@ -41,6 +41,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout AutoSamplerAudioProcessor::c
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::midiThru, 1 }, "MIDI Thru", true));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::startAutoSample, 1 }, "Start Auto Sample", false));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::exportPreset, 1 }, "Export Preset", false));
+    layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::trimSilence, 1 }, "Trim Silence", true));
+    layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::normalizeCapture, 1 }, "Normalize Capture", true));
+    layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::sustainLoop, 1 }, "Sustain Loop", true));
+    addFloatParam (layout, PID::trimThresholdDb, "Trim Threshold (dB)", { -72.0f, -18.0f, 0.1f }, -48.0f);
+    addFloatParam (layout, PID::trimPadMs, "Trim Pad (ms)", { 0.0f, 50.0f, 0.1f }, 5.0f);
+    addFloatParam (layout, PID::normalizePeakDb, "Normalize Peak (dB)", { -6.0f, 0.0f, 0.01f }, -0.3f);
 
     return layout;
 }
@@ -130,6 +136,12 @@ autosampler::AutoRecordEngine::Config AutoSamplerAudioProcessor::buildAutoConfig
     cfg.gapSeconds = static_cast<double> (*apvts_.getRawParameterValue (PID::gapMs)) / 1000.0;
     cfg.velocity = static_cast<int> (*apvts_.getRawParameterValue (PID::recordVelocity));
     cfg.midiThru = *apvts_.getRawParameterValue (PID::midiThru) >= 0.5f;
+    cfg.postProcess.trimSilence = *apvts_.getRawParameterValue (PID::trimSilence) >= 0.5f;
+    cfg.postProcess.normalize = *apvts_.getRawParameterValue (PID::normalizeCapture) >= 0.5f;
+    cfg.postProcess.findSustainLoop = *apvts_.getRawParameterValue (PID::sustainLoop) >= 0.5f;
+    cfg.postProcess.trimThresholdDb = *apvts_.getRawParameterValue (PID::trimThresholdDb);
+    cfg.postProcess.trimPadMs = *apvts_.getRawParameterValue (PID::trimPadMs);
+    cfg.postProcess.normalizePeakDb = *apvts_.getRawParameterValue (PID::normalizePeakDb);
     return cfg;
 }
 

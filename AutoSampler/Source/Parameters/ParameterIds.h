@@ -14,7 +14,11 @@ struct ParameterIDs
     static constexpr const char* midiThru = "midiThru";
     static constexpr const char* startAutoSample = "startAutoSample";
     static constexpr const char* exportPreset = "exportPreset";
-    static constexpr const char* recordProgress = "recordProgress";
-    static constexpr const char* autoSampleState = "autoSampleState";
+    static constexpr const char* trimSilence = "trimSilence";
+    static constexpr const char* normalizeCapture = "normalizeCapture";
+    static constexpr const char* sustainLoop = "sustainLoop";
+    static constexpr const char* trimThresholdDb = "trimThresholdDb";
+    static constexpr const char* trimPadMs = "trimPadMs";
+    static constexpr const char* normalizePeakDb = "normalizePeakDb";
 };
 } // namespace autosampler

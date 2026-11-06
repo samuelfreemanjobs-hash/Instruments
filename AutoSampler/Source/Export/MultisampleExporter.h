@@ -34,6 +34,9 @@ public:
 
     static juce::var presetToVar (const MultisampleProgram& program);
     static bool writePresetJson (const MultisampleProgram& program, const juce::File& presetJsonFile);
+    static bool writePresetSfz (const MultisampleProgram& program, const juce::File& presetSfzFile);
+
+    static bool writeWavZones (const MultisampleProgram& program, const juce::File& samplesDir, juce::String& error);
 };
 
 } // namespace autosampler
