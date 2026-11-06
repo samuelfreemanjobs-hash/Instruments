@@ -66,12 +66,8 @@ public:
 private:
     HuckabyAudioProcessor& processor;
 
-    juce::AudioProcessorValueTreeState::SliderAttachment masterGainAttach;
-    juce::AudioProcessorValueTreeState::SliderAttachment internalBpmAttach;
-
-    juce::AudioProcessorValueTreeState::ButtonAttachment internalPlayAttach;
-    juce::AudioProcessorValueTreeState::ButtonAttachment useInternalTransportAttach;
-
+    // Widgets must be declared before their APVTS attachments — C++ initializes members
+    // in declaration order; attachments reference sliders/toggles in their ctor.
     juce::Label masterGainLabel;
     juce::Slider masterGainSlider;
 
@@ -82,6 +78,12 @@ private:
     juce::ToggleButton internalTransportToggle { "Internal transport" };
 
     juce::TextButton resetButton { "Reset counters" };
+
+    juce::AudioProcessorValueTreeState::SliderAttachment masterGainAttach;
+    juce::AudioProcessorValueTreeState::SliderAttachment internalBpmAttach;
+
+    juce::AudioProcessorValueTreeState::ButtonAttachment internalPlayAttach;
+    juce::AudioProcessorValueTreeState::ButtonAttachment useInternalTransportAttach;
 
     juce::TabbedComponent tabs;
 

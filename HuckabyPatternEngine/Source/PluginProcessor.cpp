@@ -67,28 +67,33 @@ juce::AudioProcessorValueTreeState::ParameterLayout HuckabyAudioProcessor::creat
 
     for (int t = 0; t < kNumTracks; ++t)
     {
+        const juce::String idLen = trackParamId(t, "len");
+        const juce::String idMode = trackParamId(t, "mode");
+        const juce::String idBankStatic = trackParamId(t, "bank_static");
+        const juce::String idModDiv = trackParamId(t, "mod_div");
+
         layout.add(std::make_unique<juce::AudioParameterInt>(
-            juce::ParameterID { trackParamId(t, "len").toRawUTF8(), 1 },
+            juce::ParameterID { idLen, 1 },
             "Track " + juce::String(t + 1) + " length (steps)",
             1,
             64,
             (t == 0 ? 16 : t == 1 ? 12 : t == 2 ? 7 : t == 3 ? 5 : 16)));
 
         layout.add(std::make_unique<juce::AudioParameterChoice>(
-            juce::ParameterID { trackParamId(t, "mode").toRawUTF8(), 1 },
+            juce::ParameterID { idMode, 1 },
             "Track " + juce::String(t + 1) + " bank mode",
             juce::StringArray { "Static", "Modulo cycle", "Random" },
             0));
 
         layout.add(std::make_unique<juce::AudioParameterInt>(
-            juce::ParameterID { trackParamId(t, "bank_static").toRawUTF8(), 1 },
+            juce::ParameterID { idBankStatic, 1 },
             "Track " + juce::String(t + 1) + " static bank",
             0,
             kMaxBankSize - 1,
             0));
 
         layout.add(std::make_unique<juce::AudioParameterInt>(
-            juce::ParameterID { trackParamId(t, "mod_div").toRawUTF8(), 1 },
+            juce::ParameterID { idModDiv, 1 },
             "Track " + juce::String(t + 1) + " modulo divisor",
             1,
             64,
