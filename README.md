@@ -30,6 +30,8 @@ cmake --build build -j
 
 AU (macOS): see [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
+**Windows (no local build):** download VST3 + Standalone zips from GitHub Actions — [docs/WINDOWS_PREBUILD.md](docs/WINDOWS_PREBUILD.md).
+
 ## Features (current)
 
 - 32-voice pool, 4 tones per voice, zero heap allocation on the audio thread
