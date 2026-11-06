@@ -49,7 +49,7 @@ Each track reads **sorted** `.mid` / `.midi` files from a folder:
    - When internal transport is off, the sequencer follows the host playhead (`AudioPlayHead`).
 
 2. **Pattern layer**
-   - Each track stores a compact **bitmask** of enabled steps (`uint64_t`), edited in the UI or **loaded from MIDI**.
+   - Each track stores a compact **bitmask** of enabled steps (`uint64_t`), edited on a **piano-roll style strip** (horizontal = step time, vertical bar height = hit velocity) or **loaded from MIDI**.
    - Per-step velocities are stored in **four atomic bit-packs** (`VelocityPacking`) for safe RT reads + compact project state.
    - Per-track parameters control **loop length**, **bank selection mode**, **static bank index**, and **modulo divisor**.
 
@@ -76,7 +76,7 @@ Each track reads **sorted** `.mid` / `.midi` files from a folder:
 | `Source/TrackModel.h` | Track state, default demo patterns, bank sizing constants |
 | `Source/SampleTypes.h` | `SampleData` + `AtomicSharedSample` |
 | `Source/DrumVoice.h` | One-shot interpolated playback voice |
-| `Source/PluginEditor.*` | Tabs per track: pattern bits, MIDI library, bank controls, WAV loader |
+| `Source/PluginEditor.*` | Tabs per track: step piano roll, MIDI library, bank controls, WAV loader |
 
 ## Extension points
 

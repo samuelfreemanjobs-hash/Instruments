@@ -1,10 +1,44 @@
 #pragma once
 
+#include "PatternSnapshot.h"
 #include "PluginProcessor.h"
 #include <JuceHeader.h>
 
 namespace huckaby
 {
+
+class StepPianoRollComponent final : public juce::Component
+{
+public:
+    explicit StepPianoRollComponent(HuckabyAudioProcessor& processorIn, int trackIndexIn);
+
+    void paint(juce::Graphics& g) override;
+    void resized() override;
+
+    void mouseDown(const juce::MouseEvent& e) override;
+    void mouseDrag(const juce::MouseEvent& e) override;
+    void mouseWheelMove(const juce::MouseEvent& e, const juce::MouseWheelDetails& wheel) override;
+
+    /** Refresh from processor (bits + velocities). */
+    void reloadFromProcessor();
+
+private:
+    HuckabyAudioProcessor& processor;
+    const int trackIndex;
+
+    PatternSnapshot edit {};
+
+    float timeToX(int step, int numSteps, juce::Rectangle<float> plot) const noexcept;
+    int xToStep(float x, int numSteps, juce::Rectangle<float> plot) const noexcept;
+    float yToVelocity(float y, juce::Rectangle<float> plot) const noexcept;
+
+    void applyEditAt(int step, bool on, float velocity, bool allowErase);
+    void commitEdit();
+
+    int lastStep { -1 };
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(StepPianoRollComponent)
+};
 
 class PatternGridComponent final : public juce::Component,
                                    private juce::Timer
@@ -56,7 +90,8 @@ private:
     juce::TextButton midiReloadButton { "Reload" };
     juce::TextButton exportMidiButton { "Export .mid" };
 
-    juce::OwnedArray<juce::ToggleButton> stepButtons;
+    juce::Label rollLabel;
+    StepPianoRollComponent stepRoll;
 
     juce::Label slotLabel;
     juce::Slider slotSlider;
@@ -65,10 +100,6 @@ private:
     int getSelectedSlotIndex() const noexcept;
 
     void rebuildFromLengthChange();
-    void rebuildStepButtons();
-    void applyBitsToButtons(uint64_t bits);
-    uint64_t readBitsFromButtons() const;
-
     void updateMidiPatternStatusLabel();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PatternGridComponent)
@@ -87,8 +118,6 @@ public:
 private:
     HuckabyAudioProcessor& processor;
 
-    // Widgets must be declared before their APVTS attachments — C++ initializes members
-    // in declaration order; attachments reference sliders/toggles in their ctor.
     juce::Label masterGainLabel;
     juce::Slider masterGainSlider;
 

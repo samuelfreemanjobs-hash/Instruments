@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DrumVoice.h"
+#include "PatternSnapshot.h"
 #include "TrackModel.h"
 #include <JuceHeader.h>
 #include <array>
@@ -50,6 +51,9 @@ public:
     void setPatternBits(int trackIndex, uint64_t bits) noexcept;
     uint64_t getPatternBits(int trackIndex) const noexcept;
 
+    PatternSnapshot getTrackPatternSnapshot(int trackIndex) const noexcept;
+    void setTrackPatternFromUi(int trackIndex, const PatternSnapshot& snap);
+
     void requestLoadSample(int trackIndex, int slotIndex, const juce::File& file);
 
     void resetTransportCounters();
@@ -72,6 +76,10 @@ public:
     void exportCurrentPatternToMidi(int trackIndex, const juce::File& file) const;
 
     void syncPatternUiForTrack(int trackIndex);
+
+    /** Playhead step for this track's loop (message/UI thread; -1 if not playing). */
+    int getTransportStepForTrack(int trackIndex) const noexcept;
+
 
 private:
     struct TrackParams final
@@ -147,6 +155,8 @@ private:
     bool lastEffectivePlaying { false };
 
     int64_t globalTickIndex { 0 };
+
+    std::atomic<int64_t> playheadGlobalTick { 0 };
 
     juce::ThreadPool loadPool { 1 };
 

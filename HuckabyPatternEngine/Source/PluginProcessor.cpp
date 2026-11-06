@@ -271,12 +271,16 @@ void HuckabyAudioProcessor::reconcilePlaybackStartStopEdge()
     if (playing && !lastEffectivePlaying)
     {
         globalTickIndex = 0;
+        playheadGlobalTick.store(0, std::memory_order_release);
         sampleCounter = 0.0;
         for (auto& t : tracks)
             t.resetCounters();
     }
 
     lastEffectivePlaying = playing;
+
+    if (!playing)
+        playheadGlobalTick.store(-1, std::memory_order_release);
 }
 
 void HuckabyAudioProcessor::pullPatternBitsIntoTracks() noexcept
@@ -481,6 +485,8 @@ void HuckabyAudioProcessor::loadMidiPatternAtIndexFromMessageThread(int trackInd
 void HuckabyAudioProcessor::onSequencerTick() noexcept
 {
     const int64_t g = globalTickIndex;
+
+    playheadGlobalTick.store(g, std::memory_order_release);
 
     for (int t = 0; t < kNumTracks; ++t)
         fireTrackIfTriggered(t, g);
@@ -702,9 +708,67 @@ uint64_t HuckabyAudioProcessor::getPatternBits(int trackIndex) const noexcept
     return patternBits[static_cast<size_t>(trackIndex)].load(std::memory_order_relaxed);
 }
 
+PatternSnapshot HuckabyAudioProcessor::getTrackPatternSnapshot(int trackIndex) const noexcept
+{
+    PatternSnapshot out {};
+
+    if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))
+        return out;
+
+    out.bits = patternBits[static_cast<size_t>(trackIndex)].load(std::memory_order_relaxed);
+
+    uint64_t words[4] {
+        velocityPacks[static_cast<size_t>(trackIndex)][0].load(std::memory_order_relaxed),
+        velocityPacks[static_cast<size_t>(trackIndex)][1].load(std::memory_order_relaxed),
+        velocityPacks[static_cast<size_t>(trackIndex)][2].load(std::memory_order_relaxed),
+        velocityPacks[static_cast<size_t>(trackIndex)][3].load(std::memory_order_relaxed),
+    };
+
+    velpack::unpackFromWords(words, out.velocities);
+    return out;
+}
+
+void HuckabyAudioProcessor::setTrackPatternFromUi(int trackIndex, const PatternSnapshot& snap)
+{
+    if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))
+        return;
+
+    patternBits[static_cast<size_t>(trackIndex)].store(snap.bits, std::memory_order_release);
+
+    for (int s = 0; s < kMaxSteps; ++s)
+        tracks[static_cast<size_t>(trackIndex)].velocities[static_cast<size_t>(s)] =
+            juce::jlimit(0.05f, 1.0f, snap.velocities[static_cast<size_t>(s)]);
+
+    velpack::packFrom(tracks[static_cast<size_t>(trackIndex)].velocities,
+                    velocityPacks[static_cast<size_t>(trackIndex)]);
+}
+
+int HuckabyAudioProcessor::getTransportStepForTrack(int trackIndex) const noexcept
+{
+    if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))
+        return -1;
+
+    const int64_t g = playheadGlobalTick.load(std::memory_order_acquire);
+    if (g < 0)
+        return -1;
+
+    const int len = getTrackLengthSteps(trackIndex);
+    if (len < 1)
+        return -1;
+
+    return static_cast<int>(g % static_cast<int64_t>(len));
+}
+
+void HuckabyAudioProcessor::syncPatternUiForTrack(int trackIndex)
+{
+    if (auto* ed = dynamic_cast<HuckabyAudioProcessorEditor*>(getActiveEditor()))
+        ed->syncTrackPatternUi(trackIndex);
+}
+
 void HuckabyAudioProcessor::resetTransportCounters()
 {
     globalTickIndex = 0;
+    playheadGlobalTick.store(isEffectivelyPlaying() ? 0 : -1, std::memory_order_release);
     sampleCounter = 0.0;
     for (auto& t : tracks)
         t.resetCounters();
@@ -839,12 +903,6 @@ void HuckabyAudioProcessor::requestLoadSample(int trackIndex, int slotIndex, con
             tracks[static_cast<size_t>(trackIndex)].numSamplesLoaded = countLoadedSamples(tracks[static_cast<size_t>(trackIndex)]);
         });
     });
-}
-
-void HuckabyAudioProcessor::syncPatternUiForTrack(int trackIndex)
-{
-    if (auto* ed = dynamic_cast<HuckabyAudioProcessorEditor*>(getActiveEditor()))
-        ed->syncTrackPatternUi(trackIndex);
 }
 
 } // namespace huckaby

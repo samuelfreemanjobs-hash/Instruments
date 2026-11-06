@@ -8,6 +8,18 @@
 namespace huckaby::velpack
 {
 
+inline void unpackFromWords(const uint64_t words[4], std::array<float, kMaxSteps>& out) noexcept
+{
+    for (int s = 0; s < kMaxSteps; ++s)
+    {
+        const int word = s / 16;
+        const int shift = (s % 16) * 4;
+        const int nibble = static_cast<int>((words[word] >> shift) & 0xFull);
+        const float g = static_cast<float>(nibble + 1) / 16.0f;
+        out[static_cast<size_t>(s)] = juce::jlimit(0.05f, 1.0f, g);
+    }
+}
+
 inline void unpackInto(std::array<std::atomic<uint64_t>, 4>& packs, std::array<float, kMaxSteps>& out) noexcept
 {
     uint64_t words[4] {
@@ -17,14 +29,7 @@ inline void unpackInto(std::array<std::atomic<uint64_t>, 4>& packs, std::array<f
         packs[3].load(std::memory_order_relaxed),
     };
 
-    for (int s = 0; s < kMaxSteps; ++s)
-    {
-        const int word = s / 16;
-        const int shift = (s % 16) * 4;
-        const int nibble = static_cast<int>((words[word] >> shift) & 0xFull);
-        const float g = static_cast<float>(nibble + 1) / 16.0f;
-        out[static_cast<size_t>(s)] = juce::jlimit(0.05f, 1.0f, g);
-    }
+    unpackFromWords(words, out);
 }
 
 inline void packFrom(const std::array<float, kMaxSteps>& v, std::array<std::atomic<uint64_t>, 4>& packs) noexcept

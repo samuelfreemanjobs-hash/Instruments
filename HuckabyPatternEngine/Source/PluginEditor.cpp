@@ -10,12 +10,224 @@ juce::String trackId(int trackIndex, const char* suffix)
 {
     return pid::trackField(trackIndex, suffix);
 }
+
+constexpr float kVelOff = 0.05f;
 } // namespace
 
+//==============================================================================
+StepPianoRollComponent::StepPianoRollComponent(HuckabyAudioProcessor& processorIn, int trackIndexIn)
+    : processor(processorIn)
+    , trackIndex(trackIndexIn)
+{
+    setOpaque(true);
+    reloadFromProcessor();
+}
+
+void StepPianoRollComponent::reloadFromProcessor()
+{
+    edit = processor.getTrackPatternSnapshot(trackIndex);
+    repaint();
+}
+
+void StepPianoRollComponent::resized()
+{
+    repaint();
+}
+
+float StepPianoRollComponent::timeToX(int step, int numSteps, juce::Rectangle<float> plot) const noexcept
+{
+    if (numSteps <= 0)
+        return plot.getX();
+
+    const float w = plot.getWidth() / static_cast<float>(numSteps);
+    return plot.getX() + static_cast<float>(step) * w;
+}
+
+int StepPianoRollComponent::xToStep(float x, int numSteps, juce::Rectangle<float> plot) const noexcept
+{
+    if (numSteps <= 0)
+        return 0;
+
+    const float w = plot.getWidth() / static_cast<float>(numSteps);
+    const float rel = (x - plot.getX()) / juce::jmax(1.0f, w);
+    return juce::jlimit(0, numSteps - 1, static_cast<int>(std::floor(rel)));
+}
+
+float StepPianoRollComponent::yToVelocity(float y, juce::Rectangle<float> plot) const noexcept
+{
+    const float t = juce::jlimit(0.0f, 1.0f, (y - plot.getY()) / juce::jmax(1.0f, plot.getHeight()));
+    return juce::jlimit(kVelOff, 1.0f, 1.0f - t);
+}
+
+void StepPianoRollComponent::applyEditAt(int step, bool on, float velocity, bool allowErase)
+{
+    if (!juce::isPositiveAndBelow(step, kMaxSteps))
+        return;
+
+    if (!on && allowErase)
+    {
+        edit.bits &= ~(1ull << step);
+        edit.velocities[static_cast<size_t>(step)] = kVelOff;
+        return;
+    }
+
+    edit.bits |= (1ull << step);
+    edit.velocities[static_cast<size_t>(step)] = juce::jlimit(kVelOff, 1.0f, velocity);
+}
+
+void StepPianoRollComponent::commitEdit()
+{
+    processor.setTrackPatternFromUi(trackIndex, edit);
+}
+
+void StepPianoRollComponent::paint(juce::Graphics& g)
+{
+    auto bounds = getLocalBounds().toFloat().reduced(4.0f);
+    g.fillAll(juce::Colour(0xff121212));
+
+    const int numSteps = juce::jlimit(1, kMaxSteps, processor.getApvts().getRawParameterValue(trackId(trackIndex, "len")) != nullptr
+                                                ? juce::roundToInt(processor.getApvts().getRawParameterValue(trackId(trackIndex, "len"))->load())
+                                                : 16);
+
+    auto plot = bounds.removeFromBottom(bounds.getHeight() - 18.0f);
+
+    g.setColour(juce::Colour(0xff2a2a2a));
+    g.drawRoundedRectangle(plot, 4.0f, 1.0f);
+
+    g.setFont(juce::FontOptions(12.0f));
+    g.setColour(juce::Colours::grey);
+    const juce::String caption = "Pattern / velocity  |  " + juce::String(numSteps) + " steps";
+    g.drawText(caption,
+               bounds.toNearestInt(),
+               juce::Justification::centredLeft);
+
+    for (int s = 0; s <= numSteps; ++s)
+    {
+        const float x = timeToX(s, numSteps, plot);
+        g.setColour(((s % 4) == 0) ? juce::Colour(0xff3a3a3a) : juce::Colour(0xff222222));
+        g.drawVerticalLine(juce::roundToInt(x), plot.getY(), plot.getBottom());
+    }
+
+    const int ph = processor.getTransportStepForTrack(trackIndex);
+    if (ph >= 0 && juce::isPositiveAndBelow(ph, numSteps))
+    {
+        const float cell = plot.getWidth() / static_cast<float>(numSteps);
+        const float px = timeToX(ph, numSteps, plot) + cell * 0.5f;
+        g.setColour(juce::Colour(0xffff4444).withAlpha(0.55f));
+        g.drawVerticalLine(juce::roundToInt(px), juce::roundToInt(plot.getY()), juce::roundToInt(plot.getBottom()));
+    }
+
+    for (int s = 0; s < numSteps; ++s)
+    {
+        const float x0 = timeToX(s, numSteps, plot);
+        const float x1 = timeToX(s + 1, numSteps, plot);
+        const float cellW = juce::jmax(2.0f, x1 - x0 - 2.0f);
+        const float cx = x0 + 1.0f;
+
+        const float vel = edit.velocities[static_cast<size_t>(s)];
+        const bool on = ((edit.bits >> s) & 1ull) != 0;
+
+        if (!on && vel <= kVelOff + 0.001f)
+            continue;
+
+        const float h = juce::jmax(2.0f, (vel - kVelOff) / (1.0f - kVelOff) * plot.getHeight() * 0.92f);
+        const juce::Rectangle<float> bar(cx, plot.getBottom() - h, cellW, h);
+
+        g.setColour(on ? juce::Colour(0xff4fd1c5) : juce::Colour(0xff555555));
+        g.fillRoundedRectangle(bar, 2.0f);
+        g.setColour(juce::Colours::black.withAlpha(0.35f));
+        g.drawRoundedRectangle(bar, 2.0f, 1.0f);
+    }
+}
+
+void StepPianoRollComponent::mouseDown(const juce::MouseEvent& e)
+{
+    auto plot = getLocalBounds().toFloat().reduced(4.0f).removeFromBottom(getHeight() - 18 - 8);
+
+    const int numSteps = juce::jlimit(1, kMaxSteps, processor.getApvts().getRawParameterValue(trackId(trackIndex, "len")) != nullptr
+                                                ? juce::roundToInt(processor.getApvts().getRawParameterValue(trackId(trackIndex, "len"))->load())
+                                                : 16);
+
+    const int step = xToStep(static_cast<float>(e.x), numSteps, plot);
+    lastStep = step;
+
+    const float vel = yToVelocity(static_cast<float>(e.y), plot);
+
+    if (e.mods.isAltDown())
+    {
+        applyEditAt(step, false, kVelOff, true);
+        commitEdit();
+        repaint();
+        return;
+    }
+
+    const bool currentlyOn = ((edit.bits >> step) & 1ull) != 0;
+    const bool turnOff = currentlyOn && e.mods.isShiftDown();
+
+    if (turnOff)
+    {
+        applyEditAt(step, false, kVelOff, true);
+    }
+    else
+    {
+        applyEditAt(step, true, vel, false);
+    }
+
+    commitEdit();
+    repaint();
+}
+
+void StepPianoRollComponent::mouseDrag(const juce::MouseEvent& e)
+{
+    auto plot = getLocalBounds().toFloat().reduced(4.0f).removeFromBottom(getHeight() - 18 - 8);
+
+    const int numSteps = juce::jlimit(1, kMaxSteps, processor.getApvts().getRawParameterValue(trackId(trackIndex, "len")) != nullptr
+                                                ? juce::roundToInt(processor.getApvts().getRawParameterValue(trackId(trackIndex, "len"))->load())
+                                                : 16);
+
+    const int step = xToStep(static_cast<float>(e.x), numSteps, plot);
+    const float vel = yToVelocity(static_cast<float>(e.y), plot);
+
+    if (step != lastStep)
+    {
+        applyEditAt(step, true, vel, false);
+        lastStep = step;
+    }
+    else
+    {
+        applyEditAt(step, true, vel, false);
+    }
+
+    commitEdit();
+    repaint();
+}
+
+void StepPianoRollComponent::mouseWheelMove(const juce::MouseEvent& e, const juce::MouseWheelDetails& wheel)
+{
+    auto plot = getLocalBounds().toFloat().reduced(4.0f).removeFromBottom(getHeight() - 18 - 8);
+
+    const int numSteps = juce::jlimit(1, kMaxSteps, processor.getApvts().getRawParameterValue(trackId(trackIndex, "len")) != nullptr
+                                                ? juce::roundToInt(processor.getApvts().getRawParameterValue(trackId(trackIndex, "len"))->load())
+                                                : 16);
+
+    const int step = xToStep(static_cast<float>(e.x), numSteps, plot);
+
+    if (!((edit.bits >> step) & 1ull))
+        return;
+
+    const float delta = wheel.deltaY > 0 ? 0.05f : -0.05f;
+    const float nv = juce::jlimit(kVelOff, 1.0f, edit.velocities[static_cast<size_t>(step)] + delta);
+    applyEditAt(step, true, nv, false);
+    commitEdit();
+    repaint();
+}
+
+//==============================================================================
 PatternGridComponent::PatternGridComponent(HuckabyAudioProcessor& processorIn, int trackIndexIn)
     : processor(processorIn)
     , trackIndex(trackIndexIn)
     , apvts(processorIn.getApvts())
+    , stepRoll(processorIn, trackIndexIn)
 {
     lenLabel.setText("Steps", juce::dontSendNotification);
     addAndMakeVisible(lenLabel);
@@ -81,6 +293,11 @@ PatternGridComponent::PatternGridComponent(HuckabyAudioProcessor& processorIn, i
     addAndMakeVisible(midiNextButton);
     addAndMakeVisible(midiReloadButton);
     addAndMakeVisible(exportMidiButton);
+
+    rollLabel.setText("Pattern (click/drag blocks, Shift+click = off, Alt+click = erase, wheel = velocity)", juce::dontSendNotification);
+    rollLabel.setFont(juce::FontOptions(13.0f));
+    addAndMakeVisible(rollLabel);
+    addAndMakeVisible(stepRoll);
 
     chooseMidiFolderButton.onClick = [this]() {
         auto chooser = std::make_shared<juce::FileChooser>("Select MIDI pattern folder",
@@ -153,12 +370,12 @@ PatternGridComponent::PatternGridComponent(HuckabyAudioProcessor& processorIn, i
 
     rebuildFromLengthChange();
     syncFromProcessor();
-    startTimerHz(4);
+    startTimerHz(30);
 }
 
 void PatternGridComponent::syncFromProcessor()
 {
-    applyBitsToButtons(processor.getPatternBits(trackIndex));
+    stepRoll.reloadFromProcessor();
     updateMidiPatternStatusLabel();
 }
 
@@ -194,44 +411,9 @@ void PatternGridComponent::rebuildFromLengthChange()
     else
         cachedLengthSteps = 16;
 
-    rebuildStepButtons();
     updateMidiPatternStatusLabel();
-}
-
-void PatternGridComponent::rebuildStepButtons()
-{
-    stepButtons.clear();
-
-    const int steps = juce::jlimit(1, kMaxSteps, cachedLengthSteps);
-
-    for (int s = 0; s < steps; ++s)
-    {
-        auto* b = stepButtons.add(new juce::ToggleButton(juce::String(s + 1)));
-        addAndMakeVisible(b);
-        b->onClick = [this]() {
-            processor.setPatternBits(trackIndex, readBitsFromButtons());
-        };
-    }
-
-    applyBitsToButtons(processor.getPatternBits(trackIndex));
+    stepRoll.reloadFromProcessor();
     resized();
-}
-
-void PatternGridComponent::applyBitsToButtons(uint64_t bits)
-{
-    for (int i = 0; i < stepButtons.size(); ++i)
-        if (auto* b = stepButtons[i])
-            b->setToggleState((bits & (1ull << i)) != 0, juce::dontSendNotification);
-}
-
-uint64_t PatternGridComponent::readBitsFromButtons() const
-{
-    uint64_t bits = 0;
-    for (int i = 0; i < stepButtons.size(); ++i)
-        if (auto* b = stepButtons[i])
-            if (b->getToggleState())
-                bits |= (1ull << i);
-    return bits;
 }
 
 void PatternGridComponent::timerCallback()
@@ -243,6 +425,8 @@ void PatternGridComponent::timerCallback()
     const int clamped = juce::jlimit(1, kMaxSteps, len);
     if (clamped != cachedLengthSteps)
         rebuildFromLengthChange();
+
+    stepRoll.repaint();
 }
 
 void PatternGridComponent::resized()
@@ -318,30 +502,10 @@ void PatternGridComponent::resized()
         loadButton.setBounds(row3.removeFromLeft(420));
     }
 
-    area.removeFromTop(10);
+    area.removeFromTop(8);
 
-    const int cols = juce::jmin(16, juce::jmax(1, stepButtons.size()));
-    const int rows = (stepButtons.size() + cols - 1) / cols;
-
-    const int w = area.getWidth() / juce::jmax(1, cols);
-    const int h = juce::jlimit(22, 44, juce::jmax(120, area.getHeight()) / juce::jmax(1, rows));
-
-    int x = area.getX();
-    int y = area.getY();
-
-    for (int i = 0; i < stepButtons.size(); ++i)
-    {
-        if (i != 0 && (i % cols) == 0)
-        {
-            x = area.getX();
-            y += h + 6;
-        }
-
-        if (auto* b = stepButtons[i])
-            b->setBounds(x + 2, y + 2, w - 4, h - 4);
-
-        x += w;
-    }
+    rollLabel.setBounds(area.removeFromTop(22));
+    stepRoll.setBounds(area);
 }
 
 HuckabyAudioProcessorEditor::HuckabyAudioProcessorEditor(HuckabyAudioProcessor& p)
@@ -353,7 +517,7 @@ HuckabyAudioProcessorEditor::HuckabyAudioProcessorEditor(HuckabyAudioProcessor& 
     , useInternalTransportAttach(p.getApvts(), "internal_transport", internalTransportToggle)
     , tabs(juce::TabbedButtonBar::TabsAtTop)
 {
-    setSize(980, 720);
+    setSize(980, 760);
 
     masterGainLabel.setText("Gain", juce::dontSendNotification);
     masterGainLabel.attachToComponent(&masterGainSlider, true);
