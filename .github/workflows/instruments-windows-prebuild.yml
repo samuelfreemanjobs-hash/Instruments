@@ -36,12 +36,13 @@ jobs:
       - name: Configure (Ninja Release, VST3 + Standalone only)
         run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DINSTRUMENTS_ENABLE_CLAP=OFF
 
-      - name: Build JD Upgraded, WAVE-9090, SP-1200
+      - name: Build JD Upgraded, WAVE-9090, SP-1200 (+ SP1200 unit test exes)
         run: >
           cmake --build build -j
           --target JDUpgraded_VST3 JDUpgraded_Standalone
           Wave9090_VST3 Wave9090_Standalone
           SP1200_VST3 SP1200_Standalone
+          SP1200MemoryTests SP1200SequencerTests SP1200ProjectFileTests
 
       - name: SP-1200 unit tests
         run: ctest --test-dir build -R SP1200 --output-on-failure
