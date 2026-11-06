@@ -26,6 +26,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **DiskLordz Phonk Box** (PC phonk engine) | [disklordz/phonk-box/ARCHITECTURE.md](disklordz/phonk-box/ARCHITECTURE.md) | `python phonk_engine.py --self-test` in `disklordz/phonk-box/engine/` |
 | **MPC Renaissance dedicated box** (pseudo-standalone host) | [renaissance-box/ARCHITECTURE.md](renaissance-box/ARCHITECTURE.md) · [docs/MPC_RENAISSANCE_DEDICATED_BOX.md](docs/MPC_RENAISSANCE_DEDICATED_BOX.md) | `pip install -e renaissance-box/host` · `python sidecar.py` |
 | **Songwriting engine** (MIDI composition + MPC500 export) | [songwriting-engine/README.md](songwriting-engine/README.md) | `python -m songwriting.cli check` in `songwriting-engine/` |
+| **Memphis Vault** (batch procedural one-shot WAV generator) | [memphis-vault/ARCHITECTURE.md](memphis-vault/ARCHITECTURE.md) | `python3 memphis-vault/scripts/batch_generate.py --out ./out --count 1` |
 
 ## Repository layout
 
