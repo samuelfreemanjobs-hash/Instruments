@@ -1,4 +1,5 @@
 #include "PluginEditor.h"
+#include "Engine/MidiNoteName.h"
 
 namespace
 {
@@ -52,6 +53,13 @@ AutoSamplerAudioProcessorEditor::AutoSamplerAudioProcessorEditor (AutoSamplerAud
         processor_.setCurrentProgram (programBox_.getSelectedId() - 1);
     };
     addAndMakeVisible (programBox_);
+
+    noteMapBox_.addItemList ({ "Chromatic", "Minor 3rd", "Major 3rd", "Fifth", "Octave" }, 1);
+    blackKeyBox_.addItemList ({ "Include black keys", "Skip black keys", "White keys only" }, 1);
+    addAndMakeVisible (noteMapBox_);
+    addAndMakeVisible (blackKeyBox_);
+    noteMapAttachment_ = std::make_unique<ComboAttachment> (processor_.getApvts(), autosampler::ParameterIDs::noteMapPreset, noteMapBox_);
+    blackKeyAttachment_ = std::make_unique<ComboAttachment> (processor_.getApvts(), autosampler::ParameterIDs::blackKeyPolicy, blackKeyBox_);
 
     lowNoteSlider_.setRange (0, 127, 1);
     highNoteSlider_.setRange (0, 127, 1);
@@ -190,7 +198,10 @@ void AutoSamplerAudioProcessorEditor::resized()
     inputMeterLabel_.setBounds (area.removeFromTop (18));
     progressBar_.setBounds (area.removeFromTop (12));
     keyboard_.setBounds (area.removeFromTop (50));
-    programBox_.setBounds (area.removeFromTop (26).removeFromLeft (220));
+    auto programRow = area.removeFromTop (26);
+    programBox_.setBounds (programRow.removeFromLeft (200));
+    noteMapBox_.setBounds (programRow.removeFromLeft (130));
+    blackKeyBox_.setBounds (programRow.removeFromLeft (150));
 
     auto row = area.removeFromTop (34);
     megaBankJsonButton_.setBounds (row.removeFromRight (125));
@@ -236,10 +247,18 @@ void AutoSamplerAudioProcessorEditor::timerCallback()
     progressValue_ = static_cast<double> (processor_.autoSampleProgress());
 
     const auto plan = processor_.getSessionPlan();
-    planLabel_.setText ("Keys: " + juce::String (plan.noteCount)
-                            + "  Vels: " + juce::String (plan.velocityCount)
-                            + "  Splits: " + juce::String (plan.totalCaptures)
-                            + "  ~" + juce::String (plan.estimatedTotalSeconds, 1) + " s",
+    using autosampler::ParameterIDs;
+    const int lo = static_cast<int> (*processor_.getApvts().getRawParameterValue (ParameterIDs::lowNote));
+    const int hi = static_cast<int> (*processor_.getApvts().getRawParameterValue (ParameterIDs::highNote));
+    const int step = static_cast<int> (*processor_.getApvts().getRawParameterValue (ParameterIDs::noteStep));
+
+    planLabel_.setText ("Range " + autosampler::midiNoteName (lo) + "–" + autosampler::midiNoteName (hi)
+                            + " · interval " + juce::String (step) + " ST"
+                            + " · Keys " + juce::String (plan.noteCount)
+                            + " · Vels " + juce::String (plan.velocityCount)
+                            + " · Splits " + juce::String (plan.totalCaptures)
+                            + " · " + juce::String (plan.secondsPerCapture, 2) + " s/capture"
+                            + " · ~" + juce::String (plan.estimatedTotalSeconds / 60.0, 1) + " min",
                         juce::dontSendNotification);
 
     const float inDb = juce::Decibels::gainToDecibels (processor_.inputPeakLevel(), -100.0f);

@@ -13,6 +13,8 @@ struct AutoSampleSessionPlan
     int velocityCount = 0;
     int totalCaptures = 0;
     double secondsPerCapture = 0.0;
+    /** Gate + release (+ preroll) + pause — MPC “per split” wall time. */
+    double secondsPerSplit = 0.0;
     double pauseSeconds = 0.0;
     double estimatedTotalSeconds = 0.0;
 };

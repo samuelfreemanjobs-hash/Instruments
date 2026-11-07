@@ -12,7 +12,9 @@ Auto Sampler mirrors the MPC Auto Sampler timing model (see also community tooli
 | Preroll | **Preroll (ms)** | Capture audio before note-on |
 | Velocity layers V1–V4 | **Velocity 1–4** | `0` = off (MPC-style) |
 | MIDI channel | **MIDI Channel** | 1–16 |
-| Session estimate | UI status line | Keys × vels × (gate+release+pause) |
+| How many notes? | **Plan bar** | `Keys` / `Splits` (notes × velocity layers) |
+| How long? | Gate + Release + Pause | `X s/capture` and `~Y min` total in plan bar |
+| Session estimate | UI status line | Same formula as MPC Mozaic: splits × (gate+release+pause) |
 
 ## Overnight JSON (`capture`)
 

@@ -44,6 +44,7 @@ AutoSampleSessionPlan AutoSampleSessionPlanBuilder::plan (const AutoRecordEngine
     plan.totalCaptures = plan.noteCount * plan.velocityCount;
     plan.secondsPerCapture = captureLengthSeconds (config);
     plan.pauseSeconds = config.pauseMs / 1000.0;
+    plan.secondsPerSplit = plan.secondsPerCapture + plan.pauseSeconds;
 
     if (plan.totalCaptures <= 0)
         return plan;

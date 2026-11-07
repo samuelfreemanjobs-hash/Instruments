@@ -25,6 +25,8 @@ private:
     juce::Label planLabel_ { {}, "Plan" };
     juce::Label inputMeterLabel_ { {}, "In: -inf dB" };
     juce::ComboBox programBox_;
+    juce::ComboBox noteMapBox_;
+    juce::ComboBox blackKeyBox_;
     juce::TextButton startButton_ { "Start Auto Sample" };
     juce::TextButton exportPresetButton_ { "Export Preset" };
     juce::TextButton exportMpcKitButton_ { "Export MPC Kit" };
@@ -57,6 +59,9 @@ private:
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
 
+    using ComboAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
+    std::unique_ptr<ComboAttachment> noteMapAttachment_;
+    std::unique_ptr<ComboAttachment> blackKeyAttachment_;
     std::unique_ptr<SliderAttachment> lowNoteAttachment_;
     std::unique_ptr<SliderAttachment> highNoteAttachment_;
     std::unique_ptr<SliderAttachment> noteStepAttachment_;

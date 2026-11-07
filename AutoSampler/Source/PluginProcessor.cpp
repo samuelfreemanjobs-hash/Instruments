@@ -183,6 +183,8 @@ autosampler::AutoRecordEngine::Config AutoSamplerAudioProcessor::buildAutoConfig
     cfg.postProcess.trimThresholdDb = *apvts_.getRawParameterValue (PID::trimThresholdDb);
     cfg.postProcess.trimPadMs = *apvts_.getRawParameterValue (PID::trimPadMs);
     cfg.postProcess.normalizePeakDb = *apvts_.getRawParameterValue (PID::normalizePeakDb);
+    cfg.silenceThresholdDb = -50.0f;
+    cfg.silenceHoldSeconds = 0.25;
     return cfg;
 }
 
@@ -304,7 +306,7 @@ void AutoSamplerAudioProcessor::reprocessCurrentPreset() noexcept
 
 bool AutoSamplerAudioProcessor::writeMegaBankTemplateJson (const juce::File& jsonFile, juce::String& error) const
 {
-    return autosampler::writeMegaBankJsonTemplate (jsonFile, error);
+    return autosampler::writeMegaBankJsonTemplate (jsonFile, error, buildAutoConfig());
 }
 
 autosampler::ExportResult AutoSamplerAudioProcessor::exportEntireBank() const
