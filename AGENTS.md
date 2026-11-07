@@ -67,6 +67,15 @@ ctest --test-dir build -R SP1200 --output-on-failure
 
 Handoff: [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md). Spec: [docs/SP1200_STANDALONE_SPEC.md](docs/SP1200_STANDALONE_SPEC.md).
 
+## JUCE VST engineer rules (Claude Code)
+
+For any VST/VSTi session, read **[docs/CLAUDE_VST_ENGINEER.md](docs/CLAUDE_VST_ENGINEER.md)** — RT constraints, file ownership, build commands, pluginval, APC lifecycle, and SmoothParam pattern. This is the plain-markdown mirror of `.cursor/rules/` for Claude Code sessions.
+
+**Session bootstrap (paste once):**
+```
+Read AGENTS.md and docs/CLAUDE_VST_ENGINEER.md. Active product: <ProphetRev2Trap | SP1200 | …>
+```
+
 ## JUCE plugin (default Cloud install)
 
 ```bash
