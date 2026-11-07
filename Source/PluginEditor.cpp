@@ -41,8 +41,22 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
             processor_.setCurrentProgram (index);
         });
 
-    presetBrowser_->setCategoryFilterOptions (
-        { "EP", "Pad", "Bass", "Vaporwave", "80s R&B", "90s R&B", "Elite", "Trap", "Phonk", "Lo-Fi" });
+    presetBrowser_->setCategoryFilterOptions ({ "EP",
+                                                "Pad",
+                                                "Bass",
+                                                "Vaporwave",
+                                                "80s R&B",
+                                                "90s R&B",
+                                                "Elite",
+                                                "Trap",
+                                                "Phonk",
+                                                "Lo-Fi",
+                                                "Synthwave",
+                                                "House",
+                                                "Afro",
+                                                "Jersey",
+                                                "Ambient",
+                                                "MPC Pack" });
     addAndMakeVisible (*presetBrowser_);
 
     styleRotary (masterGainSlider_, "Master");

@@ -64,3 +64,11 @@ add_executable (Wave9090PresetCountTests
 target_include_directories (Wave9090PresetCountTests PRIVATE Source)
 target_compile_features (Wave9090PresetCountTests PRIVATE cxx_std_20)
 add_test (NAME Wave9090PresetCount COMMAND Wave9090PresetCountTests)
+
+add_executable (Wave9090PresetQualityTests
+    Tests/PresetQualityTests.cpp
+    Source/Presets/FactoryPresets.cpp
+)
+target_include_directories (Wave9090PresetQualityTests PRIVATE Source)
+target_compile_features (Wave9090PresetQualityTests PRIVATE cxx_std_20)
+add_test (NAME Wave9090PresetQuality COMMAND Wave9090PresetQualityTests)

@@ -1,4 +1,4 @@
-# Factory presets (200)
+# Factory presets (500)
 
 Programs are **four-tone stacks**. Use the in-plugin **Preset Browser** (search + category), host program change, or prev/next inside the browser.
 
@@ -15,7 +15,7 @@ Programs are **four-tone stacks**. Use the in-plugin **Preset Browser** (search 
 | 153–176 | Phonk |
 | 177–200 | Lo-Fi |
 
-See [PRESET_FACTORY_200.md](PRESET_FACTORY_200.md) for WAVE-9090 lanes and UI notes.
+See [PRESET_FACTORY_500.md](PRESET_FACTORY_500.md) and [STITCH_UI_BRIEF.md](STITCH_UI_BRIEF.md).
 
 ## Per-tone mute
 

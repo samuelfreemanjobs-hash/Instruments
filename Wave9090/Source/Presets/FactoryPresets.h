@@ -9,7 +9,7 @@
 namespace wave9090::presets
 {
 
-inline constexpr std::size_t kFactoryPresetCount = 200;
+inline constexpr std::size_t kFactoryPresetCount = 500;
 
 struct FactoryPreset
 {

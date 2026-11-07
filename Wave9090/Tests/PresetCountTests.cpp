@@ -7,9 +7,9 @@
 int main()
 {
     const auto& presets = wave9090::presets::getFactoryPresets();
-    if (presets.size() != wave9090::presets::kFactoryPresetCount || presets.size() != 200)
+    if (presets.size() != wave9090::presets::kFactoryPresetCount || presets.size() != 500)
     {
-        std::cerr << "Expected 200 WAVE-9090 presets, got " << presets.size() << '\n';
+        std::cerr << "Expected 500 WAVE-9090 presets, got " << presets.size() << '\n';
         return EXIT_FAILURE;
     }
 

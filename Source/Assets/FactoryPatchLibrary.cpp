@@ -1,5 +1,7 @@
 #include "FactoryPatchLibrary.h"
 
+#include "FactoryPatchDedup.h"
+
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -21,8 +23,17 @@ enum class PresetCategory : std::uint8_t
     elite,
     trap,
     phonk,
-    loFi
+    loFi,
+    synthwave,
+    house,
+    afro,
+    jersey,
+    ambient,
+    mpcPack
 };
+
+constexpr std::size_t kLegacyBankEnd = 200;
+constexpr std::size_t kExtendedBankSize = 50;
 
 PresetCategory categoryForIndex (std::size_t index) noexcept
 {
@@ -44,7 +55,43 @@ PresetCategory categoryForIndex (std::size_t index) noexcept
         return PresetCategory::trap;
     if (index < 176)
         return PresetCategory::phonk;
-    return PresetCategory::loFi;
+    if (index < kLegacyBankEnd)
+        return PresetCategory::loFi;
+    if (index < 250)
+        return PresetCategory::synthwave;
+    if (index < 300)
+        return PresetCategory::house;
+    if (index < 350)
+        return PresetCategory::afro;
+    if (index < 400)
+        return PresetCategory::jersey;
+    if (index < 450)
+        return PresetCategory::ambient;
+    return PresetCategory::mpcPack;
+}
+
+std::size_t categoryRangeStart (PresetCategory category) noexcept
+{
+    switch (category)
+    {
+        case PresetCategory::epPiano: return 0;
+        case PresetCategory::pad: return 24;
+        case PresetCategory::bass: return 48;
+        case PresetCategory::vaporwave: return 64;
+        case PresetCategory::rnb80: return 80;
+        case PresetCategory::rnb90: return 96;
+        case PresetCategory::elite: return 112;
+        case PresetCategory::trap: return 128;
+        case PresetCategory::phonk: return 152;
+        case PresetCategory::loFi: return 176;
+        case PresetCategory::synthwave: return 200;
+        case PresetCategory::house: return 250;
+        case PresetCategory::afro: return 300;
+        case PresetCategory::jersey: return 350;
+        case PresetCategory::ambient: return 400;
+        case PresetCategory::mpcPack: return 450;
+        default: return 0;
+    }
 }
 
 const char* categoryLabel (PresetCategory category) noexcept
@@ -61,6 +108,12 @@ const char* categoryLabel (PresetCategory category) noexcept
         case PresetCategory::trap: return "Trap";
         case PresetCategory::phonk: return "Phonk";
         case PresetCategory::loFi: return "Lo-Fi";
+        case PresetCategory::synthwave: return "Synthwave";
+        case PresetCategory::house: return "House";
+        case PresetCategory::afro: return "Afro";
+        case PresetCategory::jersey: return "Jersey";
+        case PresetCategory::ambient: return "Ambient";
+        case PresetCategory::mpcPack: return "MPC Pack";
         default: return "Patch";
     }
 }
@@ -95,6 +148,18 @@ jdupgraded::dsp::ToneCouplingMode couplingFor (PresetCategory category, std::siz
         case PresetCategory::phonk:
             return (variant % 2 == 0) ? jdupgraded::dsp::ToneCouplingMode::ringPair01
                                         : jdupgraded::dsp::ToneCouplingMode::independent;
+        case PresetCategory::synthwave:
+        case PresetCategory::ambient:
+        case PresetCategory::mpcPack:
+            return (variant % 3 == 1) ? jdupgraded::dsp::ToneCouplingMode::ringPair01
+                                        : jdupgraded::dsp::ToneCouplingMode::independent;
+        case PresetCategory::house:
+        case PresetCategory::jersey:
+            return (variant % 2 == 1) ? jdupgraded::dsp::ToneCouplingMode::crossModPair01
+                                        : jdupgraded::dsp::ToneCouplingMode::independent;
+        case PresetCategory::afro:
+            return (variant % 4 == 0) ? jdupgraded::dsp::ToneCouplingMode::ringPair23
+                                        : jdupgraded::dsp::ToneCouplingMode::independent;
         case PresetCategory::epPiano:
             return (variant % 4 == 0) ? jdupgraded::dsp::ToneCouplingMode::crossModPair01
                                       : jdupgraded::dsp::ToneCouplingMode::independent;
@@ -103,10 +168,27 @@ jdupgraded::dsp::ToneCouplingMode couplingFor (PresetCategory category, std::siz
     }
 }
 
+void buildExtendedMarketName (std::size_t index, PresetCategory category, std::string& nameStorage)
+{
+    static constexpr const char* kAdj[6] = { "Neon", "Midnight", "Chrome", "Soft", "Ritual", "Golden" };
+    static constexpr const char* kNoun[6] = { "Stack", "Keys", "Pad", "Bass", "Lead", "Bell" };
+    const std::size_t slot = index - categoryRangeStart (category);
+    const char* bank = categoryLabel (category);
+    char buf[72];
+    std::snprintf (buf,
+                   sizeof (buf),
+                   "%s %s %s · P%03zu",
+                   kAdj[slot % 6],
+                   kNoun[(slot / 3) % 6],
+                   bank,
+                   index + 1);
+    nameStorage = buf;
+}
+
 FactoryPatch buildPatch (std::size_t index, std::string& nameStorage)
 {
     const auto category = categoryForIndex (index);
-    const std::size_t variant = index % 24;
+    const std::size_t variant = index - categoryRangeStart (category);
     const float v = static_cast<float> (variant);
 
     if (category == PresetCategory::vaporwave && index >= 64 && index < 80)
@@ -164,10 +246,19 @@ FactoryPatch buildPatch (std::size_t index, std::string& nameStorage)
         };
         nameStorage = kLoFiMarketNames[index - 176];
     }
+    else if (index >= kLegacyBankEnd)
+    {
+        buildExtendedMarketName (index, category, nameStorage);
+    }
     else
     {
-        char nameBuf[48];
-        std::snprintf (nameBuf, sizeof (nameBuf), "%s %02zu", categoryLabel (category), (variant + 1));
+        char nameBuf[56];
+        std::snprintf (nameBuf,
+                       sizeof (nameBuf),
+                       "%s %02zu · P%03zu",
+                       categoryLabel (category),
+                       variant + 1,
+                       index + 1);
         nameStorage = nameBuf;
     }
 
@@ -180,8 +271,8 @@ FactoryPatch buildPatch (std::size_t index, std::string& nameStorage)
     {
         case PresetCategory::epPiano:
             t0 = layer (1 + static_cast<std::uint16_t> (variant % 4), 0, 0.92f, 0.0f, 0.88f, 0.38f);
-            t1 = layer (0, static_cast<std::uint16_t> (4 + variant), 0.45f, 12.0f + v * 0.5f, 0.75f, 0.32f);
-            t2 = layer (0, static_cast<std::uint16_t> (20 + variant % 8), 0.22f, -7.0f, 0.62f, 0.25f);
+            t1 = layer (0, static_cast<std::uint16_t> (4 + variant + (index % 11)), 0.45f, 12.0f + v * 0.5f, 0.75f, 0.32f);
+            t2 = layer (0, static_cast<std::uint16_t> (20 + (variant + index) % 8), 0.22f, -7.0f, 0.62f, 0.25f);
             t3 = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.3f);
             groupB = 0.15f + v * 0.005f;
             break;
@@ -254,6 +345,58 @@ FactoryPatch buildPatch (std::size_t index, std::string& nameStorage)
             t3 = layer (0, static_cast<std::uint16_t> (72 + variant % 8), 0.28f, 3.0f, 0.5f, 0.2f);
             groupB = 0.34f;
             groupA = 0.04f;
+            break;
+
+        case PresetCategory::synthwave:
+            t0 = layer (static_cast<std::uint16_t> (4 + (index % 6)), 0, 0.82f, -5.0f - v * 0.1f, 0.76f, 0.32f);
+            t1 = layer (0, static_cast<std::uint16_t> (32 + (index % 20)), 0.58f, 5.0f, 0.72f, 0.28f);
+            t2 = layer (static_cast<std::uint16_t> (16 + variant % 6), 0, 0.38f, 0.0f, 0.6f, 0.24f);
+            t3 = layer (0, static_cast<std::uint16_t> (80 + (index % 16)), 0.22f, 12.0f, 0.52f, 0.22f);
+            groupB = 0.3f + v * 0.004f;
+            break;
+
+        case PresetCategory::house:
+            t0 = layer (static_cast<std::uint16_t> (7 + variant % 5), 0, 0.9f, 0.0f, 0.68f, 0.35f);
+            t1 = layer (0, static_cast<std::uint16_t> (24 + (index % 24)), 0.52f, 7.0f, 0.62f, 0.3f);
+            t2 = layer (static_cast<std::uint16_t> (12 + variant % 4), 0, 0.45f, -3.0f, 0.58f, 0.28f);
+            t3 = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.2f);
+            groupB = 0.26f;
+            groupA = 0.06f;
+            break;
+
+        case PresetCategory::afro:
+            t0 = layer (static_cast<std::uint16_t> (5 + variant % 4), 0, 0.88f, 0.0f, 0.62f, 0.36f);
+            t1 = layer (0, static_cast<std::uint16_t> (40 + (index % 18)), 0.55f, 5.0f, 0.58f, 0.32f);
+            t2 = layer (static_cast<std::uint16_t> (8 + variant % 3), 0, 0.5f, -7.0f, 0.55f, 0.3f);
+            t3 = layer (static_cast<std::uint16_t> (10 + variant % 3), 0, 0.62f, 12.0f, 0.42f, 0.28f);
+            groupB = 0.24f;
+            break;
+
+        case PresetCategory::jersey:
+            t0 = layer (static_cast<std::uint16_t> (9 + variant % 3), 0, 1.0f, -12.0f, 0.44f, 0.38f);
+            t1 = layer (0, static_cast<std::uint16_t> (16 + (index % 12)), 0.48f, 0.0f, 0.5f, 0.34f);
+            t2 = layer (static_cast<std::uint16_t> (6 + variant % 4), 0, 0.4f, 7.0f, 0.48f, 0.3f);
+            t3 = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.2f);
+            groupA = 0.12f;
+            master = 0.82f;
+            break;
+
+        case PresetCategory::ambient:
+            t0 = layer (static_cast<std::uint16_t> (14 + variant % 5), 0, 0.72f, 0.0f, 0.78f, 0.22f);
+            t1 = layer (0, static_cast<std::uint16_t> (56 + (index % 24)), 0.55f, -2.0f, 0.7f, 0.2f);
+            t2 = layer (static_cast<std::uint16_t> (18 + variant % 4), 0, 0.42f, 5.0f, 0.62f, 0.18f);
+            t3 = layer (0, static_cast<std::uint16_t> (96 + (index % 12)), 0.25f, -5.0f, 0.55f, 0.16f);
+            groupB = 0.36f;
+            break;
+
+        case PresetCategory::mpcPack:
+            t0 = layer (static_cast<std::uint16_t> (2 + variant % 4), 0, 1.0f, -12.0f, 0.4f, 0.34f);
+            t1 = layer (static_cast<std::uint16_t> (10 + variant % 3), 0, 0.58f, 0.0f, 0.46f, 0.3f);
+            t2 = layer (0, static_cast<std::uint16_t> (8 + (index % 20)), 0.35f, 12.0f, 0.5f, 0.26f);
+            t3 = layer (0, static_cast<std::uint16_t> (28 + (index % 14)), 0.2f, 7.0f, 0.44f, 0.22f);
+            groupA = 0.1f + v * 0.006f;
+            groupB = 0.16f;
+            master = 0.84f;
             break;
 
         case PresetCategory::elite:
@@ -346,6 +489,22 @@ void applyCuratedOverrides (std::size_t index, FactoryPatch& patch, std::string&
             patch.tones[1] = layer (2, 88, 0.62f, 8.0f, 0.68f, 0.26f);
             patch.groupBMix = 0.36f;
             break;
+        case 200:
+            nameStorage = "Sunset Grid Stack (curated)";
+            patch.tones[0] = layer (4, 40, 0.88f, 0.0f, 0.78f, 0.34f);
+            patch.tones[1] = layer (0, 64, 0.55f, 7.0f, 0.72f, 0.3f);
+            patch.groupBMix = 0.32f;
+            break;
+        case 300:
+            nameStorage = "Afro Gold Stack (curated)";
+            patch.tones[0] = layer (6, 24, 0.92f, 0.0f, 0.58f, 0.38f);
+            patch.groupBMix = 0.28f;
+            break;
+        case 450:
+            nameStorage = "MPC Cart Classics (curated)";
+            patch.tones[0] = layer (2, 6, 1.0f, -12.0f, 0.38f, 0.36f);
+            patch.groupADrive = 0.14f;
+            break;
         case 112:
             nameStorage = "Elite Sync Lead (curated)";
             patch.tones[0] = layer (4, 96, 0.9f, 0.0f, 0.7f, 0.55f);
@@ -383,6 +542,7 @@ const PatchStore& patchStore()
             applyCuratedOverrides (i, result.patches[i], result.names[i]);
             result.patches[i].name = result.names[i].c_str();
         }
+        detail::deduplicatePatchStore (result.names, result.patches);
         return result;
     }();
     return store;

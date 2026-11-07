@@ -71,6 +71,7 @@ target_sources(JDUpgraded
         Source/DSP/Tone.cpp
         Source/Assets/RomBank.cpp
         Source/Assets/FactoryPatchLibrary.cpp
+        Source/Assets/FactoryPatchDedup.cpp
         Source/Preset/SysExParser.cpp
         Source/Preset/JdPatchSysexMapper.cpp
 )
@@ -146,6 +147,12 @@ target_compile_definitions(OfflineRender
         JUCE_USE_CURL=0
 )
 add_dependencies(OfflineRender JDUpgradedRomData)
+
+add_executable(QAFactoryPresets tools/QAFactoryPresets.cpp)
+target_link_libraries(QAFactoryPresets PRIVATE JDUpgraded)
+target_include_directories(QAFactoryPresets PRIVATE Source)
+add_test(NAME QAFactoryPresetsJD COMMAND QAFactoryPresets)
+add_dependencies(QAFactoryPresets JDUpgradedRomData)
 
 add_executable(Wave9090OfflineRender tools/Wave9090OfflineRender.cpp)
 target_link_libraries(Wave9090OfflineRender

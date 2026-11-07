@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cstdio>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace wave9090::presets
@@ -21,10 +23,12 @@ enum class PresetCategory : std::uint8_t
     pad,
     lead,
     pluck,
-    keys
+    keys,
+    synth,
+    mpc
 };
 
-constexpr std::size_t kCategories = 8;
+constexpr std::size_t kCategories = 10;
 constexpr std::size_t kPerCategory = kFactoryPresetCount / kCategories;
 
 PresetCategory categoryForIndex (std::size_t index) noexcept
@@ -44,6 +48,8 @@ const char* categoryLabel (PresetCategory c) noexcept
         case PresetCategory::lead: return "LEAD";
         case PresetCategory::pluck: return "PLUCK";
         case PresetCategory::keys: return "KEYS";
+        case PresetCategory::synth: return "SYNTH";
+        case PresetCategory::mpc: return "MPC";
         default: return "TRAP";
     }
 }
@@ -140,12 +146,29 @@ SynthParams buildParams (std::size_t index) noexcept
             break;
 
         case PresetCategory::keys:
-        default:
             p.wtPosition = frand (index, 42, 0.25f, 0.65f);
             p.tapeWobble = frand (index, 43, 0.15f, 0.55f);
             p.stereoWidth = frand (index, 44, 0.15f, 0.45f);
             p.wtScan = frand (index, 45, 0.0f, 0.25f);
             p.filterCutoff = frand (index, 46, 0.55f, 0.8f);
+            break;
+
+        case PresetCategory::synth:
+            p.wtPosition = frand (index, 47, 0.3f, 0.95f);
+            p.wtScan = frand (index, 48, 0.1f, 0.6f);
+            p.filterCutoff = frand (index, 49, 0.4f, 0.9f);
+            p.filterRes = frand (index, 50, 0.2f, 0.75f);
+            p.stereoWidth = frand (index, 51, 0.2f, 0.8f);
+            break;
+
+        case PresetCategory::mpc:
+        default:
+            p.wtPosition = frand (index, 52, 0.04f, 0.2f);
+            p.subLevel = frand (index, 53, 0.8f, 1.0f);
+            p.drive = frand (index, 54, 0.35f, 0.8f);
+            p.crush = frand (index, 55, 0.15f, 0.55f);
+            p.filterCutoff = frand (index, 56, 0.25f, 0.5f);
+            p.filterDestructive = (slot % 2) == 0;
             break;
     }
 
@@ -172,24 +195,85 @@ void buildMarketName (std::size_t index, PresetCategory category, std::string& o
     switch (category)
     {
         case PresetCategory::trap:
-            std::snprintf (buf, sizeof (buf), "%s %s %02zu", kTrapAdj[a], kTrapNoun[n], (slot % 25) + 1);
+            std::snprintf (buf, sizeof (buf), "%s %s %02zu · P%03zu", kTrapAdj[a], kTrapNoun[n], slot + 1, index + 1);
             break;
         case PresetCategory::phonk:
-            std::snprintf (buf, sizeof (buf), "%s %s %02zu", kPhonkAdj[a], kPhonkNoun[n], (slot % 25) + 1);
+            std::snprintf (buf, sizeof (buf), "%s %s %02zu · P%03zu", kPhonkAdj[a], kPhonkNoun[n], slot + 1, index + 1);
             break;
         case PresetCategory::drill:
-            std::snprintf (buf, sizeof (buf), "%s %s %02zu", kDrillAdj[a], kDrillNoun[n], (slot % 25) + 1);
+            std::snprintf (buf, sizeof (buf), "%s %s %02zu · P%03zu", kDrillAdj[a], kDrillNoun[n], slot + 1, index + 1);
             break;
         default:
             std::snprintf (buf,
                            sizeof (buf),
-                           "%s %s %02zu",
+                           "%s %s %02zu · P%03zu",
                            kGenericAdj[a],
                            kGenericNoun[n],
-                           (slot % 25) + 1);
+                           slot + 1,
+                           index + 1);
             break;
     }
     out = buf;
+}
+
+std::uint64_t fingerprintParams (const SynthParams& p) noexcept
+{
+    auto q = [] (float v) { return static_cast<std::uint32_t> (std::lround (v * 1000.0f)); };
+    std::uint64_t h = 1469598103934665603ull;
+    auto mix = [&h] (std::uint64_t v)
+    {
+        h ^= v;
+        h *= 1099511628211ull;
+    };
+    mix (q (p.wtPosition));
+    mix (q (p.wtScan));
+    mix (q (p.filterCutoff));
+    mix (q (p.filterRes));
+    mix (p.filterDestructive ? 1u : 0u);
+    mix (q (p.drive));
+    mix (q (p.crush));
+    mix (q (p.subLevel));
+    mix (q (p.detuneCents));
+    mix (q (p.tapeWobble));
+    mix (q (p.stereoWidth));
+    return h;
+}
+
+struct PresetStore final
+{
+    std::vector<std::string> names;
+    std::vector<std::string> categories;
+    std::vector<FactoryPreset> presets;
+};
+
+void deduplicatePresetStore (PresetStore& store)
+{
+    std::unordered_set<std::string> usedNames;
+    std::unordered_map<std::uint64_t, std::size_t> usedFingerprints;
+
+    for (std::size_t i = 0; i < store.presets.size(); ++i)
+    {
+        auto& preset = store.presets[i];
+        auto& name = store.names[i];
+
+        if (usedNames.count (name) > 0)
+            name += " · alt";
+        usedNames.insert (name);
+
+        std::uint64_t fp = fingerprintParams (preset.params);
+        int guard = 0;
+        while (usedFingerprints.count (fp) > 0 && guard < 64)
+        {
+            preset.params.wtPosition = std::fmod (preset.params.wtPosition + 0.013f + guard * 0.002f, 1.0f);
+            preset.params.drive = std::min (1.0f, preset.params.drive + 0.01f);
+            fp = fingerprintParams (preset.params);
+            ++guard;
+        }
+        usedFingerprints[fp] = i;
+
+        preset.name = name;
+        preset.category = store.categories[i];
+    }
 }
 
 void applyCuratedOverrides (std::size_t index, SynthParams& p, std::string& name, std::string_view& category)
@@ -226,35 +310,33 @@ void applyCuratedOverrides (std::size_t index, SynthParams& p, std::string& name
             category = "TRAP";
             p.wtPosition = 0.78f;
             break;
-        case 25:
+        case 55:
             name = "Memphis Cowbell";
             category = "PHONK";
             p.wtPosition = 0.55f;
             p.drive = 0.65f;
             p.detuneCents = -14.0f;
             break;
-        case 50:
+        case 105:
             name = "Drill Stab";
             category = "DRILL";
             p.wtPosition = 0.88f;
             p.filterDestructive = true;
             break;
-        case 175:
+        case 400:
             name = "Trap Pad";
             category = "PAD";
             p.tapeWobble = 0.65f;
+            break;
+        case 450:
+            name = "MPC Submax";
+            category = "MPC";
+            p.subLevel = 0.98f;
             break;
         default:
             break;
     }
 }
-
-struct PresetStore final
-{
-    std::vector<std::string> names;
-    std::vector<std::string> categories;
-    std::vector<FactoryPreset> presets;
-};
 
 const PresetStore& presetStore()
 {
@@ -280,6 +362,7 @@ const PresetStore& presetStore()
             result.presets[i].category = result.categories[i];
             result.presets[i].params = params;
         }
+        deduplicatePresetStore (result);
         return result;
     }();
     return store;

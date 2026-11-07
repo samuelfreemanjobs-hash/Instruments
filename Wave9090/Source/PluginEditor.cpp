@@ -18,7 +18,7 @@ Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcess
     titleLabel_.setFont (juce::Font (26.0f, juce::Font::bold));
     titleLabel_.setColour (juce::Label::textColourId, juce::Colour (0xfff2f2ff));
     addAndMakeVisible (titleLabel_);
-    subtitleLabel_.setText ("200 trap / phonk / drill factory presets", juce::dontSendNotification);
+    subtitleLabel_.setText ("500 trap / phonk / MPC factory presets", juce::dontSendNotification);
     addAndMakeVisible (subtitleLabel_);
 
     presetBrowser_ = std::make_unique<PresetBrowserComponent> (
@@ -39,7 +39,7 @@ Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcess
             processor_.setCurrentProgram (index);
         });
 
-    presetBrowser_->setCategoryFilterOptions ({ "TRAP", "PHONK", "DRILL", "BELL", "PAD", "LEAD", "PLUCK", "KEYS" });
+    presetBrowser_->setCategoryFilterOptions ({ "TRAP", "PHONK", "DRILL", "BELL", "PAD", "LEAD", "PLUCK", "KEYS", "SYNTH", "MPC" });
     presetBrowser_->setCurrentProgram (p.getCurrentProgram());
     addAndMakeVisible (*presetBrowser_);
 
