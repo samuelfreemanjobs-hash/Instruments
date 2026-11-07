@@ -13,6 +13,11 @@ juce::File MegaBankProgress::validationReportFor (const juce::File& outputRoot, 
     return outputRoot.getChildFile (bankName.replaceCharacter ('/', '_')).getChildFile ("mpc_validation.txt");
 }
 
+juce::File MegaBankProgress::skippedReportFor (const juce::File& outputRoot, const juce::String& bankName)
+{
+    return outputRoot.getChildFile (bankName.replaceCharacter ('/', '_')).getChildFile ("mega_bank_skipped.txt");
+}
+
 bool MegaBankProgress::load (const juce::File& file, juce::var& state, juce::String& error)
 {
     if (! file.existsAsFile())
@@ -122,10 +127,17 @@ void MegaBankProgress::setRunning (juce::var& state, const juce::String& bankNam
     touchUpdated (state);
 }
 
-void MegaBankProgress::setFinished (juce::var& state, bool success)
+void MegaBankProgress::setFinished (juce::var& state, bool success, bool hadSkips)
 {
     if (auto* obj = state.getDynamicObject())
-        obj->setProperty ("status", success ? "completed" : "failed");
+    {
+        if (! success)
+            obj->setProperty ("status", "failed");
+        else if (hadSkips)
+            obj->setProperty ("status", "completed_with_skips");
+        else
+            obj->setProperty ("status", "completed");
+    }
     touchUpdated (state);
 }
 

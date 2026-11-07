@@ -25,7 +25,16 @@ public:
     static constexpr const char* kFormat = "instruments-autosampler-mega-bank-v2";
 
     static bool loadJob (const juce::File& jsonFile, MegaBankJob& job, juce::String& error);
-    static bool runJob (const MegaBankJob& job, const juce::File& outputDirectory, juce::String& error);
+    struct RunSummary
+    {
+        int sourcesTotal = 0;
+        int completed = 0;
+        int skipped = 0;
+        juce::StringArray skippedPresets;
+        juce::StringArray skippedReasons;
+    };
+
+    static bool runJob (const MegaBankJob& job, const juce::File& outputDirectory, juce::String& error, RunSummary* summary = nullptr);
     static bool writeMegaBankTemplate (const juce::File& jsonFile, juce::String& error);
 };
 

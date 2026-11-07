@@ -24,9 +24,11 @@
     "silenceHoldSeconds": 0.3
   },
   "run": {
+    "failFast": true,
+    "skipFailedSources": true,
     "resume": true,
     "writeProgress": true,
-    "maxRetriesPerSource": 3,
+    "maxRetriesPerSource": 0,
     "sourceTimeoutSeconds": 3600,
     "pluginCacheFile": ""
   },

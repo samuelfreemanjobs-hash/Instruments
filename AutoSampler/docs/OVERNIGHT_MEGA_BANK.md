@@ -32,7 +32,10 @@ Re-run the same command; finished sources are skipped.
 
 ## Reliability (`run`)
 
-- `maxRetriesPerSource` — retry hung/failed plugins
+- **`failFast`** (default `true`) — `maxRetriesPerSource` stays **0**; one failed attempt then skip
+- **`skipFailedSources`** (default `true`) — continue the bank; do not stop at the first bad VST3
+- **`mega_bank_skipped.txt`** — written at end of every run with each skipped preset and reason
+- Exit code **1** if any preset was skipped (successful presets are still exported)
 - `sourceTimeoutSeconds` — per-plugin wall clock (default 3600)
 - `pluginCacheFile` — optional cache JSON path
 

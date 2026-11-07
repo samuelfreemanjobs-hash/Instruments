@@ -21,9 +21,11 @@ bool writeMegaBankJsonTemplate (const juce::File& jsonFile, juce::String& error)
       "sustainLoop": true
     })"));
     root->setProperty ("run", juce::JSON::parse (R"({
+      "failFast": true,
+      "skipFailedSources": true,
       "resume": true,
       "writeProgress": true,
-      "maxRetriesPerSource": 3,
+      "maxRetriesPerSource": 0,
       "sourceTimeoutSeconds": 3600
     })"));
     root->setProperty ("sources", juce::Array<juce::var>());

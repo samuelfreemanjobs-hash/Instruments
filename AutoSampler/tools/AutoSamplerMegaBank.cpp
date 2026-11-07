@@ -60,12 +60,25 @@ int main (int argc, char** argv)
         return 1;
     }
 
-    if (! autosampler::MegaBankRunner::runJob (job, juce::File (argv[2]), error))
+    autosampler::MegaBankRunner::RunSummary summary;
+    const bool ok = autosampler::MegaBankRunner::runJob (job, juce::File (argv[2]), error, &summary);
+
+    if (summary.skipped > 0)
+    {
+        std::cerr << "Mega bank finished with skipped presets (" << summary.skipped << "/" << summary.sourcesTotal << "):\n";
+        for (int i = 0; i < summary.skippedPresets.size(); ++i)
+            std::cerr << "  - " << summary.skippedPresets[i] << ": " << summary.skippedReasons[i] << '\n';
+        std::cerr << error << '\n';
+        return 1;
+    }
+
+    if (! ok)
     {
         std::cerr << error << '\n';
         return 1;
     }
 
-    std::cout << "Mega bank '" << job.name << "' exported with " << job.sources.size() << " source VST3(s).\n";
+    std::cout << "Mega bank '" << job.name << "' exported " << summary.completed << " / " << summary.sourcesTotal
+              << " source VST3(s).\n";
     return 0;
 }

@@ -82,10 +82,15 @@ static AutoRecordEngine::Config captureFromVar (const juce::var& v)
 static MegaBankRunOptions runOptionsFromVar (const juce::var& v)
 {
     MegaBankRunOptions opt;
+    opt.failFast = static_cast<bool> (v.getProperty ("failFast", opt.failFast));
+    opt.skipFailedSources = static_cast<bool> (v.getProperty ("skipFailedSources", opt.skipFailedSources));
     opt.maxRetriesPerSource = static_cast<int> (v.getProperty ("maxRetriesPerSource", opt.maxRetriesPerSource));
     opt.sourceTimeoutSeconds = static_cast<double> (v.getProperty ("sourceTimeoutSeconds", opt.sourceTimeoutSeconds));
     opt.resume = static_cast<bool> (v.getProperty ("resume", opt.resume));
     opt.writeProgress = static_cast<bool> (v.getProperty ("writeProgress", opt.writeProgress));
+
+    if (opt.failFast && ! v.hasProperty ("maxRetriesPerSource"))
+        opt.maxRetriesPerSource = 0;
 
     const auto cachePath = v.getProperty ("pluginCacheFile", {}).toString();
     if (cachePath.isNotEmpty())
@@ -152,8 +157,30 @@ bool MegaBankRunner::writeMegaBankTemplate (const juce::File& jsonFile, juce::St
     return writeMegaBankJsonTemplate (jsonFile, error);
 }
 
-bool MegaBankRunner::runJob (const MegaBankJob& job, const juce::File& outputDirectory, juce::String& error)
+static void recordSkip (MegaBankRunner::RunSummary* summary,
+                        const juce::String& presetName,
+                        const juce::String& reason,
+                        juce::StringArray& skippedLines)
 {
+    if (summary != nullptr)
+    {
+        ++summary->skipped;
+        summary->skippedPresets.add (presetName);
+        summary->skippedReasons.add (reason);
+    }
+    skippedLines.add (presetName + " | " + reason);
+}
+
+bool MegaBankRunner::runJob (const MegaBankJob& job, const juce::File& outputDirectory, juce::String& error, RunSummary* summary)
+{
+    if (summary != nullptr)
+    {
+        summary->sourcesTotal = static_cast<int> (job.sources.size());
+        summary->completed = 0;
+        summary->skipped = 0;
+        summary->skippedPresets.clearQuick();
+        summary->skippedReasons.clearQuick();
+    }
     if (! Vst3OfflineRenderer::isSupportedOnThisPlatform())
     {
         error = "VST3 mega-bank capture requires a desktop build with JUCE_PLUGINHOST_VST3";
@@ -193,6 +220,7 @@ bool MegaBankRunner::runJob (const MegaBankJob& job, const juce::File& outputDir
                                      : rootDir.getChildFile ("vst3_plugin_cache.json"));
 
     juce::StringArray validationLines;
+    juce::StringArray skippedLines;
 
     for (const auto& spec : job.sources)
     {
@@ -232,21 +260,25 @@ bool MegaBankRunner::runJob (const MegaBankJob& job, const juce::File& outputDir
 
         if (! captured)
         {
+            const juce::String reason = "capture failed: " + lastErr;
             MegaBankProgress::markSourceFailed (progressState, spec.presetName, lastErr, job.runOptions.maxRetriesPerSource + 1);
+            recordSkip (summary, spec.presetName, reason, skippedLines);
+
             if (job.runOptions.writeProgress)
             {
                 juce::String progressErr;
                 MegaBankProgress::save (progressPath, progressState, progressErr);
             }
 
-            error = "Failed source " + spec.presetName + ": " + lastErr;
-            MegaBankProgress::setFinished (progressState, false);
-            if (job.runOptions.writeProgress)
+            if (! job.runOptions.skipFailedSources)
             {
-                juce::String progressErr;
-                MegaBankProgress::save (progressPath, progressState, progressErr);
+                error = "Failed source " + spec.presetName + ": " + lastErr;
+                MegaBankProgress::setFinished (progressState, false);
+                if (job.runOptions.writeProgress)
+                    MegaBankProgress::save (progressPath, progressState, error);
+                return false;
             }
-            return false;
+            continue;
         }
 
         const auto validation = MpcKeyzoneValidator::validateProgram (program);
@@ -254,14 +286,48 @@ bool MegaBankRunner::runJob (const MegaBankJob& job, const juce::File& outputDir
         if (! validation.ok)
             validationLines.add (validation.reportText);
 
-        const auto exported = MultisampleExporter::exportMpcKit (program, rootDir.getChildFile ("presets"), true);
-        if (! exported.ok)
+        if (! validation.ok)
         {
-            error = exported.error;
+            const juce::String reason = "MPC validation failed: " + validation.errors.joinIntoString ("; ");
+            if (job.runOptions.skipFailedSources)
+            {
+                MegaBankProgress::markSourceFailed (progressState, spec.presetName, validation.errors.joinIntoString ("; "), 1);
+                recordSkip (summary, spec.presetName, reason, skippedLines);
+                if (job.runOptions.writeProgress)
+                {
+                    juce::String progressErr;
+                    MegaBankProgress::save (progressPath, progressState, progressErr);
+                }
+                continue;
+            }
+
+            error = spec.presetName + ": " + reason;
+            MegaBankProgress::setFinished (progressState, false);
+            if (job.runOptions.writeProgress)
+                MegaBankProgress::save (progressPath, progressState, error);
             return false;
         }
 
+        const auto exported = MultisampleExporter::exportMpcKit (program, rootDir.getChildFile ("presets"), true);
+        if (! exported.ok)
+        {
+            recordSkip (summary, spec.presetName, "export failed: " + exported.error, skippedLines);
+            MegaBankProgress::markSourceFailed (progressState, spec.presetName, exported.error, 1);
+
+            if (! job.runOptions.skipFailedSources)
+            {
+                error = exported.error;
+                MegaBankProgress::setFinished (progressState, false);
+                if (job.runOptions.writeProgress)
+                    MegaBankProgress::save (progressPath, progressState, error);
+                return false;
+            }
+            continue;
+        }
+
         bank.presets.push_back (std::move (program));
+        if (summary != nullptr)
+            ++summary->completed;
         MegaBankProgress::markSourceCompleted (progressState,
                                                  spec.presetName,
                                                  exported.presetJson.getParentDirectory());
@@ -271,6 +337,15 @@ bool MegaBankRunner::runJob (const MegaBankJob& job, const juce::File& outputDir
             juce::String progressErr;
             MegaBankProgress::save (progressPath, progressState, progressErr);
         }
+    }
+
+    if (bank.presets.empty())
+    {
+        error = "Mega bank produced no presets";
+        MegaBankProgress::setFinished (progressState, false);
+        if (job.runOptions.writeProgress)
+            MegaBankProgress::save (progressPath, progressState, error);
+        return false;
     }
 
     const auto bankResult = MultisampleExporter::exportBank (bank, rootDir);
@@ -288,9 +363,28 @@ bool MegaBankRunner::runJob (const MegaBankJob& job, const juce::File& outputDir
     report << validationLines.joinIntoString ("\n");
     reportFile.replaceWithText (report);
 
-    MegaBankProgress::setFinished (progressState, true);
+    const juce::File skippedFile = MegaBankProgress::skippedReportFor (outputDirectory, job.name);
+    juce::String skippedReport = "Mega bank skipped presets report\n";
+    skippedReport << "Bank: " << job.name << "\n";
+    skippedReport << "Completed: " << juce::String (summary != nullptr ? summary->completed : static_cast<int> (bank.presets.size())) << "\n";
+    skippedReport << "Skipped: " << juce::String (skippedLines.size()) << "\n\n";
+    if (skippedLines.isEmpty())
+        skippedReport << "(none)\n";
+    else
+        skippedReport << skippedLines.joinIntoString ("\n") << "\n";
+    skippedFile.replaceWithText (skippedReport);
+
+    const bool hadSkips = ! skippedLines.isEmpty();
+    MegaBankProgress::setFinished (progressState, true, hadSkips);
     if (job.runOptions.writeProgress)
         MegaBankProgress::save (progressPath, progressState, error);
+
+    if (hadSkips)
+    {
+        error = "Skipped " + juce::String (skippedLines.size()) + " preset(s). See "
+                + skippedFile.getFullPathName() + ":\n" + skippedLines.joinIntoString ("\n");
+        return false;
+    }
 
     return true;
 }
