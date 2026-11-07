@@ -13,6 +13,8 @@ npm run dev    # http://localhost:3000
 npm run build && npm start
 ```
 
+**Remote Grok PWA:** `/remote-agent` + `POST /api/agent` → `GROK_INFERENCE_HOOK_URL` ([docs/GROK_PWA_INTEGRATION.md](../../docs/GROK_PWA_INTEGRATION.md)).
+
 Regenerate stub WAVs:
 
 ```bash

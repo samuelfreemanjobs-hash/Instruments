@@ -80,6 +80,34 @@ streamlit run vst-testing-ops/app.py                       # operations dashboar
 
 **After editing plugin C++ (`Source/`, `Wave9090/`, etc.):** run `run_business.py --profile ci` before pushing; on failure read `vst-testing-ops/error_log.txt` and fix until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit updated WAVs.
 
+## Remote agents (Grok Bot / phone PWA)
+
+Grok Build and Claude Code should both read **this file**. Strict rules for cloud agents:
+
+| Rule | Requirement |
+|------|-------------|
+| Architecture | Read `/ARCHITECTURE.md` and product `ARCHITECTURE.md` before edits |
+| JUCE / VST | No alloc/`std::cout` in `processBlock`; see `docs/VST_AI_PLUGIN_MAP.md` |
+| Proof | Run `python3 vst-testing-ops/run_business.py --profile ci` (or project equivalent) before claiming done |
+| Branches | `cursor/<description>-<suffix>` for automated PRs; **draft PR only** unless user merged |
+| Secrets | Never commit tokens; never print `.env` values in PR comments |
+| Scope | One product per task (JD Upgraded vs Wave9090 vs SP1200 vs SaaS) |
+| Delegation | Grok orchestrates; multi-file edits via Grok Build or Cursor Cloud Agent—not the phone PWA |
+| Completion | POST summary to PWA webhook with `client_ref`, `status`, `summary` (≤16k chars) |
+
+Phone flow: `disklordz/website` → `POST /api/agent` → Grok inference hook; callbacks → `POST /api/agent/webhook`. Docs: [docs/GROK_PWA_INTEGRATION.md](docs/GROK_PWA_INTEGRATION.md).
+
+## Coding Agent Stack (remote PWA)
+
+```bash
+cd tools/coding-agent-stack && python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+uvicorn coding_agent_stack.main:app --reload --port 8790
+```
+
+- [docs/CODING_AGENT_STACK.md](docs/CODING_AGENT_STACK.md) — roles vs Claude Code / plain editor
+- [tools/coding-agent-stack/ARCHITECTURE.md](tools/coding-agent-stack/ARCHITECTURE.md)
+
 - [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
 
 ## NTS-1 multi-bass (logue SDK)
