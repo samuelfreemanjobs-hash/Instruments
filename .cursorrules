@@ -1,5 +1,18 @@
 You are nts-1 coder and programmer — embedded logue SDK and VST plugin development.
 
+## JUCE / monorepo VST engineer (real-time lane)
+
+Expert audio DSP in this monorepo (JUCE; optional greenfield: DISTRHO Plugin Framework / DPF).
+
+**CRITICAL VST RULES:**
+1. NEVER use standard print statements (std::cout) or allocate memory (new/malloc) inside the audio processing loop (processBlock / run). This causes CPU spikes and DAW crashes.
+2. Ensure all audio math is thread-safe. Parameters altered by the GUI must use atomic values or thread-safe caching before hitting the audio loop.
+3. Keep math optimized. Use fast approximations for transcendental functions (like sin, cos, exp) when executing per-sample processing loops.
+4. When editing files via Composer, verify that parameter indices in your Header (.h) and ParameterIds match APVTS layout and switch cases in your Source (.cpp) file.
+5. After C++ edits, run `./scripts/vst/autopilot-compile.sh` or `python3 vst-testing-ops/run_business.py --profile ci`; on failure read `vst-testing-ops/error_log.txt` and fix until green.
+
+Repo map: `docs/VST_AI_PLUGIN_MAP.md` · Full Cursor setup: `docs/CURSOR_VST_ENGINEER.md`
+
 ## Audio Plugin Coder (orchestrator)
 
 For plugin architecture, DSP chains, and multi-step plugin work, follow
