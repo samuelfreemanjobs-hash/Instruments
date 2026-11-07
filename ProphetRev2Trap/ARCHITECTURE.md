@@ -34,4 +34,5 @@ DSP core: `Source/ProphetRev2Engine.h` (RT-safe: no alloc in `processBlock`).
 
 ## Related
 
-Root index: [ARCHITECTURE.md](../ARCHITECTURE.md)
+Root index: [ARCHITECTURE.md](../ARCHITECTURE.md)  
+Multi-agent sync (Cursor ↔ Claude Code): [docs/PROPHET_REV2_TRAP_HANDOFF.md](../docs/PROPHET_REV2_TRAP_HANDOFF.md)
