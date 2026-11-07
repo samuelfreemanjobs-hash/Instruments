@@ -17,7 +17,7 @@ SynthParams baseParams()
 const std::vector<FactoryPreset>& getFactoryPresets() noexcept
 {
     static const std::vector<FactoryPreset> kPresets = {
-        { "Sub-Zero 808", "BASS", [] {
+        { "Slide 808", "TRAP", [] {
               auto p = baseParams();
               p.wtPosition = 0.08f;
               p.filterCutoff = 0.35f;
@@ -32,7 +32,7 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.ampRelease = 0.25f;
               return p;
           }() },
-        { "Drift Lead", "LEAD", [] {
+        { "Night Drive Lead", "TRAP", [] {
               auto p = baseParams();
               p.wtPosition = 0.62f;
               p.wtScan = 0.35f;
@@ -41,7 +41,7 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.detuneCents = 8.0f;
               return p;
           }() },
-        { "Sinister Pluck", "PLUCK", [] {
+        { "Dark Trap Pluck", "TRAP", [] {
               auto p = baseParams();
               p.wtPosition = 0.48f;
               p.filterCutoff = 0.66f;
@@ -53,7 +53,7 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.filtEnvAmt = 0.75f;
               return p;
           }() },
-        { "Dark Bell", "BELL", [] {
+        { "Funeral Bell", "TRAP", [] {
               auto p = baseParams();
               p.wtPosition = 0.78f;
               p.filterCutoff = 0.82f;
@@ -62,7 +62,7 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.ampRelease = 0.8f;
               return p;
           }() },
-        { "Phonk Cowbell", "BELL", [] {
+        { "Memphis Cowbell", "PHONK", [] {
               auto p = baseParams();
               p.wtPosition = 0.55f;
               p.filterCutoff = 0.71f;
@@ -72,7 +72,7 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.detuneCents = -14.0f;
               return p;
           }() },
-        { "Haunted Keys", "KEYS", [] {
+        { "Smoke Keys", "TRAP", [] {
               auto p = baseParams();
               p.wtPosition = 0.42f;
               p.tapeWobble = 0.55f;
@@ -80,7 +80,7 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.wtScan = 0.15f;
               return p;
           }() },
-        { "Metallic Stab", "LEAD", [] {
+        { "Drill Stab", "DRILL", [] {
               auto p = baseParams();
               p.wtPosition = 0.88f;
               p.filterCutoff = 0.52f;
@@ -92,7 +92,7 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.ampSustain = 0.1f;
               return p;
           }() },
-        { "Tape Pad", "PAD", [] {
+        { "Trap Pad", "TRAP", [] {
               auto p = baseParams();
               p.wtPosition = 0.3f;
               p.wtScan = 0.22f;

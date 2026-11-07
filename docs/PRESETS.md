@@ -7,7 +7,7 @@ Programs are **four-tone stacks**. Use host program change or the plugin **&lt; 
 | 1–24 | EP / Rhodes / JD-style keys |
 | 25–48 | Pads |
 | 49–64 | Bass |
-| 65–80 | Vaporwave |
+| 65–80 | Vaporwave (market names on programs 64–79, e.g. *Palm Mall Stack*, *Chrome Lobby EP*) |
 | 81–96 | 80s R&B |
 | 97–112 | 90s R&B |
 | 113–128 | Elite sound design |

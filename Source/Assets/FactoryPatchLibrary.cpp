@@ -45,7 +45,7 @@ const char* categoryLabel (PresetCategory category) noexcept
         case PresetCategory::epPiano: return "EP";
         case PresetCategory::pad: return "Pad";
         case PresetCategory::bass: return "Bass";
-        case PresetCategory::vaporwave: return "Vapor";
+        case PresetCategory::vaporwave: return "Vaporwave";
         case PresetCategory::rnb80: return "80s R&B";
         case PresetCategory::rnb90: return "90s R&B";
         case PresetCategory::elite: return "Elite";
@@ -90,9 +90,34 @@ FactoryPatch buildPatch (std::size_t index, std::string& nameStorage)
     const std::size_t variant = index % 24;
     const float v = static_cast<float> (variant);
 
-    char nameBuf[48];
-    std::snprintf (nameBuf, sizeof (nameBuf), "%s %02zu", categoryLabel (category), (variant + 1));
-    nameStorage = nameBuf;
+    if (category == PresetCategory::vaporwave && index >= 64 && index < 80)
+    {
+        static constexpr const char* kVaporMarketNames[16] = {
+            "Palm Mall Keys",
+            "Chrome Lobby EP",
+            "Slow Pacific Pad",
+            "VHS Sunset Stack",
+            "Pink Atrium Bell",
+            "Escalator Dreams",
+            "Aqua Tile Rhodes",
+            "Midnight Food Court",
+            "Marble Fountain Pad",
+            "Sundown Fax Tone",
+            "Soft Channel Surf",
+            "Crt Glow Keys",
+            "Ritual Elevator Pad",
+            "Limewire Haze",
+            "Ocean View Mall",
+            "Velvet Escalator",
+        };
+        nameStorage = kVaporMarketNames[index - 64];
+    }
+    else
+    {
+        char nameBuf[48];
+        std::snprintf (nameBuf, sizeof (nameBuf), "%s %02zu", categoryLabel (category), (variant + 1));
+        nameStorage = nameBuf;
+    }
 
     FactoryToneLayer t0 {}, t1 {}, t2 {}, t3 {};
     float master = 0.76f;
@@ -203,7 +228,7 @@ void applyCuratedOverrides (std::size_t index, FactoryPatch& patch, std::string&
             patch.groupBMix = 0.32f;
             break;
         case 64:
-            nameStorage = "Vapor Stack (curated)";
+            nameStorage = "Palm Mall Stack (curated)";
             patch.tones[0] = layer (3, 128, 0.75f, 0.0f, 0.8f, 0.3f);
             patch.tones[1] = layer (3, 144, 0.7f, 0.05f, 0.78f, 0.28f);
             patch.tones[2] = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.2f);

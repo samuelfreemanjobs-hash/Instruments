@@ -146,6 +146,26 @@ target_compile_definitions(OfflineRender
 )
 add_dependencies(OfflineRender JDUpgradedRomData)
 
+add_executable(Wave9090OfflineRender tools/Wave9090OfflineRender.cpp)
+target_link_libraries(Wave9090OfflineRender
+    PRIVATE
+        Wave9090
+        juce::juce_audio_formats
+        juce::juce_audio_processors
+        juce::juce_audio_utils
+)
+target_include_directories(Wave9090OfflineRender
+    PRIVATE
+        Wave9090/Source
+        "${CMAKE_BINARY_DIR}/Wave9090/Wave9090_artefacts/JuceLibraryCode"
+)
+target_compile_definitions(Wave9090OfflineRender
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+)
+add_dependencies(Wave9090OfflineRender Wave9090)
+
 add_executable(ExportPreset tools/ExportPreset.cpp)
 target_link_libraries(ExportPreset
     PRIVATE
