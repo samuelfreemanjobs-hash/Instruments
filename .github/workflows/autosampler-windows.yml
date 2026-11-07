@@ -33,7 +33,7 @@ jobs:
       - name: Build Auto Sampler
         run: >
           cmake --build build -j
-          --target AutoSampler_VST3 AutoSampler_Standalone AutoSamplerBatchExport AutoSamplerTests
+          --target AutoSampler_VST3 AutoSampler_Standalone AutoSamplerBatchExport AutoSamplerMegaBank AutoSamplerTests
 
       - name: Unit tests
         run: ctest --test-dir build -R AutoSampler --output-on-failure
@@ -57,7 +57,12 @@ jobs:
           if ($null -eq $batch) { throw "AutoSamplerBatchExport.exe not found under build/AutoSampler" }
           Copy-Item $batch.FullName "$pkg/Tools/AutoSamplerBatchExport.exe"
 
+          $mega = Get-ChildItem -Path build/AutoSampler -Recurse -Filter AutoSamplerMegaBank.exe | Select-Object -First 1
+          if ($null -eq $mega) { throw "AutoSamplerMegaBank.exe not found under build/AutoSampler" }
+          Copy-Item $mega.FullName "$pkg/Tools/AutoSamplerMegaBank.exe"
+
           Copy-Item AutoSampler/examples/batch_bank.example.json "$pkg/examples/"
+          Copy-Item AutoSampler/examples/mega_bank.example.json "$pkg/examples/"
 
           @"
           Auto Sampler — Windows x64 prebuild
@@ -75,6 +80,10 @@ jobs:
 
           Batch export (optional)
             Tools/AutoSamplerBatchExport.exe examples/batch_bank.example.json C:\path\to\output
+
+          26-VST mega bank (offline host)
+            Edit examples/mega_bank.example.json with up to 26 vst3Path entries, then:
+            Tools/AutoSamplerMegaBank.exe examples/mega_bank.example.json C:\path\to\output
 
           Built from Instruments monorepo (JUCE). No installer — unsigned; allow if SmartScreen prompts.
           "@ | Set-Content -Path "$pkg/README.txt" -Encoding UTF8

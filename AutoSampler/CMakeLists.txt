@@ -24,6 +24,7 @@ target_sources (AutoSampler
         Source/Engine/SamplePostProcessor.cpp
         Source/Engine/SamplerEngine.cpp
         Source/Export/MultisampleExporter.cpp
+        Source/Export/MpcKeygroupExporter.cpp
 )
 
 target_compile_definitions (AutoSampler
@@ -51,6 +52,7 @@ add_executable (AutoSamplerBatchExport
     tools/AutoSamplerBatchExport.cpp
     Source/Engine/MultisampleProgram.cpp
     Source/Export/MultisampleExporter.cpp
+    Source/Export/MpcKeygroupExporter.cpp
 )
 
 target_include_directories (AutoSamplerBatchExport
@@ -82,6 +84,7 @@ add_executable (AutoSamplerTests
     Source/Engine/AutoRecordEngine.cpp
     Source/Engine/SamplePostProcessor.cpp
     Source/Export/MultisampleExporter.cpp
+    Source/Export/MpcKeygroupExporter.cpp
 )
 
 target_include_directories (AutoSamplerTests
@@ -104,3 +107,44 @@ target_link_libraries (AutoSamplerTests
 add_dependencies (AutoSamplerTests AutoSampler)
 
 add_test (NAME AutoSamplerUnit COMMAND AutoSamplerTests)
+
+add_executable (AutoSamplerMegaBank
+    tools/AutoSamplerMegaBank.cpp
+    Source/Engine/MultisampleProgram.cpp
+    Source/Engine/AutoRecordEngine.cpp
+    Source/Engine/SamplePostProcessor.cpp
+    Source/Engine/Vst3OfflineRenderer.cpp
+    Source/Engine/MegaBankRunner.cpp
+    Source/Export/MultisampleExporter.cpp
+    Source/Export/MpcKeygroupExporter.cpp
+)
+
+target_include_directories (AutoSamplerMegaBank
+    PRIVATE
+        Source
+        "${CMAKE_BINARY_DIR}/AutoSampler/AutoSampler_artefacts/JuceLibraryCode"
+)
+target_link_libraries (AutoSamplerMegaBank
+    PRIVATE
+        juce::juce_audio_utils
+        juce::juce_audio_processors
+        juce::juce_audio_formats
+        juce::juce_audio_basics
+        juce::juce_data_structures
+        juce::juce_gui_basics
+        juce::juce_gui_extra
+        juce::juce_core
+    PUBLIC
+        juce::juce_recommended_config_flags
+)
+add_dependencies (AutoSamplerMegaBank AutoSampler)
+target_compile_definitions (AutoSamplerMegaBank
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+        JUCE_PLUGINHOST_VST3=1
+        JUCE_PLUGINHOST_VST=0
+        JUCE_PLUGINHOST_AU=0
+        JUCE_PLUGINHOST_LADSPA=0
+        JUCE_PLUGINHOST_LV2=0
+)

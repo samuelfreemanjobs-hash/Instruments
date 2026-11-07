@@ -1,11 +1,13 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "AutoSamplerConstants.h"
 
 #include <algorithm>
 
 namespace
 {
 using PID = autosampler::ParameterIDs;
+using autosampler::kBankSlots;
 
 void addIntParam (juce::AudioProcessorValueTreeState::ParameterLayout& layout,
                   const char* id,

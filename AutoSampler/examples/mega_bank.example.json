@@ -1,0 +1,31 @@
+{
+  "format": "instruments-autosampler-mega-bank-v1",
+  "name": "TwentySixSynthMegaBank",
+  "capture": {
+    "lowNote": 36,
+    "highNote": 60,
+    "noteStep": 3,
+    "recordSeconds": 2.5,
+    "gapMs": 120,
+    "recordVelocity": 100,
+    "trimSilence": true,
+    "normalize": true,
+    "sustainLoop": true,
+    "trimThresholdDb": -48.0,
+    "normalizePeakDb": -0.3
+  },
+  "sources": [
+    {
+      "presetName": "Synth_01",
+      "vst3Path": "C:/Program Files/Common Files/VST3/ExampleSynth1.vst3",
+      "programIndex": 0
+    },
+    {
+      "presetName": "Synth_02",
+      "vst3Path": "C:/Program Files/Common Files/VST3/ExampleSynth2.vst3",
+      "programIndex": 0,
+      "lowNote": 48,
+      "highNote": 72
+    }
+  ]
+}

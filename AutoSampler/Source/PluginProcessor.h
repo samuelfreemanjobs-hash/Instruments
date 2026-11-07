@@ -4,6 +4,7 @@
 #include "Engine/MultisampleProgram.h"
 #include "Engine/SamplerEngine.h"
 #include "Export/MultisampleExporter.h"
+#include "AutoSamplerConstants.h"
 #include "Parameters/ParameterIds.h"
 
 #include <JuceHeader.h>
@@ -60,8 +61,6 @@ private:
     void refreshParametersFromApvts() noexcept;
     void handleTriggers() noexcept;
     autosampler::AutoRecordEngine::Config buildAutoConfig() const noexcept;
-
-    static constexpr int kBankSlots = 16;
 
     juce::AudioProcessorValueTreeState apvts_;
     std::vector<autosampler::MultisampleProgram> presetBank_;

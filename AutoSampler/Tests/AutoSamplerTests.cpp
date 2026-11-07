@@ -2,6 +2,7 @@
 #include "../Source/Engine/MultisampleProgram.h"
 #include "../Source/Engine/SamplePostProcessor.h"
 #include "../Source/Export/MultisampleExporter.h"
+#include "../Source/Export/MpcKeygroupExporter.h"
 
 #include <juce_core/juce_core.h>
 
@@ -100,6 +101,15 @@ static void testPostProcessAndSfz()
     const juce::File sfz = result.presetJson.getParentDirectory().getChildFile ("LoopPreset.sfz");
     assert (sfz.existsAsFile());
     assert (sfz.loadFileAsString().contains ("loop_start="));
+
+    juce::String mpcErr;
+    assert (autosampler::MpcKeygroupExporter::exportKeygroup (program, out.getChildFile ("mpc_only"), mpcErr));
+    const juce::File xpm = out.getChildFile ("mpc_only").getChildFile ("LoopPreset").getChildFile ("LoopPreset.xpm");
+    assert (xpm.existsAsFile());
+    assert (xpm.loadFileAsString().contains ("MPCVObject"));
+    assert (xpm.loadFileAsString().contains ("KeygroupMasterTranspose"));
+    assert (xpm.loadFileAsString().contains ("<SampleFile>"));
+
     out.deleteRecursively();
 }
 

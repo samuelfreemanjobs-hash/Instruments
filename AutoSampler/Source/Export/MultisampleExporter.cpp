@@ -1,4 +1,5 @@
 #include "MultisampleExporter.h"
+#include "MpcKeygroupExporter.h"
 
 namespace autosampler
 {
@@ -137,6 +138,13 @@ ExportResult MultisampleExporter::exportPreset (const MultisampleProgram& progra
     if (! writePresetSfz (program, presetSfz))
     {
         result.error = "Could not write SFZ";
+        return result;
+    }
+
+    juce::String mpcError;
+    if (! MpcKeygroupExporter::exportKeygroup (program, dir.getChildFile ("mpc"), mpcError))
+    {
+        result.error = mpcError;
         return result;
     }
 

@@ -34,7 +34,7 @@ void MultisampleProgram::rebuildKeyRanges() noexcept
         else
         {
             const int prevRoot = zones_[order[i - 1]].rootNote;
-            lowKeys_[idx] = (root + prevRoot + 1) / 2;
+            lowKeys_[idx] = (prevRoot + root) / 2 + 1;
         }
 
         if (i + 1 == order.size())
@@ -42,7 +42,7 @@ void MultisampleProgram::rebuildKeyRanges() noexcept
         else
         {
             const int nextRoot = zones_[order[i + 1]].rootNote;
-            highKeys_[idx] = (root + nextRoot - 1) / 2;
+            highKeys_[idx] = (root + nextRoot) / 2;
         }
     }
 }

@@ -20,6 +20,8 @@ Artifacts:
 - VST3: `build/AutoSampler/AutoSampler_artefacts/Release/VST3/Auto Sampler.vst3`
 - Standalone: `build/AutoSampler/AutoSampler_artefacts/Release/Standalone/Auto Sampler`
 - Batch CLI: `build/AutoSampler/AutoSamplerBatchExport`
+- Mega bank CLI: `build/AutoSampler/AutoSamplerMegaBank` (requires `JUCE_PLUGINHOST_VST3`)
+- In-plugin bank slots: **32** programs (`AutoSamplerConstants.h`)
 
 ### Windows prebuild (no local compile)
 
@@ -58,7 +60,11 @@ Capture finalize ──► trim silence, peak normalize, zero-cross sustain loop
 | `Source/Engine/AutoRecordEngine.*` | Note schedule, input capture, MIDI thru |
 | `Source/Engine/SamplerEngine.*` | Voice playback with pitch ratio |
 | `Source/Engine/SamplePostProcessor.*` | Trim, normalize, sustain loop detection |
-| `Source/Export/MultisampleExporter.*` | JSON + SFZ + WAV; bank export |
+| `Source/Export/MultisampleExporter.*` | JSON + SFZ + MPC + WAV; bank export |
+| `Source/Export/MpcKeygroupExporter.*` | Akai `.xpm` keygroup + `.WAV` |
+| `Source/Engine/Vst3OfflineRenderer.*` | Offline capture from up to 26 source VST3s |
+| `Source/Engine/MegaBankRunner.*` | Mega-bank JSON orchestration |
+| `tools/AutoSamplerMegaBank.cpp` | CLI: 26-VST automated banks |
 | `Source/PluginProcessor.*` | APVTS, programs (bank slots), export API |
 | `Source/PluginEditor.*` | Range controls, arm/export buttons |
 | `tools/AutoSamplerBatchExport.cpp` | Headless batch bank export |
