@@ -1,4 +1,5 @@
 #include "Vst3OfflineRenderer.h"
+#include "AutoSampleSessionPlan.h"
 #include "NoteMapBuilder.h"
 #include "SamplePostProcessor.h"
 #include "Vst3PluginCache.h"
@@ -54,7 +55,7 @@ static std::unique_ptr<juce::AudioPluginInstance> loadInstance (const juce::File
 
 static int captureLengthSamples (const AutoRecordEngine::Config& cfg, double sampleRate)
 {
-    const double sec = cfg.recordUntilSilence ? cfg.maxRecordSeconds : cfg.recordSeconds;
+    const double sec = AutoSampleSessionPlanBuilder::captureLengthSeconds (cfg);
     return static_cast<int> (std::ceil (sec * sampleRate));
 }
 
@@ -68,10 +69,21 @@ static void renderNote (juce::AudioPluginInstance& instance,
                           Zone& destZone,
                           std::chrono::steady_clock::time_point deadline)
 {
-    const int totalSamples = captureLengthSamples (cfg, sampleRate);
-    const int noteOffSample = juce::jlimit (1,
-                                            totalSamples - 1,
-                                            static_cast<int> (static_cast<double> (totalSamples) * cfg.noteOffAtRatio));
+    const int prerollSamples = static_cast<int> (std::ceil ((cfg.prerollMs / 1000.0) * sampleRate));
+    const int holdSamples = cfg.recordUntilSilence
+                                ? static_cast<int> (std::ceil ((cfg.noteHoldMs / 1000.0) * sampleRate))
+                                : static_cast<int> (std::ceil ((cfg.noteHoldMs / 1000.0) * sampleRate));
+    const int tailSamples = cfg.recordUntilSilence
+                                  ? static_cast<int> (std::ceil (cfg.maxRecordSeconds * sampleRate))
+                                  : static_cast<int> (std::ceil ((cfg.tailMs / 1000.0) * sampleRate));
+    const int totalSamples = cfg.recordUntilSilence
+                                 ? tailSamples
+                                 : prerollSamples + holdSamples + tailSamples;
+    const int noteOnSample = cfg.recordUntilSilence ? 0 : prerollSamples;
+    const int noteOffSample = cfg.recordUntilSilence
+                                  ? juce::jmin (holdSamples, totalSamples - 1)
+                                  : prerollSamples + holdSamples;
+    const int midiChannel = juce::jlimit (1, 16, cfg.midiChannel);
 
     VelocityLayer layer;
     layer.velStart = 0;
@@ -98,11 +110,11 @@ static void renderNote (juce::AudioPluginInstance& instance,
         buffer.clear();
         midi.clear();
 
-        if (offset == 0)
-            midi.addEvent (juce::MidiMessage::noteOn (1, note, (juce::uint8) velocity), 0);
-        if (! noteOffSent && offset >= noteOffSample)
+        if (offset <= noteOnSample && noteOnSample < offset + numThisBlock)
+            midi.addEvent (juce::MidiMessage::noteOn (midiChannel, note, (juce::uint8) velocity), noteOnSample - offset);
+        if (! noteOffSent && offset <= noteOffSample && noteOffSample < offset + numThisBlock)
         {
-            midi.addEvent (juce::MidiMessage::noteOff (1, note), 0);
+            midi.addEvent (juce::MidiMessage::noteOff (midiChannel, note), noteOffSample - offset);
             noteOffSent = true;
         }
 
@@ -208,9 +220,7 @@ bool Vst3OfflineRenderer::captureProgram (const Vst3CaptureSpec& spec,
                                                            cfg.noteMapPreset,
                                                            cfg.blackKeyPolicy);
 
-    std::vector<int> velocities = cfg.velocityLayers;
-    if (velocities.empty())
-        velocities.push_back (cfg.velocity);
+    const auto velocities = AutoSampleSessionPlanBuilder::activeVelocities (cfg);
 
     dest.clear();
     dest.name = spec.presetName.isNotEmpty() ? spec.presetName : spec.vst3Path.getFileNameWithoutExtension();
@@ -226,9 +236,7 @@ bool Vst3OfflineRenderer::captureProgram (const Vst3CaptureSpec& spec,
         }
 
         Zone zone;
-        const int velPassCount = cfg.multiVelocityLayers ? static_cast<int> (velocities.size()) : 1;
-
-        for (int vi = 0; vi < velPassCount; ++vi)
+        for (int vi = 0; vi < static_cast<int> (velocities.size()); ++vi)
         {
             if (std::chrono::steady_clock::now() > deadline)
             {
@@ -244,7 +252,7 @@ bool Vst3OfflineRenderer::captureProgram (const Vst3CaptureSpec& spec,
                 continue;
 
             auto layer = std::move (passZone.velocityLayers.front());
-            const auto [vLo, vHi] = velocitySpanForLayer (vi, velPassCount);
+            const auto [vLo, vHi] = velocitySpanForLayer (vi, static_cast<int> (velocities.size()));
             layer.velStart = vLo;
             layer.velEnd = vHi;
 

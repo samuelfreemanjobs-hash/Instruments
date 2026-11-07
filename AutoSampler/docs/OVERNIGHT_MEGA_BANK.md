@@ -20,6 +20,8 @@ With `"run": { "resume": true, "writeProgress": true }` the job writes:
 
 Re-run the same command; finished sources are skipped.
 
+MPC-style timing fields: `noteHoldMs` (gate), `tailMs` (release), `prerollMs`, `pauseMs`, `velocity1`–`velocity4` (0 = off). See [MPC_AUTOSAMPLER_PARITY.md](MPC_AUTOSAMPLER_PARITY.md).
+
 ## Capture options (JSON `capture`)
 
 | Field | Purpose |

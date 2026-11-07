@@ -21,6 +21,7 @@ set (AUTOSAMPLER_CORE_SOURCES
     Source/Engine/SamplePostProcessor.cpp
     Source/Engine/SamplerEngine.cpp
     Source/Engine/NoteMapBuilder.cpp
+    Source/Engine/AutoSampleSessionPlan.cpp
     Source/Engine/MegaBankTemplate.cpp
     Source/Export/MultisampleExporter.cpp
     Source/Export/MpcKeygroupExporter.cpp

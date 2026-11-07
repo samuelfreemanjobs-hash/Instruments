@@ -46,11 +46,17 @@ juce::AudioProcessorValueTreeState::ParameterLayout AutoSamplerAudioProcessor::c
                                                               "Black Keys",
                                                               juce::StringArray { "Include", "Skip", "White Only" },
                                                               0));
-    addFloatParam (layout, PID::recordSeconds, "Record Seconds", { 0.25f, 30.0f, 0.01f }, 2.0f);
+    addFloatParam (layout, PID::noteHoldMs, "Gate (ms)", { 50.0f, 10000.0f, 1.0f }, 1000.0f);
+    addFloatParam (layout, PID::tailMs, "Release (ms)", { 50.0f, 30000.0f, 1.0f }, 2000.0f);
+    addFloatParam (layout, PID::prerollMs, "Preroll (ms)", { 0.0f, 5000.0f, 1.0f }, 0.0f);
     addFloatParam (layout, PID::maxRecordSeconds, "Max Record Sec", { 1.0f, 120.0f, 0.1f }, 20.0f);
-    addFloatParam (layout, PID::gapMs, "Gap (ms)", { 0.0f, 2000.0f, 1.0f }, 150.0f);
-    addIntParam (layout, PID::recordVelocity, "Record Velocity", 1, 127, 100);
-    layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::multiVelocityLayers, 1 }, "Velocity Layers", false));
+    addFloatParam (layout, PID::gapMs, "Pause (ms)", { 0.0f, 5000.0f, 1.0f }, 150.0f);
+    addIntParam (layout, PID::recordVelocity, "Record Velocity", 0, 127, 127);
+    addIntParam (layout, PID::velocity1, "Velocity 1", 0, 127, 127);
+    addIntParam (layout, PID::velocity2, "Velocity 2", 0, 127, 0);
+    addIntParam (layout, PID::velocity3, "Velocity 3", 0, 127, 0);
+    addIntParam (layout, PID::velocity4, "Velocity 4", 0, 127, 0);
+    addIntParam (layout, PID::midiChannel, "MIDI Channel", 1, 16, 1);
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::recordUntilSilence, 1 }, "Record Until Silence", false));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::midiThru, 1 }, "MIDI Thru", true));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::startAutoSample, 1 }, "Start Auto Sample", false));
@@ -152,11 +158,19 @@ autosampler::AutoRecordEngine::Config AutoSamplerAudioProcessor::buildAutoConfig
     cfg.lowNote = static_cast<int> (*apvts_.getRawParameterValue (PID::lowNote));
     cfg.highNote = static_cast<int> (*apvts_.getRawParameterValue (PID::highNote));
     cfg.noteStep = static_cast<int> (*apvts_.getRawParameterValue (PID::noteStep));
-    cfg.recordSeconds = static_cast<double> (*apvts_.getRawParameterValue (PID::recordSeconds));
-    cfg.gapSeconds = static_cast<double> (*apvts_.getRawParameterValue (PID::gapMs)) / 1000.0;
+    cfg.noteHoldMs = static_cast<double> (*apvts_.getRawParameterValue (PID::noteHoldMs));
+    cfg.tailMs = static_cast<double> (*apvts_.getRawParameterValue (PID::tailMs));
+    cfg.prerollMs = static_cast<double> (*apvts_.getRawParameterValue (PID::prerollMs));
+    cfg.pauseMs = static_cast<double> (*apvts_.getRawParameterValue (PID::gapMs));
+    cfg.maxRecordSeconds = static_cast<double> (*apvts_.getRawParameterValue (PID::maxRecordSeconds));
+    cfg.recordSeconds = (cfg.noteHoldMs + cfg.tailMs + cfg.prerollMs) / 1000.0;
     cfg.velocity = static_cast<int> (*apvts_.getRawParameterValue (PID::recordVelocity));
+    cfg.velocitySlots[0] = static_cast<int> (*apvts_.getRawParameterValue (PID::velocity1));
+    cfg.velocitySlots[1] = static_cast<int> (*apvts_.getRawParameterValue (PID::velocity2));
+    cfg.velocitySlots[2] = static_cast<int> (*apvts_.getRawParameterValue (PID::velocity3));
+    cfg.velocitySlots[3] = static_cast<int> (*apvts_.getRawParameterValue (PID::velocity4));
+    cfg.midiChannel = static_cast<int> (*apvts_.getRawParameterValue (PID::midiChannel));
     cfg.midiThru = *apvts_.getRawParameterValue (PID::midiThru) >= 0.5f;
-    cfg.multiVelocityLayers = *apvts_.getRawParameterValue (PID::multiVelocityLayers) >= 0.5f;
     cfg.recordUntilSilence = *apvts_.getRawParameterValue (PID::recordUntilSilence) >= 0.5f;
     cfg.maxRecordSeconds = static_cast<double> (*apvts_.getRawParameterValue (PID::maxRecordSeconds));
     cfg.noteMapPreset = static_cast<autosampler::NoteMapPreset> (
@@ -170,6 +184,11 @@ autosampler::AutoRecordEngine::Config AutoSamplerAudioProcessor::buildAutoConfig
     cfg.postProcess.trimPadMs = *apvts_.getRawParameterValue (PID::trimPadMs);
     cfg.postProcess.normalizePeakDb = *apvts_.getRawParameterValue (PID::normalizePeakDb);
     return cfg;
+}
+
+autosampler::AutoSampleSessionPlan AutoSamplerAudioProcessor::getSessionPlan() const noexcept
+{
+    return autosampler::AutoSampleSessionPlanBuilder::plan (buildAutoConfig());
 }
 
 void AutoSamplerAudioProcessor::handleTriggers() noexcept

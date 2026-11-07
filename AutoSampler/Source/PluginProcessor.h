@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/AutoRecordEngine.h"
+#include "Engine/AutoSampleSessionPlan.h"
 #include "Engine/MegaBankTemplate.h"
 #include "Engine/MultisampleProgram.h"
 #include "Engine/SamplerEngine.h"
@@ -65,6 +66,7 @@ public:
 
     autosampler::AutoSampleState autoSampleState() const noexcept { return autoRecord_.state(); }
     float autoSampleProgress() const noexcept { return autoRecord_.progress01(); }
+    autosampler::AutoSampleSessionPlan getSessionPlan() const noexcept;
     float inputPeakLevel() const noexcept { return inputPeak_.load(); }
 
     juce::MidiKeyboardState& getKeyboardState() noexcept { return keyboardState_; }

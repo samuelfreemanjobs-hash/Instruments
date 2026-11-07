@@ -83,5 +83,6 @@ Capture finalize ──► trim silence, peak normalize, zero-cross sustain loop
 
 ## Related docs
 
+- [docs/MPC_AUTOSAMPLER_PARITY.md](docs/MPC_AUTOSAMPLER_PARITY.md) — gate/release/velocity options vs MPC Software
 - [../ARCHITECTURE.md](../ARCHITECTURE.md) — monorepo index
 - [../SP1200/ARCHITECTURE.md](../SP1200/ARCHITECTURE.md) — input recording reference

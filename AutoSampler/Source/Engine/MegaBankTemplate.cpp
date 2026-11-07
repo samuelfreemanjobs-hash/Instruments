@@ -16,8 +16,15 @@ bool writeMegaBankJsonTemplate (const juce::File& jsonFile, juce::String& error)
       "blackKeyPolicy": "skip",
       "recordUntilSilence": true,
       "maxRecordSeconds": 20,
-      "multiVelocityLayers": true,
-      "velocityLayers": [32, 64, 96, 127],
+      "noteHoldMs": 1000,
+      "tailMs": 2500,
+      "prerollMs": 0,
+      "pauseMs": 500,
+      "velocity1": 127,
+      "velocity2": 96,
+      "velocity3": 64,
+      "velocity4": 32,
+      "midiChannel": 1,
       "sustainLoop": true
     })"));
     root->setProperty ("run", juce::JSON::parse (R"({

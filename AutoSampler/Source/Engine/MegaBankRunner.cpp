@@ -56,24 +56,53 @@ static AutoRecordEngine::Config captureFromVar (const juce::var& v)
     cfg.lowNote = static_cast<int> (v.getProperty ("lowNote", cfg.lowNote));
     cfg.highNote = static_cast<int> (v.getProperty ("highNote", cfg.highNote));
     cfg.noteStep = static_cast<int> (v.getProperty ("noteStep", cfg.noteStep));
+    cfg.noteHoldMs = static_cast<double> (v.getProperty ("noteHoldMs", v.getProperty ("gateMs", cfg.noteHoldMs)));
+    cfg.tailMs = static_cast<double> (v.getProperty ("tailMs", v.getProperty ("releaseMs", cfg.tailMs)));
+    cfg.prerollMs = static_cast<double> (v.getProperty ("prerollMs", cfg.prerollMs));
+    cfg.pauseMs = static_cast<double> (v.getProperty ("pauseMs", v.getProperty ("gapMs", cfg.pauseMs)));
+    cfg.midiChannel = static_cast<int> (v.getProperty ("midiChannel", cfg.midiChannel));
     cfg.recordSeconds = static_cast<double> (v.getProperty ("recordSeconds", cfg.recordSeconds));
-    cfg.gapSeconds = static_cast<double> (v.getProperty ("gapMs", cfg.gapSeconds * 1000.0)) / 1000.0;
     cfg.velocity = static_cast<int> (v.getProperty ("recordVelocity", cfg.velocity));
+
+    if (v.hasProperty ("recordSeconds") && ! v.hasProperty ("noteHoldMs") && ! v.hasProperty ("gateMs"))
+    {
+        const double sec = cfg.recordSeconds;
+        cfg.noteHoldMs = sec * 0.35 * 1000.0;
+        cfg.tailMs = sec * 0.65 * 1000.0;
+    }
     cfg.postProcess = postFromVar (v, {});
     cfg.noteMapPreset = parseNoteMap (v.getProperty ("noteMapPreset", "chromatic").toString());
     cfg.blackKeyPolicy = parseBlackKeyPolicy (v.getProperty ("blackKeyPolicy", "include").toString());
-    cfg.multiVelocityLayers = static_cast<bool> (v.getProperty ("multiVelocityLayers", false));
     cfg.recordUntilSilence = static_cast<bool> (v.getProperty ("recordUntilSilence", true));
     cfg.maxRecordSeconds = static_cast<double> (v.getProperty ("maxRecordSeconds", cfg.maxRecordSeconds));
     cfg.silenceThresholdDb = static_cast<float> (v.getProperty ("silenceThresholdDb", cfg.silenceThresholdDb));
     cfg.silenceHoldSeconds = static_cast<double> (v.getProperty ("silenceHoldSeconds", cfg.silenceHoldSeconds));
-    cfg.noteOffAtRatio = static_cast<double> (v.getProperty ("noteOffAtRatio", cfg.noteOffAtRatio));
+    for (int i = 0; i < 4; ++i)
+    {
+        const juce::String key = "velocity" + juce::String (i + 1);
+        if (v.hasProperty (key))
+            cfg.velocitySlots[static_cast<std::size_t> (i)] = static_cast<int> (v.getProperty (key, 0));
+    }
 
     if (auto* velArr = v.getProperty ("velocityLayers", {}).getArray())
     {
-        cfg.velocityLayers.clear();
+        int idx = 0;
         for (const auto& vel : *velArr)
-            cfg.velocityLayers.push_back (static_cast<int> (vel));
+        {
+            if (idx >= 4)
+                break;
+            cfg.velocitySlots[static_cast<std::size_t> (idx++)] = static_cast<int> (vel);
+        }
+    }
+    else if (auto* velArr = v.getProperty ("velocities", {}).getArray())
+    {
+        int idx = 0;
+        for (const auto& vel : *velArr)
+        {
+            if (idx >= 4)
+                break;
+            cfg.velocitySlots[static_cast<std::size_t> (idx++)] = static_cast<int> (vel);
+        }
     }
 
     return cfg;

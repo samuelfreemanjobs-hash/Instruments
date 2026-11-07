@@ -76,8 +76,9 @@ static void testAutoRecord()
     cfg.lowNote = 60;
     cfg.highNote = 62;
     cfg.noteStep = 1;
-    cfg.recordSeconds = 0.05;
-    cfg.gapSeconds = 0.01;
+    cfg.noteHoldMs = 25.0;
+    cfg.tailMs = 25.0;
+    cfg.pauseMs = 10.0;
     cfg.midiThru = true;
 
     autosampler::MultisampleProgram program;

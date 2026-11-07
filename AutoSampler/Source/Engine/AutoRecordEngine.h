@@ -6,6 +6,7 @@
 
 #include <JuceHeader.h>
 
+#include <array>
 #include <vector>
 
 namespace autosampler
@@ -29,20 +30,27 @@ public:
         int lowNote = 36;
         int highNote = 72;
         int noteStep = 1;
-        double recordSeconds = 2.0;
-        double gapSeconds = 0.15;
+        /** MPC gate: MIDI note held (ms). */
+        double noteHoldMs = 1000.0;
+        /** MPC release tail recorded after note-off (ms). */
+        double tailMs = 2000.0;
+        /** Audio captured before note-on (ms). */
+        double prerollMs = 0.0;
+        /** Pause between note captures (ms). */
+        double pauseMs = 150.0;
+        /** Legacy single duration; used only when hold/tail not set in JSON. */
+        double recordSeconds = 3.0;
         int velocity = 100;
+        std::array<int, 4> velocitySlots { { 127, 0, 0, 0 } };
+        int midiChannel = 1;
         bool midiThru = true;
         PostProcessConfig postProcess {};
         NoteMapPreset noteMapPreset = NoteMapPreset::chromatic;
         BlackKeyPolicy blackKeyPolicy = BlackKeyPolicy::include;
-        bool multiVelocityLayers = false;
-        std::vector<int> velocityLayers { 32, 64, 96, 127 };
         bool recordUntilSilence = false;
         double maxRecordSeconds = 30.0;
         float silenceThresholdDb = -50.0f;
         double silenceHoldSeconds = 0.25;
-        double noteOffAtRatio = 0.85;
     };
 
     void prepare (double sampleRate, int maxBlockSize);
@@ -84,7 +92,12 @@ private:
     int captureWritePos_ = 0;
     int samplesUntilNextAction_ = 0;
     int targetRecordSamples_ = 0;
+    int prerollSamples_ = 0;
+    int holdSamples_ = 0;
+    int noteOnSamplePos_ = -1;
+    int noteOffSamplePos_ = -1;
     bool noteHeld_ = false;
+    std::vector<int> velocityList_;
 };
 
 } // namespace autosampler
