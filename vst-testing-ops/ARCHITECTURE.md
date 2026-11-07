@@ -79,11 +79,13 @@ GitHub Actions **Build** job: configure + build, then `run_business.py --profile
 | **VST3 DSP via bundle** | Not built | Future: headless host MIDI→WAV through `.vst3` (complement `OfflineRender`) |
 | **Dashboard** | Streamlit `app.py` | Optional long-running service on dev machine only |
 
-**Cursor should:** after C++ plugin edits, run `python3 vst-testing-ops/run_business.py --profile ci` (or `dsp-only` for DSP-only diffs); on failure read `vst-testing-ops/error_log.txt`, patch, re-run until green; update golden WAVs only via `tests/golden/refresh_golden.sh` when DSP output intentionally changes.
+**Cursor should:** after C++ plugin edits, run `./scripts/vst/autopilot-compile.sh` (fast build) or `python3 vst-testing-ops/run_business.py --profile ci` (full gate); on failure read `vst-testing-ops/error_log.txt`, patch, re-run until green; update golden WAVs only via `tests/golden/refresh_golden.sh` when DSP output intentionally changes.
 
+See [docs/CURSOR_VST_ENGINEER.md](../docs/CURSOR_VST_ENGINEER.md) and [docs/VST_AI_PLUGIN_MAP.md](../docs/VST_AI_PLUGIN_MAP.md).
 
 ## Related docs
 
+- [docs/CURSOR_VST_ENGINEER.md](../docs/CURSOR_VST_ENGINEER.md) — rules, @Docs, autopilot compile
 - [tools/ARCHITECTURE.md](../tools/ARCHITECTURE.md) — offline tools
 - [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) — JD Upgraded testing
 - [disklordz/website/ARCHITECTURE.md](../disklordz/website/ARCHITECTURE.md) — SaaS build

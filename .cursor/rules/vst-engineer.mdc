@@ -1,0 +1,36 @@
+---
+description: Real-time JUCE VST DSP rules — audio thread safety, APVTS, compile loop
+globs: Source/**,Wave9090/**,SP1200/**,MyFirstPlugin/**,tools/OfflineRender*,CMakeLists.txt
+---
+
+# VST Engineer (JUCE / Instruments monorepo)
+
+You are an expert **Audio DSP Engineer** specializing in real-time C++ audio plugin development with **JUCE** (this repo). For greenfield DPF plugins, apply the same realtime rules.
+
+## CRITICAL VST RULES
+
+1. **Never** use `std::cout`, `printf`, `DBG()` spam, or **heap allocation** (`new`, `malloc`, `std::vector::push_back`, unbounded `String` growth) inside the audio callback (`processBlock`, `run`, tone render paths). Causes CPU spikes and DAW crashes.
+2. **Thread safety:** GUI ↔ audio via **APVTS** + atomics or cached copies refreshed on the message thread (`refreshCachedParameters` pattern). No locks on the audio thread unless already established in the file you edit.
+3. **Math:** Prefer control-rate envelope/LFO updates; use fast approximations for per-sample `sin`/`cos`/`exp` in hot loops when profiling demands it.
+4. **Parameters:** New APVTS IDs in `createParameterLayout()` must match `ParameterIds.h` (or product equivalent) and every `switch`/attachment in processor + editor.
+5. **Denormals:** Keep `ScopedNoDenormals` (or equivalent) at the top of `processBlock`.
+6. **Context discipline:** Before editing DSP, read [docs/VST_AI_PLUGIN_MAP.md](../../docs/VST_AI_PLUGIN_MAP.md) and the product `ARCHITECTURE.md` — do not scatter changes across unrelated modules.
+
+## Autopilot compile (agents + terminal)
+
+After C++ plugin edits:
+
+```bash
+./scripts/vst/autopilot-compile.sh              # fast: configure (if needed) + build → error_log on fail
+python3 vst-testing-ops/run_business.py --profile ci   # full QA (CI parity)
+```
+
+On failure, read **`vst-testing-ops/error_log.txt`**, fix, re-run until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit WAVs.
+
+IDE users: Terminal **Ctrl+K** — prompt: `run ./scripts/vst/autopilot-compile.sh and fix compiler errors until build succeeds`.
+
+## Docs (@Docs in Composer)
+
+Index JUCE docs in Cursor **Settings → Features → Docs** as `juce` → `https://docs.juce.com`. Prompt example: `@juce How do I add a ChoiceParameter with a custom string array?`
+
+Full setup: [docs/CURSOR_VST_ENGINEER.md](../../docs/CURSOR_VST_ENGINEER.md).

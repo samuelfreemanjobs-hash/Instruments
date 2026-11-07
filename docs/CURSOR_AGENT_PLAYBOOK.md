@@ -16,6 +16,7 @@ Use this for **Disklordz** and **any new repo** in the org. Pair with [AGENTIC_P
 | `.cursorignore` | Keep huge trees out of context |
 | CI workflow | `lint` / `test` / `build` on PR |
 | `.cursor/rules/*.mdc` | At least one `alwaysApply` architecture/security rule |
+| `.cursorrules` / `vst-engineer.mdc` | JUCE VST lane — [CURSOR_VST_ENGINEER.md](CURSOR_VST_ENGINEER.md) |
 
 First agent task: **one vertical slice** (scaffold + health check), not full product.
 

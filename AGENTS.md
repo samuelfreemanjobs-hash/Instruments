@@ -69,16 +69,19 @@ Handoff: [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md). Spec: [docs/SP1200_ST
 
 ## JUCE plugin (default Cloud install)
 
+**VST Engineer Cursor setup:** [docs/CURSOR_VST_ENGINEER.md](docs/CURSOR_VST_ENGINEER.md) · plugin file map: [docs/VST_AI_PLUGIN_MAP.md](docs/VST_AI_PLUGIN_MAP.md) · rules: `.cursor/rules/vst-engineer.mdc` + `.cursorrules`
+
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
 cmake --build build -j
+./scripts/vst/autopilot-compile.sh                           # fast build; errors → error_log.txt
 python3 vst-testing-ops/run_business.py --profile ci       # full plugin QA (matches build.yml)
 python3 vst-testing-ops/run_business.py --profile dsp-only # DSP/golden only (faster)
 python3 vst-testing-ops/test_runner.py                     # single-VST pluginval
 streamlit run vst-testing-ops/app.py                       # operations dashboard
 ```
 
-**After editing plugin C++ (`Source/`, `Wave9090/`, etc.):** run `run_business.py --profile ci` before pushing; on failure read `vst-testing-ops/error_log.txt` and fix until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit updated WAVs.
+**After editing plugin C++ (`Source/`, `Wave9090/`, etc.):** run `autopilot-compile.sh` or `run_business.py --profile ci` before pushing; on failure read `vst-testing-ops/error_log.txt` and fix until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit updated WAVs.
 
 - [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
 
