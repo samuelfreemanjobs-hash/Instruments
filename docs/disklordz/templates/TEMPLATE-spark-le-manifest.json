@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "generator_version": "0.0.0",
+  "lane": "DJ-TOOMP",
+  "family": "atlanta",
+  "lane_alt": [
+    "GANGSTA-TRAP",
+    "PHONK-TRAP",
+    "VINTAGE-SOUTH",
+    "GUCCI-MANE",
+    "MIKE-WILL",
+    "DRUMMA-BOY",
+    "ZAYTOVEN",
+    "TI",
+    "DJ-DOOMP",
+    "MANNIE-FRESH",
+    "MASTER-P",
+    "BEATS-BY-THE-POUND",
+    "DRAKE-TYPE"
+  ],
+  "bpm": 140,
+  "swing_note": "Document 16th swing % if used; VINTAGE-SOUTH often higher",
+  "spark_le": {
+    "pad_map_version": "1.0",
+    "pads": {
+      "1": { "role": "808_sub", "file": "OneShots/01_808_Sub.wav", "target_lufs": -18 },
+      "2": { "role": "808_knock", "file": "OneShots/02_808_Knock.wav", "target_lufs": -16 },
+      "3": { "role": "snare_body", "file": "OneShots/03_Snare_Body.wav", "target_lufs": -15 },
+      "4": { "role": "snare_snap_clap", "file": "OneShots/04_Snap_Clap.wav", "target_lufs": -14 },
+      "5": { "role": "hat_closed", "file": "OneShots/05_Hat_Closed.wav", "target_lufs": -17 },
+      "6": { "role": "hat_open", "file": "OneShots/06_Hat_Open.wav", "target_lufs": -17 },
+      "7": { "role": "rim_perc", "file": "OneShots/07_Rim.wav", "target_lufs": -16 },
+      "8": { "role": "cowbell_fx", "file": "OneShots/08_Cowbell_FX.wav", "target_lufs": -15 }
+    }
+  },
+  "loops": [
+    { "id": "kick_sub", "file": "Loops/Kick_Sub_2bar.wav", "bars": 2 },
+    { "id": "tops_kickless", "file": "Loops/Tops_Kickless_2bar.wav", "bars": 2 }
+  ],
+  "overflow": [],
+  "lineage": {
+    "parent_keeper_id": null,
+    "parent_seed": null,
+    "dna_template_id": null
+  },
+  "review": {
+    "batch_id": "",
+    "keeper": false,
+    "scores": { "sonic": 0, "groove": 0, "workflow": 0, "vibe": 0 }
+  }
+}
