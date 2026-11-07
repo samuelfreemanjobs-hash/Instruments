@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#111827" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="/assets/styles.css" />
+    <title>Remote Agent</title>
+  </head>
+  <body>
+    <header>
+      <h1>Remote Agent</h1>
+      <p class="sub">Off-desk harness &amp; repo tasks</p>
+    </header>
+    <main id="log" aria-live="polite"></main>
+    <form id="chat">
+      <label class="mode">
+        Engine
+        <select id="mode" aria-label="Agent engine">
+          <option value="grok">Grok Bot (outer loop)</option>
+          <option value="team">Local team (Architect→QA)</option>
+          <option value="local">Local harness</option>
+        </select>
+      </label>
+      <label class="mode" id="routine-wrap" hidden>
+        Grok routine
+        <select id="routine" aria-label="Grok routine"></select>
+      </label>
+      <textarea id="prompt" rows="3" placeholder="e.g. Review open PR and run VST CI brief in Grok Build"></textarea>
+      <button type="submit" id="send">Send</button>
+    </form>
+    <script src="/assets/app.js" defer></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
+      }
+    </script>
+  </body>
+</html>

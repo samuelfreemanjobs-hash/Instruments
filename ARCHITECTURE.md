@@ -9,6 +9,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **JD Upgraded** (VST3 + CLAP + standalone synth) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [Source/UI/ARCHITECTURE.md](Source/UI/ARCHITECTURE.md) | `JDUpgraded_VST3`, `JDUpgraded_CLAP`, `JDUpgraded_Standalone` |
 | **Offline tooling** (ROM gen, render, regression) | [tools/ARCHITECTURE.md](tools/ARCHITECTURE.md) | `GenerateCleanroomRom`, `OfflineRender`, `SpectralDiff` |
 | **SynthForge** (hardware preset workstation) | [tools/synth-forge/ARCHITECTURE.md](tools/synth-forge/ARCHITECTURE.md) | `pytest tests -v` · `uvicorn synth_forge.main:app --port 8000` in `tools/synth-forge/` |
+| **Coding Agent Stack** (ReAct + PWA + Grok ACP) | [tools/coding-agent-stack/ARCHITECTURE.md](tools/coding-agent-stack/ARCHITECTURE.md) · [docs/CODING_AGENT_STACK.md](docs/CODING_AGENT_STACK.md) · [docs/GROK_PWA_INTEGRATION.md](docs/GROK_PWA_INTEGRATION.md) | `uvicorn coding_agent_stack.main:app --port 8790` in `tools/coding-agent-stack/` |
 | **VST testing ops** (pluginval command center) | [vst-testing-ops/ARCHITECTURE.md](vst-testing-ops/ARCHITECTURE.md) | `python3 vst-testing-ops/run_business.py --profile ci` · `streamlit run vst-testing-ops/app.py` |
 | **HISE sketch lane** (rompler / sampler R&D) | [docs/HISE_ANTIGRAVITY_LANE.md](docs/HISE_ANTIGRAVITY_LANE.md) · [hise-sketch/ARCHITECTURE.md](hise-sketch/ARCHITECTURE.md) | HISE local export (Antigravity); not in root CMake |
 | **Disklordz** (package index) | [disklordz/ARCHITECTURE.md](disklordz/ARCHITECTURE.md) · [docs/ROADMAP.md](docs/ROADMAP.md) | `./scripts/run-agent-fleet-now.sh` |
@@ -54,7 +55,7 @@ cmake --build build -j
 
 Optional Slack: CI ([`ci-slack-notify.yml`](.github/workflows/ci-slack-notify.yml)), Antigravity inbox ([`antigravity-inbox-slack.yml`](.github/workflows/antigravity-inbox-slack.yml)), Airtable handoff ([`airtable-antigravity-handoff.yml`](.github/workflows/airtable-antigravity-handoff.yml)) — configure with [`scripts/setup-disklordz-integrations.sh`](scripts/setup-disklordz-integrations.sh).
 
-**Cursor / agents:** [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) · [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) · **SOPs & templates** [docs/disklordz/README.md](docs/disklordz/README.md) · **Roadmap & progress** [docs/ROADMAP.md](docs/ROADMAP.md) · SaaS deep dive [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) · optional desktop agent [docs/BYTEBOT_SETUP.md](docs/BYTEBOT_SETUP.md).
+**Cursor / agents:** [docs/AI_CODING_AGENT_STACK.md](docs/AI_CODING_AGENT_STACK.md) · [docs/GROK_PWA_INTEGRATION.md](docs/GROK_PWA_INTEGRATION.md) · [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) · [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) · **SOPs & templates** [docs/disklordz/README.md](docs/disklordz/README.md) · **Roadmap & progress** [docs/ROADMAP.md](docs/ROADMAP.md) · SaaS deep dive [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) · optional desktop agent [docs/BYTEBOT_SETUP.md](docs/BYTEBOT_SETUP.md).
 
 ## Documentation policy
 

@@ -1,0 +1,17 @@
+{
+  "name": "Instruments Remote Grok",
+  "short_name": "Grok",
+  "theme_color": "#09090b",
+  "background_color": "#09090b",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/remote-agent",
+  "start_url": "/remote-agent",
+  "icons": [
+    {
+      "src": "/file.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
