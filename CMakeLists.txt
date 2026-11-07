@@ -66,10 +66,12 @@ target_sources(JDUpgraded
     PRIVATE
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
+        Source/UI/PresetBrowserComponent.cpp
         Source/DSP/VoicePool.cpp
         Source/DSP/Tone.cpp
         Source/Assets/RomBank.cpp
         Source/Assets/FactoryPatchLibrary.cpp
+        Source/Assets/FactoryPatchDedup.cpp
         Source/Preset/SysExParser.cpp
         Source/Preset/JdPatchSysexMapper.cpp
 )
@@ -145,6 +147,32 @@ target_compile_definitions(OfflineRender
         JUCE_USE_CURL=0
 )
 add_dependencies(OfflineRender JDUpgradedRomData)
+
+add_executable(QAFactoryPresets tools/QAFactoryPresets.cpp)
+target_link_libraries(QAFactoryPresets PRIVATE JDUpgraded)
+target_include_directories(QAFactoryPresets PRIVATE Source)
+add_test(NAME QAFactoryPresetsJD COMMAND QAFactoryPresets)
+add_dependencies(QAFactoryPresets JDUpgradedRomData)
+
+add_executable(Wave9090OfflineRender tools/Wave9090OfflineRender.cpp)
+target_link_libraries(Wave9090OfflineRender
+    PRIVATE
+        Wave9090
+        juce::juce_audio_formats
+        juce::juce_audio_processors
+        juce::juce_audio_utils
+)
+target_include_directories(Wave9090OfflineRender
+    PRIVATE
+        Wave9090/Source
+        "${CMAKE_BINARY_DIR}/Wave9090/Wave9090_artefacts/JuceLibraryCode"
+)
+target_compile_definitions(Wave9090OfflineRender
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+)
+add_dependencies(Wave9090OfflineRender Wave9090)
 
 add_executable(ExportPreset tools/ExportPreset.cpp)
 target_link_libraries(ExportPreset
