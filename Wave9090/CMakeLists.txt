@@ -44,6 +44,7 @@ juce_generate_juce_header (Wave9090)
 
 add_executable (Wave9090Tests
     Tests/DSP/WavetableBankTests.cpp
+    Source/Presets/FactoryPresets.cpp
 )
 
 target_include_directories (Wave9090Tests PRIVATE Source)

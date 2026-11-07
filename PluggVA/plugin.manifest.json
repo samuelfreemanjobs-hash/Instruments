@@ -1,0 +1,21 @@
+{
+  "projectId": "pluggva",
+  "pluginName": "Plugg VA",
+  "codename": "Trap Virtual Analog",
+  "version": "0.1.0",
+  "type": "instrument",
+  "category": "synthesizer",
+  "sampleless": true,
+  "formats": ["VST3", "Standalone"],
+  "platforms": ["Linux", "Windows", "macOS"],
+  "sonicIdentity": "Virtual-analog dual-oscillator synth for trap, plugg, phonk, rage, and Southern lead workflows",
+  "p0Features": [
+    "PolyBLEP saw/square/pulse/triangle",
+    "Dual oscillators + sub + unison",
+    "ZDF lowpass with filter envelope",
+    "Glide, chorus, drift wow",
+    "Drive and crush",
+    "32 factory presets",
+    "APVTS state persistence"
+  ]
+}
