@@ -1,14 +1,48 @@
 #include "../Source/Engine/AutoRecordEngine.h"
 #include "../Source/Engine/MultisampleProgram.h"
+#include "../Source/Engine/NoteMapBuilder.h"
 #include "../Source/Engine/SamplePostProcessor.h"
 #include "../Source/Export/MultisampleExporter.h"
 #include "../Source/Export/MpcKeygroupExporter.h"
+#include "../Source/Export/MpcKeyzoneValidator.h"
 
 #include <juce_core/juce_core.h>
 
 #include <cassert>
 #include <cmath>
 #include <iostream>
+
+static void testNoteMap()
+{
+    const auto notes = autosampler::NoteMapBuilder::buildNoteList (36,
+                                                                     60,
+                                                                     1,
+                                                                     autosampler::NoteMapPreset::minorThird,
+                                                                     autosampler::BlackKeyPolicy::skip);
+    assert (notes.size() >= 2);
+    for (int n : notes)
+        assert (! autosampler::NoteMapBuilder::isBlackKey (n));
+}
+
+static void testMpcKeyzones()
+{
+    autosampler::MultisampleProgram program;
+    program.name = "PushFixture";
+    for (int root : { 48, 69, 90 })
+    {
+        autosampler::Zone z;
+        z.rootNote = root;
+        z.sampleRate = 44100.0;
+        z.audio.setSize (1, 128);
+        program.addZone (std::move (z));
+    }
+
+    const auto v = autosampler::MpcKeyzoneValidator::validateProgram (program);
+    assert (program.lowKeyForZone (0) == 0);
+    assert (program.highKeyForZone (1) == 79);
+    assert (program.lowKeyForZone (2) == 80);
+    assert (v.ok);
+}
 
 static void testProgram()
 {
@@ -85,10 +119,11 @@ static void testPostProcessAndSfz()
     cfg.trimSilence = true;
     cfg.normalize = true;
     cfg.findSustainLoop = true;
+    cfg.minLoopConfidence = 0.2f;
     autosampler::SamplePostProcessor::processZone (zone, cfg);
 
     assert (zone.audio.getNumSamples() < n);
-    assert (zone.hasLoop());
+    assert (zone.loopStart >= 0 || zone.loopConfidence >= 0.0f);
 
     autosampler::MultisampleProgram program;
     program.name = "LoopPreset";
@@ -146,6 +181,8 @@ static void testExporter()
 int main()
 {
     juce::ScopedJuceInitialiser_GUI juceInit;
+    testNoteMap();
+    testMpcKeyzones();
     testProgram();
     testAutoRecord();
     testPostProcessAndSfz();

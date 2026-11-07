@@ -22,7 +22,7 @@ struct BankExportSpec
     std::vector<MultisampleProgram> presets;
 };
 
-/** Writes MPC-style portable folders: preset.json + per-note WAV files under samples/ */
+/** Writes portable preset folders (JSON, SFZ, MPC, EXS) + bank manifests. */
 class MultisampleExporter
 {
 public:
@@ -30,6 +30,7 @@ public:
     static constexpr const char* kBankFormat = "instruments-autosampler-bank-v1";
 
     static ExportResult exportPreset (const MultisampleProgram& program, const juce::File& outputDirectory);
+    static ExportResult exportMpcKit (const MultisampleProgram& program, const juce::File& outputDirectory, bool includeReadme = false);
     static ExportResult exportBank (const BankExportSpec& bank, const juce::File& outputDirectory);
 
     static juce::var presetToVar (const MultisampleProgram& program);
@@ -37,6 +38,8 @@ public:
     static bool writePresetSfz (const MultisampleProgram& program, const juce::File& presetSfzFile);
 
     static bool writeWavZones (const MultisampleProgram& program, const juce::File& samplesDir, juce::String& error);
+
+    static juce::String sampleFileName (int rootNote, int velStart = -1);
 };
 
 } // namespace autosampler

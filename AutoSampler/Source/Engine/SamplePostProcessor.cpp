@@ -190,8 +190,37 @@ void SamplePostProcessor::findZeroCrossLoop (Zone& zone, const PostProcessConfig
 
     if (bestStart >= 0 && bestEnd > bestStart)
     {
-        zone.loopStart = bestStart;
-        zone.loopEnd = bestEnd;
+        const int compareLen = juce::jmin (256, bestEnd - bestStart);
+        float dot = 0.0f;
+        float energyA = 0.0f;
+        float energyB = 0.0f;
+
+        for (int i = 0; i < compareLen; ++i)
+        {
+            const float a = mono.getSample (0, bestStart + i);
+            const float b = mono.getSample (0, bestEnd + i);
+            dot += a * b;
+            energyA += a * a;
+            energyB += b * b;
+        }
+
+        const float denom = std::sqrt (energyA * energyB) + 1.0e-8f;
+        const float correlation = juce::jlimit (0.0f, 1.0f, dot / denom);
+        const float slopeScore = 1.0f / (1.0f + bestScore);
+
+        zone.loopConfidence = 0.6f * correlation + 0.4f * slopeScore;
+
+        if (zone.loopConfidence >= config.minLoopConfidence)
+        {
+            zone.loopStart = bestStart;
+            zone.loopEnd = bestEnd;
+        }
+        else
+        {
+            zone.loopStart = -1;
+            zone.loopEnd = -1;
+            zone.loopConfidence = correlation;
+        }
     }
 }
 

@@ -15,16 +15,24 @@ juce_add_plugin (AutoSampler
     PRODUCT_NAME "Auto Sampler"
 )
 
+set (AUTOSAMPLER_CORE_SOURCES
+    Source/Engine/MultisampleProgram.cpp
+    Source/Engine/AutoRecordEngine.cpp
+    Source/Engine/SamplePostProcessor.cpp
+    Source/Engine/SamplerEngine.cpp
+    Source/Engine/NoteMapBuilder.cpp
+    Source/Engine/MegaBankTemplate.cpp
+    Source/Export/MultisampleExporter.cpp
+    Source/Export/MpcKeygroupExporter.cpp
+    Source/Export/MpcKeyzoneValidator.cpp
+    Source/Export/Exs24Exporter.cpp
+)
+
 target_sources (AutoSampler
     PRIVATE
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
-        Source/Engine/MultisampleProgram.cpp
-        Source/Engine/AutoRecordEngine.cpp
-        Source/Engine/SamplePostProcessor.cpp
-        Source/Engine/SamplerEngine.cpp
-        Source/Export/MultisampleExporter.cpp
-        Source/Export/MpcKeygroupExporter.cpp
+        ${AUTOSAMPLER_CORE_SOURCES}
 )
 
 target_compile_definitions (AutoSampler
@@ -50,9 +58,7 @@ juce_generate_juce_header (AutoSampler)
 
 add_executable (AutoSamplerBatchExport
     tools/AutoSamplerBatchExport.cpp
-    Source/Engine/MultisampleProgram.cpp
-    Source/Export/MultisampleExporter.cpp
-    Source/Export/MpcKeygroupExporter.cpp
+    ${AUTOSAMPLER_CORE_SOURCES}
 )
 
 target_include_directories (AutoSamplerBatchExport
@@ -80,11 +86,7 @@ target_compile_definitions (AutoSamplerBatchExport
 
 add_executable (AutoSamplerTests
     Tests/AutoSamplerTests.cpp
-    Source/Engine/MultisampleProgram.cpp
-    Source/Engine/AutoRecordEngine.cpp
-    Source/Engine/SamplePostProcessor.cpp
-    Source/Export/MultisampleExporter.cpp
-    Source/Export/MpcKeygroupExporter.cpp
+    ${AUTOSAMPLER_CORE_SOURCES}
 )
 
 target_include_directories (AutoSamplerTests
@@ -110,13 +112,11 @@ add_test (NAME AutoSamplerUnit COMMAND AutoSamplerTests)
 
 add_executable (AutoSamplerMegaBank
     tools/AutoSamplerMegaBank.cpp
-    Source/Engine/MultisampleProgram.cpp
-    Source/Engine/AutoRecordEngine.cpp
-    Source/Engine/SamplePostProcessor.cpp
-    Source/Engine/Vst3OfflineRenderer.cpp
     Source/Engine/MegaBankRunner.cpp
-    Source/Export/MultisampleExporter.cpp
-    Source/Export/MpcKeygroupExporter.cpp
+    Source/Engine/MegaBankProgress.cpp
+    Source/Engine/Vst3OfflineRenderer.cpp
+    Source/Engine/Vst3PluginCache.cpp
+    ${AUTOSAMPLER_CORE_SOURCES}
 )
 
 target_include_directories (AutoSamplerMegaBank

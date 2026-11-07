@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/AutoRecordEngine.h"
+#include "Engine/MegaBankTemplate.h"
 #include "Engine/MultisampleProgram.h"
 #include "Engine/SamplerEngine.h"
 #include "Export/MultisampleExporter.h"
@@ -9,6 +10,7 @@
 
 #include <JuceHeader.h>
 
+#include <atomic>
 #include <vector>
 
 class AutoSamplerAudioProcessor final : public juce::AudioProcessor
@@ -51,9 +53,21 @@ public:
     void setExportRootDirectory (const juce::File& dir) { exportRootDirectory_ = dir; }
 
     autosampler::ExportResult exportCurrentPreset() const;
+    autosampler::ExportResult exportMpcKit() const;
     autosampler::ExportResult exportEntireBank() const;
 
+    void queueAsyncExport (bool mpcKit);
+    bool isExportInProgress() const noexcept { return exportInProgress_.load(); }
+    juce::String lastExportMessage() const;
+
+    void reprocessCurrentPreset() noexcept;
+    bool writeMegaBankTemplateJson (const juce::File& jsonFile, juce::String& error) const;
+
     autosampler::AutoSampleState autoSampleState() const noexcept { return autoRecord_.state(); }
+    float autoSampleProgress() const noexcept { return autoRecord_.progress01(); }
+    float inputPeakLevel() const noexcept { return inputPeak_.load(); }
+
+    juce::MidiKeyboardState& getKeyboardState() noexcept { return keyboardState_; }
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
@@ -61,6 +75,7 @@ private:
     void refreshParametersFromApvts() noexcept;
     void handleTriggers() noexcept;
     autosampler::AutoRecordEngine::Config buildAutoConfig() const noexcept;
+    void runExportJob (bool mpcKit);
 
     juce::AudioProcessorValueTreeState apvts_;
     std::vector<autosampler::MultisampleProgram> presetBank_;
@@ -72,6 +87,14 @@ private:
     juce::File exportRootDirectory_;
     bool lastStartTrigger_ = false;
     bool lastExportTrigger_ = false;
+    bool lastMpcKitTrigger_ = false;
+    bool lastReprocessTrigger_ = false;
+
+    std::atomic<bool> exportInProgress_ { false };
+    std::atomic<float> inputPeak_ { 0.0f };
+    mutable juce::CriticalSection exportMessageLock_;
+    juce::String exportMessage_ { "Ready" };
+    juce::MidiKeyboardState keyboardState_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AutoSamplerAudioProcessor)
 };

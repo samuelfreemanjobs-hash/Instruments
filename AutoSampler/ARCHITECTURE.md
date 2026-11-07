@@ -20,7 +20,7 @@ Artifacts:
 - VST3: `build/AutoSampler/AutoSampler_artefacts/Release/VST3/Auto Sampler.vst3`
 - Standalone: `build/AutoSampler/AutoSampler_artefacts/Release/Standalone/Auto Sampler`
 - Batch CLI: `build/AutoSampler/AutoSamplerBatchExport`
-- Mega bank CLI: `build/AutoSampler/AutoSamplerMegaBank` (requires `JUCE_PLUGINHOST_VST3`)
+- Mega bank CLI: `build/AutoSampler/AutoSamplerMegaBank` (requires `JUCE_PLUGINHOST_VST3`) — see [docs/OVERNIGHT_MEGA_BANK.md](docs/OVERNIGHT_MEGA_BANK.md)
 - In-plugin bank slots: **32** programs (`AutoSamplerConstants.h`)
 
 ### Windows prebuild (no local compile)
@@ -61,7 +61,12 @@ Capture finalize ──► trim silence, peak normalize, zero-cross sustain loop
 | `Source/Engine/SamplerEngine.*` | Voice playback with pitch ratio |
 | `Source/Engine/SamplePostProcessor.*` | Trim, normalize, sustain loop detection |
 | `Source/Export/MultisampleExporter.*` | JSON + SFZ + MPC + WAV; bank export |
-| `Source/Export/MpcKeygroupExporter.*` | Akai `.xpm` keygroup + `.WAV` |
+| `Source/Export/MpcKeygroupExporter.*` | Akai `.xpm` keygroup + velocity layers |
+| `Source/Export/MpcKeyzoneValidator.*` | MPC zone/velocity validation |
+| `Source/Export/Exs24Exporter.*` | EXS24 text + samples |
+| `Source/Engine/MegaBankProgress.*` | Resume/progress JSON |
+| `Source/Engine/Vst3PluginCache.*` | VST3 load cache |
+| `Source/Engine/NoteMapBuilder.*` | Map presets / black-key policy |
 | `Source/Engine/Vst3OfflineRenderer.*` | Offline capture from up to 26 source VST3s |
 | `Source/Engine/MegaBankRunner.*` | Mega-bank JSON orchestration |
 | `tools/AutoSamplerMegaBank.cpp` | CLI: 26-VST automated banks |

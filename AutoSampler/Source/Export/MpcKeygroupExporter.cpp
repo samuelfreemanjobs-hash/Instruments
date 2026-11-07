@@ -1,11 +1,15 @@
 #include "MpcKeygroupExporter.h"
+#include "MpcKeyzoneValidator.h"
 
 namespace autosampler
 {
 
-juce::String MpcKeygroupExporter::mpcSampleBaseName (int rootNote)
+juce::String MpcKeygroupExporter::mpcSampleBaseName (int rootNote, int velStart)
 {
-    return "note_" + juce::String (rootNote).paddedLeft ('0', 3);
+    auto base = "note_" + juce::String (rootNote).paddedLeft ('0', 3);
+    if (velStart > 0 && velStart < 127)
+        base << "_v" << juce::String (velStart).paddedLeft ('0', 3);
+    return base;
 }
 
 juce::String MpcKeygroupExporter::escapeXml (const juce::String& text)
@@ -16,67 +20,68 @@ juce::String MpcKeygroupExporter::escapeXml (const juce::String& text)
         .replace ("\"", "&quot;");
 }
 
-static void writeWavFile (const Zone& zone, const juce::File& destWav)
+static void writeLayerWav (const VelocityLayer& layer, double sampleRate, const juce::File& destWav)
 {
     std::unique_ptr<juce::FileOutputStream> stream (destWav.createOutputStream());
     if (stream == nullptr)
         return;
 
     juce::WavAudioFormat wav;
-    juce::AudioFormatWriter* writer = wav.createWriterFor (stream.get(), zone.sampleRate,
-                                                             static_cast<unsigned int> (zone.audio.getNumChannels()),
+    juce::AudioFormatWriter* writer = wav.createWriterFor (stream.get(), sampleRate,
+                                                             static_cast<unsigned int> (layer.audio.getNumChannels()),
                                                              24, {}, 0);
     if (writer == nullptr)
         return;
 
     stream.release();
     std::unique_ptr<juce::AudioFormatWriter> owner (writer);
-    owner->writeFromAudioSampleBuffer (zone.audio, 0, zone.audio.getNumSamples());
+    owner->writeFromAudioSampleBuffer (layer.audio, 0, layer.audio.getNumSamples());
 }
 
-static juce::String layerBlockV2 (const Zone& zone, const juce::String& sampleFileName)
+static juce::String layerBlockV2 (const Zone& zone,
+                                    int layerNumber,
+                                    const VelocityLayer& layer,
+                                    const juce::String& sampleFileName)
 {
-    const bool hasLoop = zone.hasLoop();
+    const bool hasLoop = layer.hasLoop();
 
-    juce::String layer;
-    layer << "        <Layer number=\"1\">\n";
-    layer << "          <SampleFile>" << MpcKeygroupExporter::escapeXml (sampleFileName) << "</SampleFile>\n";
-    layer << "          <RootNote>" << zone.rootNote << "</RootNote>\n";
-    layer << "          <VelStart>0</VelStart>\n";
-    layer << "          <VelEnd>127</VelEnd>\n";
-    layer << "          <SampleStart>0</SampleStart>\n";
-    layer << "          <SampleEnd>-1</SampleEnd>\n";
+    juce::String out;
+    out << "        <Layer number=\"" << layerNumber << "\">\n";
+    out << "          <SampleFile>" << MpcKeygroupExporter::escapeXml (sampleFileName) << "</SampleFile>\n";
+    out << "          <RootNote>" << zone.rootNote << "</RootNote>\n";
+    out << "          <VelStart>" << layer.velStart << "</VelStart>\n";
+    out << "          <VelEnd>" << layer.velEnd << "</VelEnd>\n";
+    out << "          <SampleStart>0</SampleStart>\n";
+    out << "          <SampleEnd>-1</SampleEnd>\n";
 
     if (hasLoop)
     {
-        layer << "          <LoopStart>" << zone.loopStart << "</LoopStart>\n";
-        layer << "          <LoopEnd>" << zone.loopEnd << "</LoopEnd>\n";
-        layer << "          <Looping>1</Looping>\n";
+        out << "          <LoopStart>" << layer.loopStart << "</LoopStart>\n";
+        out << "          <LoopEnd>" << layer.loopEnd << "</LoopEnd>\n";
+        out << "          <Looping>1</Looping>\n";
     }
     else
     {
-        layer << "          <LoopStart>-1</LoopStart>\n";
-        layer << "          <LoopEnd>-1</LoopEnd>\n";
-        layer << "          <Looping>0</Looping>\n";
+        out << "          <LoopStart>-1</LoopStart>\n";
+        out << "          <LoopEnd>-1</LoopEnd>\n";
+        out << "          <Looping>0</Looping>\n";
     }
 
-    layer << "          <Bidirectional>0</Bidirectional>\n";
-    layer << "          <Reverse>0</Reverse>\n";
-    layer << "          <VolumeOffset>0</VolumeOffset>\n";
-    layer << "          <PanOffset>0</PanOffset>\n";
-    layer << "          <TuneOffset>0</TuneOffset>\n";
-    layer << "        </Layer>\n";
-    return layer;
+    out << "          <Bidirectional>0</Bidirectional>\n";
+    out << "          <Reverse>0</Reverse>\n";
+    out << "          <VolumeOffset>0</VolumeOffset>\n";
+    out << "          <PanOffset>0</PanOffset>\n";
+    out << "          <TuneOffset>0</TuneOffset>\n";
+    out << "        </Layer>\n";
+    return out;
 }
 
-static juce::String instrumentBlockV2 (const MultisampleProgram& program,
-                                        std::size_t zoneIndex,
-                                        int instrumentNumber)
+static juce::String instrumentBlockV2 (const MultisampleProgram& program, std::size_t zoneIndex, int instrumentNumber)
 {
     const auto& z = program.zones()[zoneIndex];
     const int low = program.lowKeyForZone (zoneIndex);
     const int high = program.highKeyForZone (zoneIndex);
-    const auto sampleFile = MpcKeygroupExporter::mpcSampleBaseName (z.rootNote) + ".wav";
+    const auto layers = z.velocityLayersForExport();
 
     juce::String xml;
     xml << "      <Instrument number=\"" << instrumentNumber << "\">\n";
@@ -84,7 +89,14 @@ static juce::String instrumentBlockV2 (const MultisampleProgram& program,
     xml << "        <LowNote>" << low << "</LowNote>\n";
     xml << "        <HighNote>" << high << "</HighNote>\n";
     xml << "        <Layers>\n";
-    xml << layerBlockV2 (z, sampleFile);
+
+    int layerNum = 1;
+    for (const auto& layer : layers)
+    {
+        const auto sampleFile = MpcKeygroupExporter::mpcSampleBaseName (z.rootNote, layer.velStart) + ".wav";
+        xml << layerBlockV2 (z, layerNum++, layer, sampleFile);
+    }
+
     xml << "        </Layers>\n";
     xml << "      </Instrument>\n";
     return xml;
@@ -92,6 +104,13 @@ static juce::String instrumentBlockV2 (const MultisampleProgram& program,
 
 bool MpcKeygroupExporter::exportKeygroup (const MultisampleProgram& program, const juce::File& destinationDir, juce::String& error)
 {
+    const auto validation = MpcKeyzoneValidator::validateProgram (program);
+    if (! validation.ok)
+    {
+        error = validation.errors.joinIntoString ("; ");
+        return false;
+    }
+
     if (program.empty())
     {
         error = "Program has no zones";
@@ -108,8 +127,11 @@ bool MpcKeygroupExporter::exportKeygroup (const MultisampleProgram& program, con
 
     for (const auto& z : program.zones())
     {
-        const auto base = mpcSampleBaseName (z.rootNote);
-        writeWavFile (z, programDir.getChildFile (base + ".wav"));
+        for (const auto& layer : z.velocityLayersForExport())
+        {
+            const auto base = mpcSampleBaseName (z.rootNote, layer.velStart);
+            writeLayerWav (layer, z.sampleRate, programDir.getChildFile (base + ".wav"));
+        }
     }
 
     const int numKeygroups = static_cast<int> (program.zoneCount());

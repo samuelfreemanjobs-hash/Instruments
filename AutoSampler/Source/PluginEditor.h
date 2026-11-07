@@ -21,11 +21,18 @@ private:
 
     juce::Label titleLabel_ { {}, "Auto Sampler" };
     juce::Label statusLabel_ { {}, "Idle" };
+    juce::Label inputMeterLabel_ { {}, "In: -inf dB" };
     juce::ComboBox programBox_;
     juce::TextButton startButton_ { "Start Auto Sample" };
     juce::TextButton exportPresetButton_ { "Export Preset" };
+    juce::TextButton exportMpcKitButton_ { "Export MPC Kit" };
     juce::TextButton exportBankButton_ { "Export Bank" };
     juce::TextButton chooseFolderButton_ { "Export Folder..." };
+    juce::TextButton reprocessButton_ { "Reprocess" };
+    juce::TextButton megaBankJsonButton_ { "Mega Bank JSON..." };
+    juce::ProgressBar progressBar_;
+    double progressValue_ = 0.0;
+    juce::MidiKeyboardComponent keyboard_ { processor_.getKeyboardState(), juce::MidiKeyboardComponent::horizontalKeyboard };
 
     juce::Slider lowNoteSlider_;
     juce::Slider highNoteSlider_;
@@ -34,6 +41,7 @@ private:
     juce::ToggleButton trimButton_ { "Trim" };
     juce::ToggleButton normalizeButton_ { "Normalize" };
     juce::ToggleButton loopButton_ { "Sustain Loop" };
+    juce::ToggleButton velocityLayersButton_ { "Vel Layers" };
 
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
@@ -46,6 +54,7 @@ private:
     std::unique_ptr<ButtonAttachment> trimAttachment_;
     std::unique_ptr<ButtonAttachment> normalizeAttachment_;
     std::unique_ptr<ButtonAttachment> loopAttachment_;
+    std::unique_ptr<ButtonAttachment> velocityLayersAttachment_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AutoSamplerAudioProcessorEditor)
 };

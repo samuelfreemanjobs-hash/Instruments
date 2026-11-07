@@ -1,6 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "AutoSamplerConstants.h"
+#include "Engine/NoteMapBuilder.h"
 
 #include <algorithm>
 
@@ -37,12 +38,25 @@ juce::AudioProcessorValueTreeState::ParameterLayout AutoSamplerAudioProcessor::c
     addIntParam (layout, PID::lowNote, "Low Note", 0, 127, 36);
     addIntParam (layout, PID::highNote, "High Note", 0, 127, 72);
     addIntParam (layout, PID::noteStep, "Note Step", 1, 12, 1);
+    layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID { PID::noteMapPreset, 1 },
+                                                              "Note Map",
+                                                              juce::StringArray { "Chromatic", "Minor 3rd", "Major 3rd", "Fifth", "Octave" },
+                                                              0));
+    layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID { PID::blackKeyPolicy, 1 },
+                                                              "Black Keys",
+                                                              juce::StringArray { "Include", "Skip", "White Only" },
+                                                              0));
     addFloatParam (layout, PID::recordSeconds, "Record Seconds", { 0.25f, 30.0f, 0.01f }, 2.0f);
+    addFloatParam (layout, PID::maxRecordSeconds, "Max Record Sec", { 1.0f, 120.0f, 0.1f }, 20.0f);
     addFloatParam (layout, PID::gapMs, "Gap (ms)", { 0.0f, 2000.0f, 1.0f }, 150.0f);
     addIntParam (layout, PID::recordVelocity, "Record Velocity", 1, 127, 100);
+    layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::multiVelocityLayers, 1 }, "Velocity Layers", false));
+    layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::recordUntilSilence, 1 }, "Record Until Silence", false));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::midiThru, 1 }, "MIDI Thru", true));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::startAutoSample, 1 }, "Start Auto Sample", false));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::exportPreset, 1 }, "Export Preset", false));
+    layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::exportMpcKit, 1 }, "Export MPC Kit", false));
+    layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::reprocessPreset, 1 }, "Reprocess Capture", false));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::trimSilence, 1 }, "Trim Silence", true));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::normalizeCapture, 1 }, "Normalize Capture", true));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::sustainLoop, 1 }, "Sustain Loop", true));
@@ -70,7 +84,11 @@ AutoSamplerAudioProcessor::AutoSamplerAudioProcessor()
                                .getChildFile ("AutoSamplerExports");
 }
 
-AutoSamplerAudioProcessor::~AutoSamplerAudioProcessor() = default;
+AutoSamplerAudioProcessor::~AutoSamplerAudioProcessor()
+{
+    while (exportInProgress_.load())
+        juce::Thread::sleep (10);
+}
 
 const juce::String AutoSamplerAudioProcessor::getName() const
 {
@@ -138,6 +156,13 @@ autosampler::AutoRecordEngine::Config AutoSamplerAudioProcessor::buildAutoConfig
     cfg.gapSeconds = static_cast<double> (*apvts_.getRawParameterValue (PID::gapMs)) / 1000.0;
     cfg.velocity = static_cast<int> (*apvts_.getRawParameterValue (PID::recordVelocity));
     cfg.midiThru = *apvts_.getRawParameterValue (PID::midiThru) >= 0.5f;
+    cfg.multiVelocityLayers = *apvts_.getRawParameterValue (PID::multiVelocityLayers) >= 0.5f;
+    cfg.recordUntilSilence = *apvts_.getRawParameterValue (PID::recordUntilSilence) >= 0.5f;
+    cfg.maxRecordSeconds = static_cast<double> (*apvts_.getRawParameterValue (PID::maxRecordSeconds));
+    cfg.noteMapPreset = static_cast<autosampler::NoteMapPreset> (
+        static_cast<int> (*apvts_.getRawParameterValue (PID::noteMapPreset)));
+    cfg.blackKeyPolicy = static_cast<autosampler::BlackKeyPolicy> (
+        static_cast<int> (*apvts_.getRawParameterValue (PID::blackKeyPolicy)));
     cfg.postProcess.trimSilence = *apvts_.getRawParameterValue (PID::trimSilence) >= 0.5f;
     cfg.postProcess.normalize = *apvts_.getRawParameterValue (PID::normalizeCapture) >= 0.5f;
     cfg.postProcess.findSustainLoop = *apvts_.getRawParameterValue (PID::sustainLoop) >= 0.5f;
@@ -159,8 +184,18 @@ void AutoSamplerAudioProcessor::handleTriggers() noexcept
 
     const bool exportTrig = *apvts_.getRawParameterValue (PID::exportPreset) >= 0.5f;
     if (exportTrig && ! lastExportTrigger_)
-        exportCurrentPreset();
+        queueAsyncExport (false);
     lastExportTrigger_ = exportTrig;
+
+    const bool mpcTrig = *apvts_.getRawParameterValue (PID::exportMpcKit) >= 0.5f;
+    if (mpcTrig && ! lastMpcKitTrigger_)
+        queueAsyncExport (true);
+    lastMpcKitTrigger_ = mpcTrig;
+
+    const bool reprocTrig = *apvts_.getRawParameterValue (PID::reprocessPreset) >= 0.5f;
+    if (reprocTrig && ! lastReprocessTrigger_)
+        reprocessCurrentPreset();
+    lastReprocessTrigger_ = reprocTrig;
 }
 
 void AutoSamplerAudioProcessor::refreshParametersFromApvts() noexcept
@@ -175,8 +210,13 @@ void AutoSamplerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     handleTriggers();
 
     juce::AudioBuffer<float> input (getTotalNumInputChannels(), buffer.getNumSamples());
+    float peak = 0.0f;
     for (int ch = 0; ch < input.getNumChannels(); ++ch)
+    {
         input.copyFrom (ch, 0, buffer, ch, 0, buffer.getNumSamples());
+        peak = juce::jmax (peak, input.getMagnitude (ch, 0, buffer.getNumSamples()));
+    }
+    inputPeak_.store (peak);
 
     juce::MidiBuffer midiThru;
     if (autoRecord_.isActive() || autoRecord_.state() == autosampler::AutoSampleState::finished)
@@ -184,6 +224,7 @@ void AutoSamplerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
     midi.addEvents (midiThru, 0, buffer.getNumSamples(), 0);
 
+    keyboardState_.processNextMidiBuffer (midi, 0, buffer.getNumSamples(), true);
     sampler_.process (buffer, midi);
     refreshParametersFromApvts();
 }
@@ -200,6 +241,51 @@ autosampler::ExportResult AutoSamplerAudioProcessor::exportCurrentPreset() const
 
     exportRootDirectory_.createDirectory();
     return autosampler::MultisampleExporter::exportPreset (getProgram(), exportRootDirectory_);
+}
+
+autosampler::ExportResult AutoSamplerAudioProcessor::exportMpcKit() const
+{
+    if (exportRootDirectory_.getFullPathName().isEmpty())
+        return { false, "Export directory not set", {} };
+
+    exportRootDirectory_.createDirectory();
+    return autosampler::MultisampleExporter::exportMpcKit (getProgram(), exportRootDirectory_, true);
+}
+
+void AutoSamplerAudioProcessor::queueAsyncExport (bool mpcKit)
+{
+    if (exportInProgress_.exchange (true))
+        return;
+
+    juce::Thread::launch ([this, mpcKit]
+                          {
+                              runExportJob (mpcKit);
+                              exportInProgress_.store (false);
+                          });
+}
+
+void AutoSamplerAudioProcessor::runExportJob (bool mpcKit)
+{
+    const auto result = mpcKit ? exportMpcKit() : exportCurrentPreset();
+    const juce::ScopedLock lock (exportMessageLock_);
+    exportMessage_ = result.ok ? ("Exported: " + result.presetJson.getFullPathName())
+                               : ("Export failed: " + result.error);
+}
+
+juce::String AutoSamplerAudioProcessor::lastExportMessage() const
+{
+    const juce::ScopedLock lock (exportMessageLock_);
+    return exportMessage_;
+}
+
+void AutoSamplerAudioProcessor::reprocessCurrentPreset() noexcept
+{
+    getProgram().reprocessAllZones (buildAutoConfig().postProcess);
+}
+
+bool AutoSamplerAudioProcessor::writeMegaBankTemplateJson (const juce::File& jsonFile, juce::String& error) const
+{
+    return autosampler::writeMegaBankJsonTemplate (jsonFile, error);
 }
 
 autosampler::ExportResult AutoSamplerAudioProcessor::exportEntireBank() const

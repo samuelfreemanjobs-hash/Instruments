@@ -17,7 +17,7 @@ public:
     static constexpr const char* kFileVersion = "2.1";
     static constexpr const char* kAppVersion = "2.10.0";
 
-    static juce::String mpcSampleBaseName (int rootNote);
+    static juce::String mpcSampleBaseName (int rootNote, int velStart = 0);
     static juce::String escapeXml (const juce::String& text);
 
     /** Writes `<name>/<name>.xpm` and uppercase `.WAV` samples in destinationDir. */

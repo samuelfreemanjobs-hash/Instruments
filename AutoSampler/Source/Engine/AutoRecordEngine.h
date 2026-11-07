@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MultisampleProgram.h"
+#include "NoteMapBuilder.h"
 #include "SamplePostProcessor.h"
 
 #include <JuceHeader.h>
@@ -33,6 +34,15 @@ public:
         int velocity = 100;
         bool midiThru = true;
         PostProcessConfig postProcess {};
+        NoteMapPreset noteMapPreset = NoteMapPreset::chromatic;
+        BlackKeyPolicy blackKeyPolicy = BlackKeyPolicy::include;
+        bool multiVelocityLayers = false;
+        std::vector<int> velocityLayers { 32, 64, 96, 127 };
+        bool recordUntilSilence = false;
+        double maxRecordSeconds = 30.0;
+        float silenceThresholdDb = -50.0f;
+        double silenceHoldSeconds = 0.25;
+        double noteOffAtRatio = 0.85;
     };
 
     void prepare (double sampleRate, int maxBlockSize);
@@ -65,6 +75,10 @@ private:
     std::vector<int> noteList_;
     std::size_t noteIndex_ = 0;
     int currentRootNote_ = -1;
+    int currentVelocity_ = 100;
+    std::size_t velocityPassIndex_ = 0;
+    int trailingSilentSamples_ = 0;
+    bool noteOffSent_ = false;
 
     juce::AudioBuffer<float> capture_;
     int captureWritePos_ = 0;

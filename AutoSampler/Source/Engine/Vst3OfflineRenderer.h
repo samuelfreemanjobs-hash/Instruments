@@ -4,6 +4,11 @@
 #include "AutoRecordEngine.h"
 #include "MultisampleProgram.h"
 
+namespace autosampler
+{
+class Vst3PluginCache;
+}
+
 #include <JuceHeader.h>
 
 namespace autosampler
@@ -24,7 +29,11 @@ public:
     static bool isSupportedOnThisPlatform() noexcept;
 
     /** Renders each note in captureConfig; applies post-process identically to live auto-sample. */
-    static bool captureProgram (const Vst3CaptureSpec& spec, MultisampleProgram& dest, juce::String& error);
+    static bool captureProgram (const Vst3CaptureSpec& spec,
+                                MultisampleProgram& dest,
+                                juce::String& error,
+                                Vst3PluginCache* cache = nullptr,
+                                double timeoutSeconds = 1800.0);
 };
 
 } // namespace autosampler

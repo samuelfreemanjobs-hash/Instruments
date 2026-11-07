@@ -15,6 +15,8 @@ struct PostProcessConfig
     float normalizePeakDb = -0.3f;
     float minLoopSeconds = 0.08f;
     float sustainLevelRatio = 0.25f;
+    float minLoopConfidence = 0.35f;
+    int loopCrossfadeSamples = 64;
 };
 
 /** Trim, normalize, and detect zero-cross sustain loops on captured zones. */

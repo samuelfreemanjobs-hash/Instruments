@@ -1,12 +1,81 @@
 #include "MultisampleProgram.h"
+#include "SamplePostProcessor.h"
 
 namespace autosampler
 {
 
+void Zone::syncPrimaryFromLayers() noexcept
+{
+    if (velocityLayers.empty())
+        return;
+
+    const auto& best = velocityLayers.back();
+    audio.makeCopyOf (best.audio);
+    loopStart = best.loopStart;
+    loopEnd = best.loopEnd;
+    loopConfidence = best.loopConfidence;
+}
+
+void Zone::addVelocityLayer (VelocityLayer layer)
+{
+    velocityLayers.push_back (std::move (layer));
+    syncPrimaryFromLayers();
+}
+
+int Zone::velocityLayerCount() const noexcept
+{
+    return static_cast<int> (velocityLayers.empty() ? 1 : velocityLayers.size());
+}
+
+std::vector<VelocityLayer> Zone::velocityLayersForExport() const
+{
+    if (! velocityLayers.empty())
+        return velocityLayers;
+
+    VelocityLayer single;
+    single.velStart = 0;
+    single.velEnd = 127;
+    single.audio.makeCopyOf (audio);
+    single.loopStart = loopStart;
+    single.loopEnd = loopEnd;
+    single.loopConfidence = loopConfidence;
+    return { single };
+}
+
 void MultisampleProgram::addZone (Zone zone)
 {
+    if (! zone.velocityLayers.empty())
+        zone.syncPrimaryFromLayers();
+
     zones_.push_back (std::move (zone));
     rebuildKeyRanges();
+}
+
+void MultisampleProgram::reprocessAllZones (const PostProcessConfig& config) noexcept
+{
+    for (auto& zone : zones_)
+    {
+        if (! zone.velocityLayers.empty())
+        {
+            for (auto& layer : zone.velocityLayers)
+            {
+                Zone temp;
+                temp.rootNote = zone.rootNote;
+                temp.sampleRate = zone.sampleRate;
+                temp.audio = layer.audio;
+                SamplePostProcessor::processZone (temp, config);
+                layer.audio = std::move (temp.audio);
+                layer.loopStart = temp.loopStart;
+                layer.loopEnd = temp.loopEnd;
+                layer.loopConfidence = temp.loopConfidence;
+            }
+            zone.syncPrimaryFromLayers();
+        }
+        else
+        {
+            SamplePostProcessor::processZone (zone, config);
+        }
+    }
 }
 
 void MultisampleProgram::rebuildKeyRanges() noexcept
@@ -47,6 +116,14 @@ void MultisampleProgram::rebuildKeyRanges() noexcept
     }
 }
 
+int MultisampleProgram::zoneIndexForRoot (int rootNote) const noexcept
+{
+    for (std::size_t i = 0; i < zones_.size(); ++i)
+        if (zones_[i].rootNote == rootNote)
+            return static_cast<int> (i);
+    return -1;
+}
+
 int MultisampleProgram::zoneIndexForNote (int midiNote) const noexcept
 {
     for (std::size_t i = 0; i < zones_.size(); ++i)
@@ -85,6 +162,9 @@ juce::ValueTree MultisampleProgram::toValueTree() const
         zoneNode.setProperty ("sampleRate", z.sampleRate, nullptr);
         zoneNode.setProperty ("channels", z.audio.getNumChannels(), nullptr);
         zoneNode.setProperty ("length", z.audio.getNumSamples(), nullptr);
+        zoneNode.setProperty ("loopStart", z.loopStart, nullptr);
+        zoneNode.setProperty ("loopEnd", z.loopEnd, nullptr);
+        zoneNode.setProperty ("loopConfidence", z.loopConfidence, nullptr);
 
         juce::MemoryBlock encoded;
         juce::MemoryOutputStream mos (encoded, false);
@@ -94,8 +174,6 @@ juce::ValueTree MultisampleProgram::toValueTree() const
 
         zoneNode.setProperty ("pcm", encoded.toBase64Encoding(), nullptr);
         zoneNode.setProperty ("id", noteTag (z.rootNote), nullptr);
-        zoneNode.setProperty ("loopStart", z.loopStart, nullptr);
-        zoneNode.setProperty ("loopEnd", z.loopEnd, nullptr);
         root.appendChild (zoneNode, nullptr);
     }
 
@@ -121,6 +199,7 @@ bool MultisampleProgram::loadFromValueTree (const juce::ValueTree& tree)
         z.sampleRate = static_cast<double> (zoneNode.getProperty ("sampleRate", 44100.0));
         z.loopStart = static_cast<int> (zoneNode.getProperty ("loopStart", -1));
         z.loopEnd = static_cast<int> (zoneNode.getProperty ("loopEnd", -1));
+        z.loopConfidence = static_cast<float> (zoneNode.getProperty ("loopConfidence", 1.0f));
 
         const int channels = static_cast<int> (zoneNode.getProperty ("channels", 2));
         const int length = static_cast<int> (zoneNode.getProperty ("length", 0));

@@ -1,12 +1,16 @@
 #include "MultisampleExporter.h"
+#include "Exs24Exporter.h"
 #include "MpcKeygroupExporter.h"
 
 namespace autosampler
 {
 
-static juce::String sampleFileName (int rootNote)
+juce::String MultisampleExporter::sampleFileName (int rootNote, int velStart)
 {
-    return "note_" + juce::String (rootNote).paddedLeft ('0', 3) + ".wav";
+    if (velStart < 0)
+        return "note_" + juce::String (rootNote).paddedLeft ('0', 3) + ".wav";
+    return "note_" + juce::String (rootNote).paddedLeft ('0', 3) + "_v"
+           + juce::String (velStart).paddedLeft ('0', 3) + ".wav";
 }
 
 juce::var MultisampleExporter::presetToVar (const MultisampleProgram& program)
@@ -23,6 +27,23 @@ juce::var MultisampleExporter::presetToVar (const MultisampleProgram& program)
         obj->setProperty ("highKey", program.highKeyForZone (i));
         obj->setProperty ("loopStart", z.loopStart);
         obj->setProperty ("loopEnd", z.loopEnd);
+        obj->setProperty ("loopConfidence", z.loopConfidence);
+
+        const auto layers = z.velocityLayersForExport();
+        if (layers.size() > 1)
+        {
+            juce::Array<juce::var> layerArr;
+            for (const auto& layer : layers)
+            {
+                juce::DynamicObject::Ptr layerObj = new juce::DynamicObject();
+                layerObj->setProperty ("velStart", layer.velStart);
+                layerObj->setProperty ("velEnd", layer.velEnd);
+                layerObj->setProperty ("file", "samples/" + sampleFileName (z.rootNote, layer.velStart));
+                layerArr.add (juce::var (layerObj.get()));
+            }
+            obj->setProperty ("velocityLayers", layerArr);
+        }
+
         zonesVar.add (juce::var (obj.get()));
     }
 
@@ -48,56 +69,68 @@ bool MultisampleExporter::writePresetSfz (const MultisampleProgram& program, con
     for (std::size_t i = 0; i < program.zoneCount(); ++i)
     {
         const auto& z = program.zones()[i];
-        const juce::String samplePath = "samples/" + sampleFileName (z.rootNote);
+        const auto layers = z.velocityLayersForExport();
 
-        text << "<region>\n";
-        text << "sample=" << samplePath << "\n";
-        text << "lokey=" << program.lowKeyForZone (i) << "\n";
-        text << "hikey=" << program.highKeyForZone (i) << "\n";
-        text << "pitch_keycenter=" << z.rootNote << "\n";
-
-        if (z.hasLoop())
+        for (const auto& layer : layers)
         {
-            text << "loop_mode=loop_continuous\n";
-            text << "loop_start=" << z.loopStart << "\n";
-            text << "loop_end=" << z.loopEnd << "\n";
-        }
+            const juce::String samplePath = "samples/" + sampleFileName (z.rootNote, layers.size() > 1 ? layer.velStart : -1);
 
-        text << "\n";
+            text << "<region>\n";
+            text << "sample=" << samplePath << "\n";
+            text << "lokey=" << program.lowKeyForZone (i) << "\n";
+            text << "hikey=" << program.highKeyForZone (i) << "\n";
+            text << "pitch_keycenter=" << z.rootNote << "\n";
+            text << "lovel=" << layer.velStart << "\n";
+            text << "hivel=" << layer.velEnd << "\n";
+
+            if (layer.hasLoop())
+            {
+                text << "loop_mode=loop_continuous\n";
+                text << "loop_start=" << layer.loopStart << "\n";
+                text << "loop_end=" << layer.loopEnd << "\n";
+            }
+
+            text << "\n";
+        }
     }
 
     return presetSfzFile.replaceWithText (text);
 }
 
 bool MultisampleExporter::writeWavZones (const MultisampleProgram& program,
-                                           const juce::File& samplesDir,
-                                           juce::String& error)
+                                             const juce::File& samplesDir,
+                                             juce::String& error)
 {
     juce::WavAudioFormat wav;
 
     for (const auto& zone : program.zones())
     {
-        const juce::File wavFile = samplesDir.getChildFile (sampleFileName (zone.rootNote));
-        std::unique_ptr<juce::FileOutputStream> stream (wavFile.createOutputStream());
-        if (stream == nullptr)
+        const auto layers = zone.velocityLayersForExport();
+        for (const auto& layer : layers)
         {
-            error = "Could not write " + wavFile.getFileName();
-            return false;
+            const juce::File wavFile = samplesDir.getChildFile (
+                sampleFileName (zone.rootNote, layers.size() > 1 ? layer.velStart : -1));
+            std::unique_ptr<juce::FileOutputStream> stream (wavFile.createOutputStream());
+            if (stream == nullptr)
+            {
+                error = "Could not write " + wavFile.getFileName();
+                return false;
+            }
+
+            juce::AudioFormatWriter* writer = wav.createWriterFor (stream.get(), zone.sampleRate,
+                                                                     static_cast<unsigned int> (layer.audio.getNumChannels()),
+                                                                     24, {}, 0);
+
+            if (writer == nullptr)
+            {
+                error = "WAV writer failed for " + wavFile.getFileName();
+                return false;
+            }
+
+            stream.release();
+            std::unique_ptr<juce::AudioFormatWriter> writerOwner (writer);
+            writerOwner->writeFromAudioSampleBuffer (layer.audio, 0, layer.audio.getNumSamples());
         }
-
-        juce::AudioFormatWriter* writer = wav.createWriterFor (stream.get(), zone.sampleRate,
-                                                                 static_cast<unsigned int> (zone.audio.getNumChannels()),
-                                                                 24, {}, 0);
-
-        if (writer == nullptr)
-        {
-            error = "WAV writer failed for " + wavFile.getFileName();
-            return false;
-        }
-
-        stream.release();
-        std::unique_ptr<juce::AudioFormatWriter> writerOwner (writer);
-        writerOwner->writeFromAudioSampleBuffer (zone.audio, 0, zone.audio.getNumSamples());
     }
 
     return true;
@@ -148,8 +181,38 @@ ExportResult MultisampleExporter::exportPreset (const MultisampleProgram& progra
         return result;
     }
 
+    juce::String exsError;
+    if (! Exs24Exporter::exportInstrument (program, dir.getChildFile ("exs"), exsError))
+    {
+        result.error = exsError;
+        return result;
+    }
+
     result.ok = true;
     result.presetJson = presetJson;
+    return result;
+}
+
+ExportResult MultisampleExporter::exportMpcKit (const MultisampleProgram& program,
+                                                  const juce::File& outputDirectory,
+                                                  bool includeReadme)
+{
+    auto result = exportPreset (program, outputDirectory);
+    if (! result.ok)
+        return result;
+
+    const juce::File dir = result.presetJson.getParentDirectory();
+
+    if (includeReadme)
+    {
+        juce::String readme;
+        readme << "Auto Sampler MPC kit\n";
+        readme << "Program: " << program.name << "\n";
+        readme << "Copy the mpc/" << program.name << "/ folder to MPC content.\n";
+        readme << "Companion formats: SFZ, EXS24, preset.json\n";
+        dir.getChildFile ("README_MPC.txt").replaceWithText (readme);
+    }
+
     return result;
 }
 

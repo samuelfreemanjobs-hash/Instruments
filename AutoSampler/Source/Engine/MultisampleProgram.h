@@ -7,16 +7,43 @@
 namespace autosampler
 {
 
+struct VelocityLayer
+{
+    int velStart = 0;
+    int velEnd = 127;
+    juce::AudioBuffer<float> audio;
+    int loopStart = -1;
+    int loopEnd = -1;
+    float loopConfidence = 0.0f;
+
+    bool hasLoop() const noexcept { return loopStart >= 0 && loopEnd > loopStart && loopConfidence >= 0.35f; }
+};
+
 struct Zone
 {
     int rootNote = 60;
     juce::AudioBuffer<float> audio;
     double sampleRate = 44100.0;
-    /** Inclusive loop points in samples; negative = no loop. */
     int loopStart = -1;
     int loopEnd = -1;
+    float loopConfidence = 0.0f;
+    std::vector<VelocityLayer> velocityLayers;
 
-    bool hasLoop() const noexcept { return loopStart >= 0 && loopEnd > loopStart; }
+    void syncPrimaryFromLayers() noexcept;
+    void addVelocityLayer (VelocityLayer layer);
+    int velocityLayerCount() const noexcept;
+    std::vector<VelocityLayer> velocityLayersForExport() const;
+
+    bool hasLoop() const noexcept
+    {
+        if (! velocityLayers.empty())
+        {
+            for (const auto& layer : velocityLayers)
+                if (layer.hasLoop())
+                    return true;
+        }
+        return loopStart >= 0 && loopEnd > loopStart && loopConfidence >= 0.35f;
+    }
 };
 
 /** One playable multisample preset (MPC Auto Sampler-style program). */
@@ -36,8 +63,10 @@ public:
     void addZone (Zone zone);
     void rebuildKeyRanges() noexcept;
 
-    /** Find zone index for MIDI note, or -1. */
+    void reprocessAllZones (const struct PostProcessConfig& config) noexcept;
+
     int zoneIndexForNote (int midiNote) const noexcept;
+    int zoneIndexForRoot (int rootNote) const noexcept;
 
     int lowKeyForZone (std::size_t index) const noexcept;
     int highKeyForZone (std::size_t index) const noexcept;

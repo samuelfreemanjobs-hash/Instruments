@@ -30,6 +30,8 @@ private:
         double position = 0.0;
         float gain = 1.0f;
         int note = 60;
+        int crossfadeRemaining = 0;
+        int crossfadeTotal = 0;
     };
 
     void startVoice (int note, float velocity);
