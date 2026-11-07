@@ -14,7 +14,9 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release \
 cmake --build build -j --target PluggVA_VST3 PluggVA_Standalone PluggVATests
 ```
 
-Artifact: `build/PluggVA/PluggVA_artefacts/Release/VST3/Plugg VA.vst3`
+Artifact (local): `build/PluggVA/PluggVA_artefacts/Release/VST3/Plugg VA.vst3`
+
+**Windows CI:** [`.github/workflows/windows-vst3-monorepo.yml`](../.github/workflows/windows-vst3-monorepo.yml) uploads VST3 bundles as workflow artifacts on `main` / `cursor/**` pushes and PRs.
 
 ## Data flow
 
