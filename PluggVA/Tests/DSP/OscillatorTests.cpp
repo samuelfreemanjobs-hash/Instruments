@@ -1,4 +1,5 @@
 #include "DSP/PolyBlepOscillator.h"
+#include "Presets/FactoryPresets.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -6,6 +7,13 @@
 
 int main()
 {
+    if (pluggva::presets::getFactoryPresets().size() != 32)
+    {
+        std::cerr << "expected 32 factory presets, got "
+                  << pluggva::presets::getFactoryPresets().size() << '\n';
+        return EXIT_FAILURE;
+    }
+
     pluggva::dsp::PolyBlepOscillator osc;
     osc.prepare (48000.0);
     osc.setFrequency (220.0f);

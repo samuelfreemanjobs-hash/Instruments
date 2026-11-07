@@ -42,7 +42,10 @@ target_include_directories (PluggVA PRIVATE Source)
 
 juce_generate_juce_header (PluggVA)
 
-add_executable (PluggVATests Tests/DSP/OscillatorTests.cpp)
+add_executable (PluggVATests
+    Tests/DSP/OscillatorTests.cpp
+    Source/Presets/FactoryPresets.cpp
+)
 
 target_include_directories (PluggVATests PRIVATE Source)
 target_compile_features (PluggVATests PRIVATE cxx_std_20)
