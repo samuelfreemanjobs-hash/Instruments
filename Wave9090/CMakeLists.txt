@@ -20,6 +20,12 @@ target_sources (Wave9090
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
         Source/Presets/FactoryPresets.cpp
+        "${CMAKE_CURRENT_SOURCE_DIR}/../Source/UI/PresetBrowserComponent.cpp"
+)
+
+target_include_directories (Wave9090
+    PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/../Source"
 )
 
 target_compile_definitions (Wave9090
@@ -50,3 +56,11 @@ target_include_directories (Wave9090Tests PRIVATE Source)
 target_compile_features (Wave9090Tests PRIVATE cxx_std_20)
 
 add_test (NAME Wave9090Wavetable COMMAND Wave9090Tests)
+
+add_executable (Wave9090PresetCountTests
+    Tests/PresetCountTests.cpp
+    Source/Presets/FactoryPresets.cpp
+)
+target_include_directories (Wave9090PresetCountTests PRIVATE Source)
+target_compile_features (Wave9090PresetCountTests PRIVATE cxx_std_20)
+add_test (NAME Wave9090PresetCount COMMAND Wave9090PresetCountTests)

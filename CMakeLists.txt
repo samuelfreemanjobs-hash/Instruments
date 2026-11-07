@@ -66,6 +66,7 @@ target_sources(JDUpgraded
     PRIVATE
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
+        Source/UI/PresetBrowserComponent.cpp
         Source/DSP/VoicePool.cpp
         Source/DSP/Tone.cpp
         Source/Assets/RomBank.cpp

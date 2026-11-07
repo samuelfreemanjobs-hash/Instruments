@@ -18,7 +18,10 @@ enum class PresetCategory : std::uint8_t
     vaporwave,
     rnb80,
     rnb90,
-    elite
+    elite,
+    trap,
+    phonk,
+    loFi
 };
 
 PresetCategory categoryForIndex (std::size_t index) noexcept
@@ -35,7 +38,13 @@ PresetCategory categoryForIndex (std::size_t index) noexcept
         return PresetCategory::rnb80;
     if (index < 112)
         return PresetCategory::rnb90;
-    return PresetCategory::elite;
+    if (index < 128)
+        return PresetCategory::elite;
+    if (index < 152)
+        return PresetCategory::trap;
+    if (index < 176)
+        return PresetCategory::phonk;
+    return PresetCategory::loFi;
 }
 
 const char* categoryLabel (PresetCategory category) noexcept
@@ -49,6 +58,9 @@ const char* categoryLabel (PresetCategory category) noexcept
         case PresetCategory::rnb80: return "80s R&B";
         case PresetCategory::rnb90: return "90s R&B";
         case PresetCategory::elite: return "Elite";
+        case PresetCategory::trap: return "Trap";
+        case PresetCategory::phonk: return "Phonk";
+        case PresetCategory::loFi: return "Lo-Fi";
         default: return "Patch";
     }
 }
@@ -74,8 +86,15 @@ jdupgraded::dsp::ToneCouplingMode couplingFor (PresetCategory category, std::siz
                 default: return jdupgraded::dsp::ToneCouplingMode::ringPair23;
             }
         case PresetCategory::vaporwave:
+        case PresetCategory::loFi:
             return (variant % 3 == 0) ? jdupgraded::dsp::ToneCouplingMode::independent
                                         : jdupgraded::dsp::ToneCouplingMode::ringPair01;
+        case PresetCategory::trap:
+            return (variant % 2 == 0) ? jdupgraded::dsp::ToneCouplingMode::crossModPair01
+                                        : jdupgraded::dsp::ToneCouplingMode::independent;
+        case PresetCategory::phonk:
+            return (variant % 2 == 0) ? jdupgraded::dsp::ToneCouplingMode::ringPair01
+                                        : jdupgraded::dsp::ToneCouplingMode::independent;
         case PresetCategory::epPiano:
             return (variant % 4 == 0) ? jdupgraded::dsp::ToneCouplingMode::crossModPair01
                                       : jdupgraded::dsp::ToneCouplingMode::independent;
@@ -111,6 +130,39 @@ FactoryPatch buildPatch (std::size_t index, std::string& nameStorage)
             "Velvet Escalator",
         };
         nameStorage = kVaporMarketNames[index - 64];
+    }
+    else if (category == PresetCategory::trap && index >= 128 && index < 152)
+    {
+        static constexpr const char* kTrapMarketNames[24] = {
+            "808 Cart Push", "Rack Room Sub", "Gunshot Pluck", "Night 808", "Slime Lead",
+            "Metro Bell", "Opium Pad", "Atlanta Keys", "Shadow 808", "Vault Sub",
+            "Dark Hall Pluck", "Chrome 808", "Drill Stack", "Dusty Bell", "Hood Pad",
+            "Witch Lead", "Trap EP 01", "Low Fog Bass", "Ice Pluck", "Saint Bell",
+            "Smoke Pad", "Ritual Lead", "Zone 808", "Backroom Sub",
+        };
+        nameStorage = kTrapMarketNames[index - 128];
+    }
+    else if (category == PresetCategory::phonk && index >= 152 && index < 176)
+    {
+        static constexpr const char* kPhonkMarketNames[24] = {
+            "Memphis Cow Route", "Graveyard Bell", "Chopped Organ", "Swamp Lead", "Dust Tape Keys",
+            "Ritual Cow", "Phonk Stab 01", "Vintage Horn", "Grim Bell", "Night Organ",
+            "Gravel Lead", "Hollow Cow", "Funeral Stab", "Delta Keys", "Smoke Organ",
+            "Rust Bell", "Backroad Lead", "Crypt Cow", "Ash Stab", "Field Organ",
+            "Bone Lead", "Memphis Night", "Dirt Cow", "Lantern Keys",
+        };
+        nameStorage = kPhonkMarketNames[index - 152];
+    }
+    else if (category == PresetCategory::loFi && index >= 176 && index < 200)
+    {
+        static constexpr const char* kLoFiMarketNames[24] = {
+            "Rain Window EP", "Dusk Mall Pad", "Study Rhodes", "Tape Haze Keys", "Loft Sunset",
+            "Coffee Pad", "Soft Channel", "Letter Rhodes", "Evening Mall", "Warm Static Pad",
+            "Balcony Keys", "Late Train EP", "Cloud Pad", "Bedroom Rhodes", "City Glow",
+            "Polaroid Pad", "Quiet Hall EP", "Dream Transit", "Sodium Pad", "Home Rhodes",
+            "Blue Hour", "Lobby Lo-Fi", "Sleep Mall", "Golden Escalator",
+        };
+        nameStorage = kLoFiMarketNames[index - 176];
     }
     else
     {
@@ -176,8 +228,35 @@ FactoryPatch buildPatch (std::size_t index, std::string& nameStorage)
             groupA = 0.08f;
             break;
 
+        case PresetCategory::trap:
+            t0 = layer (static_cast<std::uint16_t> (8 + variant % 4), 0, 1.0f, -12.0f, 0.38f, 0.35f);
+            t1 = layer (static_cast<std::uint16_t> (10 + variant % 5), 0, 0.55f, 0.0f, 0.48f, 0.32f);
+            t2 = layer (0, static_cast<std::uint16_t> (12 + variant % 8), 0.35f, 12.0f, 0.52f, 0.28f);
+            t3 = layer (0, static_cast<std::uint16_t> (28 + variant % 6), 0.25f, 7.0f, 0.45f, 0.25f);
+            groupA = 0.14f + v * 0.008f;
+            groupB = 0.18f;
+            master = 0.8f;
+            break;
+
+        case PresetCategory::phonk:
+            t0 = layer (static_cast<std::uint16_t> (11 + variant % 4), 0, 0.92f, -7.0f, 0.55f, 0.42f);
+            t1 = layer (0, static_cast<std::uint16_t> (44 + variant % 10), 0.48f, 5.0f, 0.62f, 0.38f);
+            t2 = layer (static_cast<std::uint16_t> (6 + variant % 3), 0, 0.42f, 0.0f, 0.5f, 0.35f);
+            t3 = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.3f);
+            groupA = 0.1f;
+            groupB = 0.22f;
+            break;
+
+        case PresetCategory::loFi:
+            t0 = layer (1, 0, 0.78f, -8.0f - v * 0.2f, 0.7f, 0.26f);
+            t1 = layer (2, 0, 0.65f, 7.0f + v * 0.15f, 0.66f, 0.24f);
+            t2 = layer (static_cast<std::uint16_t> (14 + variant % 5), 0, 0.4f, 0.0f, 0.58f, 0.22f);
+            t3 = layer (0, static_cast<std::uint16_t> (72 + variant % 8), 0.28f, 3.0f, 0.5f, 0.2f);
+            groupB = 0.34f;
+            groupA = 0.04f;
+            break;
+
         case PresetCategory::elite:
-        default:
             t0 = layer (static_cast<std::uint16_t> (18 + variant % 6), 0, 0.7f, 0.0f, 0.82f, 0.55f);
             t1 = layer (static_cast<std::uint16_t> (20 + variant % 4), 0, 0.65f, -5.0f, 0.75f, 0.52f);
             t2 = layer (0, static_cast<std::uint16_t> (55 + variant % 8), 0.5f, 12.0f, 0.7f, 0.48f);
@@ -185,6 +264,9 @@ FactoryPatch buildPatch (std::size_t index, std::string& nameStorage)
             groupA = 0.15f + v * 0.012f;
             groupB = 0.25f + v * 0.01f;
             master = 0.74f;
+            break;
+
+        default:
             break;
     }
 
@@ -245,6 +327,25 @@ void applyCuratedOverrides (std::size_t index, FactoryPatch& patch, std::string&
             patch.groupADrive = 0.05f;
             patch.groupBMix = 0.28f;
             break;
+        case 128:
+            nameStorage = "808 Cart Push (curated)";
+            patch.tones[0] = layer (2, 8, 1.0f, -12.0f, 0.36f, 0.4f);
+            patch.tones[1] = layer (2, 16, 0.5f, -12.0f, 0.42f, 0.35f);
+            patch.coupling = jdupgraded::dsp::ToneCouplingMode::crossModPair01;
+            patch.groupADrive = 0.16f;
+            break;
+        case 152:
+            nameStorage = "Memphis Cow Route (curated)";
+            patch.tones[0] = layer (3, 52, 0.95f, -5.0f, 0.58f, 0.45f);
+            patch.tones[1] = layer (0, 48, 0.5f, 7.0f, 0.55f, 0.38f);
+            patch.coupling = jdupgraded::dsp::ToneCouplingMode::ringPair01;
+            break;
+        case 176:
+            nameStorage = "Rain Window EP (curated)";
+            patch.tones[0] = layer (1, 72, 0.85f, -10.0f, 0.72f, 0.28f);
+            patch.tones[1] = layer (2, 88, 0.62f, 8.0f, 0.68f, 0.26f);
+            patch.groupBMix = 0.36f;
+            break;
         case 112:
             nameStorage = "Elite Sync Lead (curated)";
             patch.tones[0] = layer (4, 96, 0.9f, 0.0f, 0.7f, 0.55f);
@@ -298,6 +399,11 @@ const FactoryPatch& FactoryPatchLibrary::getPatch (std::size_t index) noexcept
 {
     const auto& store = patchStore();
     return store.patches[index % store.patches.size()];
+}
+
+const char* FactoryPatchLibrary::getCategoryName (std::size_t index) noexcept
+{
+    return categoryLabel (categoryForIndex (index));
 }
 
 } // namespace jdupgraded::assets

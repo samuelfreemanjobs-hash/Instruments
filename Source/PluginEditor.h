@@ -4,6 +4,7 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include "PluginProcessor.h"
+#include "UI/PresetBrowserComponent.h"
 #include "UI/WavePreviewComponent.h"
 
 #include <array>
@@ -50,6 +51,7 @@ private:
     juce::Label programLabel_;
     juce::TextButton programPrev_ { "<" };
     juce::TextButton programNext_ { ">" };
+    std::unique_ptr<PresetBrowserComponent> presetBrowser_;
     juce::TextButton exportPresetButton_ { "Export" };
     juce::TextButton importPresetButton_ { "Import" };
     juce::Label romBrowseLabel_;

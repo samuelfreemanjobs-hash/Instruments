@@ -1,6 +1,6 @@
-# Factory presets (128)
+# Factory presets (200)
 
-Programs are **four-tone stacks**. Use host program change or the plugin **&lt; / &gt;** buttons.
+Programs are **four-tone stacks**. Use the in-plugin **Preset Browser** (search + category), host program change, or prev/next inside the browser.
 
 | Index | Category |
 |-------|----------|
@@ -11,6 +11,11 @@ Programs are **four-tone stacks**. Use host program change or the plugin **&lt; 
 | 81–96 | 80s R&B |
 | 97–112 | 90s R&B |
 | 113–128 | Elite sound design |
+| 129–152 | Trap (MPC / 808 packs) |
+| 153–176 | Phonk |
+| 177–200 | Lo-Fi |
+
+See [PRESET_FACTORY_200.md](PRESET_FACTORY_200.md) for WAVE-9090 lanes and UI notes.
 
 ## Per-tone mute
 
