@@ -49,6 +49,21 @@
       "context_paths": ["docs/CURSOR_FACTORY_LIAISON.md", "docs/CHORD_ENGINE_PRD.md"],
       "priority": 5,
       "gate_completed_task": "dev-environment"
+    },
+    {
+      "id": "cloud-factory-paste-human-windows",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "PASTE_TO_FACTORY human-windows for plugin-skeleton + idle NEXT_SLICE",
+      "acceptance": "factory-queue.py emits Samuel build block; tick emit_waiting shows queue idle",
+      "allowlist": [
+        "scripts/audio-plugin/",
+        "scripts/autonomous-coder/",
+        "disklordz/audio-command/data/",
+        ".cursor/autonomous-coder/"
+      ],
+      "context_paths": ["docs/CURSOR_FACTORY_LIAISON.md"],
+      "priority": 6
     }
   ]
 }

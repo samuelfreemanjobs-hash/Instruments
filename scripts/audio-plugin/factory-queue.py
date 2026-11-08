@@ -41,6 +41,8 @@ def next_open_task(progress: dict, playbooks: dict) -> tuple[str, dict] | None:
 def blocker(progress: dict, task_id: str) -> str | None:
     completed = set(progress.get("completed_ids") or [])
     if "dev-environment" not in completed and task_id != "dev-environment":
+        return "dev-environment"
+    if task_id == "plugin-skeleton" and task_id not in completed:
         return "human-windows"
     return None
 
@@ -72,6 +74,40 @@ DiskLordz Audio — Factory implementer only.
 - Report §18.3: Completed, Files, Build, Tests, Limitations, Next task
 
 **Parallel:** Antigravity may run WO-PREP / WO-CC per `sync-all-antigravity.sh` — do not wait on it for compile.
+"""
+
+
+def render_samuel_build(task_id: str, pb: dict, stage: tuple[str, str]) -> str:
+    letter, blurb = stage
+    return f"""# PASTE_TO_FACTORY (generated)
+
+_Generated {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")} · task `{task_id}`_
+
+**Blocker:** human-windows  
+**Next owner:** Samuel (Windows build + DAW)  
+**Liaison:** skill `disklordz-plugin-factory-liaison`
+
+---
+
+Stage B **JUCE shell is landed** under `DiskLordz-Audio/Products/ChordEngine/`.
+
+**Stage:** {letter} — {blurb}  
+**Slice:** {pb.get("headline", task_id)}
+
+### Build (from `C:\\dev\\Instruments`)
+
+```powershell
+git pull origin cursor/audio-business-copilot-b828
+powershell -ExecutionPolicy Bypass -File .\\DiskLordz-Audio\\build-windows.ps1
+```
+
+VST3: `DiskLordz-Audio\\Build\\Windows\\ChordEngine_artefacts\\Release\\VST3\\CHORD ENGINE.vst3`
+
+**Done when:** {pb.get("done_when", "DAW scan + open")}
+
+**Factory chat:** only if build fails — paste this file + log; rule `disklordz-audio-engineering-lane`.
+
+**Parallel:** Antigravity WO-PREP (docs/batch) — not required for compile.
 """
 
 
@@ -108,6 +144,12 @@ def main() -> int:
 
     task_id, pb = nxt
     block = blocker(progress, task_id)
+    if block == "human-windows" and task_id == "plugin-skeleton":
+        stage = STAGE_BY_TASK.get(task_id, ("B", pb.get("headline", task_id)))
+        OUT.write_text(render_samuel_build(task_id, pb, stage), encoding="utf-8")
+        print(f"blocked={block} factory_next={task_id}")
+        print(f"Wrote {OUT}")
+        return 0
     if block:
         OUT.write_text(render_blocked(block, task_id), encoding="utf-8")
         print(f"blocked={block}")

@@ -82,9 +82,15 @@ def emit_waiting(queue: dict, state: dict) -> None:
     """Write NEXT_SLICE when no runnable cloud item (usually sprint gate)."""
     blocked = None
     completed = set(state.get("completed_ids") or [])
-    for it in sorted(queue.get("items") or [], key=lambda x: x.get("priority", 99)):
-        if it.get("owner") != "cloud":
-            continue
+    cloud_items = [
+        it
+        for it in sorted(queue.get("items") or [], key=lambda x: x.get("priority", 99))
+        if it.get("owner") == "cloud"
+    ]
+    pending_cloud = [
+        it for it in cloud_items if it["id"] not in completed or it.get("recurrence_hours")
+    ]
+    for it in cloud_items:
         if it["id"] in completed and not it.get("recurrence_hours"):
             continue
         if not gate_open(it):
@@ -92,31 +98,47 @@ def emit_waiting(queue: dict, state: dict) -> None:
             break
     progress = load(PROGRESS) if PROGRESS.is_file() else {}
     done = progress.get("completed_ids") or []
-    gate = (blocked or {}).get("gate_completed_task", "dev-environment")
+    coach_done = set(done)
     lines = [
         "# Autonomous Coding Agent — NEXT SLICE",
         "",
         "**Status:** `waiting` — no cloud slice runnable",
         "",
-        f"**Blocked by:** Coach sprint task `{gate}` not in progress completed_ids",
-        f"**Completed sprint ids:** `{done}`",
-        "",
-        "## Your move (human)",
-        f"1. Finish Coach task **`{gate}`** (Windows dev box).",
-        "2. Mark done in Coach PWA or update `disklordz/audio-command/data/progress.json`.",
-        "3. Re-run: `python3 scripts/autonomous-coder/tick.py --emit-slice`",
+    ]
+    if not pending_cloud:
+        lines += [
+            "**Reason:** Cloud coding queue idle (all slices complete).",
+            f"**Coach completed_ids:** `{done}`",
+            "",
+            "## Human critical path",
+            "1. Coach sprint **`plugin-skeleton`**: `build-windows.ps1` + REAPER/FL load.",
+            "2. Mark done in Coach → add `plugin-skeleton` to `progress.json`.",
+            "3. Re-run: `python3 scripts/autonomous-coder/tick.py --emit-slice` after queue grows.",
+        ]
+    else:
+        gate = (blocked or {}).get("gate_completed_task", "dev-environment")
+        lines += [
+            f"**Blocked by:** Coach gate `{gate}`" + (" (not in completed_ids)" if gate not in coach_done else ""),
+            f"**Completed sprint ids:** `{done}`",
+            "",
+            "## Your move (human)",
+            f"1. Finish Coach task **`{gate}`**.",
+            "2. Mark done in Coach PWA or update `disklordz/audio-command/data/progress.json`.",
+            "3. Re-run: `python3 scripts/autonomous-coder/tick.py --emit-slice`",
+        ]
+        if blocked:
+            lines += [
+                "",
+                f"**Next cloud slice when unblocked:** `{blocked['id']}` — {blocked.get('title', '')}",
+            ]
+    lines += [
         "",
         "## Meanwhile (this agent may still run)",
         "```bash",
         "python3 scripts/autonomous-coder/tick.py          # Antigravity sync / progress log",
-        "./scripts/run-audio-plugin-fleet.sh               # factory PASTE_TO_FACTORY refresh",
+        "python3 scripts/audio-plugin/factory-queue.py     # factory PASTE_TO_FACTORY refresh",
         "```",
     ]
-    if blocked:
-        lines += [
-            "",
-            f"**Next cloud slice when unblocked:** `{blocked['id']}` — {blocked.get('title', '')}",
-        ]
     SLICE_OUT.parent.mkdir(parents=True, exist_ok=True)
     SLICE_OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Wrote {SLICE_OUT} (waiting)")
