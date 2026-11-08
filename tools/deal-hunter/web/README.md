@@ -1,4 +1,4 @@
-# Black Friday Madness — Next.js (Phase 2–4)
+# Black Friday Madness — Next.js (Phase 2–5)
 
 ## UI
 
@@ -6,6 +6,7 @@
 - **Ported flows:** Search, Discover, Assistant (client components calling Express via `/api` rewrite).
 - **Phase 3:** `/product/[id]` (PRD detail + Recharts history), `/intel`, `/autopilot`, `/alerts` (Supabase `price_alerts` actions), `DealCard` links to product intel.
 - **Phase 4:** `/coupons`, `/budget`, `/calendar`; API `USE_SUPABASE_CATALOG` read path; scheduled sync cron; steal alerts via `/api/notifications/steal-hits` + dispatch.
+- **Phase 5:** `/compare`, `/categories`; settings notification toggles; dashboard catalog source + product links.
 
 ## Wishlist
 

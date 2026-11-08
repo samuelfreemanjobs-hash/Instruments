@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { DealCard } from "@/components/deals/DealCard";
 import { DealGridSkeleton } from "@/components/deals/DealGridSkeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -11,8 +12,10 @@ import { fetchCategories, universalSearch } from "@/lib/deal-api";
 import type { Deal } from "@/lib/types";
 
 export function SearchClient() {
+  const searchParams = useSearchParams();
   const [q, setQ] = useState("");
-  const [retailer, setRetailer] = useState("");
+  const [retailer, setRetailer] = useState(searchParams.get("retailer") ?? "");
+  const [category, setCategory] = useState(searchParams.get("category") ?? "");
   const [maxPrice, setMaxPrice] = useState("");
   const [freeShip, setFreeShip] = useState(false);
   const [hits, setHits] = useState<Deal[]>([]);
@@ -31,8 +34,9 @@ export function SearchClient() {
     setErr(null);
     try {
       const res = await universalSearch({
-        q: q || undefined,
+        q: q || category || undefined,
         retailer: retailer || undefined,
+        category: category || undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
         freeShippingOnly: freeShip,
         trustedOnly: true,
@@ -44,7 +48,7 @@ export function SearchClient() {
     } finally {
       setLoading(false);
     }
-  }, [q, retailer, maxPrice, freeShip]);
+  }, [q, retailer, category, maxPrice, freeShip]);
 
   useEffect(() => {
     void run();

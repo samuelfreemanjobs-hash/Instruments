@@ -9,17 +9,17 @@
 | Dashboard | `hq` (HqDashboard) | Live |
 | Discover Deals | `discover` | Live (filters: extend) |
 | Product Search | `search` | Live |
-| Categories | `search` + `/api/categories` | Partial |
+| Categories | `/categories` + `/search` | Live |
 | Price Tracker | `alerts` + watchlist | Partial |
 | AI Shopping Assistant | `assistant` | Live |
-| Coupons | `coupons` | Stub |
-| Comparison Center | `pricing` + `compare` | Partial |
-| Wishlist | `list` | Live (shared list) |
-| Shopping Budget | `budget` | Stub |
-| Deal Calendar | `calendar` | Stub |
+| Coupons | `/coupons` (Next) | Live |
+| Comparison Center | `/compare` (Next) | Live |
+| Wishlist | `/wishlist` | Live (Supabase + Server Actions) |
+| Shopping Budget | `/budget` | Live |
+| Deal Calendar | `/calendar` | Live |
 | Community | `discover` community section | Live |
 | Notifications | `alerts` + n8n | Partial |
-| Account Settings | `settings` | Stub |
+| Account Settings | `/settings` | Live (profile + notification prefs) |
 
 | PRD stack | Current | Target |
 |-----------|---------|--------|

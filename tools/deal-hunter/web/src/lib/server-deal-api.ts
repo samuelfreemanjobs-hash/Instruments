@@ -1,5 +1,11 @@
 const base = () => process.env.DEAL_API_ORIGIN ?? "http://127.0.0.1:3847";
 
+export async function fetchCatalogSourceServer() {
+  const res = await fetch(`${base()}/api/catalog/source`, { cache: "no-store" });
+  if (!res.ok) throw new Error("catalog_source_failed");
+  return res.json() as Promise<{ source: string; useSupabase: boolean }>;
+}
+
 export async function fetchProductDetail(id: string) {
   const res = await fetch(`${base()}/api/v1/deals/${encodeURIComponent(id)}`, {
     next: { revalidate: 90 },

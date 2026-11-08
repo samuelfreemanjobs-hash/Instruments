@@ -13,6 +13,32 @@ export async function universalSearch(params: Record<string, string | number | b
   return res.json() as Promise<{ hits: Deal[]; fetchedAt: string; count: number }>;
 }
 
+export async function fetchCatalogSource() {
+  const res = await fetch("/api/catalog/source", { cache: "no-store" });
+  if (!res.ok) throw new Error("catalog_source_failed");
+  return res.json() as Promise<{ source: string; useSupabase: boolean }>;
+}
+
+export async function runPricingCompare(question: string, dealIds?: string[]) {
+  const res = await fetch("/api/agents/pricing", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question, dealIds }),
+  });
+  if (!res.ok) throw new Error("pricing_failed");
+  return res.json() as Promise<{
+    summary: string;
+    valueVerdict: string;
+    bestPick: Deal | null;
+    bestValueScore: number;
+    alternatives: Deal[];
+    couponTip: string;
+    savingsBreakdown: string;
+    confidence: string;
+    analyzedAt: string;
+  }>;
+}
+
 export async function fetchCategories() {
   const res = await fetch("/api/categories");
   return res.json() as Promise<{ categories: string[]; retailers: string[] }>;

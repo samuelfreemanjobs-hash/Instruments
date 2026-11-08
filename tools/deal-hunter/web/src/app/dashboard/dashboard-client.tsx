@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { fetchDealsTrending } from "@/lib/api";
 import { DealGridSkeleton } from "@/components/deals/DealGridSkeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -34,8 +35,10 @@ export function DashboardClient() {
         <CardContent className="space-y-2 text-sm">
           {gems.slice(0, 5).map((d) => (
             <div key={d.id} className="flex justify-between gap-2 border-b border-bfm-border/50 pb-2">
-              <span className="line-clamp-1">{d.title}</span>
-              <span className="text-bfm-accent">${d.price.toFixed(2)}</span>
+              <Link href={`/product/${d.id}`} className="line-clamp-1 text-bfm-accent hover:underline">
+                {d.title}
+              </Link>
+              <span className="text-bfm-accent-2">${d.price.toFixed(2)}</span>
             </div>
           ))}
           {gems.length === 0 && <p className="text-bfm-muted">No gems this refresh.</p>}
@@ -48,7 +51,9 @@ export function DashboardClient() {
         <CardContent className="space-y-2 text-sm">
           {alerts.slice(0, 5).map((d) => (
             <div key={d.id} className="flex justify-between gap-2">
-              <span className="line-clamp-1">{d.title}</span>
+              <Link href={`/product/${d.id}`} className="line-clamp-1 hover:text-bfm-accent">
+                {d.title}
+              </Link>
               <span className="text-bfm-success">Steal {d.stealScore}</span>
             </div>
           ))}

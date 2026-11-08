@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { loadNotificationPrefs } from "./actions";
+import { SettingsClient } from "./settings-client";
 
 export default async function SettingsPage() {
   if (!isSupabaseConfigured()) {
@@ -34,6 +36,8 @@ export default async function SettingsPage() {
     .eq("id", user.id)
     .maybeSingle();
 
+  const notif = await loadNotificationPrefs();
+
   return (
     <section className="space-y-4">
       <h2 className="text-lg font-semibold">Account &amp; preferences</h2>
@@ -46,7 +50,7 @@ export default async function SettingsPage() {
         <dt className="text-bfm-muted">Member since</dt>
         <dd>{profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : "—"}</dd>
       </dl>
-      <p className="text-xs text-bfm-muted">Notification toggles live in `notification_preferences` (Supabase RLS).</p>
+      {notif.ok ? <SettingsClient initial={notif.prefs} /> : <p className="text-sm text-bfm-muted">{notif.error}</p>}
     </section>
   );
 }

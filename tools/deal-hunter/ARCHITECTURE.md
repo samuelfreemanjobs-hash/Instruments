@@ -11,8 +11,9 @@ npm run dev          # Express :3847 + Next.js :3000
 npm test && npm run build
 ```
 
-- **Phase 2 UI:** `web/` — Next.js 15 App Router, Tailwind 4, `@supabase/ssr`.
-- **Legacy PWA:** `npm run dev:legacy` (Vite on :5173).
+- **Primary UI:** `web/` — Next.js 15 App Router, Tailwind 4, `@supabase/ssr`.
+- **Legacy PWA:** `npm run dev:legacy` (Vite on :5173) — parity achieved for PRD nav; deprecate when production cutover is done.
+- **Catalog pool:** `server/catalog-pool.ts` — local SQLite drift + optional Supabase overlay (`USE_SUPABASE_CATALOG=1`).
 - **Supabase:** `supabase/README.md` + migrations `001` + `002` (RLS).
 
 ## PRD alignment
