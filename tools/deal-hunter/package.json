@@ -4,10 +4,15 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:web\"",
+    "dev:web": "npm run dev --prefix web",
+    "dev:legacy": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:client": "vite",
     "dev:server": "tsx watch server/index.ts",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run build:server && npm run build:web",
+    "build:server": "tsc --noEmit",
+    "build:web": "npm run build --prefix web",
+    "build:legacy": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "start": "NODE_ENV=production tsx server/index.ts",
     "test": "vitest run"

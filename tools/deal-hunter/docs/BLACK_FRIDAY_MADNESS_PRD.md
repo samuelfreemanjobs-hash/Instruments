@@ -23,9 +23,9 @@
 
 | PRD stack | Current | Target |
 |-----------|---------|--------|
-| Frontend | Vite + React PWA | Next.js App Router (Phase 2) |
-| DB | SQLite demo | PostgreSQL + Supabase (see `supabase/migrations/`) |
-| Auth | Local-first | Supabase Auth (Phase 2) |
+| Frontend | Vite PWA (`npm run dev:legacy`) | **Next.js** in `web/` (`npm run dev`) |
+| DB | SQLite demo API | PostgreSQL + Supabase (`supabase/migrations/`) |
+| Auth | Local-first legacy | **Supabase Auth** magic link (`web/src/app/login`) |
 | Jobs | n8n webhooks | Inngest/Trigger.dev + n8n glue |
 | Hosting | Vercel static + Node API | Vercel full stack |
 

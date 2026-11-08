@@ -6,9 +6,14 @@
 
 ```bash
 cd tools/deal-hunter
-npm ci && npm run dev
+npm ci && npm install --prefix web
+npm run dev          # Express :3847 + Next.js :3000
 npm test && npm run build
 ```
+
+- **Phase 2 UI:** `web/` — Next.js 15 App Router, Tailwind 4, `@supabase/ssr`.
+- **Legacy PWA:** `npm run dev:legacy` (Vite on :5173).
+- **Supabase:** `supabase/README.md` + migrations `001` + `002` (RLS).
 
 ## PRD alignment
 

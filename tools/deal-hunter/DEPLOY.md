@@ -1,9 +1,16 @@
-# Savvy HQ deployment
+# Black Friday Madness deployment
 
-## Vercel (PWA frontend)
+## Vercel (Phase 2 — Next.js)
+
+1. Set **Root Directory** to `tools/deal-hunter/web`.
+2. Build: `npm run build` (Next 15).
+3. Env: `NEXT_PUBLIC_SUPABASE_*`, `DEAL_API_ORIGIN` → production API URL.
+4. Add Supabase redirect URL: `https://<your-domain>/auth/callback`.
+
+## Vercel (legacy PWA)
 
 1. Set project root to `tools/deal-hunter`.
-2. Build: `npm run build` → `dist/`.
+2. Build: `npm run build:legacy` → `dist/`.
 3. Replace `YOUR_DEAL_API_HOST` in `vercel.json` with your Node API host (Fly, Railway, VPS, etc.).
 4. Env: `VITE_API_PROXY` is dev-only; production uses same-origin rewrites or explicit API URL.
 
