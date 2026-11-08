@@ -1,5 +1,7 @@
 "use server";
 
+import { requireAdminCaller } from "@/lib/require-admin";
+
 const origin = () => process.env.DEAL_API_ORIGIN ?? "http://127.0.0.1:3847";
 
 function adminHeaders() {
@@ -11,6 +13,9 @@ function adminHeaders() {
 }
 
 export async function fetchAdminStatus() {
+  const gate = await requireAdminCaller();
+  if (!gate.ok) return { ok: false as const, error: gate.error };
+
   const res = await fetch(`${origin()}/api/admin/status`, {
     headers: adminHeaders(),
     cache: "no-store",
@@ -34,6 +39,9 @@ export async function fetchAdminStatus() {
 }
 
 export async function triggerCatalogSync() {
+  const gate = await requireAdminCaller();
+  if (!gate.ok) return { ok: false as const, error: gate.error };
+
   const res = await fetch(`${origin()}/api/admin/sync-catalog/cron`, {
     method: "POST",
     headers: adminHeaders(),
@@ -43,6 +51,9 @@ export async function triggerCatalogSync() {
 }
 
 export async function triggerStealDispatch() {
+  const gate = await requireAdminCaller();
+  if (!gate.ok) return { ok: false as const, error: gate.error };
+
   const res = await fetch(`${origin()}/api/notifications/dispatch-steals`, {
     method: "POST",
     headers: adminHeaders(),

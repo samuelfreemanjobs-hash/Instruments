@@ -1,5 +1,6 @@
 import type { Deal } from "./types";
 import type { CatalogSearchHit } from "./supabase/catalog-search";
+import { assessProductUrl } from "./trust-url";
 
 export function catalogHitsToDeals(hits: CatalogSearchHit[]): Deal[] {
   return hits.map((r) => ({
@@ -15,15 +16,6 @@ export function catalogHitsToDeals(hits: CatalogSearchHit[]): Deal[] {
     stealScore: r.stealScore,
     discountPct: Math.round(((r.msrp - r.price) / Math.max(r.msrp, 1)) * 100),
     itemCondition: "new",
-    trust: {
-      safeUrl: true,
-      hostname: (() => {
-        try {
-          return new URL(r.url).hostname;
-        } catch {
-          return "";
-        }
-      })(),
-    },
+    trust: assessProductUrl(r.url),
   }));
 }

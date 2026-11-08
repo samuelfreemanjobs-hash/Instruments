@@ -1,5 +1,6 @@
 import { fetchSupabaseOfferByExternalId } from "@/lib/supabase/catalog-search";
 import { fetchProductDetail, type ProductDetailPayload } from "@/lib/server-deal-api";
+import { assessProductUrl } from "@/lib/trust-url";
 
 const useSupabaseCatalog = () => process.env.NEXT_PUBLIC_USE_SUPABASE_CATALOG === "1";
 
@@ -52,7 +53,7 @@ function minimalPayloadFromCatalogHit(hit: {
       freeShipping: true,
       stealScore: hit.stealScore,
       itemCondition: "new",
-      trust: { safeUrl: true, hostname: safeHost(hit.url) },
+      trust: assessProductUrl(hit.url),
       pricing: { finalPrice: hit.price },
     },
     intelligence: {
@@ -73,10 +74,3 @@ function minimalPayloadFromCatalogHit(hit: {
   };
 }
 
-function safeHost(url: string) {
-  try {
-    return new URL(url).hostname;
-  } catch {
-    return "";
-  }
-}
