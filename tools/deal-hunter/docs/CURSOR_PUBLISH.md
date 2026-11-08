@@ -6,6 +6,16 @@ Live app: **https://black-friday-madness.apps.grok.bot** (private by default).
 
 With **no** `DEAL_API_ORIGIN`, the published build serves the **bundled demo catalog** (search, product intel, compare, assistant stubs). No external API required.
 
+## Supabase (auth / wishlist)
+
+1. Create project → run `npm run supabase:migrate` from `tools/deal-hunter`.
+2. In Supabase Auth → Redirect URLs add:  
+   `https://black-friday-madness.apps.grok.bot/auth/callback`
+3. In Cursor app Secrets add: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `USE_SUPABASE_CATALOG=1`.
+4. Republish the app (or confirm pending publish).
+
+Local: `npm run setup:env` then fill `tools/deal-hunter/.env` once; the script mirrors into `web/.env.local`.
+
 ## Optional secrets (Cursor → app → Secrets)
 
 Add these in the publish settings secure form (never in chat):

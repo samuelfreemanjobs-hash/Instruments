@@ -20,7 +20,22 @@ supabase db push
 #   migrations/007_user_push_subscriptions.sql
 ```
 
-5. Auth → URL configuration: add redirect `http://localhost:3000/auth/callback` and production URL.
+5. Auth → URL configuration: add redirect URLs:
+   - `http://localhost:3000/auth/callback`
+   - `https://black-friday-madness.apps.grok.bot/auth/callback` (Cursor Apps)
+   - Your Vercel domain `/auth/callback` when using Vercel.
+
+## One-command local env
+
+```bash
+cd tools/deal-hunter
+npm run setup:env    # writes web/.env.local from .env.example (+ merges tools/deal-hunter/.env if present)
+npm run supabase:migrate   # supabase db push, or prints combined SQL
+```
+
+## Cursor Apps (published)
+
+Add **only** these in the app Secrets form (not in chat): `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `USE_SUPABASE_CATALOG=1` after migrations + `npm run sync:supabase`.
 
 ## Env (Next.js `web/.env.local`)
 
