@@ -17,7 +17,7 @@ void ChordEngineAudioProcessorEditor::paint(juce::Graphics& g)
 {
     g.fillAll(juce::Colour(kBg));
     g.setColour(juce::Colour(kAccent));
-    g.setFont(juce::FontOptions(18.0f));
+    g.setFont(juce::Font(18.0f));
     g.drawFittedText("CHORD ENGINE — Milestone 001 shell", getLocalBounds().reduced(12),
                      juce::Justification::centred, 2);
 }
