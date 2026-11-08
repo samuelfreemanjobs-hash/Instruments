@@ -10,7 +10,7 @@ Design reference:
 |---------|---------|
 | Product name | **VOYAGER-V** |
 | Manufacturer line | **FOUR-STACK MOOG ENGINE · SYSTEMS ENGINEERING AUDIO** |
-| **Moog stack** | Voyager · Sub Phatty · Subsequent 37 · Model D (lineage badge + accent color) |
+| **Moog stack** | Four **STACK MODE** switches + lineage badge + accent color |
 | Patch line | `PATCH: PROG nn "Name"` with prev/next (factory bank) |
 
 ## Panel zones → current APVTS

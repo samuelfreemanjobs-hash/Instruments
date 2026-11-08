@@ -11,7 +11,7 @@
 
 ## UI
 
-- **Keyboard lineage** combo selects the active stack.
+- **STACK MODE** four-way switch (Voyager · Sub Phatty · Sub 37 · Model D) selects the active stack — automatable via **Moog Stack**.
 - Badge under the title shows the short label (`VOYAGER`, `SUB PHATTY`, etc.).
 - Accent color follows lineage (amber · coral · cyan · sky blue).
 - **Sub −1** knob: square sub-oscillator one octave below root (essential for Phatty / Subsequent patches).

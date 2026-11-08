@@ -87,19 +87,27 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     stackBadgeLabel.setFont(juce::FontOptions(15.0f, juce::Font::bold));
     addAndMakeVisible(stackBadgeLabel);
 
-    stackLabel.setText("Keyboard lineage", juce::dontSendNotification);
-    stackLabel.setColour(juce::Label::textColourId, kSectionText);
-    stackLabel.setJustificationType(juce::Justification::centredRight);
-    addAndMakeVisible(stackLabel);
+    stackSwitchLabel.setText("STACK MODE", juce::dontSendNotification);
+    stackSwitchLabel.setColour(juce::Label::textColourId, kSectionText.withAlpha(0.85f));
+    stackSwitchLabel.setJustificationType(juce::Justification::centredLeft);
+    stackSwitchLabel.setFont(juce::FontOptions(11.0f, juce::Font::bold));
+    addAndMakeVisible(stackSwitchLabel);
 
+    const juce::String shortNames[4] = { "VOYAGER", "SUB PHATTY", "SUB 37", "MODEL D" };
     for (int i = 0; i < moogstack::lineageCount(); ++i)
-        stackBox.addItem(juce::String(moogstack::lineageName(moogstack::lineageFromChoiceIndex(i)).data()), i + 1);
-    stackBox.onChange = [this]() {
-        const int idx = stackBox.getSelectedItemIndex();
-        moogstack::applyLineageTemplate(processorRef, moogstack::lineageFromChoiceIndex(idx));
-        refreshStackChrome();
-    };
-    addAndMakeVisible(stackBox);
+    {
+        auto& btn = stackModeSwitch[static_cast<size_t>(i)];
+        btn.setButtonText(shortNames[i]);
+        btn.setRadioGroupId(88001);
+        btn.setClickingTogglesState(true);
+        btn.setColour(juce::TextButton::buttonColourId, kPanelInset);
+        btn.setColour(juce::TextButton::textColourOffId, kSectionText);
+        btn.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+        btn.onClick = [this, i]() { selectStackMode(i, true); };
+        addAndMakeVisible(btn);
+    }
+
+    processorRef.getApvts().addParameterListener(std::string(SynthParamIDs::moogStack), this);
 
     presetLabel.setText("Factory preset", juce::dontSendNotification);
     presetLabel.setColour(juce::Label::textColourId, kSectionText);
@@ -212,7 +220,6 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     mixerDriveAttachment =
         std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::mixerDrive), mixerDriveSlider);
     subOscAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::subOscLevel), subOscSlider);
-    stackAttachment = std::make_unique<ComboAttachment>(apvts, std::string(SynthParamIDs::moogStack), stackBox);
 
     fAttackAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::filterAttack), fAttack);
     fDecayAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::filterDecay), fDecay);
@@ -236,13 +243,14 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     setSize(1100, 640);
 }
 
-MoogVoyagerAudioProcessorEditor::~MoogVoyagerAudioProcessorEditor() = default;
-
-juce::Colour MoogVoyagerAudioProcessorEditor::accentForCurrentStack() const
+MoogVoyagerAudioProcessorEditor::~MoogVoyagerAudioProcessorEditor()
 {
-    const int idx = static_cast<int>(
-        processorRef.getApvts().getRawParameterValue(std::string(SynthParamIDs::moogStack))->load());
-    switch (moogstack::lineageFromChoiceIndex(idx))
+    processorRef.getApvts().removeParameterListener(std::string(SynthParamIDs::moogStack), this);
+}
+
+juce::Colour MoogVoyagerAudioProcessorEditor::accentForLineage(moogstack::Lineage lineage)
+{
+    switch (lineage)
     {
         case moogstack::Lineage::voyager:
             return juce::Colour(0xfff4a62a);
@@ -254,6 +262,34 @@ juce::Colour MoogVoyagerAudioProcessorEditor::accentForCurrentStack() const
             return juce::Colour(0xff6fa8dc);
     }
     return juce::Colour(0xfff4a62a);
+}
+
+juce::Colour MoogVoyagerAudioProcessorEditor::accentForCurrentStack() const
+{
+    const int idx = static_cast<int>(
+        processorRef.getApvts().getRawParameterValue(std::string(SynthParamIDs::moogStack))->load());
+    return accentForLineage(moogstack::lineageFromChoiceIndex(idx));
+}
+
+void MoogVoyagerAudioProcessorEditor::selectStackMode(int index, bool applyTemplate)
+{
+    index = juce::jlimit(0, moogstack::lineageCount() - 1, index);
+    if (auto* param = processorRef.getApvts().getParameter(std::string(SynthParamIDs::moogStack)))
+    {
+        const int n = moogstack::lineageCount();
+        const float norm = n > 1 ? static_cast<float>(index) / static_cast<float>(n - 1) : 0.0f;
+        param->setValueNotifyingHost(norm);
+    }
+    if (applyTemplate)
+        moogstack::applyLineageTemplate(processorRef, moogstack::lineageFromChoiceIndex(index));
+    refreshStackChrome();
+}
+
+void MoogVoyagerAudioProcessorEditor::parameterChanged(const juce::String& parameterID, float newValue)
+{
+    juce::ignoreUnused(newValue);
+    if (parameterID == "moogStack")
+        refreshStackChrome();
 }
 
 void MoogVoyagerAudioProcessorEditor::refreshStackChrome()
@@ -299,6 +335,15 @@ void MoogVoyagerAudioProcessorEditor::refreshStackChrome()
     repaintAccent(mixerDriveSlider);
 
     patchReadoutLabel.setColour(juce::Label::textColourId, accent);
+
+    for (int i = 0; i < moogstack::lineageCount(); ++i)
+    {
+        const auto lin = moogstack::lineageFromChoiceIndex(i);
+        auto& btn = stackModeSwitch[static_cast<size_t>(i)];
+        btn.setColour(juce::TextButton::buttonOnColourId, accentForLineage(lin));
+        btn.setToggleState(i == idx, juce::dontSendNotification);
+    }
+
     repaint();
 }
 
@@ -329,11 +374,11 @@ void MoogVoyagerAudioProcessorEditor::paint(juce::Graphics& g)
     g.fillRect(panel);
 
     g.setColour(kPanelInset);
-    g.fillRect(panel.getX(), panel.getY(), panel.getWidth(), 94);
+    g.fillRect(panel.getX(), panel.getY(), panel.getWidth(), 108);
     g.setColour(accent.withAlpha(0.55f));
-    g.fillRect(panel.getX(), panel.getY() + 92, panel.getWidth(), 2);
+    g.fillRect(panel.getX(), panel.getY() + 106, panel.getWidth(), 2);
 
-    auto bounds = getLocalBounds().reduced(woodW + 10, 12).withTrimmedTop(104);
+    auto bounds = getLocalBounds().reduced(woodW + 10, 12).withTrimmedTop(118);
     auto oscBox = bounds.removeFromTop(175);
     auto filterBox = bounds.removeFromTop(125);
     auto envBox = bounds.removeFromTop(115);
@@ -355,16 +400,18 @@ void MoogVoyagerAudioProcessorEditor::resized()
     patchReadoutLabel.setBounds(panel.getCentreX() - 220, 10, 440, 22);
 
   {
-    auto stackRow = panel.reduced(14, 0).withTrimmedTop(54).removeFromTop(26);
-    stackLabel.setBounds(stackRow.removeFromRight(120));
-    stackBox.setBounds(stackRow.removeFromRight(juce::jmin(280, stackRow.getWidth())).reduced(4, 0));
+    auto stackRow = panel.reduced(14, 0).withTrimmedTop(52).removeFromTop(30);
+    stackSwitchLabel.setBounds(stackRow.removeFromLeft(88).reduced(0, 4));
+    const int btnW = stackRow.getWidth() / moogstack::lineageCount();
+    for (int i = 0; i < moogstack::lineageCount(); ++i)
+        stackModeSwitch[static_cast<size_t>(i)].setBounds(stackRow.removeFromLeft(btnW).reduced(i == 0 ? 0 : 2, 2));
   }
 
-    auto presetRow = panel.reduced(14, 0).withTrimmedTop(78).removeFromTop(26);
+    auto presetRow = panel.reduced(14, 0).withTrimmedTop(86).removeFromTop(26);
     presetLabel.setBounds(presetRow.removeFromRight(120));
     presetBox.setBounds(presetRow.removeFromRight(juce::jmin(380, presetRow.getWidth())).reduced(4, 0));
 
-    auto bounds = panel.reduced(12).withTrimmedTop(104);
+    auto bounds = panel.reduced(12).withTrimmedTop(118);
     auto oscBox = bounds.removeFromTop(175);
     oscSectionLabel.setBounds(oscBox.removeFromTop(20));
     auto oscInner = oscBox.reduced(10, 4);

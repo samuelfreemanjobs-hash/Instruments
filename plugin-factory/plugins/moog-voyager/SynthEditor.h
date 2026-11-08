@@ -1,10 +1,12 @@
 #pragma once
 
 #include "SynthProcessor.h"
+#include "MoogStackLineage.h"
 #include <JuceHeader.h>
 #include <array>
 
-class MoogVoyagerAudioProcessorEditor : public juce::AudioProcessorEditor
+class MoogVoyagerAudioProcessorEditor : public juce::AudioProcessorEditor,
+                                        private juce::AudioProcessorValueTreeState::Listener
 {
 public:
     explicit MoogVoyagerAudioProcessorEditor(MoogVoyagerAudioProcessor&);
@@ -16,8 +18,11 @@ public:
     void refreshPatchReadout();
     void refreshStackChrome();
     juce::Colour accentForCurrentStack() const;
+    void selectStackMode(int index, bool applyTemplate);
+    void parameterChanged(const juce::String& parameterID, float newValue) override;
 
 private:
+    static juce::Colour accentForLineage(moogstack::Lineage lineage);
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     using ComboAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
 
@@ -31,8 +36,8 @@ private:
     juce::Label subtitleLabel;
     juce::Label patchReadoutLabel;
     juce::Label stackBadgeLabel;
-    juce::Label stackLabel;
-    juce::ComboBox stackBox;
+    juce::Label stackSwitchLabel;
+    std::array<juce::TextButton, 4> stackModeSwitch;
     juce::Label presetLabel;
     juce::ComboBox presetBox;
     juce::Label oscSectionLabel, filterSectionLabel, envSectionLabel, modSectionLabel;
@@ -54,7 +59,6 @@ private:
     std::unique_ptr<SliderAttachment> filterCutoffAttachment, filterResAttachment, filterDriveAttachment;
     std::unique_ptr<SliderAttachment> filterEnvAmtAttachment, filterKbAttachment, mixerDriveAttachment;
     std::unique_ptr<SliderAttachment> subOscAttachment;
-    std::unique_ptr<ComboAttachment> stackAttachment;
     std::unique_ptr<SliderAttachment> fAttackAttachment, fDecayAttachment, fSustainAttachment, fReleaseAttachment;
     std::unique_ptr<SliderAttachment> aAttackAttachment, aDecayAttachment, aSustainAttachment, aReleaseAttachment;
     std::unique_ptr<SliderAttachment> lfoRateAttachment, lfoPitchAttachment, lfoFilterAttachment, glideAttachment;
