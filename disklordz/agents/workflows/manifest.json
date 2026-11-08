@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "agent_count": 32,
+  "agent_count": 33,
   "agents": [
     {
       "id": "workflow-automation",
@@ -465,6 +465,13 @@
         ]
       },
       "automation_path": "disklordz/agents/workflows/agents/release-notes/automation.yaml"
+    },
+    {
+      "id": "audio-business-copilot",
+      "title": "Audio Business Copilot",
+      "announcement": "",
+      "automation": {},
+      "automation_path": "disklordz/agents/workflows/agents/audio-business-copilot/automation.yaml"
     },
     {
       "id": "hardware-preset-designer",

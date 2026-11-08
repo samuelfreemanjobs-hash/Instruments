@@ -25,6 +25,14 @@ All profit agents are **company-wide** in this monorepo — not only under `disk
 - [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
 - `.cursor/rules/*.mdc` — always-on architecture and security  
 
+## DiskLordz Audio (plugins — CHORD ENGINE)
+
+**Business / roadmap:** agent **`audio-business-copilot`** · [docs/DISKLORDZ_MASTER_PLAN.md](docs/DISKLORDZ_MASTER_PLAN.md) · PWA `disklordz/audio-command/pwa/` · weekly `python3 disklordz/audio-command/scripts/weekly_review.py --write`
+
+**VST engineering (Cursor only):** [docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md](docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md) §18–20 · [docs/DPF_TECHNICAL_ARCHITECTURE.md](docs/DPF_TECHNICAL_ARCHITECTURE.md) · rule `.cursor/rules/disklordz-audio-engineering-lane.mdc`
+
+Do not mix lanes: Cursor implements JUCE/DPF; **audio-business-copilot** owns sprint checklist, pricing hypotheses, and fleet briefings.
+
 ## Disklordz SaaS (web)
 
 ```bash

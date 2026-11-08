@@ -1,0 +1,13 @@
+{
+  "year": 1,
+  "phases": [
+    { "month": 1, "name": "Company foundation", "deliverable": "Compiling plugin foundation", "checklist_phase": "foundation" },
+    { "month": "2-3", "name": "CHORD ENGINE alpha", "deliverable": "Functional alpha", "checklist_phase": "alpha" },
+    { "month": 4, "name": "Beta testing", "deliverable": "Public beta candidate", "checklist_phase": "beta" },
+    { "month": 5, "name": "Commercial launch preparation", "deliverable": "Release candidate", "checklist_phase": "launch-prep" },
+    { "month": 6, "name": "CHORD ENGINE launch", "deliverable": "First commercial product", "checklist_phase": "launch" },
+    { "month": "7-8", "name": "ARP MACHINE", "deliverable": "Second plugin", "checklist_phase": "product-2" },
+    { "month": "9-10", "name": "808 SATURATOR", "deliverable": "First audio effect", "checklist_phase": "product-3" },
+    { "month": "11-12", "name": "MEMPHIS GRIT", "deliverable": "Fourth product milestone", "checklist_phase": "product-4" }
+  ]
+}

@@ -1,0 +1,13 @@
+# Automation — Audio Business Copilot (`audio-business-copilot`)
+
+platform: manual
+trigger: manual
+primary: TBD
+
+## Steps
+
+## Invoke agent
+Read: disklordz/agents/profit/audio-business-copilot/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#audio-business-copilot

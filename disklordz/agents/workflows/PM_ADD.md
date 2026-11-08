@@ -258,6 +258,13 @@ I'm **Release Notes** — I turn merged PRs into customer-facing changelog lines
 - **Agent docs:** [`profit/release-notes/agent.md`](../profit/release-notes/agent.md)
 - **Workflow file:** [`agents/release-notes/automation.yaml`](agents/release-notes/automation.yaml)
 
+## audio-business-copilot
+
+I'm **Audio Business Copilot** — assigned to profit lever: Shippable plugin business without Cursor doing PM work.
+
+- **Agent docs:** [`profit/audio-business-copilot/agent.md`](../profit/audio-business-copilot/agent.md)
+- **Workflow file:** [`agents/audio-business-copilot/automation.yaml`](agents/audio-business-copilot/automation.yaml)
+
 ## hardware-preset-designer
 
 I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches from prompts and samples, with safety clamps and librarian-ready export staging.

@@ -1,0 +1,36 @@
+{
+  "phases": {
+    "foundation": {
+      "primary": ["audio-business-copilot", "pm-agent", "license-compliance"],
+      "secondary": ["competitive-intel", "ship-velocity"]
+    },
+    "milestone-001": {
+      "primary": ["audio-business-copilot"],
+      "engineering": ["golden-wav-qa"],
+      "note": "Cursor Cloud owns C++/JUCE implementation — not audio-business-copilot"
+    },
+    "alpha": {
+      "primary": ["audio-business-copilot", "spec-validator"],
+      "engineering": ["golden-wav-qa"],
+      "secondary": ["daw-inbox-copilot"]
+    },
+    "beta": {
+      "primary": ["audio-business-copilot", "conversion-qa"],
+      "secondary": ["onboarding-concierge", "support-macro", "pricing-experiment"]
+    },
+    "launch-prep": {
+      "primary": ["audio-business-copilot", "release-notes", "marketing-glue"],
+      "secondary": ["seo-kit-pages", "social-clip-factory", "license-compliance"]
+    },
+    "launch": {
+      "primary": ["audio-business-copilot", "billing-ops", "analytics-interpreter"],
+      "secondary": ["churn-winback", "referral-affiliate"]
+    }
+  },
+  "always_read_docs": [
+    "docs/DISKLORDZ_MASTER_PLAN.md",
+    "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md",
+    "docs/DPF_TECHNICAL_ARCHITECTURE.md",
+    "docs/CHORD_ENGINE_PRD.md"
+  ]
+}

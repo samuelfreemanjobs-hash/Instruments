@@ -1,0 +1,11 @@
+{
+  "updated_at": "2026-11-08T00:00:00Z",
+  "completed_ids": [],
+  "notes": {
+    "weekly": "Master plan ingested into repo. Next: Milestone 001 plugin skeleton on Windows."
+  },
+  "current_phase": "foundation",
+  "build_status": "not_started",
+  "open_bugs": 0,
+  "next_milestone": "Milestone 001 — Plugin Foundation"
+}

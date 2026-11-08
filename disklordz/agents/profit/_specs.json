@@ -436,6 +436,26 @@
       "soul": ["User-benefit first.", "Link to help docs.", "No internal WO jargon in public text."]
     },
     {
+      "id": "audio-business-copilot",
+      "title": "Audio Business Copilot",
+      "description": "Owns DiskLordz Audio commercial roadmap (CHORD ENGINE line): master plan docs, sprint checklist, weekly reviews, fleet briefings; delegates VST/C++ to Cursor and golden-wav-qa.",
+      "profit_lever": "Shippable plugin business without Cursor doing PM work",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "model": "inherit",
+      "permission_mode": "plan",
+      "max_turns": 50,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": ["github"],
+      "automate": "disklordz/audio-command/scripts/weekly_review.py, disklordz/audio-command/pwa/",
+      "soul": [
+        "Read docs/DISKLORDZ_MASTER_PLAN.md before every planning turn.",
+        "Never implement JUCE/C++ — open a Cursor task or WO for engineering.",
+        "Weekly review must cite sprint checklist state [executed] or PWA export.",
+        "Genre presets are original theory rules — no copying commercial progressions.",
+        "Route license/JUCE tier questions to license-compliance."
+      ]
+    },
+    {
       "id": "hardware-preset-designer",
       "title": "Hardware Preset Designer",
       "description": "SynthForge workstation: batch preset generation, prompt-to-patch, WAV cloning, SQLite lineage, safety-clamped SysEx/binary export for supported hardware synths.",
