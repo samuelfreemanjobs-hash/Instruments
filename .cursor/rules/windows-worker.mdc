@@ -1,0 +1,53 @@
+---
+description: Windows My Machines worker (samuel-windows-instruments) — verified build commands and limits
+alwaysApply: true
+---
+
+# Windows worker
+
+Applies only when the OS is Windows (e.g. `C:\dev\Instruments`, PowerShell). On the Linux cloud image, ignore this file.
+
+The Linux build blocks in `AGENTS.md` (`g++-12`, `make`, `apt-get`, `$(nproc)`) do not work here. Use these instead.
+
+## Machine limits
+
+- 4-thread laptop CPU, 8 GB RAM. One heavy job at a time: never run a C++ build, `npm ci`, and `next build` together.
+- Build **one target**, never the whole root project. A cold JUCE plugin build with LTO takes 30+ minutes.
+- Other agents may share this checkout. Do work in a worktree: `git worktree add C:\dev\Instruments-<task> -b cursor/<task> origin/main`. Do not switch branches in `C:\dev\Instruments`.
+
+## Shell and tools
+
+- Shell is PowerShell. Run repo `.sh` scripts through Git Bash: `bash ./scripts/<name>.sh`.
+- Use `npm.cmd` / `npx.cmd` in PowerShell. `python` and `python3` both work (3.12).
+- Installed: VS 2022 (MSVC), CMake 4.x, Git, `gh` (authenticated), Node 22, Rust/Cargo.
+- Not installed: `g++-12`, `make`, `ninja`, ARM toolchain, `pluginval`. NTS-1 / logue SDK builds stay on Linux CI.
+
+## JUCE VST3 (MyFirstPlugin preset)
+
+```powershell
+cd MyFirstPlugin
+cmake --preset windows-vs-release -DMYFIRSTPLUGIN_COPY_AFTER_BUILD=OFF -DMYFIRSTSYNTH_COPY_AFTER_BUILD=OFF
+cmake --build --preset windows-vs-release -- /v:minimal *> build\build.log
+```
+
+- Output: `MyFirstPlugin\build\<Name>_artefacts\Release\VST3\<Name>.vst3`. Cold build of both plugins ≈ 1 hour (JUCE compile + LTO link); rebuilds reuse objects in `build\`.
+- Always pass `*_COPY_AFTER_BUILD=OFF`: copying writes to `C:\Program Files\Common Files\VST3` (admin, the user's live DAW plugin folder).
+- Other plugins (untested here): same pattern with `-G "Visual Studio 17 2022" -A x64`, `--config Release --target <Name>_VST3`, logs under the gitignored `build\`.
+- `songwriting-engine/scripts/build-windows.ps1` builds the Rust/Tauri songwriting desktop app, not a VST.
+
+## Disklordz website
+
+```powershell
+cd disklordz/website
+npm.cmd ci                       # ~15 min here
+npm.cmd run build                # ~8 min
+npx.cmd next start -p 3100       # avoid 3000; other agents use it
+```
+
+Smoke: `POST /api/factory/batch` with `{"prompt":"go-live pack","presetId":"boulevard-86","spec":{"engine":"studio"}}`.
+
+## Never on this machine
+
+- Global installs, registry or system setting changes, writes outside `C:\dev`.
+- Writes into the user's real `Downloads`, `Music`, or DAW plugin folders — use a scratch dir and the `DISKLOORDZ_INBOX_*` env overrides for the DAW inbox watcher.
+- Pushing to `main`, merging, or production deploys unless the user asks.
