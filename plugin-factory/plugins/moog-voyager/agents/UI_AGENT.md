@@ -21,10 +21,10 @@ Close the gap between the **mockup** and [`SynthEditor.cpp`](../SynthEditor.cpp)
 | Four-stack + badge | ✓ | Align switch styling to PNG |
 | Oscillator mix **faders** | ✓ | Match fader cap art from mockup |
 | ADSR **vertical sliders** | ✓ | Match spacing/labels from mockup |
-| **Performance** keyboard + wheels + XY | ✗ | Optional mini-keyboard or host-MIDI note |
-| Modulation **bus panel** layout | Partial | Match section borders/labels to PNG |
-| Patch **prev/next** flanking display | Partial | Move closer to center readout per PNG |
-| Oversample / meter / scope | ✓ (functional) | Skin to match mockup corner layout |
+| **Performance** keyboard + wheels + XY | ✓ (wave 1) | Wire wheels/XY to mod bus (optional) |
+| Modulation **bus panel** layout | Partial | Dual source columns per PNG |
+| Patch **prev/next** flanking display | ✓ | ◀ PATCH ▶ centered |
+| Oversample / meter / scope | ✓ | Master knob by scope; wood LEDs |
 
 ## Loop
 

@@ -1,0 +1,16 @@
+{
+  "work_order_id": "WO-2026-VVOY-005",
+  "owner_agent": "v-voyager-ui-agent",
+  "status": "in_progress",
+  "title": "[V-Voyager][UI] Mockup parity — wave 1",
+  "completed": [
+    "Performance strip: XY pad, pitch/mod wheels, 2-oct MIDI keyboard",
+    "Header: patch ◀ ▶, gold title, wood LED strips, OUTPUT scope + master",
+    "CPU indicator, MODULATION BUS / FILTER labels"
+  ],
+  "remaining": [
+    "Mod bus dual-column source matrix (visual)",
+    "Oscillator sync toggle",
+    "Wheel MIDI to host (optional)"
+  ]
+}

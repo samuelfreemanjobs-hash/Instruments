@@ -511,6 +511,7 @@ void MoogVoyagerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 {
     juce::ScopedNoDenormals noDenormals;
     buffer.clear();
+    keyboardState.processNextMidiBuffer(midi, 0, buffer.getNumSamples(), true);
     cachedVoiceParams = readVoiceParams();
 
     const int osChoice = static_cast<int>(apvts.getRawParameterValue(std::string(SynthParamIDs::oversample))->load());

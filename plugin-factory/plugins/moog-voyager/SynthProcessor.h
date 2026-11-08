@@ -79,6 +79,8 @@ public:
     float getOutputPeakDb() const noexcept { return outputPeakDb.load(); }
     void getScopeSnapshot(std::array<float, 256>& out) const noexcept;
 
+    juce::MidiKeyboardState& getKeyboardState() noexcept { return keyboardState; }
+
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
@@ -139,6 +141,7 @@ private:
     int oversampleFactor = 1;
     juce::AudioBuffer<float> oversampleScratch;
 
+    juce::MidiKeyboardState keyboardState;
     std::atomic<float> outputPeakDb { -60.0f };
     std::array<std::atomic<float>, 256> scopeRing {};
     std::atomic<int> scopeWrite { 0 };

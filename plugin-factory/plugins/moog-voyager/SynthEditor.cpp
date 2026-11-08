@@ -38,11 +38,78 @@ void layoutKnobRow(juce::Rectangle<int> area, std::initializer_list<juce::Slider
 }
 } // namespace
 
+VoyagerPerformanceStrip::VoyagerPerformanceStrip(MoogVoyagerAudioProcessor& p, juce::MidiKeyboardComponent& kb)
+    : processor(p),
+      keyboard(kb)
+{
+    addAndMakeVisible(keyboard);
+    keyboard.setKeyWidth(15.5f);
+    keyboard.setScrollButtonsVisible(false);
+    keyboard.setLowestVisibleKey(36);
+    keyboard.setColour(juce::MidiKeyboardComponent::whiteNoteColourId, juce::Colours::white);
+    keyboard.setColour(juce::MidiKeyboardComponent::blackNoteColourId, juce::Colour(0xff1a1a1a));
+    keyboard.setColour(juce::MidiKeyboardComponent::keySeparatorLineColourId, juce::Colours::black.withAlpha(0.55f));
+}
+
+void VoyagerPerformanceStrip::paint(juce::Graphics& g)
+{
+    g.fillAll(kPanelInset.darker(0.08f));
+    auto bounds = getLocalBounds().toFloat().reduced(4.0f);
+    auto xy = bounds.removeFromLeft(92.0f).reduced(2.0f);
+    g.setColour(kPanelMetal);
+    g.fillRoundedRectangle(xy, 4.0f);
+    g.setColour(accent.withAlpha(0.35f));
+    const float px = xy.getX() + xyX * xy.getWidth();
+    const float py = xy.getY() + (1.0f - xyY) * xy.getHeight();
+    g.fillEllipse(px - 5.0f, py - 5.0f, 10.0f, 10.0f);
+    g.setColour(kSectionText.withAlpha(0.7f));
+    g.setFont(juce::FontOptions(9.0f));
+    g.drawText("X / Y", xy.toNearestInt().removeFromTop(12), juce::Justification::centred);
+
+    auto wheels = bounds.removeFromLeft(52.0f);
+    const auto drawWheel = [&](float x, float norm, const char* name) {
+        juce::Rectangle<float> wr(x, wheels.getY() + 14.0f, 20.0f, wheels.getHeight() - 22.0f);
+        g.setColour(kPanelMetal);
+        g.fillRoundedRectangle(wr, 3.0f);
+        g.setColour(accent);
+        const float y = wr.getY() + (1.0f - norm) * (wr.getHeight() - 6.0f);
+        g.fillRoundedRectangle(wr.getX() + 4.0f, y, wr.getWidth() - 8.0f, 6.0f, 2.0f);
+        g.setColour(kSectionText.withAlpha(0.65f));
+        g.drawText(name, (int) wr.getX() - 2, (int) wheels.getY(), 26, 12, juce::Justification::centred);
+    };
+    drawWheel(wheels.getX() + 4.0f, pitchWheel, "P");
+    drawWheel(wheels.getX() + 28.0f, modWheel, "M");
+}
+
+void VoyagerPerformanceStrip::resized()
+{
+    auto b = getLocalBounds().reduced(6, 4);
+    b.removeFromLeft(148);
+    keyboard.setBounds(b);
+}
+
+void VoyagerPerformanceStrip::mouseDown(const juce::MouseEvent& e) { mouseDrag(e); }
+
+void VoyagerPerformanceStrip::mouseDrag(const juce::MouseEvent& e)
+{
+    auto bounds = getLocalBounds().toFloat().reduced(4.0f);
+    auto xy = bounds.withWidth(92.0f).reduced(2.0f);
+    if (xy.contains(e.position))
+    {
+        xyX = juce::jlimit(0.0f, 1.0f, (e.position.x - xy.getX()) / xy.getWidth());
+        xyY = juce::jlimit(0.0f, 1.0f, 1.0f - (e.position.y - xy.getY()) / xy.getHeight());
+        repaint();
+    }
+}
+
 void MeterScopePanel::paint(juce::Graphics& g)
 {
     auto bounds = getLocalBounds().toFloat().reduced(1.0f);
     g.setColour(kPanelInset);
     g.fillRoundedRectangle(bounds, 4.0f);
+    g.setColour(kSectionText.withAlpha(0.75f));
+    g.setFont(juce::FontOptions(9.0f, juce::Font::bold));
+    g.drawText("OUTPUT", bounds.removeFromTop(12.0f).toNearestInt(), juce::Justification::centredLeft);
 
     const float peakDb = processor.getOutputPeakDb();
     const float peakNorm = juce::jmap(juce::jlimit(-48.0f, 6.0f, peakDb), -48.0f, 6.0f, 0.0f, 1.0f);
@@ -129,14 +196,16 @@ void MoogVoyagerAudioProcessorEditor::sectionLabel(juce::Label& label, const juc
 MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudioProcessor& p)
     : AudioProcessorEditor(&p),
       processorRef(p),
-      meterScope(p)
+      meterScope(p),
+      midiKeyboard(p.getKeyboardState(), juce::MidiKeyboardComponent::horizontalKeyboard),
+      performanceStrip(p, midiKeyboard)
 {
     setOpaque(true);
 
     titleLabel.setText("VOYAGER-V", juce::dontSendNotification);
     titleLabel.setJustificationType(juce::Justification::centredLeft);
-    titleLabel.setColour(juce::Label::textColourId, kSectionText);
-    titleLabel.setFont(juce::FontOptions(28.0f, juce::Font::bold));
+    titleLabel.setColour(juce::Label::textColourId, juce::Colour(0xffe8b44a));
+    titleLabel.setFont(juce::FontOptions(30.0f, juce::Font::bold));
     addAndMakeVisible(titleLabel);
 
     subtitleLabel.setText("FOUR-STACK MOOG ENGINE  ·  SYSTEMS ENGINEERING AUDIO", juce::dontSendNotification);
@@ -202,8 +271,8 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
         presetBox.setSelectedItemIndex(p, juce::dontSendNotification);
         refreshPatchReadout();
     };
-    presetPrevButton.setButtonText("<");
-    presetNextButton.setButtonText(">");
+    presetPrevButton.setButtonText("◀");
+    presetNextButton.setButtonText("▶");
     presetPrevButton.setColour(juce::TextButton::buttonColourId, kPanelInset);
     presetPrevButton.setColour(juce::TextButton::textColourOffId, kSectionText);
     presetNextButton.setColour(juce::TextButton::buttonColourId, kPanelInset);
@@ -230,6 +299,18 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     addAndMakeVisible(oversampleBox);
 
     addAndMakeVisible(meterScope);
+
+    outputSectionLabel.setText("OUTPUT & VISUALIZER", juce::dontSendNotification);
+    outputSectionLabel.setColour(juce::Label::textColourId, kSectionText.withAlpha(0.85f));
+    outputSectionLabel.setFont(juce::FontOptions(10.0f, juce::Font::bold));
+    addAndMakeVisible(outputSectionLabel);
+
+    cpuStatusLabel.setText("CPU", juce::dontSendNotification);
+    cpuStatusLabel.setJustificationType(juce::Justification::centred);
+    cpuStatusLabel.setFont(juce::FontOptions(8.0f));
+    addAndMakeVisible(cpuStatusLabel);
+
+    addAndMakeVisible(performanceStrip);
 
     modLfoLabel.setText("LFO", juce::dontSendNotification);
     modLfoLabel.setColour(juce::Label::textColourId, kSectionText.withAlpha(0.85f));
@@ -369,14 +450,18 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     filterCutoff.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 72, 20);
     filterCutoff.setPopupDisplayEnabled(true, false, this);
 
-    setResizeLimits(960, 600, 1480, 940);
-    setSize(1100, 720);
+    setResizeLimits(1000, 680, 1520, 980);
+    setSize(1180, 820);
     startTimerHz(28);
 }
 
 void MoogVoyagerAudioProcessorEditor::timerCallback()
 {
+    ++ledPhase;
     meterScope.repaint();
+    performanceStrip.repaint();
+    repaint(0, 0, 40, getHeight());
+    repaint(getWidth() - 40, 0, 40, getHeight());
 }
 
 MoogVoyagerAudioProcessorEditor::~MoogVoyagerAudioProcessorEditor()
@@ -482,6 +567,7 @@ void MoogVoyagerAudioProcessorEditor::refreshStackChrome()
         tb->setColour(juce::ToggleButton::tickColourId, accent);
 
     meterScope.setAccentColour(accent);
+    performanceStrip.setAccentColour(accent);
     meterScope.repaint();
 
     repaint();
@@ -506,6 +592,17 @@ void MoogVoyagerAudioProcessorEditor::paint(juce::Graphics& g)
     g.setColour(kPanelWood);
     g.fillRect(0, 0, woodW, getHeight());
     g.fillRect(getWidth() - woodW, 0, woodW, getHeight());
+    const int ledCount = getHeight() / 28;
+    for (int side = 0; side < 2; ++side)
+    {
+        const int x0 = side == 0 ? 8 : getWidth() - woodW + 8;
+        for (int i = 0; i < ledCount; ++i)
+        {
+            const float phase = static_cast<float>((i + ledPhase) % ledCount) / static_cast<float>(ledCount);
+            g.setColour(accent.withAlpha(0.15f + 0.65f * (1.0f - std::abs(phase * 2.0f - 1.0f))));
+            g.fillEllipse(static_cast<float>(x0), 18.0f + static_cast<float>(i * 26), 6.0f, 6.0f);
+        }
+    }
 
     juce::Rectangle<int> panel(woodW, 0, getWidth() - 2 * woodW, getHeight());
     juce::ColourGradient metalGrad(kPanelMetalHi, panel.getTopLeft().toFloat(), kPanelMetal,
@@ -519,14 +616,22 @@ void MoogVoyagerAudioProcessorEditor::paint(juce::Graphics& g)
     g.fillRect(panel.getX(), panel.getY() + 110, panel.getWidth(), 2);
 
     auto bounds = getLocalBounds().reduced(woodW + 10, 12).withTrimmedTop(122);
-    auto oscBox = bounds.removeFromTop(195);
-    auto filterBox = bounds.removeFromTop(148);
-    auto envBox = bounds.removeFromTop(158);
+    const int perfH = 94;
+    auto upper = bounds.withTrimmedBottom(perfH);
+    auto perfBox = bounds.removeFromBottom(perfH);
+
+    auto oscBox = upper.removeFromTop(195);
+    auto filterBox = upper.removeFromTop(148);
+    auto envBox = upper.removeFromTop(158);
 
     drawSection(g, oscBox, "Oscillator 1 · 2 · 3");
-    drawSection(g, filterBox, "Ladder filter");
+    drawSection(g, filterBox, "FILTER");
     drawSection(g, envBox, "Filter & amplifier envelopes");
-    drawSection(g, bounds, "Modulation bus");
+    drawSection(g, upper, "MODULATION BUS");
+    drawSection(g, perfBox, "Performance — touch · wheels · keyboard");
+
+    g.setColour(juce::Colours::limegreen.withAlpha(0.9f));
+    g.fillEllipse(static_cast<float>(getWidth() - woodW - 108), 10.0f, 7.0f, 7.0f);
 }
 
 void MoogVoyagerAudioProcessorEditor::resized()
@@ -537,10 +642,16 @@ void MoogVoyagerAudioProcessorEditor::resized()
     titleLabel.setBounds(panel.getX() + 14, 8, 280, 32);
     subtitleLabel.setBounds(panel.getX() + 14, 38, 420, 16);
     stackBadgeLabel.setBounds(panel.getX() + 14, 58, 200, 20);
-    patchReadoutLabel.setBounds(panel.getCentreX() - 200, 8, 400, 22);
-    oversampleLabel.setBounds(panel.getRight() - 158, 8, 22, 18);
-    oversampleBox.setBounds(panel.getRight() - 134, 6, 52, 22);
-    meterScope.setBounds(panel.getRight() - 220, 30, 206, 74);
+    const int patchCy = 34;
+    presetPrevButton.setBounds(panel.getCentreX() - 228, patchCy - 4, 28, 26);
+    patchReadoutLabel.setBounds(panel.getCentreX() - 196, patchCy - 2, 392, 22);
+    presetNextButton.setBounds(panel.getCentreX() + 200, patchCy - 4, 28, 26);
+    oversampleLabel.setBounds(panel.getRight() - 200, 8, 20, 16);
+    oversampleBox.setBounds(panel.getRight() - 178, 6, 54, 22);
+    cpuStatusLabel.setBounds(panel.getRight() - 118, 8, 32, 14);
+    outputSectionLabel.setBounds(panel.getRight() - 248, 26, 130, 12);
+    meterScope.setBounds(panel.getRight() - 248, 40, 228, 72);
+    masterSlider.setBounds(panel.getRight() - 64, 28, 56, 72);
 
   {
     auto stackRow = panel.reduced(14, 0).withTrimmedTop(52).removeFromTop(30);
@@ -551,10 +662,8 @@ void MoogVoyagerAudioProcessorEditor::resized()
   }
 
     auto presetRow = panel.reduced(14, 0).withTrimmedTop(86).removeFromTop(26);
-    presetLabel.setBounds(presetRow.removeFromRight(108));
-    presetNextButton.setBounds(presetRow.removeFromRight(28).reduced(2, 2));
-    presetBox.setBounds(presetRow.removeFromRight(juce::jmin(340, presetRow.getWidth())).reduced(4, 0));
-    presetPrevButton.setBounds(presetRow.removeFromRight(28).reduced(2, 2));
+    presetLabel.setBounds(presetRow.removeFromRight(100));
+    presetBox.setBounds(presetRow.removeFromRight(juce::jmin(360, presetRow.getWidth())).reduced(4, 0));
 
     auto bounds = panel.reduced(12).withTrimmedTop(122);
     auto oscBox = bounds.removeFromTop(195);
@@ -602,6 +711,7 @@ void MoogVoyagerAudioProcessorEditor::resized()
     auto aEnvRow = eIn;
     layoutKnobRow(aEnvRow, { &aAttack, &aDecay, &aSustain, &aRelease });
 
+    bounds = bounds.withTrimmedBottom(94);
     auto modBox = bounds.removeFromTop(112);
     modSectionLabel.setBounds(modBox.removeFromTop(20));
     auto mIn = modBox.reduced(10, 4);
@@ -609,5 +719,8 @@ void MoogVoyagerAudioProcessorEditor::resized()
     layoutKnobRow(mIn.removeFromTop(42), { &lfoRate, &lfoPitch, &lfoFilter });
     auto m2 = mIn;
     noisePinkButton.setBounds(m2.removeFromLeft(56).removeFromTop(22).reduced(0, 2));
-    layoutKnobRow(m2, { &glide, &noiseSlider, &masterSlider });
+    layoutKnobRow(m2, { &glide, &noiseSlider });
+
+    auto perf = panel.reduced(12).removeFromBottom(100);
+    performanceStrip.setBounds(perf.reduced(8, 6));
 }

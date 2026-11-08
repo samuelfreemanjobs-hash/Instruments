@@ -5,6 +5,30 @@
 #include <JuceHeader.h>
 #include <array>
 
+/** Mockup performance row: XY surface, pitch/mod wheels, on-screen MIDI keyboard. */
+class VoyagerPerformanceStrip : public juce::Component
+{
+public:
+    VoyagerPerformanceStrip(MoogVoyagerAudioProcessor& p, juce::MidiKeyboardComponent& keyboard);
+
+    void setAccentColour(juce::Colour c) noexcept { accent = c; }
+
+    void paint(juce::Graphics& g) override;
+    void resized() override;
+
+private:
+    MoogVoyagerAudioProcessor& processor;
+    juce::MidiKeyboardComponent& keyboard;
+    juce::Colour accent { 0xfff4a62a };
+    float xyX = 0.5f;
+    float xyY = 0.5f;
+    float pitchWheel = 0.5f;
+    float modWheel = 0.25f;
+
+    void mouseDown(const juce::MouseEvent& e) override;
+    void mouseDrag(const juce::MouseEvent& e) override;
+};
+
 class MeterScopePanel : public juce::Component
 {
 public:
@@ -52,6 +76,8 @@ private:
 
     MoogVoyagerAudioProcessor& processorRef;
 
+    int ledPhase = 0;
+
     juce::Label titleLabel;
     juce::Label subtitleLabel;
     juce::Label patchReadoutLabel;
@@ -71,6 +97,10 @@ private:
     juce::ToggleButton mixerOdButton;
     juce::ToggleButton filterOdButton;
     juce::Label modLfoLabel;
+    juce::Label outputSectionLabel;
+    juce::Label cpuStatusLabel;
+    juce::MidiKeyboardComponent midiKeyboard;
+    VoyagerPerformanceStrip performanceStrip;
     juce::Label oscSectionLabel, filterSectionLabel, envSectionLabel, modSectionLabel;
 
     juce::Slider masterSlider;
