@@ -1,4 +1,4 @@
-# SOP-012 — Operator autopilot (unknown tasks)
+# SOP-018 — Operator autopilot (unknown tasks)
 
 ## Purpose
 

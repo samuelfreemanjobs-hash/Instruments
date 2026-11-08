@@ -1,0 +1,52 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "Voyager SE",
+    "num_param": 9,
+    "params": [
+      ["Vibe", 0, 100, "%"],
+      ["Fat", 0, 100, "%"],
+      ["Square", 0, 100, "%"],
+      ["Sub", 0, 100, "%"],
+      ["Drive", 0, 100, "%"],
+      ["Glide", 0, 100, "%"],
+      ["Squelch", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "moog_voyager_se1_squelch",
+    "type": "osc",
+    "collection": "nts1-multi-bass",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "Minimoog/Voyager + SE-1 fat 3-osc saw/square stack, drive, gliding high-resonance filter squelch. Vibe morphs Model D fat to squelch lead.",
+    "presets": [
+      {
+        "name": "Model D fat stack",
+        "midi_hint": "E1-C2, cutoff mid",
+        "values": [28, 58, 35, 48, 32, 22, 25, 10, 42]
+      },
+      {
+        "name": "SE-1 multi saw",
+        "midi_hint": "E2-G2, res 45%",
+        "values": [45, 72, 28, 40, 38, 30, 38, 8, 36]
+      },
+      {
+        "name": "Glide squelch",
+        "midi_hint": "legato slides, res 70%+",
+        "values": [68, 52, 42, 35, 45, 72, 78, 6, 32]
+      },
+      {
+        "name": "Resonance scream",
+        "midi_hint": "F2-A2, open cutoff",
+        "values": [82, 48, 55, 28, 55, 55, 88, 4, 28]
+      }
+    ]
+  }
+}

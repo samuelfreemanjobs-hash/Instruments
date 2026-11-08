@@ -1,0 +1,48 @@
+{
+  "project": {
+    "title": "Smoker Sketch 001",
+    "schema_version": 1,
+    "seed": 48127
+  },
+  "music": {
+    "tempo_bpm": 95,
+    "time_signature": [4, 4],
+    "key": "D",
+    "scale": "natural_minor",
+    "swing": 0.12
+  },
+  "style": {
+    "profile": "west_coast_smoker",
+    "harmonic_density": 0.7,
+    "melodic_density": 0.4,
+    "rhythmic_density": 0.5
+  },
+  "harmony": {
+    "progression": ["Dm9", "Gm9", "Bbmaj7", "A7"],
+    "bars_per_chord": 1,
+    "voice_leading": true
+  },
+  "arrangement": {
+    "sections": [
+      {"type": "intro", "bars": 8},
+      {"type": "verse", "bars": 16},
+      {"type": "hook", "bars": 8},
+      {"type": "verse", "bars": 16},
+      {"type": "hook", "bars": 8},
+      {"type": "bridge", "bars": 8},
+      {"type": "outro", "bars": 8}
+    ]
+  },
+  "tracks": {
+    "pad": true,
+    "electric_piano": true,
+    "bass": true,
+    "lead": true
+  },
+  "export": {
+    "format": 1,
+    "midi_ppq": 960,
+    "include_tempo": true,
+    "include_markers": true
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "Juicy 36",
+    "num_param": 9,
+    "params": [
+      ["Vibe", 0, 100, "%"],
+      ["Sub", 0, 100, "%"],
+      ["Trunk", 0, 100, "%"],
+      ["Tape", 0, 100, "%"],
+      ["Mid", 0, 100, "%"],
+      ["Glide", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "juicy_j_three6_memphis_bass",
+    "type": "osc",
+    "collection": "nts1-multi-bass",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "Juicy J / Three 6 Memphis sub: phase-locked sine + octave trunk (~30Hz feel), tape compression, optional upper-mid waveshape for small speakers. Layer under 808 kick.",
+    "presets": [
+      {
+        "name": "Trunk anthem",
+        "midi_hint": "C1-D1, with separate kick",
+        "values": [55, 78, 70, 52, 32, 20, 6, 50, 48]
+      },
+      {
+        "name": "DJ Paul rumble",
+        "midi_hint": "C1-E1 sustained",
+        "values": [48, 82, 75, 58, 28, 15, 4, 55, 52]
+      },
+      {
+        "name": "Phone speaker mid",
+        "midi_hint": "Mid up for laptops",
+        "values": [62, 72, 62, 48, 55, 22, 8, 45, 42]
+      },
+      {
+        "name": "Lo-fi tape crush",
+        "midi_hint": "Tape 65%, Sub max",
+        "values": [52, 85, 68, 65, 38, 18, 5, 52, 50]
+      }
+    ]
+  }
+}

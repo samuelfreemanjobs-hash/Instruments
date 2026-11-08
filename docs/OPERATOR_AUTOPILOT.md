@@ -2,7 +2,7 @@
 
 Run **Cursor Cloud Agent** on **Instruments** from plain-English tasks. One intake path (GitHub Issues), a simple router, existing fleet skills, and **META R10** gates for money and production.
 
-**Related:** [disklordz/templates/TEMPLATE-cloud-agent-prompt.md](disklordz/templates/TEMPLATE-cloud-agent-prompt.md) · [disklordz/sops/SOP-001-cloud-agent-task.md](disklordz/sops/SOP-001-cloud-agent-task.md) · [STUB_AGENT_BLOCKERS.md](../disklordz/agents/workflows/STUB_AGENT_BLOCKERS.md)
+**Related:** [disklordz/sops/SOP-018-operator-autopilot.md](disklordz/sops/SOP-018-operator-autopilot.md) · [disklordz/templates/TEMPLATE-cloud-agent-prompt.md](disklordz/templates/TEMPLATE-cloud-agent-prompt.md) · [disklordz/sops/SOP-001-cloud-agent-task.md](disklordz/sops/SOP-001-cloud-agent-task.md) · [STUB_AGENT_BLOCKERS.md](../disklordz/agents/workflows/STUB_AGENT_BLOCKERS.md)
 
 ---
 

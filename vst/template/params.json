@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "plugin": "TemplateSynth",
+  "parameters": [
+    {
+      "id": "gain",
+      "name": "Gain",
+      "type": "float",
+      "min": 0,
+      "max": 1,
+      "default": 0.7,
+      "smoothingMs": 10,
+      "targets": { "vst": "gain" }
+    },
+    {
+      "id": "wave",
+      "name": "Wave",
+      "type": "float",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "smoothingMs": 5,
+      "targets": { "vst": "wave" }
+    }
+  ],
+  "presets": [
+    {
+      "name": "Init",
+      "values": { "gain": 0.7, "wave": 0 }
+    }
+  ]
+}
