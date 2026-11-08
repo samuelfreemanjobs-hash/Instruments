@@ -1,6 +1,6 @@
 # PASTE_TO_FACTORY (generated)
 
-_Generated 2026-11-08 11:34 UTC · task `plugin-skeleton`_
+_Generated 2026-11-08 11:35 UTC · task `plugin-skeleton`_
 
 **Blocker:** none  
 **Next owner:** Cursor Factory (separate chat)  
@@ -9,6 +9,8 @@ _Generated 2026-11-08 11:34 UTC · task `plugin-skeleton`_
 ---
 
 DiskLordz Audio — Factory implementer only.
+
+**Implement root:** `DiskLordz-Audio/` (see `DiskLordz-Audio/MILESTONE_001_FACTORY.md`)
 
 **Stage:** B — Blank VST3 shell compiles and loads in DAW  
 **Slice:** Delegate: blank VST3 that loads  

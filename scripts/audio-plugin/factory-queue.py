@@ -59,6 +59,8 @@ _Generated {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")} · task `
 
 DiskLordz Audio — Factory implementer only.
 
+**Implement root:** `DiskLordz-Audio/` (see `DiskLordz-Audio/MILESTONE_001_FACTORY.md`)
+
 **Stage:** {letter} — {blurb}  
 **Slice:** {pb.get("headline", task_id)}  
 **Read:** `docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md` §18, `docs/DPF_TECHNICAL_ARCHITECTURE.md`, `docs/CHORD_ENGINE_PRD.md`  
