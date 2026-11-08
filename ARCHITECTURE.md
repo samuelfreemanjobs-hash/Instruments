@@ -24,6 +24,10 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-9090** (sampleless trap wavetable synth) | [Wave9090/ARCHITECTURE.md](Wave9090/ARCHITECTURE.md) | `Wave9090_VST3`, `Wave9090_Standalone`, `Wave9090Tests` |
 | **SP-1200 Drumulator** (standalone + VST3 sampler) | [SP1200/ARCHITECTURE.md](SP1200/ARCHITECTURE.md) · [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md) | `SP1200_Standalone`, `SP1200_VST3`, `ctest -R SP1200` |
+| **DiskLordz 808 Lab** (lanes, sprint kits, MPC500 workflow) | [docs/disklordz/808-LAB.md](docs/disklordz/808-LAB.md) · [disklordz/website/](disklordz/website/) | `npm run export:sprint-1-5` in `disklordz/website/` |
+| **DiskLordz Phonk Box** (PC phonk engine) | [disklordz/phonk-box/ARCHITECTURE.md](disklordz/phonk-box/ARCHITECTURE.md) | `python phonk_engine.py --self-test` in `disklordz/phonk-box/engine/` |
+| **MPC Renaissance dedicated box** (pseudo-standalone host) | [renaissance-box/ARCHITECTURE.md](renaissance-box/ARCHITECTURE.md) · [docs/MPC_RENAISSANCE_DEDICATED_BOX.md](docs/MPC_RENAISSANCE_DEDICATED_BOX.md) | `pip install -e renaissance-box/host` · `python sidecar.py` |
+| **Songwriting engine** (MIDI composition + MPC500 export) | [songwriting-engine/README.md](songwriting-engine/README.md) | `python -m songwriting.cli check` in `songwriting-engine/` |
 
 ## Repository layout
 
@@ -52,7 +56,7 @@ cmake --build build -j
 
 Optional Slack: CI ([`ci-slack-notify.yml`](.github/workflows/ci-slack-notify.yml)), Antigravity inbox ([`antigravity-inbox-slack.yml`](.github/workflows/antigravity-inbox-slack.yml)), Airtable handoff ([`airtable-antigravity-handoff.yml`](.github/workflows/airtable-antigravity-handoff.yml)) — configure with [`scripts/setup-disklordz-integrations.sh`](scripts/setup-disklordz-integrations.sh).
 
-**Cursor / agents:** [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) · [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) · **SOPs & templates** [docs/disklordz/README.md](docs/disklordz/README.md) · **Roadmap & progress** [docs/ROADMAP.md](docs/ROADMAP.md) · SaaS deep dive [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) · optional desktop agent [docs/BYTEBOT_SETUP.md](docs/BYTEBOT_SETUP.md).
+**Cursor / agents:** [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) · [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) · **Operator autopilot** [docs/OPERATOR_AUTOPILOT.md](docs/OPERATOR_AUTOPILOT.md) · **SOPs & templates** [docs/disklordz/README.md](docs/disklordz/README.md) · **Roadmap & progress** [docs/ROADMAP.md](docs/ROADMAP.md) · SaaS deep dive [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) · optional desktop agent [docs/BYTEBOT_SETUP.md](docs/BYTEBOT_SETUP.md).
 
 ## Documentation policy
 

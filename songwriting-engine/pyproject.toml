@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "antigravity-songwriting-engine"
+version = "0.1.0"
+description = "Deterministic, MIDI-first songwriting engine"
+requires-python = ">=3.12"
+dependencies = ["mido>=1.3,<2"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<9"]
+package = ["PyInstaller>=6.10,<7"]
+
+[project.scripts]
+songwriter = "songwriting.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["songwriting*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

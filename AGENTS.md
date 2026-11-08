@@ -14,16 +14,25 @@ All profit agents are **company-wide** in this monorepo — not only under `disk
 | **Orchestration** | `workflow-automation` (scaffold workflows) · **`pm-agent`** (governance + execute CI) |
 
 ```bash
-./scripts/run-agent-fleet-now.sh          # sync + execute all local agent roles now
+./scripts/run-agent-fleet-mvp.sh          # MVP motion → docs/fleet-activity-latest.md
+./scripts/run-agent-fleet-now.sh          # sync + execute (+ MVP motion lite tail)
 ./scripts/complete-roadmap-automation.sh  # integrations promote + 007 smoke + stub blockers
 ./scripts/sync-disklordz-agent-fleet.sh   # regenerate fleet docs after _specs.json edits
 ```
 
+[MVP agent motion](docs/DISKLORDZ_MVP_AGENT_MOTION.md) — scheduled CI **08:00 & 16:00 UTC** weekdays.
+
+```bash
+./scripts/unlock-agent-fleet-prod.sh https://your-production-url   # Tier C CI unlock
+```
+
 ## Standards
 
+- [docs/OPERATOR_AUTOPILOT.md](docs/OPERATOR_AUTOPILOT.md) — “I don’t know how” → GitHub **Agent run** issue → Cursor Cloud
 - [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts  
 - [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
 - `.cursor/rules/*.mdc` — always-on architecture and security  
+- **Windows (My Machines worker):** [`.cursor/rules/windows-worker.mdc`](.cursor/rules/windows-worker.mdc) — the Linux build commands below do not work there  
 
 ## AI team (Cursor / Antigravity / others)
 
@@ -97,6 +106,22 @@ streamlit run vst-testing-ops/app.py                       # operations dashboar
 **After editing plugin C++ (`Source/`, `Wave9090/`, etc.):** run `run_business.py --profile ci` before pushing; on failure read `vst-testing-ops/error_log.txt` and fix until green. Intentional DSP output changes: `tests/golden/refresh_golden.sh` then commit updated WAVs.
 
 - [docs/REPO_AUTOMATION.md](docs/REPO_AUTOMATION.md) — branch protection, Slack CI, golden WAV policy
+
+## NTS-1 multi-bass (logue SDK)
+
+```bash
+./tools/mkii-automate.sh bootstrap
+export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
+./tools/build-all-bass-mkii.sh   # NTS-1 mkII (.nts1mkiiunit)
+./tools/build-all-bass.sh        # NTS-1 mkI (.ntkdigunit)
+./tools/package-nts1.sh
+```
+
+Install today: [docs/NTS1_INSTALL_TODAY.md](docs/NTS1_INSTALL_TODAY.md). Catalog: [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md). mkII porting: [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
+
+## Audio Plugin Coder (optional VST scaffold)
+
+New plugins under `vst/`: [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-setup` … `/apc-ship` · [docs/vst-lifecycle.md](docs/vst-lifecycle.md).
 
 ## SynthForge (preset workstation)
 

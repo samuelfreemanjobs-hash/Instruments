@@ -11,6 +11,7 @@ import { creditCostForSpec } from "@/lib/generation/mode-utils";
 import { buildVariationBatch } from "@/lib/generation/variations";
 import { activeKitStorageBackend, ensureKitStorageReady } from "@/lib/kit-storage";
 import { saveKitForUser } from "@/lib/kits/persist";
+import { coalesceSparkPreset } from "@/lib/spark-le/lane-resolve";
 import { getPreset, STYLE_PRESETS } from "@/lib/presets";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
   }
 
   const prompt = (body.prompt ?? "").trim();
-  const presetId = body.presetId ?? STYLE_PRESETS[0].id;
+  const requestedPresetId = body.presetId ?? STYLE_PRESETS[0].id;
 
   if (!prompt || prompt.length < 3) {
     return NextResponse.json(
@@ -40,9 +41,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (!getPreset(presetId)) {
+  if (!getPreset(requestedPresetId)) {
     return NextResponse.json({ error: "invalid_preset" }, { status: 400 });
   }
+
+  const presetId = coalesceSparkPreset(prompt, requestedPresetId);
 
   const parsed = parseGenerationSpec(body.spec, presetId);
   if (!parsed.ok) {

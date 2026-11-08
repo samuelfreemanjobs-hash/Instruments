@@ -1,0 +1,20 @@
+DISKLORDZ MPC500 KIT UD144
+Lane: UK-DRILL  Preset: lane-uk-drill  BPM: 144
+Swing: Session 5 stretch — tight hats, dark snap, slide-808 discipline @ 144
+
+PAD  ROLE              SAMPLE
+A01  808_sub           UD144_01SUB
+A02  808_knock         UD144_02KNK
+A03  snare_body        UD144_03SNR
+A04  snare_snap_clap   UD144_04CLP
+A05  hat_closed        UD144_05CHH
+A06  hat_open          UD144_06OHH
+A07  rim_perc          UD144_07RIM
+A08  cowbell_fx        UD144_08FX
+A09 A10 A11 A12  (empty: add overflow entries with mpc_pad 9-12)
+
+LOOPS (load to a free pad or bank B)
+  UD144_L1DRIL  2 bars  (Loops/Drill_Full_2bar.wav)
+  UD144_L2TOPS  2 bars  (Loops/Tops_Kickless_2bar.wav)
+
+Memory: 0.70 MB of 16 MB budget
