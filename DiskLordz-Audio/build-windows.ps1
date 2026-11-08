@@ -11,9 +11,9 @@ cmake -B $Build -S $Source -G "Visual Studio 17 2022" -A x64
 Write-Host "Build: ChordEngine_VST3 (Release)"
 cmake --build $Build --config Release --target ChordEngine_VST3
 
-$Vst3 = Join-Path $Build "ChordEngine_artefacts\Release\VST3\CHORD ENGINE.vst3"
-if (Test-Path $Vst3) {
-    Write-Host "VST3: $Vst3"
+$Vst3 = Get-ChildItem -Path $Build -Recurse -Filter "CHORD ENGINE.vst3" -Directory -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($Vst3) {
+    Write-Host "VST3: $($Vst3.FullName)"
 } else {
-    Write-Warning "Expected VST3 not found at $Vst3 — check build log."
+    Write-Warning "CHORD ENGINE.vst3 bundle not found under $Build — check build log."
 }

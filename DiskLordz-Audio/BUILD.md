@@ -19,7 +19,7 @@ cmake --build DiskLordz-Audio\Build\Windows --config Release --target ChordEngin
 
 VST3 artifact (typical, from repo root):
 
-`DiskLordz-Audio\Build\Windows\ChordEngine_artefacts\Release\VST3\CHORD ENGINE.vst3`
+`DiskLordz-Audio\Build\Windows\Products\ChordEngine\ChordEngine_artefacts\Release\VST3\CHORD ENGINE.vst3` (CMake may also nest under `Build\Windows\ChordEngine_artefacts\` on some generators — use `build-windows.ps1` output line)
 
 ## GitHub Actions (Windows artifact)
 

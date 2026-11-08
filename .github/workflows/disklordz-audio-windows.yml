@@ -39,16 +39,21 @@ jobs:
           cmake --build DiskLordz-Audio/Build/Windows --config Release `
             --target ChordEngine_VST3 -- /m
 
-      - name: List VST3 output
+      - name: Resolve VST3 bundle path
+        id: vst3
         shell: pwsh
         run: |
-          Get-ChildItem -Recurse "DiskLordz-Audio/Build/Windows/ChordEngine_artefacts/Release/VST3" |
-            Select-Object -First 25 FullName
+          $root = "DiskLordz-Audio/Build/Windows"
+          $bundles = Get-ChildItem -Path $root -Recurse -Filter "CHORD ENGINE.vst3" -Directory -ErrorAction SilentlyContinue
+          if (-not $bundles) { throw "CHORD ENGINE.vst3 bundle not found under $root" }
+          $path = $bundles[0].FullName
+          echo "path=$path" >> $env:GITHUB_OUTPUT
+          Get-ChildItem -Recurse $path | Select-Object -First 20 FullName
 
       - name: Upload CHORD ENGINE.vst3 artifact
         uses: actions/upload-artifact@v4
         with:
           name: chord-engine-vst3-windows-${{ github.run_number }}
-          path: DiskLordz-Audio/Build/Windows/ChordEngine_artefacts/Release/VST3/CHORD ENGINE.vst3
+          path: ${{ steps.vst3.outputs.path }}
           if-no-files-found: error
           retention-days: 14
