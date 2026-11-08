@@ -41,6 +41,10 @@ python3 scripts/audio-plugin/fleet_tick.py --weekly --antigravity
 
 [AUDIO_PREP_HANDOFF_BUNDLE.md](AUDIO_PREP_HANDOFF_BUNDLE.md) — paths after WO-PREP-001/002.
 
+## Operator (Pro plan)
+
+[CURSOR_OPERATOR_ON_20_PRO.md](CURSOR_OPERATOR_ON_20_PRO.md) — compute tiers, billing guardrails, single inbox.
+
 ## Related
 
 - [CURSOR_FACTORY_LIAISON.md](CURSOR_FACTORY_LIAISON.md)

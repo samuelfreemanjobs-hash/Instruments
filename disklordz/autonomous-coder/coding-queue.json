@@ -64,6 +64,16 @@
       ],
       "context_paths": ["docs/CURSOR_FACTORY_LIAISON.md"],
       "priority": 6
+    },
+    {
+      "id": "cloud-cursor-operator-20-pro-doc",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Operator playbook for Pro plan (compute tiers + inbox)",
+      "acceptance": "docs/CURSOR_OPERATOR_ON_20_PRO.md exists; linked from AUDIO_PLUGIN_AGENT_LANE.md",
+      "allowlist": ["docs/"],
+      "context_paths": ["disklordz/audio-command/ARCHITECTURE.md"],
+      "priority": 7
     }
   ]
 }
