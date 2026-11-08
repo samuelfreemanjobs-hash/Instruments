@@ -11,9 +11,13 @@ npm run dev          # Express :3847 + Next.js :3000
 npm test && npm run build
 ```
 
-- **Primary UI:** `web/` — Next.js 15 App Router, Tailwind 4, `@supabase/ssr`.
-- **Legacy PWA:** `npm run dev:legacy` (Vite on :5173) — parity achieved for PRD nav; deprecate when production cutover is done.
-- **Catalog pool:** `server/catalog-pool.ts` — local SQLite drift + optional Supabase overlay (`USE_SUPABASE_CATALOG=1`).
+- **Primary UI:** `web/` — Next.js 15 App Router, Tailwind 4, `@supabase/ssr` (production default on Vercel).
+- **Legacy PWA:** [LEGACY_PWA.md](./LEGACY_PWA.md) — Vite `:5173` regression only.
+- **Catalog pool:** `server/catalog-pool.ts` — SQLite drift + Supabase overlay (`USE_SUPABASE_CATALOG=1` on API).
+- **Supabase search:** `web/src/app/api/catalog/search` when `NEXT_PUBLIC_USE_SUPABASE_CATALOG=1` (migration `006`).
+- **Jobs:** Inngest crons in `web/src/inngest/` (+ n8n `x-n8n-secret` on API).
+- **Web Push:** VAPID + `web-push` on API; `web/public/sw.js` + `NEXT_PUBLIC_VAPID_PUBLIC_KEY`.
+- **Admin:** `/admin` — `BFM_ADMIN_EMAILS` + Server Actions → `GET /api/admin/status`.
 - **Supabase:** `supabase/README.md` + migrations `001` + `002` (RLS).
 
 ## PRD alignment

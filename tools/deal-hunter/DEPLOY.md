@@ -1,11 +1,14 @@
 # Black Friday Madness deployment
 
-## Vercel (Phase 2 — Next.js)
+## Vercel (production — Next.js)
 
 1. Set **Root Directory** to `tools/deal-hunter/web`.
 2. Build: `npm run build` (Next 15).
-3. Env: `NEXT_PUBLIC_SUPABASE_*`, `DEAL_API_ORIGIN` → production API URL.
-4. Add Supabase redirect URL: `https://<your-domain>/auth/callback`.
+3. Env: `NEXT_PUBLIC_SUPABASE_*`, `DEAL_API_ORIGIN` → production API URL, `NEXT_PUBLIC_USE_SUPABASE_CATALOG=1` after sync.
+4. Inngest: `INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY` — sync app URL `https://<domain>/api/inngest`.
+5. Web Push: `NEXT_PUBLIC_VAPID_PUBLIC_KEY` + API host `VAPID_*` keys.
+6. Admin: `BFM_ADMIN_EMAILS`, `BFM_ADMIN_SECRET` (matches API `x-admin-secret`).
+7. Supabase redirect: `https://<your-domain>/auth/callback`.
 
 ## Vercel (legacy PWA)
 

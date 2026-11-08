@@ -21,6 +21,7 @@ const MORE = [
   { href: "/calendar", label: "Calendar" },
   { href: "/wishlist", label: "Wishlist" },
   { href: "/settings", label: "Settings" },
+  { href: "/admin", label: "Admin" },
 ];
 
 export function ShellNav() {

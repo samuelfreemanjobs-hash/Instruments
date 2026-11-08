@@ -1,4 +1,4 @@
-# Black Friday Madness — Next.js (Phase 2–5)
+# Black Friday Madness — Next.js (production)
 
 ## UI
 
@@ -7,6 +7,13 @@
 - **Phase 3:** `/product/[id]` (PRD detail + Recharts history), `/intel`, `/autopilot`, `/alerts` (Supabase `price_alerts` actions), `DealCard` links to product intel.
 - **Phase 4:** `/coupons`, `/budget`, `/calendar`; API `USE_SUPABASE_CATALOG` read path; scheduled sync cron; steal alerts via `/api/notifications/steal-hits` + dispatch.
 - **Phase 5:** `/compare`, `/categories`; settings notification toggles; dashboard catalog source + product links.
+- **Phase 6:** production cutover docs; VAPID web push; Inngest jobs; Supabase `/api/catalog/search`; `/admin` console.
+
+### Inngest (local)
+
+```bash
+cd web && npx inngest-cli@latest dev -u http://127.0.0.1:3000/api/inngest
+```
 
 ## Wishlist
 

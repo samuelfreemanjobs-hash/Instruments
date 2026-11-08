@@ -11,6 +11,47 @@ import { addDealToWishlist } from "@/app/wishlist/actions";
 import { fetchCategories, universalSearch } from "@/lib/deal-api";
 import type { Deal } from "@/lib/types";
 
+const useSupabaseCatalog = process.env.NEXT_PUBLIC_USE_SUPABASE_CATALOG === "1";
+
+function mapCatalogHits(
+  rows: {
+    id: string;
+    title: string;
+    retailer: string;
+    category: string;
+    price: number;
+    msrp: number;
+    url: string;
+    image: string;
+    stealScore: number;
+  }[],
+): Deal[] {
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    retailer: r.retailer,
+    category: r.category,
+    price: r.price,
+    msrp: r.msrp,
+    freeShipping: true,
+    url: r.url,
+    image: r.image,
+    stealScore: r.stealScore,
+    discountPct: Math.round(((r.msrp - r.price) / r.msrp) * 100),
+    itemCondition: "new",
+    trust: {
+      safeUrl: true,
+      hostname: (() => {
+        try {
+          return new URL(r.url).hostname;
+        } catch {
+          return "";
+        }
+      })(),
+    },
+  }));
+}
+
 export function SearchClient() {
   const searchParams = useSearchParams();
   const [q, setQ] = useState("");
@@ -33,6 +74,24 @@ export function SearchClient() {
     setLoading(true);
     setErr(null);
     try {
+      if (useSupabaseCatalog) {
+        const sp = new URLSearchParams();
+        if (q) sp.set("q", q);
+        if (category) sp.set("category", category);
+        if (retailer) sp.set("retailer", retailer);
+        if (maxPrice) sp.set("maxPrice", maxPrice);
+        const pg = await fetch(`/api/catalog/search?${sp}`);
+        if (pg.ok) {
+          const body = (await pg.json()) as { hits: Parameters<typeof mapCatalogHits>[0]; count: number };
+          if (body.count > 0) {
+            let mapped = mapCatalogHits(body.hits);
+            if (freeShip) mapped = mapped.filter((d) => d.freeShipping);
+            setHits(mapped);
+            setFetchedAt(new Date().toISOString());
+            return;
+          }
+        }
+      }
       const res = await universalSearch({
         q: q || category || undefined,
         retailer: retailer || undefined,

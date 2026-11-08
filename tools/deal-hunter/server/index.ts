@@ -36,11 +36,19 @@ import {
 } from "./agents/autonomous-fleet.js";
 import { assertN8nCronAuth, emitN8nEvent } from "./integrations/n8n.js";
 import { notifyDealAlert, savePushSubscription, updatePushSubscriptionPrefs } from "./integrations/notify.js";
+import { vapidPublicKey, vapidConfigured } from "./integrations/web-push.js";
 import { runCatalogSyncJob, startCatalogSyncScheduler } from "./integrations/catalog-scheduler.js";
 import { dispatchStealAlerts, findStealHits } from "./integrations/steal-dispatch.js";
 import { v1 } from "./api/v1/routes.js";
 import { runShoppingOrchestrator } from "./agents/orchestrator.js";
 import { syncCatalogToSupabase } from "./integrations/supabase-sync.js";
+import { demoAdapterRegistry } from "./retailers/demo-adapter.js";
+
+function assertAdminAuth(header: string | undefined): boolean {
+  const secret = process.env.BFM_ADMIN_SECRET ?? process.env.SYNC_CATALOG_SECRET;
+  if (!secret) return process.env.NODE_ENV !== "production";
+  return header === secret;
+}
 
 const shareCodeAlphabet = customAlphabet("23456789ABCDEFGHJKLMNPQRSTUVWXYZ", 8);
 const app = express();
@@ -94,6 +102,22 @@ app.post("/api/admin/sync-catalog/cron", async (req, res) => {
 
 app.get("/api/catalog/source", (_req, res) => {
   res.json({ source: getCatalogSource(), useSupabase: process.env.USE_SUPABASE_CATALOG === "1" });
+});
+
+app.get("/api/admin/status", async (req, res) => {
+  if (!assertAdminAuth(req.headers["x-admin-secret"] as string | undefined)) {
+    res.status(401).json({ error: "unauthorized" });
+    return;
+  }
+  const adapters = demoAdapterRegistry();
+  const integrations = await Promise.all(adapters.map((a) => a.getStatus()));
+  res.json({
+    catalogSource: getCatalogSource(),
+    useSupabaseCatalog: process.env.USE_SUPABASE_CATALOG === "1",
+    vapidConfigured: vapidConfigured(),
+    inngestNote: "Next /api/inngest on Vercel; n8n cron still supported",
+    integrations,
+  });
 });
 
 app.post("/api/orchestrator/chat", (req, res) => {
@@ -216,6 +240,11 @@ app.post("/api/autopilot/agent/:agentId", (req, res) => {
   const { deals } = freshPool();
   const profile = parseProfile(req.body?.profile ?? req.body);
   res.json(runAutonomousAgent(agentId, deals, profile));
+});
+
+app.get("/api/notifications/vapid-public-key", (_req, res) => {
+  const key = vapidPublicKey();
+  res.json({ configured: vapidConfigured(), publicKey: key });
 });
 
 app.post("/api/notifications/subscribe", (req, res) => {

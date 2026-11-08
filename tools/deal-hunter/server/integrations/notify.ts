@@ -1,6 +1,7 @@
 import { customAlphabet } from "nanoid";
 import { db } from "../db.js";
 import { emitN8nEvent } from "./n8n.js";
+import { sendWebPush, vapidConfigured } from "./web-push.js";
 
 const subId = customAlphabet("23456789abcdef", 16);
 
@@ -100,8 +101,14 @@ export async function notifyDealAlert(payload: {
   body: string;
   dealId: string;
   email?: string;
+  pushSubscription?: PushSubscriptionInput;
 }) {
   const results: { channel: string; ok: boolean }[] = [];
+
+  if (payload.pushSubscription) {
+    const sent = await sendWebPush(payload.pushSubscription, payload);
+    if (vapidConfigured()) results.push({ channel: "web_push", ok: sent });
+  }
 
   if (payload.email) {
     const mail = await sendDealAlertEmail({

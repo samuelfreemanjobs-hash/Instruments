@@ -79,6 +79,7 @@ export async function dispatchStealAlerts(): Promise<{
       body,
       dealId: top.dealId,
       email: sub.notifyEmail ? sub.email : undefined,
+      pushSubscription: { endpoint: sub.endpoint, keys: sub.keys, email: sub.email },
     });
     db.prepare(`INSERT INTO steal_alert_log (id, created_at) VALUES (?, ?)`).run(
       dedupeKey,

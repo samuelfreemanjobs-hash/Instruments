@@ -184,13 +184,14 @@ export async function registerStealAlertBackend(body: {
   endpoint: string;
   minStealScore: number;
   email?: string;
+  keys?: { p256dh: string; auth: string };
 }) {
   const res = await fetch("/api/notifications/subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       endpoint: body.endpoint,
-      keys: { p256dh: "browser-local", auth: "browser-local" },
+      keys: body.keys ?? { p256dh: "browser-local", auth: "browser-local" },
       minStealScore: body.minStealScore,
       notifyEmail: Boolean(body.email),
       email: body.email,

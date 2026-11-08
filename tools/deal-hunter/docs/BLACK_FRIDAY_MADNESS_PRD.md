@@ -23,10 +23,10 @@
 
 | PRD stack | Current | Target |
 |-----------|---------|--------|
-| Frontend | Vite PWA (`npm run dev:legacy`) | **Next.js** in `web/` (`npm run dev`) |
+| Frontend | Legacy Vite (`dev:legacy`) | **Next.js** in `web/` (`npm run dev`) — production default |
 | DB | SQLite demo API | PostgreSQL + Supabase (`supabase/migrations/`) |
 | Auth | Local-first legacy | **Supabase Auth** magic link (`web/src/app/login`) |
-| Jobs | n8n webhooks | Inngest/Trigger.dev + n8n glue |
+| Jobs | n8n webhooks | **Inngest** (`web/src/inngest`) + n8n glue |
 | Hosting | Vercel static + Node API | Vercel full stack |
 
 **Non‑negotiables (from PRD):**
@@ -36,4 +36,4 @@
 - Agents cannot purchase or hold payment credentials (`server/agents/orchestrator.ts`).
 - Community deals labeled separately from verified offers.
 
-**Admin (Part 3):** not in PWA v1 — planned Supabase-backed admin app.
+**Admin (Part 3):** `/admin` (Next) — adapter status, sync + steal dispatch (Supabase auth + `BFM_ADMIN_EMAILS`).

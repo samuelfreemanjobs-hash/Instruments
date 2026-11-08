@@ -1,6 +1,7 @@
 "use client";
 
 import { fetchStealHits, registerStealAlertBackend } from "@/lib/deal-api";
+import { registerRealWebPush } from "@/lib/push-registration";
 
 const DEDUPE_KEY = "bfm-steal-notified";
 
@@ -23,6 +24,10 @@ export async function enableStealAlerts(
   email?: string,
   endpoint?: string,
 ): Promise<string> {
+  if (!endpoint) {
+    const real = await registerRealWebPush(minStealScore).catch(() => null);
+    if (real) return real;
+  }
   const ep =
     endpoint ??
     `browser-tab:${typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Date.now()}`;
@@ -30,6 +35,7 @@ export async function enableStealAlerts(
     endpoint: ep,
     minStealScore,
     email,
+    keys: { p256dh: "browser-local", auth: "browser-local" },
   });
   return ep;
 }
