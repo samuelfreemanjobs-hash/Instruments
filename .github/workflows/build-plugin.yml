@@ -42,7 +42,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure and build (CMake preset)
+      - name: Setup MSVC toolchain
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure and build (Ninja)
         run: |
-          cmake --preset windows-vs-release
-          cmake --build --preset windows-vs-release
+          choco install ninja -y
+          cmake --preset windows-ninja-release
+          cmake --build --preset windows-ninja-release

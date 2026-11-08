@@ -27,7 +27,7 @@ Single place to see **where we are going** and **what is done**. PM Agent refres
 |-------|---------------|--------|
 | **Disklordz SaaS v0** | Auth, generate, ZIP, deploy | **Shipped** — see [DISKLORDZ_GO_LIVE.md](DISKLORDZ_GO_LIVE.md) |
 | **SaaS 007+ (ILLUGEN-shaped)** | Spec, variations, async, credits, RAG | **In progress** — partial API + integrations hub |
-| **Agent fleet (31)** | Repo-wide docs + autopilot CI | **Shipped** — scheduled CI on `main` |
+| **Agent fleet (32)** | Repo-wide docs + MVP motion CI | **Shipped** — `agent-fleet-mvp-motion.yml` 2× weekdays + activity log |
 | **OSS integrations (35)** | manifest + website wiring | **34 integrated**, 1 external (Bytebot) — run `promote-integrations.py` after new stubs |
 | **JD Upgraded plugin** | Phase 5 | See [PHASE5.md](PHASE5.md) |
 | **WAVE-9090** | Trap wavetable synth | Active product — [Wave9090/ARCHITECTURE.md](../Wave9090/ARCHITECTURE.md) |

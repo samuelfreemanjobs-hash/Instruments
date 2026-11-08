@@ -18,7 +18,11 @@ jobs:
           test -f DISKLORDZ_AGENTS.md
 
       - name: Remote integration verify
-        if: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL != '' }}
-        run: bash disklordz/integrations/scripts/verify-integrations.sh
         env:
           DISKLORDZ_URL: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL }}
+        run: |
+          if [ -n "${DISKLORDZ_URL:-}" ]; then
+            bash disklordz/integrations/scripts/verify-integrations.sh
+          else
+            echo "SKIP remote verify: DISKLORDZ_VERIFY_BASE_URL not set"
+          fi
