@@ -11,6 +11,8 @@ pf_add_juce_plugin(
         SynthProcessor.cpp
         SynthEditor.h
         SynthEditor.cpp
+        MoogStackLineage.h
+        MoogStackLineage.cpp
         VoyagerPresetBank.h
         VoyagerPresetBank.cpp
 )

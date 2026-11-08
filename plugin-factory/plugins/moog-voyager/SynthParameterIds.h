@@ -46,4 +46,8 @@ inline constexpr std::string_view lfoToFilter { "lfoToFilter" };
 inline constexpr std::string_view glideTime { "glideTime" };
 
 inline constexpr std::string_view mixerDrive { "mixerDrive" };
+
+/** Four-keyboard stack: Voyager · Sub Phatty · Subsequent 37 · Model D */
+inline constexpr std::string_view moogStack { "moogStack" };
+inline constexpr std::string_view subOscLevel { "subOscLevel" };
 } // namespace SynthParamIDs

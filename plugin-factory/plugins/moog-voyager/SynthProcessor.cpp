@@ -1,5 +1,6 @@
 #include "SynthProcessor.h"
 #include "SynthEditor.h"
+#include "MoogStackLineage.h"
 #include "VoyagerPresetBank.h"
 
 namespace
@@ -189,7 +190,8 @@ void MoogVoyagerAudioProcessor::SynthVoice::renderNextBlock(juce::AudioBuffer<fl
         for (int o = 0; o < 3; ++o)
         {
             driftPhase[o] += driftRates[o] / sr;
-            const float drift = 1.0f + 0.0012f * std::sin(driftPhase[o] * kTwoPi);
+            const float drift =
+                1.0f + 0.0012f * params.stackDrift * std::sin(driftPhase[o] * kTwoPi);
             const float hz = rootHz * std::pow(2.0f, params.oscOctave[o])
                              * std::pow(2.0f, params.oscFine[o] / 1200.0f) * drift;
             const float inc = hz / sr;
@@ -199,16 +201,28 @@ void MoogVoyagerAudioProcessor::SynthVoice::renderNextBlock(juce::AudioBuffer<fl
             mixed += waveFromPhase(phase[o], inc, params.oscWave[o]) * params.oscLevel[o];
         }
         mixed += nextNoiseSample() * params.noiseLevel;
-        mixed = mixerSaturate(mixed, params.mixerDrive);
+
+        if (params.subOscLevel > 0.001f)
+        {
+            const float subHz = rootHz * 0.5f;
+            const float subInc = subHz / sr;
+            subPhase += subInc;
+            if (subPhase >= 1.0f)
+                subPhase -= 1.0f;
+            const float subSq = subPhase < 0.5f ? 1.0f : -1.0f;
+            mixed += subSq * params.subOscLevel;
+        }
+
+        mixed = mixerSaturate(mixed, params.mixerDrive * params.stackMixerScale);
 
         const float filterEnv = filterAdsr.getNextSample();
         const float ampEnv = ampAdsr.getNextSample();
 
-        const float cutoff = computeCutoffHz(params, filterEnv, lfo, currentMidiNote);
+        const float cutoff = computeCutoffHz(params, filterEnv, lfo, currentMidiNote) * params.stackCutoffScale;
 
         ladder.setCutoffFrequencyHz(cutoff);
-        ladder.setResonance(params.filterResonance);
-        ladder.setDrive(params.filterDrive);
+        ladder.setResonance(juce::jlimit(0.0f, 1.0f, params.filterResonance + params.stackResBias));
+        ladder.setDrive(params.filterDrive * params.stackFilterDriveScale);
 
         float filterIn = mixed;
         float* channelPtr = &filterIn;
@@ -279,6 +293,17 @@ MoogVoyagerAudioProcessor::VoiceParams MoogVoyagerAudioProcessor::readVoiceParam
     p.lfoToFilter = apvts.getRawParameterValue(std::string(SynthParamIDs::lfoToFilter))->load();
     p.glideSeconds = apvts.getRawParameterValue(std::string(SynthParamIDs::glideTime))->load();
     p.mixerDrive = apvts.getRawParameterValue(std::string(SynthParamIDs::mixerDrive))->load();
+    p.subOscLevel = apvts.getRawParameterValue(std::string(SynthParamIDs::subOscLevel))->load();
+
+    const int stackIdx = static_cast<int>(apvts.getRawParameterValue(std::string(SynthParamIDs::moogStack))->load());
+    p.moogStack = stackIdx;
+    const auto lineage = moogstack::lineageFromChoiceIndex(stackIdx);
+    const auto c = moogstack::coeffsFor(lineage);
+    p.stackDrift = c.driftAmount;
+    p.stackCutoffScale = c.cutoffScale;
+    p.stackResBias = c.resonanceBias;
+    p.stackMixerScale = c.mixerDriveScale;
+    p.stackFilterDriveScale = c.filterDriveScale;
 
     return p;
 }
@@ -332,6 +357,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout MoogVoyagerAudioProcessor::c
 
     addFloat(SynthParamIDs::noiseLevel, "Noise", 0.0f, 1.0f, 0.02f);
     addFloat(SynthParamIDs::mixerDrive, "Mixer Drive", 1.0f, 4.0f, 2.2f);
+    addFloat(SynthParamIDs::subOscLevel, "Sub Osc", 0.0f, 1.0f, 0.0f);
+
+    layout.add(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID { std::string(SynthParamIDs::moogStack), 1 },
+        "Moog Stack",
+        juce::StringArray { "Voyager", "Sub Phatty", "Subsequent 37", "Model D" },
+        0));
 
     addFloat(SynthParamIDs::filterCutoff, "Filter Cutoff", 20.0f, 18000.0f, 1800.0f, 0.3f);
     addFloat(SynthParamIDs::filterResonance, "Filter Resonance", 0.0f, 1.0f, 0.45f);

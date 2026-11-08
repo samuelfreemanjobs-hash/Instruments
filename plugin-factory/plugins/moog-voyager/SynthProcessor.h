@@ -4,7 +4,7 @@
 #include <JuceHeader.h>
 #include <array>
 
-/** Monophonic Voyager-style VSTi: triple oscillator, noise, Moog ladder LPF, dual ADSR. */
+/** V Voyager — four-stack Moog engine (Voyager · Sub Phatty · Subsequent 37 · Model D). */
 class MoogVoyagerAudioProcessor : public juce::AudioProcessor
 {
 public:
@@ -61,6 +61,13 @@ public:
         float lfoToFilter = 0.0f;
         float glideSeconds = 0.0f;
         float mixerDrive = 2.0f;
+        float subOscLevel = 0.0f;
+        int moogStack = 0;
+        float stackDrift = 1.0f;
+        float stackCutoffScale = 1.0f;
+        float stackResBias = 0.0f;
+        float stackMixerScale = 1.0f;
+        float stackFilterDriveScale = 1.0f;
     };
 
     VoiceParams readVoiceParams() const noexcept;
@@ -112,6 +119,7 @@ private:
         int currentMidiNote = 60;
         uint32_t rngState = 0xC0FFEEu;
         float driftPhase[3] { 0.0f, 0.0f, 0.0f };
+        float subPhase = 0.0f;
         bool prepared = false;
     };
 

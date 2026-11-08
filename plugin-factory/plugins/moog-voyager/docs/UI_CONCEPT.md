@@ -9,7 +9,8 @@ Design reference:
 | Element | Concept |
 |---------|---------|
 | Product name | **VOYAGER-V** |
-| Manufacturer line | **SYSTEMS ENGINEERING AUDIO** |
+| Manufacturer line | **FOUR-STACK MOOG ENGINE · SYSTEMS ENGINEERING AUDIO** |
+| **Moog stack** | Voyager · Sub Phatty · Subsequent 37 · Model D (lineage badge + accent color) |
 | Patch line | `PATCH: PROG nn "Name"` with prev/next (factory bank) |
 
 ## Panel zones → current APVTS
@@ -28,7 +29,7 @@ Design reference:
 
 ## Implementation status
 
-- **Phase 1 (this repo):** VOYAGER-V header, patch readout, wood side rails, metal panel, prominent cutoff knob, factory preset browser.
+- **Phase 1 (this repo):** VOYAGER-V header, **keyboard lineage** selector, patch readout, wood side rails, metal panel, prominent cutoff knob, sub osc, factory preset browser. See [MOOG_FOUR_STACK.md](MOOG_FOUR_STACK.md).
 - **Phase 2:** ADSR sliders, osc mix faders, filter/OD switches, mod bus layout.
 - **Phase 3:** Scope, oversampling toggle, touch surface / wheels (or host-only note).
 

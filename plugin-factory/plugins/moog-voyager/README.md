@@ -1,8 +1,9 @@
-# V Voyager (Voyager-style monophonic VSTi)
+# V Voyager (Four-Stack Moog monosynth)
 
-Triple oscillator, Moog ladder LPF, dual envelopes, LFO, glide, mixer saturation, PolyBLEP sources.
+**VOYAGER-V** combines four keyboard lineages in one engine: **Moog Voyager**, **Sub Phatty**, **Subsequent 37**, and **Minimoog Model D**. Triple oscillator, sub osc, Moog ladder LPF, dual envelopes, LFO, glide, mixer saturation, PolyBLEP sources.
 
-**UI concept:** [docs/UI_CONCEPT.md](docs/UI_CONCEPT.md) (VOYAGER-V · Systems Engineering Audio).
+- **Four-stack guide:** [docs/MOOG_FOUR_STACK.md](docs/MOOG_FOUR_STACK.md)
+- **UI concept:** [docs/UI_CONCEPT.md](docs/UI_CONCEPT.md) (VOYAGER-V · Systems Engineering Audio).
 
 ## Factory preset bank (300 Moog programs)
 

@@ -14,6 +14,8 @@ public:
     void resized() override;
 
     void refreshPatchReadout();
+    void refreshStackChrome();
+    juce::Colour accentForCurrentStack() const;
 
 private:
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
@@ -28,6 +30,9 @@ private:
     juce::Label titleLabel;
     juce::Label subtitleLabel;
     juce::Label patchReadoutLabel;
+    juce::Label stackBadgeLabel;
+    juce::Label stackLabel;
+    juce::ComboBox stackBox;
     juce::Label presetLabel;
     juce::ComboBox presetBox;
     juce::Label oscSectionLabel, filterSectionLabel, envSectionLabel, modSectionLabel;
@@ -37,7 +42,7 @@ private:
     juce::ComboBox oscOctave[3], oscWave[3];
     juce::Label oscIndexLabel[3], oscOctLabel[3], oscWaveLabel[3];
 
-    juce::Slider filterCutoff, filterRes, filterDrive, filterEnvAmt, filterKb, mixerDriveSlider;
+    juce::Slider filterCutoff, filterRes, filterDrive, filterEnvAmt, filterKb, mixerDriveSlider, subOscSlider;
     juce::Slider fAttack, fDecay, fSustain, fRelease;
     juce::Slider aAttack, aDecay, aSustain, aRelease;
     juce::Slider lfoRate, lfoPitch, lfoFilter, glide;
@@ -48,6 +53,8 @@ private:
     std::unique_ptr<SliderAttachment> noiseAttachment;
     std::unique_ptr<SliderAttachment> filterCutoffAttachment, filterResAttachment, filterDriveAttachment;
     std::unique_ptr<SliderAttachment> filterEnvAmtAttachment, filterKbAttachment, mixerDriveAttachment;
+    std::unique_ptr<SliderAttachment> subOscAttachment;
+    std::unique_ptr<ComboAttachment> stackAttachment;
     std::unique_ptr<SliderAttachment> fAttackAttachment, fDecayAttachment, fSustainAttachment, fReleaseAttachment;
     std::unique_ptr<SliderAttachment> aAttackAttachment, aDecayAttachment, aSustainAttachment, aReleaseAttachment;
     std::unique_ptr<SliderAttachment> lfoRateAttachment, lfoPitchAttachment, lfoFilterAttachment, glideAttachment;
