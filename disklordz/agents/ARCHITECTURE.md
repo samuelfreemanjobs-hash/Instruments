@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Thirty-one **profit agents** (including **Workflow Automation** and **PM Agent**) with Claude-Code-style file trees, bound by **META v3.1** ([charter/](charter/ARCHITECTURE.md)). (`agent.md`, `skill.md`, `subagents.md`, `soul.md`, …) for Cursor, Claude Code, Copilot skills, and Cloud Agents working on Disklordz.
+Thirty-two **profit agents** (including **Workflow Automation** and **PM Agent**) with Claude-Code-style file trees, bound by **META v3.1** ([charter/](charter/ARCHITECTURE.md)). (`agent.md`, `skill.md`, `subagents.md`, `soul.md`, …) for Cursor, Claude Code, Copilot skills, and Cloud Agents working on Disklordz.
 
 ## Build & run
 
@@ -12,6 +12,9 @@ python3 disklordz/agents/profit/scaffold_agents.py
 
 # Validate fleet registry
 python3 disklordz/agents/profit/scaffold_agents.py --check
+
+# MVP motion (per-agent hooks + activity log)
+./scripts/run-agent-fleet-mvp.sh
 ```
 
 Load any agent in Claude Code: copy frontmatter from `disklordz/agents/profit/<id>/agent.md` into `.claude/agents/<id>.md`, or point Cloud Agent at `AGENTS.md` + the agent `skill.md`.

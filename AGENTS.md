@@ -14,10 +14,13 @@ All profit agents are **company-wide** in this monorepo — not only under `disk
 | **Orchestration** | `workflow-automation` (scaffold workflows) · **`pm-agent`** (governance + execute CI) |
 
 ```bash
-./scripts/run-agent-fleet-now.sh          # sync + execute all local agent roles now
+./scripts/run-agent-fleet-mvp.sh          # MVP motion → docs/fleet-activity-latest.md
+./scripts/run-agent-fleet-now.sh          # sync + execute (+ MVP motion lite tail)
 ./scripts/complete-roadmap-automation.sh  # integrations promote + 007 smoke + stub blockers
 ./scripts/sync-disklordz-agent-fleet.sh   # regenerate fleet docs after _specs.json edits
 ```
+
+[MVP agent motion](docs/DISKLORDZ_MVP_AGENT_MOTION.md) — scheduled CI **08:00 & 16:00 UTC** weekdays.
 
 ## Standards
 
