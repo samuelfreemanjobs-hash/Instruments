@@ -1,5 +1,6 @@
 #include "DSP/PolyBlepOscillator.h"
 #include "Presets/FactoryPresets.h"
+#include "Presets/PresetAgent.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -7,9 +8,10 @@
 
 int main()
 {
-    if (pluggva::presets::getFactoryPresets().size() != 32)
+    if (pluggva::presets::getFactoryPresets().size()
+        != pluggva::presets::agent::kFactoryPresetCount)
     {
-        std::cerr << "expected 32 factory presets, got "
+        std::cerr << "expected 256 factory presets, got "
                   << pluggva::presets::getFactoryPresets().size() << '\n';
         return EXIT_FAILURE;
     }

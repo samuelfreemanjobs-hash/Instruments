@@ -2,7 +2,7 @@
 
 #include "Engine/SynthParams.h"
 
-#include <string_view>
+#include <string>
 #include <vector>
 
 namespace wave9090::presets
@@ -10,8 +10,8 @@ namespace wave9090::presets
 
 struct FactoryPreset
 {
-    std::string_view name;
-    std::string_view category;
+    std::string name;
+    std::string category;
     SynthParams params;
 };
 

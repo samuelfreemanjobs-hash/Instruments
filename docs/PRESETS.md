@@ -1,4 +1,4 @@
-# Factory presets (128)
+# Factory presets (256)
 
 Programs are **four-tone stacks**. Use host program change or the plugin **&lt; / &gt;** buttons.
 

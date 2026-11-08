@@ -1,5 +1,7 @@
 #include "Presets/FactoryPresets.h"
+#include "Presets/PresetAgent.h"
 
+#include <cstdio>
 #include <vector>
 
 namespace pluggva::presets
@@ -11,11 +13,50 @@ SynthParams base()
 {
     return SynthParams {};
 }
+
+SynthParams mutateFromSeed (const SynthParams& seed, std::size_t index) noexcept
+{
+    using agent::clamp;
+    using agent::rand01;
+    std::uint32_t state = 0x504C5641u ^ static_cast<std::uint32_t> (index * 2654435761ull);
+    SynthParams p = seed;
+
+    auto jitter = [&] (float& v, float span, float lo, float hi) {
+        v = clamp (v + (rand01 (state) - 0.5f) * span, lo, hi);
+    };
+
+    jitter (p.osc1Level, 0.15f, 0.2f, 1.0f);
+    jitter (p.osc2Level, 0.15f, 0.0f, 1.0f);
+    jitter (p.osc2DetuneCents, 18.0f, -40.0f, 40.0f);
+    jitter (p.pulseWidth, 0.18f, 0.08f, 0.92f);
+    jitter (p.subLevel, 0.2f, 0.0f, 1.0f);
+    jitter (p.unisonAmount, 0.22f, 0.0f, 1.0f);
+    jitter (p.unisonSpreadCents, 16.0f, 4.0f, 48.0f);
+    jitter (p.filterCutoff, 0.2f, 0.05f, 1.0f);
+    jitter (p.filterRes, 0.18f, 0.0f, 0.92f);
+    jitter (p.filtEnvAmt, 0.22f, 0.0f, 1.0f);
+    jitter (p.drive, 0.2f, 0.0f, 1.0f);
+    jitter (p.crush, 0.15f, 0.0f, 0.85f);
+    jitter (p.chorus, 0.2f, 0.0f, 0.95f);
+    jitter (p.drift, 0.12f, 0.0f, 0.55f);
+    jitter (p.glideMs, 55.0f, 0.0f, 220.0f);
+    jitter (p.stereoWidth, 0.2f, 0.0f, 1.0f);
+
+    if (rand01 (state) > 0.88f)
+        p.osc2Octave = clamp (p.osc2Octave + (rand01 (state) > 0.5f ? 1 : -1), -1, 2);
+    if (rand01 (state) > 0.9f)
+        p.osc1Wave = static_cast<Waveform> ((static_cast<int> (p.osc1Wave) + 1) % 4);
+    if (rand01 (state) > 0.9f)
+        p.osc2Wave = static_cast<Waveform> ((static_cast<int> (p.osc2Wave) + 2) % 4);
+
+    return p;
+}
 } // namespace
 
 const std::vector<FactoryPreset>& getFactoryPresets() noexcept
 {
-    static const std::vector<FactoryPreset> kPresets = {
+    static const std::vector<FactoryPreset> kPresets = [] {
+        const std::vector<FactoryPreset> curated = {
         // —— PLUGG (8) ——
         { "Atlanta Plugg Pluck", "PLUGG", [] {
               auto p = base();
@@ -389,7 +430,27 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.ampRelease = 0.35f;
               return p;
           }() },
-    };
+        };
+
+        std::vector<FactoryPreset> bank;
+        bank.reserve (agent::kFactoryPresetCount);
+        for (const auto& entry : curated)
+            bank.push_back (entry);
+
+        for (std::size_t i = curated.size(); i < agent::kFactoryPresetCount; ++i)
+        {
+            const auto& seed = curated[i % curated.size()];
+            char nameBuf[72];
+            std::snprintf (nameBuf,
+                           sizeof (nameBuf),
+                           "%s %03zu",
+                           seed.category.c_str(),
+                           i + 1);
+            bank.push_back (
+                FactoryPreset { nameBuf, seed.category, mutateFromSeed (seed.params, i) });
+        }
+        return bank;
+    }();
 
     return kPresets;
 }

@@ -1,5 +1,7 @@
 #include "Presets/FactoryPresets.h"
+#include "Presets/PresetAgent.h"
 
+#include <cstdio>
 #include <vector>
 
 namespace wave9090::presets
@@ -11,11 +13,46 @@ SynthParams baseParams()
 {
     return SynthParams {};
 }
+
+SynthParams mutateFromSeed (const SynthParams& seed, std::size_t index) noexcept
+{
+    using agent::clamp;
+    using agent::rand01;
+    std::uint32_t state = 0x9090u ^ static_cast<std::uint32_t> (index * 2654435761ull);
+    SynthParams p = seed;
+
+    auto jitter = [&] (float& v, float span, float lo, float hi) {
+        v = clamp (v + (rand01 (state) - 0.5f) * span, lo, hi);
+    };
+
+    jitter (p.wtPosition, 0.28f, 0.0f, 1.0f);
+    jitter (p.wtScan, 0.22f, 0.0f, 1.0f);
+    jitter (p.filterCutoff, 0.18f, 0.05f, 1.0f);
+    jitter (p.filterRes, 0.2f, 0.0f, 0.95f);
+    jitter (p.drive, 0.25f, 0.0f, 1.0f);
+    jitter (p.crush, 0.22f, 0.0f, 1.0f);
+    jitter (p.subLevel, 0.2f, 0.0f, 1.0f);
+    jitter (p.detuneCents, 24.0f, -50.0f, 50.0f);
+    jitter (p.glideMs, 60.0f, 0.0f, 250.0f);
+    jitter (p.tapeWobble, 0.18f, 0.0f, 0.95f);
+    jitter (p.ampAttack, 0.015f, 0.0005f, 0.6f);
+    jitter (p.ampDecay, 0.2f, 0.02f, 1.2f);
+    jitter (p.ampSustain, 0.12f, 0.0f, 1.0f);
+    jitter (p.ampRelease, 0.35f, 0.05f, 2.0f);
+    jitter (p.filtEnvAmt, 0.2f, 0.0f, 1.0f);
+    jitter (p.stereoWidth, 0.22f, 0.0f, 1.0f);
+
+    if (rand01 (state) > 0.82f)
+        p.filterDestructive = ! p.filterDestructive;
+
+    return p;
+}
 } // namespace
 
 const std::vector<FactoryPreset>& getFactoryPresets() noexcept
 {
-    static const std::vector<FactoryPreset> kPresets = {
+    static const std::vector<FactoryPreset> kPresets = [] {
+        const std::vector<FactoryPreset> curated = {
         // —— BASS (5) ——
         { "Sub-Zero 808", "BASS", [] {
               auto p = baseParams();
@@ -279,7 +316,27 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.ampSustain = 0.9f;
               return p;
           }() },
-    };
+        };
+
+        std::vector<FactoryPreset> bank;
+        bank.reserve (agent::kFactoryPresetCount);
+        for (const auto& entry : curated)
+            bank.push_back (entry);
+
+        for (std::size_t i = curated.size(); i < agent::kFactoryPresetCount; ++i)
+        {
+            const auto& seed = curated[i % curated.size()];
+            char nameBuf[72];
+            std::snprintf (nameBuf,
+                           sizeof (nameBuf),
+                           "%s %03zu",
+                           seed.category.c_str(),
+                           i + 1);
+            bank.push_back (
+                FactoryPreset { nameBuf, seed.category, mutateFromSeed (seed.params, i) });
+        }
+        return bank;
+    }();
 
     return kPresets;
 }

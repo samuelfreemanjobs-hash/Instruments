@@ -23,17 +23,17 @@ enum class PresetCategory : std::uint8_t
 
 PresetCategory categoryForIndex (std::size_t index) noexcept
 {
-    if (index < 24)
+    if (index < 36)
         return PresetCategory::epPiano;
-    if (index < 48)
+    if (index < 72)
         return PresetCategory::pad;
-    if (index < 64)
+    if (index < 108)
         return PresetCategory::bass;
-    if (index < 80)
+    if (index < 144)
         return PresetCategory::vaporwave;
-    if (index < 96)
+    if (index < 180)
         return PresetCategory::rnb80;
-    if (index < 112)
+    if (index < 216)
         return PresetCategory::rnb90;
     return PresetCategory::elite;
 }

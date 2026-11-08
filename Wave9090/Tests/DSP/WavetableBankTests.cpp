@@ -2,6 +2,7 @@
 #include "Engine/VoiceManager.h"
 #include "Engine/SynthParams.h"
 #include "Presets/FactoryPresets.h"
+#include "Presets/PresetAgent.h"
 
 #include <algorithm>
 #include <cmath>
@@ -11,9 +12,10 @@
 
 int main()
 {
-    if (wave9090::presets::getFactoryPresets().size() != 24)
+    if (wave9090::presets::getFactoryPresets().size()
+        != wave9090::presets::agent::kFactoryPresetCount)
     {
-        std::cerr << "expected 24 factory presets, got "
+        std::cerr << "expected 256 factory presets, got "
                   << wave9090::presets::getFactoryPresets().size() << '\n';
         return EXIT_FAILURE;
     }
