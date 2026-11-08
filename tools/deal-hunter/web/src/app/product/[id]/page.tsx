@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { PriceHistoryChart } from "@/components/charts/PriceHistoryChart";
 import { ProductActions } from "./product-actions";
-import { fetchProductDetail } from "@/lib/server-deal-api";
+import { fetchProductDetailResolved } from "@/lib/server-product-resolve";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type Props = { params: Promise<{ id: string }> };
@@ -12,7 +12,7 @@ export default async function ProductDetailPage({ params }: Props) {
   const { id } = await params;
   let payload;
   try {
-    payload = await fetchProductDetail(id);
+    payload = await fetchProductDetailResolved(id);
   } catch {
     return (
       <p className="text-sm text-bfm-danger">Deal API unreachable — run npm run dev:server.</p>

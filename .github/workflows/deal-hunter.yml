@@ -1,0 +1,42 @@
+name: Black Friday Madness
+
+on:
+  push:
+    paths:
+      - "tools/deal-hunter/**"
+      - ".github/workflows/deal-hunter.yml"
+  pull_request:
+    paths:
+      - "tools/deal-hunter/**"
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/deal-hunter
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            tools/deal-hunter/package-lock.json
+            tools/deal-hunter/web/package-lock.json
+
+      - name: Install API dependencies
+        run: npm ci
+
+      - name: Vitest
+        run: npm test
+
+      - name: Typecheck API
+        run: npm run build:server
+
+      - name: Install web dependencies
+        run: npm ci --prefix web
+
+      - name: Build Next.js
+        run: npm run build --prefix web

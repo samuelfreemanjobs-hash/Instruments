@@ -8,6 +8,7 @@
 - **Phase 4:** `/coupons`, `/budget`, `/calendar`; API `USE_SUPABASE_CATALOG` read path; scheduled sync cron; steal alerts via `/api/notifications/steal-hits` + dispatch.
 - **Phase 5:** `/compare`, `/categories`; settings notification toggles; dashboard catalog source + product links.
 - **Phase 6:** production cutover docs; VAPID web push; Inngest jobs; Supabase `/api/catalog/search`; `/admin` console.
+- **Phase 7:** GitHub Actions `deal-hunter.yml`; `web/.env.example`; product Supabase overlay; discover/deals list via PG; Inngest on-demand events from admin.
 
 ### Inngest (local)
 

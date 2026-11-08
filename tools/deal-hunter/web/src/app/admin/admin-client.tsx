@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { triggerCatalogSync, triggerStealDispatch, fetchAdminStatus } from "./actions";
+import { enqueueCatalogSync, enqueueStealDispatch } from "./inngest-triggers";
 
 export function AdminDashboardClient() {
   const [status, setStatus] = useState<Awaited<ReturnType<typeof fetchAdminStatus>> | null>(null);
@@ -43,7 +44,15 @@ export function AdminDashboardClient() {
         <Button
           type="button"
           onClick={() =>
-            void triggerCatalogSync().then((r) => setMsg(r.ok ? "Sync triggered" : r.error ?? "Failed"))
+            void (async () => {
+              const q = await enqueueCatalogSync();
+              if (q.ok) {
+                setMsg("Inngest catalog sync queued");
+                return;
+              }
+              const r = await triggerCatalogSync();
+              setMsg(r.ok ? "Direct API sync triggered" : r.error ?? "Failed");
+            })()
           }
         >
           Sync catalog → Supabase
@@ -52,7 +61,15 @@ export function AdminDashboardClient() {
           type="button"
           variant="outline"
           onClick={() =>
-            void triggerStealDispatch().then((r) => setMsg(r.ok ? "Steal dispatch triggered" : r.error ?? "Failed"))
+            void (async () => {
+              const q = await enqueueStealDispatch();
+              if (q.ok) {
+                setMsg("Inngest steal dispatch queued");
+                return;
+              }
+              const r = await triggerStealDispatch();
+              setMsg(r.ok ? "Direct steal dispatch triggered" : r.error ?? "Failed");
+            })()
           }
         >
           Dispatch steal alerts

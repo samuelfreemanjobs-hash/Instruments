@@ -29,3 +29,5 @@ See [LEGACY_PWA.md](./LEGACY_PWA.md) — `npm run dev:legacy` (:5173) for regres
 ```bash
 npm test && npm run build
 ```
+
+CI: [`.github/workflows/deal-hunter.yml`](../../.github/workflows/deal-hunter.yml) on changes under `tools/deal-hunter/`.

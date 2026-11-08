@@ -20,6 +20,18 @@ export const catalogSyncCron = inngest.createFunction(
   },
 );
 
+export const catalogSyncOnDemand = inngest.createFunction(
+  { id: "bfm-catalog-sync-on-demand", name: "BFM catalog sync (event)" },
+  { event: "bfm/catalog.sync" },
+  async () => {
+    const res = await fetch(`${apiOrigin()}/api/admin/sync-catalog/cron`, {
+      method: "POST",
+      headers: cronHeaders(),
+    });
+    return { status: res.status, body: (await res.text()).slice(0, 500) };
+  },
+);
+
 export const stealDispatchCron = inngest.createFunction(
   { id: "bfm-steal-dispatch", name: "BFM steal dispatch" },
   { cron: "*/15 * * * *" },
@@ -32,4 +44,21 @@ export const stealDispatchCron = inngest.createFunction(
   },
 );
 
-export const inngestFunctions = [catalogSyncCron, stealDispatchCron];
+export const stealDispatchOnDemand = inngest.createFunction(
+  { id: "bfm-steal-dispatch-on-demand", name: "BFM steal dispatch (event)" },
+  { event: "bfm/steals.dispatch" },
+  async () => {
+    const res = await fetch(`${apiOrigin()}/api/notifications/dispatch-steals`, {
+      method: "POST",
+      headers: cronHeaders(),
+    });
+    return { status: res.status, body: await res.text() };
+  },
+);
+
+export const inngestFunctions = [
+  catalogSyncCron,
+  catalogSyncOnDemand,
+  stealDispatchCron,
+  stealDispatchOnDemand,
+];
