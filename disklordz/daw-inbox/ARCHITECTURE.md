@@ -8,7 +8,7 @@ Move generated **Disklordz ZIPs** from the system Downloads folder into a stable
 
 ```bash
 cd disklordz/daw-inbox
-npm install
+npm ci
 npm start          # watch Downloads
 npm run once       # process existing zips once
 ```
@@ -36,7 +36,13 @@ Browser → Download disklordz-*.zip → ~/Downloads
 }
 ```
 
-Environment overrides: `DISKLOORDZ_INBOX_DOWNLOAD_DIR`, `DISKLOORDZ_INBOX_TARGET_DIR`, `DISKLOORDZ_INBOX_PROCESSED_DIR`, `DISKLOORDZ_INBOX_CONFIG`.
+Windows: `%USERPROFILE%\.config\disklordz\inbox.json` (full paths, escaped backslashes — see [README.md](README.md#windows-mpc-pc)).
+
+Environment overrides: `DISKLORDZ_INBOX_DOWNLOAD_DIR`, `DISKLORDZ_INBOX_TARGET_DIR`, `DISKLORDZ_INBOX_PROCESSED_DIR`, `DISKLORDZ_INBOX_CONFIG`. Legacy misspelling `DISKLOORDZ_INBOX_*` is still accepted.
+
+## Safety
+
+`extractZip` resolves each entry against `<inboxDir>/<zip-stem>/` and skips entries that escape it (JSZip strips `../` but passes absolute names like `C:/…` through).
 
 ## Key modules
 

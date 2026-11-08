@@ -16,7 +16,10 @@ Commands:
   slack-ci          Configure GitHub secret SLACK_WEBHOOK_URL and test notifications
   slack-antigravity Configure SLACK_WEBHOOK_ANTIGRAVITY_URL + optional SLACK_MENTION_USER_ID (#disklordz-dev)
   cursor-cloud      Verify repo-managed Cursor Cloud Agent config (environment.json)
-  all               Run cursor-cloud, then slack-ci (if webhook provided)
+  all               Run cursor-cloud, then slack-ci (requires a webhook; errors without one)
+
+Requires: gh (authenticated) for secrets; jq + curl for tests and cursor-cloud.
+Avoid --webhook-url on shared machines (shell history); export the env var instead.
 
 slack-ci options:
   --webhook-url URL     Incoming webhook URL (or set SLACK_WEBHOOK_URL)

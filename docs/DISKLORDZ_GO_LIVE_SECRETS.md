@@ -8,6 +8,7 @@ Add these under **GitHub → Settings → Secrets and variables → Actions → 
 |--------|----------|
 | `SUPABASE_ACCESS_TOKEN` | `supabase db push` |
 | `SUPABASE_PROJECT_REF` | Supabase project id (subdomain) |
+| `SUPABASE_DB_PASSWORD` | Database password (Supabase → Project Settings → Database); `supabase link` / `db push` in CI |
 | `DISKLORDZ_URL` | Production site URL, no trailing slash (e.g. `https://disklordz.vercel.app`) |
 | `VERCEL_DEPLOY_HOOK_URL` | Vercel → Project → Settings → Git → Deploy Hooks → Production hook URL |
 
@@ -49,6 +50,10 @@ bash scripts/setup-stripe-webhook.sh
 ```
 
 Copy the printed `whsec_...` into GitHub secret `STRIPE_WEBHOOK_SECRET` and Vercel env, then re-run go-live with **Sync Vercel env** enabled.
+
+If you use the workflow's **Register Stripe webhook** option instead, the secret is **not** printed (this repo is public, so Actions logs are world-readable). Reveal it in Stripe Dashboard → Developers → Webhooks → your endpoint → **Signing secret**.
+
+Ordered operator steps (HUMAN vs AGENT/CI): [OPERATOR_OPS_MASTER_CHECKLIST.md](OPERATOR_OPS_MASTER_CHECKLIST.md) — Phase B.
 
 ## Run automation
 

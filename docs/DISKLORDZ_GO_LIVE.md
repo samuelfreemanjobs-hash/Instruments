@@ -2,6 +2,8 @@
 
 Use this after **WO-SAAS-007–015** land on `main`.
 
+**Operator one-pager (ordered, HUMAN vs AGENT/CI):** [OPERATOR_OPS_MASTER_CHECKLIST.md](OPERATOR_OPS_MASTER_CHECKLIST.md) — Phase B.
+
 ## Automated go-live (recommended)
 
 1. Add repository secrets once: **[DISKLORDZ_GO_LIVE_SECRETS.md](DISKLORDZ_GO_LIVE_SECRETS.md)**.
@@ -24,7 +26,7 @@ Sign up: [vercel.com](https://vercel.com) → **Add New Project** → import `In
 |------|--------|
 | 1.1 | **Merge** the open SaaS PR into `main` (or use GitHub **Actions** / `gh pr merge` if you automate). |
 | 1.2 | **Vercel** — link repo; **Root Directory** = `disklordz/website`; add env vars (section 2). |
-| 1.3 | Confirm production deploy from `main` (workflow `Disklordz website` on GitHub). |
+| 1.3 | Confirm production deploy from `main` in **Vercel → Deployments** (Vercel Git integration or the deploy hook). The GitHub workflow `Disklordz website` is a **build check only** — it does not deploy. |
 
 ### Automate merge (optional)
 
@@ -85,6 +87,9 @@ Run in the Supabase SQL editor (or CLI) **in this order**:
 3. `disklordz/website/supabase/migrations/20260917220000_credits_billing.sql`
 4. `disklordz/website/supabase/migrations/20260917230000_saved_kits_history.sql`
 5. `disklordz/website/supabase/migrations/20260917240000_credits_variable_amount.sql` — **loop/SFX/pack credit amounts**
+6. `disklordz/website/supabase/migrations/20260928110000_prompt_knowledge_pgvector.sql` — **RAG prompt knowledge (pgvector)**
+
+`supabase db push` (workflow or `apply-supabase-migrations.sh`) applies all of these in order.
 
 ## 5. Stripe webhook
 

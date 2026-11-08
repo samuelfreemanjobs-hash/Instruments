@@ -11,6 +11,8 @@ cat > "$OUT" << EOF
 
 Regenerate: \`bash disklordz/agents/workflows/scripts/stub-agent-env-check.sh\`
 
+"This shell" only reflects env vars in the shell that ran the script. CI uses GitHub Actions secrets — list names (never values) with \`gh secret list --repo samuelfreemanjobs-hash/Instruments\`. Operator steps: [OPERATOR_OPS_MASTER_CHECKLIST.md](../../../docs/OPERATOR_OPS_MASTER_CHECKLIST.md).
+
 | Agent area | Requirement | This shell |
 |------------|-------------|------------|
 | billing-ops | \`STRIPE_SECRET_KEY\` + n8n import | Stripe: $(check STRIPE_SECRET_KEY) |
@@ -21,6 +23,8 @@ Regenerate: \`bash disklordz/agents/workflows/scripts/stub-agent-env-check.sh\`
 | factory-batch-gpu | Modal/Trigger/GPU URL | MODAL: $(check MODAL_TOKEN_ID) |
 | async-generation / onboarding | Inngest prod keys | INNGEST_EVENT_KEY: $(check INNGEST_EVENT_KEY) |
 | prompt-coach pgvector | OpenAI + Supabase | OPENAI: $(check OPENAI_API_KEY) |
+| airtable-wo-triage / Antigravity handoff | \`AIRTABLE_API_KEY\` + \`AIRTABLE_BASE_ID\` | AIRTABLE: $(check AIRTABLE_API_KEY) |
+| integration-health / ship-velocity (Slack CI) | \`SLACK_WEBHOOK_URL\` (+ optional \`SLACK_WEBHOOK_ANTIGRAVITY_URL\`) | SLACK: $(check SLACK_WEBHOOK_URL) |
 
 ## n8n stub imports
 
