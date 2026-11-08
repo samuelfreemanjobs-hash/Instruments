@@ -10,10 +10,13 @@
 
 ## Stage B — plugin skeleton (current slice)
 
-1. Add **CMake** at `DiskLordz-Audio/CMakeLists.txt` (and `Products/ChordEngine/`) targeting **Windows x64 VST3**.
-2. Minimal JUCE plugin: passes audio/MIDI through or silent; **must scan and open in REAPER/FL**.
-3. Place implementation under `Products/ChordEngine/` and shared stubs under `DPF-Core/`, `DPF-MIDI/` as needed for compile.
-4. Do **not** commit `Build/` artifacts; use `Build/Windows/` for local/cmake cache per `.gitignore`.
+**Landed:** CMake + JUCE sources in `Products/ChordEngine/Source/` (Milestone 001 shell). Build: [BUILD.md](BUILD.md).
+
+**Samuel (Windows):** compile + DAW scan — then mark Coach `plugin-skeleton` done.
+
+1. ~~CMake at `DiskLordz-Audio/CMakeLists.txt`~~
+2. Minimal JUCE plugin (silent audio; MIDI buses enabled for Stage C).
+3. Do **not** commit `Build/` artifacts.
 
 ## Acceptance (§18.3 report required)
 

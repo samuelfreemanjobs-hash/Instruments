@@ -1,6 +1,6 @@
 # PASTE_TO_FACTORY (generated)
 
-_Generated 2026-11-08 11:35 UTC · task `plugin-skeleton`_
+_Generated 2026-11-08 11:43 UTC · task `plugin-skeleton`_
 
 **Blocker:** none  
 **Next owner:** Cursor Factory (separate chat)  
