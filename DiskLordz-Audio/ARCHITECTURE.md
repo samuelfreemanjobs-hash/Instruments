@@ -6,15 +6,7 @@ Shared **DiskLordz Plugin Framework (DPF)** and **Products/** SKUs for trap/phon
 
 ## Build & run
 
-Milestone 001 (in progress): Factory adds root `CMakeLists.txt` + `Products/ChordEngine` JUCE target.
-
-```bash
-# After Factory lands CMake (Windows x64)
-cmake -B DiskLordz-Audio/Build/Windows -S DiskLordz-Audio
-cmake --build DiskLordz-Audio/Build/Windows --config Release
-```
-
-Until then: structure-only; see [MILESTONE_001_FACTORY.md](MILESTONE_001_FACTORY.md).
+Stage B shell: CMake at repo subtree root; target `ChordEngine_VST3`. See [BUILD.md](BUILD.md).
 
 ## Data flow
 
