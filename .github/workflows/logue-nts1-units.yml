@@ -5,6 +5,14 @@ name: logue NTS-1 units
 
 on:
   workflow_dispatch:
+    inputs:
+      ref:
+        description: Git ref to build (branch, tag, or SHA)
+        required: false
+        default: main
+        type: string
+  repository_dispatch:
+    types: [build-logue-units]
   push:
     branches: [main]
     paths:
@@ -33,7 +41,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve checkout ref
+        id: checkout_ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "value=${{ inputs.ref }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            ref="${{ github.event.client_payload.ref }}"
+            echo "value=${ref:-main}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=${{ github.ref }}" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.checkout_ref.outputs.value }}
 
       - name: Install ARM GCC
         run: |
