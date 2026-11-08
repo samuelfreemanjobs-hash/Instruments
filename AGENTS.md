@@ -34,6 +34,22 @@ All profit agents are **company-wide** in this monorepo — not only under `disk
 - `.cursor/rules/*.mdc` — always-on architecture and security  
 - **Windows (My Machines worker):** [`.cursor/rules/windows-worker.mdc`](.cursor/rules/windows-worker.mdc) — the Linux build commands below do not work there  
 
+## AI team (Cursor / Antigravity / others)
+
+Root **`.cursorrules`** — delegation to Antigravity, Factory liaison, business copilot. Git bridge: [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md).
+
+**Antigravity** runs parallel prep on Windows (inbox/outbox): [active mode](docs/ANTIGRAVITY_ACTIVE_MODE.md) · **product factory** [ANTIGRAVITY_PRODUCT_FACTORY.md](docs/ANTIGRAVITY_PRODUCT_FACTORY.md) (`sync-product-prep.py`) · **Claude Code + DPF** [ANTIGRAVITY_CLAUDE_CODE_COPILOT.md](docs/ANTIGRAVITY_CLAUDE_CODE_COPILOT.md) (`request-claude-support.sh`). **24/7 allowlisted coder:** [AUTONOMOUS_CODING_AGENT.md](docs/AUTONOMOUS_CODING_AGENT.md) · agent `autonomous-coding-agent` · `scripts/autonomous-coder/tick.py`.
+
+## DiskLordz Audio (plugins — CHORD ENGINE)
+
+**Business / roadmap:** agent **`audio-business-copilot`** (presents **one task** per session) · Coach PWA `http://127.0.0.1:8765/pwa/` · outreach [disklordz/audio-command/docs/OUTREACH_SETUP.md](disklordz/audio-command/docs/OUTREACH_SETUP.md)
+
+**VST factory liaison (no C++):** agent **`plugin-factory-liaison`** · [docs/CURSOR_FACTORY_LIAISON.md](docs/CURSOR_FACTORY_LIAISON.md) · skill `disklordz-plugin-factory-liaison`
+
+**VST engineering (implementer Cursor only):** [docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md](docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md) §18–20 · rule `.cursor/rules/disklordz-audio-engineering-lane.mdc`
+
+Do not mix lanes: **audio-business-copilot** = sprint; **plugin-factory-liaison** = Factory prompts/CI triage; **Cursor Factory** = JUCE/C++.
+
 ## Disklordz SaaS (web)
 
 ```bash
@@ -50,7 +66,7 @@ Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md
 
 Integrations hub: [disklordz/integrations/ARCHITECTURE.md](disklordz/integrations/ARCHITECTURE.md) · `./scripts/setup-open-source-integrations.sh`
 
-Profit agents (31): [DISKLORDZ_AGENTS.md](DISKLORDZ_AGENTS.md) · [docs/DISKLORDZ_PROFIT_AGENTS.md](docs/DISKLORDZ_PROFIT_AGENTS.md) · `disklordz/agents/profit/<id>/agent.md`
+Profit agents (35): [DISKLORDZ_AGENTS.md](DISKLORDZ_AGENTS.md) · **24/7 coder:** `autonomous-coding-agent` ([docs/AUTONOMOUS_CODING_AGENT.md](docs/AUTONOMOUS_CODING_AGENT.md)) · [docs/DISKLORDZ_PROFIT_AGENTS.md](docs/DISKLORDZ_PROFIT_AGENTS.md) · `disklordz/agents/profit/<id>/agent.md`
 
 **Roadmap & progress:** [docs/ROADMAP.md](docs/ROADMAP.md)  
 **SOPs & templates:** [docs/disklordz/README.md](docs/disklordz/README.md)

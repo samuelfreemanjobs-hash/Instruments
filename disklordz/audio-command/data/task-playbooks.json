@@ -1,0 +1,127 @@
+{
+  "company-identity": {
+    "headline": "Lock in DiskLordz Audio identity",
+    "why": "Everything else ships under one recognizable brand.",
+    "owner": "you",
+    "minutes": 45,
+    "steps": [
+      "Pick final company string: DiskLordz Audio (confirm spelling).",
+      "Write 2-sentence tagline: Built for the Underground + who it's for.",
+      "Choose 3 reference colors (dark bg + accent — match PWA lime or revise).",
+      "Save logo direction (wordmark only is fine for v1) in a note or Figma.",
+      "Drop result in sprint notes or tell audio-business-copilot — mark done in Coach."
+    ],
+    "done_when": "You can describe brand in one breath and have colors written down."
+  },
+  "dev-environment": {
+    "headline": "Verify your Windows plugin dev box",
+    "why": "Cursor cannot ship Milestone 001 on a machine that doesn't build.",
+    "owner": "you",
+    "minutes": 60,
+    "steps": [
+      "Install Visual Studio 2022 Community with Desktop development with C++.",
+      "Install CMake 3.22+ and add to PATH.",
+      "Install JUCE (Projucer or CMake fetch) per your existing Instruments repo docs.",
+      "Run: cmake --version, cl.exe or g++ --version — screenshot or log.",
+      "Open Cursor only after this passes — delegate Milestone 001 VST shell to Cursor."
+    ],
+    "done_when": "CMake and a C++ compiler run from a normal terminal."
+  },
+  "github-repo": {
+    "headline": "Stand up the product repo structure",
+    "why": "DPF layout day-one prevents rewrite when ARP MACHINE ships.",
+    "owner": "you",
+    "minutes": 30,
+    "steps": [
+      "Create private GitHub org/repo OR folder in Instruments per master plan.",
+      "Add DPF-Core / DPF-MIDI / Products/ChordEngine folders (empty READMEs OK).",
+      "Copy LICENSES/ pattern from master roadmap.",
+      "Link repo in audio-command progress notes.",
+      "Tell Cursor: implement Milestone 001 in this tree."
+    ],
+    "done_when": "Remote exists and DPF folder skeleton matches docs/DPF_TECHNICAL_ARCHITECTURE.md."
+  },
+  "plugin-skeleton": {
+    "headline": "Delegate: blank VST3 that loads",
+    "why": "First proof the pipeline works in a DAW.",
+    "owner": "cursor",
+    "minutes": 0,
+    "steps": [
+      "Open a Cursor agent (VST lane) with docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md §18 Stage B.",
+      "Require: Windows x64 VST3 artifact path + DAW load screenshot.",
+      "You only review the agent's build log — do not write C++ yourself unless you want to.",
+      "When green, mark done in Coach."
+    ],
+    "done_when": "You have evidence the plugin scans and opens in REAPER or FL."
+  },
+  "midi-output": {
+    "headline": "Delegate: MIDI reaches an instrument track",
+    "why": "CHORD ENGINE is a MIDI product — this is the riskiest host behavior.",
+    "owner": "cursor",
+    "minutes": 0,
+    "steps": [
+      "Cursor task: generate test MIDI from plugin; route to instrument in REAPER.",
+      "You: load project, press play once, confirm audible notes.",
+      "Log DAW name + buffer size in weekly notes.",
+      "Mark done when you heard notes."
+    ],
+    "done_when": "Audible MIDI from plugin to instrument without stuck notes in a 30s test."
+  },
+  "theory-engine": {
+    "headline": "Delegate: theory unit tests green",
+    "why": "Musical correctness lives here — not in the UI.",
+    "owner": "cursor",
+    "minutes": 0,
+    "steps": [
+      "Cursor: Stage D in roadmap — scales, chords, inversions + pytest/ctest.",
+      "You: read test summary; spot-check one F minor triad spelling.",
+      "Mark done when CI/local tests pass."
+    ],
+    "done_when": "Automated tests exist and pass for scales + triads."
+  },
+  "chord-engine": {
+    "headline": "Delegate: extended chord library",
+    "owner": "cursor",
+    "minutes": 0,
+    "steps": [
+      "Cursor: data-driven chord definitions per roadmap §5.2.",
+      "You: pick one maj9 and one min7b5 — confirm notes match your ear in a MIDI monitor.",
+      "Mark done."
+    ],
+    "done_when": "Extended chords generate correct MIDI note sets in tests."
+  },
+  "progression-generator": {
+    "headline": "Delegate: 4-chord progression generator",
+    "owner": "cursor",
+    "minutes": 0,
+    "steps": [
+      "Cursor: F minor + Dark Trap example from PRD.",
+      "You: export MIDI, import to DAW, listen once.",
+      "Mark done."
+    ],
+    "done_when": "Four-chord progression exports and loops in DAW."
+  },
+  "first-interface": {
+    "headline": "Delegate: key + grid UI wired to engine",
+    "owner": "cursor",
+    "minutes": 0,
+    "steps": [
+      "Cursor: five UI areas — only wire controls that work.",
+      "You: 10-minute usability pass at 100% scale on your monitor.",
+      "Mark done."
+    ],
+    "done_when": "You can change key and see progression update without crash."
+  },
+  "first-alpha": {
+    "headline": "Package first alpha zip",
+    "owner": "you",
+    "minutes": 20,
+    "steps": [
+      "Cursor produces signed/unsigned build folder.",
+      "You: zip VST3 + README with version 0.1.0-alpha.",
+      "Back up to cloud storage.",
+      "Mark done — celebrate."
+    ],
+    "done_when": "Alpha zip stored and path noted in weekly review."
+  }
+}

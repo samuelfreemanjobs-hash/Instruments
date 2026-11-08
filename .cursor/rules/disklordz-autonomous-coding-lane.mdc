@@ -1,0 +1,20 @@
+---
+description: 24/7 autonomous-coding-agent — one slice from NEXT_SLICE.md, allowlist only
+alwaysApply: false
+globs:
+  - "disklordz/autonomous-coder/**"
+  - ".cursor/autonomous-coder/**"
+  - "scripts/autonomous-coder/**"
+---
+
+# Autonomous Coding Agent lane
+
+When the user or timer invokes **`autonomous-coding-agent`**:
+
+1. Read `disklordz/agents/profit/autonomous-coding-agent/agent.md` and `.cursor/autonomous-coder/NEXT_SLICE.md` (or run `tick.py --emit-slice`).
+2. **One slice only** — paths must match `disklordz/autonomous-coder/allowlist-paths.json`.
+3. **No** JUCE/C++ in `Source/`, `Products/`, `DPF-*` — write `disklordz/autonomous-coder/factory-escalation/` and stop.
+4. Run minimal verification (`py_compile`, docs only, or script dry-run).
+5. `python3 scripts/autonomous-coder/tick.py --complete <id>` then commit + push.
+
+Full doc: `docs/AUTONOMOUS_CODING_AGENT.md`.

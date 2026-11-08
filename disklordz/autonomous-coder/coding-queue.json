@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "tick-antigravity-sync",
+      "owner": "tick",
+      "kind": "antigravity_dispatch",
+      "title": "Dispatch Antigravity product + Claude Code support",
+      "command": "./scripts/antigravity-bridge/sync-all-antigravity.sh --push",
+      "priority": 1,
+      "recurrence_hours": 24
+    },
+    {
+      "id": "cloud-coach-script-hygiene",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Verify coach_engine + coach_outreach imports and fix broken paths only",
+      "acceptance": "python3 -m py_compile on touched files; no behavior change unless import error",
+      "allowlist": ["disklordz/audio-command/scripts/", "disklordz/autonomous-coder/"],
+      "context_paths": ["disklordz/audio-command/ARCHITECTURE.md"],
+      "priority": 2
+    },
+    {
+      "id": "cloud-bridge-docs",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Cross-link Antigravity docs from AGENTS.md (one paragraph)",
+      "acceptance": "AGENTS.md links AUTONOMOUS_CODING_AGENT + product factory + Claude copilot",
+      "allowlist": ["AGENTS.md", "docs/"],
+      "context_paths": ["docs/ANTIGRAVITY_PRODUCT_FACTORY.md"],
+      "priority": 3
+    },
+    {
+      "id": "tick-progress-staleness",
+      "owner": "tick",
+      "kind": "shell",
+      "title": "Log coach progress age",
+      "command": "python3 scripts/autonomous-coder/tick.py --check-progress",
+      "priority": 4,
+      "recurrence_hours": 12
+    },
+    {
+      "id": "escalate-dpf-slice",
+      "owner": "cloud",
+      "kind": "factory_escalation",
+      "title": "When Milestone 001 unblocked: emit PASTE_TO_FACTORY for plugin skeleton only",
+      "acceptance": "Write disklordz/autonomous-coder/factory-escalation/next-factory.md per CURSOR_FACTORY_LIAISON template",
+      "allowlist": ["disklordz/autonomous-coder/factory-escalation/"],
+      "context_paths": ["docs/CURSOR_FACTORY_LIAISON.md", "docs/CHORD_ENGINE_PRD.md"],
+      "priority": 5,
+      "gate_completed_task": "dev-environment"
+    },
+    {
+      "id": "cloud-factory-paste-human-windows",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "PASTE_TO_FACTORY human-windows for plugin-skeleton + idle NEXT_SLICE",
+      "acceptance": "factory-queue.py emits Samuel build block; tick emit_waiting shows queue idle",
+      "allowlist": [
+        "scripts/audio-plugin/",
+        "scripts/autonomous-coder/",
+        "disklordz/audio-command/data/",
+        ".cursor/autonomous-coder/"
+      ],
+      "context_paths": ["docs/CURSOR_FACTORY_LIAISON.md"],
+      "priority": 6
+    },
+    {
+      "id": "cloud-cursor-operator-20-pro-doc",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Operator playbook for Pro plan (compute tiers + inbox)",
+      "acceptance": "docs/CURSOR_OPERATOR_ON_20_PRO.md exists; linked from AUDIO_PLUGIN_AGENT_LANE.md",
+      "allowlist": ["docs/"],
+      "context_paths": ["disklordz/audio-command/ARCHITECTURE.md"],
+      "priority": 7
+    }
+  ]
+}
