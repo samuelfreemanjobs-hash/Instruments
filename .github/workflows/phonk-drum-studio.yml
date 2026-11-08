@@ -37,6 +37,7 @@ jobs:
           pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install -r requirements.txt
           pip install -e .
+          pip install pytest
       - name: Unit tests
         run: python -m pytest tests -v
 
@@ -63,7 +64,7 @@ jobs:
           pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install -r requirements.txt
           pip install -e .
-          pip install pyinstaller
+          pip install pyinstaller pytest
       - name: Build PhonkDrumStudio.exe
         shell: pwsh
         run: python build_standalone.py
