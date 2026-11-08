@@ -3,11 +3,13 @@
 
 namespace
 {
-const juce::Colour kPanelBlue { 0xff152238 };
-const juce::Colour kPanelInset { 0xff0d1628 };
-const juce::Colour kPanelWood { 0xff5c3d22 };
-const juce::Colour kAccent { 0xfff0d060 };
-const juce::Colour kSectionText { 0xffe8eef8 };
+const juce::Colour kPanelMetal { 0xff3a3d42 };
+const juce::Colour kPanelMetalHi { 0xff5c6168 };
+const juce::Colour kPanelInset { 0xff25282c };
+const juce::Colour kPanelWood { 0xff6b4423 };
+const juce::Colour kPanelWoodDark { 0xff3d2614 };
+const juce::Colour kAccent { 0xfff4a62a };
+const juce::Colour kSectionText { 0xfff0f2f5 };
 
 void drawSection(juce::Graphics& g, juce::Rectangle<int> r, const juce::String& title)
 {
@@ -62,11 +64,22 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
 {
     setOpaque(true);
 
-    titleLabel.setText("V VOYAGER", juce::dontSendNotification);
-    titleLabel.setJustificationType(juce::Justification::centred);
-    titleLabel.setColour(juce::Label::textColourId, kAccent);
-    titleLabel.setFont(juce::FontOptions(26.0f, juce::Font::bold));
+    titleLabel.setText("VOYAGER-V", juce::dontSendNotification);
+    titleLabel.setJustificationType(juce::Justification::centredLeft);
+    titleLabel.setColour(juce::Label::textColourId, kSectionText);
+    titleLabel.setFont(juce::FontOptions(28.0f, juce::Font::bold));
     addAndMakeVisible(titleLabel);
+
+    subtitleLabel.setText("SYSTEMS ENGINEERING AUDIO", juce::dontSendNotification);
+    subtitleLabel.setJustificationType(juce::Justification::centredLeft);
+    subtitleLabel.setColour(juce::Label::textColourId, kSectionText.withAlpha(0.75f));
+    subtitleLabel.setFont(juce::FontOptions(11.0f, juce::Font::plain));
+    addAndMakeVisible(subtitleLabel);
+
+    patchReadoutLabel.setJustificationType(juce::Justification::centred);
+    patchReadoutLabel.setColour(juce::Label::textColourId, kAccent);
+    patchReadoutLabel.setFont(juce::FontOptions(13.0f, juce::Font::bold));
+    addAndMakeVisible(patchReadoutLabel);
 
     presetLabel.setText("Factory preset", juce::dontSendNotification);
     presetLabel.setColour(juce::Label::textColourId, kSectionText);
@@ -78,17 +91,19 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     presetBox.setSelectedItemIndex(processorRef.getCurrentProgram(), juce::dontSendNotification);
     presetBox.onChange = [this]() {
         processorRef.setCurrentProgram(presetBox.getSelectedItemIndex());
+        refreshPatchReadout();
     };
     addAndMakeVisible(presetBox);
+    refreshPatchReadout();
 
     for (auto* lab : { &oscSectionLabel, &filterSectionLabel, &envSectionLabel, &modSectionLabel })
     {
         addAndMakeVisible(*lab);
     }
-    sectionLabel(oscSectionLabel, "OSCILLATORS");
-    sectionLabel(filterSectionLabel, "LADDER FILTER");
-    sectionLabel(envSectionLabel, "ENVELOPES");
-    sectionLabel(modSectionLabel, "LFO / GLIDE");
+    sectionLabel(oscSectionLabel, "OSCILLATOR BANK");
+    sectionLabel(filterSectionLabel, "FILTER");
+    sectionLabel(envSectionLabel, "FILTER & AMP ENVELOPES");
+    sectionLabel(modSectionLabel, "MODULATION BUS");
 
     const juce::StringArray waves { "Saw", "Square", "Triangle", "Pulse" };
     const juce::StringArray octaves { "-2", "-1", "0", "+1", "+2" };
@@ -189,41 +204,70 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     lfoFilterAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::lfoToFilter), lfoFilter);
     glideAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::glideTime), glide);
 
-    setResizeLimits(900, 520, 1400, 820);
-    setSize(1040, 610);
+    filterCutoff.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 72, 20);
+    filterCutoff.setPopupDisplayEnabled(true, false, this);
+
+    setResizeLimits(960, 540, 1480, 860);
+    setSize(1100, 640);
 }
 
 MoogVoyagerAudioProcessorEditor::~MoogVoyagerAudioProcessorEditor() = default;
 
+void MoogVoyagerAudioProcessorEditor::refreshPatchReadout()
+{
+    const int prog = processorRef.getCurrentProgram();
+    const auto name = voyager::getFactoryPresetName(prog);
+    const juce::String display =
+        name.empty() ? juce::String("PATCH: —")
+                     : juce::String("PATCH: PROG ") + juce::String(prog + 1).paddedLeft('0', 3) + " \""
+                         + juce::String(name.data()) + "\"";
+    patchReadoutLabel.setText(display, juce::dontSendNotification);
+}
+
 void MoogVoyagerAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    g.fillAll(kPanelBlue);
+    const int woodW = 36;
+    g.fillAll(kPanelWoodDark);
     g.setColour(kPanelWood);
-    g.fillRect(0, 0, getWidth(), 52);
-    g.setColour(kAccent.withAlpha(0.35f));
-    g.fillRect(0, 52, getWidth(), 2);
+    g.fillRect(0, 0, woodW, getHeight());
+    g.fillRect(getWidth() - woodW, 0, woodW, getHeight());
 
-    auto bounds = getLocalBounds().reduced(12).withTrimmedTop(88);
+    juce::Rectangle<int> panel(woodW, 0, getWidth() - 2 * woodW, getHeight());
+    juce::ColourGradient metalGrad(kPanelMetalHi, panel.getTopLeft().toFloat(), kPanelMetal,
+                                   panel.getBottomRight().toFloat(), false);
+    g.setGradientFill(metalGrad);
+    g.fillRect(panel);
+
+    g.setColour(kPanelInset);
+    g.fillRect(panel.getX(), panel.getY(), panel.getWidth(), 78);
+    g.setColour(kAccent.withAlpha(0.45f));
+    g.fillRect(panel.getX(), panel.getY() + 76, panel.getWidth(), 2);
+
+    auto bounds = getLocalBounds().reduced(woodW + 10, 12).withTrimmedTop(88);
     auto oscBox = bounds.removeFromTop(175);
-    auto filterBox = bounds.removeFromTop(115);
+    auto filterBox = bounds.removeFromTop(125);
     auto envBox = bounds.removeFromTop(115);
-    auto modBox = bounds.removeFromTop(95);
-    juce::ignoreUnused(modBox);
 
-    drawSection(g, oscBox, "Oscillator bank");
-    drawSection(g, filterBox, "Moog ladder filter");
+    drawSection(g, oscBox, "Oscillator 1 · 2 · 3");
+    drawSection(g, filterBox, "Ladder filter");
     drawSection(g, envBox, "Filter & amplifier envelopes");
-    drawSection(g, bounds, "Modulation");
+    drawSection(g, bounds, "Modulation bus");
 }
 
 void MoogVoyagerAudioProcessorEditor::resized()
 {
-    titleLabel.setBounds(0, 8, getWidth(), 36);
-    auto presetRow = getLocalBounds().reduced(12).withTrimmedTop(48).removeFromTop(28);
-    presetLabel.setBounds(presetRow.removeFromLeft(120));
-    presetBox.setBounds(presetRow.removeFromLeft(juce::jmin(420, presetRow.getWidth())));
+    const int woodW = 36;
+    auto panel = getLocalBounds().withTrimmedLeft(woodW).withTrimmedRight(woodW);
 
-    auto bounds = getLocalBounds().reduced(12).withTrimmedTop(88);
+    titleLabel.setBounds(panel.getX() + 14, 10, 280, 32);
+    subtitleLabel.setBounds(panel.getX() + 14, 40, 300, 16);
+    patchReadoutLabel.setBounds(panel.getCentreX() - 220, 12, 440, 22);
+
+    auto presetRow = panel.reduced(14, 0).withTrimmedTop(52).removeFromTop(26);
+    presetLabel.setBounds(presetRow.removeFromRight(120));
+    presetBox.setBounds(presetRow.removeFromRight(juce::jmin(380, presetRow.getWidth())).reduced(4, 0));
+
+    auto bounds = panel.reduced(12).withTrimmedTop(88);
     auto oscBox = bounds.removeFromTop(175);
     oscSectionLabel.setBounds(oscBox.removeFromTop(20));
     auto oscInner = oscBox.reduced(10, 4);
@@ -241,11 +285,18 @@ void MoogVoyagerAudioProcessorEditor::resized()
         oscWave[i].setBounds(col.removeFromTop(22));
     }
 
-    auto filterBox = bounds.removeFromTop(115);
+    auto filterBox = bounds.removeFromTop(125);
     filterSectionLabel.setBounds(filterBox.removeFromTop(20));
     auto fIn = filterBox.reduced(10, 4);
-    layoutKnobRow(fIn.removeFromTop(78),
-                  { &filterCutoff, &filterRes, &filterDrive, &filterEnvAmt, &filterKb, &mixerDriveSlider });
+    auto fRow = fIn.removeFromTop(88);
+  {
+    const int bigW = juce::jmin(120, fRow.getWidth() / 4);
+    filterCutoff.setBounds(fRow.removeFromLeft(bigW).reduced(4));
+    const int n = 5;
+    const int w = fRow.getWidth() / n;
+    for (auto* k : { &filterRes, &filterDrive, &filterEnvAmt, &filterKb, &mixerDriveSlider })
+        k->setBounds(fRow.removeFromLeft(w).reduced(6));
+  }
 
     auto envBox = bounds.removeFromTop(115);
     envSectionLabel.setBounds(envBox.removeFromTop(20));

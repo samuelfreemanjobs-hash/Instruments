@@ -2,6 +2,8 @@
 
 Triple oscillator, Moog ladder LPF, dual envelopes, LFO, glide, mixer saturation, PolyBLEP sources.
 
+**UI concept:** [docs/UI_CONCEPT.md](docs/UI_CONCEPT.md) (VOYAGER-V · Systems Engineering Audio).
+
 ## Factory preset bank (300 Moog programs)
 
 Full catalog: [PRESETS.md](PRESETS.md) — 32 curated (incl. P-Funk, 80s boogie/R&B, DJ Screw, Troutman) + 268 variants.

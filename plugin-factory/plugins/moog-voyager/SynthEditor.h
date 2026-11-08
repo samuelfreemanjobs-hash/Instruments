@@ -13,6 +13,8 @@ public:
     void paint(juce::Graphics&) override;
     void resized() override;
 
+    void refreshPatchReadout();
+
 private:
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     using ComboAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
@@ -24,6 +26,8 @@ private:
     MoogVoyagerAudioProcessor& processorRef;
 
     juce::Label titleLabel;
+    juce::Label subtitleLabel;
+    juce::Label patchReadoutLabel;
     juce::Label presetLabel;
     juce::ComboBox presetBox;
     juce::Label oscSectionLabel, filterSectionLabel, envSectionLabel, modSectionLabel;
