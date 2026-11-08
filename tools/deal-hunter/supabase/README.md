@@ -25,6 +25,15 @@ supabase db push
    - `https://black-friday-madness.apps.grok.bot/auth/callback` (Cursor Apps)
    - Your Vercel domain `/auth/callback` when using Vercel.
 
+## Automated provision (CLI)
+
+```bash
+cd tools/deal-hunter
+npm run provision:supabase
+```
+
+Requires `SUPABASE_ACCESS_TOKEN` and either `SUPABASE_PROJECT_REF` or `SUPABASE_ORG_ID` to create a project. See [docs/SUPABASE_MCP.md](../docs/SUPABASE_MCP.md).
+
 ## One-command local env
 
 ```bash

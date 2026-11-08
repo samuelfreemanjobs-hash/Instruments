@@ -20,7 +20,8 @@
     "test:e2e": "npm run test:e2e --prefix web",
     "sync:supabase": "tsx scripts/sync-supabase-catalog.ts",
     "setup:env": "bash scripts/setup-web-env.sh",
-    "supabase:migrate": "bash scripts/apply-supabase-migrations.sh"
+    "supabase:migrate": "bash scripts/apply-supabase-migrations.sh",
+    "provision:supabase": "bash scripts/provision-supabase.sh"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
