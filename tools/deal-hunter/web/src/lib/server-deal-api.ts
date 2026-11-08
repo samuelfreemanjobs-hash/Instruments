@@ -1,13 +1,23 @@
-const base = () => process.env.DEAL_API_ORIGIN ?? "http://127.0.0.1:3847";
+import { dealApiOriginForServer, shouldProxyToExternalDealApi } from "@/lib/deal-api-origin";
+import { hostedProductDetail } from "@/lib/hosted-catalog";
+import { hostedCatalogSource } from "@/lib/hosted-api-handlers";
 
 export async function fetchCatalogSourceServer() {
-  const res = await fetch(`${base()}/api/catalog/source`, { cache: "no-store" });
+  if (!shouldProxyToExternalDealApi()) {
+    return hostedCatalogSource();
+  }
+  const res = await fetch(`${dealApiOriginForServer()}/api/catalog/source`, { cache: "no-store" });
   if (!res.ok) throw new Error("catalog_source_failed");
   return res.json() as Promise<{ source: string; useSupabase: boolean }>;
 }
 
 export async function fetchProductDetail(id: string) {
-  const res = await fetch(`${base()}/api/v1/deals/${encodeURIComponent(id)}`, {
+  if (!shouldProxyToExternalDealApi()) {
+    const row = hostedProductDetail(id);
+    if (!row) return null;
+    return row as ProductDetailPayload;
+  }
+  const res = await fetch(`${dealApiOriginForServer()}/api/v1/deals/${encodeURIComponent(id)}`, {
     next: { revalidate: 90 },
   });
   if (res.status === 404) return null;

@@ -1,6 +1,7 @@
 import type { CommunityDeal, Deal, ShoppingRecommendation } from "./types";
 import type { CatalogSearchHit } from "./supabase/catalog-search";
 import { catalogHitsToDeals } from "./catalog-deal-map";
+import { readClientPublicConfig } from "./client-public-config";
 
 export async function universalSearch(params: Record<string, string | number | boolean | undefined>) {
   const sp = new URLSearchParams();
@@ -101,7 +102,7 @@ export async function fetchRecommendations(profile: {
 }
 
 export async function fetchDealsList() {
-  if (process.env.NEXT_PUBLIC_USE_SUPABASE_CATALOG === "1") {
+  if (readClientPublicConfig().useSupabaseCatalog) {
     const res = await fetch("/api/catalog/search");
     if (res.ok) {
       const body = (await res.json()) as { hits: CatalogSearchHit[]; count: number };

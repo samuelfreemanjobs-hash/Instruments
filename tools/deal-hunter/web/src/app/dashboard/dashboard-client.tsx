@@ -19,7 +19,7 @@ export function DashboardClient() {
         setGems(t.hiddenGems ?? []);
         setAlerts(t.priceAlerts ?? []);
       })
-      .catch(() => setError("Start the deal API: npm run dev:server (port 3847)."))
+      .catch(() => setError("Could not load dashboard deals."))
       .finally(() => setLoading(false));
   }, []);
 

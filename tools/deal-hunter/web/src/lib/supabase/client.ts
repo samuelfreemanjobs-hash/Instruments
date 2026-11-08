@@ -1,11 +1,11 @@
 import { createBrowserClient } from "@supabase/ssr";
 
-import { isSupabaseConfigured, supabasePublicConfig } from "./config";
+import { readClientPublicConfig } from "@/lib/client-public-config";
 
 export function createClient() {
-  if (!isSupabaseConfigured()) {
+  const { supabaseUrl, supabaseAnonKey } = readClientPublicConfig();
+  if (!supabaseUrl || !supabaseAnonKey) {
     return null;
   }
-  const { url, anonKey } = supabasePublicConfig();
-  return createBrowserClient(url, anonKey);
+  return createBrowserClient(supabaseUrl, supabaseAnonKey);
 }

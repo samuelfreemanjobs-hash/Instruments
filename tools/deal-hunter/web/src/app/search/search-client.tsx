@@ -13,7 +13,9 @@ import type { Deal } from "@/lib/types";
 import type { CatalogSearchHit } from "@/lib/supabase/catalog-search";
 import { catalogHitsToDeals } from "@/lib/catalog-deal-map";
 
-const useSupabaseCatalog = process.env.NEXT_PUBLIC_USE_SUPABASE_CATALOG === "1";
+import { readClientPublicConfig } from "@/lib/client-public-config";
+
+const useSupabaseCatalog = () => readClientPublicConfig().useSupabaseCatalog;
 
 export function SearchClient() {
   const searchParams = useSearchParams();
@@ -37,7 +39,7 @@ export function SearchClient() {
     setLoading(true);
     setErr(null);
     try {
-      if (useSupabaseCatalog) {
+      if (useSupabaseCatalog()) {
         const sp = new URLSearchParams();
         if (q) sp.set("q", q);
         if (category) sp.set("category", category);

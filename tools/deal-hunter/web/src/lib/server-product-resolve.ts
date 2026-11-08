@@ -1,8 +1,9 @@
 import { fetchSupabaseOfferByExternalId } from "@/lib/supabase/catalog-search";
 import { fetchProductDetail, type ProductDetailPayload } from "@/lib/server-deal-api";
 import { assessProductUrl } from "@/lib/trust-url";
+import { publicRuntimeConfig } from "@/lib/public-env";
 
-const useSupabaseCatalog = () => process.env.NEXT_PUBLIC_USE_SUPABASE_CATALOG === "1";
+const useSupabaseCatalog = () => publicRuntimeConfig().useSupabaseCatalog;
 
 export async function fetchProductDetailResolved(id: string): Promise<ProductDetailPayload | null> {
   let payload: ProductDetailPayload | null = null;
