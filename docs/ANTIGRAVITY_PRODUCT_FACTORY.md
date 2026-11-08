@@ -53,6 +53,10 @@ Antigravity commits under `docs/drafts/`, `disklordz/antigravity/outbox-artifact
 - No JUCE C++ from Antigravity (data + docs only).
 - Original music theory data only (no copied progression packs).
 
+## Claude Code / DPF coding
+
+Antigravity does **not** write production C++, but runs Windows builds, pytest, and fixtures for **Claude Code** — [ANTIGRAVITY_CLAUDE_CODE_COPILOT.md](ANTIGRAVITY_CLAUDE_CODE_COPILOT.md).
+
 ## Related
 
 - [ANTIGRAVITY_ACTIVE_MODE.md](ANTIGRAVITY_ACTIVE_MODE.md)

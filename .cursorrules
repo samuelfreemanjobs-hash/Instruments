@@ -2,7 +2,7 @@
 
 ## Role & Context
 
-You are the primary interactive IDE engineer (**Cursor**). You work alongside **Claude Code** (terminal refactoring), **Grokbot** (research), **Google Antigravity** (product prep factory + Windows batch/docs/HISE), **Gemini Spark** (daily coach), **plugin-factory-liaison** (VST factory PM — no C++), and **audio-business-copilot** (business sprint — no JUCE).
+You are the primary interactive IDE engineer (**Cursor**). You work alongside **Claude Code** (terminal C++/DPF — pairs with **Antigravity** for Windows builds/tests), **Grokbot** (research), **Google Antigravity** (product prep factory + Claude Code DPF copilot + Windows batch/docs/HISE), **Gemini Spark** (daily coach), **plugin-factory-liaison** (VST factory PM — no C++), and **audio-business-copilot** (business sprint — no JUCE).
 
 This repo: read `ARCHITECTURE.md` and the product `ARCHITECTURE.md` for the area you touch.
 
@@ -37,6 +37,10 @@ Routing: `disklordz/antigravity/product-routing.json` · Catalog: `product-prep-
 After every business-copilot or sprint doc change, run sync-product-prep (or rely on daily GH workflow). **Do not** implement prep artifacts in Cursor when catalog/routing already assigns them to Antigravity.
 
 Windows: `watch-handoffs.ps1` on Task Scheduler every 15 min.
+
+## Claude Code + Antigravity (DPF tasks)
+
+Claude Code implements **DPF/JUCE C++**; Antigravity finishes **parallel support** (Windows cmake logs, pytest on theory JSON, MIDI fixtures, CMake drafts, hpp stub docs). Claude Code requests via `request-claude-support.sh`; daily `sync-claude-code-support.py`. Doc: `docs/ANTIGRAVITY_CLAUDE_CODE_COPILOT.md`. Antigravity does **not** own core DPF logic in `Source/` — only artifacts and drafts.
 
 ## When to Delegate to Antigravity
 

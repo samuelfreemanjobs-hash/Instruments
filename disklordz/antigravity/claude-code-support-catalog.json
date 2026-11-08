@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "description": "Antigravity support tasks that unblock Claude Code / DPF implementation (not primary C++ author)",
+  "items": [
+    {
+      "wo_id": "WO-CC-001",
+      "lane": "dpf",
+      "dpf_area": "Build",
+      "title": "[ClaudeCode][DPF] Windows CMake configure + build log bundle",
+      "criteria": "On Windows after git pull: cmake -B build-dpf -S . (or path from docs/drafts/product-tree/) if tree exists else document blocker; run cmake --build build-dpf -j or repo-standard target; save logs to disklordz/antigravity/outbox-artifacts/claude-code/build-log-latest.txt; publish-handoff to claude-code",
+      "context_paths": [
+        "docs/DPF_TECHNICAL_ARCHITECTURE.md",
+        "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md",
+        "AGENTS.md"
+      ],
+      "priority": 5,
+      "triggers": ["windows_build", "after_claude_push"]
+    },
+    {
+      "wo_id": "WO-CC-002",
+      "lane": "dpf",
+      "dpf_area": "DPF-MIDI",
+      "title": "[ClaudeCode][DPF] MusicTheory pytest harness from JSON fixtures",
+      "criteria": "If docs/drafts/chord-engine/data/chord-spelling-v0.json exists, generate tests/drafts/dpf_music_theory_test.py (pytest) + run pytest -q; save junit or log to outbox-artifacts/claude-code/pytest-music-theory.log",
+      "context_paths": [
+        "docs/CHORD_ENGINE_PRD.md",
+        "docs/DPF_TECHNICAL_ARCHITECTURE.md"
+      ],
+      "priority": 6,
+      "triggers": ["theory_engine", "pytest_run"]
+    },
+    {
+      "wo_id": "WO-CC-003",
+      "lane": "dpf",
+      "dpf_area": "DPF-MIDI",
+      "title": "[ClaudeCode][DPF] C++ stub outlines from data JSON (drafts only)",
+      "criteria": "Read chord-spelling / progression seed JSON under docs/drafts/chord-engine/data/; write docs/drafts/dpf/MusicTheory_stubs.hpp.md with function signatures + field mapping for Claude Code to paste into DPF-MIDI — do not edit Source/ or Products/",
+      "context_paths": [
+        "docs/DPF_TECHNICAL_ARCHITECTURE.md",
+        "docs/CHORD_ENGINE_PRD.md"
+      ],
+      "priority": 7,
+      "triggers": ["codegen_stub", "after_data_json"]
+    },
+    {
+      "wo_id": "WO-CC-004",
+      "lane": "dpf",
+      "dpf_area": "Tests",
+      "title": "[ClaudeCode][DPF] MIDI fixture regeneration + manifest",
+      "criteria": "Refresh docs/drafts/test-fixtures/midi/ per WO-PREP-005 spec if missing; update manifest.json; zip folder to outbox-artifacts/claude-code/midi-fixtures.zip",
+      "context_paths": [
+        "docs/CHORD_ENGINE_PRD.md"
+      ],
+      "priority": 8,
+      "triggers": ["midi_fixture"]
+    },
+    {
+      "wo_id": "WO-CC-005",
+      "lane": "dpf",
+      "dpf_area": "DPF-Core",
+      "title": "[ClaudeCode][DPF] CMakeLists drafts for DPF-Core / DPF-MIDI skeleton",
+      "criteria": "docs/drafts/dpf/cmake/CMakeLists.DPF-Core.draft.txt and CMakeLists.DPF-MIDI.draft.txt matching DPF_TECHNICAL_ARCHITECTURE layout; no commit to root CMake until Claude Code merges",
+      "context_paths": [
+        "docs/DPF_TECHNICAL_ARCHITECTURE.md"
+      ],
+      "priority": 9,
+      "triggers": ["cmake_scaffold", "github-repo"]
+    }
+  ]
+}

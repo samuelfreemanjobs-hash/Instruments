@@ -7,7 +7,8 @@ alwaysApply: true
 
 Full text: repository root **`.cursorrules`**.
 
-- **Antigravity:** batch audio, presets, heavy audits, large docs; HISE lane via `antigravity-bridge.sh` + `inbox/`.
+- **Antigravity:** product prep factory, **Claude Code DPF copilot** (Windows build/pytest/fixtures), batch audio, presets, HISE via `inbox/`; `request-claude-support.sh` + `docs/ANTIGRAVITY_CLAUDE_CODE_COPILOT.md`.
+- **Claude Code:** terminal C++/DPF implementation; request Antigravity for Windows/batch legs.
 - **Cursor (you):** in-IDE engineering, small diffs, CHORD ENGINE when user wants VST lane here.
 - **plugin-factory-liaison:** factory PM, `PASTE_TO_FACTORY`, no C++.
 - **audio-business-copilot:** sprint, brand, Slack coach — no JUCE.

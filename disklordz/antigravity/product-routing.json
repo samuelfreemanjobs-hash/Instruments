@@ -43,9 +43,12 @@
     "company-identity": { "human": true, "antigravity_after_done": ["WO-PREP-010"] },
     "dev-environment": { "human": true, "antigravity_after_done": ["WO-PREP-011"] },
     "github-repo": { "antigravity_before": ["WO-PREP-001", "WO-PREP-002"], "cursor_after": ["plugin-skeleton"] },
-    "plugin-skeleton": { "cursor": true, "antigravity_parallel": ["WO-PREP-003", "WO-PREP-004"] },
-    "midi-output": { "cursor": true, "antigravity_parallel": ["WO-PREP-005"] },
-    "theory-engine": { "antigravity_before": ["WO-PREP-006"], "cursor_after": true },
+    "plugin-skeleton": {
+      "cursor": true,
+      "antigravity_parallel": ["WO-PREP-003", "WO-PREP-004", "WO-CC-001", "WO-CC-005"]
+    },
+    "midi-output": { "cursor": true, "antigravity_parallel": ["WO-PREP-005", "WO-CC-004"] },
+    "theory-engine": { "antigravity_before": ["WO-PREP-006", "WO-CC-002", "WO-CC-003"], "cursor_after": true },
     "chord-engine": { "antigravity_before": ["WO-AG-001"], "cursor_after": true },
     "progression-generator": { "antigravity_parallel": ["WO-PREP-007"] },
     "first-interface": { "antigravity_parallel": ["WO-PREP-002", "WO-PREP-008"] },
@@ -54,5 +57,22 @@
   "dispatch_limits": {
     "max_new_handoffs_per_run": 2,
     "respect_open_inbox_per_wo": true
+  },
+  "claude_code_support": {
+    "primary_implementer": "claude-code",
+    "antigravity_parallel": [
+      "windows_cmake_build_log",
+      "theory_pytest_harness",
+      "midi_fixture_generation",
+      "cmake_lists_drafts",
+      "hpp_stub_markdown_from_json"
+    ],
+    "catalog_wo_prefix": "WO-CC-",
+    "request_inbox": "disklordz/antigravity/claude-code-inbox/",
+    "artifact_dir": "disklordz/antigravity/outbox-artifacts/claude-code/",
+    "antigravity_never": [
+      "direct_Source_cpp_merge",
+      "dpf_core_logic_without_review"
+    ]
   }
 }

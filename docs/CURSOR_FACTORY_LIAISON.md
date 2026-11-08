@@ -13,15 +13,19 @@ When **Claude Code is paused** or you run two Cursor chats, the liaison is the *
 ```text
 Spark (chat) ──PASTE_LIAISON──► plugin-factory-liaison (this agent)
                                         │
-                                        ▼ PASTE_TO_FACTORY
-                                 Cursor Cloud Factory (C++ / JUCE)
-                                        │
-                                        ▼ PR / push
-                                 golden-wav-qa (run_business.py --profile ci)
-                                        │
-                                        ▼ red/green
-                                 plugin-factory-liaison (triage → next slice)
+                    ┌───────────────────┴───────────────────┐
+                    ▼ PASTE_TO_FACTORY                     ▼ request-claude-support.sh
+             Cursor Cloud Factory (C++ / JUCE)      Antigravity (DPF build · pytest · fixtures)
+             Claude Code (terminal DPF) ◄──outbox──┘
+                    │
+                    ▼ PR / push
+             golden-wav-qa (run_business.py --profile ci)
+                    │
+                    ▼ red/green
+             plugin-factory-liaison (triage → next slice)
 ```
+
+Antigravity + Claude Code: [ANTIGRAVITY_CLAUDE_CODE_COPILOT.md](ANTIGRAVITY_CLAUDE_CODE_COPILOT.md).
 
 ## Liaison MAY
 

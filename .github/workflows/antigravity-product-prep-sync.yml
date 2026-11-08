@@ -29,6 +29,7 @@ jobs:
             args+=(--dry-run)
           fi
           python3 scripts/antigravity-bridge/sync-product-prep.py "${args[@]}" || true
+          python3 scripts/antigravity-bridge/sync-claude-code-support.py "${args[@]}" || true
       - name: Commit queue merge if changed
         run: |
           git config user.name "github-actions[bot]"

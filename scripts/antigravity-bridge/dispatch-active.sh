@@ -72,6 +72,7 @@ to_agent = {
     "docs": "antigravity-docs",
     "prep": "antigravity-prep",
     "assets": "antigravity-assets",
+    "dpf": "antigravity-dpf-support",
 }.get(lane, "antigravity-batch")
 # shell-safe exports
 import shlex

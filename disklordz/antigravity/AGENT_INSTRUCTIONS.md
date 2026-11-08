@@ -39,6 +39,10 @@ Standing queue (Cursor dispatches): `disklordz/antigravity/active-queue.json`. D
 
 Product factory: `docs/ANTIGRAVITY_PRODUCT_FACTORY.md`. Deliverables go under `docs/drafts/`, `scripts/product-prep/`, `disklordz/antigravity/outbox-artifacts/`.
 
+| `antigravity-dpf-support` | Claude Code copilot: Windows builds, pytest, MIDI fixtures, CMake/hpp **drafts** — `docs/ANTIGRAVITY_CLAUDE_CODE_COPILOT.md` |
+
+Check `claude-code-inbox/` after `git pull`. Return results with `publish-handoff.ps1 -ToAgent claude-code`.
+
 ## Boundaries
 
 - Do **not** edit `disklordz/website/` (Cursor SaaS) or JUCE factory C++ unless a **JUCE port WO** exists.

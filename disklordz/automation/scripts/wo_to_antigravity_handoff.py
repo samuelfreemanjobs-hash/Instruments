@@ -35,7 +35,15 @@ def main() -> None:
     routing_path = REPO_ROOT / "disklordz" / "antigravity" / "product-routing.json"
     antigravity_wo = False
     if routing_path.is_file():
-        prefixes = ("[Plugin][HISE]", "[Antigravity]", "[Product][Prep]", "[Product][Batch]", "[Product][Docs]", "[Product][Assets]")
+        prefixes = (
+            "[Plugin][HISE]",
+            "[Antigravity]",
+            "[ClaudeCode]",
+            "[Product][Prep]",
+            "[Product][Batch]",
+            "[Product][Docs]",
+            "[Product][Assets]",
+        )
         antigravity_wo = title.startswith(prefixes) or any(p in title for p in prefixes)
         antigravity_wo = antigravity_wo or "antigravity" in owner.lower()
     else:
