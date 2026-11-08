@@ -32,10 +32,19 @@ def main() -> None:
     owner = str(fields.get("owner_agent") or fields.get("Owner Agent") or "")
     status = str(fields.get("status") or "")
 
-    if "[Plugin][HISE]" not in title and "antigravity" not in owner.lower():
+    routing_path = REPO_ROOT / "disklordz" / "antigravity" / "product-routing.json"
+    antigravity_wo = False
+    if routing_path.is_file():
+        prefixes = ("[Plugin][HISE]", "[Antigravity]", "[Product][Prep]", "[Product][Batch]", "[Product][Docs]", "[Product][Assets]")
+        antigravity_wo = title.startswith(prefixes) or any(p in title for p in prefixes)
+        antigravity_wo = antigravity_wo or "antigravity" in owner.lower()
+    else:
+        antigravity_wo = "[Plugin][HISE]" in title or "antigravity" in owner.lower()
+
+    if not antigravity_wo:
         raise SystemExit(
             f"WO {args.work_order_id} is not Antigravity lane "
-            f"(title must include [Plugin][HISE] or owner_agent antigravity-hise)"
+            f"(title prefix [Product]/[Antigravity]/[Plugin][HISE] or owner_agent antigravity-*)"
         )
 
     cmd = [

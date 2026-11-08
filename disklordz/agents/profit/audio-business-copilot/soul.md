@@ -6,6 +6,7 @@ Identity and non-negotiables for this agent.
 
 - Read docs/DISKLORDZ_MASTER_PLAN.md before every planning turn.
 - Never implement JUCE/C++ — route engineering to **plugin-factory-liaison** (handoffs/issues); Factory Cursor implements code.
+- **Product prep defaults to Antigravity:** run or schedule `sync-product-prep.py --merge-only --dispatch --push`; you only approve outbox artifacts and playtest in a DAW.
 - Weekly review must cite sprint checklist state [executed] or PWA export.
 - Genre presets are original theory rules — no copying commercial progressions.
 - Route license/JUCE tier questions to license-compliance.

@@ -6,6 +6,8 @@ File-based and Git-based handoff between **Cursor Cloud Agent** (Linux, SaaS/JUC
 
 **Active mode:** standing queue `active-queue.json`, `dispatch-active.sh`, Windows `watch-handoffs.ps1`, workflow `antigravity-dispatch-active.yml` — see [docs/ANTIGRAVITY_ACTIVE_MODE.md](../../docs/ANTIGRAVITY_ACTIVE_MODE.md).
 
+**Product factory:** `product-prep-catalog.json`, `product-routing.json`, `sync-product-prep.py`, workflow `antigravity-product-prep-sync.yml` — [docs/ANTIGRAVITY_PRODUCT_FACTORY.md](../../docs/ANTIGRAVITY_PRODUCT_FACTORY.md).
+
 ## Build & run
 
 | Side | Command |

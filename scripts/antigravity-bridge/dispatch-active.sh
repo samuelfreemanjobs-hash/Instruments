@@ -66,7 +66,13 @@ if not pick:
     print('PICK=')
     sys.exit(0)
 lane = pick.get("lane", "batch")
-to_agent = {"hise": "antigravity-hise", "batch": "antigravity-batch", "docs": "antigravity-docs"}.get(lane, "antigravity-batch")
+to_agent = {
+    "hise": "antigravity-hise",
+    "batch": "antigravity-batch",
+    "docs": "antigravity-docs",
+    "prep": "antigravity-prep",
+    "assets": "antigravity-assets",
+}.get(lane, "antigravity-batch")
 # shell-safe exports
 import shlex
 print(f"WO_ID={shlex.quote(pick['wo_id'])}")

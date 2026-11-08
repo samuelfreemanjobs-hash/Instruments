@@ -34,6 +34,10 @@ Standing queue (Cursor dispatches): `disklordz/antigravity/active-queue.json`. D
 | `antigravity-batch` | Python/scipy/numpy batches, preset JSON at scale, manifests |
 | `antigravity-docs` | Large specs, genre packs, schema drafts (original theory only) |
 | `antigravity-hise` | HISE sketch exports only — read `docs/HISE_ANTIGRAVITY_LANE.md`, `docs/HISE_SKETCH_LANE.md` |
+| `antigravity-prep` | Product folder scaffolds, packaging scripts, store drafts — **no C++** |
+| `antigravity-assets` | UI tokens, listing copy, brand-adjacent JSON/markdown |
+
+Product factory: `docs/ANTIGRAVITY_PRODUCT_FACTORY.md`. Deliverables go under `docs/drafts/`, `scripts/product-prep/`, `disklordz/antigravity/outbox-artifacts/`.
 
 ## Boundaries
 

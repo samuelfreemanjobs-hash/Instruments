@@ -55,6 +55,10 @@ When `HO-*.json` lands on **`main`**, workflow **`antigravity-inbox-slack.yml`**
 
 `.cursorrules` — for batch/docs/heavy tasks, **dispatch Antigravity** (packet or `dispatch-active.sh`) instead of doing the work inline.
 
+## Product creation (prep factory)
+
+Sprint-aware auto-dispatch: [ANTIGRAVITY_PRODUCT_FACTORY.md](ANTIGRAVITY_PRODUCT_FACTORY.md) · `sync-product-prep.py`
+
 ## Related
 
 - [disklordz/antigravity/ARCHITECTURE.md](../disklordz/antigravity/ARCHITECTURE.md)

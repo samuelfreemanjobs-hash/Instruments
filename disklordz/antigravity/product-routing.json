@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "policy": "Maximize Antigravity for product creation PREP; you and Cursor only approve, compile C++, and sell.",
+  "lanes": {
+    "prep": "antigravity-prep",
+    "batch": "antigravity-batch",
+    "docs": "antigravity-docs",
+    "hise": "antigravity-hise",
+    "assets": "antigravity-assets"
+  },
+  "cursor_only": [
+    "juce_cpp",
+    "dpf_cpp",
+    "vst_dsp",
+    "saas_nextjs",
+    "stripe_writes",
+    "supabase_migrations"
+  ],
+  "human_only": [
+    "dev_environment_smoke",
+    "daw_playtest",
+    "legal_signature",
+    "payment_banking"
+  ],
+  "antigravity_default": [
+    "folder_scaffolds",
+    "readme_and_manuals",
+    "chord_midi_data_json",
+    "genre_packs",
+    "preset_manifests",
+    "marketing_copy_drafts",
+    "store_listing_markdown",
+    "sample_pack_metadata",
+    "wav_batch_scripts",
+    "alpha_packaging_scripts",
+    "test_fixture_midi",
+    "ui_theme_tokens",
+    "hise_sketch_export",
+    "ci_helper_scripts_non_cpp",
+    "product_one_pagers"
+  ],
+  "sprint_task_routing": {
+    "company-identity": { "human": true, "antigravity_after_done": ["WO-PREP-010"] },
+    "dev-environment": { "human": true, "antigravity_after_done": ["WO-PREP-011"] },
+    "github-repo": { "antigravity_before": ["WO-PREP-001", "WO-PREP-002"], "cursor_after": ["plugin-skeleton"] },
+    "plugin-skeleton": { "cursor": true, "antigravity_parallel": ["WO-PREP-003", "WO-PREP-004"] },
+    "midi-output": { "cursor": true, "antigravity_parallel": ["WO-PREP-005"] },
+    "theory-engine": { "antigravity_before": ["WO-PREP-006"], "cursor_after": true },
+    "chord-engine": { "antigravity_before": ["WO-AG-001"], "cursor_after": true },
+    "progression-generator": { "antigravity_parallel": ["WO-PREP-007"] },
+    "first-interface": { "antigravity_parallel": ["WO-PREP-002", "WO-PREP-008"] },
+    "first-alpha": { "antigravity_before": ["WO-PREP-009"], "human_after": ["daw_playtest"] }
+  },
+  "dispatch_limits": {
+    "max_new_handoffs_per_run": 2,
+    "respect_open_inbox_per_wo": true
+  }
+}

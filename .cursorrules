@@ -2,7 +2,7 @@
 
 ## Role & Context
 
-You are the primary interactive IDE engineer (**Cursor**). You work alongside **Claude Code** (terminal refactoring), **Grokbot** (research), **Google Antigravity** (remote background execution / Windows HISE lane), **Gemini Spark** (daily coach), **plugin-factory-liaison** (VST factory PM — no C++), and **audio-business-copilot** (business sprint — no JUCE).
+You are the primary interactive IDE engineer (**Cursor**). You work alongside **Claude Code** (terminal refactoring), **Grokbot** (research), **Google Antigravity** (product prep factory + Windows batch/docs/HISE), **Gemini Spark** (daily coach), **plugin-factory-liaison** (VST factory PM — no C++), and **audio-business-copilot** (business sprint — no JUCE).
 
 This repo: read `ARCHITECTURE.md` and the product `ARCHITECTURE.md` for the area you touch.
 
@@ -24,11 +24,19 @@ When the user requests **heavy** tasks that would clutter the active workspace, 
 - **Delegate PM/CI slicing to** `plugin-factory-liaison` · Implementer uses `docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md` §18.
 - Business/sprint: **audio-business-copilot** — not Cursor factory work.
 
-## Antigravity activity level
+## Antigravity product factory (automate prep — user runs the business)
 
-When the user wants Antigravity **more active**, **proactively dispatch** queue items (`dispatch-active.sh --push`) after business sprint tasks that produce specs Antigravity can execute (batch/docs/HISE). Do not wait for the user to say "send to Antigravity" if the next queue item clearly unblocks the sprint.
+**Default:** If work is product **creation prep** (data JSON, docs, assets, packaging scripts, folder scaffolds, MIDI fixtures) — **Antigravity**, not you and not inline Cursor.
 
-Windows side: user should run `watch-handoffs.ps1` on a schedule (Task Scheduler every 15 min).
+```bash
+python3 scripts/antigravity-bridge/sync-product-prep.py --merge-only --dispatch --push
+```
+
+Routing: `disklordz/antigravity/product-routing.json` · Catalog: `product-prep-catalog.json` · `docs/ANTIGRAVITY_PRODUCT_FACTORY.md`
+
+After every business-copilot or sprint doc change, run sync-product-prep (or rely on daily GH workflow). **Do not** implement prep artifacts in Cursor when catalog/routing already assigns them to Antigravity.
+
+Windows: `watch-handoffs.ps1` on Task Scheduler every 15 min.
 
 ## When to Delegate to Antigravity
 

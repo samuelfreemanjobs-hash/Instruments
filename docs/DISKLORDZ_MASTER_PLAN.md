@@ -15,6 +15,8 @@ Companion specs:
 
 **Operator UI:** **Coach** PWA (one task at a time) — [disklordz/audio-command/ARCHITECTURE.md](../disklordz/audio-command/ARCHITECTURE.md) · outreach [OUTREACH_SETUP.md](../disklordz/audio-command/docs/OUTREACH_SETUP.md)
 
+**Product prep (hands-off):** [ANTIGRAVITY_PRODUCT_FACTORY.md](ANTIGRAVITY_PRODUCT_FACTORY.md) — Antigravity builds drafts/data; you approve; Cursor implements C++.
+
 ---
 
 ## Operating model
