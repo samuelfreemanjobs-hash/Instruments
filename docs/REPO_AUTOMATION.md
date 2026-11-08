@@ -51,6 +51,8 @@ Download from the GitHub Actions run → **Artifacts** → `windows-vst3-<sha>`.
 
 Windows CI configures with `-DJDUPGRADED_ENABLE_CLAP=OFF` so FetchContent does not pull `clap-juce-extensions` (shallow-clone fragility on GHA). Linux **Build** still builds CLAP by default.
 
+`Wave9090Wavetable` on Windows runs bank/preset checks only (voice render smoke runs on Linux **Build** / ctest).
+
 Configure the repo secret (admin):
 
 ```bash

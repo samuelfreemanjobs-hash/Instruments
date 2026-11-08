@@ -37,7 +37,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path artifact/vst3 | Out-Null
           $bundles = Get-ChildItem -Path build -Recurse -Directory |
-            Where-Object { $_.Extension -eq '.vst3' }
+            Where-Object { $_.Name -like '*.vst3' }
           if (-not $bundles) {
             Write-Error "No .vst3 bundles found under build/"
           }
