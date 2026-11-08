@@ -5,6 +5,18 @@ name: logue NTS-1 units
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/oscillators/**'
+      - 'src/mkii/**'
+      - 'src/shared/**'
+      - 'src/effects/**'
+      - 'tools/build*.sh'
+      - 'tools/mkii/**'
+      - 'tools/package-nts1.sh'
+      - 'tools/build-all-units.sh'
+      - '.github/workflows/logue-nts1-units.yml'
   pull_request:
     paths:
       - 'src/oscillators/**'
@@ -38,7 +50,7 @@ jobs:
           export LOGUE_SDK="${{ github.workspace }}/.deps/logue-sdk"
           ./tools/build-all-units.sh --all-platforms --mkii --package
 
-      - name: Upload unit packages
+      - name: Upload unit packages (all platforms + mkII)
         uses: actions/upload-artifact@v4
         with:
           name: logue-custom-units
@@ -46,3 +58,12 @@ jobs:
             release/nts1-custom-oscillators/
             release/logue-build-status.tsv
           if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload mkII units only
+        uses: actions/upload-artifact@v4
+        with:
+          name: logue-nts1-mkii-only
+          path: release/nts1-custom-oscillators/mkII-nts1mkiiunit/
+          if-no-files-found: error
+          retention-days: 30

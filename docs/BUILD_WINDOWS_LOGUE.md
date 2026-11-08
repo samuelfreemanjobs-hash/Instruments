@@ -85,9 +85,17 @@ Single unit:
 ./tools/build-mkii.sh moog_voyager_se1_squelch
 ```
 
-## CI artifacts
+## CI artifacts (recommended for Sam)
 
-Workflow `.github/workflows/logue-nts1-units.yml` builds the full catalog on `ubuntu-latest` and uploads `release/nts1-custom-oscillators` as a zip — download from the Actions run without compiling locally.
+No Windows compile required: GitHub Actions cross-compiles on Linux (same output as local WSL).
+
+1. Open **Actions** → workflow **logue NTS-1 units** ([`.github/workflows/logue-nts1-units.yml`](../.github/workflows/logue-nts1-units.yml)).
+2. Run **workflow_dispatch** on `main` (after PR merge) or use the artifact from the PR’s check run.
+3. Download artifacts:
+   - **`logue-custom-units`** — full tree (`mkI-ntkdigunit/`, `minilogue-xd-mnlgxdunit/`, `prologue-prlgunit/`, `mkII-nts1mkiiunit/`, `logue-build-status.tsv`)
+   - **`logue-nts1-mkii-only`** — only `*.nts1mkiiunit` files
+
+Artifacts are **not hardware-tested**.
 
 ## Catalog / DSP status
 
