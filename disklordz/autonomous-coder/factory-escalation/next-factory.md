@@ -1,29 +1,44 @@
-# Factory escalation — plugin-skeleton (Stage B)
+# Factory escalation — plugin-skeleton (Stage B verify)
 
-_Generated after `dev-environment` complete · 2026-11-08_
+_Updated 2026-11-08 · slice `escalate-dpf-slice`_
 
 ## Status
 
 | Field | Value |
 |-------|--------|
-| Blocker | **none** |
+| Blocker | **human-windows** (DAW scan evidence) |
 | Sprint | `plugin-skeleton` |
-| Owner | **Cursor Factory** (separate chat) |
+| Owner | **Samuel** (build + REAPER/FL) |
+| Code | **Landed** on `cursor/audio-business-copilot-b828` — `DiskLordz-Audio/Products/ChordEngine/` |
 | Liaison skill | `disklordz-plugin-factory-liaison` |
-| Canonical prompt | [`disklordz/audio-command/data/PASTE_TO_FACTORY.md`](../../audio-command/data/PASTE_TO_FACTORY.md) |
 
-## Action
+## Build (Samuel)
 
-1. Open **Cursor Factory** with rule `disklordz-audio-engineering-lane`.
-2. Paste full contents of `PASTE_TO_FACTORY.md` (generated daily by `factory-queue.py`).
-3. On green build + DAW load evidence, mark **`plugin-skeleton`** done in Coach.
+From `C:\dev\Instruments`:
+
+```powershell
+git pull origin cursor/audio-business-copilot-b828
+powershell -ExecutionPolicy Bypass -File .\DiskLordz-Audio\build-windows.ps1
+```
+
+VST3 (typical): `DiskLordz-Audio\Build\Windows\ChordEngine_artefacts\Release\VST3\CHORD ENGINE.vst3`
+
+## Factory chat (only if build fails)
+
+Paste [`disklordz/audio-command/data/PASTE_TO_FACTORY.md`](../../audio-command/data/PASTE_TO_FACTORY.md) + failure log. Rule: `disklordz-audio-engineering-lane`.
+
+## Done when
+
+- Plugin scans and opens in REAPER or FL.
+- Coach: mark **`plugin-skeleton`** complete.
+- Report §18.3: Completed, Files, Build path, Tests, Limitations, Next task (= Stage C).
 
 ## Parallel (do not block compile)
 
-- Samuel / **github-repo** — company repo + DPF folder skeleton (Coach task #3).
-- **Antigravity** — `python3 scripts/antigravity-bridge/sync-product-prep.py --merge-only --dispatch --push` for WO-PREP-001/002.
+- Antigravity WO-PREP / WO-CC per `sync-all-antigravity.sh` (tokens not required for skeleton).
 
 ## Reference
 
 - [CURSOR_FACTORY_LIAISON.md](../../../docs/CURSOR_FACTORY_LIAISON.md)
+- [BUILD.md](../../../DiskLordz-Audio/BUILD.md)
 - [CHORD_ENGINE_PRD.md](../../../docs/CHORD_ENGINE_PRD.md)
