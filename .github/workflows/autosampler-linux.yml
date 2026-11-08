@@ -1,0 +1,39 @@
+name: Auto Sampler Linux CI
+
+on:
+  push:
+    branches: [main, "cursor/**"]
+    paths:
+      - "AutoSampler/**"
+      - "CMakeLists.txt"
+      - ".github/workflows/autosampler-linux.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "AutoSampler/**"
+      - "CMakeLists.txt"
+      - ".github/workflows/autosampler-linux.yml"
+  workflow_dispatch:
+
+jobs:
+  linux-mega-bank-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure Release
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+
+      - name: Build tests + mega bank CLI
+        run: cmake --build build -j --target AutoSamplerTests AutoSamplerMegaBank
+
+      - name: Unit tests
+        run: ctest --test-dir build -R AutoSampler --output-on-failure
+
+      - name: Mega bank template smoke
+        run: |
+          ./build/AutoSampler/AutoSamplerMegaBank --template /tmp/mega_bank.json
+          grep -q OvernightMegaBank /tmp/mega_bank.json

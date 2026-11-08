@@ -1,0 +1,54 @@
+{
+  "format": "instruments-autosampler-mega-bank-v2",
+  "name": "OvernightTwentySixSynthBank",
+  "capture": {
+    "lowNote": 36,
+    "highNote": 96,
+    "noteStep": 3,
+    "noteMapPreset": "minorThird",
+    "blackKeyPolicy": "skip",
+    "recordUntilSilence": true,
+    "maxRecordSeconds": 25,
+    "noteHoldMs": 1000,
+    "tailMs": 2500,
+    "prerollMs": 0,
+    "pauseMs": 500,
+    "midiChannel": 1,
+    "velocity1": 127,
+    "velocity2": 96,
+    "velocity3": 64,
+    "velocity4": 32,
+    "trimSilence": true,
+    "normalize": true,
+    "sustainLoop": true,
+    "trimThresholdDb": -48.0,
+    "normalizePeakDb": -0.3,
+    "minLoopConfidence": 0.35,
+    "silenceThresholdDb": -52.0,
+    "silenceHoldSeconds": 0.3
+  },
+  "run": {
+    "failFast": true,
+    "skipFailedSources": true,
+    "resume": true,
+    "writeProgress": true,
+    "maxRetriesPerSource": 0,
+    "sourceTimeoutSeconds": 3600,
+    "pluginCacheFile": ""
+  },
+  "sources": [
+    {
+      "presetName": "Synth_01",
+      "vst3Path": "/path/to/Synth1.vst3",
+      "programIndex": 0
+    },
+    {
+      "presetName": "Synth_02",
+      "vst3Path": "/path/to/Synth2.vst3",
+      "programIndex": 0,
+      "lowNote": 48,
+      "highNote": 84,
+      "noteStep": 4
+    }
+  ]
+}

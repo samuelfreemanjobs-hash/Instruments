@@ -30,6 +30,9 @@ jobs:
       - name: SP1200 unit tests
         run: ctest --test-dir build -R SP1200 --output-on-failure
 
+      - name: AutoSampler unit tests
+        run: ctest --test-dir build -R AutoSampler --output-on-failure
+
       - name: Cache pluginval binary
         run: python3 scripts/vst/run_pluginval.py --install-only
 
