@@ -1,7 +1,7 @@
 {
-  "name": "DiskLordz Audio Command",
-  "short_name": "DL Audio",
-  "description": "Sprint checklist and roadmap for DiskLordz Audio",
+  "name": "DiskLordz Coach",
+  "short_name": "DL Coach",
+  "description": "One task at a time — DiskLordz Audio execution coach",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0a0a0c",
@@ -11,7 +11,7 @@
       "src": "icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }

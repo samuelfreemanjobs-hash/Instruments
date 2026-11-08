@@ -1,0 +1,23 @@
+name: Audio Coach daily nudge
+
+on:
+  schedule:
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+
+jobs:
+  nudge:
+    if: ${{ vars.AUDIO_COACH_NUDGES_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send coach message
+        env:
+          DISKLORDZ_COACH_WEBHOOK_URL: ${{ secrets.DISKLORDZ_COACH_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISKLORDZ_COACH_WEBHOOK_URL" ]; then
+            echo "No DISKLORDZ_COACH_WEBHOOK_URL secret — printing dry-run:"
+            python3 disklordz/audio-command/scripts/coach_outreach.py
+            exit 0
+          fi
+          python3 disklordz/audio-command/scripts/coach_outreach.py --send

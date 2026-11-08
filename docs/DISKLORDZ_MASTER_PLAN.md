@@ -13,7 +13,7 @@ Companion specs:
 | [DISKLORDZ_PLUGIN_TRACKS.md](DISKLORDZ_PLUGIN_TRACKS.md) | Factory lanes vs HISE |
 | [ROADMAP.md](ROADMAP.md) | Monorepo-wide progress block |
 
-**Operator UI:** PWA + CLI — [disklordz/audio-command/ARCHITECTURE.md](../disklordz/audio-command/ARCHITECTURE.md)
+**Operator UI:** **Coach** PWA (one task at a time) — [disklordz/audio-command/ARCHITECTURE.md](../disklordz/audio-command/ARCHITECTURE.md) · outreach [OUTREACH_SETUP.md](../disklordz/audio-command/docs/OUTREACH_SETUP.md)
 
 ---
 

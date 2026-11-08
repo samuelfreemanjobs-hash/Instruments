@@ -1,6 +1,5 @@
-const CACHE = "disklordz-audio-command-v1";
-
-const ASSETS = ["./", "./index.html", "./app.js", "./styles.css", "./manifest.webmanifest", "./icon.svg"];
+const CACHE = "disklordz-audio-coach-v2";
+const ASSETS = ["./", "./index.html", "./coach.js", "./styles.css", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));

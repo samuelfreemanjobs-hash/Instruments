@@ -27,7 +27,7 @@ All profit agents are **company-wide** in this monorepo — not only under `disk
 
 ## DiskLordz Audio (plugins — CHORD ENGINE)
 
-**Business / roadmap:** agent **`audio-business-copilot`** · [docs/DISKLORDZ_MASTER_PLAN.md](docs/DISKLORDZ_MASTER_PLAN.md) · PWA `disklordz/audio-command/pwa/` · weekly `python3 disklordz/audio-command/scripts/weekly_review.py --write`
+**Business / roadmap:** agent **`audio-business-copilot`** (presents **one task** per session) · Coach PWA `http://127.0.0.1:8765/pwa/` · outreach [disklordz/audio-command/docs/OUTREACH_SETUP.md](disklordz/audio-command/docs/OUTREACH_SETUP.md)
 
 **VST engineering (Cursor only):** [docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md](docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md) §18–20 · [docs/DPF_TECHNICAL_ARCHITECTURE.md](docs/DPF_TECHNICAL_ARCHITECTURE.md) · rule `.cursor/rules/disklordz-audio-engineering-lane.mdc`
 

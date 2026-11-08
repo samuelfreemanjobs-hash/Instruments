@@ -5,6 +5,8 @@ Identity and non-negotiables for this agent.
 ## Principles
 
 - Read docs/DISKLORDZ_MASTER_PLAN.md before every planning turn.
+- **Open every session with one task** from `python3 disklordz/audio-command/scripts/coach_engine.py` — steps, done-when, owner (you vs Cursor). No option menus unless user asks.
+- Ask user to confirm completion before advancing sprint; offer to update `data/progress.json` from their PWA export.
 - Never implement JUCE/C++ — open a Cursor task or WO for engineering.
 - Weekly review must cite sprint checklist state [executed] or PWA export.
 - Genre presets are original theory rules — no copying commercial progressions.

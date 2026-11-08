@@ -2,23 +2,30 @@
 
 ## Purpose
 
-Operator cockpit for the **DiskLordz Audio** commercial roadmap — sprint checklist, year-one milestones, weekly reviews, and fleet advisor briefings. This is **not** the VST engineering lane (that stays in Cursor + `golden-wav-qa`).
+**Coach** surfaces **one task at a time** (playbooks + outreach). You should not hunt the checklist — the app and agent present the next step and nudge you via notifications, calendar, or Slack webhook.
+
+This is **not** the VST engineering lane (that stays in Cursor + `golden-wav-qa`).
 
 **Business copilot agent:** [audio-business-copilot](../agents/profit/audio-business-copilot/agent.md)
 
 ## Build & run
 
 ```bash
+# What you should do RIGHT NOW (agent + webhooks use this)
+python3 disklordz/audio-command/scripts/coach_engine.py
+
+# Push to Slack/Discord (set DISKLORDZ_COACH_WEBHOOK_URL)
+python3 disklordz/audio-command/scripts/coach_outreach.py --send
+
 # Weekly review markdown (stdout or --write to reviews/)
-python3 disklordz/audio-command/scripts/weekly_review.py
 python3 disklordz/audio-command/scripts/weekly_review.py --write
 
-# Which profit agents to consult this week
-python3 disklordz/audio-command/scripts/fleet_briefing.py
+# Phone calendar subscribe
+python3 disklordz/audio-command/scripts/coach_calendar.py --write
 
 # Serve PWA locally (any static server)
-python3 -m http.server 8765 --bind 127.0.0.1 -d disklordz/audio-command/pwa
-# open http://127.0.0.1:8765/
+python3 -m http.server 8765 --bind 127.0.0.1 -d disklordz/audio-command
+# open http://127.0.0.1:8765/pwa/
 ```
 
 ## Data flow
