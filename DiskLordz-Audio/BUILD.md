@@ -21,6 +21,16 @@ VST3 artifact (typical, from repo root):
 
 `DiskLordz-Audio\Build\Windows\ChordEngine_artefacts\Release\VST3\CHORD ENGINE.vst3`
 
+## GitHub Actions (Windows artifact)
+
+Workflow **DiskLordz Audio (Windows VST3)** (`.github/workflows/disklordz-audio-windows.yml`) runs on `windows-latest` for pushes/PRs that touch `DiskLordz-Audio/`.
+
+1. Open the run on GitHub → **Artifacts** → `chord-engine-vst3-windows-*`.
+2. Unzip and install the `.vst3` bundle (or copy into your VST3 folder).
+3. Rescan in REAPER/FL — still required for Coach **`plugin-skeleton`** acceptance.
+
+You can trigger manually: **Actions** → **DiskLordz Audio (Windows VST3)** → **Run workflow**.
+
 ## Linux (CI smoke)
 
 ```bash

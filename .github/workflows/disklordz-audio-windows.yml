@@ -1,0 +1,54 @@
+name: DiskLordz Audio (Windows VST3)
+
+on:
+  push:
+    branches: [main, "cursor/**"]
+    paths:
+      - "DiskLordz-Audio/**"
+      - "JUCE_VERSION"
+      - ".github/workflows/disklordz-audio-windows.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "DiskLordz-Audio/**"
+      - "JUCE_VERSION"
+      - ".github/workflows/disklordz-audio-windows.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: disklordz-audio-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chord-engine-vst3:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure (VS 2022 x64)
+        run: |
+          cmake -B DiskLordz-Audio/Build/Windows -S DiskLordz-Audio \
+            -G "Visual Studio 17 2022" -A x64
+
+      - name: Build ChordEngine_VST3 (Release)
+        run: |
+          cmake --build DiskLordz-Audio/Build/Windows --config Release \
+            --target ChordEngine_VST3 -- /m
+
+      - name: List VST3 output
+        run: |
+          ls -la "DiskLordz-Audio/Build/Windows/ChordEngine_artefacts/Release/VST3/" || true
+          find "DiskLordz-Audio/Build/Windows/ChordEngine_artefacts/Release/VST3" -type f | head -20
+
+      - name: Upload CHORD ENGINE.vst3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chord-engine-vst3-windows-${{ github.run_number }}
+          path: DiskLordz-Audio/Build/Windows/ChordEngine_artefacts/Release/VST3/CHORD ENGINE.vst3
+          if-no-files-found: error
+          retention-days: 14
