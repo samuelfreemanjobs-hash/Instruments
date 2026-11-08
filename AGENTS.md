@@ -21,6 +21,7 @@ All profit agents are **company-wide** in this monorepo — not only under `disk
 
 ## Standards
 
+- [docs/OPERATOR_AUTOPILOT.md](docs/OPERATOR_AUTOPILOT.md) — “I don’t know how” → GitHub **Agent run** issue → Cursor Cloud
 - [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts  
 - [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
 - `.cursor/rules/*.mdc` — always-on architecture and security  
