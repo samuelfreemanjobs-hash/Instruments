@@ -15,9 +15,11 @@
     "build:legacy": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "start": "NODE_ENV=production tsx server/index.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "sync:supabase": "tsx scripts/sync-supabase-catalog.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.116.0",
     "better-sqlite3": "^11.8.1",
     "cors": "^2.8.5",
     "express": "^4.21.2",

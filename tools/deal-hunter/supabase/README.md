@@ -13,6 +13,7 @@ supabase db push
 # or run SQL manually in Dashboard → SQL Editor:
 #   migrations/001_black_friday_madness.sql
 #   migrations/002_auth_rls_user_data.sql
+#   migrations/003_sync_constraints.sql
 ```
 
 5. Auth → URL configuration: add redirect `http://localhost:3000/auth/callback` and production URL.
@@ -26,6 +27,15 @@ DEAL_API_ORIGIN=http://127.0.0.1:3847
 ```
 
 Service role key stays on the **API worker only** — never `NEXT_PUBLIC_*`.
+
+## Catalog sync
+
+```bash
+cd tools/deal-hunter
+npm run sync:supabase
+```
+
+Populates `retailers`, `products`, `product_offers`, `deal_records` from the live demo catalog.
 
 ## RLS
 

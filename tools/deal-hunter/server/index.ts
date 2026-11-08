@@ -38,6 +38,7 @@ import { assertN8nCronAuth, emitN8nEvent } from "./integrations/n8n.js";
 import { notifyDealAlert, savePushSubscription } from "./integrations/notify.js";
 import { v1 } from "./api/v1/routes.js";
 import { runShoppingOrchestrator } from "./agents/orchestrator.js";
+import { syncCatalogToSupabase } from "./integrations/supabase-sync.js";
 
 const shareCodeAlphabet = customAlphabet("23456789ABCDEFGHJKLMNPQRSTUVWXYZ", 8);
 const app = express();
@@ -55,6 +56,20 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/v1", v1);
+
+app.post("/api/admin/sync-catalog", async (req, res) => {
+  const secret = process.env.SYNC_CATALOG_SECRET;
+  if (secret && req.headers["x-sync-secret"] !== secret) {
+    res.status(401).json({ error: "unauthorized" });
+    return;
+  }
+  try {
+    const result = await syncCatalogToSupabase();
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({ error: "sync_failed", detail: String(e) });
+  }
+});
 
 app.post("/api/orchestrator/chat", (req, res) => {
   const message = String(req.body?.message ?? "").slice(0, 800);
