@@ -9,12 +9,12 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg"],
       manifest: {
-        name: "Black Friday HQ — Shop smarter",
-        short_name: "BF HQ",
+        name: "Savvy HQ — Shopping intelligence",
+        short_name: "Savvy HQ",
         description:
-          "Track closeouts, clearance, open-box, and Black Friday deals. Shared lists, price-drop alerts.",
-        theme_color: "#0f0f12",
-        background_color: "#0f0f12",
+          "Year-round deals with real savings math. Black Friday & Cyber Monday peak modes. Lists, autopilot agents, alerts.",
+        theme_color: "#050507",
+        background_color: "#050507",
         display: "standalone",
         orientation: "portrait-primary",
         start_url: "/",

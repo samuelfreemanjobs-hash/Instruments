@@ -39,7 +39,7 @@ export function useDealAlerts(deals: Deal[]) {
         if (dropHit) parts.push(`Price dropped to $${deal.price.toFixed(2)}`);
         if (targetHit) parts.push(`At your target $${watched!.targetPrice!.toFixed(2)}`);
 
-        new Notification("Deal Hunter — too good to skip", {
+        new Notification("Savvy HQ — real savings", {
           body: `${deal.title}: ${parts.join(" · ")}`,
           icon: "/pwa-192.png",
           tag: deal.id,

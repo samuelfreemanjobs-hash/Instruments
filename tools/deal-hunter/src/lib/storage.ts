@@ -1,4 +1,4 @@
-import type { AlertSettings, WatchEntry } from "../types";
+import type { AlertSettings, ShopperProfile, WatchEntry } from "../types";
 import type { ConditionFilter, ShoppingSeason } from "../types";
 
 const WATCH_KEY = "deal-hunter-watch";
@@ -8,6 +8,7 @@ const UI_KEY = "deal-hunter-ui";
 const LIST_DONE_KEY = "deal-hunter-list-done";
 const TARGET_WATCH_KEY = "deal-hunter-target-watches";
 const ASSISTANT_KEY = "deal-hunter-assistant-log";
+const PROFILE_KEY = "savvy-hq-shopper-profile";
 
 export const DEFAULT_ALERTS: AlertSettings = {
   minStealScore: 85,
@@ -144,4 +145,17 @@ export function loadListDone(): Record<string, boolean> {
 
 export function saveListDone(done: Record<string, boolean>) {
   localStorage.setItem(LIST_DONE_KEY, JSON.stringify(done));
+}
+
+export function loadShopperProfile(): ShopperProfile {
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY);
+    return raw ? (JSON.parse(raw) as ShopperProfile) : { maxBudget: 400 };
+  } catch {
+    return { maxBudget: 400 };
+  }
+}
+
+export function saveShopperProfile(profile: ShopperProfile) {
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
 }

@@ -185,6 +185,79 @@ export async function evaluateTargetWatches(
   }>;
 }
 
+export async function fetchCommunityDeals() {
+  const res = await fetch("/api/discover/community");
+  if (!res.ok) throw new Error("community_failed");
+  return res.json() as Promise<{ deals: import("../types").CommunityDeal[] }>;
+}
+
+export async function submitCommunityDeal(body: {
+  title: string;
+  retailer: string;
+  price: number;
+  url: string;
+  category?: string;
+  note?: string;
+  zip?: string;
+}) {
+  const res = await fetch("/api/discover/community", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return res.ok;
+}
+
+export async function upvoteCommunityDeal(id: string) {
+  await fetch(`/api/discover/community/${id}/upvote`, { method: "POST" });
+}
+
+export async function fetchLocalDeals(zip?: string) {
+  const sp = zip ? `?zip=${encodeURIComponent(zip)}` : "";
+  const res = await fetch(`/api/discover/local${sp}`);
+  if (!res.ok) throw new Error("local_failed");
+  return res.json() as Promise<{ metro: string; offers: import("../types").LocalDealOffer[] }>;
+}
+
+export async function fetchRecommendations(profile: import("../types").ShopperProfile) {
+  const res = await fetch("/api/recommendations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(profile),
+  });
+  if (!res.ok) throw new Error("recs_failed");
+  return res.json() as Promise<{ recommendations: import("../types").ShoppingRecommendation[] }>;
+}
+
+export async function fetchAutopilotAgents() {
+  const res = await fetch("/api/autopilot/agents");
+  return res.json() as Promise<{ agents: import("../types").AutonomousAgentMeta[] }>;
+}
+
+export async function fetchAutopilotDigest(profile: import("../types").ShopperProfile) {
+  const res = await fetch("/api/autopilot/digest", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ profile }),
+  });
+  if (!res.ok) throw new Error("autopilot_failed");
+  return res.json() as Promise<import("../types").AutopilotDigest>;
+}
+
+export async function registerPushSubscription(sub: PushSubscriptionJSON, email?: string, notifyEmail?: boolean) {
+  const res = await fetch("/api/notifications/subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      endpoint: sub.endpoint,
+      keys: sub.keys,
+      email,
+      notifyEmail,
+    }),
+  });
+  return res.ok;
+}
+
 export async function runDecorAgent(body: {
   room: string;
   style: string;

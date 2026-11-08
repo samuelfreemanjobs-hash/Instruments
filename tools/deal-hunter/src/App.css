@@ -1,7 +1,34 @@
 .app-shell {
-  max-width: 1100px;
+  max-width: 680px;
   margin: 0 auto;
-  padding: 1rem 1.25rem 5rem;
+  padding: 0.75rem 1rem calc(5rem + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 900px) {
+  .app-shell {
+    max-width: 960px;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+.brand-lockup {
+  margin: 0;
+  font-size: clamp(1.85rem, 6vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.brand-word {
+  color: var(--white);
+}
+
+.brand-accent {
+  color: var(--electric);
+  text-shadow: 0 0 24px var(--electric-glow);
 }
 
 .hero {
@@ -35,10 +62,10 @@
   margin-top: 0.85rem;
   padding: 0.65rem 0.85rem;
   border-radius: 10px;
-  background: rgba(45, 216, 129, 0.08);
-  border: 1px solid rgba(45, 216, 129, 0.35);
-  font-size: 0.88rem;
-  color: #c8f5e2;
+  background: linear-gradient(135deg, rgba(43, 140, 255, 0.08), rgba(184, 188, 200, 0.05));
+  border: 1px solid rgba(184, 188, 200, 0.22);
+  font-size: 0.86rem;
+  color: var(--silver);
 }
 
 .shield-icon {
@@ -47,11 +74,12 @@
   height: 1.35rem;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: var(--success);
-  color: #0f0f12;
+  border-radius: 4px;
+  background: linear-gradient(145deg, var(--silver), #6a6f7a);
+  color: var(--bg);
   font-weight: 700;
   flex-shrink: 0;
+  font-size: 0.65rem;
 }
 
 .focus-strip {
@@ -76,9 +104,14 @@
   flex-wrap: wrap;
   padding: 1rem 1.1rem;
   margin-bottom: 0.75rem;
-  background: linear-gradient(135deg, #1f1a0a 0%, var(--surface) 70%);
-  border: 1px solid var(--accent-dim);
+  background: linear-gradient(135deg, var(--surface) 0%, var(--bg-elevated) 100%);
+  border: 1px solid var(--border);
   border-radius: 14px;
+}
+
+.season-banner.peak {
+  border-color: var(--electric-dim);
+  box-shadow: 0 0 32px var(--electric-glow);
 }
 
 .season-kicker {
@@ -86,7 +119,7 @@
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--accent);
+  color: var(--silver);
 }
 
 .season-title {
@@ -618,8 +651,127 @@
 }
 
 .deal-card.steal {
-  border-color: var(--steal);
-  box-shadow: 0 0 0 1px rgba(255, 107, 53, 0.25);
+  border-color: var(--electric);
+  box-shadow: 0 0 20px var(--electric-glow);
+}
+
+.real-savings-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 0.72rem;
+}
+
+.real-savings-strip.warn {
+  border-color: var(--danger);
+}
+
+.rss-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.rss-label {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-size: 0.62rem;
+}
+
+.rss-val {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.rss-val.muted {
+  color: var(--silver);
+  font-weight: 500;
+}
+
+.rss-col.highlight .rss-val {
+  color: var(--electric);
+}
+
+.rss-arrow {
+  color: var(--silver);
+}
+
+.rss-flag {
+  color: var(--danger);
+  width: 100%;
+}
+
+.chart-panel {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.chart-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.chart-sub {
+  margin: 0.25rem 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.discover-page .panel,
+.autopilot-page .panel {
+  margin-bottom: 1rem;
+}
+
+.panel-head h2 {
+  margin: 0 0 0.35rem;
+}
+
+.profile-row {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr 1fr;
+}
+
+.rec-list,
+.local-list,
+.community-list,
+.agent-roster {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rec-list li,
+.local-list li,
+.community-list li,
+.agent-roster li {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tip-form {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.agent-schedule {
+  font-size: 0.8rem;
+  color: var(--electric);
+}
+
+.agent-narrative {
+  color: var(--silver);
+  font-size: 0.9rem;
 }
 
 .deal-card img {

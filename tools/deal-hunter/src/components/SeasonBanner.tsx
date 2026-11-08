@@ -7,21 +7,16 @@ interface Props {
   onOverride?: (s: ShoppingSeason | null) => void;
 }
 
-const ALL_SEASONS: ShoppingSeason[] = [
-  "black_friday",
-  "cyber_monday",
-  "holiday",
-  "grocery",
-];
+const ALL_SEASONS: ShoppingSeason[] = ["everyday", "black_friday", "cyber_monday", "holiday", "grocery"];
 
 export function SeasonBanner({ season, override, onOverride }: Props) {
   if (!season) return null;
   const active = override ?? season.season;
 
   return (
-    <section className="season-banner" aria-live="polite">
+    <section className={`season-banner${season.peakEvent ? " peak" : ""}`} aria-live="polite">
       <div>
-        <p className="season-kicker">Right now</p>
+        <p className="season-kicker">{season.peakEvent ? "Peak event" : "Year-round intelligence"}</p>
         <h2 className="season-title">{SEASON_LABELS[active]}</h2>
         <p className="season-focus">{season.focus}</p>
       </div>

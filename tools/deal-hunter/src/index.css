@@ -1,23 +1,29 @@
 :root {
-  --bg: #0f0f12;
-  --surface: #1a1a21;
-  --surface-2: #24242e;
-  --border: #333340;
-  --text: #f4f4f6;
-  --muted: #9b9ba8;
-  --accent: #f5c518;
-  --accent-dim: #c9a012;
-  --danger: #e63946;
-  --success: #2dd881;
-  --steal: #ff6b35;
-  font-family: "DM Sans", system-ui, sans-serif;
-  line-height: 1.5;
+  --bg: #050507;
+  --bg-elevated: #0a0a0f;
+  --surface: #111118;
+  --surface-2: #1a1a24;
+  --border: #2a2a38;
+  --silver: #b8bcc8;
+  --text: #fafafc;
+  --muted: #8b8f9c;
+  --electric: #2b8cff;
+  --electric-dim: #1a5fb8;
+  --electric-glow: rgba(43, 140, 255, 0.35);
+  --white: #ffffff;
+  --danger: #ff4d6a;
+  --success: #3dffba;
+  --steal: var(--electric);
+  font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+  line-height: 1.45;
   font-weight: 400;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  --accent: var(--electric);
+  --accent-dim: var(--electric-dim);
 }
 
 *,
@@ -29,7 +35,7 @@
 body {
   margin: 0;
   min-height: 100dvh;
-  background: radial-gradient(ellipse 120% 80% at 50% -20%, #2a2410 0%, var(--bg) 55%);
+  background: radial-gradient(ellipse 140% 90% at 50% -30%, #151520 0%, var(--bg) 50%);
 }
 
 #root {
@@ -40,10 +46,11 @@ button,
 input,
 select {
   font: inherit;
+  min-height: 44px;
 }
 
 a {
-  color: var(--accent);
+  color: var(--electric);
 }
 
 .serif {

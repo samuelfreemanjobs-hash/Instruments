@@ -27,20 +27,33 @@ import { IntelligenceHub } from "./pages/IntelligenceHub";
 import { PersonalAssistant } from "./pages/PersonalAssistant";
 import { PricingAgentPage } from "./pages/PricingAgentPage";
 import { UniversalSearchPage } from "./pages/UniversalSearchPage";
+import { DiscoverPage } from "./pages/DiscoverPage";
+import { AutopilotPage } from "./pages/AutopilotPage";
 import type { Deal, SeasonInfo } from "./types";
 import "./App.css";
 
-type Tab = "assistant" | "hq" | "intelligence" | "search" | "list" | "alerts" | "decor" | "pricing";
+type Tab =
+  | "assistant"
+  | "hq"
+  | "intelligence"
+  | "discover"
+  | "autopilot"
+  | "search"
+  | "list"
+  | "alerts"
+  | "decor"
+  | "pricing";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "assistant", label: "Assistant" },
   { id: "hq", label: "HQ" },
-  { id: "intelligence", label: "Intelligence" },
+  { id: "intelligence", label: "Intel" },
+  { id: "discover", label: "Discover" },
+  { id: "autopilot", label: "Autopilot" },
   { id: "search", label: "Search" },
-  { id: "list", label: "Our list" },
+  { id: "list", label: "List" },
   { id: "alerts", label: "Alerts" },
-  { id: "decor", label: "Decorate" },
-  { id: "pricing", label: "Pricing AI" },
+  { id: "pricing", label: "Pricing" },
 ];
 
 export default function App() {
@@ -155,23 +168,28 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="hero compact-hero">
-        <h1 className="serif">
-          Black Friday <em>HQ</em>
+        <h1 className="brand-lockup">
+          <span className="brand-word">Savvy</span>
+          <span className="brand-accent">HQ</span>
         </h1>
-        <p className="hero-lede">Shop smarter. Pay less. — deals first, always fresh.</p>
+        <p className="hero-lede">
+          Year-round shopping intelligence — Black Friday & Cyber Monday are peak events, not the whole product.
+        </p>
         <div className="safety-shield">
           <span className="shield-icon" aria-hidden>
-            ✓
+            ◆
           </span>
-          Verified retailers only · honest savings vs 30-day averages · shared list for two
+          Real savings vs 30-day averages · not retailer % stickers · authorized feeds only
         </div>
       </header>
 
       <SeasonBanner
         season={seasonInfo}
         override={ui.seasonOverride}
-        onOverride={() => {
-          /* season override via search tab prefs if needed */
+        onOverride={(s) => {
+          const prefs = { ...ui, seasonOverride: s };
+          setUi(prefs);
+          saveUiPreferences(prefs);
         }}
       />
 
@@ -196,6 +214,8 @@ export default function App() {
       )}
       {tab === "hq" && <HqDashboard {...cardProps} onOpenSearch={() => setTab("search")} />}
       {tab === "intelligence" && <IntelligenceHub />}
+      {tab === "discover" && <DiscoverPage deals={deals} {...cardProps} />}
+      {tab === "autopilot" && <AutopilotPage />}
       {tab === "search" && (
         <UniversalSearchPage
           {...cardProps}

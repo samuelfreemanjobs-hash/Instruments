@@ -1,7 +1,7 @@
 import type { CatalogDeal, DealType } from "./catalog.js";
 
 export type ItemCondition = "new" | "used" | "refurbished" | "open_box";
-export type ShoppingSeason = "black_friday" | "cyber_monday" | "holiday" | "grocery";
+export type ShoppingSeason = "everyday" | "black_friday" | "cyber_monday" | "holiday" | "grocery";
 
 export interface DealCoupon {
   code: string;
@@ -66,7 +66,8 @@ function seasonsFor(deal: CatalogDeal): ShoppingSeason[] {
     s.add("holiday");
   }
   if (deal.dealType === "flash" || deal.category === "PC") s.add("cyber_monday");
-  if (s.size === 0) s.add("holiday");
+  s.add("everyday");
+  if (s.size === 1) s.add("holiday");
   return [...s];
 }
 
@@ -99,6 +100,7 @@ export function matchesSeason(
   deal: CatalogDeal & EnrichedFields,
   season: ShoppingSeason,
 ): boolean {
+  if (season === "everyday") return true;
   if (deal.seasons.includes(season)) return true;
   if (season === "black_friday") {
     return ["black_friday", "clearance", "closeout", "open_box", "flash"].includes(deal.dealType);

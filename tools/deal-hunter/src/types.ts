@@ -11,7 +11,9 @@ export type ItemCondition = "new" | "used" | "refurbished" | "open_box";
 
 export type ConditionFilter = "new_only" | "include_used" | "used_only";
 
-export type ShoppingSeason = "black_friday" | "cyber_monday" | "holiday" | "grocery";
+export type ShoppingSeason = "everyday" | "black_friday" | "cyber_monday" | "holiday" | "grocery";
+
+export type PeakEvent = "black_friday" | "cyber_monday" | null;
 
 export type IntelligenceVerdict = "buy_now" | "good_deal" | "wait" | "skip";
 
@@ -140,6 +142,12 @@ export interface Deal {
   source?: string;
 }
 
+export interface CategoryTrendPoint {
+  category: string;
+  avgRealSavingsPct: number;
+  dealCount: number;
+}
+
 export interface IntelligenceBriefing {
   headline: string;
   buyNow: DealIntelligence[];
@@ -149,8 +157,67 @@ export interface IntelligenceBriefing {
   avgSavingsPct?: number;
   avgRealSavingsPct?: number;
   avgAdvertisedDiscountPct?: number;
+  categoryTrends?: CategoryTrendPoint[];
   generatedAt: string;
   dataFreshThrough: string;
+}
+
+export interface CommunityDeal {
+  id: string;
+  title: string;
+  retailer: string;
+  price: number;
+  url: string;
+  note?: string;
+  upvotes: number;
+  createdAt: string;
+}
+
+export interface LocalDealOffer {
+  id: string;
+  title: string;
+  storeName: string;
+  distanceMiles: number;
+  price: number;
+  url: string;
+  source: string;
+}
+
+export interface ShopperProfile {
+  zip?: string;
+  maxBudget?: number;
+  categories?: string[];
+  brands?: string[];
+  preferNewOnly?: boolean;
+}
+
+export interface ShoppingRecommendation {
+  dealId: string;
+  title: string;
+  retailer: string;
+  price: number;
+  reason: string;
+  score: number;
+  verdict: string;
+}
+
+export interface AutonomousAgentMeta {
+  id: string;
+  name: string;
+  mission: string;
+  scheduleHint: string;
+}
+
+export interface AutopilotDigest {
+  runId: string;
+  generatedAt: string;
+  agents: {
+    agentId: string;
+    title: string;
+    narrative: string;
+    picks: { id: string; label: string; detail: string }[];
+  }[];
+  topVerdicts: string[];
 }
 
 export interface DashboardPayload {
@@ -180,6 +247,8 @@ export interface SeasonInfo {
   label: string;
   focus: string;
   auto: boolean;
+  peakEvent?: PeakEvent;
+  yearRound?: boolean;
 }
 
 export const DEAL_TYPE_LABELS: Record<DealType, string> = {
@@ -200,6 +269,7 @@ export const CONDITION_LABELS: Record<ItemCondition, string> = {
 };
 
 export const SEASON_LABELS: Record<ShoppingSeason, string> = {
+  everyday: "Year-round",
   black_friday: "Black Friday",
   cyber_monday: "Cyber Monday",
   holiday: "Holiday gifts",

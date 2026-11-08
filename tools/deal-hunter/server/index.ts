@@ -24,6 +24,18 @@ import { db } from "./db.js";
 import { runShoppingAssistant } from "./agents/shopping-assistant.js";
 import { PARTICIPATING_RETAILERS } from "./participating-retailers.js";
 import { evaluateTargetWatches, type TargetWatchInput } from "./target-watch.js";
+import { AUTHORIZED_SOURCES, policySummary } from "./integrations/data-sources.js";
+import { listCommunityDeals, submitCommunityDeal, upvoteCommunityDeal } from "./community.js";
+import { discoverLocalDeals } from "./local-deals.js";
+import { buildRecommendations, type ShopperProfile } from "./recommendations.js";
+import {
+  AUTONOMOUS_AGENTS,
+  runAutonomousAgent,
+  runAutopilotDigest,
+  type AgentSpecialty,
+} from "./agents/autonomous-fleet.js";
+import { assertN8nCronAuth, emitN8nEvent } from "./integrations/n8n.js";
+import { notifyDealAlert, savePushSubscription } from "./integrations/notify.js";
 
 const shareCodeAlphabet = customAlphabet("23456789ABCDEFGHJKLMNPQRSTUVWXYZ", 8);
 const app = express();
@@ -37,7 +49,7 @@ function freshPool() {
 }
 
 app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, product: "black-friday-hq" });
+  res.json({ ok: true, product: "savvy-hq", yearRound: true });
 });
 
 app.get("/api/season", (_req, res) => {
@@ -51,8 +63,112 @@ app.get("/api/trust/tips", (_req, res) => {
       "Never pay with gift cards, wire, Zelle, or crypto for “deals.”",
       "Intelligence flags inflated MSRPs — trust steal score, not % alone.",
       "Stack verified coupon codes at checkout — screenshot your cart total.",
+      policySummary(),
     ],
+    dataSources: AUTHORIZED_SOURCES,
   });
+});
+
+app.get("/api/discover/community", (_req, res) => {
+  res.json({ deals: listCommunityDeals(), policy: policySummary() });
+});
+
+app.post("/api/discover/community", (req, res) => {
+  const result = submitCommunityDeal({
+    title: String(req.body?.title ?? ""),
+    retailer: String(req.body?.retailer ?? ""),
+    price: Number(req.body?.price ?? 0),
+    url: String(req.body?.url ?? ""),
+    zip: req.body?.zip ? String(req.body.zip) : undefined,
+    category: String(req.body?.category ?? "general"),
+    note: req.body?.note ? String(req.body.note) : undefined,
+  });
+  if (!result.ok) {
+    res.status(400).json(result);
+    return;
+  }
+  void emitN8nEvent("community_submitted", { dealId: result.deal.id, title: result.deal.title });
+  res.status(201).json(result.deal);
+});
+
+app.post("/api/discover/community/:id/upvote", (req, res) => {
+  const ok = upvoteCommunityDeal(req.params.id);
+  res.json({ ok });
+});
+
+app.get("/api/discover/local", (req, res) => {
+  const zip = req.query.zip ? String(req.query.zip) : undefined;
+  const radius = req.query.radius ? Number(req.query.radius) : 25;
+  res.json(discoverLocalDeals(zip, radius));
+});
+
+app.post("/api/recommendations", (req, res) => {
+  const { deals } = freshPool();
+  const profile = parseProfile(req.body);
+  res.json(buildRecommendations(deals, profile));
+});
+
+app.get("/api/autopilot/agents", (_req, res) => {
+  res.json({ agents: AUTONOMOUS_AGENTS });
+});
+
+app.post("/api/autopilot/digest", (req, res) => {
+  const { deals } = freshPool();
+  const profile = parseProfile(req.body?.profile ?? req.body);
+  const digest = runAutopilotDigest(deals, profile);
+  res.json(digest);
+});
+
+app.post("/api/autopilot/run", (req, res) => {
+  if (!assertN8nCronAuth(req.headers["x-n8n-secret"] as string | undefined)) {
+    res.status(401).json({ error: "unauthorized" });
+    return;
+  }
+  const { deals } = freshPool();
+  const profile = parseProfile(req.body?.profile ?? {});
+  const digest = runAutopilotDigest(deals, profile);
+  void emitN8nEvent("autopilot_complete", { runId: digest.runId, agents: digest.agents.length });
+  res.json(digest);
+});
+
+app.post("/api/autopilot/agent/:agentId", (req, res) => {
+  const agentId = req.params.agentId as AgentSpecialty;
+  if (!AUTONOMOUS_AGENTS.some((a) => a.id === agentId)) {
+    res.status(404).json({ error: "unknown_agent" });
+    return;
+  }
+  const { deals } = freshPool();
+  const profile = parseProfile(req.body?.profile ?? req.body);
+  res.json(runAutonomousAgent(agentId, deals, profile));
+});
+
+app.post("/api/notifications/subscribe", (req, res) => {
+  const endpoint = String(req.body?.endpoint ?? "");
+  const keys = req.body?.keys;
+  if (!endpoint || !keys?.p256dh || !keys?.auth) {
+    res.status(400).json({ error: "invalid_subscription" });
+    return;
+  }
+  const id = savePushSubscription({
+    endpoint,
+    keys: { p256dh: String(keys.p256dh), auth: String(keys.auth) },
+    email: req.body?.email ? String(req.body.email) : undefined,
+    notifyEmail: Boolean(req.body?.notifyEmail),
+  });
+  res.status(201).json({ id, ok: true });
+});
+
+app.post("/api/notifications/alert", async (req, res) => {
+  if (!assertN8nCronAuth(req.headers["x-n8n-secret"] as string | undefined)) {
+    res.status(401).json({ error: "unauthorized" });
+    return;
+  }
+  const title = String(req.body?.title ?? "Deal alert");
+  const body = String(req.body?.body ?? "");
+  const dealId = String(req.body?.dealId ?? "");
+  const email = req.body?.email ? String(req.body.email) : undefined;
+  const result = await notifyDealAlert({ title, body, dealId, email });
+  res.json(result);
 });
 
 /** Black Friday HQ dashboard */
@@ -247,6 +363,20 @@ app.put("/api/lists/:shareCode", (req, res) => {
   res.json({ ok: true, updatedAt: now });
 });
 
+function parseProfile(body: Record<string, unknown>): ShopperProfile {
+  return {
+    categories: Array.isArray(body.categories)
+      ? body.categories.map(String)
+      : body.categories
+        ? [String(body.categories)]
+        : undefined,
+    maxBudget: body.maxBudget != null ? Number(body.maxBudget) : undefined,
+    brands: Array.isArray(body.brands) ? body.brands.map(String) : undefined,
+    preferNewOnly: body.preferNewOnly === true,
+    zip: body.zip ? String(body.zip).slice(0, 12) : undefined,
+  };
+}
+
 function parseUniversalQuery(q: Record<string, unknown>): UniversalSearchQuery {
   const out: UniversalSearchQuery = {
     q: q.q as string | undefined,
@@ -288,5 +418,5 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.listen(PORT, "127.0.0.1", () => {
-  console.log(`Black Friday HQ API on http://127.0.0.1:${PORT}`);
+  console.log(`Savvy HQ API on http://127.0.0.1:${PORT}`);
 });

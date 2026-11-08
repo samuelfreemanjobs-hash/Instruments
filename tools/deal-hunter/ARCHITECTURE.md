@@ -1,46 +1,41 @@
-# Deal Hunter — architecture
+# Savvy HQ — architecture
 
-## Purpose
-
-Progressive Web App for couples or households hunting seasonal deals with **low cognitive load** UI. Supports Black Friday, Cyber Monday, holiday gifting, then grocery/household couponing. Users filter by price, shipping, condition (new/used/refurb), and working coupons; only **trusted retailer URLs** surface. Shared list uses checkboxes + share codes; browser notifications fire on steals and price drops.
+Year-round shopping intelligence PWA. **Black Friday** and **Cyber Monday** are peak calendar modes; the engine runs every day on authorized retailer feeds (not scrape-everything).
 
 ## Build & run
 
 ```bash
 cd tools/deal-hunter
 npm ci
-npm run dev          # Vite on :5173, API on :3847 (proxied /api)
-npm run build && npm start   # production: API serves dist/
+npm run dev
+npm test && npm run build
 ```
 
 ## Data flow
 
-1. **Search**: Browser calls `GET /api/deals/search` with query filters. Server filters the in-repo catalog, applies simulated live-price jitter, appends rows to SQLite `price_snapshots`, and returns steal score, discount %, and short price history.
-2. **Lists**: Items live in `localStorage` on each device. **Create share code** posts to `POST /api/lists`; partner **Join** loads `GET /api/lists/:code`. **Sync** pushes `PUT` so both stay aligned.
-3. **Alerts**: Thresholds and watchlist in `localStorage`. On each search refresh (~5 min), the client evaluates steal score and price-drop rules and fires `Notification` when permitted.
+1. **Catalog** — demo curated in `server/catalog.ts`; production swaps affiliate/PA-API/partner files per `server/integrations/data-sources.ts`.
+2. **Real savings** — `intelligence/engine.ts` compares live price to 30-day SQLite snapshots; UI shows advertised % vs real % on `RealSavingsStrip`.
+3. **Autopilot** — `agents/autonomous-fleet.ts` runs Value Scout, Deal Stalker, Local Scout, Community Curator, Season Planner; n8n hits `/api/autopilot/run`.
+4. **Discover** — community tips (trusted URLs), local partner circulars, recommendations.
+5. **Notify** — browser notifications + n8n email/web-push relay (`integrations/notify.ts`).
 
-## Threading / realtime
+## Hosting
 
-Single-threaded Node API; no audio/realtime constraints. Price refresh is polling-based (client interval).
+- **Vercel**: static PWA (`vercel.json`, see `DEPLOY.md`).
+- **API**: long-lived Node + SQLite (`better-sqlite3`).
 
 ## Key modules
 
 | Path | Role |
 |------|------|
-| `server/catalog.ts` | Sample deal inventory (replace with retailer APIs) |
-| `server/index.ts` | REST API, search, shared lists |
-| `server/db.ts` | SQLite for lists + price history |
-| `src/App.tsx` | Main UI: search, list, alerts |
-| `src/hooks/useAlerts.ts` | Notification logic |
-| `vite.config.ts` | PWA manifest + service worker |
+| `server/season.ts` | Calendar: `everyday` default + BF/CM peaks |
+| `server/intelligence/engine.ts` | Buy/wait, value verdicts, category trends |
+| `server/agents/autonomous-fleet.ts` | Autonomous shopping agents |
+| `server/integrations/n8n.ts` | Webhook automation |
+| `src/pages/AutopilotPage.tsx` | Agent digest UI |
+| `src/pages/DiscoverPage.tsx` | Community + local + recs |
 
-## Extension points
+## Related
 
-- Swap `CATALOG` for Amazon PA-API, affilate feeds, or a Firecrawl scraper pipeline (respect robots/ToS).
-- Add Web Push with a small backend for alerts when the app is closed.
-- Pin-protect list updates for multi-user write access.
-
-## Related docs
-
-- Root [ARCHITECTURE.md](../../ARCHITECTURE.md) monorepo index
-- [README.md](./README.md) user-facing overview
+- Root [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- [DEPLOY.md](./DEPLOY.md)

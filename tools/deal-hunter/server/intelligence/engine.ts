@@ -60,6 +60,12 @@ export interface DealIntelligence {
   generatedAt: string;
 }
 
+export interface CategoryTrendPoint {
+  category: string;
+  avgRealSavingsPct: number;
+  dealCount: number;
+}
+
 export interface IntelligenceBriefing {
   headline: string;
   buyNow: DealIntelligence[];
@@ -68,6 +74,7 @@ export interface IntelligenceBriefing {
   priceDropsToday: number;
   avgRealSavingsPct: number;
   avgAdvertisedDiscountPct: number;
+  categoryTrends: CategoryTrendPoint[];
   generatedAt: string;
   dataFreshThrough: string;
 }
@@ -380,6 +387,24 @@ export function buildBriefing(pool: ScoredDeal[], droppedCount: number): Intelli
     "Use coupon combinations only when each step is verified at checkout.",
   ];
 
+  const byCat = new Map<string, { sum: number; n: number }>();
+  for (const a of analyzed) {
+    const deal = pool.find((d) => d.id === a.dealId);
+    const cat = deal?.category ?? "general";
+    const row = byCat.get(cat) ?? { sum: 0, n: 0 };
+    row.sum += a.realSavingsVsAvgPct;
+    row.n += 1;
+    byCat.set(cat, row);
+  }
+  const categoryTrends: CategoryTrendPoint[] = [...byCat.entries()]
+    .map(([category, { sum, n }]) => ({
+      category,
+      avgRealSavingsPct: Math.round(sum / n),
+      dealCount: n,
+    }))
+    .sort((a, b) => b.avgRealSavingsPct - a.avgRealSavingsPct)
+    .slice(0, 8);
+
   return {
     headline: "AI deal intelligence — authenticity, predictions, and buy/wait on live prices.",
     buyNow,
@@ -388,6 +413,7 @@ export function buildBriefing(pool: ScoredDeal[], droppedCount: number): Intelli
     priceDropsToday: droppedCount,
     avgRealSavingsPct: avgReal,
     avgAdvertisedDiscountPct: avgAd,
+    categoryTrends,
     generatedAt: new Date().toISOString(),
     dataFreshThrough: pool[0]?.fetchedAt ?? new Date().toISOString(),
   };

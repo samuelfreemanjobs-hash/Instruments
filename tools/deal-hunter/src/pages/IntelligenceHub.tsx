@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { IntelligencePanel } from "../components/IntelligenceBadge";
 import { askIntelligence, fetchIntelligenceBriefing } from "../lib/api";
 import type { IntelligenceBriefing } from "../types";
+import { CategoryTrendChart } from "../components/CategoryTrendChart";
 import { VERDICT_LABELS } from "../types";
 
 export function IntelligenceHub() {
@@ -43,7 +44,8 @@ export function IntelligenceHub() {
         {briefing && (
           <p className="fresh-line">
             Data through {new Date(briefing.dataFreshThrough).toLocaleTimeString()} ·{" "}
-            {briefing.priceDropsToday} drops today · avg {briefing.avgSavingsPct}% off
+            {briefing.priceDropsToday} drops today · real avg {briefing.avgRealSavingsPct ?? briefing.avgSavingsPct ?? 0}%
+            vs 30d (advertised {briefing.avgAdvertisedDiscountPct ?? "—"}%)
           </p>
         )}
       </header>
@@ -68,6 +70,10 @@ export function IntelligenceHub() {
               <li key={line}>{line}</li>
             ))}
           </ul>
+
+          {briefing.categoryTrends && briefing.categoryTrends.length > 0 && (
+            <CategoryTrendChart data={briefing.categoryTrends} />
+          )}
 
           <section>
             <h3>Buy now</h3>
