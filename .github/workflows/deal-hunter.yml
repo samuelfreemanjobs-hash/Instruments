@@ -40,3 +40,30 @@ jobs:
 
       - name: Build Next.js
         run: npm run build --prefix web
+
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/deal-hunter
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            tools/deal-hunter/package-lock.json
+            tools/deal-hunter/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci && npm ci --prefix web
+
+      - name: Install Playwright Chromium
+        run: npm run test:e2e:install --prefix web
+
+      - name: Playwright smoke
+        run: npm run test:e2e --prefix web
+        env:
+          CI: "1"

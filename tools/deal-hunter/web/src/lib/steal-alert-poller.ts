@@ -1,5 +1,6 @@
 "use client";
 
+import { saveUserPushSubscription } from "@/app/alerts/push-actions";
 import { fetchStealHits, registerStealAlertBackend } from "@/lib/deal-api";
 import { registerRealWebPush } from "@/lib/push-registration";
 
@@ -26,7 +27,24 @@ export async function enableStealAlerts(
 ): Promise<string> {
   if (!endpoint) {
     const real = await registerRealWebPush(minStealScore).catch(() => null);
-    if (real) return real;
+    if (real) {
+      const json = await fetchSubscriptionKeys(real);
+      if (json) {
+        await saveUserPushSubscription({
+          endpoint: real,
+          p256dh: json.p256dh,
+          auth: json.auth,
+          minStealScore,
+        }).catch(() => undefined);
+      }
+      await registerStealAlertBackend({
+        endpoint: real,
+        minStealScore,
+        email,
+        keys: json ?? { p256dh: "browser-local", auth: "browser-local" },
+      });
+      return real;
+    }
   }
   const ep =
     endpoint ??
@@ -38,6 +56,16 @@ export async function enableStealAlerts(
     keys: { p256dh: "browser-local", auth: "browser-local" },
   });
   return ep;
+}
+
+async function fetchSubscriptionKeys(endpoint: string): Promise<{ p256dh: string; auth: string } | null> {
+  if (!("serviceWorker" in navigator)) return null;
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  if (!sub || sub.endpoint !== endpoint) return null;
+  const json = sub.toJSON();
+  if (!json.keys?.p256dh || !json.keys?.auth) return null;
+  return { p256dh: json.keys.p256dh, auth: json.keys.auth };
 }
 
 export function startStealAlertPolling(minStealScore: number, intervalMs = 90_000): () => void {

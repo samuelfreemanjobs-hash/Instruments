@@ -1,12 +1,12 @@
-# Legacy Vite PWA (deprecated)
+# Legacy Vite PWA — archived
 
-The **default product UI** is **Next.js** in `web/` (`npm run dev`).
+**Status: archived** (Phase 8). Production and CI use **Next.js only**.
 
-`npm run dev:legacy` (Vite on :5173) remains for parity checks until the production cutover is signed off. New features land in Next only.
+The Vite app under `src/` remains in the repo for historical reference. Do not ship new features there.
 
-| Use | Command |
-|-----|---------|
-| **Primary** | `npm run dev` — Next :3000 + API :3847 |
-| **Legacy** | `npm run dev:legacy` — Vite :5173 + API :3847 |
+| Need | Command |
+|------|---------|
+| **Development** | `npm run dev` → Next :3000 + API :3847 |
+| **Legacy regression only** | `npm run dev:legacy` → Vite :5173 (unmaintained) |
 
-Production hosting: Vercel root **`tools/deal-hunter/web`** per [DEPLOY.md](./DEPLOY.md).
+Legacy build output is **not** part of GitHub Actions `deal-hunter.yml`.

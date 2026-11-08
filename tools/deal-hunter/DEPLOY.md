@@ -10,14 +10,11 @@
 6. Admin: `BFM_ADMIN_EMAILS`, `BFM_ADMIN_SECRET` (matches API `x-admin-secret`).
 7. Supabase redirect: `https://<your-domain>/auth/callback`.
 
-## Vercel (legacy PWA)
-
-1. Set project root to `tools/deal-hunter`.
-2. Build: `npm run build:legacy` → `dist/`.
-3. Replace `YOUR_DEAL_API_HOST` in `vercel.json` with your Node API host (Fly, Railway, VPS, etc.).
-4. Env: `VITE_API_PROXY` is dev-only; production uses same-origin rewrites or explicit API URL.
+**Legacy Vite PWA:** archived — see [LEGACY_PWA.md](./LEGACY_PWA.md). Do not deploy `dist/` to production.
 
 SQLite (`better-sqlite3`) does **not** run on Vercel serverless — host the Express API on a long-lived Node service.
+
+Full checklist: [docs/DEPLOY_CHECKLIST.md](./docs/DEPLOY_CHECKLIST.md).
 
 ## API host
 

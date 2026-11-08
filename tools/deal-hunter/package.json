@@ -16,6 +16,7 @@
     "preview": "vite preview",
     "start": "NODE_ENV=production tsx server/index.ts",
     "test": "vitest run",
+    "test:e2e": "npm run test:e2e --prefix web",
     "sync:supabase": "tsx scripts/sync-supabase-catalog.ts"
   },
   "dependencies": {

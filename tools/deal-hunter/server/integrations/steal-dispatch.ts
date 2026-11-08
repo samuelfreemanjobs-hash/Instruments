@@ -1,6 +1,7 @@
 import { liveEnrichedDeals } from "../catalog-pool.js";
 import { db } from "../db.js";
 import { notifyDealAlert, type PushSubscriptionInput } from "./notify.js";
+import { listSupabasePushTargets } from "./supabase-push.js";
 
 export interface StealHit {
   dealId: string;
@@ -49,12 +50,40 @@ export function findStealHits(minStealScore: number): StealHit[] {
     }));
 }
 
+type SubRow = PushSubscriptionInput & { id: string; minStealScore: number };
+
+async function allPushTargets(): Promise<SubRow[]> {
+  const local = listSubscriptionsWithThreshold();
+  const remote = await listSupabasePushTargets();
+  const seen = new Set<string>();
+  const merged: SubRow[] = [];
+
+  for (const s of local) {
+    if (seen.has(s.endpoint)) continue;
+    seen.add(s.endpoint);
+    merged.push(s);
+  }
+  for (const s of remote) {
+    if (seen.has(s.endpoint)) continue;
+    seen.add(s.endpoint);
+    merged.push({
+      id: `supabase:${s.userId}:${s.endpoint.slice(-12)}`,
+      endpoint: s.endpoint,
+      keys: s.keys,
+      email: undefined,
+      notifyEmail: false,
+      minStealScore: s.minStealScore,
+    });
+  }
+  return merged;
+}
+
 export async function dispatchStealAlerts(): Promise<{
   subscriptions: number;
   notifications: number;
   hits: StealHit[];
 }> {
-  const subs = listSubscriptionsWithThreshold();
+  const subs = await allPushTargets();
   if (subs.length === 0) {
     return { subscriptions: 0, notifications: 0, hits: [] };
   }

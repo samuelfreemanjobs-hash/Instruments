@@ -15,7 +15,9 @@ supabase db push
 #   migrations/002_auth_rls_user_data.sql
 #   migrations/003_sync_constraints.sql
 #   migrations/005_shopping_budget.sql
+#   migrations/004_notification_preferences.sql
 #   migrations/006_catalog_public_read.sql
+#   migrations/007_user_push_subscriptions.sql
 ```
 
 5. Auth → URL configuration: add redirect `http://localhost:3000/auth/callback` and production URL.
