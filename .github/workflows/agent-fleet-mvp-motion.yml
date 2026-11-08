@@ -20,10 +20,19 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Resolve production verify URL
+        env:
+          VERIFY_BASE: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL }}
+          GO_LIVE_URL: ${{ secrets.DISKORDZ_URL }}
+        run: |
+          url="${VERIFY_BASE:-$GO_LIVE_URL}"
+          url="${url%/}"
+          if [ -n "$url" ]; then
+            echo "DISKLORDZ_URL=$url" >> "$GITHUB_ENV"
+          fi
+
       - name: MVP motion (no plugin rebuild)
         run: python3 disklordz/agents/workflows/fleet_mvp_motion.py
-        env:
-          DISKLORDZ_URL: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL }}
 
       - name: Upload activity summary
         uses: actions/upload-artifact@v4

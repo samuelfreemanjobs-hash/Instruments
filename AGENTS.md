@@ -22,6 +22,10 @@ All profit agents are **company-wide** in this monorepo — not only under `disk
 
 [MVP agent motion](docs/DISKLORDZ_MVP_AGENT_MOTION.md) — scheduled CI **08:00 & 16:00 UTC** weekdays.
 
+```bash
+./scripts/unlock-agent-fleet-prod.sh https://your-production-url   # Tier C CI unlock
+```
+
 ## Standards
 
 - [docs/OPERATOR_AUTOPILOT.md](docs/OPERATOR_AUTOPILOT.md) — “I don’t know how” → GitHub **Agent run** issue → Cursor Cloud

@@ -9,6 +9,7 @@ Add these under **GitHub → Settings → Secrets and variables → Actions → 
 | `SUPABASE_ACCESS_TOKEN` | `supabase db push` |
 | `SUPABASE_PROJECT_REF` | Supabase project id (subdomain) |
 | `DISKLORDZ_URL` | Production site URL, no trailing slash (e.g. `https://disklordz.vercel.app`) |
+| `DISKLORDZ_VERIFY_BASE_URL` | Same URL as `DISKLORDZ_URL` if unset — **unlocks** agent-fleet MVP motion / health / execute prod smoke |
 | `VERCEL_DEPLOY_HOOK_URL` | Vercel → Project → Settings → Git → Deploy Hooks → Production hook URL |
 
 ## Required to sync env vars to Vercel (workflow step)
