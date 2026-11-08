@@ -1,0 +1,32 @@
+name: RAG corpus reindex
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "disklordz/rag/**"
+      - "disklordz/factory/prompts/**"
+  workflow_dispatch:
+
+jobs:
+  chunk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Chunk corpus
+        run: python3 disklordz/rag/scripts/chunk_corpus.py
+      - name: Embed and upsert (optional)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [[ -n "$OPENAI_API_KEY" && -n "$SUPABASE_SERVICE_ROLE_KEY" ]]; then
+            python3 disklordz/rag/scripts/embed_and_upsert.py
+          else
+            echo "Skipping embed_and_upsert — secrets not configured"
+          fi

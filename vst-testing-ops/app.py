@@ -31,7 +31,7 @@ TEST_RUNNER = OPS_ROOT / "test_runner.py"
 AI_PROMPT = (
     "I ran the Instruments QA pipeline and a stage failed. "
     "Read vst-testing-ops/error_log.txt and the relevant source tree "
-    "(Source/ for JD Upgraded, Wave909/ for Wave909, disklordz/ for SaaS). "
+    "(Source/ for JD Upgraded, Wave9090/ for Wave9090, disklordz/ for SaaS). "
     "Identify the root cause and apply a minimal fix."
 )
 
@@ -46,7 +46,7 @@ class PluginTarget:
 
 QUICK_TARGETS: list[PluginTarget] = [
     PluginTarget("JD Upgraded", "JD Upgraded.vst3", "JDUpgraded_VST3", REPO_ROOT),
-    PluginTarget("Wave909", "WAVE-909.vst3", "Wave909_VST3", REPO_ROOT),
+    PluginTarget("Wave9090", "WAVE-9090.vst3", "Wave9090_VST3", REPO_ROOT),
 ]
 
 

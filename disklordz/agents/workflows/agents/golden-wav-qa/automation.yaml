@@ -1,0 +1,14 @@
+# Automation — Golden WAV QA (`golden-wav-qa`)
+
+platform: github
+trigger: pull_request paths Source/**
+primary: .github/workflows/build.yml
+
+## Steps
+1. run_business.py ci profile
+
+## Invoke agent
+Read: disklordz/agents/profit/golden-wav-qa/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#golden-wav-qa

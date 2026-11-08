@@ -1,0 +1,75 @@
+{
+  "format": "DISKLORDZ_MPC500_KIT",
+  "version": 1,
+  "lane": "SMOOTH-JAZZ-RAP",
+  "bpm": 86,
+  "code": "SJR86",
+  "pads": [
+    {
+      "pad": "A01",
+      "role": "808_sub",
+      "sampleName": "SJR86_01SUB",
+      "source": "OneShots/01_Sub_Round.wav",
+      "targetLufs": -20
+    },
+    {
+      "pad": "A02",
+      "role": "808_knock",
+      "sampleName": "SJR86_02KNK",
+      "source": "OneShots/02_Knock_Soft.wav",
+      "targetLufs": -18
+    },
+    {
+      "pad": "A03",
+      "role": "snare_body",
+      "sampleName": "SJR86_03SNR",
+      "source": "OneShots/03_Snare_Warm.wav",
+      "targetLufs": -16
+    },
+    {
+      "pad": "A04",
+      "role": "snare_snap_clap",
+      "sampleName": "SJR86_04CLP",
+      "source": "OneShots/04_Clap_Ghost.wav",
+      "targetLufs": -17
+    },
+    {
+      "pad": "A05",
+      "role": "hat_closed",
+      "sampleName": "SJR86_05CHH",
+      "source": "OneShots/05_Hat_Brush.wav",
+      "targetLufs": -18
+    },
+    {
+      "pad": "A06",
+      "role": "hat_open",
+      "sampleName": "SJR86_06OHH",
+      "source": "OneShots/06_Hat_Open_Soft.wav",
+      "targetLufs": -19
+    },
+    {
+      "pad": "A07",
+      "role": "rim_perc",
+      "sampleName": "SJR86_07RIM",
+      "source": "OneShots/07_Rim_Jazz.wav",
+      "targetLufs": -16
+    },
+    {
+      "pad": "A08",
+      "role": "cowbell_fx",
+      "sampleName": "SJR86_08FX",
+      "source": "OneShots/08_Shaker_Light.wav",
+      "targetLufs": -18
+    }
+  ],
+  "loops": [
+    {
+      "sampleName": "SJR86_L1TOPS",
+      "source": "Loops/Tops_Kickless_2bar.wav",
+      "bars": 2
+    }
+  ],
+  "totalBytes": 634280,
+  "ramBudgetBytes": 16777216,
+  "warnings": []
+}

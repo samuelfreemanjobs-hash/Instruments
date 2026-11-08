@@ -1,0 +1,15 @@
+# Automation — DAW Inbox Copilot (`daw-inbox-copilot`)
+
+platform: cli
+trigger: local watch
+primary: disklordz/daw-inbox/package.json
+
+## Steps
+1. inbox-watch
+2. Browser save to folder
+
+## Invoke agent
+Read: disklordz/agents/profit/daw-inbox-copilot/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#daw-inbox-copilot

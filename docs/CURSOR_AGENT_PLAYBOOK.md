@@ -135,6 +135,9 @@ Enable marketplace skills for your stack (Vercel, Supabase, env-setup). Use **na
 
 | Topic | Doc |
 |--------|-----|
+| **SOPs & templates** | [disklordz/README.md](disklordz/README.md) · [TEMPLATE-cloud-agent-prompt.md](disklordz/templates/TEMPLATE-cloud-agent-prompt.md) |
+| Agent fleet (31) | [../DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) · `./scripts/run-agent-fleet-now.sh` |
+| Roadmap & progress | [ROADMAP.md](ROADMAP.md) |
 | SaaS v0 scope | [DISKLORDZ_SAAS_V0.md](DISKLORDZ_SAAS_V0.md) |
 | ILLUGEN roadmap | [DISKLORDZ_ILLUGEN_RESEARCH.md](DISKLORDZ_ILLUGEN_RESEARCH.md) |
 | RAG / automation | [RAG_AND_INTELLIGENT_AUTOMATION.md](RAG_AND_INTELLIGENT_AUTOMATION.md) |

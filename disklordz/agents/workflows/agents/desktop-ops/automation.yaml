@@ -1,0 +1,15 @@
+# Automation — Desktop Ops (`desktop-ops`)
+
+platform: external
+trigger: manual
+primary: docs/BYTEBOT_SETUP.md
+
+## Steps
+1. Local Docker Bytebot
+2. No repo auto-commit
+
+## Invoke agent
+Read: disklordz/agents/profit/desktop-ops/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#desktop-ops

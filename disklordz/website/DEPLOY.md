@@ -14,9 +14,13 @@
    - `supabase/migrations/20260917220000_credits_billing.sql`
    - `supabase/migrations/20260917230000_saved_kits_history.sql`
    - `supabase/migrations/20260917240000_credits_variable_amount.sql`
+   - `supabase/migrations/20260928110000_prompt_knowledge_pgvector.sql`
 5. Stripe: see [docs/STRIPE.md](docs/STRIPE.md).
 6. Deploy. Full checklist: [docs/DISKLORDZ_GO_LIVE.md](../../docs/DISKLORDZ_GO_LIVE.md).
 7. Automated smoke: `DISKLORDZ_URL=https://YOUR_DOMAIN npm run verify:go-live`
+8. Integrations (pgvector, RAG index, Inngest env):  
+   `bash disklordz/integrations/scripts/activate-integrations.sh --all`  
+   or **Actions → Activate Disklordz integrations**
 
 ## Kit storage (WO-SAAS-009)
 

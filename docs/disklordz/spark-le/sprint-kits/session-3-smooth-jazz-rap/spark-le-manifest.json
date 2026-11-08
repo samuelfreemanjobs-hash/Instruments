@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "generator_version": "export-spark-sprint-kit-v1",
+  "lane": "SMOOTH-JAZZ-RAP",
+  "family": "smooth-jetlife",
+  "preset_id": "lane-smooth-jazz-rap",
+  "bpm": 86,
+  "swing_note": "Light swing 54–58% on 8th hats; no 32nd rolls",
+  "dna_template_id": "smooth-jazz-8ths",
+  "spark_le": {
+    "pad_map_version": "1.0",
+    "pads": {
+      "1": {
+        "role": "808_sub",
+        "file": "OneShots/01_Sub_Round.wav",
+        "target_lufs": -20
+      },
+      "2": {
+        "role": "808_knock",
+        "file": "OneShots/02_Knock_Soft.wav",
+        "target_lufs": -18
+      },
+      "3": {
+        "role": "snare_body",
+        "file": "OneShots/03_Snare_Warm.wav",
+        "target_lufs": -16
+      },
+      "4": {
+        "role": "snare_snap_clap",
+        "file": "OneShots/04_Clap_Ghost.wav",
+        "target_lufs": -17
+      },
+      "5": {
+        "role": "hat_closed",
+        "file": "OneShots/05_Hat_Brush.wav",
+        "target_lufs": -18
+      },
+      "6": {
+        "role": "hat_open",
+        "file": "OneShots/06_Hat_Open_Soft.wav",
+        "target_lufs": -19
+      },
+      "7": {
+        "role": "rim_perc",
+        "file": "OneShots/07_Rim_Jazz.wav",
+        "target_lufs": -16
+      },
+      "8": {
+        "role": "cowbell_fx",
+        "file": "OneShots/08_Shaker_Light.wav",
+        "target_lufs": -18
+      }
+    }
+  },
+  "loops": [
+    {
+      "id": "tops_kickless",
+      "file": "Loops/Tops_Kickless_2bar.wav",
+      "bars": 2,
+      "note": "Primary export for jazz rap stacking"
+    }
+  ],
+  "overflow": [],
+  "lineage": {
+    "parent_keeper": null,
+    "mutation": "initial"
+  },
+  "batch_id": "sprint-export-86031103",
+  "factory": {
+    "seed": 86031103,
+    "prompt": "smooth jazz rap smoky cruise",
+    "preset_id": "lane-smooth-jazz-rap",
+    "engine": "studio"
+  }
+}

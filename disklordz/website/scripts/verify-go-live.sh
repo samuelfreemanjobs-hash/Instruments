@@ -49,4 +49,11 @@ if ! echo "$pack_body" | python3 -c "import sys,json; d=json.load(sys.stdin); p=
 fi
 echo "OK: /api/factory/batch"
 
+int_code=$(curl -s -o /dev/null -w "%{http_code}" "${BASE_URL}/api/integrations/status")
+if [[ "$int_code" != "200" ]]; then
+  echo "WARN: GET /api/integrations/status returned ${int_code}"
+else
+  echo "OK: /api/integrations/status ${int_code}"
+fi
+
 echo "All automated checks passed."

@@ -1,0 +1,29 @@
+{
+  "$schema": "renaissance-box/midi-map-v1",
+  "verifiedOnHardware": false,
+  "notes": "Fill after running sidecar.py --log-midi on your Renaissance. Defaults are common 4x4 drum layouts — not guaranteed for Renaissance until verified.",
+  "pads": [
+    { "id": 1, "note": 36, "channel": 0 },
+    { "id": 2, "note": 37, "channel": 0 },
+    { "id": 3, "note": 38, "channel": 0 },
+    { "id": 4, "note": 39, "channel": 0 },
+    { "id": 5, "note": 40, "channel": 0 },
+    { "id": 6, "note": 41, "channel": 0 },
+    { "id": 7, "note": 42, "channel": 0 },
+    { "id": 8, "note": 43, "channel": 0 },
+    { "id": 9, "note": 44, "channel": 0 },
+    { "id": 10, "note": 45, "channel": 0 },
+    { "id": 11, "note": 46, "channel": 0 },
+    { "id": 12, "note": 47, "channel": 0 },
+    { "id": 13, "note": 48, "channel": 0 },
+    { "id": 14, "note": 49, "channel": 0 },
+    { "id": 15, "note": 50, "channel": 0 },
+    { "id": 16, "note": 51, "channel": 0 }
+  ],
+  "qlinks": [
+    { "id": 1, "cc": 1, "channel": 0 },
+    { "id": 2, "cc": 2, "channel": 0 },
+    { "id": 3, "cc": 3, "channel": 0 },
+    { "id": 4, "cc": 4, "channel": 0 }
+  ]
+}

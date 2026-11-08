@@ -1,0 +1,80 @@
+{
+  "format": "DISKLORDZ_MPC500_KIT",
+  "version": 1,
+  "lane": "UK-DRILL",
+  "bpm": 144,
+  "code": "UD144",
+  "pads": [
+    {
+      "pad": "A01",
+      "role": "808_sub",
+      "sampleName": "UD144_01SUB",
+      "source": "OneShots/01_Sub_Slide.wav",
+      "targetLufs": -17
+    },
+    {
+      "pad": "A02",
+      "role": "808_knock",
+      "sampleName": "UD144_02KNK",
+      "source": "OneShots/02_Knock_Tight.wav",
+      "targetLufs": -16
+    },
+    {
+      "pad": "A03",
+      "role": "snare_body",
+      "sampleName": "UD144_03SNR",
+      "source": "OneShots/03_Snare_Dark.wav",
+      "targetLufs": -14
+    },
+    {
+      "pad": "A04",
+      "role": "snare_snap_clap",
+      "sampleName": "UD144_04CLP",
+      "source": "OneShots/04_Snap_Clap.wav",
+      "targetLufs": -14
+    },
+    {
+      "pad": "A05",
+      "role": "hat_closed",
+      "sampleName": "UD144_05CHH",
+      "source": "OneShots/05_Hat_Tight.wav",
+      "targetLufs": -17
+    },
+    {
+      "pad": "A06",
+      "role": "hat_open",
+      "sampleName": "UD144_06OHH",
+      "source": "OneShots/06_Hat_Open_Dark.wav",
+      "targetLufs": -18
+    },
+    {
+      "pad": "A07",
+      "role": "rim_perc",
+      "sampleName": "UD144_07RIM",
+      "source": "OneShots/07_Rim_Click.wav",
+      "targetLufs": -16
+    },
+    {
+      "pad": "A08",
+      "role": "cowbell_fx",
+      "sampleName": "UD144_08FX",
+      "source": "OneShots/08_FX_Stab.wav",
+      "targetLufs": -15
+    }
+  ],
+  "loops": [
+    {
+      "sampleName": "UD144_L1DRIL",
+      "source": "Loops/Drill_Full_2bar.wav",
+      "bars": 2
+    },
+    {
+      "sampleName": "UD144_L2TOPS",
+      "source": "Loops/Tops_Kickless_2bar.wav",
+      "bars": 2
+    }
+  ],
+  "totalBytes": 730002,
+  "ramBudgetBytes": 16777216,
+  "warnings": []
+}

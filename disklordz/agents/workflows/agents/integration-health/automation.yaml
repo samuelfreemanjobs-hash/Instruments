@@ -1,0 +1,15 @@
+# Automation — Integration Health (`integration-health`)
+
+platform: github
+trigger: daily
+primary: .github/workflows/agent-fleet-health.yml
+
+## Steps
+1. verify-integrations.sh
+2. Slack optional
+
+## Invoke agent
+Read: disklordz/agents/profit/integration-health/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#integration-health

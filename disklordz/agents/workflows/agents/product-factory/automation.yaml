@@ -1,0 +1,15 @@
+# Automation — Product Factory (`product-factory`)
+
+platform: api
+trigger: POST /api/factory/batch
+primary: disklordz/website/src/app/api/factory/batch/route.ts
+
+## Steps
+1. buildProductPack
+2. ZIP download
+
+## Invoke agent
+Read: disklordz/agents/profit/product-factory/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#product-factory

@@ -1,0 +1,14 @@
+# Automation — Airtable WO Triage (`airtable-wo-triage`)
+
+platform: github
+trigger: repository_dispatch
+primary: .github/workflows/airtable-antigravity-handoff.yml
+
+## Steps
+1. wo_to_antigravity_handoff.py
+
+## Invoke agent
+Read: disklordz/agents/profit/airtable-wo-triage/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#airtable-wo-triage

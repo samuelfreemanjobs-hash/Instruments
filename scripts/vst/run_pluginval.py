@@ -232,7 +232,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--default-artefacts",
         action="store_true",
-        help="Validate JD Upgraded + Wave909 VST3 under build/*_artefacts/Release/VST3/",
+        help="Validate JD Upgraded + Wave9090 VST3 under build/*_artefacts/Release/VST3/",
     )
     parser.add_argument(
         "--factory-artefacts",
@@ -280,7 +280,7 @@ def main(argv: list[str] | None = None) -> int:
         roots.extend(
             [
                 root / "build" / "JDUpgraded_artefacts" / "Release" / "VST3",
-                root / "build" / "Wave909" / "Wave909_artefacts" / "Release" / "VST3",
+                root / "build" / "Wave9090" / "Wave9090_artefacts" / "Release" / "VST3",
                 root / "MyFirstPlugin" / "build" / "MyFirstPlugin_artefacts" / "Release" / "VST3",
             ]
         )

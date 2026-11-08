@@ -1,0 +1,15 @@
+# Automation — Release Notes (`release-notes`)
+
+platform: github
+trigger: release published
+primary: disklordz/agents/workflows/scripts/release-notes-from-prs.sh
+
+## Steps
+1. gh pr list merged
+2. Customer-facing MD
+
+## Invoke agent
+Read: disklordz/agents/profit/release-notes/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#release-notes

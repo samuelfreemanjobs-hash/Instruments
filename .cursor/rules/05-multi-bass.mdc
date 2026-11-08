@@ -1,0 +1,41 @@
+---
+description: NTS-1 multi-bass oscillator collection goals and conventions
+globs: ["src/oscillators/**", "docs/nts1-multi-bass-oscillators.md"]
+alwaysApply: false
+---
+
+# Multi-bass oscillators for NTS-1
+
+This repository maintains a **set of genre bass/kick user oscillators** for the
+NTS-1 (logue SDK v1.1.0 / `nutekt-digital`). The hardware holds one custom osc
+at a time; each folder under `src/oscillators/` is a standalone loadable unit.
+
+## When adding or editing units
+
+- Target **NTS-1 mkI** first (`nutekt-digital`, API 1.1-0).
+- Prefer **multifunction** design: one macro (usually **Vibe**) morphs related
+  styles instead of multiple single-purpose binaries.
+- Document **presets** in `manifest.json` → `_agent.presets` (values 0–100 unless
+  noted). Order matches `header.params`.
+- Use host `params->cutoff` and `params->resonance` for filter-based bass oscs;
+  kick/sub units may ignore them.
+- Register new units in `docs/nts1-multi-bass-oscillators.md` and
+  `tools/build-all-bass.sh`.
+- Do not merge unrelated genres into one osc; add a new folder instead.
+
+## Current collection
+
+- `tr808-kick` — phonk / 808 kick-sub
+- `west-coast-moog` — P-Funk / Minimoog / West Coast
+- `juno-rnb` — Juno-106 80s R&B bass
+- `dilla-bass` — J Dilla style wobble/glide/warm bass
+- `sub-phatty` — Moog Sub Phatty dual osc, sub, Multidrive
+- `prophet-funk` — Prophet-5 funk / R&B bass, sync, CEM filter
+- `dx7-lately` — Yamaha DX7 Lately Bass FM electric bass
+- `sh101-babyface` — SH-101 Babyface pulse/sub + hollow FM
+- `moog-voyager-se` — Voyager / Model D + SE-1 fat stack, glide squelch
+- `cardo-gfunk` — Cardo Got Wings dual-layer smooth G-funk bass
+- `larry-june` — Larry June rubbery PWM spacious cruise bass
+- `khalifa-haze` — Khalifa hazy floating cloud sub bass
+- `memphis-juicy` — Juicy J / Three 6 Memphis sine trunk + tape mid
+- `ensoniq-eps1` — Ensoniq EPS-1 wavetable drift + dark filter Memphis

@@ -1,0 +1,21 @@
+DISKLORDZ MPC500 KIT FP84
+Lane: FAT-PAT  Preset: lane-fat-pat  BPM: 84
+Swing: Syrupy trunk @ 84; lazy hat 8ths; rim ride forward — Houston pocket, not club trap
+
+PAD  ROLE              SAMPLE
+A01  808_sub           FP84_01SUB
+A02  808_knock         FP84_02KNK
+A03  snare_body        FP84_03SNR
+A04  snare_snap_clap   FP84_04CLP
+A05  hat_closed        FP84_05CHH
+A06  hat_open          FP84_06OHH
+A07  rim_perc          FP84_07RIM
+A08  cowbell_fx        FP84_08FX
+A09 A10 A11 A12  (empty: add overflow entries with mpc_pad 9-12)
+
+LOOPS (load to a free pad or bank B)
+  FP84_L1TRUN  2 bars  (Loops/Trunk_Full_2bar.wav)
+  FP84_L2TOPS  2 bars  (Loops/Tops_Kickless_2bar.wav)
+  FP84_L3RIM  2 bars  (Loops/Rim_Ride_2bar.wav)
+
+Memory: 1.58 MB of 16 MB budget

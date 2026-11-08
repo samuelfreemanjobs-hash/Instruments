@@ -1,0 +1,18 @@
+---
+description: Disklordz profit agent fleet is repo-wide — discover before changing automation
+alwaysApply: true
+---
+
+# Disklordz agent fleet (company / repo-wide)
+
+Before adding or changing Disklordz agents, workflows, or integrations:
+
+1. Read **[DISKLORDZ_AGENTS.md](../../DISKLORDZ_AGENTS.md)** at repository root (orchestration: **workflow-automation**, **pm-agent**).
+2. Read **[disklordz/agents/workflows/PM_ADD.md](../../disklordz/agents/workflows/PM_ADD.md)** for roster + automation paths.
+3. Machine index: **[.github/agents/fleet.json](../../.github/agents/fleet.json)**.
+
+Regenerate after spec changes: `./scripts/sync-disklordz-agent-fleet.sh`
+
+SOPs & prompt templates: [docs/disklordz/README.md](../../docs/disklordz/README.md)
+
+New agents must appear in `_specs.json`, Copilot skills, PM ADD, and fleet entrypoints in the same change.

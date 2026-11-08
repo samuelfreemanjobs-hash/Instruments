@@ -1,0 +1,15 @@
+# Automation — License & Compliance (`license-compliance`)
+
+platform: gate
+trigger: pre-engine-swap
+primary: disklordz/agents/profit/license-compliance/agent.md
+
+## Steps
+1. Checklist sign-off
+2. Block remote engine
+
+## Invoke agent
+Read: disklordz/agents/profit/license-compliance/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#license-compliance

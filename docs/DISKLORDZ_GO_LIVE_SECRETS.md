@@ -30,6 +30,12 @@ Add these under **GitHub → Settings → Secrets and variables → Actions → 
 |--------|---------|
 | `SAAS_DAILY_GEN_LIMIT` | `20` |
 | `VERCEL_TEAM_ID` | Only if project is under a team |
+| `OPENAI_API_KEY` | RAG embed + AI prompt polish |
+| `INNGEST_EVENT_KEY` | Async `/api/generate/async` |
+| `INNGEST_SIGNING_KEY` | Inngest webhook verification |
+| `DISKLORDZ_ENGINE` | `parametric` or `remote` |
+| `DISKLORDZ_AUDIOCRAFT_ENGINE_URL` | Remote engine worker |
+| `DISKLORDZ_STABLE_AUDIO_ENGINE_URL` | Remote engine worker |
 
 ## Stripe webhook secret (first time)
 
@@ -48,4 +54,12 @@ Copy the printed `whsec_...` into GitHub secret `STRIPE_WEBHOOK_SECRET` and Verc
 
 **Actions → Disklordz go-live → Run workflow**
 
-Local equivalent: `cd disklordz/website && bash scripts/go-live.sh`
+**Actions → Activate Disklordz integrations** — migrations + RAG embed + Vercel integration env + verify
+
+Local equivalent:
+
+```bash
+cd disklordz/website && bash scripts/go-live.sh --sync-vercel --integrations
+# or full integration pass:
+bash disklordz/integrations/scripts/activate-integrations.sh --all
+```
