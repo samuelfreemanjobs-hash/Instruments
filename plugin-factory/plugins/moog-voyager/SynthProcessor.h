@@ -68,10 +68,16 @@ public:
         float stackResBias = 0.0f;
         float stackMixerScale = 1.0f;
         float stackFilterDriveScale = 1.0f;
+        bool noisePink = false;
+        bool mixerOd = false;
+        bool filterOd = false;
     };
 
     VoiceParams readVoiceParams() const noexcept;
     VoiceParams getCachedVoiceParams() const noexcept { return cachedVoiceParams; }
+
+    float getOutputPeakDb() const noexcept { return outputPeakDb.load(); }
+    void getScopeSnapshot(std::array<float, 256>& out) const noexcept;
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -102,7 +108,7 @@ private:
         static float computeCutoffHz(const VoiceParams& params, float filterEnv, float lfo,
                                      int midiNote) noexcept;
         static float noteToHz(int midiNote, float octaveOffset, float fineCents) noexcept;
-        float nextNoiseSample() noexcept;
+        float nextNoiseSample(bool pink) noexcept;
 
         MoogVoyagerAudioProcessor& owner;
         juce::dsp::LadderFilter<float> ladder;
@@ -118,6 +124,7 @@ private:
         float velocityGain = 1.0f;
         int currentMidiNote = 60;
         uint32_t rngState = 0xC0FFEEu;
+        float pinkNoiseState = 0.0f;
         float driftPhase[3] { 0.0f, 0.0f, 0.0f };
         float subPhase = 0.0f;
         bool prepared = false;
@@ -129,6 +136,14 @@ private:
     juce::LinearSmoothedValue<float> outputGainLinear;
     VoiceParams cachedVoiceParams {};
     int currentProgramIndex = 0;
+    int oversampleFactor = 1;
+    juce::AudioBuffer<float> oversampleScratch;
+
+    std::atomic<float> outputPeakDb { -60.0f };
+    std::array<std::atomic<float>, 256> scopeRing {};
+    std::atomic<int> scopeWrite { 0 };
+
+    void pushMeterScope(const juce::AudioBuffer<float>& buffer, int startSample, int numSamples) noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MoogVoyagerAudioProcessor)
 };

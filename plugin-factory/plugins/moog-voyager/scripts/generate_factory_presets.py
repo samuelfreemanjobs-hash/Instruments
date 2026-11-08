@@ -30,6 +30,8 @@ def _snap(
     lfo_f,
     glide,
     master,
+    stack=0,
+    pink=0,
 ) -> dict:
     return {
         "name": name,
@@ -57,7 +59,34 @@ def _snap(
         "lfoF": lfo_f,
         "glide": glide,
         "master": master,
+        "stack": stack,
+        "pink": pink,
     }
+
+
+def _infer_stack(s: dict) -> int:
+    name = s["name"].lower()
+    if any(k in name for k in ("sub phatty", "screw", "dj screw", "phatty", "808 sub", "sub trap")):
+        return 1
+    if any(k in name for k in ("subsequent", "sub 37", "duo", "poly lead")):
+        return 2
+    if any(k in name for k in ("model d", "minimoog", "dilla", "vintage mono", "classic mono")):
+        return 3
+    if "bass" in name and s["cut"] < 1700:
+        return 1
+    if s["mix"] >= 2.35 and s["cut"] < 1300:
+        return 1
+    if s["glide"] >= 0.14:
+        return 2
+    if "lead" in name or "voyager" in name or name.startswith("001"):
+        return 0
+    if "funk" in name or "boogie" in name:
+        return 1
+    return 0
+
+
+def _infer_pink(s: dict) -> int:
+    return 1 if s["noise"] > 0.13 else 0
 
 
 def _clamp(x: float, lo: float, hi: float) -> float:
@@ -861,6 +890,10 @@ def build_bank() -> list[dict]:
         if variant % 19 == 0:
             archetype_i += 1
 
+    for s in bank:
+        s["stack"] = _infer_stack(s)
+        s["pink"] = _infer_pink(s)
+
     return bank
 
 
@@ -894,7 +927,7 @@ def emit_inc(bank: list[dict]) -> str:
             f"      {_fmt_float(s['fA'])},{_fmt_float(s['fD'])},{_fmt_float(s['fS'])},{_fmt_float(s['fR'])}, "
             f"{_fmt_float(s['aA'])},{_fmt_float(s['aD'])},{_fmt_float(s['aS'])},{_fmt_float(s['aR'])}, "
             f"{_fmt_float(s['lfoR'])},{_fmt_float(s['lfoP'])},{_fmt_float(s['lfoF'])}, "
-            f"{_fmt_float(s['glide'])}, {_fmt_float(s['master'])} }},"
+            f"{_fmt_float(s['glide'])}, {_fmt_float(s['master'])}, {s['stack']}, {s['pink']} }},"
         )
     lines.append("};")
     lines.append("")

@@ -8,6 +8,8 @@
 | **025–032** | **Funk / 80s / Screw / Talkbox** (Parliament, Funkadelic, boogie & R&B bass, 80s lead, DJ Screw, Roger Troutman / Zapp) |
 | **033–300** | Moog archetype variants (includes extra P-Funk, boogie, R&B, talkbox, screw lines in the long tail) |
 
+Each program also stores a default **Moog stack** index (0=Voyager … 3=Model D) and **pink noise** hint; both are applied when you load the preset.
+
 Regenerate:
 
 ```bash

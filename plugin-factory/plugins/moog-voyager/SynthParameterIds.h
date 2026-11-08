@@ -22,6 +22,10 @@ inline constexpr std::string_view osc3Fine { "osc3Fine" };
 inline constexpr std::string_view osc3Wave { "osc3Wave" };
 
 inline constexpr std::string_view noiseLevel { "noiseLevel" };
+inline constexpr std::string_view noisePink { "noisePink" };
+inline constexpr std::string_view mixerOd { "mixerOd" };
+inline constexpr std::string_view filterOd { "filterOd" };
+inline constexpr std::string_view oversample { "oversample" };
 
 inline constexpr std::string_view filterCutoff { "filterCutoff" };
 inline constexpr std::string_view filterResonance { "filterResonance" };

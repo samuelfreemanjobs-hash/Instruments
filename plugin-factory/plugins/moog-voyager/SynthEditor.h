@@ -5,8 +5,23 @@
 #include <JuceHeader.h>
 #include <array>
 
+class MeterScopePanel : public juce::Component
+{
+public:
+    explicit MeterScopePanel(MoogVoyagerAudioProcessor& p) : processor(p) {}
+
+    void setAccentColour(juce::Colour c) noexcept { accent = c; }
+
+    void paint(juce::Graphics& g) override;
+
+private:
+    MoogVoyagerAudioProcessor& processor;
+    juce::Colour accent { 0xfff4a62a };
+};
+
 class MoogVoyagerAudioProcessorEditor : public juce::AudioProcessorEditor,
-                                        private juce::AudioProcessorValueTreeState::Listener
+                                        private juce::AudioProcessorValueTreeState::Listener,
+                                        private juce::Timer
 {
 public:
     explicit MoogVoyagerAudioProcessorEditor(MoogVoyagerAudioProcessor&);
@@ -20,8 +35,10 @@ public:
     juce::Colour accentForCurrentStack() const;
     void selectStackMode(int index, bool applyTemplate);
     void parameterChanged(const juce::String& parameterID, float newValue) override;
+    void timerCallback() override;
 
 private:
+    using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
     static juce::Colour accentForLineage(moogstack::Lineage lineage);
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     using ComboAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
@@ -47,6 +64,13 @@ private:
     juce::TextButton presetNextButton;
     juce::Label filterEnvRowLabel;
     juce::Label ampEnvRowLabel;
+    juce::Label oversampleLabel;
+    juce::ComboBox oversampleBox;
+    MeterScopePanel meterScope;
+    juce::ToggleButton noisePinkButton;
+    juce::ToggleButton mixerOdButton;
+    juce::ToggleButton filterOdButton;
+    juce::Label modLfoLabel;
     juce::Label oscSectionLabel, filterSectionLabel, envSectionLabel, modSectionLabel;
 
     juce::Slider masterSlider;
@@ -66,6 +90,10 @@ private:
     std::unique_ptr<SliderAttachment> filterCutoffAttachment, filterResAttachment, filterDriveAttachment;
     std::unique_ptr<SliderAttachment> filterEnvAmtAttachment, filterKbAttachment, mixerDriveAttachment;
     std::unique_ptr<SliderAttachment> subOscAttachment;
+    std::unique_ptr<ButtonAttachment> noisePinkAttachment;
+    std::unique_ptr<ButtonAttachment> mixerOdAttachment;
+    std::unique_ptr<ButtonAttachment> filterOdAttachment;
+    std::unique_ptr<ComboAttachment> oversampleAttachment;
     std::unique_ptr<SliderAttachment> fAttackAttachment, fDecayAttachment, fSustainAttachment, fReleaseAttachment;
     std::unique_ptr<SliderAttachment> aAttackAttachment, aDecayAttachment, aSustainAttachment, aReleaseAttachment;
     std::unique_ptr<SliderAttachment> lfoRateAttachment, lfoPitchAttachment, lfoFilterAttachment, glideAttachment;

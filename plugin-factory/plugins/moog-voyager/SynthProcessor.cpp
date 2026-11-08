@@ -109,10 +109,14 @@ float MoogVoyagerAudioProcessor::SynthVoice::waveFromPhase(float phase01, float 
     }
 }
 
-float MoogVoyagerAudioProcessor::SynthVoice::nextNoiseSample() noexcept
+float MoogVoyagerAudioProcessor::SynthVoice::nextNoiseSample(bool pink) noexcept
 {
     rngState = rngState * 1664525u + 1013904223u;
-    return (static_cast<int32_t>(rngState) / static_cast<float>(INT32_MAX)) * 2.0f - 1.0f;
+    const float white = (static_cast<int32_t>(rngState) / static_cast<float>(INT32_MAX)) * 2.0f - 1.0f;
+    if (!pink)
+        return white;
+    pinkNoiseState = pinkNoiseState * 0.992f + white * 0.055f;
+    return juce::jlimit(-1.0f, 1.0f, pinkNoiseState * 2.2f);
 }
 
 void MoogVoyagerAudioProcessor::SynthVoice::startNote(int midiNoteNumber, float velocity,
@@ -200,7 +204,7 @@ void MoogVoyagerAudioProcessor::SynthVoice::renderNextBlock(juce::AudioBuffer<fl
                 phase[o] -= 1.0f;
             mixed += waveFromPhase(phase[o], inc, params.oscWave[o]) * params.oscLevel[o];
         }
-        mixed += nextNoiseSample() * params.noiseLevel;
+        mixed += nextNoiseSample(params.noisePink) * params.noiseLevel;
 
         if (params.subOscLevel > 0.001f)
         {
@@ -213,7 +217,8 @@ void MoogVoyagerAudioProcessor::SynthVoice::renderNextBlock(juce::AudioBuffer<fl
             mixed += subSq * params.subOscLevel;
         }
 
-        mixed = mixerSaturate(mixed, params.mixerDrive * params.stackMixerScale);
+        const float mixerDrive = params.mixerDrive * params.stackMixerScale * (params.mixerOd ? 1.55f : 1.0f);
+        mixed = mixerSaturate(mixed, mixerDrive);
 
         const float filterEnv = filterAdsr.getNextSample();
         const float ampEnv = ampAdsr.getNextSample();
@@ -222,7 +227,8 @@ void MoogVoyagerAudioProcessor::SynthVoice::renderNextBlock(juce::AudioBuffer<fl
 
         ladder.setCutoffFrequencyHz(cutoff);
         ladder.setResonance(juce::jlimit(0.0f, 1.0f, params.filterResonance + params.stackResBias));
-        ladder.setDrive(params.filterDrive * params.stackFilterDriveScale);
+        const float ladderDrive = params.filterDrive * params.stackFilterDriveScale * (params.filterOd ? 1.6f : 1.0f);
+        ladder.setDrive(ladderDrive);
 
         float filterIn = mixed;
         float* channelPtr = &filterIn;
@@ -305,6 +311,10 @@ MoogVoyagerAudioProcessor::VoiceParams MoogVoyagerAudioProcessor::readVoiceParam
     p.stackMixerScale = c.mixerDriveScale;
     p.stackFilterDriveScale = c.filterDriveScale;
 
+    p.noisePink = apvts.getRawParameterValue(std::string(SynthParamIDs::noisePink))->load() >= 0.5f;
+    p.mixerOd = apvts.getRawParameterValue(std::string(SynthParamIDs::mixerOd))->load() >= 0.5f;
+    p.filterOd = apvts.getRawParameterValue(std::string(SynthParamIDs::filterOd))->load() >= 0.5f;
+
     return p;
 }
 
@@ -356,6 +366,17 @@ juce::AudioProcessorValueTreeState::ParameterLayout MoogVoyagerAudioProcessor::c
     }
 
     addFloat(SynthParamIDs::noiseLevel, "Noise", 0.0f, 1.0f, 0.02f);
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID { std::string(SynthParamIDs::noisePink), 1 }, "Pink Noise", false));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID { std::string(SynthParamIDs::mixerOd), 1 }, "Mixer OD", false));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID { std::string(SynthParamIDs::filterOd), 1 }, "Filter OD", false));
+    layout.add(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID { std::string(SynthParamIDs::oversample), 1 },
+        "Oversampling",
+        juce::StringArray { "Off", "2×", "4×" },
+        0));
     addFloat(SynthParamIDs::mixerDrive, "Mixer Drive", 1.0f, 4.0f, 2.2f);
     addFloat(SynthParamIDs::subOscLevel, "Sub Osc", 0.0f, 1.0f, 0.0f);
 
@@ -434,9 +455,14 @@ void MoogVoyagerAudioProcessor::changeProgramName(int index, const juce::String&
 void MoogVoyagerAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     synthesiser.setCurrentPlaybackSampleRate(sampleRate);
+    const int osChoice = static_cast<int>(apvts.getRawParameterValue(std::string(SynthParamIDs::oversample))->load());
+    oversampleFactor = osChoice == 1 ? 2 : (osChoice == 2 ? 4 : 1);
+    const double maxSr = sampleRate * 4.0;
     for (int i = 0; i < synthesiser.getNumVoices(); ++i)
         if (auto* voice = dynamic_cast<SynthVoice*>(synthesiser.getVoice(i)))
-            voice->prepare(sampleRate, samplesPerBlock);
+            voice->prepare(maxSr, samplesPerBlock * 4);
+
+    oversampleScratch.setSize(getTotalNumOutputChannels(), samplesPerBlock * 4);
 
     outputGainLinear.reset(sampleRate, 0.02);
     outputGainLinear.setCurrentAndTargetValue(
@@ -451,23 +477,87 @@ bool MoogVoyagerAudioProcessor::isBusesLayoutSupported(const BusesLayout& layout
     return out == juce::AudioChannelSet::mono() || out == juce::AudioChannelSet::stereo();
 }
 
+void MoogVoyagerAudioProcessor::pushMeterScope(const juce::AudioBuffer<float>& buffer, int /*startSample*/,
+                                               int numSamples) noexcept
+{
+    float peak = 0.0f;
+    for (int i = 0; i < numSamples; ++i)
+    {
+        float s = 0.0f;
+        for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+            s += buffer.getSample(ch, i);
+        s /= static_cast<float>(juce::jmax(1, buffer.getNumChannels()));
+        peak = juce::jmax(peak, std::abs(s));
+        const int idx = scopeWrite.fetch_add(1, std::memory_order_relaxed) & 255;
+        scopeRing[static_cast<size_t>(idx)].store(s, std::memory_order_relaxed);
+    }
+    const float prev = outputPeakDb.load(std::memory_order_relaxed);
+    const float db = peak > 1.0e-8f ? juce::Decibels::gainToDecibels(peak, -60.0f) : -60.0f;
+  outputPeakDb.store(juce::jmax(db, prev * 0.92f), std::memory_order_relaxed);
+}
+
+void MoogVoyagerAudioProcessor::getScopeSnapshot(std::array<float, 256>& out) const noexcept
+{
+    const int end = scopeWrite.load(std::memory_order_relaxed);
+    for (int i = 0; i < 256; ++i)
+    {
+        const int pos = end - 256 + i;
+        const int idx = ((pos % 256) + 256) % 256;
+        out[static_cast<size_t>(i)] = scopeRing[static_cast<size_t>(idx)].load(std::memory_order_relaxed);
+    }
+}
+
 void MoogVoyagerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi)
 {
     juce::ScopedNoDenormals noDenormals;
     buffer.clear();
     cachedVoiceParams = readVoiceParams();
 
+    const int osChoice = static_cast<int>(apvts.getRawParameterValue(std::string(SynthParamIDs::oversample))->load());
+    oversampleFactor = osChoice == 1 ? 2 : (osChoice == 2 ? 4 : 1);
+
     outputGainLinear.setTargetValue(
         dbToLinear(apvts.getRawParameterValue(std::string(SynthParamIDs::outputGainDb))->load()));
 
-    synthesiser.renderNextBlock(buffer, midi, 0, buffer.getNumSamples());
+    const double baseSr = getSampleRate();
+    const int numSamples = buffer.getNumSamples();
 
-    for (int i = 0; i < buffer.getNumSamples(); ++i)
+    if (oversampleFactor <= 1)
+    {
+        synthesiser.setCurrentPlaybackSampleRate(baseSr);
+        synthesiser.renderNextBlock(buffer, midi, 0, numSamples);
+    }
+    else
+    {
+        synthesiser.setCurrentPlaybackSampleRate(baseSr * static_cast<double>(oversampleFactor));
+        const int osSamples = numSamples * oversampleFactor;
+        oversampleScratch.setSize(buffer.getNumChannels(), osSamples, false, false, true);
+        oversampleScratch.clear();
+        synthesiser.renderNextBlock(oversampleScratch, midi, 0, osSamples);
+        synthesiser.setCurrentPlaybackSampleRate(baseSr);
+
+        for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+        {
+            const float* src = oversampleScratch.getReadPointer(ch);
+            float* dst = buffer.getWritePointer(ch);
+            for (int i = 0; i < numSamples; ++i)
+            {
+                float sum = 0.0f;
+                for (int k = 0; k < oversampleFactor; ++k)
+                    sum += src[i * oversampleFactor + k];
+                dst[i] = sum / static_cast<float>(oversampleFactor);
+            }
+        }
+    }
+
+    for (int i = 0; i < numSamples; ++i)
     {
         const float g = outputGainLinear.getNextValue();
         for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
             buffer.setSample(ch, i, buffer.getSample(ch, i) * g);
     }
+
+    pushMeterScope(buffer, 0, numSamples);
 }
 
 bool MoogVoyagerAudioProcessor::hasEditor() const { return true; }

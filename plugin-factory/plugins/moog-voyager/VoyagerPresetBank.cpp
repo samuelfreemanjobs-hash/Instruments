@@ -27,6 +27,8 @@ struct Snapshot
     float lfoToFilter;
     float glide;
     float masterDb;
+    int stack;
+    int noisePink;
 };
 
 void setChoice(juce::AudioProcessorValueTreeState& apvts, std::string_view id, int index, int numChoices)
@@ -42,6 +44,12 @@ void setFloat(juce::AudioProcessorValueTreeState& apvts, std::string_view id, fl
 {
     if (auto* param = apvts.getParameter(std::string(id)))
         param->setValueNotifyingHost(param->convertTo0to1(value));
+}
+
+void setBool(juce::AudioProcessorValueTreeState& apvts, std::string_view id, bool value)
+{
+    if (auto* param = apvts.getParameter(std::string(id)))
+        param->setValueNotifyingHost(value ? 1.0f : 0.0f);
 }
 
 void applySnapshot(MoogVoyagerAudioProcessor& processor, const Snapshot& s)
@@ -80,6 +88,8 @@ void applySnapshot(MoogVoyagerAudioProcessor& processor, const Snapshot& s)
     setFloat(apvts, SynthParamIDs::lfoToFilter, s.lfoToFilter);
     setFloat(apvts, SynthParamIDs::glideTime, s.glide);
     setFloat(apvts, SynthParamIDs::outputGainDb, s.masterDb);
+    setChoice(apvts, SynthParamIDs::moogStack, juce::jlimit(0, 3, s.stack), 4);
+    setBool(apvts, SynthParamIDs::noisePink, s.noisePink != 0);
 }
 
 #include "VoyagerPresetsGenerated.inc"

@@ -30,7 +30,9 @@ Sub oscillator is mixed pre-ladder when **Sub −1** &gt; 0.
 
 ## Presets
 
-All **300** factory programs remain valid on any lineage. For best results, match lineage to patch style (e.g. boogie bass → Sub Phatty or Model D, Voyager leads → Voyager).
+All **300** factory programs include a default **STACK MODE** (0–3) and **pink noise** hint, applied when you load the program (you can still override with the four switches).
+
+Heuristics: bass / screw / hot-mix patches → Sub Phatty; glide-heavy → Subsequent 37; Model D names / vintage mono → Model D; otherwise Voyager.
 
 ## Related
 
