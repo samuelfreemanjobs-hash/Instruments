@@ -7,17 +7,22 @@ on:
 
 jobs:
   nudge:
-    if: ${{ vars.AUDIO_COACH_NUDGES_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Send coach message
+      - name: Send coach message to #disklordz
         env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_COACH_CHANNEL_ID: C0C2AK80XCN
           DISKLORDZ_COACH_WEBHOOK_URL: ${{ secrets.DISKLORDZ_COACH_WEBHOOK_URL }}
         run: |
-          if [ -z "$DISKLORDZ_COACH_WEBHOOK_URL" ]; then
-            echo "No DISKLORDZ_COACH_WEBHOOK_URL secret — printing dry-run:"
-            python3 disklordz/audio-command/scripts/coach_outreach.py
+          if [ -n "$SLACK_BOT_TOKEN" ]; then
+            python3 disklordz/audio-command/scripts/slack_bot_post_coach.py --send
             exit 0
           fi
-          python3 disklordz/audio-command/scripts/coach_outreach.py --send
+          if [ -n "$DISKLORDZ_COACH_WEBHOOK_URL" ]; then
+            python3 disklordz/audio-command/scripts/coach_outreach.py --send
+            exit 0
+          fi
+          echo "No Slack credentials — dry-run only (Cursor timer + Slack MCP still active):"
+          python3 disklordz/audio-command/scripts/coach_outreach.py

@@ -10,7 +10,24 @@ Channel map (Slack workspace `revenuesystem-4o91279`):
 
 Machine-readable: [`disklordz/integrations/slack-channels.json`](../disklordz/integrations/slack-channels.json)
 
-## One-time: Coach → #disklordz
+## Automated (no webhook) — Cursor Cloud
+
+**Active on this repo:** daily timer `disklordz-coach-slack-daily` posts coach output to **#disklordz** via Slack MCP (14:00 UTC).
+
+No GitHub secret required. Runs when this Cloud Agent fires on schedule.
+
+## Optional: GitHub Actions (runs if Cloud is offline)
+
+Prefer **bot token** (one secret, any message shape):
+
+1. [Slack API](https://api.slack.com/apps) → Create app → **OAuth** scope `chat:write` → Install to workspace → invite bot to **#disklordz**.
+2. `gh secret set SLACK_BOT_TOKEN --repo samuelfreemanjobs-hash/Instruments`
+3. Enable variable `AUDIO_COACH_NUDGES_ENABLED=true`
+4. `gh workflow run audio-coach-daily-nudge.yml`
+
+Fallback: incoming webhook → `DISKLORDZ_COACH_WEBHOOK_URL`.
+
+## One-time: Coach → #disklordz (webhook path)
 
 1. Slack → **Apps** → **Incoming Webhooks** → **Add to Slack** → channel **#disklordz**.
 2. Copy the `https://hooks.slack.com/services/...` URL.

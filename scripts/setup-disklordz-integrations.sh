@@ -138,6 +138,7 @@ cmd_slack_ci() {
 
 cmd_slack_coach() {
   local webhook_url="${DISKLORDZ_COACH_WEBHOOK_URL:-}"
+  local bot_token="${SLACK_BOT_TOKEN:-}"
   local repo="$REPO_DEFAULT"
   local skip_secret=0
   local skip_test=0
@@ -146,6 +147,10 @@ cmd_slack_coach() {
     case "$1" in
       --webhook-url)
         webhook_url="$2"
+        shift 2
+        ;;
+      --bot-token)
+        bot_token="$2"
         shift 2
         ;;
       --repo)
@@ -166,23 +171,32 @@ cmd_slack_coach() {
     esac
   done
 
-  [[ -n "$webhook_url" ]] || die "set --webhook-url or DISKLORDZ_COACH_WEBHOOK_URL"
+  [[ -n "$webhook_url" || -n "$bot_token" ]] || die "set --webhook-url and/or --bot-token (or env DISKLORDZ_COACH_WEBHOOK_URL / SLACK_BOT_TOKEN)"
 
   if [[ "$skip_secret" -eq 0 ]]; then
     need_cmd gh
     gh auth status >/dev/null 2>&1 || die "run: gh auth login"
-    echo "Setting GitHub secret DISKLORDZ_COACH_WEBHOOK_URL on $repo ..."
-    printf '%s' "$webhook_url" | gh secret set DISKLORDZ_COACH_WEBHOOK_URL --repo "$repo"
-    echo "Enabling AUDIO_COACH_NUDGES_ENABLED variable ..."
+    if [[ -n "$bot_token" ]]; then
+      echo "Setting GitHub secret SLACK_BOT_TOKEN on $repo ..."
+      printf '%s' "$bot_token" | gh secret set SLACK_BOT_TOKEN --repo "$repo"
+    fi
+    if [[ -n "$webhook_url" ]]; then
+      echo "Setting GitHub secret DISKLORDZ_COACH_WEBHOOK_URL on $repo ..."
+      printf '%s' "$webhook_url" | gh secret set DISKLORDZ_COACH_WEBHOOK_URL --repo "$repo"
+    fi
     gh api -X PUT "repos/${repo}/actions/variables/AUDIO_COACH_NUDGES_ENABLED" \
       -f value=true -f visibility=all 2>/dev/null \
-      || echo "Note: could not set variable via API — set AUDIO_COACH_NUDGES_ENABLED=true in GitHub → Settings → Variables."
+      || echo "Note: set AUDIO_COACH_NUDGES_ENABLED=true in GitHub → Settings → Variables if needed."
   fi
 
   if [[ "$skip_test" -eq 0 ]]; then
     need_cmd python3
     echo "Sending coach test to #${SLACK_COACH_CHANNEL_NAME} (${SLACK_COACH_CHANNEL_ID}) ..."
-    DISKLORDZ_COACH_WEBHOOK_URL="$webhook_url" python3 disklordz/audio-command/scripts/coach_outreach.py --send
+    if [[ -n "$bot_token" ]]; then
+      SLACK_BOT_TOKEN="$bot_token" python3 disklordz/audio-command/scripts/slack_bot_post_coach.py --send
+    elif [[ -n "$webhook_url" ]]; then
+      DISKLORDZ_COACH_WEBHOOK_URL="$webhook_url" python3 disklordz/audio-command/scripts/coach_outreach.py --send
+    fi
     echo "Coach test sent."
   fi
 
