@@ -1,10 +1,16 @@
 # Automation — VST Preset Agent (`vst-preset-agent`)
 
-platform: manual
-trigger: manual
-primary: TBD
+platform: github
+trigger: schedule cron 0 14 * * * + pull_request preset paths
+primary: .github/workflows/vst-preset-daily-batch.yml
 
 ## Steps
+1. python3 scripts/vst/ingest_vst_lineage.py
+2. python3 scripts/vst/daily_preset_batch.py --batch-size 8
+3. python3 scripts/vst/verify_factory_preset_counts.py
+
+## Partner
+workflow-automation — see collab-workflow-automation.md
 
 ## Invoke agent
 Read: disklordz/agents/profit/vst-preset-agent/agent.md

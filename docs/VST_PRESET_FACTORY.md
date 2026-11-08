@@ -15,9 +15,11 @@ Each **JUCE instrument** in this monorepo targets **≥ 512** factory programs. 
 
 ## Agent workflow (Preset Agent)
 
-1. Edit **curated seeds** only (`buildCuratedSeeds()` in each `FactoryPresetBank.cpp` or JD category builders).
-2. Procedural fill to `kFactoryPresetCount` (256) must stay **deterministic** (same index → same params).
-3. Verify counts:
+1. Edit **curated seeds** in `FactoryPresets.cpp` or JD category builders.
+2. **Daily autonomous batch** (no prompt): `.github/workflows/vst-preset-daily-batch.yml` → `ActiveAgentSeeds.cpp` via lineage DB (`data/vst-preset-lineage/`).
+3. Procedural fill to `kFactoryPresetCount` (512) stays **deterministic** (same index → same params).
+4. **SP-1200:** static kits only — not in daily batch.
+5. Verify counts:
 
 ```bash
 python3 scripts/vst/verify_factory_preset_counts.py

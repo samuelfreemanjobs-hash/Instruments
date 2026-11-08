@@ -1,3 +1,4 @@
+#include "Presets/ActiveAgentSeeds.h"
 #include "Presets/FactoryPresets.h"
 #include "Presets/PresetAgent.h"
 
@@ -465,14 +466,18 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
           }() },
         };
 
+        std::vector<FactoryPreset> seeds = curated;
+        const auto agentSeeds = getActiveAgentSeeds();
+        seeds.insert (seeds.end(), agentSeeds.begin(), agentSeeds.end());
+
         std::vector<FactoryPreset> bank;
         bank.reserve (agent::kFactoryPresetCount);
-        for (const auto& entry : curated)
+        for (const auto& entry : seeds)
             bank.push_back (entry);
 
-        for (std::size_t i = curated.size(); i < agent::kFactoryPresetCount; ++i)
+        for (std::size_t i = seeds.size(); i < agent::kFactoryPresetCount; ++i)
         {
-            const auto& seed = curated[i % curated.size()];
+            const auto& seed = seeds[i % seeds.size()];
             char nameBuf[72];
             std::snprintf (nameBuf,
                            sizeof (nameBuf),

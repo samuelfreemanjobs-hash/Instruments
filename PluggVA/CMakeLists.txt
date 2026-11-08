@@ -20,6 +20,7 @@ target_sources (PluggVA
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
         Source/Presets/FactoryPresets.cpp
+        Source/Presets/ActiveAgentSeeds.cpp
 )
 
 target_compile_definitions (PluggVA
@@ -45,6 +46,7 @@ juce_generate_juce_header (PluggVA)
 add_executable (PluggVATests
     Tests/DSP/OscillatorTests.cpp
     Source/Presets/FactoryPresets.cpp
+    Source/Presets/ActiveAgentSeeds.cpp
 )
 
 target_include_directories (PluggVATests PRIVATE Source)
