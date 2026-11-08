@@ -37,5 +37,11 @@ if [ -z "$id" ]; then
 fi
 
 echo "Created webhook: $id"
-echo "STRIPE_WEBHOOK_SECRET=$secret"
+# This repo is public: Actions logs are world-readable, so never print the secret in CI.
+if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
+  [ -n "$secret" ] && echo "::add-mask::$secret"
+  echo "Signing secret not printed in CI. Reveal it in Stripe Dashboard → Developers → Webhooks → $id → Signing secret."
+else
+  echo "STRIPE_WEBHOOK_SECRET=$secret"
+fi
 echo "Add to GitHub Actions secrets and Vercel env, then redeploy."
