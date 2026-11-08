@@ -111,14 +111,23 @@ fi
 
 echo "Triggered. Open: https://github.com/${REPO}/actions/workflows/${WORKFLOW_FILE}"
 
+if [[ "${WATCH}" -eq 1 ]] || [[ "${DOWNLOAD}" -eq 1 ]]; then
+  sleep 12
+  run_id="$(gh run list --repo "${REPO}" --workflow="${WORKFLOW_FILE}" --limit 5 --json databaseId,status,createdAt -q 'sort_by(.createdAt) | reverse | .[0].databaseId')"
+fi
+
 if [[ "${WATCH}" -eq 1 ]]; then
-  sleep 10
-  gh run watch --repo "${REPO}" --exit-status
+  if [[ -z "${run_id}" || "${run_id}" == "null" ]]; then
+    echo "No workflow run found yet; skipping watch." >&2
+  else
+    gh run watch "${run_id}" --repo "${REPO}" --exit-status
+  fi
 fi
 
 if [[ "${DOWNLOAD}" -eq 1 ]]; then
-  sleep 5
-  run_id="$(gh run list --repo "${REPO}" --workflow="${WORKFLOW_FILE}" --limit 1 --json databaseId -q '.[0].databaseId')"
+  if [[ -z "${run_id:-}" || "${run_id}" == "null" ]]; then
+    run_id="$(gh run list --repo "${REPO}" --workflow="${WORKFLOW_FILE}" --limit 1 --json databaseId -q '.[0].databaseId')"
+  fi
   if [[ -z "${run_id}" || "${run_id}" == "null" ]]; then
     echo "Could not resolve latest run id" >&2
     exit 1
