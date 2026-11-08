@@ -1,0 +1,23 @@
+{
+  "handoff_id": "HO-20261108-053B",
+  "direction": "cursor_to_antigravity",
+  "from_agent": "cursor-cloud",
+  "to_agent": "antigravity-prep",
+  "created_at": "2026-11-08T11:34:38Z",
+  "work_order": {
+    "id": "WO-PREP-001",
+    "title": "[Product][Prep] DPF + CHORD ENGINE repo folder scaffold (no C++)",
+    "acceptance_criteria": "Under docs/drafts/product-tree/ create README stubs matching docs/DPF_TECHNICAL_ARCHITECTURE.md (DPF-Core, DPF-MIDI, Products/ChordEngine, LICENSES); plus PRODUCTS.md index listing DiskLordz MIDI/FX/SOUND lines from DISKLORDZ_MASTER_PLAN.md",
+    "branch": "main"
+  },
+  "context_paths": [
+    "docs/HISE_ANTIGRAVITY_LANE.md",
+    "disklordz/antigravity/AGENT_INSTRUCTIONS.md",
+    "docs/DPF_TECHNICAL_ARCHITECTURE.md",
+    "docs/DISKLORDZ_MASTER_PLAN.md",
+    "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md"
+  ],
+  "artifacts": [],
+  "status": "open",
+  "notes": "Lane: prep \u2192 antigravity-prep. Active queue dispatch."
+}
