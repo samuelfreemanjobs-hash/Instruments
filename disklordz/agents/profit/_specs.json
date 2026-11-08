@@ -446,7 +446,7 @@
       "max_turns": 50,
       "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
       "mcp": ["github"],
-      "automate": "disklordz/audio-command/scripts/coach_outreach.py, coach_engine.py, weekly_review.py, audio-coach-daily-nudge.yml, pwa/",
+      "automate": ".github/workflows/audio-plugin-fleet.yml, audio-coach-daily-nudge.yml, audio-plugin-weekly.yml, scripts/run-audio-plugin-fleet.sh",
       "soul": [
         "Read docs/DISKLORDZ_MASTER_PLAN.md before every planning turn.",
         "Never implement JUCE/C++ — open a Cursor task or WO for engineering.",
@@ -466,7 +466,7 @@
       "max_turns": 50,
       "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
       "mcp": ["github"],
-      "automate": "docs/CURSOR_FACTORY_LIAISON.md, docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md §18",
+      "automate": "scripts/audio-plugin/factory-queue.py, PASTE_TO_FACTORY.md, .github/workflows/audio-plugin-fleet.yml",
       "soul": [
         "Read docs/CURSOR_FACTORY_LIAISON.md at session start.",
         "Never edit Source/, Products/, DPF-*, Wave9090/, SP1200/ C++ — output PASTE_TO_FACTORY for a separate Cursor run.",

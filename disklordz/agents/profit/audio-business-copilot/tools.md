@@ -20,7 +20,7 @@ https://github.com/samuelfreemanjobs-hash/Instruments
 
 ## Automation entrypoints
 
-disklordz/audio-command/scripts/coach_outreach.py, coach_engine.py, weekly_review.py, audio-coach-daily-nudge.yml, pwa/
+.github/workflows/audio-plugin-fleet.yml, audio-coach-daily-nudge.yml, audio-plugin-weekly.yml, scripts/run-audio-plugin-fleet.sh
 
 ## Fail-closed factory defaults
 

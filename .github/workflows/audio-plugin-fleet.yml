@@ -1,0 +1,56 @@
+# DiskLordz Audio plugin lane — business copilot, factory queue, Antigravity, optional golden DSP.
+name: Audio plugin fleet
+
+on:
+  schedule:
+    - cron: "30 15 * * *"
+  workflow_dispatch:
+    inputs:
+      weekly_review:
+        type: boolean
+        default: false
+      antigravity_push:
+        type: boolean
+        default: false
+      golden_dsp:
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install minimal Python deps if needed
+        run: python3 --version
+      - name: Fleet tick (factory queue + coach)
+        run: |
+          python3 scripts/audio-plugin/factory-queue.py
+          python3 disklordz/audio-command/scripts/coach_outreach.py || true
+      - name: Weekly review (manual dispatch only)
+        if: github.event.inputs.weekly_review == 'true'
+        run: |
+          python3 disklordz/audio-command/scripts/weekly_review.py
+          mkdir -p disklordz/audio-command/reviews
+      - name: Antigravity + product prep
+        if: github.event.inputs.antigravity_push == 'true' || github.event_name == 'schedule'
+        run: |
+          chmod +x scripts/antigravity-bridge/sync-all-antigravity.sh || true
+          ./scripts/antigravity-bridge/sync-all-antigravity.sh --push || true
+      - name: Golden WAV DSP smoke (optional)
+        if: github.event.inputs.golden_dsp == 'true'
+        continue-on-error: true
+        run: |
+          python3 vst-testing-ops/run_business.py --profile dsp-only || true
+      - name: Commit generated artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add disklordz/audio-command/data/PASTE_TO_FACTORY.md \
+            disklordz/audio-command/data/factory-queue-state.json \
+            disklordz/audio-command/reviews/ 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "chore(audio-plugin): fleet tick artifacts"
+          git push origin HEAD:"${{ github.ref_name }}" || true

@@ -33,6 +33,11 @@ Company-wide index for **Instruments / Disklordz**. Every Cursor Cloud Agent, Cl
 | `.github/workflows/airtable-antigravity-handoff.yml` | ship-velocity, airtable-wo-triage |
 | `.github/workflows/build.yml` | golden-wav-qa |
 | `.github/workflows/synth-forge.yml` | hardware-preset-designer |
+| `.github/workflows/audio-plugin-fleet.yml` | audio-business-copilot, plugin-factory-liaison, golden-wav-qa |
+| `.github/workflows/audio-coach-daily-nudge.yml` | audio-business-copilot |
+| `.github/workflows/audio-plugin-weekly.yml` | audio-business-copilot, plugin-factory-liaison |
+| `.github/workflows/autonomous-coding-agent.yml` | autonomous-coding-agent |
+| `.github/workflows/antigravity-product-prep-sync.yml` | audio-business-copilot |
 
 ## Regenerate (Workflow Automation + PM Agent)
 
@@ -75,9 +80,9 @@ Maintained by `scaffold_workflows.py` — do not hand-edit sections below the ma
 - `social-clip-factory` — **Social Clip Factory** (`cli_script`)
 - `analytics-interpreter` — **Analytics Interpreter** (`manual_stub`)
 - `release-notes` — **Release Notes** (`ci_script`)
-- `audio-business-copilot` — **Audio Business Copilot** (`manual`)
-- `plugin-factory-liaison` — **Plugin Factory Liaison** (`manual`)
-- `autonomous-coding-agent` — **Autonomous Coding Agent (24/7)** (`manual`)
+- `audio-business-copilot` — **Audio Business Copilot** (`ci_scheduled`)
+- `plugin-factory-liaison` — **Plugin Factory Liaison** (`ci_scheduled`)
+- `autonomous-coding-agent` — **Autonomous Coding Agent (24/7)** (`ci_scheduled`)
 - `hardware-preset-designer` — **Hardware Preset Designer** (`ci_on_pr`)
 
 <!-- FLEET_ROSTER_END -->

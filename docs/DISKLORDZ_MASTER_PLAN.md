@@ -17,6 +17,8 @@ Companion specs:
 
 **Product prep (hands-off):** [ANTIGRAVITY_PRODUCT_FACTORY.md](ANTIGRAVITY_PRODUCT_FACTORY.md) — Antigravity builds drafts/data; you approve; Cursor implements C++.
 
+**Agent lane (audio plugin):** [AUDIO_PLUGIN_AGENT_LANE.md](AUDIO_PLUGIN_AGENT_LANE.md)
+
 ---
 
 ## Operating model

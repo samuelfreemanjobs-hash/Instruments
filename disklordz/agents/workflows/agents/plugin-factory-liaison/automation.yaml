@@ -1,10 +1,12 @@
 # Automation — Plugin Factory Liaison (`plugin-factory-liaison`)
 
-platform: manual
-trigger: manual
-primary: TBD
+platform: github
+trigger: daily schedule
+primary: .github/workflows/audio-plugin-fleet.yml
 
 ## Steps
+1. Refresh PASTE_TO_FACTORY.md
+2. Cursor timer: paste to Factory chat
 
 ## Invoke agent
 Read: disklordz/agents/profit/plugin-factory-liaison/agent.md

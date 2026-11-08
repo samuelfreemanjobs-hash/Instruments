@@ -19,7 +19,7 @@ DiskLordz Audio VST factory PM: triage CI/build logs, slice Milestone 001/CHORD 
 ## Prerequisites
 
 - Read `AGENTS.md`, `disklordz/website/ARCHITECTURE.md`, and `disklordz/agents/profit/plugin-factory-liaison/agent.md`.
-- Run automation: docs/CURSOR_FACTORY_LIAISON.md, docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md §18
+- Run automation: scripts/audio-plugin/factory-queue.py, PASTE_TO_FACTORY.md, .github/workflows/audio-plugin-fleet.yml
 
 ## Success criteria
 

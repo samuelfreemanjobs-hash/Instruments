@@ -35,9 +35,9 @@ Repo-wide companion to [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) and [PM ADD
 | `social-clip-factory` | Social Clip Factory | `cli_script` | `disklordz/agents/workflows/scripts/social-clip-stub.sh` | `.github/skills/disklordz-social-clip-factory/SKILL.md` |
 | `analytics-interpreter` | Analytics Interpreter | `manual_stub` | `disklordz/agents/workflows/n8n/analytics-weekly-stub.json` | `.github/skills/disklordz-analytics-interpreter/SKILL.md` |
 | `release-notes` | Release Notes | `ci_script` | `disklordz/agents/workflows/scripts/release-notes-from-prs.sh` | `.github/skills/disklordz-release-notes/SKILL.md` |
-| `audio-business-copilot` | Audio Business Copilot | `manual` | `TBD` | `.github/skills/disklordz-audio-business-copilot/SKILL.md` |
-| `plugin-factory-liaison` | Plugin Factory Liaison | `manual` | `TBD` | `.github/skills/disklordz-plugin-factory-liaison/SKILL.md` |
-| `autonomous-coding-agent` | Autonomous Coding Agent (24/7) | `manual` | `TBD` | `.github/skills/disklordz-autonomous-coding-agent/SKILL.md` |
+| `audio-business-copilot` | Audio Business Copilot | `ci_scheduled` | `.github/workflows/audio-plugin-fleet.yml` | `.github/skills/disklordz-audio-business-copilot/SKILL.md` |
+| `plugin-factory-liaison` | Plugin Factory Liaison | `ci_scheduled` | `.github/workflows/audio-plugin-fleet.yml` | `.github/skills/disklordz-plugin-factory-liaison/SKILL.md` |
+| `autonomous-coding-agent` | Autonomous Coding Agent (24/7) | `ci_scheduled` | `.github/workflows/autonomous-coding-agent.yml` | `.github/skills/disklordz-autonomous-coding-agent/SKILL.md` |
 | `hardware-preset-designer` | Hardware Preset Designer | `ci_on_pr` | `.github/workflows/synth-forge.yml` | `.github/skills/disklordz-hardware-preset-designer/SKILL.md` |
 
 ### Activation legend

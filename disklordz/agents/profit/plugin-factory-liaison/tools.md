@@ -20,7 +20,7 @@ https://github.com/samuelfreemanjobs-hash/Instruments
 
 ## Automation entrypoints
 
-docs/CURSOR_FACTORY_LIAISON.md, docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md §18
+scripts/audio-plugin/factory-queue.py, PASTE_TO_FACTORY.md, .github/workflows/audio-plugin-fleet.yml
 
 ## Fail-closed factory defaults
 

@@ -19,7 +19,7 @@ Owns DiskLordz Audio commercial roadmap (CHORD ENGINE line): master plan docs, s
 ## Prerequisites
 
 - Read `AGENTS.md`, `disklordz/website/ARCHITECTURE.md`, and `disklordz/agents/profit/audio-business-copilot/agent.md`.
-- Run automation: disklordz/audio-command/scripts/coach_outreach.py, coach_engine.py, weekly_review.py, audio-coach-daily-nudge.yml, pwa/
+- Run automation: .github/workflows/audio-plugin-fleet.yml, audio-coach-daily-nudge.yml, audio-plugin-weekly.yml, scripts/run-audio-plugin-fleet.sh
 
 ## Success criteria
 

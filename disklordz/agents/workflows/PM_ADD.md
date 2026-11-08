@@ -260,22 +260,25 @@ I'm **Release Notes** — I turn merged PRs into customer-facing changelog lines
 
 ## audio-business-copilot
 
-I'm **Audio Business Copilot** — assigned to profit lever: Shippable plugin business without Cursor doing PM work.
+I'm **Audio Business Copilot** — I own the DiskLordz Audio roadmap and Coach sprint; I delegate VST C++ to the factory and prep to Antigravity.
 
+- **Automation:** `.github/workflows/audio-plugin-fleet.yml` (github, daily schedule)
 - **Agent docs:** [`profit/audio-business-copilot/agent.md`](../profit/audio-business-copilot/agent.md)
 - **Workflow file:** [`agents/audio-business-copilot/automation.yaml`](agents/audio-business-copilot/automation.yaml)
 
 ## plugin-factory-liaison
 
-I'm **Plugin Factory Liaison** — assigned to profit lever: Cursor Factory stays fed with minimal tasks — no Claude Code required.
+I'm **Plugin Factory Liaison** — I refresh PASTE_TO_FACTORY and slice Milestone 001 for Cursor Factory without writing JUCE myself.
 
+- **Automation:** `.github/workflows/audio-plugin-fleet.yml` (github, daily schedule)
 - **Agent docs:** [`profit/plugin-factory-liaison/agent.md`](../profit/plugin-factory-liaison/agent.md)
 - **Workflow file:** [`agents/plugin-factory-liaison/automation.yaml`](agents/plugin-factory-liaison/automation.yaml)
 
 ## autonomous-coding-agent
 
-I'm **Autonomous Coding Agent (24/7)** — assigned to profit lever: DiskLordz ships while Samuel runs the business — 24/7 queue drain without human babysitting.
+I'm **Autonomous Coding Agent** — I drain the 24/7 coding queue on allowlisted paths and escalate plugin C++ to the factory.
 
+- **Automation:** `.github/workflows/autonomous-coding-agent.yml` (github, every 6h)
 - **Agent docs:** [`profit/autonomous-coding-agent/agent.md`](../profit/autonomous-coding-agent/agent.md)
 - **Workflow file:** [`agents/autonomous-coding-agent/automation.yaml`](agents/autonomous-coding-agent/automation.yaml)
 
