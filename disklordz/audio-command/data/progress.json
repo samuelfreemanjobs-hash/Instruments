@@ -1,8 +1,12 @@
 {
   "updated_at": "2026-11-08T00:00:00Z",
-  "completed_ids": [],
+  "completed_ids": ["company-identity"],
   "notes": {
-    "weekly": "Master plan ingested into repo. Next: Milestone 001 plugin skeleton on Windows."
+    "weekly": "Brand locked: black/purple/lime + gold from crest. Logo refs in docs/assets/brand/. Next: dev environment."
+  },
+  "brand": {
+    "colors": ["#0A0A0C", "#7B2CBF", "#CDFF00"],
+    "logo_direction": "DiskLordz blackletter + floppy disk icon"
   },
   "current_phase": "foundation",
   "build_status": "not_started",
