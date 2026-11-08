@@ -4,14 +4,19 @@
  */
 import { createReadStream, existsSync, mkdirSync, renameSync, readFileSync } from "fs";
 import { homedir } from "os";
-import { basename, dirname, join } from "path";
+import { basename, dirname, join, resolve, sep } from "path";
 import chokidar from "chokidar";
 import JSZip from "jszip";
 
 const ZIP_RE = /^disklordz-.*\.zip$/i;
 
+// DISKLOORDZ_* (double O) is the original misspelling; still accepted.
+function env(name) {
+  return process.env[`DISKLORDZ_INBOX_${name}`] ?? process.env[`DISKLOORDZ_INBOX_${name}`];
+}
+
 function loadConfig() {
-  const configPath = process.env.DISKLOORDZ_INBOX_CONFIG
+  const configPath = env("CONFIG")
     ?? join(homedir(), ".config", "disklordz", "inbox.json");
 
   let file = {};
@@ -20,17 +25,17 @@ function loadConfig() {
   }
 
   const downloadDir =
-    process.env.DISKLOORDZ_INBOX_DOWNLOAD_DIR
+    env("DOWNLOAD_DIR")
     ?? file.downloadDir
     ?? join(homedir(), "Downloads");
 
   const inboxDir =
-    process.env.DISKLOORDZ_INBOX_TARGET_DIR
+    env("TARGET_DIR")
     ?? file.inboxDir
     ?? join(homedir(), "Music", "Disklordz", "Inbox");
 
   const processedDir =
-    process.env.DISKLOORDZ_INBOX_PROCESSED_DIR
+    env("PROCESSED_DIR")
     ?? file.processedDir
     ?? join(inboxDir, "_processed_zips");
 
@@ -48,13 +53,17 @@ async function extractZip(zipPath, destRoot) {
 
   const zip = await JSZip.loadAsync(buf);
   const folderName = basename(zipPath, ".zip");
-  const outDir = join(destRoot, folderName);
+  const outDir = resolve(destRoot, folderName);
   mkdirSync(outDir, { recursive: true });
 
   for (const [path, entry] of Object.entries(zip.files)) {
     if (entry.dir) continue;
+    const target = resolve(outDir, path);
+    if (!target.startsWith(outDir + sep)) {
+      console.warn(`[disklordz-inbox] skipping unsafe zip entry: ${path}`);
+      continue;
+    }
     const data = await entry.async("nodebuffer");
-    const target = join(outDir, path);
     mkdirSync(dirname(target), { recursive: true });
     const { writeFileSync } = await import("fs");
     writeFileSync(target, data);

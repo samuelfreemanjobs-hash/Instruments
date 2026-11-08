@@ -12,7 +12,7 @@ api() {
   local body="${3:-}"
   local url="https://api.vercel.com${path}"
   if [ -n "$TEAM" ]; then
-    url="${url}?teamId=${TEAM}"
+    case "$url" in *\?*) url="${url}&teamId=${TEAM}" ;; *) url="${url}?teamId=${TEAM}" ;; esac
   fi
   if [ -n "$body" ]; then
     curl -s -X "$method" "$url" \
@@ -29,7 +29,8 @@ upsert_env() {
   local value="$2"
   local target="$3"
   [ -n "$value" ] || return 0
-  api POST "/v10/projects/${PROJECT}/env" "$(python3 -c "
+  local resp
+  resp=$(api POST "/v10/projects/${PROJECT}/env?upsert=true" "$(python3 -c "
 import json,sys
 print(json.dumps({
   'key': sys.argv[1],
@@ -37,7 +38,11 @@ print(json.dumps({
   'type': 'encrypted',
   'target': [sys.argv[3]],
 }))
-" "$key" "$value" "$target")" >/dev/null
+" "$key" "$value" "$target")")
+  if echo "$resp" | python3 -c "import sys,json; sys.exit(0 if 'error' in json.load(sys.stdin) else 1)" 2>/dev/null; then
+    echo "::error::Vercel env $key ($target) failed: $(echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin)['error'].get('code','unknown'))")"
+    return 1
+  fi
   echo "Vercel env: $key ($target)"
 }
 

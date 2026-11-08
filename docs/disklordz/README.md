@@ -22,7 +22,7 @@ Operational playbooks for **Cursor Cloud**, **IDE Agent**, and **profit-agent fl
 | Make fleet repo-wide | [sops/SOP-009-repo-wide-fleet-governance.md](sops/SOP-009-repo-wide-fleet-governance.md) |
 | Open-source batch (35 refs) | [sops/SOP-010-open-source-integration-batch.md](sops/SOP-010-open-source-integration-batch.md) |
 | Roadmap backlog automation | [sops/SOP-011-roadmap-automation.md](sops/SOP-011-roadmap-automation.md) · `./scripts/complete-roadmap-automation.sh` |
-| Operator autopilot | [sops/SOP-018-operator-autopilot.md](sops/SOP-018-operator-autopilot.md) · [../OPERATOR_AUTOPILOT.md](../OPERATOR_AUTOPILOT.md) |
+| Operator autopilot | [sops/SOP-018-operator-autopilot.md](sops/SOP-018-operator-autopilot.md) · [../OPERATOR_AUTOPILOT.md](../OPERATOR_AUTOPILOT.md) · **ops master checklist** [../OPERATOR_OPS_MASTER_CHECKLIST.md](../OPERATOR_OPS_MASTER_CHECKLIST.md) |
 | **SparkLE elite lanes** (gangsta trap, Memphis, ATL, hardware, regional, rage) | [spark-le/ARCHITECTURE.md](spark-le/ARCHITECTURE.md) · [SOP-012](sops/SOP-012-spark-le-elite-system-charter.md) · [LANES.md](spark-le/LANES.md) · [TRAP-HAT-LOOP-DNA.md](spark-le/TRAP-HAT-LOOP-DNA.md) · [PRODUCER-LANE-INDEX.md](spark-le/PRODUCER-LANE-INDEX.md) · [SUBAGENTS](spark-le/SUBAGENTS.md) · [MEMORY-AND-CI](spark-le/MEMORY-AND-CI.md) · Skills: `spark-trap-loop-architect`, `spark-le-memory-ci` in `.claude/skills/` → [013](sops/SOP-013-spark-le-phase-1-feed-spark.md)–[017](sops/SOP-017-spark-le-phase-5-elite-leadership.md) |
 
 ---

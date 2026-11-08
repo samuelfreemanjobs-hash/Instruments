@@ -2,6 +2,8 @@
 
 Run **Cursor Cloud Agent** on **Instruments** from plain-English tasks. One intake path (GitHub Issues), a simple router, existing fleet skills, and **META R10** gates for money and production.
 
+**Setup / go-live (Slack, secrets, Airtable, stubs, Windows MPC):** [OPERATOR_OPS_MASTER_CHECKLIST.md](OPERATOR_OPS_MASTER_CHECKLIST.md)
+
 **Related:** [disklordz/sops/SOP-018-operator-autopilot.md](disklordz/sops/SOP-018-operator-autopilot.md) · [disklordz/templates/TEMPLATE-cloud-agent-prompt.md](disklordz/templates/TEMPLATE-cloud-agent-prompt.md) · [disklordz/sops/SOP-001-cloud-agent-task.md](disklordz/sops/SOP-001-cloud-agent-task.md) · [STUB_AGENT_BLOCKERS.md](../disklordz/agents/workflows/STUB_AGENT_BLOCKERS.md)
 
 ---
@@ -34,7 +36,8 @@ This is **not** a second control plane (no Paperclip, ceo, or extra repos requir
 |-------------------|----------|-------|
 | Next.js, API, factory, RAG, fleet docs in repo | **Cursor Cloud** on `Instruments` | `npm run build`, tests, PR + artifacts |
 | Plugin / DSP in monorepo | **Cursor Cloud** + C++ lane | `run_business.py --profile ci` |
-| Prod deploy, migrations, Vercel env | **You** add secrets once → Actions **`disklordz-go-live`** | [DISKLORDZ_GO_LIVE.md](DISKLORDZ_GO_LIVE.md) |
+| Prod deploy, migrations, Vercel env | **You** add secrets once → Actions **`disklordz-go-live`** | [OPERATOR_OPS_MASTER_CHECKLIST.md](OPERATOR_OPS_MASTER_CHECKLIST.md) Phase B · [DISKLORDZ_GO_LIVE.md](DISKLORDZ_GO_LIVE.md) |
+| Slack CI, Airtable handoff, Windows inbox setup | **You** (HUMAN steps) | [OPERATOR_OPS_MASTER_CHECKLIST.md](OPERATOR_OPS_MASTER_CHECKLIST.md) Phases A, C, E |
 | Stub agents (billing, Inngest, n8n…) | Fix secrets in [DISKLORDZ_GO_LIVE_SECRETS.md](DISKLORDZ_GO_LIVE_SECRETS.md) / blockers doc | `stub-agent-env-check.sh` |
 | HISE / Windows sketch | **Antigravity** handoff | `docs/HISE_ANTIGRAVITY_LANE.md` |
 | Greenfield JUCE SKU | **`audio-plugin-coder`** (separate clone) | APC ship phase |
