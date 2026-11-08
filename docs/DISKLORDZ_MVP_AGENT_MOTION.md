@@ -31,7 +31,11 @@ Outputs:
 | [`agent-fleet-governance.yml`](../.github/workflows/agent-fleet-governance.yml) | Daily + fleet path pushes | Registry drift guard |
 | [`agent-fleet-health.yml`](../.github/workflows/agent-fleet-health.yml) | **14:00 UTC** daily | Fleet count + optional prod verify |
 
-Set **`DISKLORDZ_VERIFY_BASE_URL`** in GitHub secrets so **integration-health** and **conversion-qa** run against production, not only localhost.
+Set **`DISKLORDZ_VERIFY_BASE_URL`** in GitHub (or reuse existing **`DISKLORDZ_URL`** from go-live — workflows fall back automatically):
+
+```bash
+./scripts/unlock-agent-fleet-prod.sh https://your-production-url
+```
 
 ## Activation tiers (MVP → prod)
 
