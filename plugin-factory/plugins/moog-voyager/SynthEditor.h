@@ -27,8 +27,11 @@ private:
     using ComboAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
 
     static void styleKnob(juce::Slider& s, const juce::String& name);
+    static void styleMixFader(juce::Slider& s, const juce::String& name);
+    static void styleEnvSlider(juce::Slider& s, const juce::String& name);
     static void bindCombo(juce::ComboBox& box, const juce::StringArray& items);
     static void sectionLabel(juce::Label& label, const juce::String& text);
+    void applyAccentToSlider(juce::Slider& s, juce::Colour accent, bool isFader) const;
 
     MoogVoyagerAudioProcessor& processorRef;
 
@@ -40,6 +43,10 @@ private:
     std::array<juce::TextButton, 4> stackModeSwitch;
     juce::Label presetLabel;
     juce::ComboBox presetBox;
+    juce::TextButton presetPrevButton;
+    juce::TextButton presetNextButton;
+    juce::Label filterEnvRowLabel;
+    juce::Label ampEnvRowLabel;
     juce::Label oscSectionLabel, filterSectionLabel, envSectionLabel, modSectionLabel;
 
     juce::Slider masterSlider;

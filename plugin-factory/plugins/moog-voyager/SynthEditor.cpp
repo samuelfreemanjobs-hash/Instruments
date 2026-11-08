@@ -47,6 +47,37 @@ void MoogVoyagerAudioProcessorEditor::styleKnob(juce::Slider& s, const juce::Str
     s.setColour(juce::Slider::thumbColourId, kAccent.brighter(0.2f));
 }
 
+void MoogVoyagerAudioProcessorEditor::styleMixFader(juce::Slider& s, const juce::String& name)
+{
+    s.setName(name);
+    s.setSliderStyle(juce::Slider::LinearVertical);
+    s.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    s.setColour(juce::Slider::backgroundColourId, kPanelInset.darker(0.15f));
+    s.setColour(juce::Slider::trackColourId, kPanelMetalHi);
+    s.setColour(juce::Slider::thumbColourId, kAccent);
+}
+
+void MoogVoyagerAudioProcessorEditor::styleEnvSlider(juce::Slider& s, const juce::String& name)
+{
+    s.setName(name);
+    s.setSliderStyle(juce::Slider::LinearVertical);
+    s.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 52, 14);
+    s.setColour(juce::Slider::backgroundColourId, kPanelInset.darker(0.1f));
+    s.setColour(juce::Slider::trackColourId, kPanelMetalHi.withAlpha(0.6f));
+    s.setColour(juce::Slider::thumbColourId, kAccent);
+}
+
+void MoogVoyagerAudioProcessorEditor::applyAccentToSlider(juce::Slider& s, juce::Colour accent, bool isFader) const
+{
+    if (isFader)
+        s.setColour(juce::Slider::thumbColourId, accent);
+    else
+    {
+        s.setColour(juce::Slider::rotarySliderFillColourId, accent);
+        s.setColour(juce::Slider::thumbColourId, accent.brighter(0.2f));
+    }
+}
+
 void MoogVoyagerAudioProcessorEditor::bindCombo(juce::ComboBox& box, const juce::StringArray& items)
 {
     box.addItemList(items, 1);
@@ -122,6 +153,39 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
         refreshPatchReadout();
     };
     addAndMakeVisible(presetBox);
+
+    auto stepPreset = [this](int delta) {
+        const int n = voyager::getFactoryPresetCount();
+        int p = processorRef.getCurrentProgram() + delta;
+        if (p < 0)
+            p = n - 1;
+        if (p >= n)
+            p = 0;
+        processorRef.setCurrentProgram(p);
+        presetBox.setSelectedItemIndex(p, juce::dontSendNotification);
+        refreshPatchReadout();
+    };
+    presetPrevButton.setButtonText("<");
+    presetNextButton.setButtonText(">");
+    presetPrevButton.setColour(juce::TextButton::buttonColourId, kPanelInset);
+    presetPrevButton.setColour(juce::TextButton::textColourOffId, kSectionText);
+    presetNextButton.setColour(juce::TextButton::buttonColourId, kPanelInset);
+    presetNextButton.setColour(juce::TextButton::textColourOffId, kSectionText);
+    presetPrevButton.onClick = [stepPreset]() { stepPreset(-1); };
+    presetNextButton.onClick = [stepPreset]() { stepPreset(1); };
+    addAndMakeVisible(presetPrevButton);
+    addAndMakeVisible(presetNextButton);
+
+    filterEnvRowLabel.setText("FILTER", juce::dontSendNotification);
+    ampEnvRowLabel.setText("AMP", juce::dontSendNotification);
+    for (auto* l : { &filterEnvRowLabel, &ampEnvRowLabel })
+    {
+        l->setJustificationType(juce::Justification::centredLeft);
+        l->setColour(juce::Label::textColourId, kSectionText.withAlpha(0.85f));
+        l->setFont(juce::FontOptions(11.0f, juce::Font::bold));
+        addAndMakeVisible(*l);
+    }
+
     refreshPatchReadout();
     refreshStackChrome();
 
@@ -151,7 +215,7 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
             addAndMakeVisible(*l);
         }
 
-        styleKnob(oscLevel[i], "Level");
+        styleMixFader(oscLevel[i], "Mix");
         styleKnob(oscFine[i], "Fine");
         bindCombo(oscOctave[i], octaves);
         bindCombo(oscWave[i], waves);
@@ -171,14 +235,14 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     styleKnob(filterDrive, "Drive");
     styleKnob(filterEnvAmt, "F.Env");
     styleKnob(filterKb, "KB Track");
-    styleKnob(fAttack, "F.A");
-    styleKnob(fDecay, "F.D");
-    styleKnob(fSustain, "F.S");
-    styleKnob(fRelease, "F.R");
-    styleKnob(aAttack, "A.A");
-    styleKnob(aDecay, "A.D");
-    styleKnob(aSustain, "A.S");
-    styleKnob(aRelease, "A.R");
+    styleEnvSlider(fAttack, "A");
+    styleEnvSlider(fDecay, "D");
+    styleEnvSlider(fSustain, "S");
+    styleEnvSlider(fRelease, "R");
+    styleEnvSlider(aAttack, "A");
+    styleEnvSlider(aDecay, "D");
+    styleEnvSlider(aSustain, "S");
+    styleEnvSlider(aRelease, "R");
     styleKnob(lfoRate, "LFO Hz");
     styleKnob(lfoPitch, "→ Pitch");
     styleKnob(lfoFilter, "→ Filter");
@@ -239,8 +303,8 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     filterCutoff.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 72, 20);
     filterCutoff.setPopupDisplayEnabled(true, false, this);
 
-    setResizeLimits(960, 540, 1480, 860);
-    setSize(1100, 640);
+    setResizeLimits(960, 580, 1480, 920);
+    setSize(1100, 700);
 }
 
 MoogVoyagerAudioProcessorEditor::~MoogVoyagerAudioProcessorEditor()
@@ -320,19 +384,17 @@ void MoogVoyagerAudioProcessorEditor::refreshStackChrome()
     }
     sectionLabel(oscSectionLabel, oscTitle);
 
-    const auto repaintAccent = [accent](juce::Slider& s) {
-        s.setColour(juce::Slider::rotarySliderFillColourId, accent);
-        s.setColour(juce::Slider::thumbColourId, accent.brighter(0.2f));
-    };
     for (int i = 0; i < 3; ++i)
     {
-        repaintAccent(oscLevel[i]);
-        repaintAccent(oscFine[i]);
+        applyAccentToSlider(oscLevel[i], accent, true);
+        applyAccentToSlider(oscFine[i], accent, false);
     }
-    repaintAccent(filterCutoff);
-    repaintAccent(filterRes);
-    repaintAccent(subOscSlider);
-    repaintAccent(mixerDriveSlider);
+    for (auto* s : { &filterCutoff, &filterRes, &subOscSlider, &mixerDriveSlider })
+        applyAccentToSlider(*s, accent, false);
+    for (auto* s : { &fAttack, &fDecay, &fSustain, &fRelease, &aAttack, &aDecay, &aSustain, &aRelease })
+        applyAccentToSlider(*s, accent, true);
+    for (auto* s : { &lfoRate, &lfoPitch, &lfoFilter, &glide, &noiseSlider, &masterSlider })
+        applyAccentToSlider(*s, accent, false);
 
     patchReadoutLabel.setColour(juce::Label::textColourId, accent);
 
@@ -379,9 +441,9 @@ void MoogVoyagerAudioProcessorEditor::paint(juce::Graphics& g)
     g.fillRect(panel.getX(), panel.getY() + 106, panel.getWidth(), 2);
 
     auto bounds = getLocalBounds().reduced(woodW + 10, 12).withTrimmedTop(118);
-    auto oscBox = bounds.removeFromTop(175);
+    auto oscBox = bounds.removeFromTop(195);
     auto filterBox = bounds.removeFromTop(125);
-    auto envBox = bounds.removeFromTop(115);
+    auto envBox = bounds.removeFromTop(158);
 
     drawSection(g, oscBox, "Oscillator 1 · 2 · 3");
     drawSection(g, filterBox, "Ladder filter");
@@ -408,11 +470,13 @@ void MoogVoyagerAudioProcessorEditor::resized()
   }
 
     auto presetRow = panel.reduced(14, 0).withTrimmedTop(86).removeFromTop(26);
-    presetLabel.setBounds(presetRow.removeFromRight(120));
-    presetBox.setBounds(presetRow.removeFromRight(juce::jmin(380, presetRow.getWidth())).reduced(4, 0));
+    presetLabel.setBounds(presetRow.removeFromRight(108));
+    presetNextButton.setBounds(presetRow.removeFromRight(28).reduced(2, 2));
+    presetBox.setBounds(presetRow.removeFromRight(juce::jmin(340, presetRow.getWidth())).reduced(4, 0));
+    presetPrevButton.setBounds(presetRow.removeFromRight(28).reduced(2, 2));
 
     auto bounds = panel.reduced(12).withTrimmedTop(118);
-    auto oscBox = bounds.removeFromTop(175);
+    auto oscBox = bounds.removeFromTop(195);
     oscSectionLabel.setBounds(oscBox.removeFromTop(20));
     auto oscInner = oscBox.reduced(10, 4);
 
@@ -420,13 +484,15 @@ void MoogVoyagerAudioProcessorEditor::resized()
     {
         auto col = oscInner.removeFromLeft(oscInner.getWidth() / 3).reduced(4);
         oscIndexLabel[i].setBounds(col.removeFromTop(18));
-        auto knobs = col.removeFromTop(col.getHeight() - 52);
-        oscLevel[i].setBounds(knobs.removeFromLeft(knobs.getWidth() / 2).reduced(2));
-        oscFine[i].setBounds(knobs.reduced(2));
-        oscOctLabel[i].setBounds(col.removeFromTop(14));
-        oscOctave[i].setBounds(col.removeFromTop(22));
-        oscWaveLabel[i].setBounds(col.removeFromTop(14));
-        oscWave[i].setBounds(col.removeFromTop(22));
+        const int faderW = juce::jmin(36, col.getWidth() / 3);
+        auto faderCol = col.removeFromLeft(faderW);
+        oscLevel[i].setBounds(faderCol.reduced(2, 0));
+        auto ctrlCol = col;
+        oscFine[i].setBounds(ctrlCol.removeFromTop(juce::jmin(72, ctrlCol.getHeight() / 2)).reduced(4));
+        oscOctLabel[i].setBounds(ctrlCol.removeFromTop(14));
+        oscOctave[i].setBounds(ctrlCol.removeFromTop(22));
+        oscWaveLabel[i].setBounds(ctrlCol.removeFromTop(14));
+        oscWave[i].setBounds(ctrlCol.removeFromTop(22));
     }
 
     auto filterBox = bounds.removeFromTop(125);
@@ -442,11 +508,15 @@ void MoogVoyagerAudioProcessorEditor::resized()
         k->setBounds(fRow.removeFromLeft(w).reduced(6));
   }
 
-    auto envBox = bounds.removeFromTop(115);
+    auto envBox = bounds.removeFromTop(158);
     envSectionLabel.setBounds(envBox.removeFromTop(20));
     auto eIn = envBox.reduced(10, 4);
-    layoutKnobRow(eIn.removeFromTop(38), { &fAttack, &fDecay, &fSustain, &fRelease });
-    layoutKnobRow(eIn, { &aAttack, &aDecay, &aSustain, &aRelease });
+    filterEnvRowLabel.setBounds(eIn.removeFromTop(16));
+    auto fEnvRow = eIn.removeFromTop(58);
+    layoutKnobRow(fEnvRow, { &fAttack, &fDecay, &fSustain, &fRelease });
+    ampEnvRowLabel.setBounds(eIn.removeFromTop(16));
+    auto aEnvRow = eIn;
+    layoutKnobRow(aEnvRow, { &aAttack, &aDecay, &aSustain, &aRelease });
 
     auto modBox = bounds.removeFromTop(95);
     modSectionLabel.setBounds(modBox.removeFromTop(20));
