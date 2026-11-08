@@ -1,5 +1,7 @@
 # Start a new plugin from this template
 
+> **New work:** prefer the monorepo [**VST Plugin Factory OS**](../plugin-factory/README.md) (`plugin-factory/scripts/factory.sh`) for registry-based multi-plugin builds and scaffolding.
+
 This folder builds **two** plugins from one CMake project:
 
 | Target | Type | Starting files |

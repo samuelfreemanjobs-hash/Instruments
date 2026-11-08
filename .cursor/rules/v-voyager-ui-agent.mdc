@@ -1,0 +1,15 @@
+---
+description: UI Agent v-voyager-ui-agent — mockup-driven VOYAGER-V editor
+globs:
+  - plugin-factory/plugins/moog-voyager/SynthEditor.*
+  - plugin-factory/plugins/moog-voyager/docs/UI_CONCEPT*
+  - plugin-factory/plugins/moog-voyager/agents/UI_AGENT.md
+alwaysApply: false
+---
+
+# v-voyager-ui-agent
+
+- **Visual contract:** `plugin-factory/plugins/moog-voyager/docs/UI_CONCEPT_VOYAGER-V.png`
+- **Fleet:** `v-voyager-ui-designer` · read `agents/UI_AGENT.md`
+- Edit **SynthEditor** only; DSP/APVTS → `cursor-v-voyager`
+- Compare Standalone editor to mockup; save artifacts for review

@@ -1,0 +1,7 @@
+{
+  "work_order_id": "WO-2026-VVOY-004",
+  "owner_agent": "v-voyager-preset-agent",
+  "title": "[V-Voyager][Preset] Factory bank + stack tags",
+  "instructions": "Read plugin-factory/plugins/moog-voyager/agents/PRESET_AGENT.md. Regenerate presets if needed; run python3 disklordz/integrations/agents/v_voyager_preset_agent.py --qa.",
+  "branch_hint": "cursor/v-voyager-preset-<suffix>"
+}

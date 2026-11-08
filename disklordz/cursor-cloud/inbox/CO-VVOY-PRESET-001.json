@@ -1,0 +1,7 @@
+{
+  "work_order_id": "WO-2026-VVOY-004",
+  "owner_agent": "v-voyager-preset-agent",
+  "status": "done",
+  "title": "[V-Voyager][Preset] Factory bank QA",
+  "evidence": "v_voyager_preset_agent.py --qa green, 300 programs with stack/pink"
+}

@@ -46,7 +46,21 @@ def resolve_plugin_path(vst_name: str) -> Path:
         / "Release"
         / "VST3"
         / vst_name,
+        REPO_ROOT / "build" / "factory-shipped-vst3" / vst_name,
     ]
+    factory_discover = REPO_ROOT / "plugin-factory" / "scripts" / "factory_ops.py"
+    if factory_discover.is_file():
+        proc = subprocess.run(
+            [sys.executable, str(factory_discover), "discover"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode == 0:
+            for line in proc.stdout.splitlines():
+                bundle = Path(line.strip())
+                if bundle.name == vst_name and bundle.is_dir():
+                    candidates.insert(0, bundle)
     for path in candidates:
         if path.is_dir():
             return path

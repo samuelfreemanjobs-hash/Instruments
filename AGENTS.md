@@ -48,11 +48,13 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
+**V Voyager (Plugin Factory SKU):** `cursor-v-voyager` (implementer) · **`v-voyager-preset-agent`** · **`v-voyager-ui-agent`** (mockup: `plugin-factory/plugins/moog-voyager/docs/UI_CONCEPT_VOYAGER-V.png`) · [docs/V_VOYAGER_AGENTS.md](docs/V_VOYAGER_AGENTS.md) · PM [docs/V_VOYAGER_PM.md](docs/V_VOYAGER_PM.md)
+
 Integrations hub: [disklordz/integrations/ARCHITECTURE.md](disklordz/integrations/ARCHITECTURE.md) · `./scripts/setup-open-source-integrations.sh`
 
 Profit agents (31): [DISKLORDZ_AGENTS.md](DISKLORDZ_AGENTS.md) · [docs/DISKLORDZ_PROFIT_AGENTS.md](docs/DISKLORDZ_PROFIT_AGENTS.md) · `disklordz/agents/profit/<id>/agent.md`
 
-**Roadmap & progress:** [docs/ROADMAP.md](docs/ROADMAP.md)  
+**Roadmap & progress:** [docs/ROADMAP.md](docs/ROADMAP.md)
 **SOPs & templates:** [docs/disklordz/README.md](docs/disklordz/README.md)
 
 META charter (all agents): [CLAUDE.md](CLAUDE.md) · sync: `./scripts/sync-meta-llm-charter.sh` · skills `/zero-pause` `/weave` `/premortem`
@@ -82,7 +84,10 @@ Handoff: [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md). Spec: [docs/SP1200_ST
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
 cmake --build build -j
 python3 vst-testing-ops/run_business.py --profile ci       # full plugin QA (matches build.yml)
+python3 vst-testing-ops/run_business.py --profile release  # ci + Plugin Factory QA + ship
+python3 vst-testing-ops/run_business.py --profile factory  # factory-only build/QA/ship
 python3 vst-testing-ops/run_business.py --profile dsp-only # DSP/golden only (faster)
+cd plugin-factory && ./scripts/factory.sh release          # zero-touch factory product pipeline
 python3 vst-testing-ops/test_runner.py                     # single-VST pluginval
 streamlit run vst-testing-ops/app.py                       # operations dashboard
 ```

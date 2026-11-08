@@ -1,6 +1,6 @@
 # Disklordz plugin tracks (Plugin Lab)
 
-**PM:** Airtable · **JUCE factory implementer:** Cursor Cloud Agent · **HISE sketch lane (D):** Antigravity (local Windows) · **Advisory:** Grok Plugin team  
+**PM:** Airtable · **JUCE factory implementer:** `cursor-v-voyager` (Cursor Cloud) · **HISE sketch lane (D):** Antigravity (local Windows) · **Advisory:** Grok Plugin team  
 
 **HISE sketch lane:** [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md) (handoff) · [HISE_SKETCH_LANE.md](HISE_SKETCH_LANE.md) (full) — **Business Planner + Marketing** gate every customer-facing SKU.
 
@@ -9,6 +9,7 @@
 | Track | Product | Path | Stack | Priority |
 |-------|---------|------|-------|----------|
 | **C** | **JD Upgraded** | `Source/` | JUCE VST3 + CLAP | Maintenance + CI |
+| **E** | **V Voyager** (Plugin Factory SKU) | [plugin-factory/plugins/moog-voyager/](../plugin-factory/plugins/moog-voyager/) | JUCE VST3 + Standalone | **P2** — `cursor-v-voyager`; [PM doc](V_VOYAGER_PM.md) |
 | **C2** | **SP-1200 Drumulator** | [SP1200/](../SP1200/) | JUCE Standalone + VST3 | Disklordz grit / screw lane; spec [SP1200_STANDALONE_SPEC.md](SP1200_STANDALONE_SPEC.md) |
 | **D** | **HISE sketch** (rompler / sampler SKUs) | [hise-sketch/](../hise-sketch/) | HISE → VST3 (local) | **P3** — Antigravity; does not consume Cursor WIP unless port WO |
 

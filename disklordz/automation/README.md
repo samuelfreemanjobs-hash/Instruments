@@ -34,6 +34,19 @@ Secrets in GitHub: `AIRTABLE_API_KEY`, `AIRTABLE_BASE_ID`
 
 See [AIRTABLE_ANTIGRAVITY.md](AIRTABLE_ANTIGRAVITY.md).
 
+## Cursor Cloud handoff (V Voyager / Plugin Factory)
+
+Agent **`cursor-v-voyager`** · PM: [docs/V_VOYAGER_PM.md](../../docs/V_VOYAGER_PM.md)
+
+```bash
+python3 scripts/wo_to_cursor_cloud_handoff.py --work-order-id WO-2026-VVOY-002
+```
+
+Airtable → GitHub `repository_dispatch` event **`airtable-cursor-cloud-handoff`**.  
+Workflow: [`.github/workflows/airtable-cursor-cloud-handoff.yml`](../../.github/workflows/airtable-cursor-cloud-handoff.yml)
+
+Scheduled factory QA (includes **V Voyager.vst3**): [`.github/workflows/scheduled-plugin-factory-qa.yml`](../../.github/workflows/scheduled-plugin-factory-qa.yml) — Mon/Wed/Fri 12:00 UTC.
+
 ## Slack on new inbox files
 
 When `disklordz/antigravity/inbox/HO-*.json` is pushed to **`main`**, workflow posts to **#disklordz-dev** (via your webhook).

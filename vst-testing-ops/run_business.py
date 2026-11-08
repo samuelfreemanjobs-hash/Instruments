@@ -21,7 +21,8 @@ def main(argv: list[str] | None = None) -> int:
         "--profile",
         choices=list(PROFILES.keys()),
         default="ci",
-        help="ci=local full; ci-verify=tests only (GitHub Build job); full=+ SaaS",
+        help="ci=local full; ci-verify=tests only; factory=factory build+QA+ship; "
+        "release=monorepo ci + factory + ship; full=+ SaaS",
     )
     parser.add_argument("--no-stop-on-fail", action="store_true")
     parser.add_argument("--with-saas", action="store_true", help="Include Disklordz npm build (full profile)")

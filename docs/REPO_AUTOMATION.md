@@ -34,7 +34,9 @@ If the API returns 404, enable **Settings → Branches → Branch protection rul
 
 ## CI Slack notifications
 
-Workflow [`.github/workflows/ci-slack-notify.yml`](../.github/workflows/ci-slack-notify.yml) runs when **Build**, **Build MyFirstPlugin**, or **Nightly QA** completes.
+Workflow [`.github/workflows/ci-slack-notify.yml`](../.github/workflows/ci-slack-notify.yml) runs when **Build**, **Build MyFirstPlugin**, **Build Plugin Factory OS**, **Scheduled Plugin Factory QA**, or **Nightly QA** completes.
+
+**V Voyager PM:** import [disklordz/airtable/seed/v-voyager-2026.json](../disklordz/airtable/seed/v-voyager-2026.json) into Airtable Disklordz OS — see [V_VOYAGER_PM.md](V_VOYAGER_PM.md).
 
 Configure the repo secret (admin):
 

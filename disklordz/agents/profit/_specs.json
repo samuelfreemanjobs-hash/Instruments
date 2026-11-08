@@ -436,9 +436,27 @@
       "soul": ["User-benefit first.", "Link to help docs.", "No internal WO jargon in public text."]
     },
     {
+      "id": "v-voyager-ui-designer",
+      "title": "V Voyager UI Designer",
+      "description": "VOYAGER-V JUCE editor: implement UI_CONCEPT_VOYAGER-V.png mockup in SynthEditor; visual parity with Systems Engineering Audio panel art.",
+      "profit_lever": "Plugin SKU polish — mockup-to-ship UI for DL-PLUGIN-V-VOYAGER",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "model": "inherit",
+      "permission_mode": "acceptEdits",
+      "max_turns": 50,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": [],
+      "automate": "plugin-factory/plugins/moog-voyager/agents/UI_AGENT.md, MoogVoyager_Standalone visual QA",
+      "soul": [
+        "Read UI_CONCEPT_VOYAGER-V.png before every UI change.",
+        "SynthEditor only unless cursor-v-voyager pairs on the same WO.",
+        "Screenshot evidence vs mockup required [executed]."
+      ]
+    },
+    {
       "id": "hardware-preset-designer",
       "title": "Hardware Preset Designer",
-      "description": "SynthForge workstation: batch preset generation, prompt-to-patch, WAV cloning, SQLite lineage, safety-clamped SysEx/binary export for supported hardware synths.",
+      "description": "SynthForge workstation + V Voyager factory bank (300 programs, generate_factory_presets.py, stack/pink tags).",
       "profit_lever": "Hardware preset velocity — cross-sell Instruments + producer kits",
       "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
       "model": "inherit",

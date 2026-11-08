@@ -1,0 +1,15 @@
+---
+description: Cursor Cloud agent cursor-v-voyager — V Voyager VST and Plugin Factory OS
+globs:
+  - plugin-factory/**
+  - disklordz/cursor-cloud/**
+alwaysApply: false
+---
+
+# cursor-v-voyager (Plugin Factory / V Voyager)
+
+- **PM product:** `DL-PLUGIN-V-VOYAGER` · **Airtable owner:** `cursor-v-voyager`
+- Read `docs/V_VOYAGER_PM.md` and `plugin-factory/plugins/moog-voyager/PRESETS.md` before preset or DSP changes.
+- Ship path: `cd plugin-factory && ./scripts/factory.sh release` (must produce `V Voyager.vst3`).
+- Pick up WOs from `disklordz/cursor-cloud/inbox/CO-*.json` when present.
+- Do not consume Antigravity HISE lane; do not force-push or deploy production unless asked.
