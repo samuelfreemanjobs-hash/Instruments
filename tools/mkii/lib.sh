@@ -49,6 +49,24 @@ mkii_gcc_mkii_bin() {
   echo "${sdk}/tools/gcc/gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-gcc"
 }
 
+# Print directory containing arm-none-eabi-gcc (no trailing path quirks); empty if missing.
+mkii_resolve_gcc_bin_path() {
+  local sdk="$1"
+  local korg_bin korg_gcc sys
+  korg_bin="${sdk}/tools/gcc/gcc-arm-none-eabi-10.3-2021.10/bin"
+  korg_gcc="${korg_bin}/arm-none-eabi-gcc"
+  if [[ -x "${korg_gcc}" ]]; then
+    printf '%s\n' "${korg_bin}"
+    return 0
+  fi
+  sys="$(command -v arm-none-eabi-gcc 2>/dev/null || true)"
+  if [[ -n "${sys}" ]]; then
+    dirname "${sys}"
+    return 0
+  fi
+  return 1
+}
+
 mkii_ensure_arm_gcc() {
   local sdk="$1"
   local gcc_bin installer

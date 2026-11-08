@@ -1,0 +1,80 @@
+# Build NTS-1 mkII bass oscillators on Linux CI and upload installable artifacts.
+# Windows users: download the zip from Actions — load with KORG KONTROL Editor (no local compile).
+
+name: NTS-1 mkII bass
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, 'cursor/**']
+    paths:
+      - 'src/mkii/**'
+      - 'src/oscillators/**'
+      - 'src/shared/**'
+      - 'tools/build-all-bass-mkii.sh'
+      - 'tools/build-mkii.sh'
+      - 'tools/mkii/**'
+      - 'tools/mkii-automate.sh'
+      - 'tools/package-nts1.sh'
+      - '.github/workflows/nts1-mkii.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/mkii/**'
+      - 'src/oscillators/**'
+      - 'src/shared/**'
+      - 'tools/build-all-bass-mkii.sh'
+      - 'tools/build-mkii.sh'
+      - 'tools/mkii/**'
+      - 'tools/mkii-automate.sh'
+      - 'tools/package-nts1.sh'
+      - '.github/workflows/nts1-mkii.yml'
+
+jobs:
+  build-mkii-bass:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ARM GCC and build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi make git python3 zip
+
+      - name: Bootstrap logue-sdk (skip Korg gcc download)
+        env:
+          MKII_SKIP_GCC: "1"
+        run: ./tools/mkii-automate.sh bootstrap
+
+      - name: Build all mkII bass units
+        env:
+          LOGUE_SDK: ${{ github.workspace }}/.deps/logue-sdk
+        run: ./tools/build-all-bass-mkii.sh --no-scaffold --bass-only
+
+      - name: Package for install
+        run: ./tools/package-nts1.sh
+
+      - name: Verify bass catalog count
+        run: |
+          count="$(find release/nts1-custom-oscillators/mkII-nts1mkiiunit -name '*.nts1mkiiunit' 2>/dev/null | wc -l)"
+          test "${count}" -ge 14
+
+      - name: Zip mkII bass (Windows / macOS download)
+        run: |
+          cd release/nts1-custom-oscillators
+          zip -r ../nts1-mkii-bass.zip mkII-nts1mkiiunit INSTALL.txt
+
+      - name: Upload mkII bass zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: nts1-mkii-bass
+          path: release/nts1-mkii-bass.zip
+          if-no-files-found: error
+
+      - name: Upload folder (optional browse)
+        uses: actions/upload-artifact@v4
+        with:
+          name: nts1-mkii-bass-unzipped
+          path: release/nts1-custom-oscillators/
+          if-no-files-found: error

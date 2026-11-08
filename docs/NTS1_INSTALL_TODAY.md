@@ -7,13 +7,11 @@ This repo ships **14 genre bass/kick oscillators** for the Korg NTS-1. Build onc
 ```bash
 cd /path/to/Instruments   # branch cursor/nts1-finish-install-2cf4 or merged main
 
-# One-time toolchain
+# mkI only — mkII users should use GitHub Actions artifact (above)
 ./tools/mkii-automate.sh bootstrap
-# If ARM gcc download fails: sudo apt install gcc-arm-none-eabi   (Linux)
+# Linux: sudo apt install gcc-arm-none-eabi if Korg gcc download fails
 
 export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
-
-# NTS-1 original (mkI) — full catalog
 ./tools/build-all-bass.sh
 ./tools/package-nts1.sh
 ```
@@ -22,10 +20,22 @@ Install files: **`release/nts1-custom-oscillators/mkI-ntkdigunit/*.ntkdigunit`**
 
 ## NTS-1 mkII
 
-After mkII ports are built:
+### GitHub Actions (no compile on your PC — works on **Windows**)
+
+CI builds on Linux and publishes a zip you load from **KORG KONTROL Editor** on Windows, macOS, or Linux.
+
+1. Open the repo on GitHub → **Actions** → **NTS-1 mkII bass**.
+2. Pick the latest green run (or **Run workflow** on `main`).
+3. Download artifact **`nts1-mkii-bass`** (`nts1-mkii-bass.zip`).
+4. Unzip → folder **`mkII-nts1mkiiunit/`** → 14× `.nts1mkiiunit` files + `INSTALL.txt`.
+5. KONTROL Editor → NTS-1 mkII → user oscillator → **Load** a file → **Send** to hardware.
+
+You do **not** need WSL, MSVC, or the logue SDK on Windows for this path.
+
+### Build locally (optional)
 
 ```bash
-./tools/build-all-bass-mkii.sh
+./tools/build-all-bass-mkii.sh --bass-only
 ./tools/package-nts1.sh
 ```
 

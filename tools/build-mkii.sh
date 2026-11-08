@@ -84,9 +84,13 @@ if [[ -z "${LOGUE_SDK:-}" ]]; then
 fi
 
 export LOGUE_SDK
+if ! gcc_bin="$(mkii_resolve_gcc_bin_path "${LOGUE_SDK}")"; then
+  echo "No arm-none-eabi-gcc found. Linux: sudo apt install gcc-arm-none-eabi" >&2
+  echo "Or run Korg installer: cd \"\$LOGUE_SDK/tools/gcc\" && ./get_gcc_10_3-2021_10_linux.sh" >&2
+  exit 1
+fi
+export GCC_BIN_PATH="${gcc_bin}"
 cd "${UNIT_DIR}"
-GCC_BIN_PATH="${GCC_BIN_PATH:-$(dirname "$(command -v arm-none-eabi-gcc 2>/dev/null)")/}"
-export GCC_BIN_PATH
 make -j"$(nproc 2>/dev/null || echo 2)"
 make install 2>/dev/null || true
 echo "Product: ${UNIT_DIR}/*.nts1mkiiunit (or build/*.nts1mkiiunit)"

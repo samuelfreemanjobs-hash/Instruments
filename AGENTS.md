@@ -94,6 +94,8 @@ export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
 
 Install today: [docs/NTS1_INSTALL_TODAY.md](docs/NTS1_INSTALL_TODAY.md). Catalog: [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md). mkII porting: [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
 
+**CI (Windows-friendly):** GitHub Actions workflow `nts1-mkii.yml` builds 14× `.nts1mkiiunit` and uploads `nts1-mkii-bass.zip` — no local compile on Windows.
+
 ## Audio Plugin Coder (optional VST scaffold)
 
 New plugins under `vst/`: [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-setup` … `/apc-ship` · [docs/vst-lifecycle.md](docs/vst-lifecycle.md).

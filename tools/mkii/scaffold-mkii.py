@@ -234,6 +234,7 @@ COMMON_SRC_PATH := $(NTS1_MKII)/common
 LDDIR := $(NTS1_MKII)/ld
 EXTDIR := $(LOGUE_SDK)/platform/ext
 TOOLSDIR := $(LOGUE_SDK)/tools
+include $(dir $(lastword $(MAKEFILE_LIST)))../../gcc-bin-path.mk
 
 include $(NTS1_MKII)/dummy-osc/Makefile
 """
