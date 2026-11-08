@@ -27,7 +27,9 @@ All profit agents are **company-wide** in this monorepo — not only under `disk
 
 ## AI team (Cursor / Antigravity / others)
 
-Root **`.cursorrules`** — delegation to Antigravity, Factory liaison, business copilot. Antigravity git bridge: `disklordz/antigravity/ARCHITECTURE.md`.
+Root **`.cursorrules`** — delegation to Antigravity, Factory liaison, business copilot. Git bridge: [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md).
+
+**Antigravity** runs parallel prep on Windows (inbox/outbox): [active mode](docs/ANTIGRAVITY_ACTIVE_MODE.md) · **product factory** [ANTIGRAVITY_PRODUCT_FACTORY.md](docs/ANTIGRAVITY_PRODUCT_FACTORY.md) (`sync-product-prep.py`) · **Claude Code + DPF** [ANTIGRAVITY_CLAUDE_CODE_COPILOT.md](docs/ANTIGRAVITY_CLAUDE_CODE_COPILOT.md) (`request-claude-support.sh`). **24/7 allowlisted coder:** [AUTONOMOUS_CODING_AGENT.md](docs/AUTONOMOUS_CODING_AGENT.md) · agent `autonomous-coding-agent` · `scripts/autonomous-coder/tick.py`.
 
 ## DiskLordz Audio (plugins — CHORD ENGINE)
 
