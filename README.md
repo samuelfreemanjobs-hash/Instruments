@@ -1,6 +1,6 @@
 # Instruments
 
-This monorepo hosts **JD Upgraded** (Roland JD-style synth), **SP-1200 Drumulator** ([SP1200/](SP1200/) standalone + VST3 sampler), and the **MyFirstPlugin** JUCE starter templates.
+This monorepo hosts **JD Upgraded** (Roland JD-style synth), **SP-1200 Drumulator** ([SP1200/](SP1200/) standalone + VST3 sampler), **NTS-1 multi-bass** custom oscillators ([docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md)), and the **MyFirstPlugin** JUCE starter templates.
 
 ---
 
@@ -52,6 +52,41 @@ AU (macOS): see [docs/INTEGRATION.md](docs/INTEGRATION.md).
 ## Environment
 
 `JDUPGRADED_ROM_PATH` — load a validated `JDUPGROM` file instead of the embedded ROM (development).
+
+---
+
+# NTS-1 multi-bass (logue SDK)
+
+Genre **bass and kick user oscillators** for **NTS-1 mkI** and **NTS-1 mkII** (`.ntkdigunit` / `.nts1mkiiunit`). One custom osc loaded at a time.
+
+| Unit folder | Panel name |
+|-------------|------------|
+| `tr808-kick` | Phonk 808 |
+| `west-coast-moog` | P-Funk WC |
+| `juno-rnb` | Juno R&B |
+| `dilla-bass` | Dilla Bass |
+| `sub-phatty` | Sub Phatty |
+| `prophet-funk` | P5 Funk RB |
+| `dx7-lately` | Lately Bass |
+| `sh101-babyface` | SH-101 BF |
+| `moog-voyager-se` | Voyager SE |
+| `cardo-gfunk` | Cardo GF |
+| `larry-june` | Larry June |
+| `khalifa-haze` | Khalifa Haze |
+| `memphis-juicy` | Juicy 36 |
+| `ensoniq-eps1` | EPS-1 MEM |
+
+```bash
+./tools/mkii-automate.sh bootstrap
+export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
+./tools/build-all-bass-mkii.sh    # mkII
+./tools/build-all-bass.sh         # mkI
+./tools/package-nts1.sh
+```
+
+Install: [docs/NTS1_INSTALL_TODAY.md](docs/NTS1_INSTALL_TODAY.md). mkII porting notes: [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
+
+Optional **VST/APC** workflow for new JUCE plugins: [vst/README.md](vst/README.md), [docs/apc-workflow.md](docs/apc-workflow.md).
 
 ---
 
