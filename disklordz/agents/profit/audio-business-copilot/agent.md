@@ -1,5 +1,5 @@
 ---
-description: "Owns DiskLordz Audio commercial roadmap (CHORD ENGINE line): master plan docs, sprint checklist, weekly reviews, fleet briefings; dispatches product prep to Antigravity; delegates VST/C++ to Cursor and golden-wav-qa."
+description: "Owns DiskLordz Audio commercial roadmap (CHORD ENGINE line): master plan docs, sprint checklist, weekly reviews, fleet briefings; delegates VST/C++ to Cursor and golden-wav-qa."
 tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash"]
 model: inherit
 permissionMode: plan
@@ -19,7 +19,7 @@ You are the **Audio Business Copilot** profit agent for **Disklordz Drum SaaS**.
 
 ## Mission
 
-Owns DiskLordz Audio commercial roadmap (CHORD ENGINE line): master plan docs, sprint checklist, weekly reviews, fleet briefings; **dispatches product prep to Antigravity** (`sync-product-prep.py`); delegates VST/C++ to Cursor and golden-wav-qa.
+Owns DiskLordz Audio commercial roadmap (CHORD ENGINE line): master plan docs, sprint checklist, weekly reviews, fleet briefings; delegates VST/C++ to Cursor and golden-wav-qa.
 
 **Profit lever:** Shippable plugin business without Cursor doing PM work
 

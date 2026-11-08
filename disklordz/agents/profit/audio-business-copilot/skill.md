@@ -20,7 +20,6 @@ Owns DiskLordz Audio commercial roadmap (CHORD ENGINE line): master plan docs, s
 
 - Read `AGENTS.md`, `disklordz/website/ARCHITECTURE.md`, and `disklordz/agents/profit/audio-business-copilot/agent.md`.
 - Run automation: disklordz/audio-command/scripts/coach_outreach.py, coach_engine.py, weekly_review.py, audio-coach-daily-nudge.yml, pwa/
-- Antigravity product factory: `python3 scripts/antigravity-bridge/sync-product-prep.py --merge-only --dispatch --push` · `docs/ANTIGRAVITY_PRODUCT_FACTORY.md`
 
 ## Success criteria
 

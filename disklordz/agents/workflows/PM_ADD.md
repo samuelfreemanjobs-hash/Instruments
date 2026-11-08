@@ -272,6 +272,13 @@ I'm **Plugin Factory Liaison** — assigned to profit lever: Cursor Factory stay
 - **Agent docs:** [`profit/plugin-factory-liaison/agent.md`](../profit/plugin-factory-liaison/agent.md)
 - **Workflow file:** [`agents/plugin-factory-liaison/automation.yaml`](agents/plugin-factory-liaison/automation.yaml)
 
+## autonomous-coding-agent
+
+I'm **Autonomous Coding Agent (24/7)** — assigned to profit lever: DiskLordz ships while Samuel runs the business — 24/7 queue drain without human babysitting.
+
+- **Agent docs:** [`profit/autonomous-coding-agent/agent.md`](../profit/autonomous-coding-agent/agent.md)
+- **Workflow file:** [`agents/autonomous-coding-agent/automation.yaml`](agents/autonomous-coding-agent/automation.yaml)
+
 ## hardware-preset-designer
 
 I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches from prompts and samples, with safety clamps and librarian-ready export staging.

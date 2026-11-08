@@ -1,0 +1,13 @@
+# Automation — Autonomous Coding Agent (24/7) (`autonomous-coding-agent`)
+
+platform: manual
+trigger: manual
+primary: TBD
+
+## Steps
+
+## Invoke agent
+Read: disklordz/agents/profit/autonomous-coding-agent/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#autonomous-coding-agent

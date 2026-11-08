@@ -55,7 +55,7 @@ Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md
 
 Integrations hub: [disklordz/integrations/ARCHITECTURE.md](disklordz/integrations/ARCHITECTURE.md) · `./scripts/setup-open-source-integrations.sh`
 
-Profit agents (31): [DISKLORDZ_AGENTS.md](DISKLORDZ_AGENTS.md) · [docs/DISKLORDZ_PROFIT_AGENTS.md](docs/DISKLORDZ_PROFIT_AGENTS.md) · `disklordz/agents/profit/<id>/agent.md`
+Profit agents (35): [DISKLORDZ_AGENTS.md](DISKLORDZ_AGENTS.md) · **24/7 coder:** `autonomous-coding-agent` ([docs/AUTONOMOUS_CODING_AGENT.md](docs/AUTONOMOUS_CODING_AGENT.md)) · [docs/DISKLORDZ_PROFIT_AGENTS.md](docs/DISKLORDZ_PROFIT_AGENTS.md) · `disklordz/agents/profit/<id>/agent.md`
 
 **Roadmap & progress:** [docs/ROADMAP.md](docs/ROADMAP.md)  
 **SOPs & templates:** [docs/disklordz/README.md](docs/disklordz/README.md)

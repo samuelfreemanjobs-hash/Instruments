@@ -25,14 +25,3 @@ Tier 1: always load MEMORY.md index. Tier 2: LLM picks ≤5 files from manifest 
 ## Do not memorize
 
 Anything derivable from git log, `ARCHITECTURE.md`, or Stripe dashboard — retrieve instead.
-
-## Factory anchors (Tier 1)
-
-| Resource | Path |
-|----------|------|
-| Liaison SOP | `docs/CURSOR_FACTORY_LIAISON.md` |
-| Roadmap §18 | `docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md` |
-| PRD acceptance | `docs/CHORD_ENGINE_PRD.md` |
-| CI errors | `vst-testing-ops/error_log.txt` |
-| Sprint progress | `disklordz/audio-command/data/progress.json` |
-| QA agent | `golden-wav-qa` after Factory PR |

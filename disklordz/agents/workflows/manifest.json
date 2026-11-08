@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "agent_count": 34,
+  "agent_count": 35,
   "agents": [
     {
       "id": "workflow-automation",
@@ -479,6 +479,13 @@
       "announcement": "",
       "automation": {},
       "automation_path": "disklordz/agents/workflows/agents/plugin-factory-liaison/automation.yaml"
+    },
+    {
+      "id": "autonomous-coding-agent",
+      "title": "Autonomous Coding Agent (24/7)",
+      "announcement": "",
+      "automation": {},
+      "automation_path": "disklordz/agents/workflows/agents/autonomous-coding-agent/automation.yaml"
     },
     {
       "id": "hardware-preset-designer",

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "agent_count": 34,
+  "agent_count": 35,
   "agents": [
     {
       "id": "workflow-automation",
@@ -297,6 +297,15 @@
       "path": "disklordz/agents/profit/plugin-factory-liaison",
       "entry": "disklordz/agents/profit/plugin-factory-liaison/agent.md",
       "skill": "disklordz/agents/profit/plugin-factory-liaison/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "autonomous-coding-agent",
+      "title": "Autonomous Coding Agent (24/7)",
+      "profit_lever": "DiskLordz ships while Samuel runs the business \u2014 24/7 queue drain without human babysitting",
+      "path": "disklordz/agents/profit/autonomous-coding-agent",
+      "entry": "disklordz/agents/profit/autonomous-coding-agent/agent.md",
+      "skill": "disklordz/agents/profit/autonomous-coding-agent/skill.md",
       "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
     },
     {

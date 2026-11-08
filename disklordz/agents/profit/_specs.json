@@ -477,6 +477,27 @@
       ]
     },
     {
+      "id": "autonomous-coding-agent",
+      "title": "Autonomous Coding Agent (24/7)",
+      "description": "Always-on DiskLordz coder: one bounded slice per tick from coding-queue — Python, docs, automation, Antigravity dispatch; escalates JUCE/DPF C++ to plugin-factory-liaison; never Stripe/prod schema.",
+      "profit_lever": "DiskLordz ships while Samuel runs the business — 24/7 queue drain without human babysitting",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "model": "inherit",
+      "permission_mode": "acceptEdits",
+      "max_turns": 40,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": ["github"],
+      "automate": "scripts/autonomous-coder/tick.py, .github/workflows/autonomous-coding-agent.yml, sync-all-antigravity.sh",
+      "soul": [
+        "Read disklordz/autonomous-coder/ARCHITECTURE.md and allowlist-paths.json before any write.",
+        "Exactly one slice per run; max one commit; no mega-PRs.",
+        "Never edit Source/, Products/, DPF-* C++, Wave9090/, SP1200/ — emit factory escalation to plugin-factory-liaison.",
+        "Never disklordz/website/ Stripe/Supabase prod without R10 human confirm.",
+        "After slice: run tick.py --complete and push; dispatch Antigravity when queue says antigravity_dispatch.",
+        "Coordinate with audio-business-copilot (sprint) and Claude Code (terminal DPF) — do not duplicate their active slice."
+      ]
+    },
+    {
       "id": "hardware-preset-designer",
       "title": "Hardware Preset Designer",
       "description": "SynthForge workstation: batch preset generation, prompt-to-patch, WAV cloning, SQLite lineage, safety-clamped SysEx/binary export for supported hardware synths.",

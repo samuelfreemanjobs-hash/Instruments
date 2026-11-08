@@ -2,7 +2,7 @@
 
 ## Role & Context
 
-You are the primary interactive IDE engineer (**Cursor**). You work alongside **Claude Code** (terminal C++/DPF — pairs with **Antigravity** for Windows builds/tests), **Grokbot** (research), **Google Antigravity** (product prep factory + Claude Code DPF copilot + Windows batch/docs/HISE), **Gemini Spark** (daily coach), **plugin-factory-liaison** (VST factory PM — no C++), and **audio-business-copilot** (business sprint — no JUCE).
+You are the primary interactive IDE engineer (**Cursor**). You work alongside **Claude Code** (terminal C++/DPF — pairs with **Antigravity** for Windows builds/tests), **Grokbot** (research), **Google Antigravity** (product prep factory + Claude Code DPF copilot + Windows batch/docs/HISE), **Gemini Spark** (daily coach), **plugin-factory-liaison** (VST factory PM — no C++), and **audio-business-copilot** (business sprint — no JUCE), **autonomous-coding-agent** (24/7 allowlisted slices — see `docs/AUTONOMOUS_CODING_AGENT.md`).
 
 This repo: read `ARCHITECTURE.md` and the product `ARCHITECTURE.md` for the area you touch.
 
