@@ -15,12 +15,24 @@
    - **Agent Work Orders** → `WO-2026-VVOY-*`
 3. Set Marketing / Planner gates on `WO-2026-VVOY-003` before any store SKU.
 
-## Team agent: `cursor-v-voyager`
+## Team agents
+
+| Agent | Role | SOP |
+|-------|------|-----|
+| **`cursor-v-voyager`** | JUCE implementer — DSP, ship, CI | This doc + `cursor-v-voyager-agent.mdc` |
+| **`v-voyager-preset-agent`** | 300-program bank, stack/pink, genres | [agents/PRESET_AGENT.md](../plugin-factory/plugins/moog-voyager/agents/PRESET_AGENT.md) |
+| **`v-voyager-ui-agent`** | **Your mockup** → `SynthEditor` | [agents/UI_AGENT.md](../plugin-factory/plugins/moog-voyager/agents/UI_AGENT.md) |
+
+Full roster: [V_VOYAGER_AGENTS.md](V_VOYAGER_AGENTS.md)
+
+**UI mockup file:** [UI_CONCEPT_VOYAGER-V.png](../plugin-factory/plugins/moog-voyager/docs/UI_CONCEPT_VOYAGER-V.png)
+
+### `cursor-v-voyager` (implementer)
 
 | Field | Value |
 |-------|--------|
 | **Owner** | Cursor Cloud Agent on `samuelfreemanjobs-hash/Instruments` |
-| **Scope** | Plugin Factory OS + V Voyager DSP, presets, CI ship |
+| **Scope** | Plugin Factory OS + V Voyager DSP, CI ship; integrates Preset/UI agent PRs |
 | **Rules** | `AGENTS.md`, `.cursor/rules/cursor-v-voyager-agent.mdc`, `plugin-factory/plugins/moog-voyager/README.md` |
 | **Handoff inbox** | `disklordz/cursor-cloud/inbox/CO-*.json` |
 | **WIP** | Counts toward Factory Manager **max 2** Cursor JUCE WOs when assigned implementation work |

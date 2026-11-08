@@ -1,8 +1,10 @@
 # VOYAGER-V — UI concept (source of truth for editor)
 
-Design reference:
+Design reference (UI Agent visual contract):
 
 ![VOYAGER-V panel concept](UI_CONCEPT_VOYAGER-V.png)
+
+Agent: **`v-voyager-ui-agent`** · [`../agents/UI_AGENT.md`](../agents/UI_AGENT.md) · roster [docs/V_VOYAGER_AGENTS.md](../../../../docs/V_VOYAGER_AGENTS.md)
 
 ## Branding
 

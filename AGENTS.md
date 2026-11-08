@@ -39,7 +39,7 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
-**V Voyager (Plugin Factory SKU):** agent `cursor-v-voyager` · PM import [disklordz/airtable/seed/v-voyager-2026.json](disklordz/airtable/seed/v-voyager-2026.json) · [docs/V_VOYAGER_PM.md](docs/V_VOYAGER_PM.md)
+**V Voyager (Plugin Factory SKU):** `cursor-v-voyager` (implementer) · **`v-voyager-preset-agent`** · **`v-voyager-ui-agent`** (mockup: `plugin-factory/plugins/moog-voyager/docs/UI_CONCEPT_VOYAGER-V.png`) · [docs/V_VOYAGER_AGENTS.md](docs/V_VOYAGER_AGENTS.md) · PM [docs/V_VOYAGER_PM.md](docs/V_VOYAGER_PM.md)
 
 Integrations hub: [disklordz/integrations/ARCHITECTURE.md](disklordz/integrations/ARCHITECTURE.md) · `./scripts/setup-open-source-integrations.sh`
 

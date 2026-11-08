@@ -1,0 +1,13 @@
+# Automation — V Voyager UI Designer (`v-voyager-ui-designer`)
+
+platform: manual
+trigger: manual
+primary: TBD
+
+## Steps
+
+## Invoke agent
+Read: disklordz/agents/profit/v-voyager-ui-designer/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#v-voyager-ui-designer

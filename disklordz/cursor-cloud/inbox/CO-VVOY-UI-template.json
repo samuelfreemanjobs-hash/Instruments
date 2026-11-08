@@ -1,0 +1,7 @@
+{
+  "work_order_id": "WO-2026-VVOY-005",
+  "owner_agent": "v-voyager-ui-agent",
+  "title": "[V-Voyager][UI] Mockup parity — VOYAGER-V panel",
+  "instructions": "Read UI_CONCEPT_VOYAGER-V.png and agents/UI_AGENT.md. Edit SynthEditor to match mockup; screenshot diff required.",
+  "branch_hint": "cursor/v-voyager-ui-<suffix>"
+}

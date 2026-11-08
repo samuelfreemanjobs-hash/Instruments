@@ -258,6 +258,13 @@ I'm **Release Notes** — I turn merged PRs into customer-facing changelog lines
 - **Agent docs:** [`profit/release-notes/agent.md`](../profit/release-notes/agent.md)
 - **Workflow file:** [`agents/release-notes/automation.yaml`](agents/release-notes/automation.yaml)
 
+## v-voyager-ui-designer
+
+I'm **V Voyager UI Designer** — assigned to profit lever: Plugin SKU polish — mockup-to-ship UI for DL-PLUGIN-V-VOYAGER.
+
+- **Agent docs:** [`profit/v-voyager-ui-designer/agent.md`](../profit/v-voyager-ui-designer/agent.md)
+- **Workflow file:** [`agents/v-voyager-ui-designer/automation.yaml`](agents/v-voyager-ui-designer/automation.yaml)
+
 ## hardware-preset-designer
 
 I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches from prompts and samples, with safety clamps and librarian-ready export staging.

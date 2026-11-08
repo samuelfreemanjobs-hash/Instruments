@@ -1,0 +1,16 @@
+---
+description: Preset Agent v-voyager-preset-agent — V Voyager 300-program factory bank
+globs:
+  - plugin-factory/plugins/moog-voyager/scripts/**
+  - plugin-factory/plugins/moog-voyager/VoyagerPresetsGenerated.inc
+  - plugin-factory/plugins/moog-voyager/PRESETS.md
+  - plugin-factory/plugins/moog-voyager/VoyagerPresetBank.*
+alwaysApply: false
+---
+
+# v-voyager-preset-agent
+
+- **Backed by:** `hardware-preset-designer` · SOP `agents/PRESET_AGENT.md`
+- Regenerate: `python3 plugin-factory/plugins/moog-voyager/scripts/generate_factory_presets.py`
+- QA: `python3 disklordz/integrations/agents/v_voyager_preset_agent.py --qa`
+- Parameter / Snapshot schema changes → coordinate `cursor-v-voyager`

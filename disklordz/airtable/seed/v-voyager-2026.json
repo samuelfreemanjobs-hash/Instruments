@@ -6,7 +6,7 @@
       "name": "V Voyager",
       "division": "Plugin",
       "status": "Active",
-      "brief": "Monophonic Voyager-style VSTi from Plugin Factory OS: 24 factory presets, Moog ladder DSP, zero-touch ship via factory.sh release. Path: plugin-factory/plugins/moog-voyager/.",
+      "brief": "Four-stack Moog VSTi (Voyager, Sub Phatty, Subsequent 37, Model D): 300 factory presets, mockup-driven UI (UI_AGENT), preset lane (PRESET_AGENT). Path: plugin-factory/plugins/moog-voyager/.",
       "github_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
       "price_tier": "TBD",
       "ladder_tier": "factory_sku",
@@ -26,6 +26,22 @@
       "default_branch": "main",
       "wip_policy": "Counts toward max 2 Cursor JUCE WOs when owner_agent on implementation WOs",
       "handoff_inbox": "disklordz/cursor-cloud/inbox/CO-*.json"
+    },
+    {
+      "agent_id": "v-voyager-preset-agent",
+      "display_name": "V Voyager — Preset Agent",
+      "role": "300-program factory bank, stack/pink tags, genre curation (WO-004)",
+      "repo": "samuelfreemanjobs-hash/Instruments",
+      "fleet_backing": "hardware-preset-designer",
+      "sop": "plugin-factory/plugins/moog-voyager/agents/PRESET_AGENT.md"
+    },
+    {
+      "agent_id": "v-voyager-ui-agent",
+      "display_name": "V Voyager — UI Agent",
+      "role": "Match UI_CONCEPT_VOYAGER-V.png in SynthEditor (WO-005)",
+      "repo": "samuelfreemanjobs-hash/Instruments",
+      "fleet_backing": "v-voyager-ui-designer",
+      "sop": "plugin-factory/plugins/moog-voyager/agents/UI_AGENT.md"
     }
   ],
   "projects": [
@@ -55,7 +71,26 @@
       "status": "Backlog",
       "priority": "P2",
       "owner_agent": "cursor-v-voyager",
-      "acceptance_criteria": "All 24 factory presets auditioned (offline demo or standalone). No preset leaves filter cutoff at 0 or silent amp env. run_business.py --profile factory green. Optional: user preset save in plugin state beyond factory bank."
+      "acceptance_criteria": "All 300 factory presets pass VoyagerPresetTests. Preset Agent QA script green. No silent amp env. stack/pink applied per program."
+    },
+    {
+      "work_order_id": "WO-2026-VVOY-004",
+      "project_id": "PRJ-2026-V-VOYAGER",
+      "title": "[V-Voyager][Preset] Factory bank + stack tags",
+      "status": "Ready for Cursor Cloud",
+      "priority": "P2",
+      "owner_agent": "hardware-preset-designer",
+      "co_owner_agent": "v-voyager-preset-agent",
+      "acceptance_criteria": "generate_factory_presets.py + v_voyager_preset_agent.py --qa green. PRESETS.md updated for any new curated slots. Genre 025-032 auditioned."
+    },
+    {
+      "work_order_id": "WO-2026-VVOY-005",
+      "project_id": "PRJ-2026-V-VOYAGER",
+      "title": "[V-Voyager][UI] Mockup parity — VOYAGER-V panel",
+      "status": "Ready for Cursor Cloud",
+      "priority": "P1",
+      "owner_agent": "v-voyager-ui-agent",
+      "acceptance_criteria": "UI_CONCEPT_VOYAGER-V.png committed and referenced. SynthEditor layout reviewed vs mockup with screenshot diff. Gap table in UI_AGENT.md updated."
     },
     {
       "work_order_id": "WO-2026-VVOY-003",
