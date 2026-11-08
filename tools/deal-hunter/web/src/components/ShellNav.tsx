@@ -14,6 +14,9 @@ const PRIMARY = [
 const MORE = [
   { href: "/intel", label: "Intel" },
   { href: "/autopilot", label: "Autopilot" },
+  { href: "/coupons", label: "Coupons" },
+  { href: "/budget", label: "Budget" },
+  { href: "/calendar", label: "Calendar" },
   { href: "/wishlist", label: "Wishlist" },
   { href: "/settings", label: "Settings" },
 ];

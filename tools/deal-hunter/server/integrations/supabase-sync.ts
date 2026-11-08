@@ -3,6 +3,7 @@ import { liveEnrichedDeals } from "../deal-pipeline.js";
 import type { ScoredDeal } from "../rank.js";
 import { analyzeDealIntelligence } from "../intelligence/engine.js";
 import { computeDealIntelligenceScore } from "../intelligence/deal-score.js";
+import { identityFor } from "../catalog-meta.js";
 
 function slug(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -39,6 +40,7 @@ async function ensureRetailer(admin: SupabaseClient, name: string, sampleUrl: st
 
 async function ensureProduct(admin: SupabaseClient, deal: ScoredDeal) {
   const norm = deal.title.toLowerCase();
+  const identity = identityFor(deal.id, deal.title, deal.retailer);
   const { data: existing } = await admin.from("products").select("id").eq("normalized_title", norm).maybeSingle();
   if (existing) return existing.id as string;
   const { data, error } = await admin
@@ -46,10 +48,10 @@ async function ensureProduct(admin: SupabaseClient, deal: ScoredDeal) {
     .insert({
       title: deal.title,
       normalized_title: norm,
-      model_number: deal.identity?.model ?? null,
-      upc: deal.identity?.upc ?? null,
+      model_number: identity.model ?? null,
+      upc: identity.upc ?? null,
       primary_image_url: deal.image,
-      specifications: deal.identity?.specs ?? {},
+      specifications: identity.specs ?? {},
     })
     .select("id")
     .single();

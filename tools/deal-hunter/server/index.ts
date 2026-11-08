@@ -7,13 +7,13 @@ import { CATALOG, type DealType } from "./catalog.js";
 import { runDecorAgent } from "./agents/decor-agent.js";
 import { runPricingAgent } from "./agents/pricing-agent.js";
 import { buildDashboard } from "./dashboard.js";
-import { liveEnrichedDeals } from "./deal-pipeline.js";
+import { getCatalogSource, liveEnrichedDeals, refreshSupabaseDealCache } from "./catalog-pool.js";
 import {
   buildBriefing,
   analyzeDealIntelligence,
   intelligenceForQuery,
 } from "./intelligence/engine.js";
-import { detectSeason, type ShoppingSeason } from "./season.js";
+import { detectSeason, retailCalendarEvents, type ShoppingSeason } from "./season.js";
 import {
   universalSearch,
   visualTagsFromRgb,
@@ -35,7 +35,9 @@ import {
   type AgentSpecialty,
 } from "./agents/autonomous-fleet.js";
 import { assertN8nCronAuth, emitN8nEvent } from "./integrations/n8n.js";
-import { notifyDealAlert, savePushSubscription } from "./integrations/notify.js";
+import { notifyDealAlert, savePushSubscription, updatePushSubscriptionPrefs } from "./integrations/notify.js";
+import { runCatalogSyncJob, startCatalogSyncScheduler } from "./integrations/catalog-scheduler.js";
+import { dispatchStealAlerts, findStealHits } from "./integrations/steal-dispatch.js";
 import { v1 } from "./api/v1/routes.js";
 import { runShoppingOrchestrator } from "./agents/orchestrator.js";
 import { syncCatalogToSupabase } from "./integrations/supabase-sync.js";
@@ -52,7 +54,12 @@ function freshPool() {
 }
 
 app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, product: "black-friday-madness", yearRound: true });
+  res.json({
+    ok: true,
+    product: "black-friday-madness",
+    yearRound: true,
+    catalogSource: getCatalogSource(),
+  });
 });
 
 app.use("/api/v1", v1);
@@ -65,10 +72,28 @@ app.post("/api/admin/sync-catalog", async (req, res) => {
   }
   try {
     const result = await syncCatalogToSupabase();
+    const cache = await refreshSupabaseDealCache();
+    res.json({ ...result, catalogCache: cache });
+  } catch (e) {
+    res.status(500).json({ error: "sync_failed", detail: String(e) });
+  }
+});
+
+app.post("/api/admin/sync-catalog/cron", async (req, res) => {
+  if (!assertN8nCronAuth(req.headers["x-n8n-secret"] as string | undefined)) {
+    res.status(401).json({ error: "unauthorized" });
+    return;
+  }
+  try {
+    const result = await runCatalogSyncJob();
     res.json(result);
   } catch (e) {
     res.status(500).json({ error: "sync_failed", detail: String(e) });
   }
+});
+
+app.get("/api/catalog/source", (_req, res) => {
+  res.json({ source: getCatalogSource(), useSupabase: process.env.USE_SUPABASE_CATALOG === "1" });
 });
 
 app.post("/api/orchestrator/chat", (req, res) => {
@@ -79,6 +104,32 @@ app.post("/api/orchestrator/chat", (req, res) => {
 
 app.get("/api/season", (_req, res) => {
   res.json(detectSeason());
+});
+
+app.get("/api/calendar", (_req, res) => {
+  const now = detectSeason();
+  res.json({
+    current: now,
+    events: retailCalendarEvents(),
+  });
+});
+
+app.get("/api/coupons", (_req, res) => {
+  const { deals } = freshPool();
+  const coupons = deals
+    .filter((d) => d.coupon?.verified)
+    .map((d) => ({
+      dealId: d.id,
+      title: d.title,
+      retailer: d.retailer,
+      code: d.coupon!.code,
+      description: d.coupon!.description,
+      expiresAt: d.coupon!.expiresAt,
+      listPrice: d.price,
+      finalPrice: d.pricing?.finalPrice ?? d.price,
+      stealScore: d.stealScore,
+    }));
+  res.json({ coupons, count: coupons.length, catalogSource: getCatalogSource() });
 });
 
 app.get("/api/trust/tips", (_req, res) => {
@@ -174,13 +225,47 @@ app.post("/api/notifications/subscribe", (req, res) => {
     res.status(400).json({ error: "invalid_subscription" });
     return;
   }
+  const minStealScore = req.body?.minStealScore != null ? Number(req.body.minStealScore) : 85;
   const id = savePushSubscription({
     endpoint,
     keys: { p256dh: String(keys.p256dh), auth: String(keys.auth) },
     email: req.body?.email ? String(req.body.email) : undefined,
     notifyEmail: Boolean(req.body?.notifyEmail),
+    minStealScore,
   });
-  res.status(201).json({ id, ok: true });
+  res.status(201).json({ id, ok: true, minStealScore });
+});
+
+app.patch("/api/notifications/subscribe", (req, res) => {
+  const endpoint = String(req.body?.endpoint ?? "");
+  if (!endpoint) {
+    res.status(400).json({ error: "invalid_subscription" });
+    return;
+  }
+  const ok = updatePushSubscriptionPrefs(endpoint, {
+    minStealScore: req.body?.minStealScore != null ? Number(req.body.minStealScore) : undefined,
+    notifyEmail: req.body?.notifyEmail != null ? Boolean(req.body.notifyEmail) : undefined,
+  });
+  if (!ok) {
+    res.status(404).json({ error: "not_found" });
+    return;
+  }
+  res.json({ ok: true });
+});
+
+app.get("/api/notifications/steal-hits", (req, res) => {
+  const min = req.query.minStealScore ? Number(req.query.minStealScore) : 85;
+  const hits = findStealHits(Math.min(100, Math.max(50, min)));
+  res.json({ hits, minStealScore: min, catalogSource: getCatalogSource() });
+});
+
+app.post("/api/notifications/dispatch-steals", async (req, res) => {
+  if (!assertN8nCronAuth(req.headers["x-n8n-secret"] as string | undefined)) {
+    res.status(401).json({ error: "unauthorized" });
+    return;
+  }
+  const result = await dispatchStealAlerts();
+  res.json(result);
 });
 
 app.post("/api/notifications/alert", async (req, res) => {
@@ -444,4 +529,10 @@ if (process.env.NODE_ENV === "production") {
 
 app.listen(PORT, "127.0.0.1", () => {
   console.log(`Savvy HQ API on http://127.0.0.1:${PORT}`);
+  startCatalogSyncScheduler();
+  if (process.env.USE_SUPABASE_CATALOG === "1") {
+    void refreshSupabaseDealCache().then((r) => {
+      if (r.ok) console.log(`Supabase catalog cache: ${r.count} offers overlaid`);
+    });
+  }
 });

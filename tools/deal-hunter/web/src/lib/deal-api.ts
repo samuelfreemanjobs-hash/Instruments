@@ -59,7 +59,11 @@ export async function fetchLocalDeals(zip?: string) {
   return res.json() as Promise<{ metro: string; offers: { id: string; title: string; storeName: string; price: number; url: string }[] }>;
 }
 
-export async function fetchRecommendations(profile: { zip?: string; maxBudget?: number }) {
+export async function fetchRecommendations(profile: {
+  zip?: string;
+  maxBudget?: number;
+  categories?: string[];
+}) {
   const res = await fetch("/api/recommendations", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -109,6 +113,73 @@ export async function askIntelligence(question: string) {
 export async function fetchAutopilotAgents() {
   const res = await fetch("/api/autopilot/agents");
   return res.json() as Promise<{ agents: { id: string; name: string; mission: string; scheduleHint: string }[] }>;
+}
+
+export async function fetchCoupons() {
+  const res = await fetch("/api/coupons");
+  if (!res.ok) throw new Error("coupons_failed");
+  return res.json() as Promise<{
+    coupons: {
+      dealId: string;
+      title: string;
+      retailer: string;
+      code: string;
+      description: string;
+      expiresAt?: string;
+      finalPrice: number;
+      stealScore: number;
+    }[];
+    count: number;
+  }>;
+}
+
+export async function fetchRetailCalendar() {
+  const res = await fetch("/api/calendar");
+  if (!res.ok) throw new Error("calendar_failed");
+  return res.json() as Promise<{
+    current: { label: string; focus: string; season: string };
+    events: {
+      id: string;
+      label: string;
+      startsAt: string;
+      description: string;
+      peakEvent: string | null;
+    }[];
+  }>;
+}
+
+export async function fetchStealHits(minStealScore: number) {
+  const res = await fetch(`/api/notifications/steal-hits?minStealScore=${minStealScore}`);
+  if (!res.ok) throw new Error("steal_hits_failed");
+  return res.json() as Promise<{ hits: { dealId: string; title: string; stealScore: number; price: number }[] }>;
+}
+
+export async function registerStealAlertBackend(body: {
+  endpoint: string;
+  minStealScore: number;
+  email?: string;
+}) {
+  const res = await fetch("/api/notifications/subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      endpoint: body.endpoint,
+      keys: { p256dh: "browser-local", auth: "browser-local" },
+      minStealScore: body.minStealScore,
+      notifyEmail: Boolean(body.email),
+      email: body.email,
+    }),
+  });
+  if (!res.ok) throw new Error("subscribe_failed");
+  return res.json();
+}
+
+export async function patchStealAlertPrefs(endpoint: string, minStealScore: number) {
+  await fetch("/api/notifications/subscribe", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ endpoint, minStealScore }),
+  });
 }
 
 export async function fetchAutopilotDigest(profile: { zip?: string; maxBudget?: number }) {

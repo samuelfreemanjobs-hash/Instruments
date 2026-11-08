@@ -100,3 +100,63 @@ function addDays(d: Date, n: number): Date {
   x.setDate(x.getDate() + n);
   return x;
 }
+
+export interface RetailCalendarEvent {
+  id: string;
+  label: string;
+  startsAt: string;
+  season: ShoppingSeason;
+  peakEvent: PeakEvent;
+  description: string;
+}
+
+export function retailCalendarEvents(year = new Date().getFullYear()): RetailCalendarEvent[] {
+  const thanksgiving = nthWeekdayOfMonth(year, 10, 4, 4);
+  const blackFriday = addDays(thanksgiving, 1);
+  const cyberMonday = addDays(blackFriday, 3);
+  const cyberWeekEnd = addDays(cyberMonday, 3);
+  const preBf = addDays(thanksgiving, -7);
+
+  return [
+    {
+      id: "pre-bf",
+      label: "Early Black Friday",
+      startsAt: preBf.toISOString(),
+      season: "black_friday",
+      peakEvent: "black_friday",
+      description: "Retailers start doorbusters — verify final cart price vs 30d avg.",
+    },
+    {
+      id: "black-friday",
+      label: "Black Friday",
+      startsAt: blackFriday.toISOString(),
+      season: "black_friday",
+      peakEvent: "black_friday",
+      description: "Peak in-store and online drops. Stack verified coupon codes only.",
+    },
+    {
+      id: "cyber-monday",
+      label: "Cyber Monday",
+      startsAt: cyberMonday.toISOString(),
+      season: "cyber_monday",
+      peakEvent: "cyber_monday",
+      description: "Online-first codes and tech bundles.",
+    },
+    {
+      id: "cyber-week",
+      label: "Cyber Week",
+      startsAt: cyberMonday.toISOString(),
+      season: "cyber_monday",
+      peakEvent: "cyber_monday",
+      description: `Runs through ${cyberWeekEnd.toLocaleDateString()} — extended price checks.`,
+    },
+    {
+      id: "holiday-core",
+      label: "Holiday shipping deadlines",
+      startsAt: new Date(year, 10, 15).toISOString(),
+      season: "holiday",
+      peakEvent: null,
+      description: "Gift season — prefer free shipping + trusted domains.",
+    },
+  ];
+}

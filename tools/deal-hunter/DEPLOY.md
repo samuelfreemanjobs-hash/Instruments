@@ -32,7 +32,13 @@ Import `integrations/n8n/savvy-hq-autopilot-stub.json`.
 | `N8N_WEBHOOK_EMAIL` | Digest emails |
 | `N8N_WEBHOOK_SECRET` | Header `x-n8n-secret` on `/api/autopilot/run` and `/api/notifications/alert` |
 
-Cron example: POST `https://api.example.com/api/autopilot/run` every 15 minutes.
+Cron examples (header `x-n8n-secret: $N8N_WEBHOOK_SECRET`):
+
+- POST `https://api.example.com/api/autopilot/run` every 15 minutes.
+- POST `https://api.example.com/api/admin/sync-catalog/cron` hourly (or set `CATALOG_SYNC_INTERVAL_MINUTES=60` on the API host).
+- POST `https://api.example.com/api/notifications/dispatch-steals` every 5–15 minutes for steal push/email relay.
+
+Set `USE_SUPABASE_CATALOG=1` on the API so search/discover read synced Postgres prices with SQLite fallback.
 
 ## Data compliance
 

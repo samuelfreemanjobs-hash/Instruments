@@ -22,7 +22,7 @@ export default async function AlertsPage() {
     <section className="space-y-4">
       <header className="space-y-1">
         <h2 className="text-lg font-semibold">Notifications</h2>
-        <p className="text-sm text-bfm-muted">Price alerts in Supabase with RLS; browser prefs stay local until push is wired.</p>
+        <p className="text-sm text-bfm-muted">Supabase price watches plus steal-score alerts backed by the deal API.</p>
       </header>
       <AlertsClient serverAlerts={serverAlerts} />
     </section>

@@ -51,6 +51,12 @@ db.exec(`
     auth TEXT NOT NULL,
     email TEXT,
     notify_email INTEGER NOT NULL DEFAULT 0,
+    min_steal_score INTEGER NOT NULL DEFAULT 85,
+    created_at TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS steal_alert_log (
+    id TEXT PRIMARY KEY,
     created_at TEXT NOT NULL
   );
 
@@ -62,3 +68,9 @@ db.exec(`
     created_at TEXT NOT NULL
   );
 `);
+
+try {
+  db.prepare(`ALTER TABLE push_subscriptions ADD COLUMN min_steal_score INTEGER NOT NULL DEFAULT 85`).run();
+} catch {
+  /* column exists */
+}
