@@ -22,7 +22,10 @@ Close the gap between the **mockup** and [`SynthEditor.cpp`](../SynthEditor.cpp)
 | Oscillator mix **faders** | ✓ | Match fader cap art from mockup |
 | ADSR **vertical sliders** | ✓ | Match spacing/labels from mockup |
 | **Performance** keyboard + wheels + XY | ✓ (wave 1) | Wire wheels/XY to mod bus (optional) |
-| Modulation **bus panel** layout | Partial | Dual source columns per PNG |
+| Modulation **bus panel** layout | ✓ (matrix) | Interactive routing rows (next) |
+| **OSC 2/3 SYNC** | ✓ | Hard-sync DSP |
+| Oversample **2× / 4×** switches | ✓ | Segmented header buttons |
+| XY / wheels **→ modulation** | ✓ | XY→LFO; M→filter env; P→osc fine |
 | Patch **prev/next** flanking display | ✓ | ◀ PATCH ▶ centered |
 | Oversample / meter / scope | ✓ | Master knob by scope; wood LEDs |
 

@@ -6,6 +6,16 @@
 #include <array>
 
 /** Mockup performance row: XY surface, pitch/mod wheels, on-screen MIDI keyboard. */
+class ModBusMatrixPanel : public juce::Component
+{
+public:
+    void setAccentColour(juce::Colour c) noexcept { accent = c; }
+    void paint(juce::Graphics& g) override;
+
+private:
+    juce::Colour accent { 0xfff4a62a };
+};
+
 class VoyagerPerformanceStrip : public juce::Component
 {
 public:
@@ -27,6 +37,12 @@ private:
 
     void mouseDown(const juce::MouseEvent& e) override;
     void mouseDrag(const juce::MouseEvent& e) override;
+    void mouseUp(const juce::MouseEvent& e) override;
+
+    juce::Rectangle<float> xyBounds {};
+    juce::Rectangle<float> pitchWheelBounds {};
+    juce::Rectangle<float> modWheelBounds {};
+    void applyPerformanceToEngine();
 };
 
 class MeterScopePanel : public juce::Component
@@ -97,6 +113,9 @@ private:
     juce::ToggleButton mixerOdButton;
     juce::ToggleButton filterOdButton;
     juce::Label modLfoLabel;
+    ModBusMatrixPanel modBusMatrix;
+    juce::ToggleButton osc23SyncButton;
+    std::array<juce::TextButton, 3> oversampleSwitch;
     juce::Label outputSectionLabel;
     juce::Label cpuStatusLabel;
     juce::MidiKeyboardComponent midiKeyboard;
@@ -124,6 +143,7 @@ private:
     std::unique_ptr<ButtonAttachment> mixerOdAttachment;
     std::unique_ptr<ButtonAttachment> filterOdAttachment;
     std::unique_ptr<ComboAttachment> oversampleAttachment;
+    std::unique_ptr<ButtonAttachment> osc23SyncAttachment;
     std::unique_ptr<SliderAttachment> fAttackAttachment, fDecayAttachment, fSustainAttachment, fReleaseAttachment;
     std::unique_ptr<SliderAttachment> aAttackAttachment, aDecayAttachment, aSustainAttachment, aReleaseAttachment;
     std::unique_ptr<SliderAttachment> lfoRateAttachment, lfoPitchAttachment, lfoFilterAttachment, glideAttachment;

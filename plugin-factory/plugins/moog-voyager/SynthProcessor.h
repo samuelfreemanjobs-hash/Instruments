@@ -71,6 +71,7 @@ public:
         bool noisePink = false;
         bool mixerOd = false;
         bool filterOd = false;
+        bool osc23Sync = false;
     };
 
     VoiceParams readVoiceParams() const noexcept;

@@ -6,11 +6,15 @@
   "completed": [
     "Performance strip: XY pad, pitch/mod wheels, 2-oct MIDI keyboard",
     "Header: patch ◀ ▶, gold title, wood LED strips, OUTPUT scope + master",
-    "CPU indicator, MODULATION BUS / FILTER labels"
+    "CPU indicator, MODULATION BUS / FILTER labels",
+    "Mod bus matrix panel (LFO/NOISE/ENV/OSC3 → pitch/filter)",
+    "OSC 2/3 SYNC toggle + hard sync DSP",
+    "XY/wheels wired to LFO + filter env + pitch wheel",
+    "Oversample OFF/2x/4x segmented switches"
   ],
   "remaining": [
-    "Mod bus dual-column source matrix (visual)",
-    "Oscillator sync toggle",
-    "Wheel MIDI to host (optional)"
+    "Interactive mod matrix routing (beyond LFO highlight)",
+    "Filter KB track stepped switch UI",
+    "Oscillator waveform rotary switches (mockup style)"
   ]
 }

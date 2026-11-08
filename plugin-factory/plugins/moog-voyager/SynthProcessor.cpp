@@ -191,6 +191,7 @@ void MoogVoyagerAudioProcessor::SynthVoice::renderNextBlock(juce::AudioBuffer<fl
         const float rootHz = juce::jmax(20.0f, currentHz * lfoPitchMul);
 
         float mixed = 0.0f;
+        float oscInc[3] {};
         for (int o = 0; o < 3; ++o)
         {
             driftPhase[o] += driftRates[o] / sr;
@@ -198,11 +199,24 @@ void MoogVoyagerAudioProcessor::SynthVoice::renderNextBlock(juce::AudioBuffer<fl
                 1.0f + 0.0012f * params.stackDrift * std::sin(driftPhase[o] * kTwoPi);
             const float hz = rootHz * std::pow(2.0f, params.oscOctave[o])
                              * std::pow(2.0f, params.oscFine[o] / 1200.0f) * drift;
-            const float inc = hz / sr;
-            phase[o] += inc;
+            oscInc[o] = hz / sr;
+        }
+
+        const float phase0Before = phase[0];
+        phase[0] += oscInc[0];
+        if (phase[0] >= 1.0f)
+            phase[0] -= 1.0f;
+        const bool osc1Wrapped = phase[0] < phase0Before;
+        mixed += waveFromPhase(phase[0], oscInc[0], params.oscWave[0]) * params.oscLevel[0];
+
+        for (int o = 1; o < 3; ++o)
+        {
+            if (params.osc23Sync && osc1Wrapped)
+                phase[o] = 0.0f;
+            phase[o] += oscInc[o];
             if (phase[o] >= 1.0f)
                 phase[o] -= 1.0f;
-            mixed += waveFromPhase(phase[o], inc, params.oscWave[o]) * params.oscLevel[o];
+            mixed += waveFromPhase(phase[o], oscInc[o], params.oscWave[o]) * params.oscLevel[o];
         }
         mixed += nextNoiseSample(params.noisePink) * params.noiseLevel;
 
@@ -314,6 +328,7 @@ MoogVoyagerAudioProcessor::VoiceParams MoogVoyagerAudioProcessor::readVoiceParam
     p.noisePink = apvts.getRawParameterValue(std::string(SynthParamIDs::noisePink))->load() >= 0.5f;
     p.mixerOd = apvts.getRawParameterValue(std::string(SynthParamIDs::mixerOd))->load() >= 0.5f;
     p.filterOd = apvts.getRawParameterValue(std::string(SynthParamIDs::filterOd))->load() >= 0.5f;
+    p.osc23Sync = apvts.getRawParameterValue(std::string(SynthParamIDs::osc23Sync))->load() >= 0.5f;
 
     return p;
 }
@@ -377,6 +392,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout MoogVoyagerAudioProcessor::c
         "Oversampling",
         juce::StringArray { "Off", "2×", "4×" },
         0));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID { std::string(SynthParamIDs::osc23Sync), 1 }, "OSC 2/3 Sync", false));
     addFloat(SynthParamIDs::mixerDrive, "Mixer Drive", 1.0f, 4.0f, 2.2f);
     addFloat(SynthParamIDs::subOscLevel, "Sub Osc", 0.0f, 1.0f, 0.0f);
 

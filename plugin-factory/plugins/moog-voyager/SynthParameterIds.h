@@ -26,6 +26,7 @@ inline constexpr std::string_view noisePink { "noisePink" };
 inline constexpr std::string_view mixerOd { "mixerOd" };
 inline constexpr std::string_view filterOd { "filterOd" };
 inline constexpr std::string_view oversample { "oversample" };
+inline constexpr std::string_view osc23Sync { "osc23Sync" };
 
 inline constexpr std::string_view filterCutoff { "filterCutoff" };
 inline constexpr std::string_view filterResonance { "filterResonance" };

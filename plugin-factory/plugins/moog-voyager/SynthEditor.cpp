@@ -38,6 +38,51 @@ void layoutKnobRow(juce::Rectangle<int> area, std::initializer_list<juce::Slider
 }
 } // namespace
 
+void ModBusMatrixPanel::paint(juce::Graphics& g)
+{
+    auto r = getLocalBounds().toFloat().reduced(2.0f);
+    g.setColour(kPanelInset.darker(0.05f));
+    g.fillRoundedRectangle(r, 4.0f);
+
+    const juce::String sources[4] = { "LFO", "NOISE", "ENV", "OSC 3" };
+    const juce::String dests[2] = { "→ PITCH", "→ FILTER" };
+
+    g.setFont(juce::FontOptions(9.0f, juce::Font::bold));
+    g.setColour(kSectionText.withAlpha(0.85f));
+    const float colW = r.getWidth() / 3.0f;
+    for (int d = 0; d < 2; ++d)
+        g.drawText(dests[d], (int) (r.getX() + colW * (d + 1.0f)), (int) r.getY() + 2, (int) colW, 12,
+                   juce::Justification::centred);
+
+    for (int row = 0; row < 4; ++row)
+    {
+        const float y = r.getY() + 16.0f + row * 22.0f;
+        g.setColour(kSectionText.withAlpha(0.75f));
+        g.drawText(sources[row], (int) r.getX() + 4, (int) y, (int) colW, 18, juce::Justification::centredLeft);
+        for (int col = 0; col < 2; ++col)
+        {
+            const float cx = r.getX() + colW * (col + 1.35f);
+            const bool on = (row == 0) || (row == 1 && col == 1);
+            g.setColour(on ? accent : kPanelMetalHi);
+            g.fillEllipse(cx, y + 4.0f, 10.0f, 10.0f);
+            if (on)
+            {
+                g.setColour(accent.brighter(0.3f));
+                g.drawEllipse(cx, y + 4.0f, 10.0f, 10.0f, 1.2f);
+            }
+        }
+    }
+}
+
+namespace
+{
+void setApvtsFloat(juce::AudioProcessorValueTreeState& apvts, std::string_view id, float value)
+{
+    if (auto* param = apvts.getParameter(std::string(id)))
+        param->setValueNotifyingHost(param->convertTo0to1(value));
+}
+} // namespace
+
 VoyagerPerformanceStrip::VoyagerPerformanceStrip(MoogVoyagerAudioProcessor& p, juce::MidiKeyboardComponent& kb)
     : processor(p),
       keyboard(kb)
@@ -56,6 +101,7 @@ void VoyagerPerformanceStrip::paint(juce::Graphics& g)
     g.fillAll(kPanelInset.darker(0.08f));
     auto bounds = getLocalBounds().toFloat().reduced(4.0f);
     auto xy = bounds.removeFromLeft(92.0f).reduced(2.0f);
+    xyBounds = xy;
     g.setColour(kPanelMetal);
     g.fillRoundedRectangle(xy, 4.0f);
     g.setColour(accent.withAlpha(0.35f));
@@ -67,8 +113,9 @@ void VoyagerPerformanceStrip::paint(juce::Graphics& g)
     g.drawText("X / Y", xy.toNearestInt().removeFromTop(12), juce::Justification::centred);
 
     auto wheels = bounds.removeFromLeft(52.0f);
-    const auto drawWheel = [&](float x, float norm, const char* name) {
+    const auto drawWheel = [&](float x, float norm, const char* name, juce::Rectangle<float>& store) {
         juce::Rectangle<float> wr(x, wheels.getY() + 14.0f, 20.0f, wheels.getHeight() - 22.0f);
+        store = wr;
         g.setColour(kPanelMetal);
         g.fillRoundedRectangle(wr, 3.0f);
         g.setColour(accent);
@@ -77,8 +124,17 @@ void VoyagerPerformanceStrip::paint(juce::Graphics& g)
         g.setColour(kSectionText.withAlpha(0.65f));
         g.drawText(name, (int) wr.getX() - 2, (int) wheels.getY(), 26, 12, juce::Justification::centred);
     };
-    drawWheel(wheels.getX() + 4.0f, pitchWheel, "P");
-    drawWheel(wheels.getX() + 28.0f, modWheel, "M");
+    drawWheel(wheels.getX() + 4.0f, pitchWheel, "P", pitchWheelBounds);
+    drawWheel(wheels.getX() + 28.0f, modWheel, "M", modWheelBounds);
+}
+
+void VoyagerPerformanceStrip::applyPerformanceToEngine()
+{
+    auto& apvts = processor.getApvts();
+    setApvtsFloat(apvts, SynthParamIDs::lfoToFilter, xyX * 0.65f);
+    setApvtsFloat(apvts, SynthParamIDs::lfoToPitch, xyY * 0.35f);
+    setApvtsFloat(apvts, SynthParamIDs::filterEnvAmount, juce::jlimit(0.0f, 1.0f, modWheel * 1.1f));
+    setApvtsFloat(apvts, SynthParamIDs::osc1Fine, (pitchWheel - 0.5f) * 80.0f);
 }
 
 void VoyagerPerformanceStrip::resized()
@@ -92,15 +148,30 @@ void VoyagerPerformanceStrip::mouseDown(const juce::MouseEvent& e) { mouseDrag(e
 
 void VoyagerPerformanceStrip::mouseDrag(const juce::MouseEvent& e)
 {
-    auto bounds = getLocalBounds().toFloat().reduced(4.0f);
-    auto xy = bounds.withWidth(92.0f).reduced(2.0f);
-    if (xy.contains(e.position))
+    if (xyBounds.contains(e.position))
     {
-        xyX = juce::jlimit(0.0f, 1.0f, (e.position.x - xy.getX()) / xy.getWidth());
-        xyY = juce::jlimit(0.0f, 1.0f, 1.0f - (e.position.y - xy.getY()) / xy.getHeight());
+        xyX = juce::jlimit(0.0f, 1.0f, (e.position.x - xyBounds.getX()) / xyBounds.getWidth());
+        xyY = juce::jlimit(0.0f, 1.0f, 1.0f - (e.position.y - xyBounds.getY()) / xyBounds.getHeight());
+        applyPerformanceToEngine();
+        repaint();
+        return;
+    }
+    if (pitchWheelBounds.contains(e.position))
+    {
+        pitchWheel = juce::jlimit(0.0f, 1.0f, 1.0f - (e.position.y - pitchWheelBounds.getY()) / pitchWheelBounds.getHeight());
+        applyPerformanceToEngine();
+        repaint();
+        return;
+    }
+    if (modWheelBounds.contains(e.position))
+    {
+        modWheel = juce::jlimit(0.0f, 1.0f, 1.0f - (e.position.y - modWheelBounds.getY()) / modWheelBounds.getHeight());
+        applyPerformanceToEngine();
         repaint();
     }
 }
+
+void VoyagerPerformanceStrip::mouseUp(const juce::MouseEvent&) { applyPerformanceToEngine(); }
 
 void MeterScopePanel::paint(juce::Graphics& g)
 {
@@ -138,6 +209,8 @@ void MeterScopePanel::paint(juce::Graphics& g)
     }
     g.setColour(accent.withAlpha(0.9f));
     g.strokePath(wave, juce::PathStrokeType(1.2f));
+    g.setColour(kSectionText.withAlpha(0.55f));
+    g.drawText("Live mix", bounds.removeFromBottom(14).toNearestInt(), juce::Justification::centred);
 }
 
 void MoogVoyagerAudioProcessorEditor::styleKnob(juce::Slider& s, const juce::String& name)
@@ -296,7 +369,31 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     oversampleLabel.setColour(juce::Label::textColourId, kSectionText.withAlpha(0.85f));
     addAndMakeVisible(oversampleLabel);
     bindCombo(oversampleBox, { "Off", "2×", "4×" });
-    addAndMakeVisible(oversampleBox);
+    oversampleBox.setVisible(false);
+
+    const juce::StringArray osLabels { "OFF", "2×", "4×" };
+    for (int i = 0; i < 3; ++i)
+    {
+        oversampleSwitch[static_cast<size_t>(i)].setButtonText(osLabels[i]);
+        oversampleSwitch[static_cast<size_t>(i)].setRadioGroupId(88002);
+        oversampleSwitch[static_cast<size_t>(i)].setClickingTogglesState(true);
+        oversampleSwitch[static_cast<size_t>(i)].setColour(juce::TextButton::buttonColourId, kPanelInset);
+        oversampleSwitch[static_cast<size_t>(i)].onClick = [this, i]() {
+            if (auto* param = processorRef.getApvts().getParameter(std::string(SynthParamIDs::oversample)))
+            {
+                const float norm = i / 2.0f;
+                param->setValueNotifyingHost(norm);
+            }
+        };
+        addAndMakeVisible(oversampleSwitch[static_cast<size_t>(i)]);
+    }
+
+    modBusMatrix.setInterceptsMouseClicks(false, false);
+    addAndMakeVisible(modBusMatrix);
+
+    osc23SyncButton.setButtonText("OSC 2/3 SYNC");
+    osc23SyncButton.setColour(juce::ToggleButton::textColourId, kSectionText);
+    addAndMakeVisible(osc23SyncButton);
 
     addAndMakeVisible(meterScope);
 
@@ -431,6 +528,7 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     mixerOdAttachment = std::make_unique<ButtonAttachment>(apvts, std::string(SynthParamIDs::mixerOd), mixerOdButton);
     filterOdAttachment = std::make_unique<ButtonAttachment>(apvts, std::string(SynthParamIDs::filterOd), filterOdButton);
     oversampleAttachment = std::make_unique<ComboAttachment>(apvts, std::string(SynthParamIDs::oversample), oversampleBox);
+    osc23SyncAttachment = std::make_unique<ButtonAttachment>(apvts, std::string(SynthParamIDs::osc23Sync), osc23SyncButton);
 
     fAttackAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::filterAttack), fAttack);
     fDecayAttachment = std::make_unique<SliderAttachment>(apvts, std::string(SynthParamIDs::filterDecay), fDecay);
@@ -568,6 +666,15 @@ void MoogVoyagerAudioProcessorEditor::refreshStackChrome()
 
     meterScope.setAccentColour(accent);
     performanceStrip.setAccentColour(accent);
+    modBusMatrix.setAccentColour(accent);
+
+    const int osIdx =
+        static_cast<int>(processorRef.getApvts().getRawParameterValue(std::string(SynthParamIDs::oversample))->load());
+    for (int i = 0; i < 3; ++i)
+    {
+        oversampleSwitch[static_cast<size_t>(i)].setColour(juce::TextButton::buttonOnColourId, accent);
+        oversampleSwitch[static_cast<size_t>(i)].setToggleState(i == osIdx, juce::dontSendNotification);
+    }
     meterScope.repaint();
 
     repaint();
@@ -646,8 +753,9 @@ void MoogVoyagerAudioProcessorEditor::resized()
     presetPrevButton.setBounds(panel.getCentreX() - 228, patchCy - 4, 28, 26);
     patchReadoutLabel.setBounds(panel.getCentreX() - 196, patchCy - 2, 392, 22);
     presetNextButton.setBounds(panel.getCentreX() + 200, patchCy - 4, 28, 26);
-    oversampleLabel.setBounds(panel.getRight() - 200, 8, 20, 16);
-    oversampleBox.setBounds(panel.getRight() - 178, 6, 54, 22);
+    oversampleLabel.setBounds(panel.getRight() - 198, 8, 18, 16);
+    for (int i = 0; i < 3; ++i)
+        oversampleSwitch[static_cast<size_t>(i)].setBounds(panel.getRight() - 176 + i * 38, 6, 36, 22);
     cpuStatusLabel.setBounds(panel.getRight() - 118, 8, 32, 14);
     outputSectionLabel.setBounds(panel.getRight() - 248, 26, 130, 12);
     meterScope.setBounds(panel.getRight() - 248, 40, 228, 72);
@@ -667,7 +775,9 @@ void MoogVoyagerAudioProcessorEditor::resized()
 
     auto bounds = panel.reduced(12).withTrimmedTop(122);
     auto oscBox = bounds.removeFromTop(195);
-    oscSectionLabel.setBounds(oscBox.removeFromTop(20));
+    auto oscTitle = oscBox.removeFromTop(20);
+    oscSectionLabel.setBounds(oscTitle.removeFromLeft(oscTitle.getWidth() - 120));
+    osc23SyncButton.setBounds(oscTitle.reduced(2));
     auto oscInner = oscBox.reduced(10, 4);
 
     for (int i = 0; i < 3; ++i)
@@ -712,12 +822,15 @@ void MoogVoyagerAudioProcessorEditor::resized()
     layoutKnobRow(aEnvRow, { &aAttack, &aDecay, &aSustain, &aRelease });
 
     bounds = bounds.withTrimmedBottom(94);
-    auto modBox = bounds.removeFromTop(112);
+    auto modBox = bounds.removeFromTop(128);
     modSectionLabel.setBounds(modBox.removeFromTop(20));
     auto mIn = modBox.reduced(10, 4);
-    modLfoLabel.setBounds(mIn.removeFromTop(14));
-    layoutKnobRow(mIn.removeFromTop(42), { &lfoRate, &lfoPitch, &lfoFilter });
-    auto m2 = mIn;
+    auto mLeft = mIn.removeFromLeft(juce::jmin(150, mIn.getWidth() / 3));
+    modBusMatrix.setBounds(mLeft.removeFromTop(98));
+    auto mRight = mIn;
+    modLfoLabel.setBounds(mRight.removeFromTop(14));
+    layoutKnobRow(mRight.removeFromTop(42), { &lfoRate, &lfoPitch, &lfoFilter });
+    auto m2 = mRight;
     noisePinkButton.setBounds(m2.removeFromLeft(56).removeFromTop(22).reduced(0, 2));
     layoutKnobRow(m2, { &glide, &noiseSlider });
 
