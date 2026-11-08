@@ -6,7 +6,7 @@ From monorepo root (matches dev checkout):
 
 ```powershell
 cd C:\dev\Instruments
-git pull origin cursor/audio-business-copilot-b828
+git pull origin main
 .\DiskLordz-Audio\build-windows.ps1
 ```
 

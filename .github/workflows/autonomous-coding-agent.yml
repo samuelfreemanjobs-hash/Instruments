@@ -16,12 +16,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Queue tick (Antigravity + progress check)
         run: |
-          chmod +x scripts/antigravity-bridge/sync-all-antigravity.sh || true
-          python3 scripts/autonomous-coder/tick.py --dry-run || true
-          python3 scripts/autonomous-coder/tick.py || true
+          chmod +x scripts/antigravity-bridge/sync-all-antigravity.sh
+          python3 scripts/autonomous-coder/tick.py --check-progress
+          python3 scripts/autonomous-coder/tick.py
       - name: Emit Cloud slice artifact
-        run: |
-          python3 scripts/autonomous-coder/tick.py --emit-slice || true
+        run: python3 scripts/autonomous-coder/tick.py --emit-slice
           mkdir -p /tmp/slice
           cp -f .cursor/autonomous-coder/NEXT_SLICE.md /tmp/slice/ 2>/dev/null || echo "no slice"
       - name: Persist state

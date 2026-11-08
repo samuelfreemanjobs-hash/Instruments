@@ -4,8 +4,12 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
+
+# Override: FACTORY_GIT_REF=your-branch python3 scripts/audio-plugin/factory-queue.py
+FACTORY_GIT_REF = os.environ.get("FACTORY_GIT_REF", "main").strip() or "main"
 
 REPO = Path(__file__).resolve().parents[2]
 PROGRESS = REPO / "disklordz/audio-command/data/progress.json"
@@ -97,7 +101,7 @@ Stage B **JUCE shell is landed** under `DiskLordz-Audio/Products/ChordEngine/`.
 ### Build (from `C:\\dev\\Instruments`)
 
 ```powershell
-git pull origin cursor/audio-business-copilot-b828
+git pull origin {FACTORY_GIT_REF}
 powershell -ExecutionPolicy Bypass -File .\\DiskLordz-Audio\\build-windows.ps1
 ```
 

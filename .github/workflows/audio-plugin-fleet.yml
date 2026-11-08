@@ -33,8 +33,7 @@ jobs:
       - name: Weekly review (manual dispatch only)
         if: github.event.inputs.weekly_review == 'true'
         run: |
-          python3 disklordz/audio-command/scripts/weekly_review.py
-          mkdir -p disklordz/audio-command/reviews
+          python3 disklordz/audio-command/scripts/weekly_review.py --write
       - name: Antigravity + product prep
         if: github.event.inputs.antigravity_push == 'true' || github.event_name == 'schedule'
         run: |

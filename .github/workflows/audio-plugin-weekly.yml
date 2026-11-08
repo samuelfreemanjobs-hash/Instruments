@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 disklordz/audio-command/scripts/weekly_review.py
+      - run: python3 disklordz/audio-command/scripts/weekly_review.py --write
       - run: python3 scripts/audio-plugin/factory-queue.py
       - name: Commit review
         run: |

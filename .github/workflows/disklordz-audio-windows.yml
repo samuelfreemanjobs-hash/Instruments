@@ -21,29 +21,29 @@ concurrency:
 
 jobs:
   chord-engine-vst3:
-    runs-on: windows-latest
+    runs-on: windows-2022
     timeout-minutes: 45
-    defaults:
-      run:
-        shell: bash
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Configure (VS 2022 x64)
+        shell: pwsh
         run: |
-          cmake -B DiskLordz-Audio/Build/Windows -S DiskLordz-Audio \
+          cmake -B DiskLordz-Audio/Build/Windows -S DiskLordz-Audio `
             -G "Visual Studio 17 2022" -A x64
 
       - name: Build ChordEngine_VST3 (Release)
+        shell: pwsh
         run: |
-          cmake --build DiskLordz-Audio/Build/Windows --config Release \
+          cmake --build DiskLordz-Audio/Build/Windows --config Release `
             --target ChordEngine_VST3 -- /m
 
       - name: List VST3 output
+        shell: pwsh
         run: |
-          ls -la "DiskLordz-Audio/Build/Windows/ChordEngine_artefacts/Release/VST3/" || true
-          find "DiskLordz-Audio/Build/Windows/ChordEngine_artefacts/Release/VST3" -type f | head -20
+          Get-ChildItem -Recurse "DiskLordz-Audio/Build/Windows/ChordEngine_artefacts/Release/VST3" |
+            Select-Object -First 25 FullName
 
       - name: Upload CHORD ENGINE.vst3 artifact
         uses: actions/upload-artifact@v4

@@ -9,7 +9,7 @@ _Updated 2026-11-08 · slice `escalate-dpf-slice`_
 | Blocker | **human-windows** (DAW scan evidence) |
 | Sprint | `plugin-skeleton` |
 | Owner | **Samuel** (build + REAPER/FL) |
-| Code | **Landed** on `cursor/audio-business-copilot-b828` — `DiskLordz-Audio/Products/ChordEngine/` |
+| Code | **Landed** on `main` (or your PR branch until merge) — `DiskLordz-Audio/Products/ChordEngine/` |
 | Liaison skill | `disklordz-plugin-factory-liaison` |
 
 ## Build (Samuel)
@@ -17,7 +17,7 @@ _Updated 2026-11-08 · slice `escalate-dpf-slice`_
 From `C:\dev\Instruments`:
 
 ```powershell
-git pull origin cursor/audio-business-copilot-b828
+git pull origin main
 powershell -ExecutionPolicy Bypass -File .\DiskLordz-Audio\build-windows.ps1
 ```
 

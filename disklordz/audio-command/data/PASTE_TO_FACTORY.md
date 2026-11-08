@@ -1,6 +1,6 @@
 # PASTE_TO_FACTORY (generated)
 
-_Generated 2026-11-08 20:00 UTC · task `plugin-skeleton`_
+_Generated 2026-11-08 23:32 UTC · task `plugin-skeleton`_
 
 **Blocker:** human-windows  
 **Next owner:** Samuel (Windows build + DAW)  
@@ -16,7 +16,7 @@ Stage B **JUCE shell is landed** under `DiskLordz-Audio/Products/ChordEngine/`.
 ### Build (from `C:\dev\Instruments`)
 
 ```powershell
-git pull origin cursor/audio-business-copilot-b828
+git pull origin main
 powershell -ExecutionPolicy Bypass -File .\DiskLordz-Audio\build-windows.ps1
 ```
 
