@@ -6,6 +6,10 @@ Use this for **Disklordz** and **any new repo** in the org. Pair with [AGENTIC_P
 
 ---
 
+## 0. Operator autopilot (“I don’t know how”)
+
+GitHub → **New issue** → **Agent run (operator autopilot)** on this repo, then paste the issue’s Cloud prompt into Cursor Cloud. Full router and gates: [OPERATOR_AUTOPILOT.md](OPERATOR_AUTOPILOT.md) · [SOP-012](disklordz/sops/SOP-012-operator-autopilot.md).
+
 ## 1. Repo bootstrap (day 0)
 
 | Artifact | Purpose |
