@@ -105,7 +105,7 @@ git pull origin {FACTORY_GIT_REF}
 powershell -ExecutionPolicy Bypass -File .\\DiskLordz-Audio\\build-windows.ps1
 ```
 
-VST3: `DiskLordz-Audio\\Build\\Windows\\ChordEngine_artefacts\\Release\\VST3\\CHORD ENGINE.vst3`
+VST3: printed at end of `build-windows.ps1` (search under `DiskLordz-Audio\\Build\\Windows\\` for `CHORD ENGINE.vst3`)
 
 **Or CI:** GitHub → Actions → **DiskLordz Audio (Windows VST3)** → download artifact `chord-engine-vst3-windows-*` (no local compile).
 
