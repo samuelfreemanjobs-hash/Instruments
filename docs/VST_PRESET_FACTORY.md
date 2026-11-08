@@ -1,15 +1,17 @@
 # VST preset factory (Preset Agent SOP)
 
-Each **JUCE instrument** in this monorepo targets **≥ 256** factory programs. Expansion is **deterministic procedural variation** from curated “seed” presets (trap / plugg / phonk lanes), not hand-written one-offs.
+Each **JUCE instrument** in this monorepo targets **≥ 512** factory programs. Expansion is **deterministic procedural variation** from curated “seed” presets (trap / plugg / phonk lanes), not hand-written one-offs.
+
+**Fleet agent:** `vst-preset-agent` — `disklordz/agents/profit/vst-preset-agent/agent.md`, skill `disklordz-vst-preset-agent`, CLI `python3 disklordz/integrations/agents/vst_preset_agent.py`.
 
 ## Products
 
 | Product | Bank | Implementation |
 |---------|------|------------------|
-| **JD Upgraded** | 256 patches | `Source/Assets/FactoryPatchLibrary.cpp` (`kFactoryPatchCount`) |
-| **WAVE-9090** | 256 programs | `Wave9090/Source/Presets/FactoryPresetBank.cpp` |
-| **Plugg VA** | 256 programs | `PluggVA/Source/Presets/FactoryPresetBank.cpp` |
-| **SP-1200** | 256 kit templates | `SP1200/Source/Presets/FactoryProgramBank.cpp` |
+| **JD Upgraded** | 512 patches | `Source/Assets/FactoryPatchLibrary.cpp` (`kFactoryPatchCount`) |
+| **WAVE-9090** | 512 programs + **114 wavetables** (64 classic + 50 trap) | `Wave9090/Source/Presets/`, `Wave9090/Source/DSP/WavetableBank.h` |
+| **Plugg VA** | 512 programs | `PluggVA/Source/Presets/FactoryPresets.cpp` |
+| **SP-1200** | 512 kit templates | `SP1200/Source/Presets/FactoryProgramBank.cpp` |
 
 ## Agent workflow (Preset Agent)
 

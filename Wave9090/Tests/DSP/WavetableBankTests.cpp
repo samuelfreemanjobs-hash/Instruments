@@ -15,7 +15,7 @@ int main()
     if (wave9090::presets::getFactoryPresets().size()
         != wave9090::presets::agent::kFactoryPresetCount)
     {
-        std::cerr << "expected 256 factory presets, got "
+        std::cerr << "expected 512 factory presets, got "
                   << wave9090::presets::getFactoryPresets().size() << '\n';
         return EXIT_FAILURE;
     }
@@ -25,13 +25,23 @@ int main()
 
     const auto& t0 = bank.getTable (0);
     const auto& t63 = bank.getTable (63);
+    const auto& t80 = bank.getTable (80);
 
     float peak0 = 0.0f;
     float peak63 = 0.0f;
+    float peak80 = 0.0f;
     for (float s : t0)
         peak0 = std::max (peak0, std::abs (s));
     for (float s : t63)
         peak63 = std::max (peak63, std::abs (s));
+    for (float s : t80)
+        peak80 = std::max (peak80, std::abs (s));
+
+    if (wave9090::dsp::kWavetableCount < 114)
+    {
+        std::cerr << "expected >= 114 wavetables, got " << wave9090::dsp::kWavetableCount << '\n';
+        return EXIT_FAILURE;
+    }
 
     if (peak0 <= 0.0f || peak0 > 1.0f)
     {
@@ -42,6 +52,12 @@ int main()
     if (peak63 <= 0.0f || peak63 > 1.0f)
     {
         std::cerr << "table 63 peak out of range: " << peak63 << '\n';
+        return EXIT_FAILURE;
+    }
+
+    if (peak80 <= 0.0f || peak80 > 1.0f)
+    {
+        std::cerr << "trap table 80 peak out of range: " << peak80 << '\n';
         return EXIT_FAILURE;
     }
 

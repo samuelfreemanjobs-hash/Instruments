@@ -430,6 +430,106 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.ampRelease = 0.35f;
               return p;
           }() },
+
+        // —— TRAP (12) —— VST Preset Agent
+        { "Wheezy Outta Here", "TRAP", [] {
+              auto p = base();
+              p.unisonAmount = 0.75f;
+              p.filterCutoff = 0.54f;
+              p.drive = 0.32f;
+              p.glideMs = 95.0f;
+              return p;
+          }() },
+        { "TM88 Dark Trap", "TRAP", [] {
+              auto p = base();
+              p.subLevel = 0.82f;
+              p.filterCutoff = 0.34f;
+              p.drive = 0.45f;
+              p.ampDecay = 0.48f;
+              return p;
+          }() },
+        { "Plugg Trap Reese", "TRAP", [] {
+              auto p = base();
+              p.unisonAmount = 0.88f;
+              p.osc2DetuneCents = -16.0f;
+              p.subLevel = 0.7f;
+              p.filterCutoff = 0.4f;
+              return p;
+          }() },
+        { "Trap Bell VA", "TRAP", [] {
+              auto p = base();
+              p.osc1Wave = Waveform::square;
+              p.osc2Octave = 1;
+              p.filterRes = 0.55f;
+              p.crush = 0.25f;
+              p.ampDecay = 0.12f;
+              return p;
+          }() },
+        { "Young Thug Slime", "TRAP", [] {
+              auto p = base();
+              p.chorus = 0.62f;
+              p.stereoWidth = 0.55f;
+              p.glideMs = 130.0f;
+              p.drift = 0.22f;
+              return p;
+          }() },
+        { "Trap Night Keys", "TRAP", [] {
+              auto p = base();
+              p.osc2Wave = Waveform::triangle;
+              p.chorus = 0.45f;
+              p.ampAttack = 0.02f;
+              p.filterCutoff = 0.58f;
+              return p;
+          }() },
+        { "Hard Trap Stab", "TRAP", [] {
+              auto p = base();
+              p.drive = 0.55f;
+              p.filterRes = 0.48f;
+              p.ampDecay = 0.16f;
+              p.ampSustain = 0.05f;
+              p.filtEnvAmt = 0.85f;
+              return p;
+          }() },
+        { "808 Trap Glide III", "TRAP", [] {
+              auto p = base();
+              p.subLevel = 0.95f;
+              p.glideMs = 175.0f;
+              p.filterCutoff = 0.32f;
+              p.osc1Wave = Waveform::saw;
+              return p;
+          }() },
+        { "Trap Arp Slide", "TRAP", [] {
+              auto p = base();
+              p.osc2Octave = 1;
+              p.glideMs = 40.0f;
+              p.ampDecay = 0.085f;
+              p.filtEnvAmt = 0.78f;
+              return p;
+          }() },
+        { "Drill Trap Lead", "TRAP", [] {
+              auto p = base();
+              p.unisonAmount = 0.6f;
+              p.drive = 0.4f;
+              p.filterCutoff = 0.5f;
+              p.crush = 0.18f;
+              return p;
+          }() },
+        { "Metro Style Pluck", "TRAP", [] {
+              auto p = base();
+              p.osc2DetuneCents = 12.0f;
+              p.ampDecay = 0.07f;
+              p.ampSustain = 0.0f;
+              p.filterCutoff = 0.72f;
+              return p;
+          }() },
+        { "Trap Supersaw Stack", "TRAP", [] {
+              auto p = base();
+              p.unisonAmount = 0.95f;
+              p.unisonSpreadCents = 30.0f;
+              p.chorus = 0.5f;
+              p.filterCutoff = 0.56f;
+              return p;
+          }() },
         };
 
         std::vector<FactoryPreset> bank;

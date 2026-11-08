@@ -9,7 +9,7 @@
 namespace sp1200::presets
 {
 
-inline constexpr std::size_t kFactoryProgramCount = 256;
+inline constexpr std::size_t kFactoryProgramCount = 512;
 
 struct FactoryProgram
 {

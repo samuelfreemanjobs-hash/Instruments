@@ -11,7 +11,7 @@ int main()
     if (pluggva::presets::getFactoryPresets().size()
         != pluggva::presets::agent::kFactoryPresetCount)
     {
-        std::cerr << "expected 256 factory presets, got "
+        std::cerr << "expected 512 factory presets, got "
                   << pluggva::presets::getFactoryPresets().size() << '\n';
         return EXIT_FAILURE;
     }

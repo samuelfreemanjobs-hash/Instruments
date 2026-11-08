@@ -316,6 +316,153 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.ampSustain = 0.9f;
               return p;
           }() },
+
+        // —— TRAP (16) —— VST Preset Agent / new trap wavetables 64–113
+        { "Southside 808 Trap", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.58f;
+              p.filterCutoff = 0.28f;
+              p.subLevel = 0.98f;
+              p.drive = 0.5f;
+              p.ampSustain = 0.96f;
+              return p;
+          }() },
+        { "Metro Boomin 808", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.62f;
+              p.filterCutoff = 0.26f;
+              p.subLevel = 1.0f;
+              p.glideMs = 90.0f;
+              p.ampDecay = 0.55f;
+              return p;
+          }() },
+        { "Zaytoven Pluck Trap", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.71f;
+              p.filterCutoff = 0.68f;
+              p.ampDecay = 0.09f;
+              p.ampSustain = 0.0f;
+              p.filtEnvAmt = 0.82f;
+              p.glideMs = 32.0f;
+              return p;
+          }() },
+        { "Drill Reese WAVE", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.78f;
+              p.detuneCents = -11.0f;
+              p.filterCutoff = 0.42f;
+              p.drive = 0.55f;
+              p.crush = 0.2f;
+              return p;
+          }() },
+        { "NY Drill Stab", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.85f;
+              p.filterCutoff = 0.55f;
+              p.filterRes = 0.5f;
+              p.ampDecay = 0.14f;
+              p.ampSustain = 0.0f;
+              p.drive = 0.45f;
+              return p;
+          }() },
+        { "Memphis Phonk Trap", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.66f;
+              p.crush = 0.48f;
+              p.drive = 0.65f;
+              p.filterDestructive = true;
+              p.tapeWobble = 0.25f;
+              return p;
+          }() },
+        { "Carti Slide Lead", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.74f;
+              p.wtScan = 0.22f;
+              p.glideMs = 110.0f;
+              p.filterCutoff = 0.62f;
+              p.stereoWidth = 0.35f;
+              return p;
+          }() },
+        { "Gunna Float Trap", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.69f;
+              p.filterCutoff = 0.7f;
+              p.stereoWidth = 0.4f;
+              p.ampAttack = 0.008f;
+              p.ampSustain = 0.75f;
+              return p;
+          }() },
+        { "Future Dark Pluck", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.73f;
+              p.filterCutoff = 0.64f;
+              p.ampDecay = 0.075f;
+              p.filtEnvAmt = 0.88f;
+              p.subLevel = 0.25f;
+              return p;
+          }() },
+        { "Trap Bell Memphis", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.81f;
+              p.drive = 0.6f;
+              p.crush = 0.35f;
+              p.filterDestructive = true;
+              p.detuneCents = 9.0f;
+              return p;
+          }() },
+        { "808 Glide Trap II", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.59f;
+              p.glideMs = 160.0f;
+              p.subLevel = 0.92f;
+              p.filterCutoff = 0.3f;
+              return p;
+          }() },
+        { "Trap Hihat Synth", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.88f;
+              p.filterCutoff = 0.82f;
+              p.ampDecay = 0.04f;
+              p.ampSustain = 0.0f;
+              p.ampRelease = 0.08f;
+              return p;
+          }() },
+        { "Offset Type Beat", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.76f;
+              p.stereoWidth = 0.05f;
+              p.drive = 0.38f;
+              p.filterCutoff = 0.48f;
+              p.ampSustain = 0.7f;
+              return p;
+          }() },
+        { "Lil Baby Arp Trap", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.72f;
+              p.wtScan = 0.35f;
+              p.filtEnvAmt = 0.7f;
+              p.ampDecay = 0.11f;
+              p.glideMs = 45.0f;
+              return p;
+          }() },
+        { "Travis Filter Trap", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.67f;
+              p.filterCutoff = 0.38f;
+              p.filterRes = 0.62f;
+              p.filtEnvAmt = 0.92f;
+              p.drive = 0.28f;
+              return p;
+          }() },
+        { "Trap Night Pad", "TRAP", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.64f;
+              p.filterCutoff = 0.5f;
+              p.ampAttack = 0.35f;
+              p.ampSustain = 0.88f;
+              p.tapeWobble = 0.18f;
+              return p;
+          }() },
         };
 
         std::vector<FactoryPreset> bank;

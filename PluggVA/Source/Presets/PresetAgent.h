@@ -9,7 +9,7 @@
 namespace pluggva::presets::agent
 {
 
-inline constexpr std::size_t kFactoryPresetCount = 256;
+inline constexpr std::size_t kFactoryPresetCount = 512;
 
 inline float rand01 (std::uint32_t& state) noexcept
 {

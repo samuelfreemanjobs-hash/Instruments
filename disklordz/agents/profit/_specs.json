@@ -453,6 +453,25 @@
         "Mark MiniFreak/Zenology stub output; do not claim factory librarian bit accuracy.",
         "Deliverables include pytest or preview metrics evidence [executed]."
       ]
+    },
+    {
+      "id": "vst-preset-agent",
+      "title": "VST Preset Agent",
+      "description": "Monorepo JUCE instruments: wavetable design, virtual-analog voice programming, factory preset banks, DSP effect chains, and trap/plugg/phonk archetypes for JD Upgraded, WAVE-9090, Plugg VA, and SP-1200.",
+      "profit_lever": "Plugin preset depth → differentiation vs generic wavetable competitors",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "model": "inherit",
+      "permission_mode": "acceptEdits",
+      "max_turns": 80,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": [],
+      "automate": "python3 disklordz/integrations/agents/vst_preset_agent.py, scripts/vst/verify_factory_preset_counts.py, .github/workflows/vst-preset-factory.yml",
+      "soul": [
+        "Read ARCHITECTURE.md for each product before touching DSP or preset banks.",
+        "Curated seeds are gospel; procedural fill must stay deterministic (index-stable).",
+        "Never ship a factory count change without verify_factory_preset_counts.py [executed].",
+        "Hardware SysEx stays hardware-preset-designer; this agent owns in-plugin VST banks only."
+      ]
     }
   ]
 }

@@ -8,7 +8,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-TARGET = 256
+TARGET = 512
+
+WAVE_WT_HEADER = ROOT / "Wave9090/Source/DSP/WavetableBank.h"
 
 CHECKS: list[tuple[str, Path, str]] = [
     (
@@ -36,6 +38,21 @@ CHECKS: list[tuple[str, Path, str]] = [
 
 def main() -> int:
     failed = False
+    wt_text = WAVE_WT_HEADER.read_text(encoding="utf-8")
+    classic = re.search(r"kClassicWavetableCount\s*=\s*(\d+)", wt_text)
+    trap = re.search(r"kTrapWavetableCount\s*=\s*(\d+)", wt_text)
+    if classic and trap:
+        wt_total = int(classic.group(1)) + int(trap.group(1))
+        trap_total = int(trap.group(1))
+        if trap_total < 50:
+            print(f"FAIL WAVE-9090 wavetables: trap count {trap_total} < 50")
+            failed = True
+        else:
+            print(f"OK   WAVE-9090 wavetables: {wt_total} (incl. {trap_total} trap)")
+    else:
+        print("FAIL WAVE-9090: could not parse wavetable counts")
+        failed = True
+
     for label, path, pattern in CHECKS:
         text = path.read_text(encoding="utf-8")
         match = re.search(pattern, text)

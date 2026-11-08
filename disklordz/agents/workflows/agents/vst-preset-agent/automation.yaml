@@ -1,0 +1,13 @@
+# Automation — VST Preset Agent (`vst-preset-agent`)
+
+platform: manual
+trigger: manual
+primary: TBD
+
+## Steps
+
+## Invoke agent
+Read: disklordz/agents/profit/vst-preset-agent/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#vst-preset-agent
