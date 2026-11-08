@@ -7,11 +7,10 @@ From monorepo root (matches dev checkout):
 ```powershell
 cd C:\dev\Instruments
 git pull origin cursor/audio-business-copilot-b828
-cmake -B DiskLordz-Audio\Build\Windows -S DiskLordz-Audio
-cmake --build DiskLordz-Audio\Build\Windows --config Release
+.\DiskLordz-Audio\build-windows.ps1
 ```
 
-If CMake does not pick Visual Studio automatically:
+Or run CMake directly (Visual Studio 2022 x64):
 
 ```powershell
 cmake -B DiskLordz-Audio\Build\Windows -S DiskLordz-Audio -G "Visual Studio 17 2022" -A x64
