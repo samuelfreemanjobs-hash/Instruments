@@ -51,11 +51,21 @@ export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
 
 ## One-command build (Windows)
 
-From the repo root in **PowerShell**:
+**Cloud compile + download (GitHub Actions):**
+
+```powershell
+.\scripts\antigravity-bridge\run-logue-units-ci.ps1 -Watch -Download
+```
+
+Or: `.\tools\windows\trigger-logue-units-ci.cmd -Watch -Download`
+
+**Build on this PC:**
 
 ```powershell
 .\tools\windows\build-all-logue.ps1
 ```
+
+**Unattended:** set repo secret or local env `GH_WORKFLOW_TOKEN` (classic PAT with `workflow` scope), then run `scripts/trigger-logue-units-build.sh` from Task Scheduler. Weekly scheduled builds run via workflow `logue NTS-1 units` on `main` (Sundays 08:00 UTC).
 
 Or double-click / `cmd`:
 

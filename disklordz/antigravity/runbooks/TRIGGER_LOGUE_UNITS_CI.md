@@ -7,27 +7,29 @@ Sam asked for a **Run workflow** on the **logue NTS-1 units** workflow. Cursor C
 - `gh auth login` (repo scope) on this PC
 - Repo root: e.g. `C:\dev\Instruments`
 
-## Option A — GitHub CLI (preferred)
+## Option A — Automated script (preferred)
 
-Until PR **#113** merges, build from the feature branch:
+One command (dispatch GHA, watch, download artifacts):
 
 ```powershell
 cd C:\dev\Instruments
-git fetch origin
-gh workflow run "logue NTS-1 units" --repo samuelfreemanjobs-hash/Instruments --ref cursor/logue-osc-build-windows-13db
+git pull
+.\scripts\antigravity-bridge\run-logue-units-ci.ps1 -Watch -Download
 ```
 
-After merge, use `main`:
+Or from Git Bash / WSL:
 
-```powershell
-gh workflow run "logue NTS-1 units" --repo samuelfreemanjobs-hash/Instruments --ref main
+```bash
+./scripts/trigger-logue-units-build.sh --watch --download
 ```
 
-Or run the helper:
+Build **on this machine** instead of GHA:
 
-```powershell
-.\scripts\antigravity-bridge\run-logue-units-ci.ps1
+```bash
+./scripts/trigger-logue-units-build.sh --local
 ```
+
+Set `GH_WORKFLOW_TOKEN` (PAT with `workflow` scope) for unattended automation / Antigravity scheduled tasks.
 
 Watch the run:
 

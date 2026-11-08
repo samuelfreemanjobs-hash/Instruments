@@ -13,6 +13,9 @@ on:
         type: string
   repository_dispatch:
     types: [build-logue-units]
+  schedule:
+    # Weekly Sunday 08:00 UTC (main only)
+    - cron: "0 8 * * 0"
   push:
     branches: [main]
     paths:
