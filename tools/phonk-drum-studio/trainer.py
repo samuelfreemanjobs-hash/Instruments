@@ -6,10 +6,9 @@ import logging
 import threading
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, List, Optional
 
 import torch
-from torch.utils.data import DataLoader
 
 from dataset import DrumSampleDataset, build_dataloader
 from model import (
@@ -24,6 +23,7 @@ logger = logging.getLogger(__name__)
 ProgressCallback = Callable[[int, int, float], None]
 CompleteCallback = Callable[[Path], None]
 ErrorCallback = Callable[[str], None]
+StoppedCallback = Callable[[], None]
 
 DEFAULT_CHECKPOINT = "phonk_vae.pth"
 KL_WEIGHT = 1e-4
@@ -54,6 +54,7 @@ class TrainConfig:
     learning_rate: float = 3e-4
     checkpoint_path: Path = Path(DEFAULT_CHECKPOINT)
     kl_weight: float = KL_WEIGHT
+    sample_paths: Optional[List[Path]] = None
 
 
 class TrainingWorker:
@@ -65,11 +66,13 @@ class TrainingWorker:
         progress_callback: Optional[ProgressCallback] = None,
         complete_callback: Optional[CompleteCallback] = None,
         error_callback: Optional[ErrorCallback] = None,
+        stopped_callback: Optional[StoppedCallback] = None,
     ) -> None:
         self.config = config
         self.progress_callback = progress_callback
         self.complete_callback = complete_callback
         self.error_callback = error_callback
+        self.stopped_callback = stopped_callback
         self._stop_event = threading.Event()
         self._thread: Optional[threading.Thread] = None
 
@@ -108,10 +111,12 @@ class TrainingWorker:
 
     def _train_loop(self) -> None:
         data_dir = self.config.data_dir
+        batch_size = self._resolve_batch_size()
         dataset, loader = build_dataloader(
             data_dir,
-            batch_size=self._resolve_batch_size(),
+            batch_size=batch_size,
             shuffle=True,
+            paths=self.config.sample_paths,
         )
         if len(dataset) == 0:
             self._emit_error("No valid audio files found in the selected folder.")
@@ -154,6 +159,8 @@ class TrainingWorker:
             self._emit_progress(epoch, total_epochs, mean_loss)
 
         if self._stop_event.is_set():
+            if self.stopped_callback:
+                self.stopped_callback()
             return
 
         ckpt = self.config.checkpoint_path
@@ -174,7 +181,9 @@ class TrainingWorker:
 
     def _resolve_batch_size(self) -> int:
         requested = self.config.batch_size
-        dataset = DrumSampleDataset(self.config.data_dir)
+        dataset = DrumSampleDataset(
+            self.config.data_dir, paths=self.config.sample_paths
+        )
         if len(dataset) < requested:
             return max(1, min(requested, len(dataset)))
         device = select_device()

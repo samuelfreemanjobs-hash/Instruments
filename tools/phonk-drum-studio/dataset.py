@@ -18,6 +18,16 @@ logger = logging.getLogger(__name__)
 
 AUDIO_EXTENSIONS = {".wav", ".aif", ".aiff", ".WAV", ".AIF", ".AIFF"}
 
+_RESAMPLE_CACHE: dict[int, torchaudio.transforms.Resample] = {}
+
+
+def _get_resampler(orig_freq: int) -> torchaudio.transforms.Resample:
+    if orig_freq not in _RESAMPLE_CACHE:
+        _RESAMPLE_CACHE[orig_freq] = torchaudio.transforms.Resample(
+            orig_freq=orig_freq, new_freq=SAMPLE_RATE
+        )
+    return _RESAMPLE_CACHE[orig_freq]
+
 
 def list_audio_files(root: Path) -> List[Path]:
     if not root.is_dir():
@@ -35,7 +45,6 @@ def _load_waveform(path: Path) -> Optional[Tuple[torch.Tensor, int]]:
         data, sr = sf.read(str(path), always_2d=True, dtype="float32")
         if data.size == 0:
             return None
-        # soundfile: (frames, channels) -> torch (channels, frames)
         waveform = torch.from_numpy(np.ascontiguousarray(data.T))
         return waveform, int(sr)
     except (OSError, RuntimeError, ValueError) as sf_exc:
@@ -43,7 +52,7 @@ def _load_waveform(path: Path) -> Optional[Tuple[torch.Tensor, int]]:
     try:
         waveform, sr = torchaudio.load(str(path))
         return waveform, int(sr)
-    except (OSError, RuntimeError, ValueError) as exc:
+    except (OSError, RuntimeError, ValueError, ImportError) as exc:
         logger.warning("Skipping unreadable file %s: %s", path, exc)
         return None
 
@@ -52,20 +61,17 @@ def load_and_preprocess(path: Path) -> Optional[torch.Tensor]:
     """Load mono 44.1 kHz waveform of length AUDIO_LENGTH, peak-normalized."""
     loaded = _load_waveform(path)
     if loaded is None:
-        logger.warning("Skipping empty or unreadable file %s", path)
         return None
     waveform, sr = loaded
 
     if waveform.numel() == 0:
-        logger.warning("Skipping empty file %s", path)
         return None
 
     if waveform.shape[0] > 1:
         waveform = waveform.mean(dim=0, keepdim=True)
 
     if sr != SAMPLE_RATE:
-        resampler = torchaudio.transforms.Resample(orig_freq=sr, new_freq=SAMPLE_RATE)
-        waveform = resampler(waveform)
+        waveform = _get_resampler(sr)(waveform)
 
     length = waveform.shape[-1]
     if length < AUDIO_LENGTH:
@@ -77,10 +83,28 @@ def load_and_preprocess(path: Path) -> Optional[torch.Tensor]:
     return waveform.squeeze(0)
 
 
+def scan_valid_audio_paths(directory: str | Path) -> Tuple[List[Path], int]:
+    """Return paths that preprocess successfully; second value is corrupt/skip count."""
+    root = Path(directory)
+    candidates = list_audio_files(root)
+    valid: List[Path] = []
+    skipped = 0
+    for path in candidates:
+        if load_and_preprocess(path) is None:
+            skipped += 1
+            logger.warning("Excluding corrupt or unsupported audio: %s", path)
+        else:
+            valid.append(path)
+    return valid, skipped
+
+
 class DrumSampleDataset(Dataset):
-    def __init__(self, directory: str | Path) -> None:
+    def __init__(self, directory: str | Path, *, paths: Optional[List[Path]] = None) -> None:
         self.root = Path(directory)
-        self.paths = list_audio_files(self.root)
+        if paths is not None:
+            self.paths = list(paths)
+        else:
+            self.paths, _ = scan_valid_audio_paths(self.root)
         self._cache: dict[Path, torch.Tensor] = {}
 
     def __len__(self) -> int:
@@ -95,7 +119,7 @@ class DrumSampleDataset(Dataset):
         if path not in self._cache:
             tensor = load_and_preprocess(path)
             if tensor is None:
-                tensor = torch.zeros(AUDIO_LENGTH)
+                raise RuntimeError(f"Preprocess failed for indexed file: {path}")
             self._cache[path] = tensor
         return self._cache[path]
 
@@ -109,8 +133,9 @@ def build_dataloader(
     batch_size: int,
     shuffle: bool = True,
     num_workers: int = 0,
+    paths: Optional[List[Path]] = None,
 ) -> Tuple[DrumSampleDataset, torch.utils.data.DataLoader]:
-    dataset = DrumSampleDataset(directory)
+    dataset = DrumSampleDataset(directory, paths=paths)
     loader = torch.utils.data.DataLoader(
         dataset,
         batch_size=batch_size,

@@ -23,7 +23,7 @@ python build_standalone.py
 
 ## Data flow
 
-1. **Dataset** (`dataset.py`) scans a user folder, loads each file with torchaudio, downmixes to mono, resamples to 44.1 kHz, crops/pads to 22,050 samples (0.5 s), and peak-normalizes.
+1. **Dataset** (`dataset.py`) scans a user folder, loads via soundfile (torchaudio fallback), downmixes to mono, resamples to 44.1 kHz, crops/pads to 22,050 samples (0.5 s), peak-normalizes, and excludes unreadable files from training.
 2. **Training** (`trainer.py`) runs on a background thread: Adam + multi-scale spectral reconstruction loss + weighted KL. Checkpoints save as `phonk_vae.pth` in the dataset folder.
 3. **Generation** (`app.py` + `model.py`): random latent `z ~ N(0,I)` or encode → jitter → decode; output is peak-normalized and held in memory for preview/export.
 4. **Export** writes 44.1 kHz WAV via soundfile (16-bit PCM or 32-bit float).

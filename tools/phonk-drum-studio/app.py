@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import logging
-import sys
 import threading
 import tkinter as tk
 from pathlib import Path
@@ -16,8 +15,8 @@ import numpy as np
 import soundfile as sf
 import torch
 
-from dataset import load_and_preprocess
-from model import AUDIO_LENGTH, LATENT_DIM, SAMPLE_RATE, peak_normalize
+from dataset import load_and_preprocess, scan_valid_audio_paths
+from model import LATENT_DIM, SAMPLE_RATE, peak_normalize, AudioVAE
 from trainer import (
     DEFAULT_CHECKPOINT,
     TrainConfig,
@@ -43,7 +42,9 @@ class PhonkDrumStudioApp(ctk.CTk):
 
         self.dataset_path: Optional[Path] = None
         self.file_count = 0
-        self.model: Optional[torch.nn.Module] = None
+        self.model: Optional[AudioVAE] = None
+        self._valid_paths: list[Path] = []
+        self._skipped_files = 0
         self.model_device = select_device()
         self.checkpoint_path = Path(DEFAULT_CHECKPOINT)
 
@@ -170,13 +171,9 @@ class PhonkDrumStudioApp(ctk.CTk):
 
     def _show_device_notice(self) -> None:
         label = device_label(self.model_device)
-        self._set_status(f"Compute device: {label}")
         if self.model_device.type == "cpu":
-            messagebox.showwarning(
-                "CUDA / GPU",
-                "CUDA and MPS are not available. Training and inference will run on CPU, "
-                "which is slower but fully supported.",
-            )
+            label = f"{label} — no CUDA/MPS; training may be slower"
+        self._set_status(f"Compute device: {label}")
 
     def _try_load_default_checkpoint(self) -> None:
         if self.checkpoint_path.is_file():
@@ -186,14 +183,26 @@ class PhonkDrumStudioApp(ctk.CTk):
         directory = filedialog.askdirectory(title="Select phonk drum sample folder")
         if not directory:
             return
-        from dataset import list_audio_files
-
         self.dataset_path = Path(directory)
-        paths = list_audio_files(self.dataset_path)
-        self.file_count = len(paths)
-        self.folder_label.configure(text=f"{self.dataset_path}  ({self.file_count} files)")
+        self._valid_paths, self._skipped_files = scan_valid_audio_paths(self.dataset_path)
+        self.file_count = len(self._valid_paths)
+        suffix = ""
+        if self._skipped_files:
+            suffix = f", {self._skipped_files} skipped (unreadable)"
+        self.folder_label.configure(text=f"{self.dataset_path}  ({self.file_count} files{suffix})")
         if self.file_count == 0:
-            messagebox.showwarning("Empty folder", "No .wav or .aif files were found in that folder.")
+            messagebox.showwarning(
+                "Empty folder",
+                "No readable .wav or .aif files were found in that folder.",
+            )
+            return
+
+        ckpt = self.dataset_path / DEFAULT_CHECKPOINT
+        if ckpt.is_file():
+            self.checkpoint_path = ckpt
+            threading.Thread(
+                target=self._load_checkpoint_thread, args=(ckpt,), daemon=True
+            ).start()
 
     def _require_model(self) -> bool:
         if self.model is None:
@@ -218,6 +227,7 @@ class PhonkDrumStudioApp(ctk.CTk):
             epochs=100,
             batch_size=16,
             checkpoint_path=ckpt,
+            sample_paths=self._valid_paths,
         )
 
         self.train_btn.configure(state="disabled")
@@ -230,6 +240,7 @@ class PhonkDrumStudioApp(ctk.CTk):
             progress_callback=self._on_train_progress,
             complete_callback=self._on_train_complete,
             error_callback=self._on_train_error,
+            stopped_callback=self._on_train_stopped,
         )
         self._trainer.start()
 
@@ -263,6 +274,15 @@ class PhonkDrumStudioApp(ctk.CTk):
             self.stop_btn.configure(state="disabled")
             messagebox.showerror("Training error", message)
             self._set_status(message)
+
+        self.after(0, ui)
+
+    def _on_train_stopped(self) -> None:
+        def ui() -> None:
+            self.train_btn.configure(state="normal")
+            self.stop_btn.configure(state="disabled")
+            self.train_status.configure(text="Training stopped")
+            self._set_status("Training stopped before completion (no checkpoint saved).")
 
         self.after(0, ui)
 
