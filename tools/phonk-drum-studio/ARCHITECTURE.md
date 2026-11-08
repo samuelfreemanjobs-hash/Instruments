@@ -27,6 +27,12 @@ python build_standalone.py
 2. **Training** (`trainer.py`) runs on a background thread: Adam + multi-scale spectral reconstruction loss + weighted KL. Checkpoints save as `phonk_vae.pth` in the dataset folder.
 3. **Generation** (`app.py` + `model.py`): random latent `z ~ N(0,I)` or encode → jitter → decode; output is peak-normalized and held in memory for preview/export.
 4. **Export** writes 44.1 kHz WAV via soundfile (16-bit PCM or 32-bit float).
+5. **Factory kit** (GUI panel or CLI) calls `disklordz/sound-factory/kit_from_samples.py` to emit a `DISKLORDZ_DRUM_KIT_MANIFEST` pack for the Disklordz website / ZIP pipeline.
+
+```bash
+python3 ../../disklordz/sound-factory/scripts/build_studio_kit.py \
+  --preset midnight-circuit --prompt "…" --samples-dir ./exports --out ./kit --fill-stubs
+```
 
 ## Threading / realtime
 

@@ -29,6 +29,7 @@ python app.py
 1. **Browse Folder** — point at a directory of `.wav` / `.aif` one-shots.
 2. **Train Model** — saves `phonk_vae.pth` next to your samples when finished.
 3. **Generate** or **Mutate** — audition and **Export to WAV**.
+4. **Build Factory Kit** — package WAVs into a Disklordz kit (`manifest.json` + slot WAVs). Name files `kick.wav`, `snare.wav`, etc., or use `--fill-stubs` to pad missing slots.
 
 ## Standalone build
 

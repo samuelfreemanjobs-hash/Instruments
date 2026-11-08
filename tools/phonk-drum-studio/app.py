@@ -26,6 +26,15 @@ from trainer import (
     select_device,
 )
 
+FACTORY_ROOT = Path(__file__).resolve().parents[2] / "disklordz" / "sound-factory"
+FACTORY_PRESETS = (
+    "mpc-ready-808",
+    "midnight-circuit",
+    "boulevard-86",
+    "disklordz-screw",
+    "terminal-mirage",
+)
+
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger("phonk_drum_studio")
 
@@ -53,6 +62,13 @@ class PhonkDrumStudioApp(ctk.CTk):
 
         self._trainer: Optional[TrainingWorker] = None
         self._mutation_variance = tk.DoubleVar(value=0.8)
+        self._factory_preset = tk.StringVar(value="midnight-circuit")
+        self._factory_prompt = tk.StringVar(
+            value="Memphis phonk drum kit — Phonk Drum Studio VAE exports"
+        )
+        self._factory_fill_stubs = tk.BooleanVar(value=True)
+        self._factory_samples_dir: Optional[Path] = None
+        self._factory_out_dir: Optional[Path] = None
 
         self._build_ui()
         self._show_device_notice()
@@ -70,6 +86,7 @@ class PhonkDrumStudioApp(ctk.CTk):
         self._build_generation_panel(container)
         self._build_audition_panel(container)
         self._build_export_panel(container)
+        self._build_factory_kit_panel(container)
 
         self.status_bar = ctk.CTkLabel(self, text="Ready", anchor="w")
         self.status_bar.grid(row=1, column=0, sticky="ew", padx=16, pady=(0, 8))
@@ -163,6 +180,48 @@ class PhonkDrumStudioApp(ctk.CTk):
         body = self._section(parent, "Export")
         ctk.CTkButton(body, text="Export to WAV", command=self._export_wav).grid(row=0, column=0, sticky="w")
 
+    def _build_factory_kit_panel(self, parent: ctk.CTkBaseClass) -> None:
+        body = self._section(parent, "Disklordz Factory Kit")
+
+        row0 = ctk.CTkFrame(body, fg_color="transparent")
+        row0.grid(row=0, column=0, sticky="ew")
+        row0.grid_columnconfigure(1, weight=1)
+        ctk.CTkLabel(row0, text="Preset").grid(row=0, column=0, padx=(0, 8), sticky="w")
+        ctk.CTkOptionMenu(row0, variable=self._factory_preset, values=list(FACTORY_PRESETS)).grid(
+            row=0, column=1, sticky="w"
+        )
+
+        ctk.CTkLabel(body, text="Prompt", anchor="w").grid(row=1, column=0, sticky="ew", pady=(8, 0))
+        ctk.CTkEntry(body, textvariable=self._factory_prompt).grid(row=2, column=0, sticky="ew", pady=(4, 0))
+
+        btn_row = ctk.CTkFrame(body, fg_color="transparent")
+        btn_row.grid(row=3, column=0, sticky="ew", pady=(8, 0))
+        ctk.CTkButton(
+            btn_row, text="WAV Folder", width=120, command=self._browse_factory_samples
+        ).grid(row=0, column=0, padx=(0, 8))
+        self.factory_samples_label = ctk.CTkLabel(btn_row, text="Uses dataset folder if unset", anchor="w")
+        self.factory_samples_label.grid(row=0, column=1, sticky="ew")
+
+        btn_row2 = ctk.CTkFrame(body, fg_color="transparent")
+        btn_row2.grid(row=4, column=0, sticky="ew", pady=(6, 0))
+        ctk.CTkButton(btn_row2, text="Output Folder", width=120, command=self._browse_factory_out).grid(
+            row=0, column=0, padx=(0, 8)
+        )
+        self.factory_out_label = ctk.CTkLabel(btn_row2, text="Not selected", anchor="w")
+        self.factory_out_label.grid(row=0, column=1, sticky="ew")
+
+        opts = ctk.CTkFrame(body, fg_color="transparent")
+        opts.grid(row=5, column=0, sticky="ew", pady=(8, 0))
+        ctk.CTkCheckBox(
+            opts,
+            text="Fill missing slots from Disklordz stub samples",
+            variable=self._factory_fill_stubs,
+        ).grid(row=0, column=0, sticky="w")
+
+        ctk.CTkButton(body, text="Build Factory Kit", command=self._build_factory_kit).grid(
+            row=6, column=0, sticky="w", pady=(10, 0)
+        )
+
     def _set_status(self, text: str) -> None:
         self.status_bar.configure(text=text)
 
@@ -196,6 +255,10 @@ class PhonkDrumStudioApp(ctk.CTk):
                 "No readable .wav or .aif files were found in that folder.",
             )
             return
+
+        if self._factory_samples_dir is None:
+            self._factory_samples_dir = self.dataset_path
+            self.factory_samples_label.configure(text=str(self.dataset_path))
 
         ckpt = self.dataset_path / DEFAULT_CHECKPOINT
         if ckpt.is_file():
@@ -439,6 +502,78 @@ class PhonkDrumStudioApp(ctk.CTk):
             self.after(0, lambda: self._set_status(f"Exported {Path(path).name}"))
         except Exception as exc:
             self.after(0, lambda: messagebox.showerror("Export error", str(exc)))
+
+    def _browse_factory_samples(self) -> None:
+        directory = filedialog.askdirectory(title="WAV folder for factory kit slots")
+        if not directory:
+            return
+        self._factory_samples_dir = Path(directory)
+        self.factory_samples_label.configure(text=str(self._factory_samples_dir))
+
+    def _browse_factory_out(self) -> None:
+        directory = filedialog.askdirectory(title="Output factory kit folder")
+        if not directory:
+            return
+        self._factory_out_dir = Path(directory)
+        self.factory_out_label.configure(text=str(self._factory_out_dir))
+
+    def _build_factory_kit(self) -> None:
+        samples_dir = self._factory_samples_dir or self.dataset_path
+        if samples_dir is None or not samples_dir.is_dir():
+            messagebox.showwarning(
+                "Factory kit",
+                "Choose a dataset folder or WAV folder with kick/snare/etc. exports.",
+            )
+            return
+        out_dir = self._factory_out_dir
+        if out_dir is None:
+            chosen = filedialog.askdirectory(title="Output factory kit folder")
+            if not chosen:
+                return
+            out_dir = Path(chosen)
+            self._factory_out_dir = out_dir
+            self.factory_out_label.configure(text=str(out_dir))
+
+        threading.Thread(
+            target=self._build_factory_kit_worker,
+            args=(samples_dir, out_dir),
+            daemon=True,
+        ).start()
+
+    def _build_factory_kit_worker(self, samples_dir: Path, out_dir: Path) -> None:
+        try:
+            import sys
+
+            if not FACTORY_ROOT.is_dir():
+                raise FileNotFoundError(f"sound-factory not found at {FACTORY_ROOT}")
+            sys.path.insert(0, str(FACTORY_ROOT))
+            from kit_from_samples import build_kit_from_samples
+
+            stub_root = None
+            if self._factory_fill_stubs.get():
+                stub_root = FACTORY_ROOT.parent / "website" / "public" / "samples"
+            ckpt = ""
+            if self.checkpoint_path.is_file():
+                ckpt = str(self.checkpoint_path)
+            manifest = build_kit_from_samples(
+                preset_id=self._factory_preset.get(),
+                prompt=self._factory_prompt.get(),
+                samples_dir=samples_dir,
+                out_dir=out_dir,
+                stub_root=stub_root,
+                vae_checkpoint=ckpt,
+            )
+
+            def ui() -> None:
+                self._set_status(f"Factory kit written to {out_dir}")
+                messagebox.showinfo(
+                    "Factory kit",
+                    f"Kit manifest saved.\n\n{manifest}\n\nUpload or sync this folder with Disklordz sound-factory / website.",
+                )
+
+            self.after(0, ui)
+        except Exception as exc:
+            self.after(0, lambda: messagebox.showerror("Factory kit error", str(exc)))
 
 
 def main() -> None:
