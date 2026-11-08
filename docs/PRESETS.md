@@ -4,13 +4,13 @@ Programs are **four-tone stacks**. Use host program change or the plugin **&lt; 
 
 | Index | Category |
 |-------|----------|
-| 1–24 | EP / Rhodes / JD-style keys |
-| 25–48 | Pads |
-| 49–64 | Bass |
-| 65–80 | Vaporwave |
-| 81–96 | 80s R&B |
-| 97–112 | 90s R&B |
-| 113–128 | Elite sound design |
+| 1–36 | EP / Rhodes / JD-style keys |
+| 37–72 | Pads |
+| 73–108 | Bass |
+| 109–144 | Vaporwave |
+| 145–180 | 80s R&B |
+| 181–216 | 90s R&B |
+| 217–256 | Elite sound design |
 
 ## Per-tone mute
 
