@@ -31,6 +31,105 @@
   text-shadow: 0 0 24px var(--electric-glow);
 }
 
+.brand-lockup.bfm {
+  flex-wrap: wrap;
+  font-size: clamp(1.35rem, 4.5vw, 1.85rem);
+  letter-spacing: 0.04em;
+}
+
+.brand-lockup.bfm .brand-word {
+  font-weight: 700;
+}
+
+.app-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(8, 10, 15, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  padding: 0.35rem 0 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.nav-primary {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scrollbar-width: none;
+}
+
+.nav-primary::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-btn {
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--silver);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.nav-btn.active {
+  border-color: var(--electric);
+  color: var(--text);
+  background: rgba(40, 120, 255, 0.12);
+}
+
+.nav-more {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.nav-more-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.deal-score-badge {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.35rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  font-size: 0.72rem;
+}
+
+.deal-score-badge .dsb-score {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--electric);
+}
+
+.deal-score-badge.exceptional .dsb-score {
+  color: var(--success);
+}
+
+.deal-score-badge.weak .dsb-score {
+  color: var(--danger);
+}
+
+.dsb-conf {
+  color: var(--muted);
+}
+
+.stub-ref {
+  color: var(--electric-alt);
+  font-size: 0.85rem;
+}
+
 .hero {
   padding: 1.5rem 0 1rem;
 }

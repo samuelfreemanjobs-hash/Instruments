@@ -1,41 +1,35 @@
-# Savvy HQ — architecture
+# Black Friday Madness — architecture
 
-Year-round shopping intelligence PWA. **Black Friday** and **Cyber Monday** are peak calendar modes; the engine runs every day on authorized retailer feeds (not scrape-everything).
+**Product:** AI-powered year-round shopping intelligence (`tools/deal-hunter/`).
 
 ## Build & run
 
 ```bash
 cd tools/deal-hunter
-npm ci
-npm run dev
+npm ci && npm run dev
 npm test && npm run build
 ```
 
-## Data flow
+## PRD alignment
 
-1. **Catalog** — demo curated in `server/catalog.ts`; production swaps affiliate/PA-API/partner files per `server/integrations/data-sources.ts`.
-2. **Real savings** — `intelligence/engine.ts` compares live price to 30-day SQLite snapshots; UI shows advertised % vs real % on `RealSavingsStrip`.
-3. **Autopilot** — `agents/autonomous-fleet.ts` runs Value Scout, Deal Stalker, Local Scout, Community Curator, Season Planner; n8n hits `/api/autopilot/run`.
-4. **Discover** — community tips (trusted URLs), local partner circulars, recommendations.
-5. **Notify** — browser notifications + n8n email/web-push relay (`integrations/notify.ts`).
+See [docs/BLACK_FRIDAY_MADNESS_PRD.md](./docs/BLACK_FRIDAY_MADNESS_PRD.md) for screen-by-screen status.
 
-## Hosting
+| Layer | Module |
+|-------|--------|
+| Deal Intelligence Score 0–100 | `server/intelligence/deal-score.ts` |
+| Analysis + briefing | `server/intelligence/engine.ts` |
+| Chief agent + specialists | `server/agents/orchestrator.ts`, `autonomous-fleet.ts` |
+| Retailer adapters (authorized) | `server/retailers/types.ts`, `demo-adapter.ts` |
+| REST v1 | `server/api/v1/routes.ts` → `/api/v1/*` |
+| Postgres schema (target) | `supabase/migrations/001_black_friday_madness.sql` |
+| Demo persistence | SQLite `server/db.ts` |
 
-- **Vercel**: static PWA (`vercel.json`, see `DEPLOY.md`).
-- **API**: long-lived Node + SQLite (`better-sqlite3`).
+## Principles
 
-## Key modules
+- No unrestricted scraping — `server/integrations/data-sources.ts`.
+- Agents never purchase or hold payment credentials — `orchestrator.ts`.
+- Community deals ≠ verified catalog offers — `server/community.ts`.
 
-| Path | Role |
-|------|------|
-| `server/season.ts` | Calendar: `everyday` default + BF/CM peaks |
-| `server/intelligence/engine.ts` | Buy/wait, value verdicts, category trends |
-| `server/agents/autonomous-fleet.ts` | Autonomous shopping agents |
-| `server/integrations/n8n.ts` | Webhook automation |
-| `src/pages/AutopilotPage.tsx` | Agent digest UI |
-| `src/pages/DiscoverPage.tsx` | Community + local + recs |
+## Deploy
 
-## Related
-
-- Root [ARCHITECTURE.md](../../ARCHITECTURE.md)
-- [DEPLOY.md](./DEPLOY.md)
+[Vercel static + Node API](./DEPLOY.md); n8n for external automation glue.

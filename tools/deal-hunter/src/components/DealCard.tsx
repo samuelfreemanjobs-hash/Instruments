@@ -3,6 +3,7 @@ import { CONDITION_LABELS, DEAL_TYPE_LABELS } from "../types";
 import { IntelligenceBadge } from "./IntelligenceBadge";
 import { FinalPricePanel } from "./FinalPricePanel";
 import { RealSavingsStrip } from "./RealSavingsStrip";
+import { DealScoreBadge } from "./DealScoreBadge";
 
 interface Props {
   deal: Deal;
@@ -45,6 +46,7 @@ export function DealCard({
           )}
           {deal.coupon?.verified && <span className="badge coupon">Coupon ready</span>}
         </div>
+        <DealScoreBadge intel={deal.intelligence} />
         <IntelligenceBadge intel={deal.intelligence} />
         <RealSavingsStrip deal={deal} />
         <h3 className="deal-title">{deal.title}</h3>

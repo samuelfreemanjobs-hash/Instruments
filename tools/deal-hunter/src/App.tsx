@@ -21,7 +21,8 @@ import {
   saveWatchlist,
   type LocalListState,
 } from "./lib/storage";
-import { DecorAgentPage } from "./pages/DecorAgentPage";
+import { AppNav, type AppTab } from "./components/AppNav";
+import { StubPage } from "./pages/StubPage";
 import { HqDashboard } from "./pages/HqDashboard";
 import { IntelligenceHub } from "./pages/IntelligenceHub";
 import { PersonalAssistant } from "./pages/PersonalAssistant";
@@ -32,32 +33,8 @@ import { AutopilotPage } from "./pages/AutopilotPage";
 import type { Deal, SeasonInfo } from "./types";
 import "./App.css";
 
-type Tab =
-  | "assistant"
-  | "hq"
-  | "intelligence"
-  | "discover"
-  | "autopilot"
-  | "search"
-  | "list"
-  | "alerts"
-  | "decor"
-  | "pricing";
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: "assistant", label: "Assistant" },
-  { id: "hq", label: "HQ" },
-  { id: "intelligence", label: "Intel" },
-  { id: "discover", label: "Discover" },
-  { id: "autopilot", label: "Autopilot" },
-  { id: "search", label: "Search" },
-  { id: "list", label: "List" },
-  { id: "alerts", label: "Alerts" },
-  { id: "pricing", label: "Pricing" },
-];
-
 export default function App() {
-  const [tab, setTab] = useState<Tab>("assistant");
+  const [tab, setTab] = useState<AppTab>("hq");
   const [deals, setDeals] = useState<Deal[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [localList, setLocalList] = useState<LocalListState>(() => loadLocalList());
@@ -168,12 +145,12 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="hero compact-hero">
-        <h1 className="brand-lockup">
-          <span className="brand-word">Savvy</span>
-          <span className="brand-accent">HQ</span>
+        <h1 className="brand-lockup bfm">
+          <span className="brand-word">BLACK FRIDAY</span>
+          <span className="brand-accent">MADNESS</span>
         </h1>
         <p className="hero-lede">
-          Year-round shopping intelligence — Black Friday & Cyber Monday are peak events, not the whole product.
+          AI shopping intelligence year-round — peak when Black Friday & Cyber Monday hit. Real savings, not ad copy.
         </p>
         <div className="safety-shield">
           <span className="shield-icon" aria-hidden>
@@ -193,18 +170,7 @@ export default function App() {
         }}
       />
 
-      <nav className="tabs scroll-tabs" aria-label="Main">
-        {TABS.map(({ id, label }) => (
-          <button
-            key={id}
-            type="button"
-            className={`tab${tab === id ? " active" : ""}`}
-            onClick={() => setTab(id)}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
+      <AppNav tab={tab} onTab={setTab} />
 
       {tab === "assistant" && (
         <PersonalAssistant
@@ -223,12 +189,46 @@ export default function App() {
           couponsOnly={ui.couponsOnly}
         />
       )}
-      {tab === "decor" && <DecorAgentPage stealThreshold={alerts.minStealScore} onAddList={addToList} listIds={listIds} />}
+      {tab === "coupons" && (
+        <StubPage
+          title="Coupon Center"
+          prdRef="PRD §4.7 — verified codes only"
+          bullets={[
+            "Retailer coupons surface on deal cards when verification status is known.",
+            "Never claim a code works without evidence — see Final Price panel.",
+          ]}
+        />
+      )}
+      {tab === "compare" && <PricingAgentPage />}
       {tab === "pricing" && <PricingAgentPage />}
+      {tab === "budget" && (
+        <StubPage
+          title="Shopping Budget"
+          prdRef="PRD §4.9"
+          bullets={[
+            "Set overall and category budgets.",
+            "Planned purchases — clicks to retailers do not mark items purchased.",
+          ]}
+        />
+      )}
+      {tab === "calendar" && (
+        <StubPage
+          title="Deal Calendar"
+          prdRef="PRD §4.10"
+          bullets={["Black Friday, Cyber Monday, Cyber Week, and retailer-specific events.", "Follow retailers for sale notifications."]}
+        />
+      )}
+      {tab === "settings" && (
+        <StubPage
+          title="Account & Preferences"
+          prdRef="PRD §4.12"
+          bullets={["Supabase Auth planned — profile, notifications, privacy, data export."]}
+        />
+      )}
 
       {tab === "list" && (
         <section className="panel">
-          <h2>Our list</h2>
+          <h2>Wishlist</h2>
           {listProgress.total > 0 && (
             <p>
               {listProgress.done}/{listProgress.total} done

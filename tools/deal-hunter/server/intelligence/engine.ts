@@ -3,6 +3,7 @@ import { identityFor } from "../catalog-meta.js";
 import { discountPct } from "../catalog.js";
 import { returnPolicyFor } from "../return-policy.js";
 import { computeValueScore } from "../value-score.js";
+import { computeDealIntelligenceScore, type DealIntelligenceScore } from "./deal-score.js";
 import type { ScoredDeal } from "../rank.js";
 
 export type IntelligenceVerdict = "buy_now" | "good_deal" | "wait" | "skip";
@@ -58,6 +59,7 @@ export interface DealIntelligence {
   couponStrategy: string;
   riskFlags: string[];
   generatedAt: string;
+  dealIntelligenceScore?: DealIntelligenceScore;
 }
 
 export interface CategoryTrendPoint {
@@ -328,6 +330,18 @@ export function analyzeDealIntelligence(deal: ScoredDeal, pool: ScoredDeal[]): D
       ? `Best alt: ${alts[0].title} at $${alts[0].price.toFixed(2)} (${alts[0].retailer}).`
       : "This listing leads similar items in today’s feed.";
 
+  const historyRows = db
+    .prepare(`SELECT price FROM price_snapshots WHERE deal_id = ? LIMIT 5`)
+    .all(deal.id) as { price: number }[];
+
+  const dealIntelligenceScore = computeDealIntelligenceScore(deal, pool, {
+    avg30d: avg,
+    low30d: low,
+    advertisedDiscountPct,
+    realSavingsVsAvgPct,
+    hasHistory: historyRows.length >= 3,
+  });
+
   return {
     dealId: deal.id,
     title: deal.title,
@@ -358,6 +372,7 @@ export function analyzeDealIntelligence(deal: ScoredDeal, pool: ScoredDeal[]): D
     couponStrategy,
     riskFlags,
     generatedAt,
+    dealIntelligenceScore,
   };
 }
 

@@ -1,19 +1,22 @@
 :root {
-  --bg: #050507;
-  --bg-elevated: #0a0a0f;
-  --surface: #111118;
-  --surface-2: #1a1a24;
-  --border: #2a2a38;
-  --silver: #b8bcc8;
-  --text: #fafafc;
-  --muted: #8b8f9c;
-  --electric: #2b8cff;
-  --electric-dim: #1a5fb8;
-  --electric-glow: rgba(43, 140, 255, 0.35);
-  --white: #ffffff;
-  --danger: #ff4d6a;
-  --success: #3dffba;
+  /* PRD Part 2.2 — Black Friday Madness design tokens */
+  --bg: #080a0f;
+  --bg-elevated: #11151e;
+  --surface: #171d29;
+  --surface-2: #1f2633;
+  --border: #283244;
+  --silver: #a6b0c0;
+  --text: #ffffff;
+  --muted: #a6b0c0;
+  --electric: #2878ff;
+  --electric-alt: #00b8d9;
+  --electric-glow: rgba(40, 120, 255, 0.28);
+  --success: #16a36a;
+  --warning: #f0a52b;
+  --danger: #e34d59;
   --steal: var(--electric);
+  --accent: var(--electric);
+  --accent-dim: #1a5a9e;
   font-family: "DM Sans", system-ui, -apple-system, sans-serif;
   line-height: 1.45;
   font-weight: 400;
@@ -22,8 +25,6 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  --accent: var(--electric);
-  --accent-dim: var(--electric-dim);
 }
 
 *,
@@ -35,7 +36,7 @@
 body {
   margin: 0;
   min-height: 100dvh;
-  background: radial-gradient(ellipse 140% 90% at 50% -30%, #151520 0%, var(--bg) 50%);
+  background: var(--bg);
 }
 
 #root {
@@ -51,6 +52,14 @@ select {
 
 a {
   color: var(--electric);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--electric-alt);
+  outline-offset: 2px;
 }
 
 .serif {

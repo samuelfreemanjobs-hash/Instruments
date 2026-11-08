@@ -99,6 +99,14 @@ export interface DealIntelligence {
   couponStrategy: string;
   riskFlags: string[];
   generatedAt: string;
+  dealIntelligenceScore?: {
+    score: number;
+    confidence: number;
+    classification: string;
+    classificationLabel: string;
+    explanation: string;
+    lastVerifiedAt: string;
+  };
 }
 
 export interface ReturnPolicy {

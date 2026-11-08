@@ -9,12 +9,12 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg"],
       manifest: {
-        name: "Savvy HQ — Shopping intelligence",
-        short_name: "Savvy HQ",
+        name: "Black Friday Madness",
+        short_name: "BF Madness",
         description:
           "Year-round deals with real savings math. Black Friday & Cyber Monday peak modes. Lists, autopilot agents, alerts.",
-        theme_color: "#050507",
-        background_color: "#050507",
+        theme_color: "#080A0F",
+        background_color: "#080A0F",
         display: "standalone",
         orientation: "portrait-primary",
         start_url: "/",
