@@ -2,7 +2,9 @@
 
 ## Purpose
 
-File-based and Git-based handoff between **Cursor Cloud Agent** (Linux, SaaS/JUCE factory) and **Google Antigravity IDE** (Windows, HISE lane). There is **no direct IDE remote session** — agents stay decoupled and safe.
+File-based and Git-based handoff between **Cursor Cloud Agent** (Linux, SaaS/JUCE factory) and **Google Antigravity IDE** (Windows, batch/docs/HISE lanes). There is **no direct IDE remote session** — agents stay decoupled and safe.
+
+**Active mode:** standing queue `active-queue.json`, `dispatch-active.sh`, Windows `watch-handoffs.ps1`, workflow `antigravity-dispatch-active.yml` — see [docs/ANTIGRAVITY_ACTIVE_MODE.md](../../docs/ANTIGRAVITY_ACTIVE_MODE.md).
 
 ## Build & run
 

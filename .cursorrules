@@ -12,8 +12,9 @@ When the user requests **heavy** tasks that would clutter the active workspace, 
 
 ### Repo-native Antigravity handoff (preferred when tracked)
 
-- HISE / Windows lane: `./scripts/antigravity-bridge/antigravity-bridge.sh send --wo ... --title ...`
-- Inbox: `disklordz/antigravity/inbox/` · Docs: `disklordz/antigravity/ARCHITECTURE.md`, `docs/HISE_ANTIGRAVITY_LANE.md`
+- **Active queue (preferred):** `./scripts/antigravity-bridge/dispatch-active.sh --push` (next item from `disklordz/antigravity/active-queue.json`)
+- Manual send: `./scripts/antigravity-bridge/antigravity-bridge.sh send --wo ... --title ... --to-agent antigravity-batch|docs|hise`
+- Inbox: `disklordz/antigravity/inbox/` · Active mode: `docs/ANTIGRAVITY_ACTIVE_MODE.md` · Architecture: `disklordz/antigravity/ARCHITECTURE.md`
 - Rule: `.cursor/rules/antigravity-hise-lane.mdc`
 - **Cannot** remote-control the user's Antigravity session — file/git handoff only.
 
@@ -22,6 +23,12 @@ When the user requests **heavy** tasks that would clutter the active workspace, 
 - **Implement C++ here or in a dedicated Cursor Factory chat** — not Antigravity unless user explicitly routes HISE/sketch lane.
 - **Delegate PM/CI slicing to** `plugin-factory-liaison` · Implementer uses `docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md` §18.
 - Business/sprint: **audio-business-copilot** — not Cursor factory work.
+
+## Antigravity activity level
+
+When the user wants Antigravity **more active**, **proactively dispatch** queue items (`dispatch-active.sh --push`) after business sprint tasks that produce specs Antigravity can execute (batch/docs/HISE). Do not wait for the user to say "send to Antigravity" if the next queue item clearly unblocks the sprint.
+
+Windows side: user should run `watch-handoffs.ps1` on a schedule (Task Scheduler every 15 min).
 
 ## When to Delegate to Antigravity
 

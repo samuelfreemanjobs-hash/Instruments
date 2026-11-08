@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "description": "Standing Antigravity work — dispatch-active picks next pending item",
+  "lanes": {
+    "batch": "Python/scipy/numpy audio batches, preset JSON at scale",
+    "docs": "Large manuals and spec exports",
+    "hise": "HISE sketch exports on Windows"
+  },
+  "completed_wo_ids": [],
+  "items": [
+    {
+      "wo_id": "WO-AG-001",
+      "lane": "docs",
+      "title": "[Antigravity][Docs] CHORD ENGINE genre rules — JSON schema draft",
+      "criteria": "Produce docs/drafts/chord-genre-rules.schema.json + 5 example genre packs (Memphis, Dark Trap, Drift Phonk, Luxury, Soul) under docs/drafts/genre-packs/; original theory only; push to outbox when done",
+      "context_paths": [
+        "docs/CHORD_ENGINE_PRD.md",
+        "docs/DISKLORDZ_BRAND_IDENTITY.md",
+        "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md"
+      ],
+      "priority": 1
+    },
+    {
+      "wo_id": "WO-AG-002",
+      "lane": "batch",
+      "title": "[Antigravity][Batch] Preset manifest scaffold for DiskLordz UI theme",
+      "criteria": "Generate disklordz/antigravity/outbox-artifacts/ui-theme-tokens.json mapping black/purple/lime/gold from brand doc; no secrets",
+      "context_paths": [
+        "docs/DISKLORDZ_BRAND_IDENTITY.md",
+        "docs/DPF_TECHNICAL_ARCHITECTURE.md"
+      ],
+      "priority": 2
+    },
+    {
+      "wo_id": "WO-AG-003",
+      "lane": "batch",
+      "title": "[Antigravity][Batch] Coach sprint progress merge script",
+      "criteria": "Windows-friendly Python script scripts/antigravity-bridge/merge-progress.py that merges phone-exported progress.json into disklordz/audio-command/data/progress.json with CLI",
+      "context_paths": [
+        "disklordz/audio-command/data/progress.template.json",
+        "disklordz/audio-command/README.md"
+      ],
+      "priority": 3
+    },
+    {
+      "wo_id": "WO-AG-004",
+      "lane": "hise",
+      "title": "[Plugin][HISE] Lane smoke — verify HISE export path",
+      "criteria": "Document env.windows.local values used; if HISE installed run one export smoke per HISE_ANTIGRAVITY_LANE.md; publish-handoff.ps1 status done or blocked",
+      "context_paths": [
+        "docs/HISE_ANTIGRAVITY_LANE.md",
+        "docs/HISE_SKETCH_LANE.md",
+        "disklordz/antigravity/AGENT_INSTRUCTIONS.md"
+      ],
+      "priority": 4
+    }
+  ]
+}
