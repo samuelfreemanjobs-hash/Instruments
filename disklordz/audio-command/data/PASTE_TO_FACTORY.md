@@ -1,6 +1,6 @@
 # PASTE_TO_FACTORY (generated)
 
-_Generated 2026-11-08 17:54 UTC · task `plugin-skeleton`_
+_Generated 2026-11-08 20:00 UTC · task `plugin-skeleton`_
 
 **Blocker:** human-windows  
 **Next owner:** Samuel (Windows build + DAW)  
