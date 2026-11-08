@@ -1,6 +1,6 @@
 # PASTE_TO_FACTORY (generated)
 
-_Generated 2026-11-08 16:00 UTC · task `plugin-skeleton`_
+_Generated 2026-11-08 17:54 UTC · task `plugin-skeleton`_
 
 **Blocker:** human-windows  
 **Next owner:** Samuel (Windows build + DAW)  
@@ -21,6 +21,8 @@ powershell -ExecutionPolicy Bypass -File .\DiskLordz-Audio\build-windows.ps1
 ```
 
 VST3: `DiskLordz-Audio\Build\Windows\ChordEngine_artefacts\Release\VST3\CHORD ENGINE.vst3`
+
+**Or CI:** GitHub → Actions → **DiskLordz Audio (Windows VST3)** → download artifact `chord-engine-vst3-windows-*` (no local compile).
 
 **Done when:** You have evidence the plugin scans and opens in REAPER or FL.
 
