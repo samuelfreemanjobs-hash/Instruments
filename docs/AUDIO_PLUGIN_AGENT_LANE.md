@@ -37,6 +37,10 @@ Blocked until **`dev-environment`** is done in Coach — file will say `human-wi
 python3 scripts/audio-plugin/fleet_tick.py --weekly --antigravity
 ```
 
+## Prep handoff bundle
+
+[AUDIO_PREP_HANDOFF_BUNDLE.md](AUDIO_PREP_HANDOFF_BUNDLE.md) — paths after WO-PREP-001/002.
+
 ## Related
 
 - [CURSOR_FACTORY_LIAISON.md](CURSOR_FACTORY_LIAISON.md)
