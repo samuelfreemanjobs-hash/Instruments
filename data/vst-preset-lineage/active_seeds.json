@@ -1,185 +1,229 @@
 {
   "wave9090": [
     {
-      "name": "Agent Trap 20261108-00",
+      "name": "Southside Sub (1108)",
       "category": "TRAP",
       "params": {
-        "wtPosition": 0.6267312158149461,
-        "filterCutoff": 0.21300129062672005,
-        "subLevel": 0.9330035182042943,
-        "drive": 0.4467852885778587,
-        "ampSustain": 2.0750618279872595
+        "wtPosition": 0.5794495726048285,
+        "filterCutoff": 0.2812231501728365,
+        "filterRes": 0.12771040532528213,
+        "subLevel": 0.9694495726048286,
+        "drive": 0.4296380066566027,
+        "crush": 0.1791917242682333,
+        "ampAttack": 0.002,
+        "ampDecay": 0.4819918249426986,
+        "ampSustain": 0.9689785201382691,
+        "ampRelease": 0.3115596580838629,
+        "glideMs": 94.98399066753608
       }
     },
     {
-      "name": "Agent Trap 20261108-01",
+      "name": "Metro Sub (1108)",
       "category": "TRAP",
       "params": {
-        "wtPosition": 0.7612039384907493,
-        "filterCutoff": 0.7070615481245814,
-        "ampDecay": -1.9026936033788022,
-        "ampSustain": -0.37477526551070195,
-        "filtEnvAmt": -1.4169733466972625,
-        "glideMs": 34.649462279057296
+        "wtPosition": 0.5798946701870401,
+        "filterCutoff": 0.28150304849154145,
+        "filterRes": 0.1272727366268857,
+        "subLevel": 0.9698946701870401,
+        "drive": 0.4290909207836071,
+        "crush": 0.17832064243215362,
+        "ampAttack": 0.002,
+        "ampDecay": 0.48267146117230286,
+        "ampSustain": 0.9692024387932331,
+        "ampRelease": 0.3119157361496321,
+        "glideMs": 94.99974397370916
       }
     },
     {
-      "name": "Agent Trap 20261108-02",
+      "name": "Carti Bell Pluck (1108)",
       "category": "TRAP",
       "params": {
-        "wtPosition": 0.8206426345724034,
-        "detuneCents": -14.272627345517455,
-        "drive": 0.48386051808239783,
-        "crush": 0.23798613253354278,
-        "filterCutoff": 0.445392977672386
+        "wtPosition": 0.7206436094006069,
+        "filterCutoff": 0.6818022461201585,
+        "filterRes": 0.38656192143424856,
+        "filtEnvAmt": 0.841013926463122,
+        "ampAttack": 0.001,
+        "ampDecay": 0.08864092783478333,
+        "ampSustain": 0.00944179689612678,
+        "ampRelease": 0.2525148875204855,
+        "glideMs": 34.022813345420246,
+        "stereoWidth": 0.22
       }
     },
     {
-      "name": "Agent Trap 20261108-03",
+      "name": "Nardo Bell Pluck (1108)",
       "category": "TRAP",
       "params": {
-        "wtPosition": 0.6464528746448837,
-        "crush": 0.41071188206510906,
-        "drive": 0.6571316548013392,
+        "wtPosition": 0.7212165525085615,
+        "filterCutoff": 0.6819290501810535,
+        "filterRes": 0.38603337181187275,
+        "filtEnvAmt": 0.8417074875930448,
+        "ampAttack": 0.001,
+        "ampDecay": 0.08927909749955121,
+        "ampSustain": 0.009543240144842827,
+        "ampRelease": 0.2529732420068493,
+        "glideMs": 34.03841847084351,
+        "stereoWidth": 0.22
+      }
+    },
+    {
+      "name": "Slime Slide (1108)",
+      "category": "TRAP",
+      "params": {
+        "wtPosition": 0.7618362818256853,
+        "detuneCents": -10.876864595899901,
+        "filterCutoff": 0.4219923125588564,
+        "filterRes": 0.35547268462667103,
+        "drive": 0.4868408557833388,
+        "subLevel": 0.5418362818256853,
+        "ampDecay": 0.4248944739785155,
+        "ampSustain": 0.7295938500470851
+      }
+    },
+    {
+      "name": "Travis Hook (1108)",
+      "category": "TRAP",
+      "params": {
+        "wtPosition": 0.7023413471549386,
+        "wtScan": 0.18,
+        "filterCutoff": 0.5919975509528419,
+        "glideMs": 105.06544298195247,
+        "tapeWobble": 0.12,
+        "stereoWidth": 0.38,
+        "ampSustain": 0.6895980407622736
+      }
+    },
+    {
+      "name": "Phonk Haze (1108)",
+      "category": "TRAP",
+      "params": {
+        "wtPosition": 0.6532026631732711,
+        "filterCutoff": 0.3919272046213093,
+        "crush": 0.44383646907285906,
+        "drive": 0.6453337489323754,
         "filterDestructive": true,
-        "tapeWobble": -2.168805953545307
+        "tapeWobble": 0.22,
+        "subLevel": 0.6132026631732711
       }
     },
     {
-      "name": "Agent Trap 20261108-04",
+      "name": "Drill Cut (1108)",
       "category": "TRAP",
       "params": {
-        "wtPosition": 0.646698310219937,
-        "filterCutoff": 0.29377672739858723,
-        "subLevel": 0.940830061982159,
-        "drive": 0.43865753997741375,
-        "ampSustain": 3.13462274659255
-      }
-    },
-    {
-      "name": "Agent Trap 20261108-05",
-      "category": "TRAP",
-      "params": {
-        "wtPosition": 0.7203913454135152,
-        "filterCutoff": 0.6111295012056178,
-        "ampDecay": -1.8557613911993727,
-        "ampSustain": 1.667972958467807,
-        "filtEnvAmt": 1.337884950561077,
-        "glideMs": 37.47421571171702
-      }
-    },
-    {
-      "name": "Agent Trap 20261108-06",
-      "category": "TRAP",
-      "params": {
-        "wtPosition": 0.8475678144032581,
-        "detuneCents": -11.826105161017436,
-        "drive": 0.5767738916775245,
-        "crush": 0.20542412526500242,
-        "filterCutoff": 0.44624487575278726
-      }
-    },
-    {
-      "name": "Agent Trap 20261108-07",
-      "category": "TRAP",
-      "params": {
-        "wtPosition": 0.7195285597103594,
-        "crush": 0.41422237028370956,
-        "drive": 0.6634048280372933,
-        "filterDestructive": true,
-        "tapeWobble": 0.5712902972324578
+        "wtPosition": 0.8348433313547899,
+        "filterCutoff": 0.5515709817359074,
+        "filterRes": 0.5228607622455367,
+        "ampDecay": 0.13714216273537344,
+        "ampSustain": 0.00925678538872581,
+        "drive": 0.44357595280692086,
+        "filtEnvAmt": 0.7250653011171927
       }
     }
   ],
   "pluggva": [
     {
-      "name": "Agent Trap 20261108-00",
+      "name": "Southside Sub (1108)",
       "category": "TRAP",
       "params": {
         "osc1Wave": "saw",
         "osc2Wave": "saw",
-        "unisonAmount": 1.7019448138316327,
-        "subLevel": 0.7254989260386795,
-        "filterCutoff": 0.3273477930781856,
-        "drive": 0.35472655563225286
+        "subLevel": 0.9094495726048286,
+        "filterCutoff": 0.3412231501728365,
+        "drive": 0.4096380066566027,
+        "ampDecay": 0.5019918249426987,
+        "ampSustain": 0.8889785201382692,
+        "glideMs": 119.98399066753608
       }
     },
     {
-      "name": "Agent Trap 20261108-01",
-      "category": "TRAP",
-      "params": {
-        "osc2Octave": -1.0169985107665882,
-        "osc2DetuneCents": 8.717396254532945,
-        "ampDecay": -1.8401931388333002,
-        "ampSustain": -1.0657267050715578,
-        "filtEnvAmt": 1.451285332469121,
-        "glideMs": 27.351194459056405
-      }
-    },
-    {
-      "name": "Agent Trap 20261108-02",
-      "category": "TRAP",
-      "params": {
-        "unisonAmount": 0.2768686421610368,
-        "osc2DetuneCents": -16.39436625229686,
-        "filterCutoff": 0.3720373386458936,
-        "chorus": 2.515942021019971
-      }
-    },
-    {
-      "name": "Agent Trap 20261108-03",
-      "category": "TRAP",
-      "params": {
-        "osc1Wave": "square",
-        "filterRes": 1.210569849183649,
-        "crush": 0.2130957206800386,
-        "drive": 0.46053663778377163,
-        "ampDecay": 1.2098086301616762
-      }
-    },
-    {
-      "name": "Agent Trap 20261108-04",
+      "name": "Memphis Undertow (1108)",
       "category": "TRAP",
       "params": {
         "osc1Wave": "saw",
         "osc2Wave": "saw",
-        "unisonAmount": -0.8956680299427437,
-        "subLevel": 0.7655346530109177,
-        "filterCutoff": 0.4187428020763914,
-        "drive": 0.39679997118249116
+        "unisonAmount": 0.8689304658021302,
+        "osc2DetuneCents": -15.841250842672107,
+        "unisonSpreadCents": 27.82216907848005,
+        "subLevel": 0.6701205043600029,
+        "filterCutoff": 0.3916125758149807,
+        "drive": 0.35881939762932735
       }
     },
     {
-      "name": "Agent Trap 20261108-05",
+      "name": "Carti Bell Pluck (1108)",
       "category": "TRAP",
       "params": {
-        "osc2Octave": 1.273358770118302,
-        "osc2DetuneCents": 10.886148404751397,
-        "ampDecay": 1.720689216911086,
-        "ampSustain": 1.3247995754219752,
-        "filtEnvAmt": -0.5005692545722991,
-        "glideMs": 25.754081170739383
+        "osc2Octave": 1,
+        "osc2DetuneCents": 10.147643232270593,
+        "filtEnvAmt": 0.821013926463122,
+        "ampDecay": 0.08164092783478333,
+        "ampSustain": 0.00944179689612678,
+        "ampRelease": 0.2925148875204855,
+        "glideMs": 32.022813345420246,
+        "chorus": 0.28
       }
     },
     {
-      "name": "Agent Trap 20261108-06",
+      "name": "Nardo Bell Pluck (1108)",
       "category": "TRAP",
       "params": {
-        "unisonAmount": 0.01417463068359337,
-        "osc2DetuneCents": -16.114843795316627,
-        "filterCutoff": 0.3653179412303592,
-        "chorus": 2.5459666288082614
+        "osc2Octave": 1,
+        "osc2DetuneCents": 10.135750865767138,
+        "filtEnvAmt": 0.8217074875930448,
+        "ampDecay": 0.0822790974995512,
+        "ampSustain": 0.009543240144842827,
+        "ampRelease": 0.29297324200684927,
+        "glideMs": 32.03841847084351,
+        "chorus": 0.28
       }
     },
     {
-      "name": "Agent Trap 20261108-07",
+      "name": "Brick Wall (1108)",
       "category": "TRAP",
       "params": {
-        "osc1Wave": "square",
-        "filterRes": 2.30656460706881,
-        "crush": 0.17776134569581736,
-        "drive": 0.5186526398353856,
-        "ampDecay": -0.39096687490881155
+        "osc1Wave": "saw",
+        "osc2Wave": "saw",
+        "unisonAmount": 0.90809571752697,
+        "unisonSpreadCents": 29.861314534049647,
+        "chorus": 0.48,
+        "filterCutoff": 0.5619986131166418,
+        "drive": 0.2863293628501526,
+        "glideMs": 75.06441293042779
+      }
+    },
+    {
+      "name": "Travis Hook (1108)",
+      "category": "TRAP",
+      "params": {
+        "unisonAmount": 0.5380883031963577,
+        "chorus": 0.52,
+        "stereoWidth": 0.42,
+        "glideMs": 115.06544298195247,
+        "drift": 0.2,
+        "filterCutoff": 0.7319975509528418
+      }
+    },
+    {
+      "name": "Trap Knife (1108)",
+      "category": "TRAP",
+      "params": {
+        "drive": 0.5255157104257969,
+        "filterRes": 0.48441256834063745,
+        "ampDecay": 0.14591621031242788,
+        "ampSustain": 0.0495583329377703,
+        "filtEnvAmt": 0.8635680984574015,
+        "crush": 0.1440123859509051
+      }
+    },
+    {
+      "name": "Whole Drift (1108)",
+      "category": "TRAP",
+      "params": {
+        "unisonAmount": 0.4680960536842992,
+        "glideMs": 145.11396927513684,
+        "filterCutoff": 0.6115709817359073,
+        "chorus": 0.36,
+        "ampSustain": 0.6292567853887258
       }
     }
   ],

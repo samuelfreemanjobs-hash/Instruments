@@ -28,6 +28,9 @@ jobs:
       - name: Ingest hand-curated lineage
         run: python3 scripts/vst/ingest_vst_lineage.py
 
+      - name: Quality gate (gold slots)
+        run: python3 scripts/vst/test_preset_quality.py
+
       - name: Run daily preset batch
         run: |
           python3 scripts/vst/daily_preset_batch.py \

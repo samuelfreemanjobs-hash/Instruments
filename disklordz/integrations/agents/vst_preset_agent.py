@@ -53,8 +53,16 @@ def _parse_count(path: Path, pattern: str) -> int | None:
 
 def self_test() -> dict[str, object]:
     verify = REPO / "scripts/vst/verify_factory_preset_counts.py"
+    quality = REPO / "scripts/vst/test_preset_quality.py"
     proc = subprocess.run(
         [sys.executable, str(verify)],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    qproc = subprocess.run(
+        [sys.executable, str(quality)],
         cwd=REPO,
         capture_output=True,
         text=True,
@@ -78,9 +86,11 @@ def self_test() -> dict[str, object]:
             }
         )
     return {
-        "ok": proc.returncode == 0,
+        "ok": proc.returncode == 0 and qproc.returncode == 0,
         "verify_stdout": proc.stdout.strip(),
         "verify_stderr": proc.stderr.strip(),
+        "quality_stdout": qproc.stdout.strip(),
+        "quality_stderr": qproc.stderr.strip(),
         "products": products,
         "doc": "disklordz/agents/profit/vst-preset-agent/knowledge/SYNTH_DSP_PRIMER.md",
     }

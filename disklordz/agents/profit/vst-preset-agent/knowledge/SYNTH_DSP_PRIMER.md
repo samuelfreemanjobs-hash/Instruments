@@ -45,3 +45,5 @@ Programs tune **filter + 16 pad** level/tune/decay — not ROM swap. Memphis/tra
 ## Quality bar
 
 Every bank expansion ships with **verify_factory_preset_counts.py** and product `ctest` green.
+
+**Daily batch (8 per synth):** role-locked gold templates — 2×808, 2×pluck, reese, lead, phonk/drill (WAVE) — scored **≥ 88** before promotion (`scripts/vst/preset_quality.py`). No random jitter; producer-style names only.

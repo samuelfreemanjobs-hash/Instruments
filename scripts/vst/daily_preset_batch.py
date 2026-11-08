@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Daily autonomous preset batch — VST Preset Agent (+ workflow-automation cron)."""
+"""Daily autonomous preset batch — 8 chart-grade trap slots per synth (quality-gated)."""
 
 from __future__ import annotations
 
 import argparse
-import random
+import json
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -13,158 +13,118 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "scripts/vst"))
 
-from vst_lineage import (  # noqa: E402
-    DAILY_PRODUCTS,
-    PresetRecord,
-    VstLineage,
-    load_active_seeds,
-    save_active_seeds,
+from preset_quality import (  # noqa: E402
+    MIN_DAILY_SCORE,
+    daily_plugg_presets,
+    daily_wave_presets,
 )
-
-WAVE_ARCHETYPES = [
-    {
-        "category": "TRAP",
-        "params": {
-            "wtPosition": 0.61,
-            "filterCutoff": 0.27,
-            "subLevel": 0.96,
-            "drive": 0.48,
-            "ampSustain": 0.94,
-        },
-    },
-    {
-        "category": "TRAP",
-        "params": {
-            "wtPosition": 0.74,
-            "filterCutoff": 0.66,
-            "ampDecay": 0.08,
-            "ampSustain": 0.0,
-            "filtEnvAmt": 0.84,
-            "glideMs": 36.0,
-        },
-    },
-    {
-        "category": "TRAP",
-        "params": {
-            "wtPosition": 0.82,
-            "detuneCents": -12.0,
-            "drive": 0.52,
-            "crush": 0.22,
-            "filterCutoff": 0.44,
-        },
-    },
-    {
-        "category": "TRAP",
-        "params": {
-            "wtPosition": 0.68,
-            "crush": 0.4,
-            "drive": 0.62,
-            "filterDestructive": True,
-            "tapeWobble": 0.2,
-        },
-    },
-]
-
-PLUGG_ARCHETYPES = [
-    {
-        "category": "TRAP",
-        "params": {
-            "osc1Wave": "saw",
-            "osc2Wave": "saw",
-            "unisonAmount": 0.72,
-            "subLevel": 0.78,
-            "filterCutoff": 0.36,
-            "drive": 0.38,
-        },
-    },
-    {
-        "category": "TRAP",
-        "params": {
-            "osc2Octave": 1,
-            "osc2DetuneCents": 10.0,
-            "ampDecay": 0.075,
-            "ampSustain": 0.0,
-            "filtEnvAmt": 0.8,
-            "glideMs": 28.0,
-        },
-    },
-    {
-        "category": "TRAP",
-        "params": {
-            "unisonAmount": 0.9,
-            "osc2DetuneCents": -15.0,
-            "filterCutoff": 0.4,
-            "chorus": 0.42,
-        },
-    },
-    {
-        "category": "TRAP",
-        "params": {
-            "osc1Wave": "square",
-            "filterRes": 0.5,
-            "crush": 0.2,
-            "drive": 0.5,
-            "ampDecay": 0.11,
-        },
-    },
-]
+from vst_lineage import PresetRecord, VstLineage, load_active_seeds, save_active_seeds  # noqa: E402
 
 
-def jitter(params: dict, rng: random.Random, scale: float = 0.06) -> dict:
-    out = dict(params)
-    for key, val in list(out.items()):
-        if isinstance(val, bool):
-            continue
-        if isinstance(val, (int, float)):
-            delta = (rng.random() - 0.5) * 2.0 * scale
-            if key.endswith("Level") or "Cutoff" in key or "Position" in key or key == "crush" or key == "drive":
-                out[key] = float(max(0.0, min(1.0, float(val) + delta)))
-            else:
-                out[key] = float(val) + delta * 40.0
-    return out
-
-
-def run_batch(batch_size: int, seed: int | None) -> str:
+def run_batch(batch_size: int | None, seed: int | None) -> str:
     day = datetime.now(timezone.utc).strftime("%Y%m%d")
     batch_id = f"daily-{day}-utc"
-    rng = random.Random(seed if seed is not None else int(day))
+    _ = seed  # reserved for future A/B; goldens are role-locked
 
     lineage = VstLineage()
     active = load_active_seeds()
+    for product in ("wave9090", "pluggva"):
+        active[product] = [
+            x for x in active.get(product, [])
+            if not x.get("name", "").startswith(("Agent Trap", "Agent "))
+        ]
     added = 0
+    rejected = 0
 
-    for i in range(batch_size):
-        arch = WAVE_ARCHETYPES[i % len(WAVE_ARCHETYPES)]
-        params = jitter(arch["params"], rng)
-        name = f"Agent Trap {day}-{i:02d}"
-        phash = VstLineage.param_hash(params)
-        rec = PresetRecord("wave9090", name, arch["category"], phash, __import__("json").dumps(params), "daily_batch", batch_id)
+    wave_slots = daily_wave_presets(day)
+    plugg_slots = daily_plugg_presets(day)
+
+    if batch_size is not None:
+        wave_slots = wave_slots[:batch_size]
+        plugg_slots = plugg_slots[:batch_size]
+
+    new_wave: list[dict] = []
+    new_plugg: list[dict] = []
+
+    for preset in wave_slots:
+        phash = VstLineage.param_hash(preset.params)
+        meta = {
+            "role": preset.role,
+            "score": round(preset.score, 1),
+            "notes": preset.notes,
+        }
+        rec = PresetRecord(
+            "wave9090",
+            preset.name,
+            preset.category,
+            phash,
+            json.dumps({**preset.params, "_meta": meta}),
+            "daily_batch_gold",
+            batch_id,
+        )
         if lineage.insert(rec):
-            active["wave9090"].append({"name": name, "category": arch["category"], "params": params})
+            new_wave.append(
+                {"name": preset.name, "category": preset.category, "params": preset.params}
+            )
             added += 1
+            print(f"OK  wave9090 {preset.name} score={preset.score:.1f} role={preset.role}")
+        else:
+            rejected += 1
+            print(f"SKIP wave duplicate {preset.name}")
 
-    for i in range(batch_size):
-        arch = PLUGG_ARCHETYPES[i % len(PLUGG_ARCHETYPES)]
-        params = jitter(arch["params"], rng)
-        name = f"Agent Trap {day}-{i:02d}"
-        phash = VstLineage.param_hash(params)
-        rec = PresetRecord("pluggva", name, arch["category"], phash, __import__("json").dumps(params), "daily_batch", batch_id)
+    for preset in plugg_slots:
+        phash = VstLineage.param_hash(preset.params)
+        meta = {
+            "role": preset.role,
+            "score": round(preset.score, 1),
+            "notes": preset.notes,
+        }
+        rec = PresetRecord(
+            "pluggva",
+            preset.name,
+            preset.category,
+            phash,
+            json.dumps({**preset.params, "_meta": meta}),
+            "daily_batch_gold",
+            batch_id,
+        )
         if lineage.insert(rec):
-            active["pluggva"].append({"name": name, "category": arch["category"], "params": params})
+            new_plugg.append(
+                {"name": preset.name, "category": preset.category, "params": preset.params}
+            )
             added += 1
+            print(f"OK  pluggva {preset.name} score={preset.score:.1f} role={preset.role}")
+        else:
+            rejected += 1
+            print(f"SKIP plugg duplicate {preset.name}")
 
-    lineage.record_batch(batch_id, f"added {added} presets (wave+plugg)")
+    if added == 0:
+        print(
+            f"WARN: no new presets promoted (min_score={MIN_DAILY_SCORE}, rejected={rejected})",
+            file=sys.stderr,
+        )
+
+    lineage.record_batch(
+        batch_id,
+        f"gold batch added={added} rejected={rejected} min_score={MIN_DAILY_SCORE}",
+    )
     lineage.close()
 
+    active["wave9090"].extend(new_wave)
+    active["pluggva"].extend(new_plugg)
     save_active_seeds(active)
-    codegen = REPO / "scripts/vst/codegen_active_seeds.py"
-    subprocess.run([sys.executable, str(codegen)], check=True)
+    subprocess.run([sys.executable, REPO / "scripts/vst/codegen_active_seeds.py"], check=True)
     return batch_id
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--batch-size", type=int, default=8)
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=None,
+        help="Optional cap per product (default: all 8 role slots)",
+    )
     parser.add_argument("--seed", type=int, default=None)
     args = parser.parse_args()
     bid = run_batch(args.batch_size, args.seed)
