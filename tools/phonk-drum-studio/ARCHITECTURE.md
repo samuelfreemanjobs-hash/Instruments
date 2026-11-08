@@ -12,8 +12,11 @@ python -m venv venv
 # Windows: venv\Scripts\activate
 # macOS/Linux: source venv/bin/activate
 pip install -r requirements.txt
-python app.py
+pip install -e .
+python -m phonk_drum_studio
 ```
+
+Entry points: `run_desktop.py`, `phonk_drum_studio/__main__.py`, console script `phonk-drum-studio` after `pip install -e .`.
 
 Standalone bundle:
 
@@ -47,8 +50,9 @@ python3 ../../disklordz/sound-factory/scripts/build_studio_kit.py \
 | `model.py` | `MultiScaleSpectralLoss`, `AudioVAE`, KL helper |
 | `dataset.py` | File scan, preprocessing, `DataLoader` factory |
 | `trainer.py` | Device selection, `TrainingWorker`, checkpoint I/O |
-| `app.py` | CustomTkinter GUI, audition (sounddevice), waveform canvas |
-| `build_standalone.py` | PyInstaller one-file/windowed bundle |
+| `phonk_drum_studio/app.py` | CustomTkinter GUI, audition (sounddevice), waveform canvas |
+| `phonk_drum_studio/paths.py` | Dev vs PyInstaller paths (factory + stubs) |
+| `build_standalone.py` / `PhonkDrumStudio.spec` | PyInstaller desktop bundle |
 
 ## Extension points
 

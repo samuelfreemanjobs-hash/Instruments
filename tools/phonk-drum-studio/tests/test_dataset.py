@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 import soundfile as sf
 
-from dataset import DrumSampleDataset, load_and_preprocess, scan_valid_audio_paths
-from model import AUDIO_LENGTH, SAMPLE_RATE
+from phonk_drum_studio.dataset import DrumSampleDataset, load_and_preprocess, scan_valid_audio_paths
+from phonk_drum_studio.model import AUDIO_LENGTH, SAMPLE_RATE
 
 
 def test_load_and_preprocess_wav(tmp_path: Path):

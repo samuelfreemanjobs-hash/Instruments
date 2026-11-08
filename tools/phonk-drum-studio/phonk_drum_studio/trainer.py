@@ -10,8 +10,8 @@ from typing import Callable, List, Optional
 
 import torch
 
-from dataset import DrumSampleDataset, build_dataloader
-from model import (
+from phonk_drum_studio.dataset import DrumSampleDataset, build_dataloader
+from phonk_drum_studio.model import (
     LATENT_DIM,
     AudioVAE,
     MultiScaleSpectralLoss,

@@ -2,7 +2,7 @@
 
 import torch
 
-from model import (
+from phonk_drum_studio.model import (
     AUDIO_LENGTH,
     LATENT_DIM,
     AudioVAE,

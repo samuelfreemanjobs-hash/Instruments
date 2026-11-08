@@ -15,9 +15,16 @@ import numpy as np
 import soundfile as sf
 import torch
 
-from dataset import load_and_preprocess, scan_valid_audio_paths
-from model import LATENT_DIM, SAMPLE_RATE, peak_normalize, AudioVAE
-from trainer import (
+from phonk_drum_studio.dataset import load_and_preprocess, scan_valid_audio_paths
+from phonk_drum_studio.model import LATENT_DIM, SAMPLE_RATE, peak_normalize, AudioVAE
+from phonk_drum_studio.paths import (
+    ensure_user_dirs,
+    factory_root,
+    is_frozen,
+    project_root,
+    stub_samples_root,
+)
+from phonk_drum_studio.trainer import (
     DEFAULT_CHECKPOINT,
     TrainConfig,
     TrainingWorker,
@@ -25,8 +32,6 @@ from trainer import (
     load_model_from_checkpoint,
     select_device,
 )
-
-FACTORY_ROOT = Path(__file__).resolve().parents[2] / "disklordz" / "sound-factory"
 FACTORY_PRESETS = (
     "mpc-ready-808",
     "midnight-circuit",
@@ -45,9 +50,10 @@ ctk.set_default_color_theme("blue")
 class PhonkDrumStudioApp(ctk.CTk):
     def __init__(self) -> None:
         super().__init__()
+        ensure_user_dirs()
         self.title("Phonk Drum Studio")
-        self.geometry("980x720")
-        self.minsize(880, 640)
+        self.geometry("1000x820")
+        self.minsize(900, 720)
 
         self.dataset_path: Optional[Path] = None
         self.file_count = 0
@@ -70,9 +76,31 @@ class PhonkDrumStudioApp(ctk.CTk):
         self._factory_samples_dir: Optional[Path] = None
         self._factory_out_dir: Optional[Path] = None
 
+        self._build_menubar()
         self._build_ui()
         self._show_device_notice()
         self._try_load_default_checkpoint()
+        if is_frozen():
+            self._set_status(f"Desktop build · data: {project_root()}")
+
+    def _build_menubar(self) -> None:
+        menu = tk.Menu(self)
+        self.configure(menu=menu)
+        file_menu = tk.Menu(menu, tearoff=0)
+        menu.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="Quit", command=self.destroy)
+        help_menu = tk.Menu(menu, tearoff=0)
+        menu.add_cascade(label="Help", menu=help_menu)
+        help_menu.add_command(label="About", command=self._show_about)
+
+    def _show_about(self) -> None:
+        messagebox.showinfo(
+            "About Phonk Drum Studio",
+            "Phonk Drum Studio\n\n"
+            "Train a local Audio VAE on Memphis phonk drum one-shots, "
+            "generate variations, and package Disklordz factory kits.\n\n"
+            "Factory kits use the sound-factory manifest schema (factory_studio_v1).",
+        )
 
     def _build_ui(self) -> None:
         self.grid_columnconfigure(0, weight=1)
@@ -544,14 +572,19 @@ class PhonkDrumStudioApp(ctk.CTk):
         try:
             import sys
 
-            if not FACTORY_ROOT.is_dir():
-                raise FileNotFoundError(f"sound-factory not found at {FACTORY_ROOT}")
-            sys.path.insert(0, str(FACTORY_ROOT))
+            root = factory_root()
+            if not (root / "kit_from_samples.py").is_file():
+                raise FileNotFoundError(f"sound-factory kit module not found at {root}")
+            sys.path.insert(0, str(root))
             from kit_from_samples import build_kit_from_samples
 
             stub_root = None
             if self._factory_fill_stubs.get():
-                stub_root = FACTORY_ROOT.parent / "website" / "public" / "samples"
+                stub_root = stub_samples_root()
+                if not stub_root.is_dir():
+                    raise FileNotFoundError(
+                        "Stub samples not bundled. Disable 'Fill missing slots' or run from the monorepo."
+                    )
             ckpt = ""
             if self.checkpoint_path.is_file():
                 ckpt = str(self.checkpoint_path)

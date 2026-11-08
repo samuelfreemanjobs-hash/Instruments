@@ -12,7 +12,7 @@ import torch
 import torchaudio
 from torch.utils.data import Dataset
 
-from model import AUDIO_LENGTH, SAMPLE_RATE, peak_normalize
+from phonk_drum_studio.model import AUDIO_LENGTH, SAMPLE_RATE, peak_normalize
 
 logger = logging.getLogger(__name__)
 
