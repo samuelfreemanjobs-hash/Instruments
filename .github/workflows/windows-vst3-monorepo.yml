@@ -14,18 +14,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure (Release, x64)
-        run: cmake -B build -G "Visual Studio 17 2022" -A x64
+      - name: Setup MSVC (x64)
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure (Ninja Release)
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       - name: Build VST3 plugins
         run: >
-          cmake --build build --config Release --parallel
+          cmake --build build --parallel
           --target PluggVA_VST3 Wave9090_VST3 SP1200_VST3 JDUpgraded_VST3
 
       - name: Factory preset smoke tests
         run: |
-          cmake --build build --config Release --target PluggVATests Wave9090Tests
-          ctest --test-dir build -C Release -R "PluggVA|Wave9090" --output-on-failure
+          cmake --build build --target PluggVATests Wave9090Tests
+          ctest --test-dir build -R "PluggVA|Wave9090" --output-on-failure
 
       - name: Stage VST3 bundles for upload
         shell: pwsh
