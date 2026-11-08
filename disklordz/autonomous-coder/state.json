@@ -1,5 +1,9 @@
 {
-  "last_tick_at": null,
-  "completed_ids": [],
-  "last_completed": {}
+  "last_tick_at": "2026-11-08T08:00:42Z",
+  "completed_ids": [
+    "cloud-coach-script-hygiene"
+  ],
+  "last_completed": {
+    "cloud-coach-script-hygiene": "2026-11-08T08:00:42Z"
+  }
 }

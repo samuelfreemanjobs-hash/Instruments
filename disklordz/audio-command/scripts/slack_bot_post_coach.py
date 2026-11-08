@@ -9,6 +9,11 @@ import os
 import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
+
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
 
 from coach_engine import format_outreach_markdown, next_task
 from coach_outreach import slack_payload
