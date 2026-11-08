@@ -32,6 +32,7 @@ All profit agents are **company-wide** in this monorepo — not only under `disk
 - [docs/CURSOR_AGENT_PLAYBOOK.md](docs/CURSOR_AGENT_PLAYBOOK.md) — Agent Mode, Cloud, structured prompts  
 - [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
 - `.cursor/rules/*.mdc` — always-on architecture and security  
+- **Windows (My Machines worker):** [`.cursor/rules/windows-worker.mdc`](.cursor/rules/windows-worker.mdc) — the Linux build commands below do not work there  
 
 ## Disklordz SaaS (web)
 
