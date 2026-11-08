@@ -265,3 +265,10 @@ I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches 
 - **Automation:** `.github/workflows/synth-forge.yml` (github, pull_request paths tools/synth-forge/**)
 - **Agent docs:** [`profit/hardware-preset-designer/agent.md`](../profit/hardware-preset-designer/agent.md)
 - **Workflow file:** [`agents/hardware-preset-designer/automation.yaml`](agents/hardware-preset-designer/automation.yaml)
+
+## vst-preset-agent
+
+I'm **VST Preset Agent** — assigned to profit lever: Plugin preset depth → differentiation vs generic wavetable competitors.
+
+- **Agent docs:** [`profit/vst-preset-agent/agent.md`](../profit/vst-preset-agent/agent.md)
+- **Workflow file:** [`agents/vst-preset-agent/automation.yaml`](agents/vst-preset-agent/automation.yaml)

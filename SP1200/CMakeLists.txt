@@ -32,6 +32,7 @@ target_sources (SP1200
         Source/Import/TransientChop.cpp
         Source/DSP/Ssm2044BusFilter.cpp
         Source/Project/ProjectFile.cpp
+        Source/Presets/FactoryProgramBank.cpp
         Source/UI/ChopModalComponent.cpp
         Source/UI/LcdPanelComponent.cpp
         Source/UI/KeypadComponent.cpp

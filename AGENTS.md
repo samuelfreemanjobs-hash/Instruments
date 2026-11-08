@@ -110,6 +110,8 @@ See [tools/synth-forge/ARCHITECTURE.md](tools/synth-forge/ARCHITECTURE.md).
 
 **Fleet agent:** `hardware-preset-designer` — read `disklordz/agents/profit/hardware-preset-designer/agent.md` or skill `disklordz-hardware-preset-designer`. CLI: `python3 disklordz/integrations/agents/hardware_preset_designer.py --help`.
 
+**VST factory:** `vst-preset-agent` — `disklordz/agents/profit/vst-preset-agent/agent.md`, skill `disklordz-vst-preset-agent`, `docs/VST_PRESET_FACTORY.md`, CLI `python3 disklordz/integrations/agents/vst_preset_agent.py --self-test`.
+
 ## Git
 
 - Do not force-push or deploy production unless the user asks.  

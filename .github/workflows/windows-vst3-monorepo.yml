@@ -1,0 +1,56 @@
+name: Build Windows VST3
+
+on:
+  push:
+    branches: [main, "cursor/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  windows-vst3:
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSVC (x64)
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure (Ninja Release)
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DJDUPGRADED_ENABLE_CLAP=OFF
+
+      - name: Build VST3 plugins
+        run: >
+          cmake --build build --parallel
+          --target PluggVA_VST3 Wave9090_VST3 SP1200_VST3 JDUpgraded_VST3
+
+      - name: Factory preset smoke tests
+        run: |
+          cmake --build build --target PluggVATests Wave9090Tests
+          ctest --test-dir build -R "PluggVA|Wave9090" --output-on-failure
+
+      - name: Stage VST3 bundles for upload
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifact/vst3 | Out-Null
+          $bundles = Get-ChildItem -Path build -Recurse -Directory |
+            Where-Object { $_.Name -like '*.vst3' }
+          if (-not $bundles) {
+            Write-Error "No .vst3 bundles found under build/"
+          }
+          foreach ($b in $bundles) {
+            Write-Host "Collecting $($b.FullName)"
+            Copy-Item -Recurse -Force $b.FullName (Join-Path artifact/vst3 $b.Name)
+          }
+          Get-ChildItem artifact/vst3
+
+      - name: Upload Windows VST3 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-vst3-${{ github.sha }}
+          path: artifact/vst3/
+          retention-days: 14
+          if-no-files-found: error

@@ -17,7 +17,7 @@ Company-wide index for **Instruments / Disklordz**. Every Cursor Cloud Agent, Cl
 | **workflow-automation** | Scaffolds PM ADD + per-agent `automation.yaml` |
 | **pm-agent** | Repo-wide fleet governance + scheduled execution checks |
 
-**Fleet size:** 32 agents (includes orchestration).
+**Fleet size:** 33 agents (includes orchestration).
 
 ## Active CI (executing now)
 
@@ -76,5 +76,6 @@ Maintained by `scaffold_workflows.py` — do not hand-edit sections below the ma
 - `analytics-interpreter` — **Analytics Interpreter** (`manual_stub`)
 - `release-notes` — **Release Notes** (`ci_script`)
 - `hardware-preset-designer` — **Hardware Preset Designer** (`ci_on_pr`)
+- `vst-preset-agent` — **VST Preset Agent** (`manual`)
 
 <!-- FLEET_ROSTER_END -->

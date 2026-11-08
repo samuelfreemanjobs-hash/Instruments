@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "agent_count": 32,
+  "agent_count": 33,
   "agents": [
     {
       "id": "workflow-automation",
@@ -481,6 +481,13 @@
         ]
       },
       "automation_path": "disklordz/agents/workflows/agents/hardware-preset-designer/automation.yaml"
+    },
+    {
+      "id": "vst-preset-agent",
+      "title": "VST Preset Agent",
+      "announcement": "",
+      "automation": {},
+      "automation_path": "disklordz/agents/workflows/agents/vst-preset-agent/automation.yaml"
     }
   ]
 }

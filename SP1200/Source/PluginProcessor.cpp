@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "Presets/FactoryProgramBank.h"
 #include "Project/ProjectFile.h"
 
 SP1200AudioProcessor::SP1200AudioProcessor()
@@ -9,6 +10,7 @@ SP1200AudioProcessor::SP1200AudioProcessor()
                           .withOutput ("Output", juce::AudioChannelSet::stereo(), true))
 #endif
 {
+    sp1200::presets::applyFactoryProgram (engine_, 0);
 }
 
 SP1200AudioProcessor::~SP1200AudioProcessor() = default;
@@ -24,10 +26,29 @@ bool SP1200AudioProcessor::isMidiEffect() const { return false; }
 double SP1200AudioProcessor::getTailLengthSeconds() const { return 0.5; }
 bool SP1200AudioProcessor::hasEditor() const { return true; }
 
-int SP1200AudioProcessor::getNumPrograms() { return 1; }
-int SP1200AudioProcessor::getCurrentProgram() { return 0; }
-void SP1200AudioProcessor::setCurrentProgram (int) {}
-const juce::String SP1200AudioProcessor::getProgramName (int) { return {}; }
+int SP1200AudioProcessor::getNumPrograms()
+{
+    return static_cast<int> (sp1200::presets::kFactoryProgramCount);
+}
+
+int SP1200AudioProcessor::getCurrentProgram()
+{
+    return currentProgram_;
+}
+
+void SP1200AudioProcessor::setCurrentProgram (int index)
+{
+    if (index < 0 || index >= getNumPrograms())
+        return;
+    currentProgram_ = index;
+    sp1200::presets::applyFactoryProgram (engine_, index);
+}
+
+const juce::String SP1200AudioProcessor::getProgramName (int index)
+{
+    return sp1200::presets::programNameAt (index).c_str();
+}
+
 void SP1200AudioProcessor::changeProgramName (int, const juce::String&) {}
 
 void SP1200AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)

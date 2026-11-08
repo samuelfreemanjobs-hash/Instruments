@@ -20,6 +20,7 @@ target_sources (Wave9090
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
         Source/Presets/FactoryPresets.cpp
+        Source/Presets/ActiveAgentSeeds.cpp
 )
 
 target_compile_definitions (Wave9090
@@ -44,6 +45,8 @@ juce_generate_juce_header (Wave9090)
 
 add_executable (Wave9090Tests
     Tests/DSP/WavetableBankTests.cpp
+    Source/Presets/FactoryPresets.cpp
+    Source/Presets/ActiveAgentSeeds.cpp
 )
 
 target_include_directories (Wave9090Tests PRIVATE Source)

@@ -18,3 +18,4 @@ MyFirstPlugin/build-ninja/
 *.user
 .vs/
 .idea/
+__pycache__/
