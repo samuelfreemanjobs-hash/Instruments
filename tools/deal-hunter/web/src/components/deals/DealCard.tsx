@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { Deal } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,11 @@ export function DealCard({
             {score.classificationLabel} · {score.score}/100 · {score.confidence}% conf
           </p>
         )}
-        <h4 className="line-clamp-2 text-sm font-medium">{deal.title}</h4>
+        <h4 className="line-clamp-2 text-sm font-medium">
+          <Link href={`/product/${encodeURIComponent(deal.id)}`} className="hover:text-bfm-accent">
+            {deal.title}
+          </Link>
+        </h4>
         <p className="text-xs text-bfm-muted">
           {deal.retailer} · Steal {deal.stealScore}
         </p>
@@ -37,6 +42,12 @@ export function DealCard({
         </p>
         <p className="text-lg font-semibold text-white">${deal.price.toFixed(2)}</p>
         <div className="flex flex-wrap gap-2">
+          <Link
+            href={`/product/${encodeURIComponent(deal.id)}`}
+            className="text-sm text-bfm-accent-2 hover:underline"
+          >
+            Intel
+          </Link>
           {deal.trust?.safeUrl && (
             <a
               href={deal.url}

@@ -72,3 +72,56 @@ export async function fetchDealsList() {
   const res = await fetch("/api/v1/deals?");
   return res.json() as Promise<{ data: Deal[] }>;
 }
+
+export async function fetchProductDetailClient(id: string) {
+  const res = await fetch(`/api/v1/deals/${encodeURIComponent(id)}`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error("product_failed");
+  return res.json();
+}
+
+export async function fetchIntelligenceBriefing() {
+  const res = await fetch("/api/intelligence/briefing");
+  if (!res.ok) throw new Error("briefing_failed");
+  return res.json() as Promise<{
+    headline: string;
+    buyNow: { title: string; verdictHeadline: string; dealId: string }[];
+    waitList: { title: string; dealId: string }[];
+    marketPulse: string[];
+    priceDropsToday: number;
+    avgRealSavingsPct: number;
+    avgAdvertisedDiscountPct: number;
+    categoryTrends?: { category: string; avgRealSavingsPct: number; dealCount: number }[];
+    dataFreshThrough: string;
+  }>;
+}
+
+export async function askIntelligence(question: string) {
+  const res = await fetch("/api/intelligence/ask", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question }),
+  });
+  if (!res.ok) throw new Error("ask_failed");
+  return res.json() as Promise<{ answer: string }>;
+}
+
+export async function fetchAutopilotAgents() {
+  const res = await fetch("/api/autopilot/agents");
+  return res.json() as Promise<{ agents: { id: string; name: string; mission: string; scheduleHint: string }[] }>;
+}
+
+export async function fetchAutopilotDigest(profile: { zip?: string; maxBudget?: number }) {
+  const res = await fetch("/api/autopilot/digest", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ profile }),
+  });
+  if (!res.ok) throw new Error("autopilot_failed");
+  return res.json() as Promise<{
+    runId: string;
+    generatedAt: string;
+    topVerdicts: string[];
+    agents: { agentId: string; title: string; narrative: string; picks: { id: string; label: string; detail: string }[] }[];
+  }>;
+}
