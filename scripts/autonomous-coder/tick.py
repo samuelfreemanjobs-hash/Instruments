@@ -78,6 +78,50 @@ def run_shell(cmd: str, dry_run: bool) -> int:
     return subprocess.run(cmd, shell=True, cwd=REPO).returncode
 
 
+def emit_waiting(queue: dict, state: dict) -> None:
+    """Write NEXT_SLICE when no runnable cloud item (usually sprint gate)."""
+    blocked = None
+    completed = set(state.get("completed_ids") or [])
+    for it in sorted(queue.get("items") or [], key=lambda x: x.get("priority", 99)):
+        if it.get("owner") != "cloud":
+            continue
+        if it["id"] in completed and not it.get("recurrence_hours"):
+            continue
+        if not gate_open(it):
+            blocked = it
+            break
+    progress = load(PROGRESS) if PROGRESS.is_file() else {}
+    done = progress.get("completed_ids") or []
+    gate = (blocked or {}).get("gate_completed_task", "dev-environment")
+    lines = [
+        "# Autonomous Coding Agent — NEXT SLICE",
+        "",
+        "**Status:** `waiting` — no cloud slice runnable",
+        "",
+        f"**Blocked by:** Coach sprint task `{gate}` not in progress completed_ids",
+        f"**Completed sprint ids:** `{done}`",
+        "",
+        "## Your move (human)",
+        f"1. Finish Coach task **`{gate}`** (Windows dev box).",
+        "2. Mark done in Coach PWA or update `disklordz/audio-command/data/progress.json`.",
+        "3. Re-run: `python3 scripts/autonomous-coder/tick.py --emit-slice`",
+        "",
+        "## Meanwhile (this agent may still run)",
+        "```bash",
+        "python3 scripts/autonomous-coder/tick.py          # Antigravity sync / progress log",
+        "./scripts/run-audio-plugin-fleet.sh               # factory PASTE_TO_FACTORY refresh",
+        "```",
+    ]
+    if blocked:
+        lines += [
+            "",
+            f"**Next cloud slice when unblocked:** `{blocked['id']}` — {blocked.get('title', '')}",
+        ]
+    SLICE_OUT.parent.mkdir(parents=True, exist_ok=True)
+    SLICE_OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"Wrote {SLICE_OUT} (waiting)")
+
+
 def emit_slice(item: dict) -> None:
     SLICE_OUT.parent.mkdir(parents=True, exist_ok=True)
     lines = [
@@ -155,7 +199,7 @@ def main() -> int:
     if args.emit_slice:
         item = pick_next(queue, state, owner="cloud")
         if not item:
-            print("no cloud slice pending")
+            emit_waiting(queue, state)
             return 0
         emit_slice(item)
         return 0

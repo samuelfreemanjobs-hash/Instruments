@@ -1,24 +1,19 @@
 # Autonomous Coding Agent — NEXT SLICE
 
-**Queue id:** `cloud-coach-script-hygiene`
-**Title:** Verify coach_engine + coach_outreach imports and fix broken paths only
+**Status:** `waiting` — no cloud slice runnable
 
-## Acceptance
-python3 -m py_compile on touched files; no behavior change unless import error
+**Blocked by:** Coach sprint task `dev-environment` not in progress completed_ids
+**Completed sprint ids:** `['company-identity']`
 
-## Allowlist (only these paths)
-```json
-[
-  "disklordz/audio-command/scripts/",
-  "disklordz/autonomous-coder/"
-]
+## Your move (human)
+1. Finish Coach task **`dev-environment`** (Windows dev box).
+2. Mark done in Coach PWA or update `disklordz/audio-command/data/progress.json`.
+3. Re-run: `python3 scripts/autonomous-coder/tick.py --emit-slice`
+
+## Meanwhile (this agent may still run)
+```bash
+python3 scripts/autonomous-coder/tick.py          # Antigravity sync / progress log
+./scripts/run-audio-plugin-fleet.sh               # factory PASTE_TO_FACTORY refresh
 ```
 
-## Read first
-- `disklordz/audio-command/ARCHITECTURE.md`
-
-## Agent
-- Skill: `disklordz-autonomous-coding-agent`
-- Soul: `disklordz/agents/profit/autonomous-coding-agent/soul.md`
-
-When done: `python3 scripts/autonomous-coder/tick.py --complete cloud-coach-script-hygiene`
+**Next cloud slice when unblocked:** `escalate-dpf-slice` — When Milestone 001 unblocked: emit PASTE_TO_FACTORY for plugin skeleton only
