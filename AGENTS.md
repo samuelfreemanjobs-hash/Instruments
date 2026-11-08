@@ -25,6 +25,10 @@ All profit agents are **company-wide** in this monorepo — not only under `disk
 - [docs/AGENTIC_PROJECT_STANDARDS.md](docs/AGENTIC_PROJECT_STANDARDS.md) — rules, PR policy, definition of done  
 - `.cursor/rules/*.mdc` — always-on architecture and security  
 
+## AI team (Cursor / Antigravity / others)
+
+Root **`.cursorrules`** — delegation to Antigravity, Factory liaison, business copilot. Antigravity git bridge: `disklordz/antigravity/ARCHITECTURE.md`.
+
 ## DiskLordz Audio (plugins — CHORD ENGINE)
 
 **Business / roadmap:** agent **`audio-business-copilot`** (presents **one task** per session) · Coach PWA `http://127.0.0.1:8765/pwa/` · outreach [disklordz/audio-command/docs/OUTREACH_SETUP.md](disklordz/audio-command/docs/OUTREACH_SETUP.md)
