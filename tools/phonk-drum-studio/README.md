@@ -50,6 +50,15 @@ Produces `dist/PhonkDrumStudio` (Linux), `PhonkDrumStudio.exe` (Windows), or `Ph
 
 Linux menu entry template: `packaging/PhonkDrumStudio.desktop`.
 
+### CI — Windows build (GitHub Actions)
+
+Workflow [`.github/workflows/phonk-drum-studio.yml`](../../.github/workflows/phonk-drum-studio.yml) runs on PR/push (paths filter) and **workflow_dispatch**.
+
+1. **test** (Ubuntu) — `pytest`
+2. **build-windows** — PyInstaller `PhonkDrumStudio.exe` uploaded as artifact **`PhonkDrumStudio-Windows-x64`** (14-day retention)
+
+Download: Actions → **Phonk Drum Studio** → latest run → Artifacts.
+
 ### Desktop runtime notes
 
 - **Linux:** `python3-tk`, **PortAudio** (`libportaudio2`) for audition playback.

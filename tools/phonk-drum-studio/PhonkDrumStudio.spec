@@ -1,8 +1,11 @@
 # -*- mode: python ; coding: utf-8 -*-
 """PyInstaller spec for Phonk Drum Studio desktop app."""
 
+import os
 import platform
 from pathlib import Path
+
+USE_UPX = os.environ.get("GITHUB_ACTIONS") != "true"
 
 block_cipher = None
 
@@ -74,7 +77,7 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=USE_UPX,
     upx_exclude=[],
     runtime_tmpdir=None,
     console=False,

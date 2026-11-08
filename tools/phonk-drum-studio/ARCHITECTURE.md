@@ -24,6 +24,8 @@ Standalone bundle:
 python build_standalone.py
 ```
 
+CI: `.github/workflows/phonk-drum-studio.yml` builds `PhonkDrumStudio.exe` on `windows-latest` and uploads a workflow artifact.
+
 ## Data flow
 
 1. **Dataset** (`dataset.py`) scans a user folder, loads via soundfile (torchaudio fallback), downmixes to mono, resamples to 44.1 kHz, crops/pads to 22,050 samples (0.5 s), peak-normalizes, and excludes unreadable files from training.
