@@ -310,14 +310,25 @@ __unit_callback void unit_aftertouch(uint8_t note, uint8_t press) { s_osc_instan
 """
 
 
-def render_porting_readme(slug: str, v1_rel: str, v1_source: str | None) -> str:
-    return f"""# mkII port: {slug}
+def render_porting_readme(
+    slug: str, v1_rel: str, v1_source: str | None, port_complete: bool = False
+) -> str:
+    if port_complete:
+        status = (
+            "**Port complete** — `osc.h` contains full DSP (`PORT_COMPLETE`). "
+            "Rebuild with `./tools/build-mkii.sh "
+            f"{slug}`; load `*.nts1mkiiunit` on NTS-1 mkII."
+        )
+        finish = f"""## v1 reference
 
-## Status
-
-Scaffold only — `osc.h` plays a placeholder tone until you port DSP.
-
-## Finish the port
+- Source: `src/{v1_rel}/{v1_source or '*.cpp'}`
+- Re-port only if v1 DSP changes; then re-run `tools/mkii/port_bass_osc.py` or edit `osc.h` by hand.
+"""
+    else:
+        status = (
+            "Scaffold only — `osc.h` plays a placeholder tone until you port DSP."
+        )
+        finish = f"""## Finish the port
 
 1. Open v1 source: `src/{v1_rel}/{v1_source or '*.cc'}`
 2. Copy float math from `OSC_CYCLE` into `Osc::process()` in `osc.h` (mkII uses **float** mono out, stereo `in`).
@@ -326,7 +337,14 @@ Scaffold only — `osc.h` plays a placeholder tone until you port DSP.
 5. Pitch: use `w0_` from `setPitch()` instead of `osc_w0(params->pitch)`.
 6. Build: `../../tools/build-mkii.sh {slug}`
 7. Load `*.nts1mkiiunit` on NTS-1 mkII (Kontrol Editor / loguecli).
+"""
+    return f"""# mkII port: {slug}
 
+## Status
+
+{status}
+
+{finish}
 See [docs/nts1-mkii-porting.md](../../../docs/nts1-mkii-porting.md).
 """
 
@@ -372,7 +390,10 @@ def scaffold_unit(v1_rel: str, force: bool, skip_wasm: bool, logue_sdk: Path | N
     (out_dir / "Makefile").write_text(render_makefile(), encoding="utf-8")
     (out_dir / "unit.cc").write_text(render_unit_cc(logue_sdk), encoding="utf-8")
     (out_dir / "PORTING.md").write_text(
-        render_porting_readme(slug, v1_rel, v1_source), encoding="utf-8"
+        render_porting_readme(
+            slug, v1_rel, v1_source, port_complete=osc_h_is_port_complete(osc_path)
+        ),
+        encoding="utf-8",
     )
 
     meta = {

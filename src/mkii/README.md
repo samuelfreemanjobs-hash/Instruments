@@ -12,4 +12,4 @@ Legacy: `python3 tools/mkii/scaffold-mkii.py --all-bass`, `./tools/build-mkii.sh
 
 See [docs/nts1-mkii-porting.md](../docs/nts1-mkii-porting.md).
 
-**Fully ported:** `tr808_kick_phonk` (Phonk 808). Other folders are scaffolds until `osc.h` is finished.
+**Bass catalog:** all `*_bass` / `tr808_kick_phonk` / `moog_voyager_se1_squelch` folders ship **PORT_COMPLETE** `osc.h` DSP (not hardware-tested here). Starters: `template_osc`, `wavetable_osc`.

@@ -6,6 +6,9 @@ build/
 cmake-build-*/
 
 **/*.ntkdigunit
+**/*.mnlgxdunit
+**/*.prlgunit
+**/*.nts1mkiiunit
 **/*.nts1mkiiunit
 src/**/build/
 src/**/tpl

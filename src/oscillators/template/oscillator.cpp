@@ -2,6 +2,7 @@
  * Template user oscillator — band-limited saw via phase accumulator (Q31).
  */
 #include "userosc.h"
+#include "dsp_utils.h"
 #include "oscillator.h"
 
 static uint32_t s_phase;

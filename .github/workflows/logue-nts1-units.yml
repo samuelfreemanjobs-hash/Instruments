@@ -1,0 +1,48 @@
+# Compile all logue SDK user oscillators (v1 × 3 platforms + NTS-1 mkII).
+# Artifacts are compile-only — not loaded on hardware in CI.
+
+name: logue NTS-1 units
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/oscillators/**'
+      - 'src/mkii/**'
+      - 'src/shared/**'
+      - 'src/effects/**'
+      - 'tools/build*.sh'
+      - 'tools/mkii/**'
+      - 'tools/package-nts1.sh'
+      - 'tools/build-all-units.sh'
+      - '.github/workflows/logue-nts1-units.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ARM GCC
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi make
+
+      - name: Bootstrap logue-sdk
+        run: |
+          export MKII_SKIP_GCC=1
+          ./tools/mkii-automate.sh bootstrap
+
+      - name: Build all units
+        run: |
+          export LOGUE_SDK="${{ github.workspace }}/.deps/logue-sdk"
+          ./tools/build-all-units.sh --all-platforms --mkii --package
+
+      - name: Upload unit packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: logue-custom-units
+          path: |
+            release/nts1-custom-oscillators/
+            release/logue-build-status.tsv
+          if-no-files-found: error

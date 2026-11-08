@@ -1,56 +1,80 @@
 #!/usr/bin/env bash
-# Collect built NTS-1 mkI (.ntkdigunit) and mkII (.nts1mkiiunit) into release/ for install.
+# Collect built logue SDK user units into release/ for install / handoff.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="${ROOT}/release/nts1-custom-oscillators"
-MKI="${OUT}/mkI-ntkdigunit"
+MKI_NTS="${OUT}/mkI-ntkdigunit"
+MKI_XD="${OUT}/minilogue-xd-mnlgxdunit"
+MKI_PRO="${OUT}/prologue-prlgunit"
 MKII="${OUT}/mkII-nts1mkiiunit"
-mkdir -p "${MKI}" "${MKII}"
+mkdir -p "${MKI_NTS}" "${MKI_XD}" "${MKI_PRO}" "${MKII}"
 
 shopt -s nullglob
-count_mki=0
-for pkg in "${ROOT}"/src/oscillators/*/*.ntkdigunit; do
-  cp -a "${pkg}" "${MKI}/"
-  count_mki=$((count_mki + 1))
-done
+copy_glob() {
+  local dest="$1"
+  shift
+  local n=0
+  for pkg in "$@"; do
+    [[ -f "${pkg}" ]] || continue
+    cp -a "${pkg}" "${dest}/"
+    n=$((n + 1))
+  done
+  echo "${n}"
+}
 
-count_mkii=0
-for pkg in "${ROOT}"/src/mkii/oscillators/*/*.nts1mkiiunit \
-           "${ROOT}"/src/mkii/oscillators/*/build/*.nts1mkiiunit; do
-  [[ -f "${pkg}" ]] || continue
-  cp -a "${pkg}" "${MKII}/"
-  count_mkii=$((count_mkii + 1))
-done
+count_mki_nts="$(copy_glob "${MKI_NTS}" \
+  "${ROOT}"/src/oscillators/*/*.ntkdigunit \
+  "${ROOT}"/src/oscillators/*/build/*.ntkdigunit \
+  "${ROOT}"/src/effects/*/*.ntkdigunit \
+  "${ROOT}"/src/effects/*/build/*.ntkdigunit)"
+
+count_mki_xd="$(copy_glob "${MKI_XD}" \
+  "${ROOT}"/src/oscillators/*/*.mnlgxdunit \
+  "${ROOT}"/src/oscillators/*/build/*.mnlgxdunit \
+  "${ROOT}"/src/effects/*/*.mnlgxdunit \
+  "${ROOT}"/src/effects/*/build/*.mnlgxdunit)"
+
+count_mki_pro="$(copy_glob "${MKI_PRO}" \
+  "${ROOT}"/src/oscillators/*/*.prlgunit \
+  "${ROOT}"/src/oscillators/*/build/*.prlgunit \
+  "${ROOT}"/src/effects/*/*.prlgunit \
+  "${ROOT}"/src/effects/*/build/*.prlgunit)"
+
+count_mkii="$(copy_glob "${MKII}" \
+  "${ROOT}"/src/mkii/oscillators/*/*.nts1mkiiunit \
+  "${ROOT}"/src/mkii/oscillators/*/build/*.nts1mkiiunit)"
 
 cat > "${OUT}/INSTALL.txt" <<'EOF'
-Korg NTS-1 custom oscillators — install (same day)
+Korg logue custom oscillators — install
 
 ## Which file type?
 
-- NTS-1 original (mkI): *.ntkdigunit in mkI-ntkdigunit/
-- NTS-1 mkII (firmware 1.0+): *.nts1mkiiunit in mkII-nts1mkiiunit/
+| Hardware | Extension | Folder |
+|----------|-----------|--------|
+| NTS-1 (mkI) | *.ntkdigunit | mkI-ntkdigunit/ |
+| minilogue xd | *.mnlgxdunit | minilogue-xd-mnlgxdunit/ |
+| prologue | *.prlgunit | prologue-prlgunit/ |
+| NTS-1 mkII | *.nts1mkiiunit | mkII-nts1mkiiunit/ |
 
-## mkI (nutekt-digital)
+## Load onto hardware
 
-1. Install KORG KONTROL Editor (or legacy logue SDK Librarian).
-2. Connect NTS-1 via USB.
-3. Open the Oscillator slot → Load → pick a .ntkdigunit from mkI-ntkdigunit/.
-4. Write to the unit. Only one custom osc is active at a time — swap per track.
+1. Install KORG KONTROL Editor or logue-cli (see logue-sdk docs).
+2. Connect the synth via USB.
+3. Open the Oscillator (or Effect) slot → Load → pick the unit file.
+4. Only one custom osc is active at a time on NTS-1 — swap per track.
 
-Preset knob values: see each unit's src/oscillators/<name>/manifest.json → _agent.presets.
-
-## mkII
-
-1. KORG KONTROL Editor or loguecli (see logue-sdk platform/nts-1_mkii/README.md).
-2. Load .nts1mkiiunit from mkII-nts1mkiiunit/ into the oscillator slot.
+Preset knob values: `src/oscillators/<name>/manifest.json` → `_agent.presets`.
 
 ## Rebuild locally
 
-  ./tools/mkii-automate.sh bootstrap   # once: clones logue-sdk
-  ./tools/build-all-bass.sh            # mkI catalog
-  ./tools/build-all-bass-mkii.sh       # mkII (after DSP ports complete)
-  ./tools/package-nts1.sh              # refresh this folder
+  ./tools/mkii-automate.sh bootstrap
+  export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
+  ./tools/build-all-units.sh --all-platforms --mkii --package
+
+Windows: see docs/BUILD_WINDOWS_LOGUE.md
+
+**Not hardware-tested in CI** — verify on your unit before a live set.
 EOF
 
-echo "Packaged ${count_mki} mkI and ${count_mkii} mkII units → ${OUT}"
+echo "Packaged mkI NTS=${count_mki_nts} XD=${count_mki_xd} Pro=${count_mki_pro} mkII=${count_mkii} → ${OUT}"
