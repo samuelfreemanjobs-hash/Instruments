@@ -6,7 +6,9 @@
     "docs": "Large manuals and spec exports",
     "hise": "HISE sketch exports on Windows"
   },
-  "completed_wo_ids": [],
+  "completed_wo_ids": [
+    "WO-PREP-001"
+  ],
   "items": [
     {
       "wo_id": "WO-AG-001",
