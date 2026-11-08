@@ -20,7 +20,7 @@ jobs:
           arch: x64
 
       - name: Configure (Ninja Release)
-        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DJDUPGRADED_ENABLE_CLAP=OFF
 
       - name: Build VST3 plugins
         run: >

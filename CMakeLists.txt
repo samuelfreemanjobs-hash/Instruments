@@ -18,15 +18,18 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(JUCE)
 
 # Pin to post-0.26.0 main (tag 0.26.0 fails on JUCE 8+ headless LegacyAudioParameter layout).
-set(JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG 55525c9858d4b25687be7759a5e0f70eccef218e)
-FetchContent_Declare(
-    clap_juce_extensions
-    GIT_REPOSITORY https://github.com/free-audio/clap-juce-extensions.git
-    GIT_TAG ${JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG}
-    GIT_SHALLOW TRUE
-    GIT_SUBMODULES_RECURSE TRUE
-)
-FetchContent_MakeAvailable(clap_juce_extensions)
+option(JDUPGRADED_ENABLE_CLAP "Fetch clap-juce-extensions and build JD Upgraded CLAP" ON)
+if(JDUPGRADED_ENABLE_CLAP)
+    set(JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG 55525c9858d4b25687be7759a5e0f70eccef218e)
+    FetchContent_Declare(
+        clap_juce_extensions
+        GIT_REPOSITORY https://github.com/free-audio/clap-juce-extensions.git
+        GIT_TAG ${JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG}
+        GIT_SHALLOW FALSE
+        GIT_SUBMODULES_RECURSE TRUE
+    )
+    FetchContent_MakeAvailable(clap_juce_extensions)
+endif()
 
 set(GENERATED_ROM_DIR "${CMAKE_BINARY_DIR}/generated")
 set(GENERATED_ROM_FILE "${GENERATED_ROM_DIR}/jdupg_cleanroom.rom")
@@ -121,10 +124,12 @@ target_include_directories(JDUpgraded
         "${CMAKE_BINARY_DIR}/juce_binarydata_JDUpgradedRomData/JuceLibraryCode"
 )
 
-clap_juce_extensions_plugin(TARGET JDUpgraded
-    CLAP_ID "com.instruments.jdupgraded"
-    CLAP_FEATURES instrument synthesizer stereo
-)
+if(JDUPGRADED_ENABLE_CLAP)
+    clap_juce_extensions_plugin(TARGET JDUpgraded
+        CLAP_ID "com.instruments.jdupgraded"
+        CLAP_FEATURES instrument synthesizer stereo
+    )
+endif()
 
 add_executable(OfflineRender tools/OfflineRender.cpp)
 target_link_libraries(OfflineRender

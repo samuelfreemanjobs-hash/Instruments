@@ -49,6 +49,8 @@ Workflow [`.github/workflows/windows-vst3-monorepo.yml`](../.github/workflows/wi
 
 Download from the GitHub Actions run → **Artifacts** → `windows-vst3-<sha>`. Copy each `.vst3` folder to `C:\Program Files\Common Files\VST3\` (or your DAW path).
 
+Windows CI configures with `-DJDUPGRADED_ENABLE_CLAP=OFF` so FetchContent does not pull `clap-juce-extensions` (shallow-clone fragility on GHA). Linux **Build** still builds CLAP by default.
+
 Configure the repo secret (admin):
 
 ```bash
