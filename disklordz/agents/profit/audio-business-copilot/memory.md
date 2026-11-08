@@ -25,16 +25,3 @@ Tier 1: always load MEMORY.md index. Tier 2: LLM picks ≤5 files from manifest 
 ## Do not memorize
 
 Anything derivable from git log, `ARCHITECTURE.md`, or Stripe dashboard — retrieve instead.
-
-## Audio track anchors (always Tier 1)
-
-| Resource | Path |
-|----------|------|
-| Master plan | `docs/DISKLORDZ_MASTER_PLAN.md` |
-| DPF architecture | `docs/DPF_TECHNICAL_ARCHITECTURE.md` |
-| CHORD ENGINE PRD | `docs/CHORD_ENGINE_PRD.md` |
-| Sprint progress | `disklordz/audio-command/data/progress.json` |
-| Operator PWA | `disklordz/audio-command/pwa/index.html` |
-| Weekly reviews | `disklordz/audio-command/reviews/` |
-
-Engineering work is **out of scope** for this agent — delegate to Cursor + `golden-wav-qa`.

@@ -1,0 +1,13 @@
+# Automation — Plugin Factory Liaison (`plugin-factory-liaison`)
+
+platform: manual
+trigger: manual
+primary: TBD
+
+## Steps
+
+## Invoke agent
+Read: disklordz/agents/profit/plugin-factory-liaison/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#plugin-factory-liaison

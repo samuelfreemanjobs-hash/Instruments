@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "agent_count": 33,
+  "agent_count": 34,
   "agents": [
     {
       "id": "workflow-automation",
@@ -288,6 +288,15 @@
       "path": "disklordz/agents/profit/audio-business-copilot",
       "entry": "disklordz/agents/profit/audio-business-copilot/agent.md",
       "skill": "disklordz/agents/profit/audio-business-copilot/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "plugin-factory-liaison",
+      "title": "Plugin Factory Liaison",
+      "profit_lever": "Cursor Factory stays fed with minimal tasks \u2014 no Claude Code required",
+      "path": "disklordz/agents/profit/plugin-factory-liaison",
+      "entry": "disklordz/agents/profit/plugin-factory-liaison/agent.md",
+      "skill": "disklordz/agents/profit/plugin-factory-liaison/skill.md",
       "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
     },
     {

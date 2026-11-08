@@ -3,8 +3,9 @@
   --panel: #14141a;
   --text: #e8e6e3;
   --muted: #9a9690;
-  --accent: #c4f542;
-  --accent-dim: #7a9a28;
+  --accent: #cdff00;
+  --accent-dim: #7b2cbf;
+  --brand-purple: #7b2cbf;
   --border: #2a2a32;
   font-family: "Segoe UI", system-ui, sans-serif;
 }

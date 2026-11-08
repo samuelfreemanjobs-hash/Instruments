@@ -117,6 +117,7 @@ The business copilot **coordinates**; specialists **execute**:
 | Agent | Role on this plan |
 |-------|-------------------|
 | **audio-business-copilot** | Sprint checklist, weekly review, doc truth, route work |
+| **plugin-factory-liaison** | Milestone/CHORD handoffs, issues, `PASTE_TO_FACTORY`; **no C++** |
 | **pm-agent** | Fleet registry + governance CI |
 | **ship-velocity** | WO → issue → PR for non-VST store/commerce |
 | **golden-wav-qa** | Plugin CI after C++ touches |

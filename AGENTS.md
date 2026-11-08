@@ -29,9 +29,11 @@ All profit agents are **company-wide** in this monorepo — not only under `disk
 
 **Business / roadmap:** agent **`audio-business-copilot`** (presents **one task** per session) · Coach PWA `http://127.0.0.1:8765/pwa/` · outreach [disklordz/audio-command/docs/OUTREACH_SETUP.md](disklordz/audio-command/docs/OUTREACH_SETUP.md)
 
-**VST engineering (Cursor only):** [docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md](docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md) §18–20 · [docs/DPF_TECHNICAL_ARCHITECTURE.md](docs/DPF_TECHNICAL_ARCHITECTURE.md) · rule `.cursor/rules/disklordz-audio-engineering-lane.mdc`
+**VST factory liaison (no C++):** agent **`plugin-factory-liaison`** · [docs/CURSOR_FACTORY_LIAISON.md](docs/CURSOR_FACTORY_LIAISON.md) · skill `disklordz-plugin-factory-liaison`
 
-Do not mix lanes: Cursor implements JUCE/DPF; **audio-business-copilot** owns sprint checklist, pricing hypotheses, and fleet briefings.
+**VST engineering (implementer Cursor only):** [docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md](docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md) §18–20 · rule `.cursor/rules/disklordz-audio-engineering-lane.mdc`
+
+Do not mix lanes: **audio-business-copilot** = sprint; **plugin-factory-liaison** = Factory prompts/CI triage; **Cursor Factory** = JUCE/C++.
 
 ## Disklordz SaaS (web)
 

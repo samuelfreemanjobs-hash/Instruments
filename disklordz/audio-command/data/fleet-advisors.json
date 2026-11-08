@@ -6,8 +6,8 @@
     },
     "milestone-001": {
       "primary": ["audio-business-copilot"],
-      "engineering": ["golden-wav-qa"],
-      "note": "Cursor Cloud owns C++/JUCE implementation — not audio-business-copilot"
+      "engineering": ["plugin-factory-liaison", "golden-wav-qa"],
+      "note": "plugin-factory-liaison writes Factory prompts/issues; separate Cursor Cloud run implements C++"
     },
     "alpha": {
       "primary": ["audio-business-copilot", "spec-validator"],

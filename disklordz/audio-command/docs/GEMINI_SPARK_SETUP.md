@@ -12,7 +12,8 @@ When Spark wants something to **happen**, it never says “you should” without
 
 | Label | You paste it into |
 |--------|-------------------|
-| `PASTE_CURSOR` | New **Cursor Cloud** agent (VST lane) |
+| `PASTE_LIAISON` | **plugin-factory-liaison** Cursor chat (handoffs, issues) |
+| `PASTE_CURSOR` | Cursor Factory implementer (usually copy from liaison's PASTE_TO_FACTORY) |
 | `PASTE_COPILOT` | **audio-business-copilot** chat |
 | `PASTE_GITHUB_ISSUE` | New GitHub issue (Instruments repo) |
 | `PASTE_PROGRESS_JSON` | Replace `disklordz/audio-command/data/progress.json` or send to copilot to commit |

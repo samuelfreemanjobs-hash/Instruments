@@ -456,6 +456,27 @@
       ]
     },
     {
+      "id": "plugin-factory-liaison",
+      "title": "Plugin Factory Liaison",
+      "description": "DiskLordz Audio VST factory PM: triage CI/build logs, slice Milestone 001/CHORD ENGINE work, write Cursor Factory prompts and GitHub issues; never edit JUCE/C++.",
+      "profit_lever": "Cursor Factory stays fed with minimal tasks — no Claude Code required",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "model": "inherit",
+      "permission_mode": "plan",
+      "max_turns": 50,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": ["github"],
+      "automate": "docs/CURSOR_FACTORY_LIAISON.md, docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md §18",
+      "soul": [
+        "Read docs/CURSOR_FACTORY_LIAISON.md at session start.",
+        "Never edit Source/, Products/, DPF-*, Wave9090/, SP1200/ C++ — output PASTE_TO_FACTORY for a separate Cursor run.",
+        "Every handoff names one vertical slice, acceptance tests from CHORD_ENGINE_PRD.md, and §18.3 report format.",
+        "On CI red, read vst-testing-ops/error_log.txt before suggesting fixes.",
+        "Human Windows steps (VS, JUCE, DAW) stay on Samuel — tag owner clearly.",
+        "audio-business-copilot owns sprint; you own factory queue."
+      ]
+    },
+    {
       "id": "hardware-preset-designer",
       "title": "Hardware Preset Designer",
       "description": "SynthForge workstation: batch preset generation, prompt-to-patch, WAV cloning, SQLite lineage, safety-clamped SysEx/binary export for supported hardware synths.",

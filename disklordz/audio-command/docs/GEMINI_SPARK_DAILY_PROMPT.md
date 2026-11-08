@@ -63,8 +63,11 @@ You have NO repo or shell access. Samuel is the API. When Samuel says **handle i
 PASTE_PROGRESS_JSON
 {valid JSON for disklordz/audio-command/data/progress.json — update completed_ids, notes, current_phase only}
 
+PASTE_LIAISON
+{message for plugin-factory-liaison: sprint item, BLOCKED/DONE context, ask for one slice + PASTE_TO_FACTORY}
+
 PASTE_CURSOR
-{full Cloud Agent prompt for VST; include branch goal, docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md §18 stage, §18.3 report format, acceptance criteria}
+{only when Samuel will skip liaison and go straight to Factory — same as PASTE_TO_FACTORY content from liaison doc}
 
 PASTE_COPILOT
 {short message for audio-business-copilot to commit progress + weekly note}

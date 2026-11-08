@@ -265,6 +265,13 @@ I'm **Audio Business Copilot** — assigned to profit lever: Shippable plugin bu
 - **Agent docs:** [`profit/audio-business-copilot/agent.md`](../profit/audio-business-copilot/agent.md)
 - **Workflow file:** [`agents/audio-business-copilot/automation.yaml`](agents/audio-business-copilot/automation.yaml)
 
+## plugin-factory-liaison
+
+I'm **Plugin Factory Liaison** — assigned to profit lever: Cursor Factory stays fed with minimal tasks — no Claude Code required.
+
+- **Agent docs:** [`profit/plugin-factory-liaison/agent.md`](../profit/plugin-factory-liaison/agent.md)
+- **Workflow file:** [`agents/plugin-factory-liaison/automation.yaml`](agents/plugin-factory-liaison/automation.yaml)
+
 ## hardware-preset-designer
 
 I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches from prompts and samples, with safety clamps and librarian-ready export staging.
