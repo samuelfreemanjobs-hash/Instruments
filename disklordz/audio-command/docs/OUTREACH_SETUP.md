@@ -1,9 +1,18 @@
 # Coach reaches you (not the other way around)
 
-## 1. Install the Coach PWA (phone or desktop)
+## 1. Phone app (Cursor publish — recommended)
+
+Publish bundle: `disklordz/audio-command/mobile/`
+
+1. In this chat, confirm the **Publish** dialog when the agent proposes **disklordz-coach**.
+2. Choose **Private** (only you, signed in to Cursor).
+3. On your phone, open the app from the Cursor chat pill or Apps list.
+4. **Add to Home Screen** (iOS Share menu or Android Install).
+
+## 1b. Local PWA (dev)
 
 ```bash
-python3 -m http.server 8765 --bind 127.0.0.1 -d disklordz/audio-command/pwa
+python3 -m http.server 8765 --bind 127.0.0.1 -d disklordz/audio-command/mobile
 ```
 
 Open the URL → **Add to Home Screen**. Tap **Enable notifications** and pick a daily time.
