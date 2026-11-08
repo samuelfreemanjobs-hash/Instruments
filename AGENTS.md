@@ -111,6 +111,8 @@ See [tools/synth-forge/ARCHITECTURE.md](tools/synth-forge/ARCHITECTURE.md).
 
 **Fleet agent:** `hardware-preset-designer` — read `disklordz/agents/profit/hardware-preset-designer/agent.md` or skill `disklordz-hardware-preset-designer`. CLI: `python3 disklordz/integrations/agents/hardware_preset_designer.py --help`.
 
+**Fleet agent:** `dsp-vst-architect` — elite JUCE/DSP/VST3 factory architect; read `disklordz/agents/profit/dsp-vst-architect/agent.md` or skill `disklordz-dsp-vst-architect`. Companion skills: **`disklordz-juce-coding`**, **`disklordz-cpp-realtime`** (sources under `disklordz/agents/profit/dsp-vst-architect/skills/`). CLI: `python3 disklordz/integrations/agents/dsp_vst_architect.py --self-test` · publish skills: `--publish-skills`.
+
 ## Git
 
 - Do not force-push or deploy production unless the user asks.  

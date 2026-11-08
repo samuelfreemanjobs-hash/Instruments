@@ -36,6 +36,7 @@ Repo-wide companion to [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) and [PM ADD
 | `analytics-interpreter` | Analytics Interpreter | `manual_stub` | `disklordz/agents/workflows/n8n/analytics-weekly-stub.json` | `.github/skills/disklordz-analytics-interpreter/SKILL.md` |
 | `release-notes` | Release Notes | `ci_script` | `disklordz/agents/workflows/scripts/release-notes-from-prs.sh` | `.github/skills/disklordz-release-notes/SKILL.md` |
 | `hardware-preset-designer` | Hardware Preset Designer | `ci_on_pr` | `.github/workflows/synth-forge.yml` | `.github/skills/disklordz-hardware-preset-designer/SKILL.md` |
+| `dsp-vst-architect` | DSP & VST Factory Architect | `ci_on_pr` | `.github/workflows/build.yml` | `.github/skills/disklordz-dsp-vst-architect/SKILL.md` |
 
 ### Activation legend
 

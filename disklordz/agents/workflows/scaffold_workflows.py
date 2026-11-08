@@ -50,6 +50,7 @@ ACTIVATION: dict[str, str] = {
     "analytics-interpreter": "manual_stub",
     "release-notes": "ci_script",
     "hardware-preset-designer": "ci_on_pr",
+    "dsp-vst-architect": "ci_on_pr",
 }
 
 CI_WORKFLOWS = [
@@ -61,7 +62,7 @@ CI_WORKFLOWS = [
     (".github/workflows/rag-reindex.yml", "prompt-coach"),
     (".github/workflows/activate-integrations.yml", "ops-schema, integration-health"),
     (".github/workflows/airtable-antigravity-handoff.yml", "ship-velocity, airtable-wo-triage"),
-    (".github/workflows/build.yml", "golden-wav-qa"),
+    (".github/workflows/build.yml", "golden-wav-qa, dsp-vst-architect"),
     (".github/workflows/synth-forge.yml", "hardware-preset-designer"),
 ]
 
@@ -194,6 +195,10 @@ ANNOUNCE: dict[str, str] = {
     "hardware-preset-designer": (
         "I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches from "
         "prompts and samples, with safety clamps and librarian-ready export staging."
+    ),
+    "dsp-vst-architect": (
+        "I'm **DSP & VST Factory Architect** — I design and ship JUCE desktop + VST3/CLAP "
+        "products with realtime-safe DSP, CMake factory targets, and CI-backed golden/pluginval gates."
     ),
 }
 
@@ -396,6 +401,17 @@ WORKFLOWS: dict[str, dict] = {
             "pytest tools/synth-forge/tests",
             "hardware_preset_designer.py --self-test",
             "Optional uvicorn studio smoke",
+        ],
+    },
+    "dsp-vst-architect": {
+        "platform": "github",
+        "trigger": "pull_request paths Source/** Wave9090/** SP1200/** CMakeLists.txt",
+        "workflow_file": ".github/workflows/build.yml",
+        "steps": [
+            "python3 disklordz/integrations/agents/dsp_vst_architect.py --self-test",
+            "cmake configure + build plugin targets",
+            "python3 vst-testing-ops/run_business.py --profile ci-verify or ci",
+            "pluginval + golden WAV regression",
         ],
     },
 }

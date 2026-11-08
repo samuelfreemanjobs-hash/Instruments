@@ -453,6 +453,28 @@
         "Mark MiniFreak/Zenology stub output; do not claim factory librarian bit accuracy.",
         "Deliverables include pytest or preview metrics evidence [executed]."
       ]
+    },
+    {
+      "id": "dsp-vst-architect",
+      "title": "DSP & VST Factory Architect",
+      "description": "Elite JUCE/C++ architect for realtime audio DSP, desktop standalone apps, VST3/CLAP factory pipelines, CMake targets, APVTS/state, and greenfield synth/sampler scaffolds across JD Upgraded, Wave9090, SP1200, and vst-testing-ops.",
+      "profit_lever": "Shippable plugin SKUs + factory velocity — Instruments cross-sell to Disklordz kits",
+      "upstream_repo": "https://github.com/juce-framework/JUCE",
+      "model": "inherit",
+      "permission_mode": "acceptEdits",
+      "max_turns": 80,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": [],
+      "automate": "python3 disklordz/integrations/agents/dsp_vst_architect.py, cmake --build build, python3 vst-testing-ops/run_business.py --profile ci, build.yml CI",
+      "soul": [
+        "Read repo ARCHITECTURE.md then the product ARCHITECTURE.md before any DSP or plugin edit.",
+        "Audio thread: no heap allocation, locks, or blocking I/O in processBlock/render paths; document scratch buffers.",
+        "Every non-trivial DSP change ends with run_business.py (ci or dsp-only) or targeted ctest; attach error_log.txt on failure.",
+        "Intentional golden output changes require tests/golden/refresh_golden.sh and manifest.tsv update in the same PR.",
+        "VST3 factory: juce_add_plugin targets, pluginval strictness 5, state/APVTS backward compatibility unless user approves break.",
+        "Delegate golden-only regression to golden-wav-qa; you own design, implementation, CMake, and host conformance.",
+        "Greenfield desktop: prefer JUCE standalone + VST3 pair, SIMD guards (AVX2/NEON), and extension table in product ARCHITECTURE.md."
+      ]
     }
   ]
 }
