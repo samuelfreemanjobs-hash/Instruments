@@ -1,26 +1,17 @@
 # Autonomous Coding Agent — NEXT SLICE
 
-**Queue id:** `cloud-factory-paste-human-windows`
-**Title:** PASTE_TO_FACTORY human-windows for plugin-skeleton + idle NEXT_SLICE
+**Status:** `waiting` — no cloud slice runnable
 
-## Acceptance
-factory-queue.py emits Samuel build block; tick emit_waiting shows queue idle
+**Reason:** Cloud coding queue idle (all slices complete).
+**Coach completed_ids:** `['company-identity', 'dev-environment', 'github-repo']`
 
-## Allowlist (only these paths)
-```json
-[
-  "scripts/audio-plugin/",
-  "scripts/autonomous-coder/",
-  "disklordz/audio-command/data/",
-  ".cursor/autonomous-coder/"
-]
+## Human critical path
+1. Coach sprint **`plugin-skeleton`**: `build-windows.ps1` + REAPER/FL load.
+2. Mark done in Coach → add `plugin-skeleton` to `progress.json`.
+3. Re-run: `python3 scripts/autonomous-coder/tick.py --emit-slice` after queue grows.
+
+## Meanwhile (this agent may still run)
+```bash
+python3 scripts/autonomous-coder/tick.py          # Antigravity sync / progress log
+python3 scripts/audio-plugin/factory-queue.py     # factory PASTE_TO_FACTORY refresh
 ```
-
-## Read first
-- `docs/CURSOR_FACTORY_LIAISON.md`
-
-## Agent
-- Skill: `disklordz-autonomous-coding-agent`
-- Soul: `disklordz/agents/profit/autonomous-coding-agent/soul.md`
-
-When done: `python3 scripts/autonomous-coder/tick.py --complete cloud-factory-paste-human-windows`
