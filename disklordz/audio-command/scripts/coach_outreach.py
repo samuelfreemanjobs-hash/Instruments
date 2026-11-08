@@ -13,6 +13,30 @@ import urllib.request
 from coach_engine import format_outreach_markdown, next_task
 
 
+def slack_payload(text: str) -> dict:
+    """Slack incoming webhook: mrkdwn section + fallback text."""
+    short = text.split("\n\n")[0].replace("## ", "").strip()
+    return {
+        "text": short[:300],
+        "blocks": [
+            {
+                "type": "header",
+                "text": {"type": "plain_text", "text": "DiskLordz Coach", "emoji": True},
+            },
+            {"type": "section", "text": {"type": "mrkdwn", "text": text[:2900]}},
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "Reply in app: <https://disklordz-chief.apps.grok.bot|Coach PWA> · `DONE` / `BLOCKED` / `SKIP`",
+                    }
+                ],
+            },
+        ],
+    }
+
+
 def post_webhook(url: str, body: dict) -> None:
     data = json.dumps(body).encode("utf-8")
     req = urllib.request.Request(
@@ -43,7 +67,7 @@ def main() -> None:
 
     task = next_task()
     text = format_outreach_markdown(task)
-    payload = {"text": text}
+    payload = slack_payload(text)
 
     if not args.send:
         print(text)

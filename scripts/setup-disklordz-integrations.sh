@@ -5,6 +5,8 @@ set -euo pipefail
 REPO_DEFAULT="samuelfreemanjobs-hash/Instruments"
 SLACK_CHANNEL_NAME="disklordz-ci"
 SLACK_CHANNEL_ID="C0C1X6RMGTZ"
+SLACK_COACH_CHANNEL_NAME="disklordz"
+SLACK_COACH_CHANNEL_ID="C0C2AK80XCN"
 ENV_JSON=".cursor/environment.json"
 CURSOR_DOCS="https://cursor.com/docs/cloud-agent/setup"
 
@@ -13,7 +15,8 @@ usage() {
 Usage: setup-disklordz-integrations.sh <command> [options]
 
 Commands:
-  slack-ci          Configure GitHub secret SLACK_WEBHOOK_URL and test notifications
+  slack-ci          Configure GitHub secret SLACK_WEBHOOK_URL and test notifications (#disklordz-ci)
+  slack-coach       Configure DISKLORDZ_COACH_WEBHOOK_URL + AUDIO_COACH_NUDGES_ENABLED (#disklordz)
   slack-antigravity Configure SLACK_WEBHOOK_ANTIGRAVITY_URL + optional SLACK_MENTION_USER_ID (#disklordz-dev)
   cursor-cloud      Verify repo-managed Cursor Cloud Agent config (environment.json)
   all               Run cursor-cloud, then slack-ci (if webhook provided)
@@ -31,6 +34,7 @@ cursor-cloud options:
 Examples:
   ./scripts/setup-disklordz-integrations.sh cursor-cloud
   ./scripts/setup-disklordz-integrations.sh slack-ci --webhook-url 'https://hooks.slack.com/services/...'
+  ./scripts/setup-disklordz-integrations.sh slack-coach --webhook-url 'https://hooks.slack.com/services/...'
   ./scripts/setup-disklordz-integrations.sh slack-antigravity --webhook-url 'https://hooks.slack.com/services/...'
   SLACK_WEBHOOK_URL='https://hooks.slack.com/...' ./scripts/setup-disklordz-integrations.sh all
 
@@ -130,6 +134,62 @@ cmd_slack_ci() {
   echo ""
   echo "Next: push any branch or re-run CI; workflow ci-slack-notify.yml listens for completed Build jobs."
   echo "Manual test: gh workflow run ci-slack-notify.yml --repo $repo -f conclusion=success"
+}
+
+cmd_slack_coach() {
+  local webhook_url="${DISKLORDZ_COACH_WEBHOOK_URL:-}"
+  local repo="$REPO_DEFAULT"
+  local skip_secret=0
+  local skip_test=0
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --webhook-url)
+        webhook_url="$2"
+        shift 2
+        ;;
+      --repo)
+        repo="$2"
+        shift 2
+        ;;
+      --skip-secret)
+        skip_secret=1
+        shift
+        ;;
+      --skip-test)
+        skip_test=1
+        shift
+        ;;
+      *)
+        die "unknown slack-coach option: $1"
+        ;;
+    esac
+  done
+
+  [[ -n "$webhook_url" ]] || die "set --webhook-url or DISKLORDZ_COACH_WEBHOOK_URL"
+
+  if [[ "$skip_secret" -eq 0 ]]; then
+    need_cmd gh
+    gh auth status >/dev/null 2>&1 || die "run: gh auth login"
+    echo "Setting GitHub secret DISKLORDZ_COACH_WEBHOOK_URL on $repo ..."
+    printf '%s' "$webhook_url" | gh secret set DISKLORDZ_COACH_WEBHOOK_URL --repo "$repo"
+    echo "Enabling AUDIO_COACH_NUDGES_ENABLED variable ..."
+    gh api -X PUT "repos/${repo}/actions/variables/AUDIO_COACH_NUDGES_ENABLED" \
+      -f value=true -f visibility=all 2>/dev/null \
+      || echo "Note: could not set variable via API — set AUDIO_COACH_NUDGES_ENABLED=true in GitHub → Settings → Variables."
+  fi
+
+  if [[ "$skip_test" -eq 0 ]]; then
+    need_cmd python3
+    echo "Sending coach test to #${SLACK_COACH_CHANNEL_NAME} (${SLACK_COACH_CHANNEL_ID}) ..."
+    DISKLORDZ_COACH_WEBHOOK_URL="$webhook_url" python3 disklordz/audio-command/scripts/coach_outreach.py --send
+    echo "Coach test sent."
+  fi
+
+  echo ""
+  echo "Workflow: audio-coach-daily-nudge.yml (cron + workflow_dispatch)"
+  echo "Docs: docs/SLACK_DISKLOORDZ.md"
+  echo "Manual: gh workflow run audio-coach-daily-nudge.yml --repo $repo"
 }
 
 cmd_slack_antigravity() {
@@ -280,6 +340,9 @@ main() {
   case "$cmd" in
     slack-ci)
       cmd_slack_ci "$@"
+      ;;
+    slack-coach)
+      cmd_slack_coach "$@"
       ;;
     slack-antigravity)
       cmd_slack_antigravity "$@"

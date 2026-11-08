@@ -21,18 +21,13 @@ The app shows **one task** with steps. **I did this — next task** advances the
 
 Export **Save progress for agent** → drop `progress.json` into `disklordz/audio-command/data/` (or paste into chat with audio-business-copilot).
 
-## 2. Slack / Discord daily DM (recommended)
+## 2. Slack #disklordz (recommended)
 
-1. Create an [Slack Incoming Webhook](https://api.slack.com/messaging/webhooks) (or Discord webhook).
-2. Add GitHub repo secret: `DISKLORDZ_COACH_WEBHOOK_URL`
-3. Set repo variable: `AUDIO_COACH_NUDGES_ENABLED` = `true`
-4. Edit schedule in `.github/workflows/audio-coach-daily-nudge.yml` (cron) to your timezone.
-
-Manual test:
+Full map: [docs/SLACK_DISKLOORDZ.md](../../../docs/SLACK_DISKLOORDZ.md)
 
 ```bash
-DISKLORDZ_COACH_WEBHOOK_URL='https://hooks.slack.com/...' \
-  python3 disklordz/audio-command/scripts/coach_outreach.py --send
+./scripts/setup-disklordz-integrations.sh slack-coach --webhook-url 'https://hooks.slack.com/services/...'
+gh workflow run audio-coach-daily-nudge.yml -R samuelfreemanjobs-hash/Instruments
 ```
 
 ## 3. iPhone / Google Calendar passive nudge
