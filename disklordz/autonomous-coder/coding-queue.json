@@ -74,6 +74,16 @@
       "allowlist": ["docs/"],
       "context_paths": ["disklordz/audio-command/ARCHITECTURE.md"],
       "priority": 7
+    },
+    {
+      "id": "cloud-post-merge-112-main",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Post-merge #112: main as default branch in escalation + operator doc",
+      "acceptance": "next-factory.md and CURSOR_OPERATOR mention merge commit; git pull main",
+      "allowlist": ["docs/", "disklordz/autonomous-coder/factory-escalation/"],
+      "context_paths": ["docs/AUDIO_PLUGIN_AGENT_LANE.md"],
+      "priority": 8
     }
   ]
 }

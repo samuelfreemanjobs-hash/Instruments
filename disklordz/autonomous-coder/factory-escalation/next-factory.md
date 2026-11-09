@@ -1,6 +1,6 @@
 # Factory escalation — plugin-skeleton (Stage B verify)
 
-_Updated 2026-11-08 · slice `escalate-dpf-slice`_
+_Updated 2026-11-09 · PR **#112** merged to `main` (`c6e3bc2`)_
 
 ## Status
 
@@ -9,7 +9,7 @@ _Updated 2026-11-08 · slice `escalate-dpf-slice`_
 | Blocker | **human-windows** (DAW scan evidence) |
 | Sprint | `plugin-skeleton` |
 | Owner | **Samuel** (build + REAPER/FL) |
-| Code | **Landed** on `main` (or your PR branch until merge) — `DiskLordz-Audio/Products/ChordEngine/` |
+| Code | **`main`** — `DiskLordz-Audio/Products/ChordEngine/` · Windows CI: **DiskLordz Audio (Windows VST3)** |
 | Liaison skill | `disklordz-plugin-factory-liaison` |
 
 ## Build (Samuel)

@@ -65,7 +65,9 @@ Then at [cursor.com/agents](https://cursor.com/agents) → **My Machines**. Docs
 
 ## This week’s critical path
 
-Coach **`plugin-skeleton`**: build or CI artifact → REAPER/FL → mark done.  
+Audio copilot + Stage B merged on **`main`** (PR #112). Scheduled workflows (audio fleet, antigravity, autonomous tick, Windows VST3 CI) run from default branch.
+
+Coach **`plugin-skeleton`**: `git pull origin main` → build or **Actions** artifact → REAPER/FL → mark done.  
 Defer: tokens, product-tree drafts, new operator apps until after DAW proof.
 
 ## Related
