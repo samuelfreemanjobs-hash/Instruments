@@ -17,6 +17,8 @@ void drawSection(juce::Graphics& g, juce::Rectangle<int> r, const juce::String& 
 {
     g.setColour(kPanelInset);
     g.fillRoundedRectangle(r.toFloat(), 8.0f);
+    g.setColour(juce::Colours::black.withAlpha(0.25f));
+    g.drawRoundedRectangle(r.toFloat().reduced(1.0f), 7.0f, 1.0f);
     g.setColour(kPanelWood);
     g.drawRoundedRectangle(r.toFloat(), 8.0f, 2.0f);
     g.setColour(kSectionText);
@@ -38,6 +40,186 @@ void layoutKnobRow(juce::Rectangle<int> area, std::initializer_list<juce::Slider
 }
 } // namespace
 
+void VoyagerPanelLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height,
+                                               float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle,
+                                               juce::Slider& slider)
+{
+    const float radius = juce::jmin(width, height) * 0.5f - 4.0f;
+    const float centreX = static_cast<float>(x) + static_cast<float>(width) * 0.5f;
+    const float centreY = static_cast<float>(y) + static_cast<float>(height) * 0.5f;
+    const float rx = centreX - radius;
+    const float ry = centreY - radius;
+    const float rw = radius * 2.0f;
+
+    g.setColour(kPanelInset.darker(0.15f));
+    g.fillEllipse(rx, ry, rw, rw);
+    g.setColour(kPanelMetalHi.withAlpha(0.85f));
+    g.drawEllipse(rx, ry, rw, rw, 1.6f);
+
+    const float angle = rotaryStartAngle + sliderPosProportional * (rotaryEndAngle - rotaryStartAngle);
+    juce::Path valueArc;
+    valueArc.addCentredArc(centreX, centreY, radius - 2.0f, radius - 2.0f, 0.0f, rotaryStartAngle, angle, true);
+    g.setColour(accent.withAlpha(0.92f));
+    g.strokePath(valueArc, juce::PathStrokeType(3.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+
+    juce::Path pointer;
+    pointer.addRectangle(-2.0f, -radius + 6.0f, 4.0f, radius * 0.42f);
+    g.setColour(accent.brighter(0.25f));
+    g.fillPath(pointer, juce::AffineTransform::rotation(angle).translated(centreX, centreY));
+
+    g.setColour(kPanelMetal);
+    g.fillEllipse(centreX - 4.0f, centreY - 4.0f, 8.0f, 8.0f);
+}
+
+void VoyagerPanelLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height,
+                                               float sliderPos, float /*minSliderPos*/, float /*maxSliderPos*/,
+                                               const juce::Slider::SliderStyle style, juce::Slider& slider)
+{
+  {
+    const bool vertical = style == juce::Slider::LinearVertical || style == juce::Slider::LinearBarVertical;
+    const auto track = vertical ? juce::Rectangle<float>(static_cast<float>(x) + width * 0.38f, static_cast<float>(y),
+                                                         static_cast<float>(width) * 0.24f, static_cast<float>(height))
+                                : juce::Rectangle<float>(static_cast<float>(x), static_cast<float>(y) + height * 0.38f,
+                                                         static_cast<float>(width), static_cast<float>(height) * 0.24f);
+    g.setColour(kPanelMetal);
+    g.fillRoundedRectangle(track, 3.0f);
+    g.setColour(kPanelInset.darker(0.05f));
+    g.drawRoundedRectangle(track, 3.0f, 1.0f);
+
+    if (vertical)
+    {
+        const float thumbY = sliderPos - 7.0f;
+        g.setColour(accent);
+        g.fillRoundedRectangle(track.getX() - 3.0f, thumbY, track.getWidth() + 6.0f, 14.0f, 3.0f);
+        g.setColour(accent.brighter(0.35f));
+        g.drawRoundedRectangle(track.getX() - 3.0f, thumbY, track.getWidth() + 6.0f, 14.0f, 3.0f, 1.0f);
+    }
+    else
+    {
+        const float thumbX = sliderPos - 7.0f;
+        g.setColour(accent);
+        g.fillRoundedRectangle(thumbX, track.getY() - 3.0f, 14.0f, track.getHeight() + 6.0f, 3.0f);
+    }
+    juce::ignoreUnused(slider);
+  }
+}
+
+void WaveformSelectorStrip::paintWaveGlyph(juce::Graphics& g, juce::Rectangle<float> area, int waveIndex,
+                                           juce::Colour colour)
+{
+    g.setColour(colour);
+    area = area.reduced(4.0f, 6.0f);
+    juce::Path p;
+    switch (waveIndex)
+    {
+        case 0:
+            p.startNewSubPath(area.getX(), area.getBottom());
+            p.lineTo(area.getRight(), area.getY());
+            break;
+        case 1:
+            p.addRectangle(area.getX(), area.getCentreY() - 3.0f, area.getWidth(), 6.0f);
+            break;
+        case 2:
+            p.startNewSubPath(area.getX(), area.getBottom());
+            p.lineTo(area.getCentreX(), area.getY());
+            p.lineTo(area.getRight(), area.getBottom());
+            break;
+        default:
+            p.addRectangle(area.getX(), area.getCentreY() - 3.0f, area.getWidth() * 0.45f, 6.0f);
+            break;
+    }
+    g.strokePath(p, juce::PathStrokeType(1.5f));
+}
+
+void WaveformSelectorStrip::bind(MoogVoyagerAudioProcessor& processor, std::string_view waveParamId, int oscIndex)
+{
+    proc = &processor;
+    paramKey = std::string(waveParamId);
+    const juce::StringArray labels { "SAW", "SQR", "TRI", "PLS" };
+    for (int i = 0; i < 4; ++i)
+    {
+        waveButtons[static_cast<size_t>(i)].setButtonText(labels[i]);
+        waveButtons[static_cast<size_t>(i)].setRadioGroupId(90110 + oscIndex);
+        waveButtons[static_cast<size_t>(i)].setClickingTogglesState(true);
+        waveButtons[static_cast<size_t>(i)].setColour(juce::TextButton::buttonColourId, kPanelInset);
+        waveButtons[static_cast<size_t>(i)].setColour(juce::TextButton::textColourOffId, kSectionText.withAlpha(0.8f));
+        waveButtons[static_cast<size_t>(i)].onClick = [this, i]() { selectWave(i); };
+        addAndMakeVisible(waveButtons[static_cast<size_t>(i)]);
+    }
+    syncFromParameter();
+}
+
+void WaveformSelectorStrip::setAccentColour(juce::Colour c) noexcept
+{
+    accent = c;
+    for (auto& b : waveButtons)
+        b.setColour(juce::TextButton::buttonOnColourId, accent);
+    repaint();
+}
+
+void WaveformSelectorStrip::syncFromParameter()
+{
+    if (proc == nullptr)
+        return;
+    const int idx = static_cast<int>(
+        proc->getApvts().getRawParameterValue(paramKey)->load());
+    for (int i = 0; i < 4; ++i)
+        waveButtons[static_cast<size_t>(i)].setToggleState(i == idx, juce::dontSendNotification);
+    repaint();
+}
+
+void WaveformSelectorStrip::selectWave(int index)
+{
+    if (proc == nullptr)
+        return;
+    index = juce::jlimit(0, 3, index);
+    if (auto* param = proc->getApvts().getParameter(paramKey))
+        param->setValueNotifyingHost(index / 3.0f);
+    syncFromParameter();
+}
+
+void WaveformSelectorStrip::resized()
+{
+    auto b = getLocalBounds();
+    const int w = b.getWidth() / 4;
+    for (int i = 0; i < 4; ++i)
+        waveButtons[static_cast<size_t>(i)].setBounds(b.removeFromLeft(w).reduced(1, 0));
+}
+
+bool ModBusMatrixPanel::hitCell(juce::Point<float> pos, int& rowOut, int& colOut) const
+{
+    auto r = getLocalBounds().toFloat().reduced(2.0f);
+    const float halfW = r.getWidth() * 0.5f;
+    for (int col = 0; col < 2; ++col)
+    {
+        auto bus = r.withWidth(halfW).withX(r.getX() + col * halfW);
+        const float cx = bus.getCentreX();
+        for (int row = 0; row < 4; ++row)
+        {
+            const float y = bus.getY() + 18.0f + row * 22.0f;
+            juce::Rectangle<float> dot(cx - 10.0f, y, 20.0f, 20.0f);
+            if (dot.contains(pos))
+            {
+                rowOut = row;
+                colOut = col;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void ModBusMatrixPanel::mouseDown(const juce::MouseEvent& e)
+{
+    int row = 0;
+    int col = 0;
+    if (!hitCell(e.position, row, col))
+        return;
+    routes[static_cast<size_t>(row)][static_cast<size_t>(col)] =
+        !routes[static_cast<size_t>(row)][static_cast<size_t>(col)];
+    repaint();
+}
+
 void ModBusMatrixPanel::paint(juce::Graphics& g)
 {
     auto r = getLocalBounds().toFloat().reduced(2.0f);
@@ -45,29 +227,31 @@ void ModBusMatrixPanel::paint(juce::Graphics& g)
     g.fillRoundedRectangle(r, 4.0f);
 
     const juce::String sources[4] = { "LFO", "NOISE", "ENV", "OSC 3" };
-    const juce::String dests[2] = { "→ PITCH", "→ FILTER" };
+    const juce::String busTitles[2] = { "MOD BUS A", "MOD BUS B" };
 
     g.setFont(juce::FontOptions(9.0f, juce::Font::bold));
     g.setColour(kSectionText.withAlpha(0.85f));
-    const float colW = r.getWidth() / 3.0f;
-    for (int d = 0; d < 2; ++d)
-        g.drawText(dests[d], (int) (r.getX() + colW * (d + 1.0f)), (int) r.getY() + 2, (int) colW, 12,
-                   juce::Justification::centred);
-
-    for (int row = 0; row < 4; ++row)
+    const float halfW = r.getWidth() * 0.5f;
+    for (int col = 0; col < 2; ++col)
     {
-        const float y = r.getY() + 16.0f + row * 22.0f;
-        g.setColour(kSectionText.withAlpha(0.75f));
-        g.drawText(sources[row], (int) r.getX() + 4, (int) y, (int) colW, 18, juce::Justification::centredLeft);
-        for (int col = 0; col < 2; ++col)
+        auto bus = r.withWidth(halfW).withX(r.getX() + col * halfW);
+        g.drawText(busTitles[col], bus.removeFromTop(14.0f).toNearestInt(), juce::Justification::centred);
+        g.setColour(kPanelWood.withAlpha(0.55f));
+        if (col == 0)
+            g.drawVerticalLine(static_cast<int>(bus.getRight()), static_cast<int>(r.getY()), static_cast<int>(r.getBottom()));
+        for (int row = 0; row < 4; ++row)
         {
-            const float cx = r.getX() + colW * (col + 1.35f);
-            const bool on = (row == 0) || (row == 1 && col == 1);
+            const float y = bus.getY() + 18.0f + row * 22.0f;
+            g.setColour(kSectionText.withAlpha(0.75f));
+            g.drawText(sources[row], (int) bus.getX() + 4, (int) y, (int) (halfW * 0.55f), 18,
+                       juce::Justification::centredRight);
+            const float cx = bus.getCentreX() + halfW * 0.18f;
+            const bool on = routes[static_cast<size_t>(row)][static_cast<size_t>(col)];
             g.setColour(on ? accent : kPanelMetalHi);
             g.fillEllipse(cx, y + 4.0f, 10.0f, 10.0f);
             if (on)
             {
-                g.setColour(accent.brighter(0.3f));
+                g.setColour(accent.brighter(0.35f));
                 g.drawEllipse(cx, y + 4.0f, 10.0f, 10.0f, 1.2f);
             }
         }
@@ -110,7 +294,11 @@ void VoyagerPerformanceStrip::paint(juce::Graphics& g)
     g.fillEllipse(px - 5.0f, py - 5.0f, 10.0f, 10.0f);
     g.setColour(kSectionText.withAlpha(0.7f));
     g.setFont(juce::FontOptions(9.0f));
-    g.drawText("X / Y", xy.toNearestInt().removeFromTop(12), juce::Justification::centred);
+  {
+    auto xyLabel = xy.toNearestInt();
+    g.drawText("TOUCH", xyLabel.removeFromTop(10), juce::Justification::centred);
+    g.drawText("SURFACE", xyLabel.removeFromTop(10), juce::Justification::centred);
+  }
 
     auto wheels = bounds.removeFromLeft(52.0f);
     const auto drawWheel = [&](float x, float norm, const char* name, juce::Rectangle<float>& store) {
@@ -124,8 +312,8 @@ void VoyagerPerformanceStrip::paint(juce::Graphics& g)
         g.setColour(kSectionText.withAlpha(0.65f));
         g.drawText(name, (int) wr.getX() - 2, (int) wheels.getY(), 26, 12, juce::Justification::centred);
     };
-    drawWheel(wheels.getX() + 4.0f, pitchWheel, "P", pitchWheelBounds);
-    drawWheel(wheels.getX() + 28.0f, modWheel, "M", modWheelBounds);
+    drawWheel(wheels.getX() + 4.0f, pitchWheel, "PITCH", pitchWheelBounds);
+    drawWheel(wheels.getX() + 28.0f, modWheel, "MOD", modWheelBounds);
 }
 
 void VoyagerPerformanceStrip::applyPerformanceToEngine()
@@ -209,8 +397,14 @@ void MeterScopePanel::paint(juce::Graphics& g)
     }
     g.setColour(accent.withAlpha(0.9f));
     g.strokePath(wave, juce::PathStrokeType(1.2f));
+    const int w1 = static_cast<int>(
+        processor.getApvts().getRawParameterValue(std::string(SynthParamIDs::osc1Wave))->load());
+    static const char* waveCaptions[] = { "Sawtooth", "Square", "Triangle", "Pulse width" };
+    const int idx = juce::jlimit(0, 3, w1);
     g.setColour(kSectionText.withAlpha(0.55f));
-    g.drawText("Live mix", bounds.removeFromBottom(14).toNearestInt(), juce::Justification::centred);
+    g.setFont(juce::FontOptions(8.5f));
+    g.drawText(juce::String(waveCaptions[idx]) + " · live", bounds.removeFromBottom(14).toNearestInt(),
+               juce::Justification::centred);
 }
 
 void MoogVoyagerAudioProcessorEditor::styleKnob(juce::Slider& s, const juce::String& name)
@@ -388,7 +582,6 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
         addAndMakeVisible(oversampleSwitch[static_cast<size_t>(i)]);
     }
 
-    modBusMatrix.setInterceptsMouseClicks(false, false);
     addAndMakeVisible(modBusMatrix);
 
     osc23SyncButton.setButtonText("OSC 2/3 SYNC");
@@ -414,6 +607,16 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     modLfoLabel.setFont(juce::FontOptions(11.0f, juce::Font::bold));
     addAndMakeVisible(modLfoLabel);
 
+    modWheelPitchLabel.setText("CONTROL WHEEL · PITCH", juce::dontSendNotification);
+    modWheelFilterLabel.setText("CONTROL WHEEL · FILTER", juce::dontSendNotification);
+    for (auto* l : { &modWheelPitchLabel, &modWheelFilterLabel })
+    {
+        l->setColour(juce::Label::textColourId, kSectionText.withAlpha(0.75f));
+        l->setFont(juce::FontOptions(8.5f, juce::Font::bold));
+        l->setJustificationType(juce::Justification::centred);
+        addAndMakeVisible(*l);
+    }
+
     for (auto* tb : { &noisePinkButton, &mixerOdButton, &filterOdButton })
     {
         tb->setClickingTogglesState(true);
@@ -422,7 +625,7 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
         tb->setColour(juce::ToggleButton::tickDisabledColourId, kPanelMetalHi);
         addAndMakeVisible(*tb);
     }
-    noisePinkButton.setButtonText("Pink");
+    noisePinkButton.setButtonText("White / Pink");
     mixerOdButton.setButtonText("Mix OD");
     filterOdButton.setButtonText("Filt OD");
 
@@ -440,6 +643,7 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
 
     const juce::StringArray waves { "Saw", "Square", "Triangle", "Pulse" };
     const juce::StringArray octaves { "-2", "-1", "0", "+1", "+2" };
+    const std::string_view waveIds[3] = { SynthParamIDs::osc1Wave, SynthParamIDs::osc2Wave, SynthParamIDs::osc3Wave };
 
     for (int i = 0; i < 3; ++i)
     {
@@ -459,6 +663,9 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
         styleKnob(oscFine[i], "Fine");
         bindCombo(oscOctave[i], octaves);
         bindCombo(oscWave[i], waves);
+        oscWave[i].setVisible(false);
+        waveSelectors[static_cast<size_t>(i)].bind(processorRef, waveIds[i], i);
+        addAndMakeVisible(waveSelectors[static_cast<size_t>(i)]);
         addAndMakeVisible(oscLevel[i]);
         addAndMakeVisible(oscFine[i]);
         addAndMakeVisible(oscOctave[i]);
@@ -501,7 +708,6 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     const std::string_view levelIds[3] = { SynthParamIDs::osc1Level, SynthParamIDs::osc2Level, SynthParamIDs::osc3Level };
     const std::string_view fineIds[3] = { SynthParamIDs::osc1Fine, SynthParamIDs::osc2Fine, SynthParamIDs::osc3Fine };
     const std::string_view octIds[3] = { SynthParamIDs::osc1Octave, SynthParamIDs::osc2Octave, SynthParamIDs::osc3Octave };
-    const std::string_view waveIds[3] = { SynthParamIDs::osc1Wave, SynthParamIDs::osc2Wave, SynthParamIDs::osc3Wave };
 
     for (int i = 0; i < 3; ++i)
     {
@@ -547,10 +753,79 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
 
     filterCutoff.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 72, 20);
     filterCutoff.setPopupDisplayEnabled(true, false, this);
+    filterKb.setVisible(false);
+
+    filterKbStepLabel.setText("KEYBOARD TRACK", juce::dontSendNotification);
+    filterKbStepLabel.setColour(juce::Label::textColourId, kSectionText.withAlpha(0.85f));
+    filterKbStepLabel.setFont(juce::FontOptions(9.0f, juce::Font::bold));
+    addAndMakeVisible(filterKbStepLabel);
+    const juce::StringArray kbLabels { "OFF", "1/3", "2/3", "FULL" };
+    for (int i = 0; i < 4; ++i)
+    {
+        filterKbStepSwitch[static_cast<size_t>(i)].setButtonText(kbLabels[i]);
+        filterKbStepSwitch[static_cast<size_t>(i)].setRadioGroupId(88004);
+        filterKbStepSwitch[static_cast<size_t>(i)].setClickingTogglesState(true);
+        filterKbStepSwitch[static_cast<size_t>(i)].setColour(juce::TextButton::buttonColourId, kPanelInset);
+        filterKbStepSwitch[static_cast<size_t>(i)].onClick = [this, i]() { setFilterKbStep(i); };
+        addAndMakeVisible(filterKbStepSwitch[static_cast<size_t>(i)]);
+    }
+    syncFilterKbStepsFromParameter();
+
+    panelLookAndFeel.setColour(juce::ResizableWindow::backgroundColourId, kPanelMetal);
+    applyLookAndFeelToControls();
 
     setResizeLimits(1000, 680, 1520, 980);
     setSize(1180, 820);
     startTimerHz(28);
+}
+
+void MoogVoyagerAudioProcessorEditor::applyLookAndFeelToControls()
+{
+    const auto setLaf = [this](juce::Slider& s) {
+        s.setLookAndFeel(&panelLookAndFeel);
+    };
+    for (auto& s : oscLevel)
+        setLaf(s);
+    for (auto& s : oscFine)
+        setLaf(s);
+    setLaf(noiseSlider);
+    setLaf(subOscSlider);
+    for (auto* s : { &filterCutoff, &filterRes, &filterDrive, &filterEnvAmt, &filterKb, &mixerDriveSlider,
+                     &fAttack, &fDecay, &fSustain, &fRelease, &aAttack, &aDecay, &aSustain, &aRelease, &lfoRate,
+                     &lfoPitch, &lfoFilter, &glide, &masterSlider })
+        setLaf(*s);
+}
+
+void MoogVoyagerAudioProcessorEditor::setFilterKbStep(int stepIndex)
+{
+    static const float values[4] = { 0.0f, 0.33f, 0.66f, 1.0f };
+    stepIndex = juce::jlimit(0, 3, stepIndex);
+    if (auto* param = processorRef.getApvts().getParameter(std::string(SynthParamIDs::filterKeyTrack)))
+        param->setValueNotifyingHost(param->convertTo0to1(values[stepIndex]));
+    syncFilterKbStepsFromParameter();
+}
+
+void MoogVoyagerAudioProcessorEditor::syncFilterKbStepsFromParameter()
+{
+    const float v = processorRef.getApvts().getRawParameterValue(std::string(SynthParamIDs::filterKeyTrack))->load();
+    int best = 0;
+    float bestDist = 10.0f;
+    static const float values[4] = { 0.0f, 0.33f, 0.66f, 1.0f };
+    for (int i = 0; i < 4; ++i)
+    {
+        const float d = std::abs(v - values[i]);
+        if (d < bestDist)
+        {
+            bestDist = d;
+            best = i;
+        }
+    }
+    const auto accent = accentForCurrentStack();
+    for (int i = 0; i < 4; ++i)
+    {
+        filterKbStepSwitch[static_cast<size_t>(i)].setColour(juce::TextButton::buttonOnColourId, accent);
+        filterKbStepSwitch[static_cast<size_t>(i)].setToggleState(i == best, juce::dontSendNotification);
+    }
 }
 
 void MoogVoyagerAudioProcessorEditor::timerCallback()
@@ -565,6 +840,17 @@ void MoogVoyagerAudioProcessorEditor::timerCallback()
 MoogVoyagerAudioProcessorEditor::~MoogVoyagerAudioProcessorEditor()
 {
     processorRef.getApvts().removeParameterListener(std::string(SynthParamIDs::moogStack), this);
+    const auto clearLaf = [](juce::Slider& s) { s.setLookAndFeel(nullptr); };
+    for (auto& s : oscLevel)
+        clearLaf(s);
+    for (auto& s : oscFine)
+        clearLaf(s);
+    clearLaf(noiseSlider);
+    clearLaf(subOscSlider);
+    for (auto* s : { &filterCutoff, &filterRes, &filterDrive, &filterEnvAmt, &filterKb, &mixerDriveSlider,
+                     &fAttack, &fDecay, &fSustain, &fRelease, &aAttack, &aDecay, &aSustain, &aRelease, &lfoRate,
+                     &lfoPitch, &lfoFilter, &glide, &masterSlider })
+        clearLaf(*s);
 }
 
 juce::Colour MoogVoyagerAudioProcessorEditor::accentForLineage(moogstack::Lineage lineage)
@@ -667,6 +953,14 @@ void MoogVoyagerAudioProcessorEditor::refreshStackChrome()
     meterScope.setAccentColour(accent);
     performanceStrip.setAccentColour(accent);
     modBusMatrix.setAccentColour(accent);
+  {
+    panelLookAndFeel.accent = accent;
+    for (auto& strip : waveSelectors)
+        strip.setAccentColour(accent);
+    syncFilterKbStepsFromParameter();
+    for (int i = 0; i < 3; ++i)
+        waveSelectors[static_cast<size_t>(i)].syncFromParameter();
+  }
 
     const int osIdx =
         static_cast<int>(processorRef.getApvts().getRawParameterValue(std::string(SynthParamIDs::oversample))->load());
@@ -694,7 +988,7 @@ void MoogVoyagerAudioProcessorEditor::refreshPatchReadout()
 void MoogVoyagerAudioProcessorEditor::paint(juce::Graphics& g)
 {
     const auto accent = accentForCurrentStack();
-    const int woodW = 36;
+    const int woodW = 44;
     g.fillAll(kPanelWoodDark);
     g.setColour(kPanelWood);
     g.fillRect(0, 0, woodW, getHeight());
@@ -743,7 +1037,7 @@ void MoogVoyagerAudioProcessorEditor::paint(juce::Graphics& g)
 
 void MoogVoyagerAudioProcessorEditor::resized()
 {
-    const int woodW = 36;
+    const int woodW = 44;
     auto panel = getLocalBounds().withTrimmedLeft(woodW).withTrimmedRight(woodW);
 
     titleLabel.setBounds(panel.getX() + 14, 8, 280, 32);
@@ -792,7 +1086,8 @@ void MoogVoyagerAudioProcessorEditor::resized()
         oscOctLabel[i].setBounds(ctrlCol.removeFromTop(14));
         oscOctave[i].setBounds(ctrlCol.removeFromTop(22));
         oscWaveLabel[i].setBounds(ctrlCol.removeFromTop(14));
-        oscWave[i].setBounds(ctrlCol.removeFromTop(22));
+        waveSelectors[static_cast<size_t>(i)].setBounds(ctrlCol.removeFromTop(24));
+        oscWave[i].setBounds(ctrlCol.removeFromTop(0));
     }
 
     auto filterBox = bounds.removeFromTop(148);
@@ -800,16 +1095,20 @@ void MoogVoyagerAudioProcessorEditor::resized()
     auto fIn = filterBox.reduced(10, 4);
     auto fRow = fIn.removeFromTop(88);
   {
-    const int bigW = juce::jmin(120, fRow.getWidth() / 4);
-    filterCutoff.setBounds(fRow.removeFromLeft(bigW).reduced(4));
-    const int n = 6;
+    const int bigW = juce::jmin(148, fRow.getWidth() / 3);
+    filterCutoff.setBounds(fRow.removeFromLeft(bigW).reduced(2));
+    const int n = 5;
     const int w = fRow.getWidth() / n;
-    for (auto* k : { &filterRes, &filterDrive, &filterEnvAmt, &filterKb, &mixerDriveSlider, &subOscSlider })
+    for (auto* k : { &filterRes, &filterDrive, &filterEnvAmt, &mixerDriveSlider, &subOscSlider })
         k->setBounds(fRow.removeFromLeft(w).reduced(6));
   }
     auto odRow = fIn.removeFromTop(26);
     mixerOdButton.setBounds(odRow.removeFromLeft(72).reduced(2));
     filterOdButton.setBounds(odRow.removeFromLeft(72).reduced(2));
+    filterKbStepLabel.setBounds(odRow.removeFromLeft(88).reduced(0, 4));
+    const int kbW = juce::jmin(44, odRow.getWidth() / 4);
+    for (int i = 0; i < 4; ++i)
+        filterKbStepSwitch[static_cast<size_t>(i)].setBounds(odRow.removeFromLeft(kbW).reduced(1, 2));
 
     auto envBox = bounds.removeFromTop(158);
     envSectionLabel.setBounds(envBox.removeFromTop(20));
@@ -825,11 +1124,18 @@ void MoogVoyagerAudioProcessorEditor::resized()
     auto modBox = bounds.removeFromTop(128);
     modSectionLabel.setBounds(modBox.removeFromTop(20));
     auto mIn = modBox.reduced(10, 4);
-    auto mLeft = mIn.removeFromLeft(juce::jmin(150, mIn.getWidth() / 3));
+    auto mLeft = mIn.removeFromLeft(juce::jmin(196, mIn.getWidth() / 2));
     modBusMatrix.setBounds(mLeft.removeFromTop(98));
     auto mRight = mIn;
     modLfoLabel.setBounds(mRight.removeFromTop(14));
-    layoutKnobRow(mRight.removeFromTop(42), { &lfoRate, &lfoPitch, &lfoFilter });
+    auto lfoRow = mRight.removeFromTop(58);
+    lfoRate.setBounds(lfoRow.removeFromLeft(lfoRow.getWidth() / 3).reduced(4));
+    auto wheelCols = lfoRow;
+    auto pitchCol = wheelCols.removeFromLeft(wheelCols.getWidth() / 2);
+    modWheelPitchLabel.setBounds(pitchCol.removeFromTop(12));
+    lfoPitch.setBounds(pitchCol.reduced(2));
+    modWheelFilterLabel.setBounds(wheelCols.removeFromTop(12));
+    lfoFilter.setBounds(wheelCols.reduced(2));
     auto m2 = mRight;
     noisePinkButton.setBounds(m2.removeFromLeft(56).removeFromTop(22).reduced(0, 2));
     layoutKnobRow(m2, { &glide, &noiseSlider });

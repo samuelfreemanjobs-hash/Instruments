@@ -22,7 +22,11 @@ Close the gap between the **mockup** and [`SynthEditor.cpp`](../SynthEditor.cpp)
 | Oscillator mix **faders** | ✓ | Match fader cap art from mockup |
 | ADSR **vertical sliders** | ✓ | Match spacing/labels from mockup |
 | **Performance** keyboard + wheels + XY | ✓ (wave 1) | Wire wheels/XY to mod bus (optional) |
-| Modulation **bus panel** layout | ✓ (matrix) | Interactive routing rows (next) |
+| Modulation **bus panel** layout | ✓ (click matrix) | Wire matrix → APVTS (optional) |
+| **Waveform** rotary switches | ✓ | SAW/SQR/TRI/PLS strips |
+| **Filter KB track** stepped UI | ✓ | OFF / 1/3 / 2/3 / FULL |
+| **Knob + fader** styling | ✓ | VoyagerPanelLookAndFeel |
+| Large filter cutoff | ✓ (enlarged) | Position vs mockup |
 | **OSC 2/3 SYNC** | ✓ | Hard-sync DSP |
 | Oversample **2× / 4×** switches | ✓ | Segmented header buttons |
 | XY / wheels **→ modulation** | ✓ | XY→LFO; M→filter env; P→osc fine |

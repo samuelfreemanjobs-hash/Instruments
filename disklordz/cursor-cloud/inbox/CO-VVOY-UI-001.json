@@ -13,8 +13,8 @@
     "Oversample OFF/2x/4x segmented switches"
   ],
   "remaining": [
-    "Interactive mod matrix routing (beyond LFO highlight)",
-    "Filter KB track stepped switch UI",
-    "Oscillator waveform rotary switches (mockup style)"
+    "Mod matrix routes → DSP (optional)",
+    "Octave stepped switches",
+    "Wood rail proportion pass vs PNG"
   ]
 }

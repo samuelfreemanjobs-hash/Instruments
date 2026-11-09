@@ -5,15 +5,51 @@
 #include <JuceHeader.h>
 #include <array>
 
+class VoyagerPanelLookAndFeel : public juce::LookAndFeel_V4
+{
+public:
+    juce::Colour accent { 0xfff4a62a };
+
+    void drawRotarySlider(juce::Graphics&, int x, int y, int width, int height, float sliderPosProportional,
+                          float rotaryStartAngle, float rotaryEndAngle, juce::Slider&) override;
+
+    void drawLinearSlider(juce::Graphics&, int x, int y, int width, int height, float sliderPos,
+                          float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle,
+                          juce::Slider&) override;
+};
+
+/** Four-position wave rotary (mockup-style) bound to APVTS wave choice. */
+class WaveformSelectorStrip : public juce::Component
+{
+public:
+    void bind(MoogVoyagerAudioProcessor& processor, std::string_view waveParamId, int oscIndex);
+    void setAccentColour(juce::Colour c) noexcept;
+    void syncFromParameter();
+
+    void resized() override;
+
+private:
+    MoogVoyagerAudioProcessor* proc = nullptr;
+    std::string paramKey;
+    juce::Colour accent { 0xfff4a62a };
+    std::array<juce::TextButton, 4> waveButtons {};
+    void selectWave(int index);
+    static void paintWaveGlyph(juce::Graphics& g, juce::Rectangle<float> area, int waveIndex, juce::Colour colour);
+};
+
 /** Mockup performance row: XY surface, pitch/mod wheels, on-screen MIDI keyboard. */
 class ModBusMatrixPanel : public juce::Component
 {
 public:
     void setAccentColour(juce::Colour c) noexcept { accent = c; }
     void paint(juce::Graphics& g) override;
+    void mouseDown(const juce::MouseEvent& e) override;
 
 private:
     juce::Colour accent { 0xfff4a62a };
+    /** [source row][bus column 0 = A, 1 = B] */
+    std::array<std::array<bool, 2>, 4> routes { { { true, true }, { false, true }, { true, false }, { false, false } } };
+    bool hitCell(juce::Point<float> pos, int& rowOut, int& colOut) const;
 };
 
 class VoyagerPerformanceStrip : public juce::Component
@@ -89,8 +125,12 @@ private:
     static void bindCombo(juce::ComboBox& box, const juce::StringArray& items);
     static void sectionLabel(juce::Label& label, const juce::String& text);
     void applyAccentToSlider(juce::Slider& s, juce::Colour accent, bool isFader) const;
+    void applyLookAndFeelToControls();
+    void syncFilterKbStepsFromParameter();
+    void setFilterKbStep(int stepIndex);
 
     MoogVoyagerAudioProcessor& processorRef;
+    VoyagerPanelLookAndFeel panelLookAndFeel;
 
     int ledPhase = 0;
 
@@ -113,9 +153,13 @@ private:
     juce::ToggleButton mixerOdButton;
     juce::ToggleButton filterOdButton;
     juce::Label modLfoLabel;
+    juce::Label modWheelPitchLabel;
+    juce::Label modWheelFilterLabel;
     ModBusMatrixPanel modBusMatrix;
     juce::ToggleButton osc23SyncButton;
     std::array<juce::TextButton, 3> oversampleSwitch;
+    juce::Label filterKbStepLabel;
+    std::array<juce::TextButton, 4> filterKbStepSwitch;
     juce::Label outputSectionLabel;
     juce::Label cpuStatusLabel;
     juce::MidiKeyboardComponent midiKeyboard;
@@ -125,6 +169,7 @@ private:
     juce::Slider masterSlider;
     juce::Slider oscLevel[3], oscFine[3], noiseSlider;
     juce::ComboBox oscOctave[3], oscWave[3];
+    std::array<WaveformSelectorStrip, 3> waveSelectors;
     juce::Label oscIndexLabel[3], oscOctLabel[3], oscWaveLabel[3];
 
     juce::Slider filterCutoff, filterRes, filterDrive, filterEnvAmt, filterKb, mixerDriveSlider, subOscSlider;
