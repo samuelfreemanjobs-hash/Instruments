@@ -69,6 +69,16 @@ Report §18.3: Completed, Files, Build, Tests, Limitations, Next task.
 
 Gemini Spark uses **`PASTE_LIAISON`** (not `PASTE_CURSOR`) for engineering queue work → paste into Cursor Cloud with skill **`disklordz-plugin-factory-liaison`**.
 
+## VST Factory HTTP (greenfield APC)
+
+When the DiskLordz VST Factory service is running (`uvicorn` on `:8790`):
+
+- `POST /api/projects/{id}/sync` — pull APC `status.json` / gate results into factory state  
+- `GET /api/projects/{id}/pipeline` — 10-stage strip + blocking gate + next SOP  
+- Gates: `approve_architecture` → scaffold; `approve_gui` → accept impl; `approve_release` → ship  
+
+See [disklordz/vst-factory/ARCHITECTURE.md](../disklordz/vst-factory/ARCHITECTURE.md) and [DISKLORDZ_VST_FACTORY_PLATFORM.md](DISKLORDZ_VST_FACTORY_PLATFORM.md).
+
 ## Related
 
 - [DISKLORDZ_MASTER_PLAN.md](DISKLORDZ_MASTER_PLAN.md)  

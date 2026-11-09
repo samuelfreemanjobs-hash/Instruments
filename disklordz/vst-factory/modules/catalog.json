@@ -15,5 +15,9 @@
     "dsp/midi.json"
   ],
   "gui": ["gui/controls.json"],
-  "workflows": ["workflows/scaffold-default.json"]
+  "workflows": [
+    "workflows/scaffold-default.json",
+    "workflows/full-lifecycle.json"
+  ],
+  "features": "features.json"
 }

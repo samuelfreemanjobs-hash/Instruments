@@ -11,16 +11,20 @@ AI-powered local-first orchestration for JUCE/VST3 plugins. This is **not** the 
 | [docs/CURSOR_FACTORY_LIAISON.md](CURSOR_FACTORY_LIAISON.md) | PM agent (no C++) |
 | [docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md](DiskLordz_Audio_Master_Roadmap_for_Cursor.md) | CHORD ENGINE §18 stages |
 
-## Run (Phase 1)
+## Run (full lifecycle)
 
 ```bash
 cd disklordz/vst-factory
 python3 -m venv .venv && source .venv/bin/activate
-pip install -e .
-uvicorn vst_factory.main:app --reload --port 8790
+pip install -e ".[dev]"
+pytest -q
+uvicorn vst_factory.main:app --host 127.0.0.1 --port 8790
 ```
 
-Open `http://127.0.0.1:8790/` — **AI Builder** + **Build Center** + **Plugin Lab** (static shell).
+Open `http://127.0.0.1:8790/` — **AI Builder** + **Build Center** (pipeline strip) + **Plugin Lab**.
+
+Lifecycle: intake → dream → plan → design → scaffold → impl → build → test → certify → ship.  
+Sync: `POST /api/projects/{id}/sync`. Status: `GET /api/projects/{id}/pipeline`. Ship: `POST /api/projects/{id}/ship`.
 
 ## Product paths
 

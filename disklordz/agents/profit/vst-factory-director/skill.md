@@ -26,9 +26,18 @@ Foreman for DiskLordz VST Factory hybrid studio: greenfield APC products, approv
 - [ ] Evidence attached (logs, curl, CI link)
 - [ ] No secrets in git
 - [ ] `npm run build` in `disklordz/website` when SaaS touched
+- [ ] Factory lifecycle green: `pytest -q` in `disklordz/vst-factory`; MeterTap smoke hits `/sync` + `/pipeline`
+
+## Factory foreman checklist
+
+1. `GET /api/projects/{id}/pipeline` — blocking gate + next SOP (`SOP-VF-*`)
+2. `POST /api/projects/{id}/sync` — APC phase → factory state; opens `approve_gui` after design
+3. Gates: architecture → scaffold; gui → impl accept; release → ship
+4. `POST /api/projects/{id}/ship` after certify (skipped OK on non-Linux)
 
 ## Anti-patterns
 
 - Skipping ARCHITECTURE.md
 - Stripe/Supabase writes without confirmation
 - Unbounded sub-agent fan-out
+- Scaffold before Dream/Plan/Design or without `approve_architecture`

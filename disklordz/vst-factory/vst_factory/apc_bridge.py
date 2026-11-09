@@ -93,3 +93,89 @@ def suggest_plugin_name(prompt: str) -> str:
     if not base[0].isalpha():
         base = "F" + base
     return re.sub(r"[^A-Za-z0-9]", "", base)[:32] or "FactoryPlugin"
+
+
+def status_path(plugin_name: str, root: Path | None = None) -> Path:
+    root = root or repo_root()
+    return plugins_dir(root) / plugin_name / "status.json"
+
+
+def read_status(plugin_name: str, root: Path | None = None) -> dict | None:
+    """Load plugins/<Name>/status.json or return None if missing."""
+    path = status_path(plugin_name, root=root)
+    if not path.is_file():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def run_apc_gate(plugin_name: str, phase: str, root: Path | None = None) -> tuple[bool, str]:
+    """Run tools/apc-gate.sh <Name> <phase>; returns (ok, output)."""
+    root = root or repo_root()
+    script = root / "tools" / "apc-gate.sh"
+    if not script.is_file():
+        return False, f"Missing {script}\n"
+    try:
+        proc = subprocess.run(
+            ["bash", str(script), plugin_name, phase],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=60,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return False, str(exc)
+    out = (proc.stdout or "") + (proc.stderr or "")
+    return proc.returncode == 0, out
+
+
+def _file_exists(root: Path, plugin_name: str, rel: str) -> bool:
+    return (plugins_dir(root) / plugin_name / rel).is_file()
+
+
+def infer_apc_phase(plugin_name: str, root: Path | None = None) -> tuple[str, dict]:
+    """Return (furthest APC phase among dream/plan/design/impl, validation dict).
+
+    Prefers tools/apc-gate.sh when available; falls back to status.json + file checks.
+    """
+    root = root or repo_root()
+    status = read_status(plugin_name, root=root) or {}
+    validation = dict(status.get("validation") or {})
+
+    # File / flag probes (used when gate script unavailable or as soft evidence)
+    brief = validation.get("creative_brief_exists") or _file_exists(
+        root, plugin_name, ".ideas/creative-brief.md"
+    )
+    param = validation.get("parameter_spec_exists") or _file_exists(
+        root, plugin_name, ".ideas/parameter-spec.md"
+    )
+    arch = validation.get("architecture_defined") or _file_exists(
+        root, plugin_name, ".ideas/architecture.md"
+    )
+    design = validation.get("design_complete") or _file_exists(
+        root, plugin_name, ".ideas/design-spec.md"
+    )
+
+    gate_plan, _ = run_apc_gate(plugin_name, "plan", root=root)
+    gate_design, _ = run_apc_gate(plugin_name, "design", root=root)
+    gate_impl, _ = run_apc_gate(plugin_name, "impl", root=root)
+
+    phase = "intake"
+    if brief or status:
+        phase = "dream"
+    if gate_plan or (brief and param):
+        phase = "plan"
+    if gate_design or (brief and param and arch):
+        phase = "design"
+    if gate_impl or (brief and param and arch and design):
+        phase = "impl"
+
+    validation["creative_brief_exists"] = bool(brief)
+    validation["parameter_spec_exists"] = bool(param)
+    validation["architecture_defined"] = bool(arch or gate_design or gate_impl)
+    validation["design_complete"] = bool(design or gate_impl)
+    return phase, validation
