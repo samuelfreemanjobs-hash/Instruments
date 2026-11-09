@@ -5,11 +5,16 @@ Stereo peak/RMS utility meter (DiskLordz VST Factory dogfood). Scaffolded via
 
 ## Build
 
+JUCE is **not** a git submodule in this repo (no `.gitmodules` entry). Fetch it
+once per machine with the same clone CI uses:
+
 ```bash
-# JUCE once per machine (not committed):
+# From repo root — not committed; tools/build-vst.sh looks for vst/JUCE/
 git clone --depth 1 --branch 7.0.12 https://github.com/juce-framework/JUCE.git vst/JUCE
 ./tools/build-vst.sh MeterTap
 ```
+
+(`git submodule update --init vst/JUCE` will not work until a submodule is added.)
 
 ## Editor
 
@@ -23,4 +28,5 @@ are available.
 
 ```bash
 plugins/MeterTap/scripts/verify-phase4.sh
+# CI: xvfb-run -a bash plugins/MeterTap/scripts/verify-phase4.sh
 ```
