@@ -33,6 +33,11 @@ class ProjectCreate(BaseModel):
         default=None,
         description="PascalCase; generated from prompt if omitted",
     )
+    product_category: str | None = Field(
+        default=None,
+        description="Taxonomy id e.g. fx.metering",
+        max_length=128,
+    )
 
     @field_validator("plugin_name")
     @classmethod

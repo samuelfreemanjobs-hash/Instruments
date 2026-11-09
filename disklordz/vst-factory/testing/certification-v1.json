@@ -1,0 +1,30 @@
+{
+  "schema_version": "certification/v1",
+  "description": "Hard gates for POST /api/projects/{id}/certify — fail closed.",
+  "hard_gates": [
+    {
+      "id": "build_ok",
+      "field": "build_ok",
+      "required": true,
+      "description": "Latest build run succeeded"
+    },
+    {
+      "id": "artefact_ok",
+      "field": "artefact_ok",
+      "required": true,
+      "description": "VST3 bundle present under vst/<Name>/build"
+    },
+    {
+      "id": "pluginval_ok",
+      "field": "pluginval_ok",
+      "required": true,
+      "description": "Latest factory QA / pluginval-style test run succeeded"
+    },
+    {
+      "id": "audio_ok",
+      "field": "audio_ok",
+      "required": true,
+      "description": "Latest factory-audio check succeeded (skip without fixture still counts as ok)"
+    }
+  ]
+}

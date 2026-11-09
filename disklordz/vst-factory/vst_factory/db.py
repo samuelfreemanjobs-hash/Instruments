@@ -47,6 +47,22 @@ class FactoryDB:
                 created_at TEXT NOT NULL,
                 FOREIGN KEY (project_id) REFERENCES projects(id)
             );
+            CREATE TABLE IF NOT EXISTS approvals (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                project_id INTEGER NOT NULL,
+                gate TEXT NOT NULL,
+                status TEXT NOT NULL,
+                detail TEXT,
+                created_at TEXT NOT NULL,
+                resolved_at TEXT,
+                FOREIGN KEY (project_id) REFERENCES projects(id)
+            );
+            CREATE TABLE IF NOT EXISTS product_work_orders (
+                project_id INTEGER PRIMARY KEY,
+                wo_json TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (project_id) REFERENCES projects(id)
+            );
             """
         )
         self._conn.commit()
@@ -172,6 +188,99 @@ class FactoryDB:
             "SELECT COUNT(*) AS c FROM projects WHERE json_extract(spec_json, '$.track') = 'apc_greenfield'"
         ).fetchone()
         return int(row["c"]) if row else 0
+
+    def add_approval(
+        self,
+        project_id: int,
+        *,
+        gate: str,
+        status: str = "pending",
+        detail: str | None = None,
+    ) -> int:
+        with self.transaction():
+            cur = self._conn.execute(
+                """
+                INSERT INTO approvals (project_id, gate, status, detail, created_at)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (project_id, gate, status, detail, _utc_now()),
+            )
+            return int(cur.lastrowid)
+
+    def list_approvals(self, project_id: int) -> list[dict[str, Any]]:
+        rows = self._conn.execute(
+            "SELECT * FROM approvals WHERE project_id=? ORDER BY id ASC",
+            (project_id,),
+        ).fetchall()
+        return [
+            {
+                "id": r["id"],
+                "project_id": r["project_id"],
+                "gate": r["gate"],
+                "status": r["status"],
+                "detail": r["detail"],
+                "created_at": r["created_at"],
+                "resolved_at": r["resolved_at"],
+            }
+            for r in rows
+        ]
+
+    def resolve_approval(self, approval_id: int, *, status: str = "approved") -> None:
+        with self.transaction():
+            cur = self._conn.execute(
+                """
+                UPDATE approvals SET status=?, resolved_at=? WHERE id=?
+                """,
+                (status, _utc_now(), approval_id),
+            )
+            if cur.rowcount == 0:
+                raise KeyError(approval_id)
+
+    def gate_approved(self, project_id: int, gate: str) -> bool:
+        row = self._conn.execute(
+            """
+            SELECT status FROM approvals
+            WHERE project_id=? AND gate=?
+            ORDER BY id DESC LIMIT 1
+            """,
+            (project_id, gate),
+        ).fetchone()
+        return bool(row and row["status"] == "approved")
+
+    def pending_gates(self, project_id: int) -> list[str]:
+        rows = self._conn.execute(
+            """
+            SELECT gate FROM approvals
+            WHERE project_id=? AND status='pending'
+            ORDER BY id ASC
+            """,
+            (project_id,),
+        ).fetchall()
+        return [r["gate"] for r in rows]
+
+    def upsert_product_wo(self, project_id: int, wo: dict[str, Any]) -> None:
+        now = _utc_now()
+        payload = json.dumps(wo)
+        with self.transaction():
+            self._conn.execute(
+                """
+                INSERT INTO product_work_orders (project_id, wo_json, updated_at)
+                VALUES (?, ?, ?)
+                ON CONFLICT(project_id) DO UPDATE SET
+                    wo_json=excluded.wo_json,
+                    updated_at=excluded.updated_at
+                """,
+                (project_id, payload, now),
+            )
+
+    def get_product_wo(self, project_id: int) -> dict[str, Any] | None:
+        row = self._conn.execute(
+            "SELECT wo_json FROM product_work_orders WHERE project_id=?",
+            (project_id,),
+        ).fetchone()
+        if not row:
+            return None
+        return json.loads(row["wo_json"])
 
     @staticmethod
     def _row_project(row: sqlite3.Row) -> dict[str, Any]:

@@ -76,3 +76,28 @@ def run_factory_qa(plugin_name: str) -> tuple[bool, str]:
     )
     out = (proc.stdout or "") + (proc.stderr or "")
     return proc.returncode == 0, out
+
+
+def run_factory_audio_check(plugin_name: str) -> tuple[bool, str]:
+    """Run factory-audio profile (skip-ok when no WAV fixture)."""
+    root = repo_root()
+    runner = root / "vst-testing-ops/run_business.py"
+    if not runner.is_file():
+        return False, "Missing vst-testing-ops/run_business.py\n"
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(runner),
+            "--profile",
+            "factory-audio",
+            "--plugin",
+            plugin_name,
+        ],
+        cwd=str(root),
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=600,
+    )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    return proc.returncode == 0, out
