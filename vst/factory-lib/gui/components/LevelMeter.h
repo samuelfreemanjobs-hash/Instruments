@@ -12,7 +12,8 @@ enum class MeterBarSize { sm, md, lg, xl };
  * Vertical level meter (display only). Ballistics live in factory-lib/analysis;
  * this widget takes prepared dB values via setLevels().
  */
-class LevelMeter : public juce::Component
+class LevelMeter : public juce::Component,
+                   public juce::SettableTooltipClient
 {
 public:
     explicit LevelMeter (MeterBarSize barSize = MeterBarSize::md);

@@ -62,6 +62,16 @@ inline juce::Font makeFont (const typography::Style& style, float scale = 1.0f)
     return font;
 }
 
+/** String width in pixels — Font::getStringWidthFloat on JUCE 7; GlyphArrangement on JUCE 8+. */
+inline float stringWidth (const juce::Font& font, const juce::String& text) noexcept
+{
+#if JUCE_MAJOR_VERSION >= 8
+    return juce::GlyphArrangement::getStringWidth (font, text);
+#else
+    return font.getStringWidthFloat (text);
+#endif
+}
+
 inline juce::String applyCase (const juce::String& text, const char* textCase)
 {
     if (std::strcmp (textCase, "upper") == 0)

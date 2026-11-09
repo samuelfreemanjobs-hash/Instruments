@@ -38,6 +38,12 @@ void ValueReadout::setState (State s)
     valueLabel.setColour (juce::Label::textColourId, col);
     unitLabel.setColour (juce::Label::textColourId,
                          state == State::over ? argb (color::state::danger) : argb (color::text::tertiary));
+    // OVER occupies the unit column — refresh layout when state flips.
+    if (state == State::over && unitLabel.getText() != "OVER")
+        unitLabel.setText ("OVER", juce::dontSendNotification);
+    else if (state != State::over && unitLabel.getText() == "OVER")
+        unitLabel.setText ({}, juce::dontSendNotification);
+    resized();
     repaint();
 }
 
@@ -46,6 +52,8 @@ void ValueReadout::setValueText (const juce::String& value, const juce::String& 
     if (! valueLabel.isBeingEdited())
         valueLabel.setText (value, juce::dontSendNotification);
     unitLabel.setText (state == State::over ? "OVER" : unit, juce::dontSendNotification);
+    // Unit column is optional — reclaim width when empty so −96.0 / +12.0 fit an 80 px well.
+    resized();
 }
 
 void ValueReadout::setFromDb (float db)
@@ -80,8 +88,21 @@ void ValueReadout::resized()
     wellPath.clear();
     wellPath.addRoundedRectangle (getLocalBounds().toFloat(), radius::xs);
     auto r = getLocalBounds().reduced (8, 4);
-    unitLabel.setBounds (r.removeFromRight (40));
+    // Reserve unit column only when a unit (or OVER) is shown — RMS wells have no unit.
+    if (unitLabel.getText().isNotEmpty())
+    {
+        const int unitW = juce::jmin (40, juce::jmax (28, r.getWidth() / 3));
+        unitLabel.setBounds (r.removeFromRight (unitW));
+        unitLabel.setVisible (true);
+    }
+    else
+    {
+        unitLabel.setBounds ({});
+        unitLabel.setVisible (false);
+    }
     valueLabel.setBounds (r);
+    // Never ellipsize the value — shrink tracking only if needed; prefer full glyphs.
+    valueLabel.setMinimumHorizontalScale (0.85f);
 }
 
 void ValueReadout::mouseDown (const juce::MouseEvent&)

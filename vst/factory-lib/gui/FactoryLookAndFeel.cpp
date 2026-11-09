@@ -345,7 +345,10 @@ void FactoryLookAndFeel::drawButtonText (juce::Graphics& g, juce::TextButton& bu
 
     g.setColour (textCol);
     g.setFont (makeFont (typography::style::legend));
-    g.drawFittedText (applyCase (button.getButtonText(), typography::style::legend.textCase),
+    const auto caseProp = button.getProperties()
+                              .getWithDefault (buttonTextCaseProperty, typography::style::legend.textCase)
+                              .toString();
+    g.drawFittedText (applyCase (button.getButtonText(), caseProp.toRawUTF8()),
                       button.getLocalBounds(), juce::Justification::centred, 1);
 }
 
