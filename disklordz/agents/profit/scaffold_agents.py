@@ -103,31 +103,24 @@ Freeze hook config at session start; update only via user `/hooks` or repo chang
 def memory_md(spec: dict) -> str:
     return f"""# Memory — {spec["title"]}
 
-File-tier persistence (no DB). Layout under repo or `~/.claude/projects/disklordz/memory/`.
+Repo-wide, git-tracked memory in [`disklordz/agents/memory/`](../../memory/MEMORY.md) (procedure: [SOP-019](../../../../docs/disklordz/sops/SOP-019-agent-memory.md)). Agent id: `{spec["id"]}`.
 
 | File | Type | Purpose |
 |------|------|---------|
-| `MEMORY.md` | index | ≤200 lines; pointers only |
-| `{spec["id"]}_learnings.md` | feedback | Validated runbooks |
-| `{spec["id"]}_incidents.md` | project | Dated outages / misconfigs |
+| `disklordz/agents/memory/MEMORY.md` | index | ≤200 lines: session protocol, "Always load" hot list, manifest |
+| `disklordz/agents/memory/{spec["id"]}_learnings.md` | learning (`L-0001`…) | Validated, reusable lessons for this agent |
+| `disklordz/agents/memory/{spec["id"]}_incidents.md` | incident (`I-0001`…) | Dated problems and their fixes |
+| `disklordz/agents/memory/shared_*.md` | shared | Lessons for every agent |
 
-## Frontmatter template
+## Session protocol
 
-```yaml
----
-name: {spec["title"]} incident 2026-03-28
-description: One-line for LLM recall
-type: feedback
----
-```
-
-## Recall
-
-Tier 1: always load MEMORY.md index. Tier 2: LLM picks ≤5 files from manifest using current query + recent tool history.
+1. **Start:** `python3 scripts/agent_memory.py recall --agent {spec["id"]} <task keywords>` and apply the "Always load" list.
+2. **End:** for each new verified lesson `python3 scripts/agent_memory.py add --agent {spec["id"]} --kind learning|incident --title ... --area ... --when ... --lesson ... --do ... --evidence ... --confidence executed|inspected|assumed`, then `python3 scripts/agent_memory.py check`.
+3. **Repeat hit:** promote the lesson into an SOP, rule, test or script; `python3 scripts/agent_memory.py promote <ID> --agent {spec["id"]} --to <path>`.
 
 ## Do not memorize
 
-Anything derivable from git log, `ARCHITECTURE.md`, or Stripe dashboard — retrieve instead.
+Secrets, tokens, personal data, or anything derivable from git log, `ARCHITECTURE.md`, SOPs or dashboards: link instead.
 """
 
 
@@ -298,7 +291,7 @@ See `subagents.md`. Delegate exploration and verification; you synthesize.
 
 ## Memory & soul
 
-Load `memory.md` layout at session start. Obey `soul.md` non-negotiables.
+At session start run `python3 scripts/agent_memory.py recall --agent {spec["id"]} <task keywords>` (see `memory.md`); before finishing, record new verified lessons with `scripts/agent_memory.py add` and pass `check`. Obey `soul.md` non-negotiables.
 
 ## Output format
 

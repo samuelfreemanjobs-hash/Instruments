@@ -13,7 +13,8 @@ Run several agents (local + Cloud) on one product or platform without collisions
 5. **Prompt:** use [TEMPLATE-factory-cloud-agent-prompt.md](../templates/TEMPLATE-factory-cloud-agent-prompt.md): read-first list, owned paths, DPCS order, success criteria as commands, delivery rules, evidence tags.
 6. **Specs frozen:** agents report spec bugs; they don't silently deviate.
 7. **On completion:** pull the branch locally (worktree), rerun the success commands yourself, then mark ready / merge when CI is green.
-8. **Lost artifacts:** if an agent exported a bundle or left work only on its VM, ask that agent to push its branch; if it can't, rebuild from the spec on a new branch. Never block on a file that only exists on another machine.
+8. **Memory ([SOP-019](SOP-019-agent-memory.md)):** every prompt includes the recall/add block; when an agent reports back, the orchestrator records review findings the agent missed (`agent_memory.py add`), and promotes repeats into this SOP or the templates.
+9. **Lost artifacts:** if an agent exported a bundle or left work only on its VM, ask that agent to push its branch; if it can't, rebuild from the spec on a new branch. Never block on a file that only exists on another machine.
 
 ## Definition of done
 
