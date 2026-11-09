@@ -6,103 +6,159 @@
     {
       "id": "intake",
       "label": "Intake",
-      "inputs": ["prompt", "plugin_class", "product_category"],
-      "outputs": ["project_row", "factory-spec/v2"],
+      "inputs": [
+        "prompt",
+        "plugin_class",
+        "product_category"
+      ],
+      "outputs": [
+        "project_row",
+        "factory-spec/v2"
+      ],
       "gate": null,
       "verify": "GET /api/projects/{id}",
-      "sop": "SOP-VF-001",
+      "sop": "SOP-VF-07",
       "command": "POST /api/projects"
     },
     {
       "id": "dream",
       "label": "Dream",
-      "inputs": ["factory-spec/v2"],
-      "outputs": ["plugins/<Name>/.ideas/creative-brief.md", "status.json"],
+      "inputs": [
+        "factory-spec/v2"
+      ],
+      "outputs": [
+        "plugins/<Name>/.ideas/creative-brief.md",
+        "status.json"
+      ],
       "gate": "approve_architecture",
       "verify": "apc_bridge.read_status → validation.creative_brief_exists",
-      "sop": "SOP-VF-010",
+      "sop": "SOP-VF-01",
       "command": "POST /api/projects/{id}/sync"
     },
     {
       "id": "plan",
       "label": "Plan",
-      "inputs": ["creative-brief.md", "parameter-spec.md"],
-      "outputs": ["architecture.md", "status.architecture_defined"],
+      "inputs": [
+        "creative-brief.md",
+        "parameter-spec.md"
+      ],
+      "outputs": [
+        "architecture.md",
+        "status.architecture_defined"
+      ],
       "gate": null,
       "verify": "tools/apc-gate.sh <Name> plan",
-      "sop": "SOP-VF-020",
+      "sop": "SOP-VF-04",
       "command": "POST /api/projects/{id}/sync"
     },
     {
       "id": "design",
       "label": "Design",
-      "inputs": ["architecture.md"],
-      "outputs": ["design-spec.md", "status.design_complete", "approve_gui pending"],
+      "inputs": [
+        "architecture.md"
+      ],
+      "outputs": [
+        "design-spec.md",
+        "status.design_complete",
+        "approve_gui pending"
+      ],
       "gate": null,
       "verify": "tools/apc-gate.sh <Name> design",
-      "sop": "SOP-VF-030",
+      "sop": "SOP-VF-02",
       "command": "POST /api/projects/{id}/sync",
       "opens_gate": "approve_gui"
     },
     {
       "id": "scaffold",
       "label": "Scaffold",
-      "inputs": ["approve_architecture", "APC workspace"],
-      "outputs": ["vst/<Name>/", "plugins/<Name>/"],
+      "inputs": [
+        "approve_architecture",
+        "APC workspace"
+      ],
+      "outputs": [
+        "vst/<Name>/",
+        "plugins/<Name>/"
+      ],
       "gate": "approve_architecture",
       "verify": "test -d vst/<Name>",
-      "sop": "SOP-VF-040",
+      "sop": "SOP-VF-05",
       "command": "POST /api/projects/{id}/scaffold"
     },
     {
       "id": "impl",
       "label": "Implement",
-      "inputs": ["design-spec.md", "approve_gui", "vst/<Name>/Source"],
-      "outputs": ["DSP + editor code", "status.code_complete"],
+      "inputs": [
+        "design-spec.md",
+        "approve_gui",
+        "vst/<Name>/Source"
+      ],
+      "outputs": [
+        "DSP + editor code",
+        "status.code_complete"
+      ],
       "gate": "approve_gui",
       "verify": "tools/apc-gate.sh <Name> impl",
-      "sop": "SOP-VF-050",
+      "sop": "SOP-VF-05",
       "command": "POST /api/projects/{id}/sync"
     },
     {
       "id": "build",
       "label": "Build",
-      "inputs": ["vst/<Name>/"],
-      "outputs": ["*.vst3 artefact"],
+      "inputs": [
+        "vst/<Name>/"
+      ],
+      "outputs": [
+        "*.vst3 artefact"
+      ],
       "gate": null,
       "verify": "tools/build-vst.sh <Name>",
-      "sop": "SOP-VF-060",
+      "sop": "SOP-VF-06",
       "command": "POST /api/projects/{id}/build"
     },
     {
       "id": "test",
       "label": "Test",
-      "inputs": ["*.vst3"],
-      "outputs": ["factory QA report"],
+      "inputs": [
+        "*.vst3"
+      ],
+      "outputs": [
+        "factory QA report"
+      ],
       "gate": null,
       "verify": "run_business.py --profile factory --plugin <Name>",
-      "sop": "SOP-VF-070",
+      "sop": "SOP-VF-06",
       "command": "POST /api/projects/{id}/test"
     },
     {
       "id": "certify",
       "label": "Certify",
-      "inputs": ["build + test + audio runs"],
-      "outputs": ["certification report", "approve_release pending"],
+      "inputs": [
+        "build + test + audio runs"
+      ],
+      "outputs": [
+        "certification report",
+        "approve_release pending"
+      ],
       "gate": "approve_release",
       "verify": "POST /api/projects/{id}/certify → passed",
-      "sop": "SOP-VF-080",
+      "sop": "SOP-VF-06",
       "command": "POST /api/projects/{id}/certify"
     },
     {
       "id": "ship",
       "label": "Ship",
-      "inputs": ["certify passed", "approve_release"],
-      "outputs": ["release/<Name>/*.zip"],
+      "inputs": [
+        "certify passed",
+        "approve_release"
+      ],
+      "outputs": [
+        "release/<Name>/*.zip"
+      ],
       "gate": "approve_release",
       "verify": "tools/package-vst.sh <Name>",
-      "sop": "SOP-VF-090",
+      "sop": "SOP-VF-08",
       "command": "POST /api/projects/{id}/ship"
     }
-  ]
+  ],
+  "sop_index": "docs/disklordz/sops/SOP-VF-00-vst-factory-master.md"
 }
