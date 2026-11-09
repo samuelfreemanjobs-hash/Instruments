@@ -4,6 +4,7 @@ node_modules/
 _deps/
 build/
 build-factory-gui/
+build-factory-gui-*/
 cmake-build-*/
 
 **/*.ntkdigunit
