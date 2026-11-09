@@ -43,5 +43,5 @@ Agent ids: `shared` (anyone), profit agents by folder name (`disklordz/agents/pr
 |------|---------|--------|----------|
 | [shared_learnings.md](shared_learnings.md) | 8 | 8 | 0 |
 | [vst-factory-director_incidents.md](vst-factory-director_incidents.md) | 3 | 3 | 0 |
-| [vst-factory-director_learnings.md](vst-factory-director_learnings.md) | 15 | 12 | 3 |
+| [vst-factory-director_learnings.md](vst-factory-director_learnings.md) | 16 | 13 | 3 |
 <!-- manifest:end -->

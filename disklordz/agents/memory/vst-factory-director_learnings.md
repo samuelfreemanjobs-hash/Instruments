@@ -151,3 +151,13 @@ Factory, plugin (APC/DPCS), design-system and JUCE work. Format and rules: [MEMO
 - **evidence:** PR #131 HeaderBar-longest@1x goldens (INIT, square glyph) vs PR #127 renders (Init, floppy+crown)
 - **confidence:** inspected
 - **status:** active
+
+### L-0016 · JUCE 8 removed Font::getStringWidthFloat
+- **date:** 2026-11-09
+- **area:** juce, juce8, text, api, compat
+- **when:** measuring text width in factory-lib gui or plugin editors
+- **lesson:** Code using juce::Font::getStringWidthFloat compiled on JUCE 7.0.12 but failed the 8.0.15 CI cell; JUCE 8 removed it.
+- **do:** Measure text only through the shared helper fds::gui::stringWidth (version-guarded) instead of calling Font APIs directly; keep the 7.0.12 + 8.0.15 matrix until the repo pin moves.
+- **evidence:** PR #127 68c7d6d4 design-system 8.0.15 failure; fixed in 749c83e0
+- **confidence:** executed
+- **status:** active
