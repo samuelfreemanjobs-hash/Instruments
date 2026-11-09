@@ -104,6 +104,16 @@
       "allowlist": ["docs/"],
       "context_paths": ["DiskLordz-Audio/BUILD.md"],
       "priority": 10
+    },
+    {
+      "id": "cloud-next-factory-ci-line",
+      "owner": "cloud",
+      "kind": "factory_escalation",
+      "title": "next-factory: GH Actions artifact + dynamic VST3 path",
+      "acceptance": "next-factory.md matches BUILD.md and PASTE_TO_FACTORY",
+      "allowlist": ["disklordz/autonomous-coder/factory-escalation/"],
+      "context_paths": ["disklordz/audio-command/data/PASTE_TO_FACTORY.md"],
+      "priority": 11
     }
   ]
 }

@@ -21,7 +21,7 @@ git pull origin main
 powershell -ExecutionPolicy Bypass -File .\DiskLordz-Audio\build-windows.ps1
 ```
 
-VST3 (typical): `DiskLordz-Audio\Build\Windows\ChordEngine_artefacts\Release\VST3\CHORD ENGINE.vst3`
+VST3: path printed by `build-windows.ps1`, or GitHub Actions artifact **`chord-engine-vst3-windows-*`** (workflow **DiskLordz Audio (Windows VST3)**).
 
 ## Factory chat (only if build fails)
 
