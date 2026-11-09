@@ -32,7 +32,7 @@ public:
         // JUCE Label ellipsizes when string width exceeds bounds at minimumHorizontalScale.
         const float minScale = valueLabel.getMinimumHorizontalScale();
         const float avail = (float) valueLabel.getWidth() / juce::jmax (0.01f, minScale);
-        return font.getStringWidthFloat (text) <= avail + 0.5f;
+        return stringWidth (font, text) <= avail + 0.5f;
     }
 
     juce::Rectangle<int> getValueLabelBounds() const { return valueLabel.getBounds(); }
