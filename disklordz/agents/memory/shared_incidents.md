@@ -12,3 +12,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** run 42581473079 job 129040956468: attempts 1/5..5/5 failed; twin verify job passed
 - **confidence:** executed
 - **status:** active
+
+### I-0002 · pluginval actions/cache hit after first download
+- **date:** 2026-11-09
+- **area:** ci,pluginval,cache
+- **when:** after PR #132 added actions/cache for pluginval keyed by OS+version
+- **lesson:** First CI run after a cold cache still hits GitHub CDN (can 504); later runs restore build/tools/pluginval from actions/cache and skip the download.
+- **do:** Keep PLUGINVAL_DOWNLOAD_FAILED exit 3 distinct from validation failure; rely on actions/cache path build/tools/pluginval keyed pluginval-${{ runner.os }}-1.0.4; do not treat a download miss as a plugin bug.
+- **evidence:** PR #132: run 42581812226 cold miss + 504x4 exit 3 (~87s retries); head 9f0fe2c9 MeterTap verify 42596775619 pass in 5m56s with cache present; Build cmake 42596775543 pass
+- **confidence:** executed
+- **status:** active

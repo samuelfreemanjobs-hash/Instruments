@@ -20,7 +20,7 @@ Factory, plugin (APC/DPCS), design-system and JUCE work. Format and rules: [MEMO
 - **do:** Build against `/JUCE_VERSION` from a fresh FetchContent tree; guard JUCE-8 APIs with `#if JUCE_MAJOR_VERSION >= 8` in one helper; test both versions in CI.
 - **evidence:** PR #126 tokens-and-render failure run 42571508857; fixed at 251f4fb8, ctest green on 7.0.12 and 8.0.15
 - **confidence:** executed
-- **status:** active
+- **status:** promoted:vst/README.md
 
 ### L-0003 · Non-ASCII UI strings in JUCE need UTF-8 conversion
 - **date:** 2026-11-09
