@@ -24,8 +24,6 @@
     "design_complete": false
   },
   "open_issues": [
-    "A: over-0 dBFS output (default: no clip, over indicator)",
-    "B: RMS reference for -12 dBFS sine (default: unweighted, -15.01 dBFS)",
     "C: bypass transition click (default: literal instant switch)",
     "D: dl_mix_level vs dl_input_trim_db (default: parameter-spec v1)",
     "E: dl_meter_floor_db fixed, no widget"

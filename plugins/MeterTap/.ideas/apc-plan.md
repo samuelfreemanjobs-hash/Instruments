@@ -57,4 +57,4 @@ OVERRIDE(spec §8.2 L0 guidance "single file Processor; inline DSP"): the MeterT
 | Verify (DPCS 4) | architecture §7 V1–V8 | all exit 0 |
 | Ship | `/apc-ship MeterTap` → `release/MeterTap/` | `tools/apc-gate.sh MeterTap ship` |
 
-Open issues A–E in architecture §8 should be answered (or the defaults accepted) before the Contract phase.
+Open issues A and B are resolved (operator, Plan). C–E in architecture §8 keep their defaults unless changed before the Contract phase.

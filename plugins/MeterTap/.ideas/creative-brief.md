@@ -45,8 +45,8 @@ MeterTap is a **stereo in / stereo out** utility effect that **passes audio unch
 | Condition | Expected meter / output |
 |-----------|-------------------------|
 | All-zero input for ≥1 s | Peak and RMS display ≤ −96 dBFS (floor); audio output silent |
-| Sine at −12 dBFS | RMS within ±0.5 dB of −12; peak within ±0.5 dB of sine peak |
-| Digital full scale square | Peak 0 dBFS; output clipped only if trim pushes over 1.0 — **trim shall not exceed +12 dB** so 0 dBFS in + 0 trim = at most 0 dBFS out |
+| Sine at −12 dBFS peak | RMS within ±0.5 dB of −15.01 dBFS (unweighted RMS = peak − 3.01 dB); peak within ±0.5 dB of −12 |
+| Digital full scale square | Peak 0 dBFS, RMS 0 dBFS. No clipping: with trim > 0 dB output may exceed 0 dBFS (float path); meters report the true value and the bar shows a red **over** marker above 0 dBFS |
 | NaN/Inf at input | Output replaces non-finite samples with 0; meters show floor; **no NaN** at output |
 
 ### Bypass
@@ -84,7 +84,7 @@ python3 vst-testing-ops/run_business.py --profile factory --plugin MeterTap
 
 **Behavioural checks (automatable where noted):**
 
-1. Render 1 kHz sine −12 dBFS 2 s stereo WAV through offline harness or `factory-audio` fixture — RMS within ±0.5 dB [future].
+1. Render 1 kHz sine −12 dBFS peak 2 s stereo WAV through offline harness or `factory-audio` fixture — RMS within ±0.5 dB of −15.01 dBFS [future].
 2. Silence 2 s — peak/RMS ≤ −96 dBFS in analysis JSON [future `analyze_wav`].
 3. pluginval pass on Windows when operator online [tier A].
 
