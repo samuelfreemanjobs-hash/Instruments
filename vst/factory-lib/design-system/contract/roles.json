@@ -1,0 +1,293 @@
+{
+  "contractVersion": "1.0.0",
+  "description": "Role contract for factory plugin UI themes. Components bind to these paths only; every theme must define all of them and pass every baselineContrast pair. Themes may add stricter pairs, never weaker ones.",
+  "floors": {
+    "minTextSize": 10,
+    "hitTargetMin": 24,
+    "spaceGrid": 4
+  },
+  "requiredPaths": [
+    "semantic.bg.chassis",
+    "semantic.bg.panel",
+    "semantic.bg.section",
+    "semantic.bg.well",
+    "semantic.bg.overlay",
+    "semantic.border.divider",
+    "semantic.border.subtle",
+    "semantic.border.overlay",
+    "semantic.text.primary",
+    "semantic.text.secondary",
+    "semantic.text.tertiary",
+    "semantic.text.disabled",
+    "semantic.text.onBrand",
+    "semantic.text.onActive",
+    "semantic.text.onPremium",
+    "semantic.control.body",
+    "semantic.control.bodyTop",
+    "semantic.control.rim",
+    "semantic.control.track",
+    "semantic.control.pointer",
+    "semantic.brand.fill",
+    "semantic.brand.stroke",
+    "semantic.brand.pressed",
+    "semantic.brand.subtle",
+    "semantic.active.default",
+    "semantic.active.hover",
+    "semantic.active.pressed",
+    "semantic.active.subtle",
+    "semantic.focus.ring",
+    "semantic.state.ledOff",
+    "semantic.state.caution",
+    "semantic.state.danger",
+    "semantic.premium.badge",
+    "semantic.meter.track",
+    "semantic.meter.rms",
+    "semantic.meter.peak",
+    "semantic.meter.hot",
+    "semantic.meter.over",
+    "semantic.meter.hold",
+    "semantic.meter.tick",
+    "semantic.meter.tickLabel",
+    "typography.style.productName",
+    "typography.style.sectionTitle",
+    "typography.style.legend",
+    "typography.style.body",
+    "typography.style.value",
+    "typography.style.valueLarge",
+    "typography.style.scale",
+    "typography.style.micro",
+    "typography.family.sans",
+    "typography.family.mono",
+    "typography.minSize",
+    "space.0",
+    "space.1",
+    "space.2",
+    "space.3",
+    "space.4",
+    "space.5",
+    "space.6",
+    "space.8",
+    "space.10",
+    "space.12",
+    "space.16",
+    "radius.none",
+    "radius.xs",
+    "radius.sm",
+    "radius.md",
+    "radius.pill",
+    "stroke.hairline",
+    "stroke.rim",
+    "stroke.arcSm",
+    "stroke.arcMd",
+    "stroke.arcLg",
+    "stroke.focus",
+    "stroke.focusOffset",
+    "elevation.lightSource",
+    "elevation.well",
+    "elevation.flat",
+    "elevation.raised",
+    "elevation.overlay",
+    "motion.hoverMs",
+    "motion.pressMs",
+    "motion.toggleMs",
+    "motion.menuMs",
+    "motion.tooltipDelayMs",
+    "motion.tooltipFadeMs",
+    "motion.meterRefreshHz",
+    "motion.easing",
+    "motion.reducedMotion",
+    "size.hitTargetMin",
+    "size.windowPadding",
+    "size.headerHeight",
+    "size.legendGap",
+    "size.led",
+    "size.tooltipMaxWidth",
+    "size.knob.sm",
+    "size.knob.md",
+    "size.knob.lg",
+    "size.knob.xl",
+    "size.knobArcInset",
+    "size.meterBar.sm",
+    "size.meterBar.md",
+    "size.meterBar.lg",
+    "size.meterBar.xl",
+    "size.button.sm",
+    "size.button.md",
+    "size.button.lg",
+    "size.toggle.md",
+    "size.toggle.lg",
+    "size.slider.trackThickness",
+    "size.slider.thumbLength",
+    "size.slider.thumbThickness",
+    "size.scaleSteps",
+    "interaction.dragPixelsFullRange",
+    "interaction.fineModifierScale",
+    "interaction.wheelStepFraction",
+    "interaction.keyStepFraction",
+    "interaction.keyPageStepFraction",
+    "interaction.doubleClick",
+    "interaction.valueEdit",
+    "meter.scale",
+    "meter.defaultFloorDb",
+    "meter.numericFloorDb",
+    "meter.hotThresholdDb",
+    "meter.overThresholdDb",
+    "meter.ticksDb",
+    "meter.labelledTicksDb",
+    "meter.peakWidthFraction",
+    "meter.holdLineThickness",
+    "meter.overCapHeight"
+  ],
+  "baselineContrast": [
+    {
+      "fg": "semantic.text.primary",
+      "bg": "semantic.bg.panel",
+      "min": 7.0,
+      "use": "legends, values on panels"
+    },
+    {
+      "fg": "semantic.text.primary",
+      "bg": "semantic.bg.section",
+      "min": 7.0,
+      "use": "legends, values in sections"
+    },
+    {
+      "fg": "semantic.text.primary",
+      "bg": "semantic.bg.well",
+      "min": 7.0,
+      "use": "readouts in display wells"
+    },
+    {
+      "fg": "semantic.text.secondary",
+      "bg": "semantic.bg.panel",
+      "min": 4.5,
+      "use": "units, idle values"
+    },
+    {
+      "fg": "semantic.text.secondary",
+      "bg": "semantic.bg.section",
+      "min": 4.5,
+      "use": "units, idle values"
+    },
+    {
+      "fg": "semantic.text.tertiary",
+      "bg": "semantic.bg.panel",
+      "min": 4.5,
+      "use": "scale labels (10 px)"
+    },
+    {
+      "fg": "semantic.text.tertiary",
+      "bg": "semantic.bg.well",
+      "min": 4.5,
+      "use": "meter tick labels"
+    },
+    {
+      "fg": "semantic.text.disabled",
+      "bg": "semantic.bg.panel",
+      "min": 2.5,
+      "use": "disabled text (WCAG-exempt, still legible)"
+    },
+    {
+      "fg": "semantic.text.onBrand",
+      "bg": "semantic.brand.fill",
+      "min": 4.5,
+      "use": "text on purple fills"
+    },
+    {
+      "fg": "semantic.text.onActive",
+      "bg": "semantic.active.default",
+      "min": 4.5,
+      "use": "text on lime buttons"
+    },
+    {
+      "fg": "semantic.text.onPremium",
+      "bg": "semantic.premium.badge",
+      "min": 4.5,
+      "use": "badge text"
+    },
+    {
+      "fg": "semantic.brand.stroke",
+      "bg": "semantic.control.track",
+      "min": 3.0,
+      "use": "knob value arc vs track"
+    },
+    {
+      "fg": "semantic.brand.stroke",
+      "bg": "semantic.bg.panel",
+      "min": 3.0,
+      "use": "purple strokes on panels"
+    },
+    {
+      "fg": "semantic.focus.ring",
+      "bg": "semantic.bg.panel",
+      "min": 3.0,
+      "use": "keyboard focus ring"
+    },
+    {
+      "fg": "semantic.focus.ring",
+      "bg": "semantic.bg.section",
+      "min": 3.0,
+      "use": "keyboard focus ring"
+    },
+    {
+      "fg": "semantic.active.default",
+      "bg": "semantic.state.ledOff",
+      "min": 3.0,
+      "use": "LED on vs off"
+    },
+    {
+      "fg": "semantic.active.default",
+      "bg": "semantic.bg.panel",
+      "min": 3.0,
+      "use": "lime indicators on panels"
+    },
+    {
+      "fg": "semantic.control.pointer",
+      "bg": "semantic.control.body",
+      "min": 4.5,
+      "use": "knob pointer line"
+    },
+    {
+      "fg": "semantic.meter.rms",
+      "bg": "semantic.meter.track",
+      "min": 3.0,
+      "use": "RMS fill vs empty meter"
+    },
+    {
+      "fg": "semantic.meter.peak",
+      "bg": "semantic.meter.rms",
+      "min": 3.0,
+      "use": "peak bar distinguishable over RMS"
+    },
+    {
+      "fg": "semantic.meter.hot",
+      "bg": "semantic.meter.track",
+      "min": 3.0,
+      "use": "hot zone"
+    },
+    {
+      "fg": "semantic.meter.over",
+      "bg": "semantic.meter.track",
+      "min": 3.0,
+      "use": "over cap"
+    },
+    {
+      "fg": "semantic.meter.hold",
+      "bg": "semantic.meter.peak",
+      "min": 1.4,
+      "use": "hold line over peak (also differs by shape)"
+    },
+    {
+      "fg": "semantic.state.caution",
+      "bg": "semantic.bg.panel",
+      "min": 3.0,
+      "use": "bypass / caution LED"
+    },
+    {
+      "fg": "semantic.state.danger",
+      "bg": "semantic.bg.panel",
+      "min": 3.0,
+      "use": "error / over indicators"
+    }
+  ]
+}
