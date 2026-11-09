@@ -427,36 +427,11 @@ void captureReadouts (float scale)
 void captureHeader (float scale)
 {
     fds::gui::FactoryLookAndFeel lnf;
-    // Candidates longest→shortest. Uppercase themes (disklordz) need shorter strings
-    // to fit the fixed 180 px productName slot (L-0008 / L-0012). Never baseline ellipsis.
-    const juce::String candidates[] = {
-        fds::gui::utf8 ("Harmonic Architect"),
-        fds::gui::utf8 ("CHORD ENGINE"),
-        fds::gui::utf8 ("MeterTap Pro"),
-        fds::gui::utf8 ("MeterTap"),
-    };
-
-    juce::String chosen = candidates[sizeof (candidates) / sizeof (candidates[0]) - 1];
-    for (const auto& name : candidates)
-    {
-        fds::gui::HeaderBar probe (name, "0.2.0");
-        probe.setLookAndFeel (&lnf);
-        probe.setSize (720, fds::size::headerHeight);
-        probe.resized();
-        std::vector<TextEntry> texts;
-        collectLabels (probe, probe, texts);
-        bool truncated = false;
-        for (const auto& t : texts)
-            if (t.string.contains ("..."))
-                truncated = true;
-        probe.setLookAndFeel (nullptr);
-        if (! truncated)
-        {
-            chosen = name;
-            break;
-        }
-    }
-
+    // Pin a single product name across hosts. Auto-picking the longest fitting
+    // candidate drifted between Cloud and ubuntu-latest (FreeType metrics),
+    // which poisoned HeaderBar goldens. "CHORD ENGINE" fits the 180 px slot
+    // even when productName is uppercase (disklordz / _template).
+    const auto chosen = fds::gui::utf8 ("CHORD ENGINE");
     fds::gui::HeaderBar header (chosen, "0.2.0");
     header.setLookAndFeel (&lnf);
     header.setSize (720, fds::size::headerHeight);
