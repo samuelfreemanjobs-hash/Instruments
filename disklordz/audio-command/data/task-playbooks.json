@@ -47,8 +47,8 @@
     "owner": "cursor",
     "minutes": 0,
     "steps": [
-      "git pull origin main on C:\\dev\\Instruments.",
-      "Build: GitHub Actions → DiskLordz Audio (Windows VST3) → download chord-engine-vst3 artifact — OR powershell -ExecutionPolicy Bypass -File .\\DiskLordz-Audio\\build-windows.ps1",
+      "git pull origin main on C:\\DiskLordz\\DiskLordz-Audio (private repo samuelfreemanjobs-hash/DiskLordz-Audio).",
+      "Build: powershell -ExecutionPolicy Bypass -File Build\\Windows\\build.ps1 -Release → out\\build\\Products\\ChordEngine\\ChordEngine_artefacts\\Release\\VST3\\CHORD ENGINE.vst3",
       "Install CHORD ENGINE.vst3; rescan REAPER or FL and open the plugin.",
       "When green, mark done in Coach (screenshot or §18.3 note optional)."
     ],

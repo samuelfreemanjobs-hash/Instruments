@@ -16,4 +16,4 @@ MIDI progression libraries, preset expansions, producer toolkits, sound design c
 
 ## Repo scaffold
 
-Canonical implementation tree: `DiskLordz-Audio/` at monorepo root. This `docs/drafts/product-tree/` folder is the Antigravity **WO-PREP-001** doc mirror for liaison review.
+Canonical implementation tree: private repo `samuelfreemanjobs-hash/DiskLordz-Audio`. This `docs/drafts/product-tree/` folder is the Antigravity **WO-PREP-001** doc mirror for liaison review.

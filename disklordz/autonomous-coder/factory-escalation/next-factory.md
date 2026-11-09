@@ -1,6 +1,6 @@
 # Factory escalation — plugin-skeleton (Stage B verify)
 
-_Updated 2026-11-09 · PR **#112** merged to `main` (`c6e3bc2`)_
+_Updated 2026-11-09 · product code moved to the private repo `samuelfreemanjobs-hash/DiskLordz-Audio`_
 
 ## Status
 
@@ -9,19 +9,19 @@ _Updated 2026-11-09 · PR **#112** merged to `main` (`c6e3bc2`)_
 | Blocker | **human-windows** (DAW scan evidence) |
 | Sprint | `plugin-skeleton` |
 | Owner | **Samuel** (build + REAPER/FL) |
-| Code | **`main`** — `DiskLordz-Audio/Products/ChordEngine/` · Windows CI: **DiskLordz Audio (Windows VST3)** |
+| Code | private repo **`samuelfreemanjobs-hash/DiskLordz-Audio`** — `Products/ChordEngine/` · Windows CI: not yet (task B, milestone 003) |
 | Liaison skill | `disklordz-plugin-factory-liaison` |
 
 ## Build (Samuel)
 
-From `C:\dev\Instruments`:
+From `C:\DiskLordz\DiskLordz-Audio`:
 
 ```powershell
 git pull origin main
-powershell -ExecutionPolicy Bypass -File .\DiskLordz-Audio\build-windows.ps1
+powershell -ExecutionPolicy Bypass -File Build\Windows\build.ps1 -Release
 ```
 
-VST3 (typical): `DiskLordz-Audio\Build\Windows\ChordEngine_artefacts\Release\VST3\CHORD ENGINE.vst3`
+VST3: `out\build\Products\ChordEngine\ChordEngine_artefacts\Release\VST3\CHORD ENGINE.vst3`
 
 ## Factory chat (only if build fails)
 
@@ -40,5 +40,5 @@ Paste [`disklordz/audio-command/data/PASTE_TO_FACTORY.md`](../../audio-command/d
 ## Reference
 
 - [CURSOR_FACTORY_LIAISON.md](../../../docs/CURSOR_FACTORY_LIAISON.md)
-- [BUILD.md](../../../DiskLordz-Audio/BUILD.md)
+- `DOCUMENTATION/BUILD.md` in the DiskLordz-Audio repo
 - [CHORD_ENGINE_PRD.md](../../../docs/CHORD_ENGINE_PRD.md)

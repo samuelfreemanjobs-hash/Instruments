@@ -63,7 +63,7 @@
       "wo_id": "WO-CC-001",
       "lane": "dpf",
       "title": "[ClaudeCode][DPF] Windows CMake configure + build log bundle",
-      "criteria": "On Windows after git pull: run .\\DiskLordz-Audio\\build-windows.ps1 (or cmake -B DiskLordz-Audio/Build/Windows -S DiskLordz-Audio -G \"Visual Studio 17 2022\" -A x64); cmake --build ... --target ChordEngine_VST3; save logs to disklordz/antigravity/outbox-artifacts/claude-code/build-log-latest.txt; publish-handoff to claude-code",
+      "criteria": "On Windows in C:\\DiskLordz\\DiskLordz-Audio (private repo samuelfreemanjobs-hash/DiskLordz-Audio) after git pull: cmake --preset vs2022; cmake --build --preset release --target ChordEngine_VST3 -- /m:2; save logs to disklordz/antigravity/outbox-artifacts/claude-code/build-log-latest.txt; publish-handoff to claude-code",
       "context_paths": [
         "docs/DPF_TECHNICAL_ARCHITECTURE.md",
         "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md",
