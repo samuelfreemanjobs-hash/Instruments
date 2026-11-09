@@ -6,8 +6,6 @@
  *   - peakSinceRead: audio CAS-max with block peak; UI exchange(0) defines refresh window.
  *   - rmsLatest: audio store(relaxed); UI load(relaxed).
  *   - One CAS loop per channel per block (not per sample).
- *
- * DPCS Phase 2 contract (declarations). Bodies land in Phase 3.
  */
 #include <array>
 #include <atomic>
@@ -26,16 +24,44 @@ public:
   MeterBridge() noexcept = default;
 
   /** Audio thread: fold blockPeak into peakSinceRead (CAS max); store rms. */
-  void publish(int channel, float blockPeak, float rms) noexcept;
+  void publish(int channel, float blockPeak, float rms) noexcept {
+    if (channel < 0 || channel >= kNumChannels) {
+      return;
+    }
+    auto& a = ch_[static_cast<size_t>(channel)];
+    float cur = a.peakSinceRead.load(std::memory_order_relaxed);
+    while (blockPeak > cur) {
+      if (a.peakSinceRead.compare_exchange_weak(cur, blockPeak, std::memory_order_relaxed,
+                                                 std::memory_order_relaxed)) {
+        break;
+      }
+    }
+    a.rmsLatest.store(rms, std::memory_order_relaxed);
+  }
 
   /** UI thread: read-and-reset peak window (exchange 0). */
-  [[nodiscard]] float consumePeak(int channel) noexcept;
+  [[nodiscard]] float consumePeak(int channel) noexcept {
+    if (channel < 0 || channel >= kNumChannels) {
+      return 0.0f;
+    }
+    return ch_[static_cast<size_t>(channel)].peakSinceRead.exchange(0.0f, std::memory_order_relaxed);
+  }
 
   /** UI thread: latest RMS (relaxed). */
-  [[nodiscard]] float loadRms(int channel) const noexcept;
+  [[nodiscard]] float loadRms(int channel) const noexcept {
+    if (channel < 0 || channel >= kNumChannels) {
+      return 0.0f;
+    }
+    return ch_[static_cast<size_t>(channel)].rmsLatest.load(std::memory_order_relaxed);
+  }
 
   /** Test / prepare helper: zero both channels. */
-  void reset() noexcept;
+  void reset() noexcept {
+    for (auto& a : ch_) {
+      a.peakSinceRead.store(0.0f, std::memory_order_relaxed);
+      a.rmsLatest.store(0.0f, std::memory_order_relaxed);
+    }
+  }
 
 private:
   struct ChannelAtomics {
