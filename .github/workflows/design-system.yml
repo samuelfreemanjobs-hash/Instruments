@@ -46,9 +46,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # workflow_dispatch --ref <branch>: check out that branch tip so we can push.
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.sha }}
+          # Always the branch tip (not the PR merge SHA) so bot golden commits push cleanly.
+          ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Resolve JUCE tag
         id: juce
