@@ -282,6 +282,13 @@ I'm **Autonomous Coding Agent** — I drain the 24/7 coding queue on allowlisted
 - **Agent docs:** [`profit/autonomous-coding-agent/agent.md`](../profit/autonomous-coding-agent/agent.md)
 - **Workflow file:** [`agents/autonomous-coding-agent/automation.yaml`](agents/autonomous-coding-agent/automation.yaml)
 
+## vst-factory-director
+
+I'm **VST Factory Director** — assigned to profit lever: One foreman coordinates the factory dev team without bloating the fleet or mixing CHORD liaison lanes.
+
+- **Agent docs:** [`profit/vst-factory-director/agent.md`](../profit/vst-factory-director/agent.md)
+- **Workflow file:** [`agents/vst-factory-director/automation.yaml`](agents/vst-factory-director/automation.yaml)
+
 ## hardware-preset-designer
 
 I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches from prompts and samples, with safety clamps and librarian-ready export staging.

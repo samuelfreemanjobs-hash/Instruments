@@ -38,6 +38,7 @@ Repo-wide companion to [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) and [PM ADD
 | `audio-business-copilot` | Audio Business Copilot | `ci_scheduled` | `.github/workflows/audio-plugin-fleet.yml` | `.github/skills/disklordz-audio-business-copilot/SKILL.md` |
 | `plugin-factory-liaison` | Plugin Factory Liaison | `ci_scheduled` | `.github/workflows/audio-plugin-fleet.yml` | `.github/skills/disklordz-plugin-factory-liaison/SKILL.md` |
 | `autonomous-coding-agent` | Autonomous Coding Agent (24/7) | `ci_scheduled` | `.github/workflows/autonomous-coding-agent.yml` | `.github/skills/disklordz-autonomous-coding-agent/SKILL.md` |
+| `vst-factory-director` | VST Factory Director | `manual` | `TBD` | `.github/skills/disklordz-vst-factory-director/SKILL.md` |
 | `hardware-preset-designer` | Hardware Preset Designer | `ci_on_pr` | `.github/workflows/synth-forge.yml` | `.github/skills/disklordz-hardware-preset-designer/SKILL.md` |
 
 ### Activation legend

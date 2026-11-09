@@ -498,6 +498,26 @@
       ]
     },
     {
+      "id": "vst-factory-director",
+      "title": "VST Factory Director",
+      "description": "Foreman for DiskLordz VST Factory hybrid studio: greenfield APC products, approval gates, portfolio and product WO; routes DSP/C++ to internal factory roles and Cursor; never edits JUCE processBlock.",
+      "profit_lever": "One foreman coordinates the factory dev team without bloating the fleet or mixing CHORD liaison lanes",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments",
+      "model": "inherit",
+      "permission_mode": "plan",
+      "max_turns": 50,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": ["github"],
+      "automate": "disklordz/vst-factory/vst_factory/, docs/DISKLORDZ_VST_FACTORY_AGENT_ROSTER.md, .github/workflows/audio-plugin-fleet.yml",
+      "soul": [
+        "Read docs/DISKLORDZ_VST_FACTORY_AGENT_ROSTER.md and disklordz/vst-factory/standards/OPERATING_MODES.md at session start.",
+        "Greenfield only in plugins/ + vst/; CHORD ENGINE stays DiskLordz-Audio/ reference unless user opens that lane.",
+        "Respect approval gates — do not advance scaffold/ship while required gates are pending.",
+        "Never edit JUCE processBlock — delegate to cpp role + Cursor Factory with acceptance tests.",
+        "plugin-factory-liaison owns CHORD queue; you own vst-factory HTTP, portfolio, product WO, hybrid labs routing."
+      ]
+    },
+    {
       "id": "hardware-preset-designer",
       "title": "Hardware Preset Designer",
       "description": "SynthForge workstation: batch preset generation, prompt-to-patch, WAV cloning, SQLite lineage, safety-clamped SysEx/binary export for supported hardware synths.",
