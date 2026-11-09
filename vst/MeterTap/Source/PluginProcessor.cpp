@@ -107,7 +107,7 @@ juce::AudioProcessorEditor* MeterTapAudioProcessor::createEditor() {
   return new juce::GenericAudioProcessorEditor(*this);
 }
 
-juce::AudioProcessorParameter* MeterTapAudioProcessor::getBypassParameter() {
+juce::AudioProcessorParameter* MeterTapAudioProcessor::getBypassParameter() const {
   return apvts_.getParameter(kParamBypass);
 }
 

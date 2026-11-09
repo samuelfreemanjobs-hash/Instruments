@@ -48,3 +48,21 @@ target_link_libraries(MeterTap
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags)
+
+# Phase 4 — processor contract tests (JUCE console; links shared MeterTap code)
+enable_testing()
+juce_add_console_app(MeterTapProcessorTests PRODUCT_NAME "MeterTapProcessorTests")
+target_sources(MeterTapProcessorTests PRIVATE tests/ProcessorTests.cpp)
+target_include_directories(MeterTapProcessorTests PRIVATE
+    ${SHARED_DSP_DIR}
+    ${FACTORY_LIB_DIR}/analysis
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source)
+target_compile_definitions(MeterTapProcessorTests
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0)
+target_link_libraries(MeterTapProcessorTests
+    PRIVATE
+        MeterTap
+        juce::juce_audio_utils)
+add_test(NAME MeterTapProcessorContracts COMMAND MeterTapProcessorTests)

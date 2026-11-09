@@ -46,7 +46,7 @@ public:
   static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
   /** Host bypass shares the plugin parameter (architecture.md §2). */
-  juce::AudioProcessorParameter* getBypassParameter() override;
+  juce::AudioProcessorParameter* getBypassParameter() const override;
 
   /** Lock-free bridge for the editor timer (UI pull). */
   dl::analysis::MeterBridge& meterBridge() noexcept { return bridge_; }
