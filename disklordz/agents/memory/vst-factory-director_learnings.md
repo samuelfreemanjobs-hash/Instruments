@@ -181,3 +181,13 @@ Factory, plugin (APC/DPCS), design-system and JUCE work. Format and rules: [MEMO
 - **evidence:** PR #131: CI AA fail on Cloud-authored goldens; orchestrator rejected tol 24/0.08; LED-on recolour fails at 0.2% but would pass at 8%
 - **confidence:** executed
 - **status:** active
+
+### L-0019 · Cloud ghs_ cannot workflow_dispatch; use sentinel file for CI rebaseline
+- **date:** 2026-11-09
+- **area:** ci, github-actions, visual-regression, permissions
+- **when:** triggering design-system rebaseline from a Cloud agent
+- **lesson:** gh workflow run returns HTTP 403 Resource not accessible by integration for ghs_ tokens. Also GITHUB_TOKEN bot pushes do not re-trigger workflows (and may land as action_required).
+- **do:** Commit tests/visual/.rebaseline-on-ci to request CI --update; after bot golden commit, push an agent empty/follow-up commit to run the verifying strict compare.
+- **evidence:** PR #131: dispatch 403; sentinel run 42649831533 authored c459ade7; verifying empty commit run 42653393326 success
+- **confidence:** executed
+- **status:** active
