@@ -66,7 +66,7 @@ _Generated {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")} · task `
 
 DiskLordz Audio — Factory implementer only.
 
-**Implement root:** `DiskLordz-Audio/` (see `DiskLordz-Audio/MILESTONE_001_FACTORY.md`)
+**Implement root:** private repo `samuelfreemanjobs-hash/DiskLordz-Audio` (`C:\\DiskLordz\\DiskLordz-Audio`) — see its `DOCUMENTATION/milestones/003-roadmap-milestone-001.md`
 
 **Stage:** {letter} — {blurb}  
 **Slice:** {pb.get("headline", task_id)}  
@@ -94,21 +94,21 @@ _Generated {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")} · task `
 
 ---
 
-Stage B **JUCE shell is landed** under `DiskLordz-Audio/Products/ChordEngine/`.
+Stage B **JUCE shell is landed** in the private repo `samuelfreemanjobs-hash/DiskLordz-Audio` under `Products/ChordEngine/`.
 
 **Stage:** {letter} — {blurb}  
 **Slice:** {pb.get("headline", task_id)}
 
-### Build (from `C:\\dev\\Instruments`)
+### Build (from `C:\\DiskLordz\\DiskLordz-Audio`)
 
 ```powershell
-git pull origin {FACTORY_GIT_REF}
-powershell -ExecutionPolicy Bypass -File .\\DiskLordz-Audio\\build-windows.ps1
+git pull origin main
+powershell -ExecutionPolicy Bypass -File Build\\Windows\\build.ps1 -Release
 ```
 
-VST3: printed at end of `build-windows.ps1` (search under `DiskLordz-Audio\\Build\\Windows\\` for `CHORD ENGINE.vst3`)
+VST3: `out\\build\\Products\\ChordEngine\\ChordEngine_artefacts\\Release\\VST3\\CHORD ENGINE.vst3`
 
-**Or CI:** GitHub → Actions → **DiskLordz Audio (Windows VST3)** → download artifact `chord-engine-vst3-windows-*` (no local compile).
+**CI:** not yet — Windows CI is task B in that repo's milestone 003.
 
 **Done when:** {pb.get("done_when", "DAW scan + open")}
 

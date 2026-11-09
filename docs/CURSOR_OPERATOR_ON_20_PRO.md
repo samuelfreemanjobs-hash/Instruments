@@ -19,11 +19,11 @@
 
 | Tier | Where | Use for |
 |------|--------|---------|
-| **A — GitHub** | `windows-latest` | `DiskLordz-Audio` VST3 artifact; phone watches Actions |
+| **A — GitHub** | `windows-latest` | VST3 artifacts; phone watches Actions (DiskLordz-Audio repo CI: not yet) |
 | **B — My Machine** | `agent worker start` on `C:\dev\Instruments` | MSVC iterate, secrets on box |
 | **C — Cloud Linux** | This agent / PR branch | Docs, JSON, workflows — **not** DAW proof |
 
-Workflow: [`.github/workflows/disklordz-audio-windows.yml`](../.github/workflows/disklordz-audio-windows.yml) · local: [`DiskLordz-Audio/build-windows.ps1`](../DiskLordz-Audio/build-windows.ps1).
+DiskLordz Audio product code lives in the private repo `samuelfreemanjobs-hash/DiskLordz-Audio` (`C:\DiskLordz\DiskLordz-Audio`); local build: `Build\Windows\build.ps1 -Release` there.
 
 ## Does the PC stay on?
 
@@ -74,4 +74,4 @@ Defer: tokens, product-tree drafts, new operator apps until after DAW proof.
 
 - [AUDIO_PLUGIN_AGENT_LANE.md](AUDIO_PLUGIN_AGENT_LANE.md)
 - [CURSOR_FACTORY_LIAISON.md](CURSOR_FACTORY_LIAISON.md)
-- [DiskLordz-Audio/BUILD.md](../DiskLordz-Audio/BUILD.md)
+- [DiskLordz-Audio/README.md](../DiskLordz-Audio/README.md) — pointer to the private product repo

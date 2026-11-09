@@ -1,12 +1,11 @@
-# DiskLordz Audio — product tree
+# DiskLordz Audio — moved
 
-Private **commercial plugin line** (CHORD ENGINE and follow-on SKUs). Lives in the **Instruments** monorepo until a dedicated GitHub repo is split out.
+The DiskLordz Audio product code (DPF framework, CHORD ENGINE, ARP MACHINE, DLZ Gain) lives in its own private repository:
 
-| Doc | Purpose |
-|-----|---------|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Build, layout, Milestone 001 |
-| [MILESTONE_001_FACTORY.md](MILESTONE_001_FACTORY.md) | **Cursor Factory** — implement here |
-| [../docs/DPF_TECHNICAL_ARCHITECTURE.md](../docs/DPF_TECHNICAL_ARCHITECTURE.md) | DPF layers |
-| [../docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md](../docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md) | §18 engineering rules |
+**https://github.com/samuelfreemanjobs-hash/DiskLordz-Audio** (Windows checkout: `C:\DiskLordz\DiskLordz-Audio`)
 
-**Remote:** `https://github.com/samuelfreemanjobs-hash/Instruments` (subtree `DiskLordz-Audio/`)
+Do not add product code here. Build, tests and milestones are documented in that repo:
+
+- `DOCUMENTATION/BUILD.md` — `powershell -ExecutionPolicy Bypass -File Build\Windows\build.ps1 -Release`
+- `DOCUMENTATION/DPF_TECHNICAL_ARCHITECTURE.md` — layout
+- `DOCUMENTATION/milestones/` — current Cursor task (`003-roadmap-milestone-001.md`)

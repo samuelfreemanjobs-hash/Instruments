@@ -92,7 +92,7 @@
       "title": "Coach playbook: plugin-skeleton via GH Actions or build-windows.ps1",
       "acceptance": "task-playbooks plugin-skeleton steps cite main + Actions workflow name",
       "allowlist": ["disklordz/audio-command/data/"],
-      "context_paths": ["DiskLordz-Audio/BUILD.md"],
+      "context_paths": ["DiskLordz-Audio/README.md"],
       "priority": 9
     }
   ]

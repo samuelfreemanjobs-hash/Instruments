@@ -8,4 +8,4 @@ README stubs matching [DPF_TECHNICAL_ARCHITECTURE.md](../../DPF_TECHNICAL_ARCHIT
 | [DPF-MIDI/README.md](DPF-MIDI/README.md) | Theory + MIDI engines |
 | [Products/ChordEngine/README.md](Products/ChordEngine/README.md) | Milestone 001 flagship |
 
-See [PRODUCTS.md](PRODUCTS.md). Live code tree: `/DiskLordz-Audio/`.
+See [PRODUCTS.md](PRODUCTS.md). Live code tree: private repo `samuelfreemanjobs-hash/DiskLordz-Audio`.
