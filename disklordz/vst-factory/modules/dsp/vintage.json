@@ -1,0 +1,8 @@
+{
+  "category": "dsp/vintage",
+  "blocks": [
+    {"id": "vintage.bitcrush", "name": "Bit depth reduction", "cpp_stub": "vst/factory-lib/vintage/Bitcrush.h"},
+    {"id": "vintage.tape", "name": "Tape coloration", "cpp_stub": "vst/factory-lib/vintage/TapeColor.h"},
+    {"id": "vintage.wow", "name": "Pitch wobble", "cpp_stub": "vst/factory-lib/vintage/WowFlutter.h"}
+  ]
+}

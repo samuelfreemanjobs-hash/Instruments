@@ -1,30 +1,21 @@
 {
   "schema_version": "certification/v1",
-  "description": "Hard gates for POST /api/projects/{id}/certify — fail closed.",
+  "weights": {
+    "build_reliability": 0.15,
+    "audio_correctness": 0.2,
+    "stability": 0.2,
+    "cpu_performance": 0.1,
+    "midi_functionality": 0.1,
+    "parameter_state": 0.1,
+    "gui_functionality": 0.1,
+    "documentation": 0.05
+  },
   "hard_gates": [
-    {
-      "id": "build_ok",
-      "field": "build_ok",
-      "required": true,
-      "description": "Latest build run succeeded"
-    },
-    {
-      "id": "artefact_ok",
-      "field": "artefact_ok",
-      "required": true,
-      "description": "VST3 bundle present under vst/<Name>/build"
-    },
-    {
-      "id": "pluginval_ok",
-      "field": "pluginval_ok",
-      "required": true,
-      "description": "Latest factory QA / pluginval-style test run succeeded"
-    },
-    {
-      "id": "audio_ok",
-      "field": "audio_ok",
-      "required": true,
-      "description": "Latest factory-audio check succeeded (skip without fixture still counts as ok)"
-    }
-  ]
+    "build_succeeds",
+    "vst3_artefact_exists",
+    "pluginval_pass",
+    "no_crash_on_load",
+    "no_nan_audio_output"
+  ],
+  "minimum_score_for_release_candidate": 0.7
 }

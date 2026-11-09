@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GUI studio layout v1",
+  "type": "object",
+  "properties": {
+    "theme_id": { "type": "string" },
+    "size": { "type": "object", "properties": { "w": { "type": "integer" }, "h": { "type": "integer" } } },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "param_id", "x", "y"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "enum": ["rotary", "fader", "button", "pad", "keyboard", "meter", "waveform"] },
+          "param_id": { "type": "string" },
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "w": { "type": "number" },
+          "h": { "type": "number" }
+        }
+      }
+    }
+  },
+  "required": ["theme_id", "controls"]
+}

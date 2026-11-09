@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
+from vst_factory.memory import format_memory_for_prompt
 from vst_factory.modules import render_template
 
 
@@ -45,7 +46,9 @@ def load_agent_prompt(role: str) -> str:
 
 
 def export_cursor_impl_prompt(spec: dict[str, Any]) -> str:
-    return render_template(
+    slug = spec.get("memory_refs", {}).get("product_slug") or spec["plugin_name"]
+    company_mem, product_mem = format_memory_for_prompt(slug)
+    body = render_template(
         "prompts/cursor-impl.md",
         plugin_name=spec["plugin_name"],
         plugin_class=spec["plugin_class"],
@@ -54,6 +57,7 @@ def export_cursor_impl_prompt(spec: dict[str, Any]) -> str:
         dsp_modules=", ".join(spec.get("dsp_modules", [])),
         gui_modules=", ".join(spec.get("gui_modules", [])),
     )
+    return f"{company_mem}\n\n{product_mem}\n\n---\n\n{body}"
 
 
 def default_backend() -> ModelBackend:

@@ -21,6 +21,7 @@ GUI: {{gui_modules}}
 
 ## Read first
 
+- `docs/DPCS.md`
 - `docs/dsp-architecture-specification.md`
 - `plugins/{{plugin_name}}/status.json`
 - `vst/{{plugin_name}}/README.md`

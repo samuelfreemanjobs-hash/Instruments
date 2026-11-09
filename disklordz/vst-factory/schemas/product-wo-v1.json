@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Product work order v1",
+  "type": "object",
+  "required": ["product_name", "prompt", "components"],
+  "properties": {
+    "product_name": { "type": "string" },
+    "prompt": { "type": "string" },
+    "product_category": { "type": "string" },
+    "autonomy_mode": { "enum": ["beginner", "collaborative", "engineering"] },
+    "components": {
+      "type": "object",
+      "properties": {
+        "dsp": { "type": "object", "properties": { "percent": { "type": "integer" }, "status": { "type": "string" } } },
+        "midi": { "type": "object", "properties": { "percent": { "type": "integer" }, "status": { "type": "string" } } },
+        "gui": { "type": "object", "properties": { "percent": { "type": "integer" }, "status": { "type": "string" } } },
+        "presets": { "type": "object", "properties": { "percent": { "type": "integer" }, "status": { "type": "string" } } },
+        "tests": { "type": "object", "properties": { "percent": { "type": "integer" }, "status": { "type": "string" } } },
+        "docs": { "type": "object", "properties": { "percent": { "type": "integer" }, "status": { "type": "string" } } }
+      }
+    },
+    "factory_project_id": { "type": "integer" }
+  }
+}

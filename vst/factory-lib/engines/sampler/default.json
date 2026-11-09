@@ -1,0 +1,6 @@
+{
+  "id": "engine/sampler/default",
+  "keygroups": 1,
+  "max_layers": 8,
+  "modules": ["sampler.one-shot", "sampler.keygroup", "sampler.slice"]
+}

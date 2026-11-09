@@ -1,0 +1,16 @@
+{
+  "id": "company",
+  "version": "1",
+  "rules": [
+    "APVTS parameter ids use prefix dl_",
+    "Reuse vst/factory-lib blocks before inventing DSP",
+    "No allocation on the audio thread",
+    "Greenfield plugins live under plugins/ + vst/; CHORD ENGINE stays in DiskLordz-Audio/",
+    "Human approval before release_ready and system VST3 install paths"
+  ],
+  "branding": {
+    "manufacturer": "DiskLordz Audio",
+    "design_system": "modules/design-system/disklordz-v1.json"
+  },
+  "default_autonomy_mode": "collaborative"
+}

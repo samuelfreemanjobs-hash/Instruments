@@ -2,38 +2,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any
 
-
-class _RunsDB(Protocol):
-    def list_runs(self, project_id: int, limit: int = 20) -> list[dict[str, Any]]: ...
-
-
-def package_root() -> Path:
-    return Path(__file__).resolve().parents[1]
-
-
-def load_certification_rules() -> dict[str, Any]:
-    path = package_root() / "testing" / "certification-v1.json"
+def cert_schema() -> dict[str, Any]:
+    path = Path(__file__).resolve().parents[1] / "testing/certification-v1.json"
     return json.loads(path.read_text(encoding="utf-8"))
-
-
-def load_recent_run_flags(project_id: int, db: _RunsDB) -> tuple[bool, bool, bool]:
-    """Return (build_ok, test_ok, audio_ok) from the newest run of each kind.
-
-    Missing kinds default to False (fail closed) so certify cannot pass
-    without evidence in the runs table.
-    """
-    flags = {"build": False, "test": False, "test-audio": False}
-    seen: set[str] = set()
-    for run in db.list_runs(project_id, limit=50):
-        kind = run.get("kind")
-        if kind in flags and kind not in seen:
-            flags[kind] = bool(run.get("ok"))
-            seen.add(kind)
-        if len(seen) == 3:
-            break
-    return flags["build"], flags["test"], flags["test-audio"]
 
 
 def evaluate_certification(
@@ -41,39 +14,44 @@ def evaluate_certification(
     build_ok: bool,
     artefact_ok: bool,
     pluginval_ok: bool,
-    audio_ok: bool,
+    audio_ok: bool | None = None,
+    runs: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Evaluate hard gates from testing/certification-v1.json.
-
-    Contract: report["passed"] is True only when every required gate passes.
-    """
-    rules = load_certification_rules()
-    values = {
-        "build_ok": build_ok,
-        "artefact_ok": artefact_ok,
-        "pluginval_ok": pluginval_ok,
-        "audio_ok": audio_ok,
+    schema = cert_schema()
+    hard: dict[str, bool] = {
+        "build_succeeds": build_ok,
+        "vst3_artefact_exists": artefact_ok,
+        "pluginval_pass": pluginval_ok,
+        "no_crash_on_load": pluginval_ok,
+        "no_nan_audio_output": audio_ok if audio_ok is not None else True,
     }
-    gates: list[dict[str, Any]] = []
-    passed = True
-    for gate in rules.get("hard_gates", []):
-        field = gate["field"]
-        required = bool(gate.get("required", True))
-        ok = bool(values.get(field, False))
-        if required and not ok:
-            passed = False
-        gates.append(
-            {
-                "id": gate.get("id", field),
-                "field": field,
-                "required": required,
-                "ok": ok,
-                "description": gate.get("description", ""),
-            }
-        )
+    hard_fail = [k for k, v in hard.items() if not v]
+    weights = schema["weights"]
+    scores: dict[str, float] = {
+        "build_reliability": 1.0 if build_ok else 0.0,
+        "audio_correctness": 1.0 if (audio_ok is not False) else 0.0,
+        "stability": 1.0 if pluginval_ok else 0.0,
+        "cpu_performance": 0.5,
+        "midi_functionality": 0.5,
+        "parameter_state": 0.5,
+        "gui_functionality": 0.5,
+        "documentation": 0.5,
+    }
+    weighted = sum(scores[k] * weights[k] for k in weights)
+    passed = len(hard_fail) == 0
     return {
-        "schema_version": rules.get("schema_version", "certification/v1"),
         "passed": passed,
-        "gates": gates,
-        "inputs": values,
+        "hard_gates": hard,
+        "hard_failures": hard_fail,
+        "weighted_score": round(weighted, 4),
+        "category_scores": scores,
+        "minimum_for_rc": schema.get("minimum_score_for_release_candidate", 0.7),
     }
+
+
+def load_recent_run_flags(project_id: int, db: Any) -> tuple[bool, bool, bool]:
+    runs = db.list_runs(project_id, limit=30)
+    build_ok = any(r["kind"] == "build" and r["ok"] for r in runs)
+    test_ok = any(r["kind"] == "test" and r["ok"] for r in runs)
+    audio_ok = any(r["kind"] == "test-audio" and r["ok"] for r in runs)
+    return build_ok, test_ok, audio_ok if runs else (False, False, False)

@@ -1,42 +1,31 @@
 from __future__ import annotations
 
-from typing import Any, Protocol
+import json
+from pathlib import Path
+from typing import Any
 
 
-class _ResearchDB(Protocol):
-    def add_approval(
-        self,
-        project_id: int,
-        *,
-        gate: str,
-        status: str = "pending",
-        detail: str | None = None,
-    ) -> int: ...
+def package_root() -> Path:
+    return Path(__file__).resolve().parents[1]
 
 
-def start_research(project_id: int, goal: str, db: _ResearchDB) -> dict[str, Any]:
-    """Open a DSP research ticket and queue approve_dsp_promotion.
+def list_algorithms() -> list[dict[str, Any]]:
+    alg_dir = package_root() / "knowledge/dsp/algorithms"
+    if not alg_dir.is_dir():
+        return []
+    out: list[dict[str, Any]] = []
+    for f in sorted(alg_dir.glob("*.json")):
+        out.append(json.loads(f.read_text(encoding="utf-8")))
+    return out
 
-    Phase 1: no LLM — records the goal and returns a stub algorithm id.
-    """
-    algorithm_id = "research-" + "".join(ch if ch.isalnum() else "-" for ch in goal.lower())[:40].strip("-")
-    result = {
-        "schema_version": "dsp-research/v1",
-        "project_id": project_id,
-        "goal": goal,
-        "status": "pending_promotion",
-        "candidates": [
-            {
-                "algorithm_id": algorithm_id or "research-unnamed",
-                "notes": "Stub candidate — promote after human review.",
-            }
-        ],
-        "gate": "approve_dsp_promotion",
-    }
+
+def start_research(project_id: int, goal: str, db: Any) -> dict[str, Any]:
+    candidates = list_algorithms()
+    matched = [c for c in candidates if goal.lower() in json.dumps(c).lower()] or candidates[:1]
     db.add_approval(
         project_id,
         gate="approve_dsp_promotion",
         status="pending",
-        detail=goal[:2000],
+        detail=json.dumps({"goal": goal, "candidates": matched}),
     )
-    return result
+    return {"goal": goal, "candidates": matched, "approval": "approve_dsp_promotion"}

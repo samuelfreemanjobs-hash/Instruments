@@ -1,0 +1,7 @@
+{
+  "id": "dsp/ladder-lpf/v0",
+  "status": "candidate",
+  "topologies": ["four-pole ladder", "simplified TPT"],
+  "tests": ["vst/factory-lib/tests/PLAN.md#test_biquad_step"],
+  "note": "Promote to knowledge/verified/dsp/ after human approve_dsp_promotion"
+}

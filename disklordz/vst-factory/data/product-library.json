@@ -2,16 +2,39 @@
   "schema_version": "product-library/v1",
   "products": [
     {
-      "sku": "MeterTap",
-      "plugin_name": "MeterTap",
-      "plugin_class": "effect",
-      "product_category": "fx.metering",
+      "id": "chord-engine",
+      "name": "CHORD ENGINE",
+      "category": "midi.chord_generator",
+      "track": "disklordz_audio",
+      "status": "in_development",
+      "progress_percent": 25,
+      "root": "DiskLordz-Audio/Products/ChordEngine"
+    },
+    {
+      "id": "meter-tap",
+      "name": "MeterTap",
+      "category": "fx.metering",
       "track": "apc_greenfield",
       "status": "dogfood",
-      "prompt": "DiskLordz factory dogfood: stereo peak and RMS meter effect with dl_mix_level gain and gui.meter; uses factory-lib analysis.peak_rms only.",
-      "dsp_modules": ["analysis.peak_rms"],
-      "gui_modules": ["gui.meter"],
-      "notes": "Internal factory proof SKU before market-research SKU #1."
+      "progress_percent": 10,
+      "factory_project_name": "MeterTap",
+      "notes": "Internal factory metering plugin — scaffold via VST Factory with product_category fx.metering"
+    },
+    {
+      "id": "memphis-bass-lab",
+      "name": "Memphis Bass Lab",
+      "category": "synth.bass808",
+      "track": "apc_greenfield",
+      "status": "planned",
+      "progress_percent": 0
+    },
+    {
+      "id": "phonk-drum-engine",
+      "name": "Phonk Drum Engine",
+      "category": "synth.drum",
+      "track": "apc_greenfield",
+      "status": "planned",
+      "progress_percent": 0
     }
   ]
 }

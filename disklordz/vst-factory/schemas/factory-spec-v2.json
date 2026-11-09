@@ -2,53 +2,50 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://disklordz.audio/schemas/factory-spec-v2.json",
   "title": "DiskLordz VST Factory project spec v2",
+  "allOf": [{ "$ref": "factory-spec-v1.json" }],
   "type": "object",
-  "required": ["schema_version", "plugin_name", "plugin_class", "prompt", "target_format"],
   "properties": {
     "schema_version": { "const": "factory-spec/v2" },
-    "plugin_name": {
-      "type": "string",
-      "pattern": "^[A-Za-z][A-Za-z0-9]*$"
-    },
-    "plugin_class": {
-      "type": "string",
-      "enum": ["synth", "effect", "midi", "sampler"]
-    },
     "product_category": {
       "type": "string",
-      "description": "Taxonomy id e.g. fx.metering"
+      "description": "Taxonomy id e.g. synth.wavetable, fx.mastering, midi.chord_generator"
     },
-    "target_format": { "type": "string", "enum": ["vst3"] },
-    "target_os": { "type": "string", "enum": ["windows_x64", "linux_ci", "macos_universal"] },
-    "prompt": { "type": "string", "minLength": 1, "maxLength": 16000 },
-    "autonomy_mode": {
-      "type": "string",
-      "enum": ["collaborative", "autonomous"]
-    },
-    "buses": { "type": "object" },
-    "parameters": { "type": "array" },
-    "dsp_modules": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "gui_modules": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "acceptance_tests": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "track": {
-      "type": "string",
-      "enum": ["apc_greenfield", "disklordz_audio_reference"]
+    "formats": {
+      "type": "object",
+      "properties": {
+        "vst3": { "type": "boolean", "default": true },
+        "standalone": { "type": "boolean", "default": true },
+        "au": { "type": "boolean", "default": false },
+        "clap": { "type": "boolean", "default": false },
+        "aax": { "type": "boolean", "default": false },
+        "lv2": { "type": "boolean", "default": false }
+      }
     },
     "commercial": {
       "type": "object",
       "properties": {
-        "release_ready": { "type": "boolean" }
+        "release_ready": { "type": "boolean", "default": false },
+        "license_checklist_passed": { "type": "boolean", "default": false },
+        "build_kind": { "type": "string", "enum": ["development", "release"], "default": "development" }
       }
     },
-    "module_refs": { "type": "object" }
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string",
+          "enum": ["verified", "untested", "known_fail"]
+        }
+      }
+    },
+    "memory_refs": {
+      "type": "object",
+      "properties": {
+        "company": { "type": "string", "default": "company" },
+        "product_slug": { "type": "string" },
+        "technical_tags": { "type": "array", "items": { "type": "string" } }
+      }
+    }
   }
 }

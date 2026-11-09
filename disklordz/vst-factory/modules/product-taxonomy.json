@@ -2,41 +2,144 @@
   "schema_version": "product-taxonomy/v1",
   "categories": [
     {
-      "id": "fx.metering",
-      "label": "Metering / analysis FX",
+      "id": "synth.analog",
+      "label": "Analog synthesizer",
+      "plugin_class": "synth",
+      "dsp_modules": ["osc.saw", "osc.sine", "filter.ladder", "env.adsr", "lfo.sine"],
+      "gui_modules": ["gui.rotary-knob", "gui.keyboard", "gui.adsr-panel"],
+      "acceptance_tests": ["voice allocation stable", "MIDI note on/off", "no alloc in processBlock"]
+    },
+    {
+      "id": "synth.fm",
+      "label": "FM synthesizer",
+      "plugin_class": "synth",
+      "dsp_modules": ["osc.sine", "env.adsr", "lfo.sine"],
+      "gui_modules": ["gui.rotary-knob", "gui.mod-matrix"],
+      "acceptance_tests": ["operator routing documented"]
+    },
+    {
+      "id": "synth.wavetable",
+      "label": "Wavetable synthesizer",
+      "plugin_class": "synth",
+      "dsp_modules": ["osc.wavetable", "filter.ladder", "env.adsr"],
+      "gui_modules": ["gui.waveform", "gui.keyboard"],
+      "acceptance_tests": ["wavetable scan click-free"]
+    },
+    {
+      "id": "synth.bass808",
+      "label": "808 / bass synthesizer",
+      "plugin_class": "synth",
+      "dsp_modules": ["osc.sine", "env.adsr", "fx.saturation"],
+      "gui_modules": ["gui.rotary-knob", "gui.keyboard"],
+      "acceptance_tests": ["sub harmonic decay natural"]
+    },
+    {
+      "id": "synth.drum",
+      "label": "Drum machine",
+      "plugin_class": "synth",
+      "dsp_modules": ["osc.sine", "osc.noise", "env.adsr"],
+      "gui_modules": ["gui.pad-grid", "gui.meter"],
+      "acceptance_tests": ["16-pad trigger", "pattern length"]
+    },
+    {
+      "id": "fx.eq",
+      "label": "EQ",
       "plugin_class": "effect",
-      "suggested_dsp_modules": ["analysis.peak_rms"],
-      "suggested_gui_modules": ["gui.meter"],
-      "dogfood": true,
-      "example_sku": "MeterTap"
+      "dsp_modules": ["filter.biquad"],
+      "gui_modules": ["gui.rotary-knob", "gui.meter"],
+      "acceptance_tests": ["frequency response documented"]
     },
     {
       "id": "fx.dynamics",
-      "label": "Dynamics",
+      "label": "Compressor / dynamics",
       "plugin_class": "effect",
-      "suggested_dsp_modules": ["dyn.compressor"],
-      "suggested_gui_modules": ["gui.meter", "gui.rotary-knob"]
+      "dsp_modules": ["dyn.compressor", "env.follower"],
+      "gui_modules": ["gui.meter", "gui.rotary-knob"],
+      "acceptance_tests": ["gain reduction meter matches audio"]
     },
     {
-      "id": "synth.subtractive",
-      "label": "Subtractive synth",
-      "plugin_class": "synth",
-      "suggested_dsp_modules": [],
-      "suggested_gui_modules": ["gui.keyboard", "gui.adsr-panel"]
+      "id": "fx.saturation",
+      "label": "Saturation / distortion",
+      "plugin_class": "effect",
+      "dsp_modules": ["fx.saturation"],
+      "gui_modules": ["gui.rotary-knob", "gui.xy-pad"],
+      "acceptance_tests": ["no unbounded DC at drive=0"]
     },
     {
-      "id": "midi.chord",
-      "label": "Chord / MIDI tools",
-      "plugin_class": "midi",
-      "suggested_dsp_modules": ["midi.chord-pads"],
-      "suggested_gui_modules": ["gui.pad-grid"]
+      "id": "fx.reverb_delay",
+      "label": "Reverb / delay",
+      "plugin_class": "effect",
+      "dsp_modules": ["fx.delay", "fx.reverb"],
+      "gui_modules": ["gui.rotary-knob"],
+      "acceptance_tests": ["tail bounded when wet=0"]
     },
     {
-      "id": "sampler.rompler",
-      "label": "Rompler / sampler",
+      "id": "fx.mastering",
+      "label": "Mastering processor",
+      "plugin_class": "effect",
+      "dsp_modules": ["dyn.compressor", "fx.saturation", "filter.biquad"],
+      "gui_modules": ["gui.meter", "gui.spectrum"],
+      "acceptance_tests": ["LUFS target optional via analyze_wav"]
+    },
+    {
+      "id": "fx.metering",
+      "label": "Analysis / metering",
+      "plugin_class": "effect",
+      "dsp_modules": ["analysis.peak_rms"],
+      "gui_modules": ["gui.meter", "gui.spectrum"],
+      "acceptance_tests": ["MeterTap dogfood profile"]
+    },
+    {
+      "id": "sampler.multisample",
+      "label": "Multisample / rompler",
       "plugin_class": "sampler",
-      "suggested_dsp_modules": [],
-      "suggested_gui_modules": ["gui.waveform", "gui.keyboard"]
+      "dsp_modules": ["sampler.one-shot", "sampler.keygroup", "filter.hpf"],
+      "gui_modules": ["gui.keyboard", "gui.waveform"],
+      "acceptance_tests": ["keymap loaded", "round-robin optional"]
+    },
+    {
+      "id": "sampler.slice",
+      "label": "Slice / chop engine",
+      "plugin_class": "sampler",
+      "dsp_modules": ["sampler.slice", "env.adsr"],
+      "gui_modules": ["gui.pad-grid", "gui.waveform"],
+      "acceptance_tests": ["slice boundary click control"]
+    },
+    {
+      "id": "midi.chord_generator",
+      "label": "Chord generator",
+      "plugin_class": "midi",
+      "dsp_modules": ["midi.chord-pads", "midi.voicing", "theory.scale"],
+      "gui_modules": ["gui.pad-grid", "gui.key-selector"],
+      "acceptance_tests": ["MIDI out to DAW", "voicing spread"]
+    },
+    {
+      "id": "midi.arp_sequencer",
+      "label": "Arpeggiator / sequencer",
+      "plugin_class": "midi",
+      "dsp_modules": ["midi.arp", "theory.scale"],
+      "gui_modules": ["gui.pad-grid"],
+      "acceptance_tests": ["clock sync", "MIDI out timing"]
+    },
+    {
+      "id": "vocal.pitch",
+      "label": "Pitch / vocal processing",
+      "plugin_class": "effect",
+      "dsp_modules": ["pitch.shift", "fx.saturation"],
+      "gui_modules": ["gui.waveform", "gui.meter"],
+      "acceptance_tests": ["latency documented"]
+    },
+    {
+      "id": "spectral.fx",
+      "label": "Spectral processor",
+      "plugin_class": "effect",
+      "dsp_modules": ["spectral.fft", "filter.biquad"],
+      "gui_modules": ["gui.spectrum"],
+      "acceptance_tests": ["FFT size fixed at prepare"]
     }
+  ],
+  "clone_templates": [
+    {"id": "from_template_synth", "path": "vst/template", "note": "Default APC synth"},
+    {"id": "from_template_effect", "path": "vst/template-effect", "note": "Default APC effect"}
   ]
 }

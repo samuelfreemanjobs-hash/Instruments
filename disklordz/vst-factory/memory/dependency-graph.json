@@ -1,0 +1,11 @@
+{
+  "schema_version": "dependency-graph/v1",
+  "modules": {
+    "vst/factory-lib": {
+      "consumers": ["MeterTap"]
+    },
+    "shared/dsp": {
+      "consumers": ["*"]
+    }
+  }
+}

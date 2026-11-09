@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DAW compatibility matrix",
+  "type": "object",
+  "properties": {
+    "plugin_name": { "type": "string" },
+    "hosts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "plugin_discovery": { "enum": ["verified", "untested", "known_fail"] },
+          "plugin_load": { "enum": ["verified", "untested", "known_fail"] },
+          "midi_input": { "enum": ["verified", "untested", "known_fail"] },
+          "automation": { "enum": ["verified", "untested", "known_fail"] },
+          "presets": { "enum": ["verified", "untested", "known_fail"] },
+          "session_reload": { "enum": ["verified", "untested", "known_fail"] },
+          "evidence_path": { "type": "string", "description": "Screenshot or log path on disk" }
+        }
+      }
+    }
+  },
+  "required": ["plugin_name", "hosts"]
+}

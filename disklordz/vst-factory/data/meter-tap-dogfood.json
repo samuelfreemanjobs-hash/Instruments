@@ -5,6 +5,9 @@
   "prompt": "DiskLordz factory dogfood: stereo peak and RMS meter effect with dl_mix_level gain and gui.meter; uses factory-lib analysis.peak_rms only.",
   "dsp_modules": ["analysis.peak_rms"],
   "gui_modules": ["gui.meter"],
-  "fixture_wav": "disklordz/vst-factory/data/fixtures/metertap-silence.wav",
-  "notes": "fixture_wav optional until Phase 4 audio fixtures land; factory-audio skips when missing."
+  "acceptance_tests": [
+    "tools/build-vst.sh MeterTap",
+    "run_business.py --profile factory --plugin MeterTap",
+    "run_business.py --profile factory-audio --plugin MeterTap when fixtures exist"
+  ]
 }

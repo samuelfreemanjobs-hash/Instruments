@@ -1,0 +1,7 @@
+{
+  "slug": "MeterTap",
+  "product_category": "fx.metering",
+  "notes": "Factory dogfood — peak/RMS meter using factory-lib analysis.peak_rms only.",
+  "dsp_modules": ["analysis.peak_rms"],
+  "gui_modules": ["gui.meter"]
+}

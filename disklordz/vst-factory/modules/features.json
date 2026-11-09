@@ -1,0 +1,16 @@
+{
+  "schema_version": "factory-features/v1",
+  "features": [
+    {"id": "ai_builder", "phase": "MVP", "status": "shipped"},
+    {"id": "module_catalog", "phase": "MVP", "status": "shipped"},
+    {"id": "portfolio_api", "phase": "MVP", "status": "active"},
+    {"id": "memory_injection", "phase": "MVP", "status": "active"},
+    {"id": "factory_audio_profile", "phase": "MVP", "status": "active"},
+    {"id": "daw_matrix_evidence", "phase": "V2", "status": "planned"},
+    {"id": "gui_dsl_editor", "phase": "V2", "status": "planned"},
+    {"id": "preset_intelligence", "phase": "V2", "status": "planned"},
+    {"id": "ollama_router", "phase": "V2", "status": "planned"},
+    {"id": "marketplace_handoff", "phase": "V3", "status": "planned"},
+    {"id": "multi_daw_automation", "phase": "V3", "status": "planned"}
+  ]
+}

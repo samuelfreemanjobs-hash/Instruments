@@ -3,10 +3,8 @@
   "blocks": [
     {
       "id": "analysis.peak_rms",
-      "name": "Peak / RMS meter analysis",
-      "realtime_safe": true,
-      "cpp_stub": "vst/factory-lib/analysis/PeakRms.h",
-      "dogfood_sku": "MeterTap"
+      "name": "Peak and RMS metering",
+      "cpp_stub": "vst/factory-lib/analysis/PeakRmsMeter.h"
     }
   ]
 }

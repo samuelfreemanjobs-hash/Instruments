@@ -197,19 +197,20 @@ class FactoryDB:
         status: str = "pending",
         detail: str | None = None,
     ) -> int:
+        now = _utc_now()
         with self.transaction():
             cur = self._conn.execute(
                 """
                 INSERT INTO approvals (project_id, gate, status, detail, created_at)
                 VALUES (?, ?, ?, ?, ?)
                 """,
-                (project_id, gate, status, detail, _utc_now()),
+                (project_id, gate, status, detail, now),
             )
             return int(cur.lastrowid)
 
     def list_approvals(self, project_id: int) -> list[dict[str, Any]]:
         rows = self._conn.execute(
-            "SELECT * FROM approvals WHERE project_id=? ORDER BY id ASC",
+            "SELECT * FROM approvals WHERE project_id=? ORDER BY id DESC",
             (project_id,),
         ).fetchall()
         return [
@@ -226,15 +227,23 @@ class FactoryDB:
         ]
 
     def resolve_approval(self, approval_id: int, *, status: str = "approved") -> None:
+        now = _utc_now()
         with self.transaction():
-            cur = self._conn.execute(
-                """
-                UPDATE approvals SET status=?, resolved_at=? WHERE id=?
-                """,
-                (status, _utc_now(), approval_id),
+            self._conn.execute(
+                "UPDATE approvals SET status=?, resolved_at=? WHERE id=?",
+                (status, now, approval_id),
             )
-            if cur.rowcount == 0:
-                raise KeyError(approval_id)
+
+    def pending_gates(self, project_id: int) -> list[str]:
+        rows = self._conn.execute(
+            """
+            SELECT gate FROM approvals
+            WHERE project_id=? AND status='pending'
+            ORDER BY id
+            """,
+            (project_id,),
+        ).fetchall()
+        return [r["gate"] for r in rows]
 
     def gate_approved(self, project_id: int, gate: str) -> bool:
         row = self._conn.execute(
@@ -245,18 +254,9 @@ class FactoryDB:
             """,
             (project_id, gate),
         ).fetchone()
-        return bool(row and row["status"] == "approved")
-
-    def pending_gates(self, project_id: int) -> list[str]:
-        rows = self._conn.execute(
-            """
-            SELECT gate FROM approvals
-            WHERE project_id=? AND status='pending'
-            ORDER BY id ASC
-            """,
-            (project_id,),
-        ).fetchall()
-        return [r["gate"] for r in rows]
+        if not row:
+            return True
+        return row["status"] == "approved"
 
     def upsert_product_wo(self, project_id: int, wo: dict[str, Any]) -> None:
         now = _utc_now()
@@ -266,9 +266,7 @@ class FactoryDB:
                 """
                 INSERT INTO product_work_orders (project_id, wo_json, updated_at)
                 VALUES (?, ?, ?)
-                ON CONFLICT(project_id) DO UPDATE SET
-                    wo_json=excluded.wo_json,
-                    updated_at=excluded.updated_at
+                ON CONFLICT(project_id) DO UPDATE SET wo_json=excluded.wo_json, updated_at=excluded.updated_at
                 """,
                 (project_id, payload, now),
             )

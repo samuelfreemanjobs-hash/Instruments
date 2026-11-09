@@ -1,0 +1,8 @@
+{
+  "category": "dsp/sampler",
+  "blocks": [
+    {"id": "sampler.one-shot", "name": "One-shot playback", "cpp_stub": "vst/factory-lib/sampler/OneShot.h"},
+    {"id": "sampler.keygroup", "name": "Keygroup map", "cpp_stub": "vst/factory-lib/sampler/Keygroup.h"},
+    {"id": "sampler.slice", "name": "Slice engine", "cpp_stub": "vst/factory-lib/sampler/SliceEngine.h"}
+  ]
+}

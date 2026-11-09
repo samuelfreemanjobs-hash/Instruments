@@ -20,16 +20,21 @@ def load_catalog() -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-@lru_cache(maxsize=1)
-def load_product_taxonomy() -> dict[str, Any]:
-    """Load modules/product-taxonomy.json for GET /api/taxonomy."""
-    path = modules_root() / "product-taxonomy.json"
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
 def _load_relative(rel: str) -> dict[str, Any]:
     path = modules_root() / rel
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_product_taxonomy() -> dict[str, Any]:
+    return _load_relative("product-taxonomy.json")
+
+
+def taxonomy_category(category_id: str) -> dict[str, Any] | None:
+    tax = load_product_taxonomy()
+    for cat in tax.get("categories", []):
+        if cat.get("id") == category_id:
+            return cat
+    return None
 
 
 def plugin_class_module(plugin_class: str) -> dict[str, Any]:
@@ -43,15 +48,6 @@ def plugin_class_module(plugin_class: str) -> dict[str, Any]:
     if not rel:
         raise ValueError(f"unknown plugin_class: {plugin_class}")
     return _load_relative(rel)
-
-
-def taxonomy_category(category_id: str | None) -> dict[str, Any] | None:
-    if not category_id:
-        return None
-    for cat in load_product_taxonomy().get("categories", []):
-        if cat.get("id") == category_id:
-            return cat
-    return None
 
 
 def list_dsp_blocks() -> list[dict[str, Any]]:
@@ -81,6 +77,16 @@ def render_template(rel_path: str, **kwargs: str) -> str:
     return text
 
 
+DEFAULT_FORMATS = {
+    "vst3": True,
+    "standalone": True,
+    "au": False,
+    "clap": False,
+    "aax": False,
+    "lv2": False,
+}
+
+
 def build_spec_from_modules(
     *,
     plugin_name: str,
@@ -89,35 +95,52 @@ def build_spec_from_modules(
     product_category: str | None = None,
 ) -> dict[str, Any]:
     pcm = plugin_class_module(plugin_class)
-    tax = taxonomy_category(product_category)
-    dsp = list(pcm.get("suggested_dsp_modules", []))
-    gui = list(pcm.get("suggested_gui_modules", []))
-    if tax:
-        if tax.get("suggested_dsp_modules"):
-            dsp = list(tax["suggested_dsp_modules"])
-        if tax.get("suggested_gui_modules"):
-            gui = list(tax["suggested_gui_modules"])
+    dsp_modules = list(pcm.get("suggested_dsp_modules", []))
+    gui_modules = list(pcm.get("suggested_gui_modules", []))
+    acceptance = [
+        f"tools/build-vst.sh {plugin_name} succeeds",
+        f"run_business.py --profile factory --plugin {plugin_name}",
+    ]
+    category_id = product_category
+    if product_category:
+        cat = taxonomy_category(product_category)
+        if cat:
+            plugin_class = cat.get("plugin_class", plugin_class)
+            dsp_modules = list(cat.get("dsp_modules", dsp_modules))
+            gui_modules = list(cat.get("gui_modules", gui_modules))
+            acceptance.extend(cat.get("acceptance_tests", []))
+    elif not category_id:
+        category_id = f"{plugin_class}.generic"
     return {
         "schema_version": "factory-spec/v2",
         "plugin_name": plugin_name,
         "plugin_class": plugin_class,
-        "product_category": product_category,
+        "product_category": category_id,
         "target_format": "vst3",
         "target_os": "windows_x64",
         "prompt": prompt,
         "track": "apc_greenfield",
+        "formats": dict(DEFAULT_FORMATS),
+        "commercial": {
+            "release_ready": False,
+            "license_checklist_passed": False,
+            "build_kind": "development",
+        },
+        "compatibility": {},
+        "memory_refs": {
+            "company": "company",
+            "product_slug": plugin_name,
+            "technical_tags": [],
+        },
         "buses": pcm.get("default_buses", {}),
-        "dsp_modules": dsp,
-        "gui_modules": gui,
+        "dsp_modules": dsp_modules,
+        "gui_modules": gui_modules,
         "parameters": [],
-        "acceptance_tests": [
-            f"tools/build-vst.sh {plugin_name} succeeds",
-            f"run_business.py --profile factory --plugin {plugin_name}",
-        ],
+        "acceptance_tests": acceptance,
         "module_refs": {
             "plugin_class_id": pcm.get("id"),
             "workflow_id": "workflow/scaffold-default",
-            "product_category": product_category,
+            "product_category": category_id,
         },
     }
 

@@ -1,5 +1,11 @@
 {
   "schema_version": "factory-modules/v1",
+  "product_taxonomy": "product-taxonomy.json",
+  "features": "features.json",
+  "themes": [
+    "themes/akai_mpc_90s.json",
+    "themes/luxury_analog.json"
+  ],
   "plugin_classes": [
     "plugin-classes/synth.json",
     "plugin-classes/effect.json",
@@ -11,8 +17,10 @@
     "dsp/filters.json",
     "dsp/envelopes.json",
     "dsp/effects.json",
+    "dsp/midi.json",
     "dsp/analysis.json",
-    "dsp/midi.json"
+    "dsp/vintage.json",
+    "dsp/sampler-blocks.json"
   ],
   "gui": ["gui/controls.json"],
   "workflows": ["workflows/scaffold-default.json"]

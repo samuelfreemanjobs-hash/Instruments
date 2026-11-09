@@ -1,0 +1,6 @@
+{
+  "id": "theme/akai_mpc_90s",
+  "label": "1990s Akai MPC style",
+  "colors": { "bg": "#1a1410", "accent": "#c45c26", "text": "#e8e0d8" },
+  "gui_modules": ["gui.pad-grid", "gui.lcd", "gui.rotary-knob"]
+}

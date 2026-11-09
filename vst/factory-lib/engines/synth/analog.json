@@ -1,0 +1,6 @@
+{
+  "id": "engine/synth/analog",
+  "topology": "subtractive",
+  "modules": ["dsp/oscillators", "dsp/filters", "dsp/envelopes"],
+  "voice_limit": 32
+}

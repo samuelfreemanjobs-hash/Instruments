@@ -1,0 +1,8 @@
+{
+  "id": "design-system/disklordz-v1",
+  "fonts": { "primary": "system-ui", "mono": "ui-monospace" },
+  "spacing_unit": 8,
+  "knob_sizes": [32, 48, 64],
+  "pad_grid": { "rows": 4, "cols": 4, "gap": 6 },
+  "param_prefix": "dl_"
+}

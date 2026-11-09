@@ -1,0 +1,6 @@
+{
+  "id": "theme/luxury_analog",
+  "label": "Modern luxury analog",
+  "colors": { "bg": "#12131a", "accent": "#c9a962", "text": "#f0f0f2" },
+  "gui_modules": ["gui.rotary-knob", "gui.adsr-panel", "gui.keyboard"]
+}

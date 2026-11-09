@@ -29,6 +29,10 @@ class FactoryState(str, Enum):
 class ProjectCreate(BaseModel):
     prompt: str = Field(..., min_length=8, max_length=16000)
     plugin_class: PluginClass = PluginClass.MIDI
+    product_category: str | None = Field(
+        default=None,
+        description="Taxonomy id from product-taxonomy.json",
+    )
     plugin_name: str | None = Field(
         default=None,
         description="PascalCase; generated from prompt if omitted",
