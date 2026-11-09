@@ -26,6 +26,14 @@ python3 scripts/autonomous-coder/tick.py --complete <queue-id>
 
 Edit `disklordz/autonomous-coder/coding-queue.json`. Writable paths: `allowlist-paths.json`.
 
+## When the queue is idle (`NEXT_SLICE.md` → `waiting`)
+
+Cloud slices in `coding-queue.json` are finite. When all are **complete**, `--emit-slice` writes **waiting** — the agent may still refresh docs, `PASTE_TO_FACTORY.md`, and Antigravity **prep** handoffs (allowlisted only).
+
+**Human gate:** until Coach marks a sprint id done (e.g. **`plugin-skeleton`** = Windows VST3 + DAW), do not add new C++ slices. Samuel: Actions **DiskLordz Audio (Windows VST3)** or `build-windows.ps1` on `main` ([CURSOR_OPERATOR_ON_20_PRO.md](CURSOR_OPERATOR_ON_20_PRO.md)).
+
+Antigravity parallel work (e.g. **WO-AG-001** docs) does not block the VST proof.
+
 ## Safety
 
 - No `Source/` / `DPF-*` C++ without factory escalation file.

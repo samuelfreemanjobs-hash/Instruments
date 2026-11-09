@@ -114,6 +114,16 @@
       "allowlist": ["disklordz/autonomous-coder/factory-escalation/"],
       "context_paths": ["disklordz/audio-command/data/PASTE_TO_FACTORY.md"],
       "priority": 11
+    },
+    {
+      "id": "cloud-autonomous-doc-idle-gate",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Document idle queue + human-windows sprint gate",
+      "acceptance": "AUTONOMOUS_CODING_AGENT.md explains waiting NEXT_SLICE",
+      "allowlist": ["docs/"],
+      "context_paths": [".cursor/autonomous-coder/NEXT_SLICE.md"],
+      "priority": 12
     }
   ]
 }
