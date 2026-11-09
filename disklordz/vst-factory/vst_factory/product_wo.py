@@ -24,9 +24,11 @@ def default_components(state: str) -> dict[str, dict[str, Any]]:
 
 def build_product_wo(proj: dict[str, Any]) -> dict[str, Any]:
     spec = proj["spec"]
+    name = proj["plugin_name"]
     return {
         "schema": "product-wo/v1",
-        "product_name": proj["plugin_name"],
+        "product_name": name,
+        "plugin_name": name,
         "prompt": spec.get("prompt", ""),
         "product_category": spec.get("product_category"),
         "autonomy_mode": spec.get("autonomy_mode", "collaborative"),

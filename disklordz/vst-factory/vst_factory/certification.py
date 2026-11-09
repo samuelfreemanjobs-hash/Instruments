@@ -26,6 +26,13 @@ def evaluate_certification(
         "no_nan_audio_output": audio_ok if audio_ok is not None else True,
     }
     hard_fail = [k for k, v in hard.items() if not v]
+    audio_gate = audio_ok if audio_ok is not None else True
+    gates = [
+        {"field": "build_ok", "ok": build_ok},
+        {"field": "artefact_ok", "ok": artefact_ok},
+        {"field": "pluginval_ok", "ok": pluginval_ok},
+        {"field": "audio_ok", "ok": audio_gate},
+    ]
     weights = schema["weights"]
     scores: dict[str, float] = {
         "build_reliability": 1.0 if build_ok else 0.0,
@@ -41,6 +48,7 @@ def evaluate_certification(
     passed = len(hard_fail) == 0
     return {
         "passed": passed,
+        "gates": gates,
         "hard_gates": hard,
         "hard_failures": hard_fail,
         "weighted_score": round(weighted, 4),
@@ -49,9 +57,19 @@ def evaluate_certification(
     }
 
 
+def _latest_run_ok(runs: list[dict[str, Any]], kind: str) -> bool:
+    for r in runs:
+        if r["kind"] == kind:
+            return bool(r["ok"])
+    return False
+
+
 def load_recent_run_flags(project_id: int, db: Any) -> tuple[bool, bool, bool]:
     runs = db.list_runs(project_id, limit=30)
-    build_ok = any(r["kind"] == "build" and r["ok"] for r in runs)
-    test_ok = any(r["kind"] == "test" and r["ok"] for r in runs)
-    audio_ok = any(r["kind"] == "test-audio" and r["ok"] for r in runs)
-    return build_ok, test_ok, audio_ok if runs else (False, False, False)
+    if not runs:
+        return False, False, False
+    return (
+        _latest_run_ok(runs, "build"),
+        _latest_run_ok(runs, "test"),
+        _latest_run_ok(runs, "test-audio"),
+    )

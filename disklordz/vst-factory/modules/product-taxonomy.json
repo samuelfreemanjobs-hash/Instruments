@@ -86,7 +86,9 @@
       "label": "Analysis / metering",
       "plugin_class": "effect",
       "dsp_modules": ["analysis.peak_rms"],
+      "suggested_dsp_modules": ["analysis.peak_rms"],
       "gui_modules": ["gui.meter", "gui.spectrum"],
+      "suggested_gui_modules": ["gui.meter", "gui.spectrum"],
       "acceptance_tests": ["MeterTap dogfood profile"]
     },
     {

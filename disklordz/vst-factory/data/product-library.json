@@ -3,6 +3,7 @@
   "products": [
     {
       "id": "chord-engine",
+      "plugin_name": "CHORD ENGINE",
       "name": "CHORD ENGINE",
       "category": "midi.chord_generator",
       "track": "disklordz_audio",
@@ -12,6 +13,7 @@
     },
     {
       "id": "meter-tap",
+      "plugin_name": "MeterTap",
       "name": "MeterTap",
       "category": "fx.metering",
       "track": "apc_greenfield",
@@ -22,6 +24,7 @@
     },
     {
       "id": "memphis-bass-lab",
+      "plugin_name": "MemphisBassLab",
       "name": "Memphis Bass Lab",
       "category": "synth.bass808",
       "track": "apc_greenfield",
@@ -30,6 +33,7 @@
     },
     {
       "id": "phonk-drum-engine",
+      "plugin_name": "PhonkDrumEngine",
       "name": "Phonk Drum Engine",
       "category": "synth.drum",
       "track": "apc_greenfield",
