@@ -141,3 +141,13 @@ Factory, plugin (APC/DPCS), design-system and JUCE work. Format and rules: [MEMO
 - **evidence:** PR #127 @68c7d6d4 assertProductNameInsideHeader; studio-light @1.0x PNG
 - **confidence:** executed
 - **status:** active
+
+### L-0015 · Golden baselines lock in whatever bugs exist when captured
+- **date:** 2026-11-09
+- **area:** testing, visual-regression, goldens, review, sequencing
+- **when:** creating or updating visual/audio golden files while UI or DSP fixes are still open in other PRs
+- **lesson:** First factory-gui goldens captured an uppercased preset name and a placeholder glyph that an open PR (#127) already fixed; merged as-is, the suite would protect the bugs and fail the fix.
+- **do:** Review a sample of new goldens by eye before merging; merge pending fixes first, then re-baseline only the affected goldens with a REVIEW.md listing each change; never re-baseline from an unmerged branch.
+- **evidence:** PR #131 HeaderBar-longest@1x goldens (INIT, square glyph) vs PR #127 renders (Init, floppy+crown)
+- **confidence:** inspected
+- **status:** active
