@@ -1,6 +1,6 @@
 # MeterTap — DPCS Phase 0 Constitution
 
-**Status:** Phase 0 complete · **Next:** Phase 1 PRD (`parameter-spec.md` + behaviour brief) — **no code**
+**Status:** Phase 0 complete · **Phase 1:** [DPCS_PHASE1_PRD.md](DPCS_PHASE1_PRD.md) · **Next:** Phase 2 Contract (headers only)
 
 ## Purpose
 
