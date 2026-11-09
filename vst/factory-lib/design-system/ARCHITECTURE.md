@@ -8,21 +8,28 @@ A **themeable template** for plugin UIs. Components are specified once against a
 - A new brand or white-label product starts from `_template` with one command.
 - `studio-light` is a deliberately different example that proves the swap works.
 
-Status: **v0.2.0 — contract 1.0.0, 3 themes, specification + tooling** (DPCS Phase 1). C++ generation is Phase 2.
+Status: **v0.3.0 — contract 1.0.0, 3 themes, JUCE tokens + LookAndFeel + components + render tests** (DPCS Phases 1–4).
 
 ## Build & run
 
 ```bash
 DS=vst/factory-lib/design-system
 
-python3 $DS/scripts/check_tokens.py --check-preview          # all themes: contract + previews fresh (exit 0 = pass)
-python3 $DS/scripts/check_tokens.py --theme disklordz        # one theme, with contrast report
-python3 -m unittest discover -s $DS/scripts -p "test_*.py"   # contract tests (18)
-python3 $DS/scripts/render_preview.py                        # regenerate previews/<theme>.html
-python3 $DS/scripts/new_theme.py acme --name "Acme Audio" --brand "Acme"   # new theme from _template
+python3 $DS/scripts/check_tokens.py --check-preview --check-generated  # contract + previews + DesignTokens.h fresh
+python3 $DS/scripts/check_tokens.py --theme disklordz                  # one theme, with contrast report
+python3 $DS/scripts/gen_juce_tokens.py --all                           # → gui/generated/<id>/DesignTokens.h
+python3 $DS/scripts/gen_juce_tokens.py --all --check                   # freshness only
+python3 -m unittest discover -s $DS/scripts -p "test_*.py"             # contract + generator tests
+python3 $DS/scripts/render_preview.py                                  # regenerate previews/<theme>.html
+python3 $DS/scripts/new_theme.py acme --name "Acme Audio" --brand "Acme"
+
+# JUCE gallery + offscreen render tests (Linux: g++-12)
+cmake -B build-factory-gui -S vst/factory-lib -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_BUILD_TYPE=Release
+cmake --build build-factory-gui -j --target FactoryGuiGallery FactoryGuiRenderTests
+ctest --test-dir build-factory-gui -R FactoryGuiRenderTests_ --output-on-failure
 ```
 
-Open `previews/<theme>.html` in a browser to see every token and component in that theme.
+Open `previews/<theme>.html` in a browser to see every token and component in that theme. Product CMake: see [`gui/README.md`](../gui/README.md).
 
 ## Layout
 
@@ -36,9 +43,17 @@ design-system/
 │       ├── tokens.json        values for every role + theme policies (usageRestrictions, extra contrast)
 │       └── THEME.md           why: palette rationale, policies, fonts, logo, changelog
 ├── foundations.md             theme-independent rules: principles, roles, type roles, layout, depth, motion, a11y
-├── components.md              13 component specs written against roles only
+├── components.md              13 component specs written against roles only (+ JUCE class names)
 ├── previews/<theme>.html      generated visual reference per theme (do not edit)
-└── scripts/                   check_tokens.py · render_preview.py · new_theme.py · test_check_tokens.py
+└── scripts/                   check_tokens · gen_juce_tokens · render_preview · new_theme · tests
+
+../gui/
+├── generated/<theme>/DesignTokens.h   header-only constexpr tokens (no JUCE include)
+├── FactoryLookAndFeel.*               LookAndFeel_V4 bound to roles
+├── components/                        RotaryKnob, LedToggle, ValueReadout, LevelMeter, …
+├── fonts/<Family>/                    vendored OFL TTFs + FONTS.md
+├── gallery/                           FactoryGuiGallery standalone
+└── tests/                             FactoryGuiRenderTests (100% / 200% PNGs)
 ```
 
 ## Data flow
@@ -48,10 +63,11 @@ brand guide ──► themes/<id>/tokens.json ──┐
                                           ├──► check_tokens.py ──► PASS/FAIL (contract, contrast, policies, floors)
 contract/roles.json ──────────────────────┤
                                           ├──► render_preview.py ──► previews/<id>.html
-                                          └──► [Phase 2] gen_juce_tokens.py --theme <id> ──► gui/DesignTokens.h
+                                          └──► gen_juce_tokens.py --theme <id> ──► gui/generated/<id>/DesignTokens.h
 foundations.md + components.md (roles only)
         │
         ▼
+factory_gui_use_theme(<target> THEME <id>)  → include path + font binary data
 plugins/<Name>/.ideas/design-spec.md  → names a theme + version, composes components, cites role names (never hex)
 ```
 
@@ -69,10 +85,13 @@ UI-only (message thread). Rules for implementers:
 |------|------|
 | `contract/roles.json` | The template's interface: required role paths, floors (10 px text, 24 px targets, 4 px grid), baseline contrast |
 | `themes/<id>/tokens.json` | A theme: header (`id`, `name`, `brandName`, `version`, `contract`), primitives, semantic role mapping, type, space, radius, stroke, elevation, motion, size, interaction, meter constants, policies |
-| `scripts/check_tokens.py` | Validates every theme against the contract. Themes may tighten, never loosen |
+| `scripts/check_tokens.py` | Validates every theme against the contract. Themes may tighten, never loosen. `--check-generated` freshness |
+| `scripts/gen_juce_tokens.py` | Emits `gui/generated/<id>/DesignTokens.h` (`fds::` constexpr); `--check` freshness |
 | `scripts/new_theme.py` | Scaffolds a theme from `_template` (or any theme); result passes immediately |
 | `scripts/render_preview.py` | Deterministic per-theme preview generator |
-| `scripts/test_check_tokens.py` | 18 contract tests incl. "all themes expose identical roles" |
+| `scripts/test_check_tokens.py` / `test_gen_juce_tokens.py` | Contract + generator unit tests |
+| `../gui/` + `../CMakeLists.txt` | `factory_gui` INTERFACE, `factory_gui_use_theme`, gallery, render tests |
+| `.github/workflows/design-system.yml` | Checker + unittest + Linux build/ctest on `vst/factory-lib/**` |
 
 ## Extension points
 
@@ -83,12 +102,12 @@ UI-only (message thread). Rules for implementers:
 
 ## Roadmap
 
-| DPCS phase | Deliverable |
-|------------|-------------|
-| 1 (this) | contract, 3 themes, foundations, components, validator, previews, scaffolder |
-| 2 Contract | `gen_juce_tokens.py --theme <id>` → `gui/DesignTokens.h` (+ freshness check), `gui/DlLookAndFeel.h`, component headers, font binary-data CMake target per theme |
-| 3 Module | One component per run: LookAndFeel, RotaryKnob, LedToggle, ValueReadout, LevelMeter, HeaderBar, PresetBrowser |
-| 4 Verify | Screenshot tests of each component per theme at 100 % and 200 %; checker in CI |
+| DPCS phase | Deliverable | Status |
+|------------|-------------|--------|
+| 1 | contract, 3 themes, foundations, components, validator, previews, scaffolder | **done** (v0.2) |
+| 2 Contract | `gen_juce_tokens.py` → `gui/generated/<id>/DesignTokens.h` + `--check` / `--check-generated`; CMake `factory_gui` + `factory_gui_use_theme`; OFL fonts | **done** (v0.3) |
+| 3 Module | `FactoryLookAndFeel`, `RotaryKnob`, `LedToggle`, `ValueReadout`, `LevelMeter`, `MeterScale`, `SectionPanel`, `HeaderBar`, `PresetBrowser` | **done** (v0.3) |
+| 4 Verify | `FactoryGuiRenderTests` per theme at 100 % / 200 %; PNGs under `build/gui-renders/`; CI workflow | **done** (v0.3) |
 
 ## Related docs
 

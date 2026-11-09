@@ -4,6 +4,26 @@ Each component lists anatomy, sizes, tokens, states, behaviour, keyboard map and
 
 The factory catalog id (`disklordz/vst-factory/modules/gui/controls.json`) is given where one exists.
 
+## JUCE implementation (v0.3)
+
+| Spec | Class | Path |
+|------|-------|------|
+| LookAndFeel (shared drawing) | `fds::gui::FactoryLookAndFeel` | `gui/FactoryLookAndFeel.*` |
+| Rotary knob | `fds::gui::RotaryKnob` | `gui/components/RotaryKnob.*` |
+| Linear slider / fader | (LookAndFeel `drawLinearSlider`) | use `juce::Slider` + L&F |
+| LED toggle | `fds::gui::LedToggle` | `gui/components/LedToggle.*` |
+| Push button | `juce::TextButton` + property `fdsButtonVariant` | LookAndFeel |
+| Value readout | `fds::gui::ValueReadout` | `gui/components/ValueReadout.*` |
+| Level meter | `fds::gui::LevelMeter` | `gui/components/LevelMeter.*` — **display only**; `setLevels(peakDb,rmsDb,holdDb,over)` |
+| Meter scale | `fds::gui::MeterScale` | `gui/components/MeterScale.*` |
+| Header bar | `fds::gui::HeaderBar` | `gui/components/HeaderBar.*` |
+| Preset browser | `fds::gui::PresetBrowser` | `gui/components/PresetBrowser.*` |
+| Section panel | `fds::gui::SectionPanel` | `gui/components/SectionPanel.*` |
+| Tooltip / popup / combo / label | LookAndFeel overrides | `FactoryLookAndFeel` |
+| Focus ring | `FactoryLookAndFeel::drawFocusRing` | keyboard focus only |
+
+Product usage: [`gui/README.md`](../gui/README.md). Tokens: `gui/generated/<theme>/DesignTokens.h` (`fds::color::text::primary`, …).
+
 ## Shared state model
 
 | State | Trigger | Visual rule |
