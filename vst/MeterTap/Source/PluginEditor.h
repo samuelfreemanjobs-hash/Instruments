@@ -27,12 +27,22 @@ public:
   void setTestOverLatched(bool left, bool right);
   void setTestLevels(int channel, float peakDb, float rmsDb, float holdDb, bool over);
   void forcePaintForTest();
+  void seedSilenceReadouts();
 
   fds::gui::LevelMeter& getMeterL() noexcept { return meterL_; }
   fds::gui::LevelMeter& getMeterR() noexcept { return meterR_; }
   fds::gui::LedToggle& getBypassToggle() noexcept { return header_.getBypassToggle(); }
   fds::gui::LedToggle& getHoldToggle() noexcept { return holdToggle_; }
   fds::gui::SectionPanel& getMeterSection() noexcept { return meterSection_; }
+  fds::gui::ValueReadout& getPeakL() noexcept { return peakL_; }
+  fds::gui::ValueReadout& getPeakR() noexcept { return peakR_; }
+  fds::gui::ValueReadout& getRmsL() noexcept { return rmsL_; }
+  fds::gui::ValueReadout& getRmsR() noexcept { return rmsR_; }
+  fds::gui::RotaryKnob& getTrimKnob() noexcept { return trimKnob_; }
+  fds::gui::HeaderBar& getHeader() noexcept { return header_; }
+  juce::String getMeterTitleText() const { return meterSection_.getTitleText(); }
+  juce::String getTrimValueText();
+  juce::String getPresetNameText();
 
 private:
   void timerCallback() override;
@@ -41,8 +51,11 @@ private:
   void updateReadout(fds::gui::ValueReadout& readout, float db, bool overLatched,
                      juce::String& lastText);
   static juce::String formatDbNoUnit(float db);
+  static juce::String metersTitleUtf8(bool bypassed);
+  static juce::String middleDotUtf8();
   void setupTooltips();
   void setupTabOrder();
+  void setupHeaderGlyph();
   void syncTrimValueLabel();
 
   MeterTapAudioProcessor& proc_;

@@ -25,6 +25,15 @@ bypass. Levels are analysed on the audio thread (factory-lib `PeakRms` +
 
 - Replaced `GenericAudioProcessorEditor` with the design-system surface.
 - Scaffold API reuses an existing `vst/MeterTap` tree instead of failing.
+- Editor evidence PNGs: truncate before `FileOutputStream` write (no concatenated
+  multi-IEND files); normal vs over+bypass renders differ; single IEND at EOF.
+- UTF-8 meter title / readouts via `CharPointer_UTF8` (U+00B7 ·, U+2212 −, U+221E ∞).
+- RMS wells always show a value (`−∞` at/below −96 dBFS).
+- Bypass caution dot: 6 px + 6 px gap; title shifts right (design-spec §4).
+- Trim readout always signed (`+0.0 dB`); preset name as-is (`Init`).
+- LevelMeter peak/hot split + `formatDb` UTF-8 helpers from design-system
+  (`cursor/design-system-juce-impl-1279`).
+- Header glyph: simplified floppy+crown vector (`brand.stroke` / `premium.badge`).
 
 ## Known issues
 
@@ -32,6 +41,7 @@ bypass. Levels are analysed on the audio thread (factory-lib `PeakRms` +
   and the program name is `Init`. Treated as a VST3 unit-info / pluginval
   surface quirk; not a host-visible crash. Host preset browser still shows Init.
 - Bypass transition click (constitution open issue C) remains a literal instant switch.
+- Header glyph is a simplified 22×22 vector (not the full brand SVG asset).
 
 ## Compatibility
 
@@ -46,12 +56,13 @@ bypass. Levels are analysed on the audio thread (factory-lib `PeakRms` +
 
 | Check | Result |
 |-------|--------|
-| `tools/build-vst.sh MeterTap` | exit 0 — VST3 built |
+| JUCE pin | `vst/JUCE` = **7.0.12** (`project(JUCE VERSION 7.0.12)`) |
+| `tools/build-vst.sh MeterTap` | exit 0 — VST3 built against JUCE 7.0.12 |
 | `run_business.py --profile factory --plugin MeterTap` | `ok: true` (build + artefact + pluginval) |
 | `plugins/MeterTap/scripts/verify-phase4.sh` | exit 0 (analysis ctest, processor, editor renders both themes, factory profile) |
-| MeterTapEditorRenderTests `disklordz` | PASS @1.0x / @2.0x |
+| MeterTapEditorRenderTests `disklordz` | PASS @1.0x / @2.0x — single-IEND PNGs, normal≠over |
 | MeterTapEditorRenderTests `studio-light` | PASS @1.0x / @2.0x (re-theme configure) |
-| FactoryGuiRenderTests | PASS (disklordz / _template / studio-light) |
+| Evidence PNGs | `plugins/MeterTap/evidence/editor-renders/{disklordz,studio-light}/` (8 files) |
 | Factory e2e (`e2e_lifecycle.py MeterTap`) | all 10 pipeline stages `done` — see `evidence/factory-e2e.json` |
 | `tools/apc-gate.sh MeterTap ship` | exit 0 |
 | pluginval (Windows) | not run in this Cloud lane |

@@ -61,6 +61,8 @@ public:
     static constexpr const char* ledRoleProperty = "fdsLedRole";
     /** Property on TextButton: "fdsButtonVariant" = "secondary"|"primary"|"brand". */
     static constexpr const char* buttonVariantProperty = "fdsButtonVariant";
+    /** Property on TextButton: "fdsTextCase" = "upper"|"none" (default: legend upper). */
+    static constexpr const char* buttonTextCaseProperty = "fdsTextCase";
 
 private:
     void loadEmbeddedTypefaces();

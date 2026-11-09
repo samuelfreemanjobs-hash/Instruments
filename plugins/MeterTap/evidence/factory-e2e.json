@@ -20,7 +20,7 @@
       "method": "GET",
       "path": "/api/health",
       "status": 200,
-      "dt_s": 0.016187314000035258,
+      "dt_s": 0.017940586999884545,
       "body": {
         "status": "ok",
         "version": "0.1.0"
@@ -30,7 +30,7 @@
       "method": "POST",
       "path": "/api/projects",
       "status": 200,
-      "dt_s": 0.008419287000151598,
+      "dt_s": 0.009085620999940147,
       "request": {
         "prompt": "DiskLordz factory e2e: MeterTap \u2014 full lifecycle through ship.",
         "plugin_class": "effect",
@@ -96,7 +96,7 @@
       "method": "GET",
       "path": "/api/projects/1/approvals",
       "status": 200,
-      "dt_s": 0.0012698580001142545,
+      "dt_s": 0.0013215560002208804,
       "body": [
         {
           "id": 1,
@@ -104,7 +104,7 @@
           "gate": "approve_architecture",
           "status": "pending",
           "detail": null,
-          "created_at": "2026-11-09T06:40:10Z",
+          "created_at": "2026-11-09T07:07:51Z",
           "resolved_at": null
         }
       ]
@@ -113,7 +113,7 @@
       "method": "POST",
       "path": "/api/projects/1/approvals/1/resolve",
       "status": 200,
-      "dt_s": 0.0037445860000389075,
+      "dt_s": 0.002813737999986188,
       "request": {
         "status": "approved"
       },
@@ -123,7 +123,7 @@
         "gate": "approve_architecture",
         "status": "pending",
         "detail": null,
-        "created_at": "2026-11-09T06:40:10Z",
+        "created_at": "2026-11-09T07:07:51Z",
         "resolved_at": null
       },
       "gate": "approve_architecture"
@@ -132,7 +132,7 @@
       "method": "POST",
       "path": "/api/projects/1/sync",
       "status": 200,
-      "dt_s": 1.421222059999991,
+      "dt_s": 1.9787941730000966,
       "body": {
         "id": 1,
         "plugin_name": "MeterTap",
@@ -207,7 +207,7 @@
       "method": "POST",
       "path": "/api/projects/1/scaffold",
       "status": 200,
-      "dt_s": 0.003934383000114394,
+      "dt_s": 0.004741503999866836,
       "body": {
         "id": 1,
         "plugin_name": "MeterTap",
@@ -285,7 +285,7 @@
       "method": "POST",
       "path": "/api/projects/1/sync",
       "status": 200,
-      "dt_s": 1.400349148000032,
+      "dt_s": 1.8450032060000012,
       "body": {
         "id": 1,
         "plugin_name": "MeterTap",
@@ -364,7 +364,7 @@
       "method": "GET",
       "path": "/api/projects/1/approvals",
       "status": 200,
-      "dt_s": 0.0017234049998933187,
+      "dt_s": 0.0018057540000882,
       "body": [
         {
           "id": 1,
@@ -372,8 +372,8 @@
           "gate": "approve_architecture",
           "status": "approved",
           "detail": null,
-          "created_at": "2026-11-09T06:40:10Z",
-          "resolved_at": "2026-11-09T06:40:10Z"
+          "created_at": "2026-11-09T07:07:51Z",
+          "resolved_at": "2026-11-09T07:07:51Z"
         },
         {
           "id": 2,
@@ -381,7 +381,7 @@
           "gate": "approve_gui",
           "status": "pending",
           "detail": null,
-          "created_at": "2026-11-09T06:40:10Z",
+          "created_at": "2026-11-09T07:07:52Z",
           "resolved_at": null
         }
       ]
@@ -390,7 +390,7 @@
       "method": "POST",
       "path": "/api/projects/1/approvals/2/resolve",
       "status": 200,
-      "dt_s": 0.0016871969999101566,
+      "dt_s": 0.0031233600002451567,
       "request": {
         "status": "approved"
       },
@@ -400,7 +400,7 @@
         "gate": "approve_gui",
         "status": "pending",
         "detail": null,
-        "created_at": "2026-11-09T06:40:10Z",
+        "created_at": "2026-11-09T07:07:52Z",
         "resolved_at": null
       },
       "gate": "approve_gui"
@@ -409,7 +409,7 @@
       "method": "POST",
       "path": "/api/projects/1/sync",
       "status": 200,
-      "dt_s": 1.4124815850000232,
+      "dt_s": 1.8012215310000101,
       "body": {
         "id": 1,
         "plugin_name": "MeterTap",
@@ -488,7 +488,7 @@
       "method": "POST",
       "path": "/api/projects/1/build",
       "status": 200,
-      "dt_s": 0.7483010549999562,
+      "dt_s": 1.5548997199998666,
       "body": {
         "id": 1,
         "plugin_name": "MeterTap",
@@ -549,8 +549,8 @@
         "apc_path": "plugins/MeterTap",
         "vst_path": "vst/MeterTap",
         "repair_attempts": 0,
-        "created_at": "2026-11-09T06:40:10Z",
-        "updated_at": "2026-11-09T06:40:15Z",
+        "created_at": "2026-11-09T07:07:51Z",
+        "updated_at": "2026-11-09T07:07:58Z",
         "phase": "build",
         "validation": {
           "dpcs_phase0_constitution_exists": true,
@@ -565,14 +565,14 @@
         },
         "apc_phase": "impl",
         "last_ok": true,
-        "last_output_tail": "==> Building vst/MeterTap\n-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'\n--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found\n--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found\n-- Configuring juceaide\n-- Building juceaide\n-- Exporting juceaide\n-- Testing juceaide\n-- Finished setting up juceaide\n-- Configuring done (0.5s)\n-- Generating done (0.0s)\n-- Build files have been written to: /agent/repos/Instruments/vst/MeterTap/build\n[  1%] Building VST3 manifest helper for MeterTap\n[ 10%] Built target factory_gui_fonts_disklordz\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /agent/repos/Instruments/vst/MeterTap/build/vst3_helpers/MeterTap\n[100%] Built target vst3_helper\n[ 10%] Built target MeterTap_vst3_helper\n[ 38%] Built target MeterTap\n[ 45%] Built target MeterTap_Standalone\n[ 53%] Built target MeterTap_VST3\n[ 73%] Built target MeterTapProcessorTests\n[100%] Built target MeterTapEditorRenderTests\nVST3: /agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3\ngmake[3]: warning: jobserver unavailable: using -j1.  Add '+' to parent make rule.\n"
+        "last_output_tail": "==> Building vst/MeterTap\n-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'\n--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found\n--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found\n-- Configuring juceaide\n-- Building juceaide\n-- Exporting juceaide\n-- Configuring done (0.5s)\n-- Generating done (0.0s)\n-- Build files have been written to: /agent/repos/Instruments/vst/MeterTap/build\n[  1%] Generating juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData1.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData2.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData3.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData4.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData5.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData6.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData7.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData8.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/FactoryGuiFonts.h\n[  3%] Built target juce_vst3_helper\n[  3%] Generating juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData1.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData2.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData3.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData4.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData5.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData6.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData7.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData8.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/FactoryGuiFonts.h\n[ 12%] Built target factory_gui_fonts_disklordz\n[ 39%] Built target MeterTap\n[ 48%] Built target MeterTap_Standalone\n[ 58%] Built target MeterTap_VST3\n[ 74%] Built target MeterTapProcessorTests\n[100%] Built target MeterTapEditorRenderTests\nVST3: /agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3\n"
       }
     },
     {
       "method": "POST",
       "path": "/api/projects/1/test",
       "status": 200,
-      "dt_s": 2.5246634049999557,
+      "dt_s": 2.9468258140000216,
       "body": {
         "id": 1,
         "plugin_name": "MeterTap",
@@ -633,8 +633,8 @@
         "apc_path": "plugins/MeterTap",
         "vst_path": "vst/MeterTap",
         "repair_attempts": 0,
-        "created_at": "2026-11-09T06:40:10Z",
-        "updated_at": "2026-11-09T06:40:17Z",
+        "created_at": "2026-11-09T07:07:51Z",
+        "updated_at": "2026-11-09T07:08:01Z",
         "phase": "test",
         "validation": {
           "dpcs_phase0_constitution_exists": true,
@@ -649,14 +649,14 @@
         },
         "apc_phase": "impl",
         "last_ok": true,
-        "last_output_tail": "64]\\nTesting with sample rate [96000] and block size [128]\\nTesting with sample rate [96000] and block size [256]\\nTesting with sample rate [96000] and block size [512]\\nTesting with sample rate [96000] and block size [1024]\\nCompleted tests in pluginval / Audio processing\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Plugin state...\\nCompleted tests in pluginval / Plugin state\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Automation...\\nTesting with sample rate [44100] and block size [64] and sub-block size [32]\\nTesting with sample rate [44100] and block size [128] and sub-block size [32]\\nTesting with sample rate [44100] and block size [256] and sub-block size [32]\\nTesting with sample rate [44100] and block size [512] and sub-block size [32]\\nTesting with sample rate [44100] and block size [1024] and sub-block size [32]\\nTesting with sample rate [48000] and block size [64] and sub-block size [32]\\nTesting with sample rate [48000] and block size [128] and sub-block size [32]\\nTesting with sample rate [48000] and block size [256] and sub-block size [32]\\nTesting with sample rate [48000] and block size [512] and sub-block size [32]\\nTesting with sample rate [48000] and block size [1024] and sub-block size [32]\\nTesting with sample rate [96000] and block size [64] and sub-block size [32]\\nTesting with sample rate [96000] and block size [128] and sub-block size [32]\\nTesting with sample rate [96000] and block size [256] and sub-block size [32]\\nTesting with sample rate [96000] and block size [512] and sub-block size [32]\\nTesting with sample rate [96000] and block size [1024] and sub-block size [32]\\nCompleted tests in pluginval / Automation\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Editor Automation...\\nCompleted tests in pluginval / Editor Automation\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Automatable Parameters...\\nCompleted tests in pluginval / Automatable Parameters\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / auval...\\nCompleted tests in pluginval / auval\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / vst3 validator...\\nINFO: Skipping vst3 validator as validator path hasn't been set\\nCompleted tests in pluginval / vst3 validator\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Basic bus...\\nCompleted tests in pluginval / Basic bus\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Listing available buses...\\nInputs:\\n\\tNamed layouts: Stereo\\n\\tDiscrete layouts: None\\nOutputs:\\n\\tNamed layouts: Stereo\\n\\tDiscrete layouts: None\\nMain bus num input channels: 2\\nMain bus num output channels: 2\\nCompleted tests in pluginval / Listing available buses\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Enabling all buses...\\nCompleted tests in pluginval / Enabling all buses\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Disabling non-main busses...\\nCompleted tests in pluginval / Disabling non-main busses\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Restoring default layout...\\nMain bus num input channels: 2\\nMain bus num output channels: 2\\nCompleted tests in pluginval / Restoring default layout\\nSUCCESS\\npluginval: all plugins passed.\\n  OK  /agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3\\nRunning pluginval on /agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3 \\u2026\\n\"\n    }\n  ]\n}\n[PASS] factory_vst_build (0.8s)\n[PASS] factory_vst_artefact (0.0s)\n[PASS] factory_pluginval (1.7s)\n"
+        "last_output_tail": "64]\\nTesting with sample rate [96000] and block size [128]\\nTesting with sample rate [96000] and block size [256]\\nTesting with sample rate [96000] and block size [512]\\nTesting with sample rate [96000] and block size [1024]\\nCompleted tests in pluginval / Audio processing\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Plugin state...\\nCompleted tests in pluginval / Plugin state\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Automation...\\nTesting with sample rate [44100] and block size [64] and sub-block size [32]\\nTesting with sample rate [44100] and block size [128] and sub-block size [32]\\nTesting with sample rate [44100] and block size [256] and sub-block size [32]\\nTesting with sample rate [44100] and block size [512] and sub-block size [32]\\nTesting with sample rate [44100] and block size [1024] and sub-block size [32]\\nTesting with sample rate [48000] and block size [64] and sub-block size [32]\\nTesting with sample rate [48000] and block size [128] and sub-block size [32]\\nTesting with sample rate [48000] and block size [256] and sub-block size [32]\\nTesting with sample rate [48000] and block size [512] and sub-block size [32]\\nTesting with sample rate [48000] and block size [1024] and sub-block size [32]\\nTesting with sample rate [96000] and block size [64] and sub-block size [32]\\nTesting with sample rate [96000] and block size [128] and sub-block size [32]\\nTesting with sample rate [96000] and block size [256] and sub-block size [32]\\nTesting with sample rate [96000] and block size [512] and sub-block size [32]\\nTesting with sample rate [96000] and block size [1024] and sub-block size [32]\\nCompleted tests in pluginval / Automation\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Editor Automation...\\nCompleted tests in pluginval / Editor Automation\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Automatable Parameters...\\nCompleted tests in pluginval / Automatable Parameters\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / auval...\\nCompleted tests in pluginval / auval\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / vst3 validator...\\nINFO: Skipping vst3 validator as validator path hasn't been set\\nCompleted tests in pluginval / vst3 validator\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Basic bus...\\nCompleted tests in pluginval / Basic bus\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Listing available buses...\\nInputs:\\n\\tNamed layouts: Stereo\\n\\tDiscrete layouts: None\\nOutputs:\\n\\tNamed layouts: Stereo\\n\\tDiscrete layouts: None\\nMain bus num input channels: 2\\nMain bus num output channels: 2\\nCompleted tests in pluginval / Listing available buses\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Enabling all buses...\\nCompleted tests in pluginval / Enabling all buses\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Disabling non-main busses...\\nCompleted tests in pluginval / Disabling non-main busses\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Restoring default layout...\\nMain bus num input channels: 2\\nMain bus num output channels: 2\\nCompleted tests in pluginval / Restoring default layout\\nSUCCESS\\npluginval: all plugins passed.\\n  OK  /agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3\\nRunning pluginval on /agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3 \\u2026\\n\"\n    }\n  ]\n}\n[PASS] factory_vst_build (1.0s)\n[PASS] factory_vst_artefact (0.0s)\n[PASS] factory_pluginval (1.7s)\n"
       }
     },
     {
       "method": "POST",
       "path": "/api/projects/1/certify",
       "status": 200,
-      "dt_s": 0.009185086999877967,
+      "dt_s": 0.008119973000248137,
       "body": {
         "schema_version": "certification/v1",
         "passed": true,
@@ -702,7 +702,7 @@
       "method": "GET",
       "path": "/api/projects/1/approvals",
       "status": 200,
-      "dt_s": 0.0007775690000926261,
+      "dt_s": 0.0009089800000765536,
       "body": [
         {
           "id": 1,
@@ -710,8 +710,8 @@
           "gate": "approve_architecture",
           "status": "approved",
           "detail": null,
-          "created_at": "2026-11-09T06:40:10Z",
-          "resolved_at": "2026-11-09T06:40:10Z"
+          "created_at": "2026-11-09T07:07:51Z",
+          "resolved_at": "2026-11-09T07:07:51Z"
         },
         {
           "id": 2,
@@ -719,8 +719,8 @@
           "gate": "approve_gui",
           "status": "approved",
           "detail": null,
-          "created_at": "2026-11-09T06:40:10Z",
-          "resolved_at": "2026-11-09T06:40:12Z"
+          "created_at": "2026-11-09T07:07:52Z",
+          "resolved_at": "2026-11-09T07:07:55Z"
         },
         {
           "id": 3,
@@ -728,7 +728,7 @@
           "gate": "approve_release",
           "status": "pending",
           "detail": "{\"schema_version\": \"certification/v1\", \"passed\": true, \"gates\": [{\"id\": \"build_ok\", \"field\": \"build_ok\", \"required\": true, \"ok\": true, \"description\": \"Latest build run succeeded\"}, {\"id\": \"artefact_ok\", \"field\": \"artefact_ok\", \"required\": true, \"ok\": true, \"description\": \"VST3 bundle present under vst/<Name>/build\"}, {\"id\": \"pluginval_ok\", \"field\": \"pluginval_ok\", \"required\": true, \"ok\": true, \"description\": \"Latest factory QA / pluginval-style test run succeeded\"}, {\"id\": \"audio_ok\", \"field\": \"audio_ok\", \"required\": true, \"ok\": true, \"description\": \"Latest factory-audio check succeeded (skip without fixture still counts as ok)\"}], \"inputs\": {\"build_ok\": true, \"artefact_ok\": true, \"pluginval_ok\": true, \"audio_ok\": true}}",
-          "created_at": "2026-11-09T06:40:17Z",
+          "created_at": "2026-11-09T07:08:01Z",
           "resolved_at": null
         }
       ]
@@ -737,7 +737,7 @@
       "method": "POST",
       "path": "/api/projects/1/approvals/3/resolve",
       "status": 200,
-      "dt_s": 0.0011640430000170454,
+      "dt_s": 0.0013211700002102589,
       "request": {
         "status": "approved"
       },
@@ -747,7 +747,7 @@
         "gate": "approve_release",
         "status": "pending",
         "detail": "{\"schema_version\": \"certification/v1\", \"passed\": true, \"gates\": [{\"id\": \"build_ok\", \"field\": \"build_ok\", \"required\": true, \"ok\": true, \"description\": \"Latest build run succeeded\"}, {\"id\": \"artefact_ok\", \"field\": \"artefact_ok\", \"required\": true, \"ok\": true, \"description\": \"VST3 bundle present under vst/<Name>/build\"}, {\"id\": \"pluginval_ok\", \"field\": \"pluginval_ok\", \"required\": true, \"ok\": true, \"description\": \"Latest factory QA / pluginval-style test run succeeded\"}, {\"id\": \"audio_ok\", \"field\": \"audio_ok\", \"required\": true, \"ok\": true, \"description\": \"Latest factory-audio check succeeded (skip without fixture still counts as ok)\"}], \"inputs\": {\"build_ok\": true, \"artefact_ok\": true, \"pluginval_ok\": true, \"audio_ok\": true}}",
-        "created_at": "2026-11-09T06:40:17Z",
+        "created_at": "2026-11-09T07:08:01Z",
         "resolved_at": null
       },
       "gate": "approve_release"
@@ -756,7 +756,7 @@
       "method": "POST",
       "path": "/api/projects/1/ship",
       "status": 200,
-      "dt_s": 1.0712084130000221,
+      "dt_s": 2.4492672940000375,
       "body": {
         "id": 1,
         "plugin_name": "MeterTap",
@@ -821,8 +821,8 @@
         "apc_path": "plugins/MeterTap",
         "vst_path": "vst/MeterTap",
         "repair_attempts": 0,
-        "created_at": "2026-11-09T06:40:10Z",
-        "updated_at": "2026-11-09T06:40:18Z",
+        "created_at": "2026-11-09T07:07:51Z",
+        "updated_at": "2026-11-09T07:08:04Z",
         "phase": "ship",
         "validation": {
           "dpcs_phase0_constitution_exists": true,
@@ -838,7 +838,7 @@
         "apc_phase": "impl",
         "ship_status": "ok",
         "last_ok": true,
-        "last_output_tail": "APC gate OK (plan) for MeterTap\nAPC gate OK (design) for MeterTap\nAPC gate OK (impl) for MeterTap\nAPC gate OK (ship) for MeterTap\n  adding: manifest.json (deflated 26%)\n  adding: MeterTap.vst3/ (stored 0%)\n  adding: MeterTap.vst3/Contents/ (stored 0%)\n  adding: MeterTap.vst3/Contents/x86_64-linux/ (stored 0%)\n  adding: MeterTap.vst3/Contents/x86_64-linux/MeterTap.so (deflated 59%)\n  adding: MeterTap.vst3/Contents/Resources/ (stored 0%)\n  adding: MeterTap.vst3/Contents/Resources/moduleinfo.json (deflated 68%)\n  adding: licenses/ (stored 0%)\n  adding: licenses/fonts/ (stored 0%)\n  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)\n  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)\n  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)\n  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)\n  adding: INSTALL.txt (deflated 41%)\nPackage: /agent/repos/Instruments/release/MeterTap/MeterTap-1.0.0-vst3.zip\nContents: /agent/repos/Instruments/release/MeterTap/staging\n",
+        "last_output_tail": "APC gate OK (plan) for MeterTap\nAPC gate OK (design) for MeterTap\nAPC gate OK (impl) for MeterTap\nAPC gate OK (ship) for MeterTap\n  adding: manifest.json (deflated 26%)\n  adding: MeterTap.vst3/ (stored 0%)\n  adding: MeterTap.vst3/Contents/ (stored 0%)\n  adding: MeterTap.vst3/Contents/x86_64-linux/ (stored 0%)\n  adding: MeterTap.vst3/Contents/x86_64-linux/MeterTap.so (deflated 60%)\n  adding: MeterTap.vst3/Contents/Resources/ (stored 0%)\n  adding: MeterTap.vst3/Contents/Resources/moduleinfo.json (deflated 73%)\n  adding: licenses/ (stored 0%)\n  adding: licenses/fonts/ (stored 0%)\n  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)\n  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)\n  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)\n  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)\n  adding: INSTALL.txt (deflated 41%)\nPackage: /agent/repos/Instruments/release/MeterTap/MeterTap-1.0.0-vst3.zip\nContents: /agent/repos/Instruments/release/MeterTap/staging\n",
         "artifact": "/agent/repos/Instruments/release/MeterTap/MeterTap-1.0.0-vst3.zip"
       }
     },
@@ -846,7 +846,7 @@
       "method": "GET",
       "path": "/api/projects/1/pipeline",
       "status": 200,
-      "dt_s": 0.7084625820000383,
+      "dt_s": 0.9978295460000481,
       "body": {
         "project_id": 1,
         "plugin_name": "MeterTap",

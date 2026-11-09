@@ -6,9 +6,21 @@ constexpr int kWinH = 440;
 
 juce::String makeTooltipTitleBody(const juce::String& title, const juce::String& body)
 {
-  return title + juce::newLine + body;
+  return title + juce::String(juce::NewLine()) + body;
 }
 } // namespace
+
+juce::String MeterTapAudioProcessorEditor::middleDotUtf8()
+{
+  // U+00B7 MIDDLE DOT — never embed raw non-ASCII in source literals.
+  return juce::String(juce::CharPointer_UTF8("\xC2\xB7"));
+}
+
+juce::String MeterTapAudioProcessorEditor::metersTitleUtf8(bool bypassed)
+{
+  return juce::String(juce::CharPointer_UTF8("METERS ")) + middleDotUtf8()
+      + juce::String(juce::CharPointer_UTF8(bypassed ? " INPUT" : " OUTPUT"));
+}
 
 MeterTapAudioProcessorEditor::MeterTapAudioProcessorEditor(MeterTapAudioProcessor& p)
     : AudioProcessorEditor(p),
@@ -19,10 +31,11 @@ MeterTapAudioProcessorEditor::MeterTapAudioProcessorEditor(MeterTapAudioProcesso
   tooltipWindow_ = std::make_unique<juce::TooltipWindow>(this, fds::motion::tooltipDelayMs);
 
   addAndMakeVisible(header_);
+  setupHeaderGlyph();
   header_.getPresetBrowser().setPresetList({"Init"});
   header_.getPresetBrowser().setPresetName("Init");
 
-  meterSection_.setTitle("METERS · OUTPUT");
+  meterSection_.setTitle(metersTitleUtf8(false));
   inputSection_.setTitle("INPUT");
   readoutSection_.setTitle("READOUT");
   addAndMakeVisible(meterSection_);
@@ -102,6 +115,7 @@ MeterTapAudioProcessorEditor::MeterTapAudioProcessorEditor(MeterTapAudioProcesso
     r->setLarge(true);
     addAndMakeVisible(*r);
   }
+  seedSilenceReadouts();
 
   addAndMakeVisible(holdToggle_);
   clearButton_.getProperties().set(fds::gui::FactoryLookAndFeel::buttonVariantProperty, "secondary");
@@ -150,13 +164,30 @@ MeterTapAudioProcessorEditor::~MeterTapAudioProcessorEditor()
   setLookAndFeel(nullptr);
 }
 
+void MeterTapAudioProcessorEditor::setupHeaderGlyph()
+{
+  // Simplified floppy + crown from design-system previews/disklordz.html (22×22 viewBox).
+  juce::Path outline, fill, accent;
+  outline.addRoundedRectangle(2.0f, 5.0f, 18.0f, 15.0f, 2.0f);
+  fill.addRectangle(6.0f, 5.0f, 9.0f, 5.0f);
+  accent.startNewSubPath(5.0f, 4.0f);
+  accent.lineTo(8.0f, 1.0f);
+  accent.lineTo(11.0f, 4.0f);
+  accent.lineTo(14.0f, 1.0f);
+  accent.lineTo(17.0f, 4.0f);
+  header_.setGlyphPaths(std::move(outline), std::move(fill), std::move(accent));
+}
+
 void MeterTapAudioProcessorEditor::setupTooltips()
 {
-  const auto trimRangeHint = juce::String::fromUTF8("\xe2\x88\x92") + "24"
-      + juce::String::fromUTF8("\xe2\x80\xa6") + "+12 dB · default 0 dB · double-click to reset";
+  // U+2212 minus, U+2026 ellipsis, U+00B7 middle dot — all via UTF-8 pointers.
+  const auto trimRangeHint = juce::String(juce::CharPointer_UTF8("\xe2\x88\x92")) + "24"
+      + juce::String(juce::CharPointer_UTF8("\xe2\x80\xa6")) + "+12 dB " + middleDotUtf8()
+      + " default 0 dB " + middleDotUtf8() + " double-click to reset";
   trimKnob_.getSlider().setTooltip(makeTooltipTitleBody(
       "Input trim",
-      "Gain applied before metering and output." + juce::newLine + trimRangeHint));
+      juce::String("Gain applied before metering and output.") + juce::String(juce::NewLine())
+          + trimRangeHint));
   header_.getBypassToggle().getButton().setTooltip(makeTooltipTitleBody(
       "Bypass", "Passes audio through untouched. Meters keep showing the input."));
   holdToggle_.getButton().setTooltip(makeTooltipTitleBody(
@@ -188,22 +219,38 @@ void MeterTapAudioProcessorEditor::setupTabOrder()
 void MeterTapAudioProcessorEditor::applyMeterTitle(bool bypassed)
 {
   showBypassDot_ = bypassed;
-  // Indent title when dot is shown so "preceded by" reads cleanly.
-  meterSection_.setTitle(bypassed ? "  METERS · INPUT" : "METERS · OUTPUT");
+  meterSection_.setTitle(metersTitleUtf8(bypassed));
+  // design-spec §4: 6 px caution dot, then 6 px gap, then title (shifts right).
+  meterSection_.setTitleExtraLeft(bypassed ? 12 : 0);
   bypassCautionDot_.setVisible(bypassed);
   if (bypassed) {
     trimKnob_.getSlider().setTooltip(makeTooltipTitleBody(
         "Input trim",
-        "Gain applied before metering and output." + juce::newLine
+        juce::String("Gain applied before metering and output.") + juce::String(juce::NewLine())
             + "No effect while bypassed."));
   } else {
-    const auto trimRangeHint = juce::String::fromUTF8("\xe2\x88\x92") + "24"
-        + juce::String::fromUTF8("\xe2\x80\xa6") + "+12 dB · default 0 dB · double-click to reset";
+    const auto trimRangeHint = juce::String(juce::CharPointer_UTF8("\xe2\x88\x92")) + "24"
+        + juce::String(juce::CharPointer_UTF8("\xe2\x80\xa6")) + "+12 dB " + middleDotUtf8()
+        + " default 0 dB " + middleDotUtf8() + " double-click to reset";
     trimKnob_.getSlider().setTooltip(makeTooltipTitleBody(
         "Input trim",
-        "Gain applied before metering and output." + juce::newLine + trimRangeHint));
+        juce::String("Gain applied before metering and output.") + juce::String(juce::NewLine())
+            + trimRangeHint));
   }
   meterSection_.repaint();
+}
+
+void MeterTapAudioProcessorEditor::seedSilenceReadouts()
+{
+  const float floorDb = fds::meter::numericFloorDb;
+  lastPeakLText_.clear();
+  lastPeakRText_.clear();
+  lastRmsLText_.clear();
+  lastRmsRText_.clear();
+  updateReadout(peakL_, floorDb, false, lastPeakLText_);
+  updateReadout(peakR_, floorDb, false, lastPeakRText_);
+  updateReadout(rmsL_, floorDb, false, lastRmsLText_);
+  updateReadout(rmsR_, floorDb, false, lastRmsRText_);
 }
 
 void MeterTapAudioProcessorEditor::clearUiHoldAndOver()
@@ -226,22 +273,18 @@ void MeterTapAudioProcessorEditor::clearUiHoldAndOver()
 
 juce::String MeterTapAudioProcessorEditor::formatDbNoUnit(float db)
 {
+  // U+2212 MINUS SIGN, U+221E INFINITY — design-spec §4 / §2.3 (+ always for >= 0).
   if (db <= fds::meter::numericFloorDb || !std::isfinite(db))
-    return juce::String::fromUTF8("\xe2\x88\x92\xe2\x88\x9e"); // −∞
+    return juce::String(juce::CharPointer_UTF8("\xe2\x88\x92\xe2\x88\x9e"));
   if (db < 0.0f)
-    return juce::String::fromUTF8("\xe2\x88\x92") + juce::String(std::abs(db), 1);
-  if (db > 0.0f)
-    return "+" + juce::String(db, 1);
-  return "0.0";
+    return juce::String(juce::CharPointer_UTF8("\xe2\x88\x92")) + juce::String(std::abs(db), 1);
+  return "+" + juce::String(db, 1);
 }
 
 void MeterTapAudioProcessorEditor::updateReadout(fds::gui::ValueReadout& readout, float db,
                                                  bool overLatched, juce::String& lastText)
 {
   const auto text = formatDbNoUnit(db);
-  if (text == lastText && !overLatched) {
-    // Still update over colour if needed
-  }
   if (overLatched || db > fds::meter::overThresholdDb)
     readout.setState(fds::gui::ValueReadout::State::over);
   else if (db <= fds::meter::numericFloorDb)
@@ -249,8 +292,11 @@ void MeterTapAudioProcessorEditor::updateReadout(fds::gui::ValueReadout& readout
   else
     readout.setState(fds::gui::ValueReadout::State::normal);
 
+  // Always push text so wells are never blank (repaint-on-change is ValueReadout's job).
   if (text != lastText) {
     lastText = text;
+    readout.setValueText(text, {});
+  } else if (readout.getValueText().isEmpty()) {
     readout.setValueText(text, {});
   }
 }
@@ -320,6 +366,19 @@ void MeterTapAudioProcessorEditor::paint(juce::Graphics& g)
   g.fillAll(fds::gui::argb(fds::color::bg::chassis));
 }
 
+juce::String MeterTapAudioProcessorEditor::getTrimValueText()
+{
+  // RotaryKnob value label is private; rebuild from APVTS (same formatter as sync).
+  const float db =
+      proc_.getAPVTS().getRawParameterValue(MeterTapAudioProcessor::kParamTrimDb)->load();
+  return formatDbNoUnit(db) + " dB";
+}
+
+juce::String MeterTapAudioProcessorEditor::getPresetNameText()
+{
+  return header_.getPresetBrowser().getPresetName();
+}
+
 void MeterTapAudioProcessorEditor::resized()
 {
   // Absolute layout per design-spec.md §2
@@ -327,7 +386,8 @@ void MeterTapAudioProcessorEditor::resized()
   meterSection_.setBounds(16, 56, 216, 368);
   inputSection_.setBounds(248, 56, 216, 156);
   readoutSection_.setBounds(248, 224, 216, 200);
-  // 6 px caution dot inside meter section, preceding title (design-spec §4)
+  // 6 px caution dot at section title inset, then 6 px gap before title text (§4).
+  // Section origin (16,56); title row y≈64; default title left = 16+12 = 28.
   bypassCautionDot_.setBounds(28, 66, 6, 6);
   bypassCautionDot_.toFront(false);
 
@@ -376,10 +436,13 @@ void MeterTapAudioProcessorEditor::setTestOverLatched(bool left, bool right)
 {
   overLatched_ = {{left, right}};
   const float floorDb = fds::meter::defaultFloorDb;
-  meterL_.setLevels(left ? 1.0f : -12.0f, -18.0f, left ? 1.0f : floorDb, left);
-  meterR_.setLevels(right ? 1.0f : -12.0f, -18.0f, right ? 1.0f : floorDb, right);
+  constexpr float kRmsDb = -18.0f;
+  meterL_.setLevels(left ? 1.0f : -12.0f, kRmsDb, left ? 1.0f : floorDb, left);
+  meterR_.setLevels(right ? 1.0f : -12.0f, kRmsDb, right ? 1.0f : floorDb, right);
   updateReadout(peakL_, left ? 1.0f : -12.0f, left, lastPeakLText_);
   updateReadout(peakR_, right ? 1.0f : -12.0f, right, lastPeakRText_);
+  updateReadout(rmsL_, kRmsDb, false, lastRmsLText_);
+  updateReadout(rmsR_, kRmsDb, false, lastRmsRText_);
 }
 
 void MeterTapAudioProcessorEditor::setTestLevels(int channel, float peakDb, float rmsDb,

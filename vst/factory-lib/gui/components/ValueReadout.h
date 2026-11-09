@@ -19,6 +19,9 @@ public:
     void setState (State s);
     void setLarge (bool large);
 
+    juce::String getValueText() const { return valueLabel.getText(); }
+    State getState() const noexcept { return state; }
+
     std::function<void (const juce::String&)> onTextCommit;
 
     void paint (juce::Graphics&) override;

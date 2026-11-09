@@ -17,6 +17,8 @@ public:
     void setProductName (const juce::String& name);
     void setVersion (const juce::String& version);
     void setGlyphPath (juce::Path glyph);
+    /** Outline (stroked brand.stroke), fill (filled brand.stroke), accent (stroked premium.badge). */
+    void setGlyphPaths (juce::Path outline, juce::Path fill, juce::Path accent);
 
     LedToggle& getBypassToggle() noexcept { return bypass; }
     PresetBrowser& getPresetBrowser() noexcept { return presets; }
@@ -29,19 +31,33 @@ private:
     class GlyphSlot : public juce::Component
     {
     public:
-        juce::Path path;
+        juce::Path path;      // legacy single fill (brand.stroke)
+        juce::Path outline;   // stroked brand.stroke
+        juce::Path fill;      // filled brand.stroke
+        juce::Path accent;    // stroked premium.badge
         void paint (juce::Graphics& g) override
         {
-            if (path.isEmpty())
+            const bool multi = ! outline.isEmpty() || ! fill.isEmpty() || ! accent.isEmpty();
+            if (! multi && path.isEmpty())
             {
                 g.setColour (argb (color::brand::fill));
                 g.fillRoundedRectangle (getLocalBounds().toFloat(), radius::xs);
+                return;
             }
-            else
+            if (multi)
             {
                 g.setColour (argb (color::brand::stroke));
-                g.fillPath (path);
+                if (! fill.isEmpty())
+                    g.fillPath (fill);
+                if (! outline.isEmpty())
+                    g.strokePath (outline, juce::PathStrokeType (1.5f));
+                g.setColour (argb (color::premium::badge));
+                if (! accent.isEmpty())
+                    g.strokePath (accent, juce::PathStrokeType (1.5f));
+                return;
             }
+            g.setColour (argb (color::brand::stroke));
+            g.fillPath (path);
         }
     };
 

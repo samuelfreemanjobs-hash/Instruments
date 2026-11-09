@@ -1,8 +1,10 @@
 /**
  * Contract: MeterTap editor offscreen renders at 100% and 200% for the configured
- * theme; key pixels match DesignTokens (over cap = meter.over; bypass LED = state.caution).
+ * theme; key pixels match DesignTokens; PNG files are single-image (one IEND);
+ * normal vs over+bypass renders differ; titles use real UTF-8 middle-dot (no mojibake);
+ * RMS wells always show a value.
  *
- * PNGs → METERTAP_RENDER_OUT_DIR/<theme>/MeterTapEditor@{scale}x.png
+ * PNGs → METERTAP_RENDER_OUT_DIR/<theme>/MeterTapEditor[@scale] / -over-bypass@
  */
 #include "../Source/PluginEditor.h"
 #include "../Source/PluginProcessor.h"
@@ -59,13 +61,47 @@ juce::Image renderComponent(juce::Component& c, float scale)
   return img;
 }
 
+/** Count PNG IEND chunks; a valid single image has exactly one, at EOF-12. */
+int countPngIend(const juce::File& file)
+{
+  juce::MemoryBlock mb;
+  if (!file.loadFileAsData(mb) || mb.getSize() < 12)
+    return 0;
+  const auto* data = static_cast<const unsigned char*>(mb.getData());
+  const size_t n = mb.getSize();
+  int count = 0;
+  // PNG chunk type is 4 bytes at offset 4 within each chunk; scan for IEND
+  for (size_t i = 0; i + 8 <= n; ++i) {
+    if (data[i] == 'I' && data[i + 1] == 'E' && data[i + 2] == 'N' && data[i + 3] == 'D')
+      ++count;
+  }
+  return count;
+}
+
+bool pngIendAtEof(const juce::File& file)
+{
+  juce::MemoryBlock mb;
+  if (!file.loadFileAsData(mb) || mb.getSize() < 12)
+    return false;
+  // IEND chunk: 4 length(0) + 'IEND' + 4 CRC = 12 bytes at end
+  const auto* data = static_cast<const unsigned char*>(mb.getData());
+  const size_t n = mb.getSize();
+  return data[n - 8] == 'I' && data[n - 7] == 'E' && data[n - 6] == 'N' && data[n - 5] == 'D';
+}
+
 void writePng(const juce::Image& img, const juce::File& file)
 {
   file.getParentDirectory().createDirectory();
+  // FileOutputStream appends by default — truncate so we never concatenate PNGs.
+  if (file.existsAsFile())
+    file.deleteFile();
   juce::FileOutputStream stream(file);
   if (stream.openedOk()) {
+    stream.setPosition(0);
+    stream.truncate();
     juce::PNGImageFormat png;
     png.writeImageToStream(img, stream);
+    stream.flush();
   }
 }
 
@@ -80,6 +116,41 @@ juce::File outDir()
 #endif
 }
 
+bool imagesDiffer(const juce::Image& a, const juce::Image& b)
+{
+  if (a.getWidth() != b.getWidth() || a.getHeight() != b.getHeight())
+    return true;
+  for (int y = 0; y < a.getHeight(); y += juce::jmax(1, a.getHeight() / 32))
+    for (int x = 0; x < a.getWidth(); x += juce::jmax(1, a.getWidth() / 32))
+      if (a.getPixelAt(x, y) != b.getPixelAt(x, y))
+        return true;
+  return false;
+}
+
+void assertUtf8Title(const juce::String& title, float scale)
+{
+  // Must contain U+00B7 middle dot, must NOT contain the mojibake sequence "Â·"
+  const juce::String mid(juce::CharPointer_UTF8("\xC2\xB7"));
+  const juce::String mojibake(juce::CharPointer_UTF8("\xC3\x82\xC2\xB7")); // Â·
+  expect(title.contains(mid), "meter title missing U+00B7 middle-dot @" + juce::String(scale)
+                                  + " got=[" + title + "]");
+  expect(!title.contains(mojibake) && !title.containsChar((juce::juce_wchar)0x00C2),
+         "meter title has mojibake @" + juce::String(scale) + " got=[" + title + "]");
+  expect(title.contains("METERS") && (title.contains("INPUT") || title.contains("OUTPUT")),
+         "meter title content @" + juce::String(scale) + " got=[" + title + "]");
+}
+
+void assertReadoutNonEmpty(fds::gui::ValueReadout& r, const juce::String& name, float scale)
+{
+  const auto t = r.getValueText();
+  expect(t.isNotEmpty(), name + " readout empty @" + juce::String(scale));
+  // Must be −∞ or a signed one-decimal value
+  const juce::String inf(juce::CharPointer_UTF8("\xe2\x88\x92\xe2\x88\x9e"));
+  const juce::String minus(juce::CharPointer_UTF8("\xe2\x88\x92"));
+  const bool ok = (t == inf) || t.startsWith("+") || t.startsWith(minus);
+  expect(ok, name + " readout format @" + juce::String(scale) + " got=[" + t + "]");
+}
+
 void runScale(float scale)
 {
   MeterTapAudioProcessor proc;
@@ -87,60 +158,101 @@ void runScale(float scale)
   MeterTapAudioProcessorEditor editor(proc);
   editor.setSize(480, 440);
   editor.resized();
+  editor.seedSilenceReadouts();
+  editor.forcePaintForTest();
 
-  // Latch over on both meters + bypass caution LED for pixel asserts
+  // --- Normal (silence, no bypass) ---
+  editor.setTestBypass(false);
+  editor.seedSilenceReadouts();
+  editor.forcePaintForTest();
+  auto imgNormal = renderComponent(editor, scale);
+  expect(imageNonBlank(imgNormal), "normal blank @" + juce::String(scale));
+  assertReadoutNonEmpty(editor.getRmsL(), "RMS L (normal)", scale);
+  assertReadoutNonEmpty(editor.getRmsR(), "RMS R (normal)", scale);
+  assertReadoutNonEmpty(editor.getPeakL(), "PEAK L (normal)", scale);
+  expect(editor.getTrimValueText() == "+0.0 dB",
+         "trim value must be '+0.0 dB' got=[" + editor.getTrimValueText() + "]");
+  expect(editor.getPresetNameText() == "Init",
+         "preset name must be 'Init' (as-is) got=[" + editor.getPresetNameText() + "]");
+  assertUtf8Title(editor.getMeterTitleText(), scale);
+  expect(editor.getMeterTitleText().contains("OUTPUT"),
+         "normal title should be OUTPUT @" + juce::String(scale));
+
+  auto normalFile = outDir().getChildFile("MeterTapEditor@" + juce::String(scale, 1) + "x.png");
+  writePng(imgNormal, normalFile);
+  expect(countPngIend(normalFile) == 1, "normal PNG must have exactly one IEND @" + juce::String(scale)
+                                            + " count=" + juce::String(countPngIend(normalFile)));
+  expect(pngIendAtEof(normalFile), "normal PNG IEND must be at EOF @" + juce::String(scale));
+
+  // --- Over + bypass ---
   editor.setTestOverLatched(true, true);
   editor.setTestBypass(true);
   editor.forcePaintForTest();
-
-  auto img = renderComponent(editor, scale);
-  expect(imageNonBlank(img), "MeterTapEditor@" + juce::String(scale) + " blank");
+  auto imgOver = renderComponent(editor, scale);
+  expect(imageNonBlank(imgOver), "over-bypass blank @" + juce::String(scale));
+  assertReadoutNonEmpty(editor.getRmsL(), "RMS L (over)", scale);
+  assertReadoutNonEmpty(editor.getRmsR(), "RMS R (over)", scale);
+  assertReadoutNonEmpty(editor.getPeakL(), "PEAK L (over)", scale);
+  assertUtf8Title(editor.getMeterTitleText(), scale);
+  expect(editor.getMeterTitleText().contains("INPUT"),
+         "bypass title should be INPUT @" + juce::String(scale));
 
   // Chassis background
-  expect(colourClose(img.getPixelAt(2, 2), fds::gui::argb(fds::color::bg::chassis), 30),
+  expect(colourClose(imgOver.getPixelAt(2, 2), fds::gui::argb(fds::color::bg::chassis), 30),
          "chassis bg @" + juce::String(scale));
 
   // Over cap L centre ≈ (64+18, 92+3) = (82, 95) at 100%
   {
     const int cx = (int)std::round(82.0f * scale);
     const int cy = (int)std::round(95.0f * scale);
-    const auto pix = img.getPixelAt(juce::jlimit(0, img.getWidth() - 1, cx),
-                                    juce::jlimit(0, img.getHeight() - 1, cy));
+    const auto pix = imgOver.getPixelAt(juce::jlimit(0, imgOver.getWidth() - 1, cx),
+                                        juce::jlimit(0, imgOver.getHeight() - 1, cy));
     expect(colourClose(pix, fds::gui::argb(fds::color::meter::over), 50),
            "over cap L pixel " + juce::String::toHexString((int)pix.getARGB())
                + " != meter.over @" + juce::String(scale));
   }
 
-  // Bypass LED region — header bypass sits near right; sample LED area roughly
-  // Header bypass bounds from HeaderBar: right side. Sample around (430, 20).
+  // Bypass LED caution colour near header right
   {
     const int bx = (int)std::round(410.0f * scale);
     const int by = (int)std::round(20.0f * scale);
-    // Scan a small neighbourhood for caution colour (LED glow)
     bool foundCaution = false;
     for (int dy = -8; dy <= 8 && !foundCaution; ++dy)
       for (int dx = -16; dx <= 16 && !foundCaution; ++dx) {
-        const int x = juce::jlimit(0, img.getWidth() - 1, bx + (int)std::round(dx * scale));
-        const int y = juce::jlimit(0, img.getHeight() - 1, by + (int)std::round(dy * scale / 2));
-        if (colourClose(img.getPixelAt(x, y), fds::gui::argb(fds::color::state::caution), 55))
+        const int x = juce::jlimit(0, imgOver.getWidth() - 1, bx + (int)std::round(dx * scale));
+        const int y = juce::jlimit(0, imgOver.getHeight() - 1, by + (int)std::round(dy * scale / 2));
+        if (colourClose(imgOver.getPixelAt(x, y), fds::gui::argb(fds::color::state::caution), 55))
           foundCaution = true;
       }
     expect(foundCaution, "bypass LED caution colour not found @" + juce::String(scale));
   }
 
-  // Caution title dot when bypassed at (28,66)+centre ≈ (31, 69)
+  // Caution title dot at (28,66)+centre ≈ (31, 69) — must not sit on the 'M'
   {
     const int dx = (int)std::round(31.0f * scale);
     const int dy = (int)std::round(69.0f * scale);
-    const auto pix = img.getPixelAt(juce::jlimit(0, img.getWidth() - 1, dx),
-                                    juce::jlimit(0, img.getHeight() - 1, dy));
+    const auto pix = imgOver.getPixelAt(juce::jlimit(0, imgOver.getWidth() - 1, dx),
+                                        juce::jlimit(0, imgOver.getHeight() - 1, dy));
     expect(colourClose(pix, fds::gui::argb(fds::color::state::caution), 55),
            "bypass title caution dot @" + juce::String(scale));
   }
 
-  writePng(img, outDir().getChildFile("MeterTapEditor@" + juce::String(scale, 1) + "x.png"));
-  // Also write over/bypass state variants for evidence
-  writePng(img, outDir().getChildFile("MeterTapEditor-over-bypass@" + juce::String(scale, 1) + "x.png"));
+  expect(imagesDiffer(imgNormal, imgOver),
+         "normal and over-bypass renders must differ @" + juce::String(scale));
+
+  auto overFile =
+      outDir().getChildFile("MeterTapEditor-over-bypass@" + juce::String(scale, 1) + "x.png");
+  writePng(imgOver, overFile);
+  expect(countPngIend(overFile) == 1, "over PNG must have exactly one IEND @" + juce::String(scale)
+                                          + " count=" + juce::String(countPngIend(overFile)));
+  expect(pngIendAtEof(overFile), "over PNG IEND must be at EOF @" + juce::String(scale));
+  expect(normalFile.getSize() != overFile.getSize()
+             || imagesDiffer(imgNormal, imgOver),
+         "normal/over files must not be byte-identical evidence @" + juce::String(scale));
+
+  // Second write must not concatenate (regression for FileOutputStream append bug)
+  writePng(imgOver, overFile);
+  expect(countPngIend(overFile) == 1, "rewritten over PNG still one IEND @" + juce::String(scale));
 
   proc.releaseResources();
 }

@@ -47,6 +47,18 @@ void HeaderBar::setVersion (const juce::String& version)
 void HeaderBar::setGlyphPath (juce::Path glyph)
 {
     glyphSlot.path = std::move (glyph);
+    glyphSlot.outline.clear();
+    glyphSlot.fill.clear();
+    glyphSlot.accent.clear();
+    glyphSlot.repaint();
+}
+
+void HeaderBar::setGlyphPaths (juce::Path outline, juce::Path fill, juce::Path accent)
+{
+    glyphSlot.path.clear();
+    glyphSlot.outline = std::move (outline);
+    glyphSlot.fill = std::move (fill);
+    glyphSlot.accent = std::move (accent);
     glyphSlot.repaint();
 }
 
