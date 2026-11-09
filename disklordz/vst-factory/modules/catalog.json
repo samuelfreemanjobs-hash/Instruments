@@ -11,6 +11,7 @@
     "dsp/filters.json",
     "dsp/envelopes.json",
     "dsp/effects.json",
+    "dsp/analysis.json",
     "dsp/midi.json"
   ],
   "gui": ["gui/controls.json"],
