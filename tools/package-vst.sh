@@ -63,6 +63,21 @@ cat > "$STAGING/manifest.json" <<EOF
 }
 EOF
 
+# Include theme font OFL licences when the product uses factory-lib GUI fonts.
+FONTS_DIR="$ROOT/vst/factory-lib/gui/fonts"
+if [[ -d "$FONTS_DIR" ]]; then
+  mkdir -p "$STAGING/licenses/fonts"
+  while IFS= read -r -d '' ofl; do
+    fam="$(basename "$(dirname "$ofl")")"
+    cp -f "$ofl" "$STAGING/licenses/fonts/${fam}-OFL.txt"
+  done < <(find "$FONTS_DIR" -name 'OFL.txt' -print0 2>/dev/null)
+  if [[ -f "$ROOT/LICENSE" ]]; then
+    cp -f "$ROOT/LICENSE" "$STAGING/licenses/LICENSE" 2>/dev/null || true
+  elif [[ -f "$ROOT/LICENSE.md" ]]; then
+    cp -f "$ROOT/LICENSE.md" "$STAGING/licenses/LICENSE.md" 2>/dev/null || true
+  fi
+fi
+
 ZIP_NAME="${NAME}-${VERSION}-vst3.zip"
 rm -f "$RELEASE_DIR/$ZIP_NAME"
 (cd "$STAGING" && zip -r "$RELEASE_DIR/$ZIP_NAME" .)
