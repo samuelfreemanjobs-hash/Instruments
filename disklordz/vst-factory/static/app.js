@@ -43,11 +43,57 @@ async function refreshApprovals() {
         });
         log(`Approved ${a.gate}`);
         await refreshApprovals();
+        await refreshPipeline();
       };
       banner.appendChild(b);
     });
   } catch (e) {
     log("Approvals: " + e.message);
+  }
+}
+
+async function refreshPipeline() {
+  const strip = document.getElementById("pipeline-strip");
+  if (!currentProject) {
+    strip.innerHTML = "";
+    return;
+  }
+  try {
+    const pipe = await api(`/api/projects/${currentProject.id}/pipeline`);
+    const approvals = await api(`/api/projects/${currentProject.id}/approvals`);
+    strip.innerHTML = "";
+    (pipe.phases || []).forEach((stage) => {
+      const el = document.createElement("div");
+      el.className = "stage " + (stage.status || "pending");
+      el.title = [stage.verify, stage.sop, stage.command].filter(Boolean).join(" · ");
+      el.appendChild(document.createTextNode(stage.id));
+      if (stage.status === "blocked" && stage.gate) {
+        const pending = approvals.find(
+          (a) => a.gate === stage.gate && a.status === "pending"
+        );
+        if (pending) {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.textContent = "Approve";
+          b.onclick = async () => {
+            await api(
+              `/api/projects/${currentProject.id}/approvals/${pending.id}/resolve`,
+              { method: "POST", body: JSON.stringify({ status: "approved" }) }
+            );
+            log(`Approved ${stage.gate}`);
+            await refreshApprovals();
+            await refreshPipeline();
+          };
+          el.appendChild(b);
+        }
+      }
+      strip.appendChild(el);
+    });
+    if (pipe.blocking_gate) {
+      log(`Pipeline blocking gate: ${pipe.blocking_gate}`);
+    }
+  } catch (e) {
+    log("Pipeline: " + e.message);
   }
 }
 
@@ -58,10 +104,13 @@ function setProject(proj) {
     ? `#${proj.id} ${proj.plugin_name} · ${proj.state} · ${proj.plugin_class}`
     : "No project selected.";
   document.getElementById("btn-scaffold").disabled = !proj;
+  document.getElementById("btn-sync").disabled = !proj;
   document.getElementById("btn-build").disabled = !proj || !proj.vst_path;
   document.getElementById("btn-test").disabled = !proj || !proj.vst_path;
+  document.getElementById("btn-ship").disabled = !proj;
   document.getElementById("btn-prompt").disabled = !proj;
   refreshApprovals();
+  refreshPipeline();
 }
 
 async function api(path, opts = {}) {
@@ -139,6 +188,28 @@ document.getElementById("btn-scaffold").onclick = async () => {
     log(`Scaffolded ${proj.apc_path} + ${proj.vst_path}`);
   } catch (e) {
     log("Scaffold failed: " + e.message);
+  }
+};
+
+document.getElementById("btn-sync").onclick = async () => {
+  if (!currentProject) return;
+  try {
+    const proj = await api(`/api/projects/${currentProject.id}/sync`, { method: "POST" });
+    setProject(proj);
+    log(`Synced phase=${proj.phase} apc=${proj.apc_phase || "-"}`);
+  } catch (e) {
+    log("Sync failed: " + e.message);
+  }
+};
+
+document.getElementById("btn-ship").onclick = async () => {
+  if (!currentProject) return;
+  try {
+    const res = await api(`/api/projects/${currentProject.id}/ship`, { method: "POST" });
+    setProject(res);
+    log(`Ship ${res.ship_status || ""}: ${(res.last_output_tail || "").slice(-2000)}`);
+  } catch (e) {
+    log("Ship failed: " + e.message);
   }
 };
 

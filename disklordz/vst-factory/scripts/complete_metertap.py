@@ -2,8 +2,9 @@
 """MeterTap factory smoke — stdlib only (Windows + Linux).
 
 Talks to a RUNNING factory at VST_FACTORY_URL (default http://127.0.0.1:8790).
-Does NOT call /scaffold, /build, or /certify unless --through-scaffold is set
+Does NOT call /scaffold, /build, /certify, or /ship unless --through-scaffold is set
 (APC lifecycle requires Dream/Plan/Design before scaffold writes vst/).
+Always exercises /sync and /pipeline after architecture approval.
 """
 
 from __future__ import annotations
@@ -176,6 +177,34 @@ def main(argv: list[str] | None = None) -> int:
             failures.append(f"scaffold: HTTP {code} {scaff}")
         else:
             print(f"OK  scaffold vst_path={scaff.get('vst_path') if isinstance(scaff, dict) else scaff}")
+
+    code, synced = _request(base, "POST", f"/api/projects/{project_id}/sync")
+    if code != 200 or not isinstance(synced, dict):
+        failures.append(f"sync: HTTP {code} {synced}")
+    else:
+        print(f"OK  sync phase={synced.get('phase')} state={synced.get('state')}")
+
+    code, pipeline = _request(base, "GET", f"/api/projects/{project_id}/pipeline")
+    if code != 200 or not isinstance(pipeline, dict):
+        failures.append(f"pipeline: HTTP {code} {pipeline}")
+    else:
+        stages = [p.get("id") for p in pipeline.get("phases", [])]
+        expected = [
+            "intake",
+            "dream",
+            "plan",
+            "design",
+            "scaffold",
+            "impl",
+            "build",
+            "test",
+            "certify",
+            "ship",
+        ]
+        if stages != expected:
+            failures.append(f"pipeline stages mismatch: {stages}")
+        else:
+            print(f"OK  pipeline stages={len(stages)} blocking={pipeline.get('blocking_gate')}")
 
     code, portfolio = _request(base, "GET", "/api/portfolio")
     if code != 200 or not isinstance(portfolio, dict):

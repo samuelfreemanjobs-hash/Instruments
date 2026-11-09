@@ -33,6 +33,7 @@ Master map for the **12-system** commercial audio development platform. Phase 1 
 | Formats | [standards/FORMATS.md](../disklordz/vst-factory/standards/FORMATS.md) |
 | Memory | [standards/MEMORY.md](../disklordz/vst-factory/standards/MEMORY.md) |
 | Commercial / security | [standards/COMMERCIAL_READINESS.md](../disklordz/vst-factory/standards/COMMERCIAL_READINESS.md) |
+| Operating modes / gates | [standards/OPERATING_MODES.md](../disklordz/vst-factory/standards/OPERATING_MODES.md) |
 | DSP spec (repo) | [dsp-architecture-specification.md](dsp-architecture-specification.md) |
 
 ## Modules & schemas
@@ -43,6 +44,8 @@ Master map for the **12-system** commercial audio development platform. Phase 1 
 | Factory spec v2 | [schemas/factory-spec-v2.json](../disklordz/vst-factory/schemas/factory-spec-v2.json) |
 | DAW matrix | [testing/daw-matrix.schema.json](../disklordz/vst-factory/testing/daw-matrix.schema.json) |
 | Feature registry | [modules/features.json](../disklordz/vst-factory/modules/features.json) |
+| Full lifecycle workflow | [modules/workflows/full-lifecycle.json](../disklordz/vst-factory/modules/workflows/full-lifecycle.json) |
+| DAW matrix example | [testing/daw-matrix.example.json](../disklordz/vst-factory/testing/daw-matrix.example.json) |
 
 ## Roadmap gates
 

@@ -57,6 +57,10 @@ class ProjectOut(BaseModel):
     spec: dict[str, Any]
     apc_path: str | None = None
     vst_path: str | None = None
+    # Backwards-compatible extensions (phase sync)
+    phase: str | None = None
+    validation: dict[str, Any] | None = None
+    apc_phase: str | None = None
 
 
 class RunOut(BaseModel):
@@ -72,3 +76,23 @@ class CursorPromptOut(BaseModel):
     project_id: int
     role: str
     prompt_text: str
+
+
+class PipelineStageOut(BaseModel):
+    id: str
+    label: str
+    status: str  # done | pending | blocked | failed
+    gate: str | None = None
+    sop: str | None = None
+    command: str | None = None
+    verify: str | None = None
+
+
+class PipelineOut(BaseModel):
+    project_id: int
+    plugin_name: str
+    workflow_id: str
+    phases: list[PipelineStageOut]
+    blocking_gate: str | None = None
+    next_command: str | None = None
+    next_sop: str | None = None

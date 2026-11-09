@@ -89,6 +89,31 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   margin-top: 0.5rem;
   margin-right: 0.5rem;
 }
+.pipeline-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0.75rem;
+}
+.pipeline-strip .stage {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.25rem 0.45rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.pipeline-strip .stage.done { border-color: #3d7a4a; color: #9cdc9c; }
+.pipeline-strip .stage.pending { border-color: var(--border); }
+.pipeline-strip .stage.blocked { border-color: #c9a227; color: #ffe9a8; }
+.pipeline-strip .stage.failed { border-color: #a33; color: #f88; }
+.pipeline-strip .stage button {
+  margin: 0.25rem 0 0;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.65rem;
+  display: block;
+}
 
 .log.small { max-height: 160px; }
 .module-grid { display: flex; flex-wrap: wrap; gap: 0.35rem; font-size: 0.75rem; color: var(--muted); }
