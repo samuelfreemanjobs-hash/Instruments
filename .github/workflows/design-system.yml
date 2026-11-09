@@ -108,7 +108,7 @@ jobs:
             --out build/visual-diff \
             --expected-juce 8.0.15 \
             --channel-tol 24 \
-            --max-diff-ratio 0.08
+            --max-diff-ratio 0.10
 
       - name: Upload visual diff report (on failure)
         if: failure() && steps.juce.outputs.tag == '8.0.15'

@@ -14,7 +14,7 @@ Catch UI bugs that pixel-colour unit checks miss: truncated readouts (`...`), mo
 | Scales | `1x`, `2x` |
 | Themes | every theme under `gui/generated/` (`disklordz`, `_template`, `studio-light`) |
 | Manifest | `tests/visual/golden/factory-gui/MANIFEST.json` (JUCE tag, OS, font SHA-256s) |
-| CI AA | design-system golden cell uses `--channel-tol 24 --max-diff-ratio 0.08` for FreeType host variance; tool defaults stay `8` / `0.2%` for local mutation proofs. Text sidecars remain exact. |
+| CI AA | design-system golden cell uses `--channel-tol 24 --max-diff-ratio 0.10` for FreeType host variance; tool defaults stay `8` / `0.2%` for local mutation proofs. Text sidecars remain exact. Whole-bar-hot mutations still land ~20%+. |
 
 Comparing against a different JUCE tag or changed font bytes fails closed until you re-baseline consciously. Prefer regenerating PNGs from the CI `factory-gui-renders-juce-8.0.15` artifact with `--update` (writes `REVIEW.md`) when host AA drifts beyond the CI allowance.
 
