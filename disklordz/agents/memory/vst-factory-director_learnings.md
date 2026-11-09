@@ -121,3 +121,23 @@ Factory, plugin (APC/DPCS), design-system and JUCE work. Format and rules: [MEMO
 - **evidence:** PR #127 review 2 @1bf4cce4: disklordz RMS '...', studio-light RMS '-1...', 'MeterTap' descender clipped
 - **confidence:** inspected
 - **status:** active
+
+### L-0013 · Readout unit column starves the value when the unit is empty
+- **date:** 2026-11-09
+- **area:** ui, juce, design-system, readout, layout
+- **when:** a ValueReadout-style component reserves space for a unit or OVER label
+- **lesson:** Reserving the unit column even when the unit text is empty shrank RMS values to '...' in an 80 px well.
+- **do:** Allocate unit space only when unit/OVER text is non-empty; assert valueTextFitsWithoutEllipsis() and the exact string (e.g. −10.0) per theme at 1x and 2x.
+- **evidence:** PR #127 @68c7d6d4 EditorRenderTests (134 checks), over-bypass PNGs show full RMS
+- **confidence:** executed
+- **status:** active
+
+### L-0014 · Header layout must use the theme productName lineHeight
+- **date:** 2026-11-09
+- **area:** ui, design-system, header, themes, layout
+- **when:** laying out HeaderBar text rows for any theme
+- **lesson:** Hard-coded row heights (22 px) clipped studio-light's productName (lineHeight 24) at the bottom; other themes looked fine.
+- **do:** Allocate productName.lineHeight first, shrink the brand line into the remainder, never clip the name; assert product-name bounds inside the header for every theme.
+- **evidence:** PR #127 @68c7d6d4 assertProductNameInsideHeader; studio-light @1.0x PNG
+- **confidence:** executed
+- **status:** active
