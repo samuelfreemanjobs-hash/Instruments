@@ -19,6 +19,11 @@ public:
     std::function<void()> onPrev, onNext;
     std::function<void (const juce::String& action)> onMenuAction;
 
+    /** Focus targets for product tab-order (‹ → name → ›). */
+    juce::TextButton& getPrevButton() noexcept { return prev; }
+    juce::TextButton& getNextButton() noexcept { return next; }
+    juce::TextButton& getNameButton() noexcept { return nameButton; }
+
     void paint (juce::Graphics&) override;
     void resized() override;
 

@@ -6,7 +6,8 @@
 namespace fds {
 namespace gui {
 
-class ValueReadout : public juce::Component
+class ValueReadout : public juce::Component,
+                     public juce::SettableTooltipClient
 {
 public:
     enum class State { normal, floor, over };

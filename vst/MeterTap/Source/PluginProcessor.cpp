@@ -1,4 +1,5 @@
 #include "PluginProcessor.h"
+#include "PluginEditor.h"
 
 #include <cmath>
 
@@ -103,8 +104,7 @@ void MeterTapAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 }
 
 juce::AudioProcessorEditor* MeterTapAudioProcessor::createEditor() {
-  // Custom LevelMeter editor follows design-spec.md once factory-lib/gui lands.
-  return new juce::GenericAudioProcessorEditor(*this);
+  return new MeterTapAudioProcessorEditor(*this);
 }
 
 juce::AudioProcessorParameter* MeterTapAudioProcessor::getBypassParameter() const {
