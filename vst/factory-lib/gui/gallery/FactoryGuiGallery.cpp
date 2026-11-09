@@ -119,7 +119,7 @@ public:
     void initialise (const juce::String&) override
     {
         mainWindow = std::make_unique<juce::DocumentWindow> (
-            "Factory GUI Gallery — " + juce::String (fds::themeId),
+            fds::gui::utf8 ("Factory GUI Gallery ") + fds::gui::emDash() + " " + juce::String (fds::themeId),
             fds::gui::argb (fds::color::bg::chassis),
             juce::DocumentWindow::allButtons);
         mainWindow->setUsingNativeTitleBar (true);

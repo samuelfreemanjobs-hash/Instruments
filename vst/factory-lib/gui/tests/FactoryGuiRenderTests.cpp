@@ -1,7 +1,8 @@
 /**
  * Contract: each factory GUI component renders non-blank images at 100% and 200%
  * for the configured theme, and sampled pixels match DesignTokens role colours
- * (meter over cap == meter.over; focus ring present only when keyboard-focused).
+ * (meter over cap == meter.over; peak bar splits peak/hot at hotThresholdDb;
+ * focus ring present only when keyboard-focused; UTF-8 middot/minus round-trip).
  *
  * Writes PNGs to FACTORY_GUI_RENDER_OUT_DIR/<theme>/<name>@Nx.png
  */
@@ -53,7 +54,6 @@ bool imageNonBlank (const juce::Image& img)
         for (int x = 0; x < img.getWidth(); x += juce::jmax (1, img.getWidth() / 16))
             if (img.getPixelAt (x, y) != first)
                 return true;
-    // uniform non-transparent still counts if alpha present and not empty size
     return first.getAlpha() > 0;
 }
 
@@ -71,6 +71,8 @@ juce::Image renderComponent (juce::Component& c, float scale)
 void writePng (const juce::Image& img, const juce::File& file)
 {
     file.getParentDirectory().createDirectory();
+    // FileOutputStream appends by default — truncate so re-runs don't corrupt PNGs.
+    file.deleteFile();
     juce::FileOutputStream stream (file);
     if (stream.openedOk())
     {
@@ -100,7 +102,6 @@ void checkMeterOver (float scale)
     auto img = renderComponent (meter, scale);
     expect (imageNonBlank (img), "LevelMeter@" + juce::String (scale) + " blank");
 
-    // Sample over-cap centre (top of component)
     const int cx = img.getWidth() / 2;
     const int cy = juce::jmax (1, (int) std::round (3.0f * scale));
     const auto pix = img.getPixelAt (cx, cy);
@@ -114,6 +115,105 @@ void checkMeterOver (float scale)
     meter.setLookAndFeel (nullptr);
 }
 
+/** Contract: peak bar is peak below hotThreshold, hot only above (components.md §7). */
+void checkMeterPeakHotSplit (float scale)
+{
+    fds::gui::FactoryLookAndFeel lnf;
+    fds::gui::LevelMeter meter (fds::gui::MeterBarSize::lg);
+    meter.setLookAndFeel (&lnf);
+    meter.setSize (48, 200);
+    meter.resized();
+
+    auto sampleAtDb = [&] (float db) -> juce::Colour
+    {
+        auto img = renderComponent (meter, scale);
+        const float lx = meter.getPeakColumnBounds().getCentreX();
+        const float ly = meter.yForDb (db);
+        const int x = juce::jlimit (0, img.getWidth() - 1, (int) std::lround ((double) lx * (double) scale));
+        const int y = juce::jlimit (0, img.getHeight() - 1, (int) std::lround ((double) ly * (double) scale));
+        return img.getPixelAt (x, y);
+    };
+
+    // Case A: peak = -2 dBFS → -30 dB height is peak, -3 dB height is hot
+    meter.setLevels (-2.0f, -40.0f, -2.0f, false);
+    {
+        const auto at30 = sampleAtDb (-30.0f);
+        const auto at3 = sampleAtDb (-3.0f);
+        const auto peakCol = fds::gui::argb (fds::color::meter::peak);
+        const auto hotCol = fds::gui::argb (fds::color::meter::hot);
+        expect (colourClose (at30, peakCol, 35),
+                "peak=-2: pixel @ -30 dB " + juce::String::toHexString ((int) toARGB (at30))
+                    + " != meter.peak " + juce::String::toHexString ((int) toARGB (peakCol))
+                    + " scale=" + juce::String (scale));
+        expect (colourClose (at3, hotCol, 35),
+                "peak=-2: pixel @ -3 dB " + juce::String::toHexString ((int) toARGB (at3))
+                    + " != meter.hot " + juce::String::toHexString ((int) toARGB (hotCol))
+                    + " scale=" + juce::String (scale));
+        std::cout << "ASSERT peak=-2dB scale=" << scale
+                  << " @-30=" << juce::String::toHexString ((int) toARGB (at30))
+                  << " (peak) @-3=" << juce::String::toHexString ((int) toARGB (at3))
+                  << " (hot)" << std::endl;
+        writePng (renderComponent (meter, scale),
+                  outDir().getChildFile ("LevelMeter_peakHot@" + juce::String (scale, 1) + "x.png"));
+    }
+
+    // Case B: peak = -20 dBFS → no hot segment; -3 dB height is empty track (not hot)
+    meter.setLevels (-20.0f, -40.0f, -20.0f, false);
+    {
+        const auto at3 = sampleAtDb (-3.0f);
+        const auto hotCol = fds::gui::argb (fds::color::meter::hot);
+        const auto trackCol = fds::gui::argb (fds::color::meter::track);
+        expect (! colourClose (at3, hotCol, 25),
+                "peak=-20: pixel @ -3 dB must not be meter.hot (got "
+                    + juce::String::toHexString ((int) toARGB (at3)) + ")");
+        expect (colourClose (at3, trackCol, 40),
+                "peak=-20: pixel @ -3 dB " + juce::String::toHexString ((int) toARGB (at3))
+                    + " should be meter.track " + juce::String::toHexString ((int) toARGB (trackCol)));
+        std::cout << "ASSERT peak=-20dB scale=" << scale
+                  << " @-3=" << juce::String::toHexString ((int) toARGB (at3))
+                  << " (track, not hot)" << std::endl;
+        writePng (renderComponent (meter, scale),
+                  outDir().getChildFile ("LevelMeter_peakCool@" + juce::String (scale, 1) + "x.png"));
+    }
+
+    meter.setLookAndFeel (nullptr);
+}
+
+void checkUtf8Label (float scale)
+{
+    // Contract: middot / minus via utf8() helper round-trip (no mojibake Â· / Ã¢).
+    const auto title = fds::gui::utf8 ("METERS ") + fds::gui::middot() + fds::gui::utf8 (" INPUT ")
+                       + fds::gui::minusSign() + "12.0";
+    expect (title.contains (fds::gui::middot()), "utf8 title contains middot");
+    expect (title.contains (fds::gui::minusSign()), "utf8 title contains minus");
+    expect (! title.contains (fds::gui::utf8 ("\xc3\x82\xc2\xb7")),
+            "utf8 title must not contain mojibake Â·");
+
+    // Raw Latin-1 mis-decode of · would be two chars; juce length of correct string:
+    // "METERS " (7) + · (1) + " INPUT " (7) + − (1) + "12.0" (4) = 20
+    expect (title.length() == 20,
+            "utf8 title length=" + juce::String (title.length()) + " expected 20 (got mojibake if 21+)");
+
+    fds::gui::FactoryLookAndFeel lnf;
+    juce::Label label;
+    label.setLookAndFeel (&lnf);
+    label.setText (title, juce::dontSendNotification);
+    label.setFont (fds::gui::makeFont (fds::typography::style::sectionTitle));
+    label.setColour (juce::Label::textColourId, fds::gui::argb (fds::color::text::primary));
+    label.setColour (juce::Label::backgroundColourId, fds::gui::argb (fds::color::bg::panel));
+    label.setSize (280, 28);
+    label.setJustificationType (juce::Justification::centredLeft);
+
+    // Round-trip through getText — must preserve glyphs
+    expect (label.getText() == title, "Label getText preserves utf8 helper string");
+
+    auto img = renderComponent (label, scale);
+    expect (imageNonBlank (img), "Utf8Label blank");
+    writePng (img, outDir().getChildFile ("Utf8Label@" + juce::String (scale, 1) + "x.png"));
+    std::cout << "ASSERT utf8 label='" << title << "' length=" << title.length() << std::endl;
+    label.setLookAndFeel (nullptr);
+}
+
 void checkFocusRing (float scale)
 {
     fds::gui::FactoryLookAndFeel lnf;
@@ -122,12 +222,10 @@ void checkFocusRing (float scale)
     btn.setLookAndFeel (&lnf);
     btn.setSize (80, 28);
 
-    // Unfocused
     btn.setFocusContainerType (juce::Component::FocusContainerType::none);
     auto imgOff = renderComponent (btn, scale);
     expect (imageNonBlank (imgOff), "Button unfocused blank");
 
-    // Force keyboard focus painting path via LookAndFeel drawFocusRing on a known rect
     juce::Image ringImg (juce::Image::ARGB, (int) (100 * scale), (int) (40 * scale), true);
     {
         juce::Graphics g (ringImg);
@@ -135,7 +233,6 @@ void checkFocusRing (float scale)
         g.fillAll (fds::gui::argb (fds::color::bg::panel));
         fds::gui::FactoryLookAndFeel::drawFocusRing (g, { 10.0f, 10.0f, 80.0f, 28.0f });
     }
-    // Sample outside fill but on ring — top edge around y=10-offset
     const int rx = (int) (50 * scale);
     const int ry = (int) ((10.0f - fds::stroke::focusOffset) * scale);
     const auto ringPix = ringImg.getPixelAt (juce::jlimit (0, ringImg.getWidth() - 1, rx),
@@ -144,7 +241,6 @@ void checkFocusRing (float scale)
                 || colourClose (ringPix, fds::gui::argb (fds::color::bg::panel), 5) == false,
             "Focus ring should paint focus.ring colour");
 
-    // Compare: unfocused button image should not be dominated by focus.ring at outer edge
     const auto edge = imgOff.getPixelAt (1, 1);
     expect (! colourClose (edge, fds::gui::argb (fds::color::focus::ring), 20),
             "Unfocused button must not show focus.ring at corner");
@@ -191,7 +287,6 @@ void checkHeader (float scale)
     header.resized();
     auto img = renderComponent (header, scale);
     expect (imageNonBlank (img), "HeaderBar blank");
-    // Chassis background sample
     const auto bg = img.getPixelAt (2, 2);
     expect (colourClose (bg, fds::gui::argb (fds::color::bg::chassis), 30),
             "HeaderBar bg should be chassis");
@@ -204,7 +299,7 @@ void checkReadout (float scale)
     fds::gui::FactoryLookAndFeel lnf;
     fds::gui::ValueReadout r;
     r.setLookAndFeel (&lnf);
-    r.setFromDb (1.5f); // over
+    r.setFromDb (1.5f);
     r.setSize (120, 32);
     r.resized();
     auto img = renderComponent (r, scale);
@@ -266,6 +361,8 @@ void runAll()
     for (float scale : { 1.0f, 2.0f })
     {
         checkMeterOver (scale);
+        checkMeterPeakHotSplit (scale);
+        checkUtf8Label (scale);
         checkFocusRing (scale);
         checkKnob (scale);
         checkLed (scale);

@@ -25,8 +25,8 @@ public:
 private:
     void showMenu();
 
-    juce::TextButton prev { juce::String::fromUTF8 ("\xe2\x80\xb9") }; // ‹
-    juce::TextButton next { juce::String::fromUTF8 ("\xe2\x80\xba") }; // ›
+    juce::TextButton prev { prevGlyph() };
+    juce::TextButton next { nextGlyph() };
     juce::TextButton nameButton;
     juce::StringArray factoryList, userList;
     juce::Path wellPath;
