@@ -18,16 +18,33 @@ inline juce::Colour argb (std::uint32_t c) noexcept
     return juce::Colour (c);
 }
 
+/**
+ * Build a juce::Font from a design-system typography style.
+ * JUCE 8 prefers FontOptions; JUCE 7 uses the classic Font(name, height, style) ctor.
+ * Components must call this helper — never branch on JUCE_MAJOR_VERSION themselves.
+ */
 inline juce::Font makeFont (const typography::Style& style, float scale = 1.0f)
 {
     const float height = (float) style.size * scale;
     const char* familyName = (std::strcmp (style.familyKey, "mono") == 0)
                                  ? typography::family::mono.name
                                  : typography::family::sans.name;
-    auto opts = juce::FontOptions (familyName, height, juce::Font::plain);
-    juce::Font font (opts);
+
+    int flags = juce::Font::plain;
     if (style.weight >= 700)
-        font = font.boldened();
+        flags |= juce::Font::bold;
+
+#if JUCE_MAJOR_VERSION >= 8
+    juce::Font font (juce::FontOptions (familyName, height, flags));
+#else
+    juce::Font font (familyName, height, flags);
+#endif
+
+    // Tracking: design tokens store em-ish letter-spacing; map to kerning factor.
+    // JUCE withExtraKerningFactor: 0 = default; positive expands.
+    if (std::abs (style.tracking) > 1.0e-6f)
+        font = font.withExtraKerningFactor (style.tracking);
+
     return font;
 }
 

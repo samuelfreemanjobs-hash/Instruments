@@ -17,37 +17,38 @@ option(FACTORY_GUI_BUILD_TESTS "Build FactoryGuiRenderTests" ON)
 option(FACTORY_GUI_USE_SYSTEM_FONTS "Skip vendored OFL TTFs; use JUCE defaults" OFF)
 set(FACTORY_GUI_THEME "disklordz" CACHE STRING "Theme id for gallery/tests (disklordz|_template|studio-light)")
 
+# Pin JUCE for standalone configures. Defaults to repo-root JUCE_VERSION (7.0.12).
+# Override: -DFACTORY_GUI_JUCE_TAG=8.0.15  (do NOT silently reuse build/_deps).
+set(_juce_pin_file "${CMAKE_CURRENT_SOURCE_DIR}/../../JUCE_VERSION")
+if(EXISTS "${_juce_pin_file}")
+  file(READ "${_juce_pin_file}" _juce_pin_default)
+  string(STRIP "${_juce_pin_default}" _juce_pin_default)
+else()
+  set(_juce_pin_default "7.0.12")
+endif()
+set(FACTORY_GUI_JUCE_TAG "${_juce_pin_default}" CACHE STRING "JUCE git tag for FetchContent when not provided by parent")
+
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/FactoryGui.cmake")
 
 # ---------------------------------------------------------------------------
-# JUCE — reuse parent target, submodule, or FetchContent
+# JUCE — reuse parent target, optional submodule, else FetchContent(FACTORY_GUI_JUCE_TAG)
+# Never auto-pick monorepo build/_deps (that tree may be a different major than JUCE_VERSION).
 # ---------------------------------------------------------------------------
 if(NOT TARGET juce::juce_gui_basics)
   set(_juce_submodule "${CMAKE_CURRENT_SOURCE_DIR}/../JUCE")
   if(EXISTS "${_juce_submodule}/CMakeLists.txt")
+    message(STATUS "factory_gui: using vst/JUCE submodule")
     add_subdirectory("${_juce_submodule}" "${CMAKE_BINARY_DIR}/juce_submodule")
   else()
     include(FetchContent)
-    set(_juce_pin_file "${CMAKE_CURRENT_SOURCE_DIR}/../../JUCE_VERSION")
-    if(EXISTS "${_juce_pin_file}")
-      file(READ "${_juce_pin_file}" _juce_tag)
-      string(STRIP "${_juce_tag}" _juce_tag)
-    else()
-      set(_juce_tag "8.0.15")
-    endif()
-    # Prefer an already-fetched tree from the monorepo build/ if present
-    set(_cached_juce "${CMAKE_CURRENT_SOURCE_DIR}/../../build/_deps/juce-src")
-    if(EXISTS "${_cached_juce}/CMakeLists.txt")
-      add_subdirectory("${_cached_juce}" "${CMAKE_BINARY_DIR}/juce_cached")
-    else()
-      FetchContent_Declare(
-        JUCE
-        GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-        GIT_TAG ${_juce_tag}
-        GIT_SHALLOW TRUE
-      )
-      FetchContent_MakeAvailable(JUCE)
-    endif()
+    message(STATUS "factory_gui: FetchContent JUCE ${FACTORY_GUI_JUCE_TAG}")
+    FetchContent_Declare(
+      JUCE
+      GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
+      GIT_TAG ${FACTORY_GUI_JUCE_TAG}
+      GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(JUCE)
   endif()
 endif()
 

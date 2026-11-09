@@ -74,13 +74,21 @@ python3 vst/factory-lib/design-system/scripts/check_tokens.py --check-generated
 
 ## Gallery & render tests
 
+`makeFont()` in `GuiHelpers.h` is dual-compiled for **JUCE 7.0.12** (repo `JUCE_VERSION`) and **8.x** (`FontOptions` behind `#if JUCE_MAJOR_VERSION >= 8`). Standalone configures FetchContent the tag in `FACTORY_GUI_JUCE_TAG` (defaults to `JUCE_VERSION`); they never silently reuse `build/_deps`.
+
 ```bash
-cmake -B build-factory-gui -S vst/factory-lib \
+# Pinned repo default (7.0.12)
+cmake -B build-factory-gui-7 -S vst/factory-lib \
   -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12 \
-  -DCMAKE_BUILD_TYPE=Release -DFACTORY_GUI_THEME=disklordz
-cmake --build build-factory-gui -j --target FactoryGuiGallery FactoryGuiRenderTests
-ctest --test-dir build-factory-gui -R FactoryGuiRenderTests_ --output-on-failure
-# PNGs → build-factory-gui/gui-renders/<theme>/
+  -DCMAKE_BUILD_TYPE=Release -DFACTORY_GUI_JUCE_TAG=7.0.12
+cmake --build build-factory-gui-7 -j --target FactoryGuiGallery FactoryGuiRenderTests
+ctest --test-dir build-factory-gui-7 -R FactoryGuiRenderTests_ --output-on-failure
+
+# JUCE 8 compatibility
+cmake -B build-factory-gui-8 -S vst/factory-lib \
+  -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12 \
+  -DCMAKE_BUILD_TYPE=Release -DFACTORY_GUI_JUCE_TAG=8.0.15
+# …
 ```
 
 ## Components
