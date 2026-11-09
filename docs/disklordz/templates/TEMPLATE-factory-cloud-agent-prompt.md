@@ -9,6 +9,12 @@ Operator approval: <quote or "autonomous work approved on <date>">.
 Read first: /ARCHITECTURE.md, AGENTS.md, CLAUDE.md (META: R5 executable success criteria, R6 every test
 names a contract, R8 evidence tags), docs/DPCS.md, <phase SOP>, <product docs: plugins/<Name>/...>.
 
+MEMORY (SOP-019): before planning run
+  python3 scripts/agent_memory.py recall --agent vst-factory-director <task keywords>
+and apply every relevant lesson. Before delivery, record each new verified lesson with
+  python3 scripts/agent_memory.py add --agent vst-factory-director --kind learning|incident ...
+then `python3 scripts/agent_memory.py check` must pass; commit memory with your change.
+
 CONTEXT: <2-4 sentences: what exists, what phase we are in, what is frozen>.
 
 OWN ONLY: <paths this agent may write>.
@@ -37,3 +43,4 @@ assumptions tagged [executed]/[inspected]/[assumed].
 - [ ] Owned paths do not overlap with any other running agent.
 - [ ] Success criteria are commands, not opinions.
 - [ ] The prompt names the SOP for the phase.
+- [ ] The prompt includes the MEMORY recall/add block (SOP-019).
