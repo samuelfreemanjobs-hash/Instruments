@@ -44,8 +44,9 @@ python3 tools/visual_diff.py \
 
 - PNGs + text sidecars come from `FactoryGuiRenderTests` (`gui-renders/<theme>/<component>-<state>@<scale>x.{png,json}`).
 - Unit tests for the differ: `python3 -m unittest discover -s tools -p 'test_visual_diff.py'`.
-- Intentional UI changes: re-baseline with `--update` in the **same PR**; reviewer opens the HTML report ([SOP-VF-13](SOP-VF-13-visual-baselines.md)).
-- MeterTap **editor** goldens are a follow-up after PR #127 — not part of the factory-gui suite yet.
+- Intentional UI changes: re-baseline **on CI** (`gh workflow run design-system.yml --ref <branch> -f rebaseline=true`); never commit goldens from a dev/agent VM ([SOP-VF-13](SOP-VF-13-visual-baselines.md)). Reviewer opens `REVIEW.md` + the HTML report.
+- Tolerances stay strict (`channel-tol 8`, `max-diff-ratio 0.2%`). Do not loosen for FreeType host mismatch.
+- MeterTap **editor** goldens are a follow-up — not part of the factory-gui suite yet.
 
 ## Related
 

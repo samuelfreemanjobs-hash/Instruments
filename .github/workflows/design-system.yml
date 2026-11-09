@@ -21,6 +21,19 @@ on:
       - "tools/test_visual_diff.py"
       - "tests/visual/**"
   workflow_dispatch:
+    inputs:
+      rebaseline:
+        description: "Re-baseline factory-gui goldens on the JUCE 8.0.15 CI cell and commit to this branch"
+        type: boolean
+        default: false
+      only:
+        description: "Optional comma-separated --only globs (e.g. HeaderBar*,PresetBrowser*)"
+        type: string
+        default: ""
+
+# Bot re-baseline commits need contents:write. Read is enough for normal PR/push runs.
+permissions:
+  contents: write
 
 jobs:
   tokens-and-render:
@@ -32,6 +45,10 @@ jobs:
         juce_tag: ["from-file", "8.0.15"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          # workflow_dispatch --ref <branch>: check out that branch tip so we can push.
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.sha }}
+          fetch-depth: 0
 
       - name: Resolve JUCE tag
         id: juce
@@ -94,21 +111,68 @@ jobs:
           xvfb-run -a ctest --output-on-failure -R 'FactoryGuiRenderTests_'
 
       - name: Visual regression (golden cell JUCE 8.0.15)
+        id: visual
         if: steps.juce.outputs.tag == '8.0.15'
+        env:
+          REBASELINE: ${{ github.event_name == 'workflow_dispatch' && inputs.rebaseline || false }}
+          ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.only || '' }}
         run: |
           set -euo pipefail
           python3 -m pip install --user Pillow
-          # Defaults stay channel-tol=8 / max-diff-ratio=0.2% for local mutation proofs.
-          # CI ubuntu-latest FreeType AA vs the Cloud agent that authored goldens can
-          # differ by a few percent on text-heavy widgets; keep text sidecars exact.
-          # Whole-peak-bar-hot mutations still land ~20%+ and fail closed.
-          python3 tools/visual_diff.py \
-            --actual "build-factory-gui-${{ steps.juce.outputs.tag }}/gui-renders" \
-            --golden tests/visual/golden/factory-gui \
-            --out build/visual-diff \
-            --expected-juce 8.0.15 \
-            --channel-tol 24 \
-            --max-diff-ratio 0.10
+          # Goldens are authored ONLY on this ubuntu-latest runner (see SOP-VF-13).
+          # Strict channel-tol=8 / max-diff-ratio=0.2% — do not loosen for host AA.
+          ARGS=(
+            --actual "build-factory-gui-${{ steps.juce.outputs.tag }}/gui-renders"
+            --golden tests/visual/golden/factory-gui
+            --out build/visual-diff
+            --expected-juce 8.0.15
+            --channel-tol 8
+            --max-diff-ratio 0.002
+          )
+          if [ "${REBASELINE}" = "true" ]; then
+            ARGS+=(--update)
+            if [ -n "${ONLY}" ]; then
+              IFS=',' read -ra GLOBS <<< "${ONLY}"
+              for g in "${GLOBS[@]}"; do
+                g="$(echo "${g}" | xargs)"
+                [ -n "${g}" ] && ARGS+=(--only "${g}")
+              done
+            fi
+            echo "Re-baseline mode: ${ARGS[*]}"
+          fi
+          python3 tools/visual_diff.py "${ARGS[@]}"
+
+      - name: Commit CI-authored goldens
+        if: >-
+          steps.juce.outputs.tag == '8.0.15'
+          && github.event_name == 'workflow_dispatch'
+          && inputs.rebaseline
+        run: |
+          set -euo pipefail
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/visual/golden/
+          if git diff --cached --quiet; then
+            echo "No golden changes to commit (already matched CI renders)."
+            exit 0
+          fi
+          git commit -m "visual: re-baseline on CI runner (${RUN_URL})"
+          # Branch tip may have moved; rebase then push the bot commit.
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"
+
+      - name: Upload re-baselined goldens artifact
+        if: >-
+          always()
+          && steps.juce.outputs.tag == '8.0.15'
+          && github.event_name == 'workflow_dispatch'
+          && inputs.rebaseline
+        uses: actions/upload-artifact@v4
+        with:
+          name: factory-gui-goldens-rebaseline
+          path: tests/visual/golden/factory-gui/
+          if-no-files-found: warn
 
       - name: Upload visual diff report (on failure)
         if: failure() && steps.juce.outputs.tag == '8.0.15'
