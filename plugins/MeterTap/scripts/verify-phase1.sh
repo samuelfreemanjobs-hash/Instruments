@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 req=(
   "$ROOT/DPCS_PHASE0_CONSTITUTION.md"
   "$ROOT/DPCS_PHASE1_PRD.md"
-  "$ROOT/parameter-spec.md"
+  "$ROOT/.ideas/parameter-spec.md"
   "$ROOT/.ideas/creative-brief.md"
   "$ROOT/status.json"
 )

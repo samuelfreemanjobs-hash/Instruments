@@ -1,0 +1,49 @@
+name: MeterTap Phase 4
+
+on:
+  push:
+    paths:
+      - "vst/MeterTap/**"
+      - "vst/factory-lib/analysis/**"
+      - "plugins/MeterTap/**"
+      - ".github/workflows/metertap.yml"
+      - "tools/build-vst.sh"
+      - "vst-testing-ops/**"
+  pull_request:
+    paths:
+      - "vst/MeterTap/**"
+      - "vst/factory-lib/analysis/**"
+      - "plugins/MeterTap/**"
+      - ".github/workflows/metertap.yml"
+      - "tools/build-vst.sh"
+      - "vst-testing-ops/**"
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential g++-12 gcc-12 libstdc++-12-dev cmake pkg-config \
+            libasound2-dev libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev \
+            libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev \
+            libcurl4-openssl-dev unzip xvfb
+
+      - name: Fetch JUCE
+        run: |
+          if [[ ! -f vst/JUCE/CMakeLists.txt ]]; then
+            git clone --depth 1 --branch 7.0.12 https://github.com/juce-framework/JUCE.git vst/JUCE
+          fi
+
+      - name: Install pluginval
+        run: python3 vst-testing-ops/test_runner.py --install-pluginval
+
+      - name: Phase 4 verify
+        env:
+          CXX: g++-12
+          CC: gcc-12
+        run: xvfb-run -a bash plugins/MeterTap/scripts/verify-phase4.sh
