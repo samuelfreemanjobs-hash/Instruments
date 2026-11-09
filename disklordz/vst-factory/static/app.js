@@ -13,6 +13,44 @@ function log(msg) {
   el.textContent = (el.textContent ? el.textContent + "\n" : "") + msg;
 }
 
+async function refreshApprovals() {
+  const banner = document.getElementById("approval-banner");
+  if (!currentProject) {
+    banner.classList.add("hidden");
+    banner.innerHTML = "";
+    return;
+  }
+  try {
+    const rows = await api(`/api/projects/${currentProject.id}/approvals`);
+    const pending = rows.filter((a) => a.status === "pending");
+    if (!pending.length) {
+      banner.classList.add("hidden");
+      banner.innerHTML = "";
+      return;
+    }
+    banner.classList.remove("hidden");
+    banner.innerHTML =
+      "<strong>Approval required</strong><br/>" +
+      pending.map((a) => `Gate <code>${a.gate}</code> (id ${a.id})`).join("<br/>");
+    pending.forEach((a) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = `Approve ${a.gate}`;
+      b.onclick = async () => {
+        await api(`/api/projects/${currentProject.id}/approvals/${a.id}/resolve`, {
+          method: "POST",
+          body: JSON.stringify({ status: "approved" }),
+        });
+        log(`Approved ${a.gate}`);
+        await refreshApprovals();
+      };
+      banner.appendChild(b);
+    });
+  } catch (e) {
+    log("Approvals: " + e.message);
+  }
+}
+
 function setProject(proj) {
   currentProject = proj;
   const meta = document.getElementById("project-meta");
@@ -23,6 +61,7 @@ function setProject(proj) {
   document.getElementById("btn-build").disabled = !proj || !proj.vst_path;
   document.getElementById("btn-test").disabled = !proj || !proj.vst_path;
   document.getElementById("btn-prompt").disabled = !proj;
+  refreshApprovals();
 }
 
 async function api(path, opts = {}) {
@@ -78,7 +117,11 @@ document.getElementById("btn-create").onclick = async () => {
   }
   const name = document.getElementById("plugin-name").value.trim() || null;
   try {
-    const body = { prompt, plugin_class: selectedClass };
+    const body = {
+      prompt,
+      plugin_class: selectedClass,
+      product_category: name === "MeterTap" ? "fx.metering" : undefined,
+    };
     if (name) body.plugin_name = name;
     const proj = await api("/api/projects", { method: "POST", body: JSON.stringify(body) });
     setProject(proj);

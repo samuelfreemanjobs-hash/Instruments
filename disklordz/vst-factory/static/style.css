@@ -73,6 +73,23 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   font-size: 0.75rem;
   white-space: pre-wrap;
 }
+.approval-banner {
+  background: #3d2a00;
+  border: 1px solid #c9a227;
+  color: #ffe9a8;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+.approval-banner.hidden {
+  display: none;
+}
+.approval-banner button {
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+}
+
 .log.small { max-height: 160px; }
 .module-grid { display: flex; flex-wrap: wrap; gap: 0.35rem; font-size: 0.75rem; color: var(--muted); }
 .module-grid span {

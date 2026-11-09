@@ -1,0 +1,16 @@
+{
+  "plugin_name": "MeterTap",
+  "track": "apc_greenfield",
+  "dpcs_phase": 0,
+  "apc_phase": "dream",
+  "factory_dogfood": true,
+  "product_category": "fx.metering",
+  "validation": {
+    "dpcs_phase0_constitution_exists": true,
+    "creative_brief_exists": false,
+    "parameter_spec_exists": false,
+    "architecture_defined": false,
+    "design_complete": false
+  },
+  "next_command": "/apc-dream MeterTap — Phase 1 PRD only (or factory POST /api/projects with product_category fx.metering)"
+}

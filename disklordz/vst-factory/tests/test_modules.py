@@ -15,7 +15,7 @@ def test_build_spec_midi() -> None:
         plugin_class="midi",
         prompt="Memphis chord pads with voicing",
     )
-    assert spec["schema_version"] == "factory-spec/v1"
+    assert spec["schema_version"] == "factory-spec/v2"
     assert spec["track"] == "apc_greenfield"
     assert "midi.chord-pads" in spec["dsp_modules"]
 

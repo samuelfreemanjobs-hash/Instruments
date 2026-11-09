@@ -35,9 +35,9 @@ def main(argv: list[str] | None = None) -> int:
     cfg = replace(PROFILES[args.profile])
     if args.with_saas:
         cfg = replace(cfg, disklordz_web=True)
-    if args.profile == "factory":
+    if args.profile in ("factory", "factory-audio"):
         if not args.plugin:
-            print("factory profile requires --plugin <PascalCaseName>", file=sys.stderr)
+            print(f"{args.profile} profile requires --plugin <PascalCaseName>", file=sys.stderr)
             return 2
         cfg = replace(cfg, factory_plugin=args.plugin)
 

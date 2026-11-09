@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
 
 from vst_factory import __version__
 from vst_factory.build_broker import windows_chord_instructions
@@ -13,6 +15,7 @@ from vst_factory.db import FactoryDB
 from vst_factory.models import CursorPromptOut, ProjectCreate, ProjectOut, RunOut
 from vst_factory import modules as modlib
 from vst_factory.orchestrator import Orchestrator
+from vst_factory.portfolio import load_product_library, merge_with_db_projects
 from vst_factory.references import load_chord_engine_reference
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
@@ -41,9 +44,28 @@ def _project_out(p: dict) -> ProjectOut:
     )
 
 
+class ApprovalResolve(BaseModel):
+    status: str = Field(default="approved", pattern="^(approved|rejected)$")
+
+
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "version": __version__}
+
+
+@app.get("/api/taxonomy")
+def api_taxonomy() -> dict:
+    return modlib.load_product_taxonomy()
+
+
+@app.get("/api/portfolio")
+def api_portfolio() -> dict[str, Any]:
+    library = load_product_library()
+    projects = db.list_projects(limit=200)
+    return {
+        "library": library,
+        "products": merge_with_db_projects(library, projects),
+    }
 
 
 @app.get("/api/modules/catalog")
@@ -88,6 +110,7 @@ def create_project(body: ProjectCreate) -> ProjectOut:
             prompt=body.prompt,
             plugin_class=body.plugin_class,
             plugin_name=body.plugin_name,
+            product_category=body.product_category,
         )
         return _project_out(proj)
     except ValueError as exc:
@@ -102,11 +125,38 @@ def get_project(project_id: int) -> ProjectOut:
     return _project_out(proj)
 
 
+@app.get("/api/projects/{project_id}/approvals")
+def list_approvals(project_id: int) -> list[dict]:
+    if not db.get_project(project_id):
+        raise HTTPException(status_code=404, detail="project not found")
+    return orch.list_approvals(project_id)
+
+
+@app.post("/api/projects/{project_id}/approvals/{approval_id}/resolve")
+def resolve_approval(project_id: int, approval_id: int, body: ApprovalResolve) -> dict:
+    try:
+        return orch.resolve_approval(project_id, approval_id, status=body.status)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="approval not found") from exc
+
+
+@app.get("/api/projects/{project_id}/product-wo")
+def get_product_wo(project_id: int) -> dict:
+    if not db.get_project(project_id):
+        raise HTTPException(status_code=404, detail="project not found")
+    wo = db.get_product_wo(project_id)
+    if not wo:
+        raise HTTPException(status_code=404, detail="work order not found")
+    return wo
+
+
 @app.post("/api/projects/{project_id}/scaffold", response_model=ProjectOut)
 def scaffold_project(project_id: int) -> ProjectOut:
     try:
         proj = orch.scaffold(project_id)
         return _project_out(proj)
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
     except FileExistsError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     except RuntimeError as exc:
@@ -125,6 +175,14 @@ def build_project(project_id: int) -> dict:
 def test_project(project_id: int) -> dict:
     try:
         return orch.test(project_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="project not found") from exc
+
+
+@app.post("/api/projects/{project_id}/certify")
+def certify_project(project_id: int) -> dict:
+    try:
+        return orch.certify(project_id)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="project not found") from exc
 
