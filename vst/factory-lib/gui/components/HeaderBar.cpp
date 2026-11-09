@@ -75,8 +75,21 @@ void HeaderBar::resized()
     glyphSlot.setBounds (r.removeFromLeft (22).withSizeKeepingCentre (22, 22));
     r.removeFromLeft (8);
     auto left = r.removeFromLeft (180);
-    productName.setBounds (left.removeFromTop (22));
-    brandLabel.setBounds (left);
+
+    // Theme-aware stack: productName keeps its full lineHeight (never clip descenders);
+    // brand/micro shrinks into whatever remains of the 40 px header.
+    const int nameLine = typography::style::productName.lineHeight;
+    const int brandLine = typography::style::micro.lineHeight;
+    const int avail = left.getHeight();
+    const int nameH = juce::jmin (nameLine, avail);
+    const int brandH = juce::jmax (0, juce::jmin (brandLine, avail - nameH));
+    // Vertically centre the name+brand stack when both fit with slack.
+    const int stackH = nameH + brandH;
+    const int topPad = juce::jmax (0, (avail - stackH) / 2);
+    auto stack = left.withTrimmedTop (topPad).withHeight (stackH);
+    productName.setBounds (stack.removeFromTop (nameH));
+    brandLabel.setBounds (stack.removeFromTop (brandH));
+    brandLabel.setVisible (brandH > 0);
 
     auto right = r.removeFromRight (140);
     bypass.setBounds (right.removeFromRight (88).withSizeKeepingCentre (88, size::toggle::md));

@@ -34,6 +34,10 @@ bypass. Levels are analysed on the audio thread (factory-lib `PeakRms` +
 - LevelMeter peak/hot split + `formatDb` UTF-8 helpers from design-system
   (`cursor/design-system-juce-impl-1279`).
 - Header glyph: simplified floppy+crown vector (`brand.stroke` / `premium.badge`).
+- ValueReadout: unit column only when unit/OVER present so RMS wells show full
+  `−10.0` / `−96.0` / `+12.0` (no ellipsis) in 80 px `valueLarge` wells.
+- HeaderBar: productName uses theme `lineHeight` (never clips descenders);
+  brand/micro shrinks into remaining header height.
 
 ## Known issues
 

@@ -23,6 +23,10 @@ public:
     LedToggle& getBypassToggle() noexcept { return bypass; }
     PresetBrowser& getPresetBrowser() noexcept { return presets; }
     juce::Component& getGlyphSlot() noexcept { return glyphSlot; }
+    juce::Label& getProductNameLabel() noexcept { return productName; }
+    const juce::Label& getProductNameLabel() const noexcept { return productName; }
+    /** Product-name label bounds in HeaderBar local coords — must lie inside the header. */
+    juce::Rectangle<int> getProductNameBounds() const { return productName.getBounds(); }
 
     void paint (juce::Graphics&) override;
     void resized() override;

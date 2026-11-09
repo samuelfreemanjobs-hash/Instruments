@@ -149,6 +149,39 @@ void assertReadoutNonEmpty(fds::gui::ValueReadout& r, const juce::String& name, 
   const juce::String minus(juce::CharPointer_UTF8("\xe2\x88\x92"));
   const bool ok = (t == inf) || t.startsWith("+") || t.startsWith(minus);
   expect(ok, name + " readout format @" + juce::String(scale) + " got=[" + t + "]");
+  expect(!t.contains("...") && !t.containsChar((juce::juce_wchar)0x2026),
+         name + " readout text must not contain ellipsis @" + juce::String(scale)
+             + " got=[" + t + "]");
+  expect(r.valueTextFitsWithoutEllipsis(),
+         name + " value must fit well without ellipsis @" + juce::String(scale)
+             + " text=[" + t + "] width=" + juce::String(r.getValueLabelBounds().getWidth()));
+}
+
+void assertReadoutExact(fds::gui::ValueReadout& r, const juce::String& expected,
+                        const juce::String& name, float scale)
+{
+  const auto t = r.getValueText();
+  expect(t == expected,
+         name + " readout must equal [" + expected + "] got=[" + t + "] @" + juce::String(scale));
+  expect(r.valueTextFitsWithoutEllipsis(),
+         name + " exact value must fit without ellipsis @" + juce::String(scale));
+}
+
+void assertProductNameInsideHeader(MeterTapAudioProcessorEditor& editor, float scale)
+{
+  auto& header = editor.getHeader();
+  const auto nameBounds = header.getProductNameBounds();
+  const auto headerBounds = header.getLocalBounds();
+  expect(headerBounds.contains(nameBounds),
+         "productName bounds must lie inside header @" + juce::String(scale)
+             + " name=" + nameBounds.toString() + " header=" + headerBounds.toString());
+  // Descenders must not be clipped: name height >= productName lineHeight (or full avail).
+  const int need = fds::typography::style::productName.lineHeight;
+  expect(nameBounds.getHeight() >= juce::jmin(need, headerBounds.getHeight()),
+         "productName height must cover lineHeight @" + juce::String(scale)
+             + " got=" + juce::String(nameBounds.getHeight()) + " need=" + juce::String(need));
+  expect(nameBounds.getBottom() <= headerBounds.getBottom(),
+         "productName bottom must not exceed header @" + juce::String(scale));
 }
 
 void runScale(float scale)
@@ -170,6 +203,10 @@ void runScale(float scale)
   assertReadoutNonEmpty(editor.getRmsL(), "RMS L (normal)", scale);
   assertReadoutNonEmpty(editor.getRmsR(), "RMS R (normal)", scale);
   assertReadoutNonEmpty(editor.getPeakL(), "PEAK L (normal)", scale);
+  {
+    const juce::String inf(juce::CharPointer_UTF8("\xe2\x88\x92\xe2\x88\x9e"));
+    assertReadoutExact(editor.getRmsL(), inf, "RMS L silence", scale);
+  }
   expect(editor.getTrimValueText() == "+0.0 dB",
          "trim value must be '+0.0 dB' got=[" + editor.getTrimValueText() + "]");
   expect(editor.getPresetNameText() == "Init",
@@ -177,6 +214,7 @@ void runScale(float scale)
   assertUtf8Title(editor.getMeterTitleText(), scale);
   expect(editor.getMeterTitleText().contains("OUTPUT"),
          "normal title should be OUTPUT @" + juce::String(scale));
+  assertProductNameInsideHeader(editor, scale);
 
   auto normalFile = outDir().getChildFile("MeterTapEditor@" + juce::String(scale, 1) + "x.png");
   writePng(imgNormal, normalFile);
@@ -193,9 +231,29 @@ void runScale(float scale)
   assertReadoutNonEmpty(editor.getRmsL(), "RMS L (over)", scale);
   assertReadoutNonEmpty(editor.getRmsR(), "RMS R (over)", scale);
   assertReadoutNonEmpty(editor.getPeakL(), "PEAK L (over)", scale);
+  {
+    // Signal present: full one-decimal string, no "..." (design-spec 80 px wells, no unit).
+    const juce::String expectedRms = juce::String(juce::CharPointer_UTF8("\xe2\x88\x92")) + "10.0";
+    assertReadoutExact(editor.getRmsL(), expectedRms, "RMS L over-bypass", scale);
+    assertReadoutExact(editor.getRmsR(), expectedRms, "RMS R over-bypass", scale);
+    // Extreme signed widths that must still fit valueLarge in an 80 px well
+    // (−96.0 is at numericFloor and becomes −∞; use −95.9 / +12.0 for digit fit).
+    editor.setTestLevels(0, -6.0f, -95.9f, -6.0f, false);
+    editor.forcePaintForTest();
+    const juce::String nearFloor = juce::String(juce::CharPointer_UTF8("\xe2\x88\x92")) + "95.9";
+    assertReadoutExact(editor.getRmsL(), nearFloor, "RMS L −95.9 fit", scale);
+    editor.setTestLevels(0, 1.0f, 12.0f, 1.0f, true);
+    editor.forcePaintForTest();
+    assertReadoutExact(editor.getRmsL(), "+12.0", "RMS L +12.0 fit", scale);
+    editor.setTestOverLatched(true, true);
+    editor.forcePaintForTest();
+    assertReadoutExact(editor.getRmsL(), expectedRms, "RMS L restored −10.0", scale);
+    assertReadoutExact(editor.getRmsR(), expectedRms, "RMS R restored −10.0", scale);
+  }
   assertUtf8Title(editor.getMeterTitleText(), scale);
   expect(editor.getMeterTitleText().contains("INPUT"),
          "bypass title should be INPUT @" + juce::String(scale));
+  assertProductNameInsideHeader(editor, scale);
 
   // Chassis background
   expect(colourClose(imgOver.getPixelAt(2, 2), fds::gui::argb(fds::color::bg::chassis), 30),

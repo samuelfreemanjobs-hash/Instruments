@@ -436,7 +436,7 @@ void MeterTapAudioProcessorEditor::setTestOverLatched(bool left, bool right)
 {
   overLatched_ = {{left, right}};
   const float floorDb = fds::meter::defaultFloorDb;
-  constexpr float kRmsDb = -18.0f;
+  constexpr float kRmsDb = -10.0f; // must render as full "−10.0" (no ellipsis) in 80 px wells
   meterL_.setLevels(left ? 1.0f : -12.0f, kRmsDb, left ? 1.0f : floorDb, left);
   meterR_.setLevels(right ? 1.0f : -12.0f, kRmsDb, right ? 1.0f : floorDb, right);
   updateReadout(peakL_, left ? 1.0f : -12.0f, left, lastPeakLText_);
