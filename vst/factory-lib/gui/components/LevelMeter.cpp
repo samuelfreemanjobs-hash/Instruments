@@ -47,6 +47,17 @@ void LevelMeter::resized()
     trackPath.addRoundedRectangle (barBounds, radius::xs);
 }
 
+float LevelMeter::yForDb (float db) const noexcept
+{
+    return barBounds.getBottom() - dbToNorm (db, meter::defaultFloorDb) * barBounds.getHeight();
+}
+
+juce::Rectangle<float> LevelMeter::getPeakColumnBounds() const noexcept
+{
+    const float pw = barBounds.getWidth() * meter::peakWidthFraction;
+    return { barBounds.getCentreX() - pw * 0.5f, barBounds.getY(), pw, barBounds.getHeight() };
+}
+
 void LevelMeter::paint (juce::Graphics& g)
 {
     // Over cap
@@ -57,11 +68,7 @@ void LevelMeter::paint (juce::Graphics& g)
     g.setColour (argb (color::meter::track));
     g.fillPath (trackPath);
 
-    const float floorDb = meter::defaultFloorDb;
-    auto yFor = [&] (float db) -> float
-    {
-        return barBounds.getBottom() - dbToNorm (db, floorDb) * barBounds.getHeight();
-    };
+    auto yFor = [this] (float db) { return yForDb (db); };
 
     // RMS full width
     {
@@ -72,15 +79,28 @@ void LevelMeter::paint (juce::Graphics& g)
         g.fillRect (fill);
     }
 
-    // Peak half-width, hot above threshold
+    // Peak half-width: meter.peak from floor up to hotThreshold; meter.hot only above it.
     {
-        const float y = yFor (peakDb);
         const float pw = barBounds.getWidth() * meter::peakWidthFraction;
-        auto fill = juce::Rectangle<float> (barBounds.getCentreX() - pw * 0.5f, y, pw,
-                                            barBounds.getBottom() - y);
-        const bool hot = peakDb >= meter::hotThresholdDb;
-        g.setColour (hot ? argb (color::meter::hot) : argb (color::meter::peak));
-        g.fillRect (fill);
+        const float px = barBounds.getCentreX() - pw * 0.5f;
+        const float yBottom = barBounds.getBottom();
+        const float yPeak = yFor (peakDb);
+        const float yThresh = yFor (meter::hotThresholdDb);
+
+        if (peakDb > meter::hotThresholdDb)
+        {
+            // Cool peak body: bottom → hot threshold
+            g.setColour (argb (color::meter::peak));
+            g.fillRect (px, yThresh, pw, yBottom - yThresh);
+            // Hot tip: hot threshold → peak
+            g.setColour (argb (color::meter::hot));
+            g.fillRect (px, yPeak, pw, yThresh - yPeak);
+        }
+        else
+        {
+            g.setColour (argb (color::meter::peak));
+            g.fillRect (px, yPeak, pw, yBottom - yPeak);
+        }
     }
 
     // Hold line
@@ -113,13 +133,6 @@ bool LevelMeter::keyPressed (const juce::KeyPress& key)
         return true;
     }
     return false;
-}
-
-juce::Colour LevelMeter::samplePixel (int x, int y) const
-{
-    // Approximate: for tests that sample known regions after paint into Image.
-    juce::ignoreUnused (x, y);
-    return argb (color::meter::track);
 }
 
 std::unique_ptr<juce::AccessibilityHandler> LevelMeter::createAccessibilityHandler()

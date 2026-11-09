@@ -18,6 +18,20 @@ inline juce::Colour argb (std::uint32_t c) noexcept
     return juce::Colour (c);
 }
 
+/** Decode a UTF-8 C string into juce::String (never use bare `String("…")` for non-ASCII). */
+inline juce::String utf8 (const char* utf8Bytes) noexcept
+{
+    return juce::String (juce::CharPointer_UTF8 (utf8Bytes));
+}
+
+inline juce::String middot() noexcept { return utf8 ("\xc2\xb7"); }           // ·
+inline juce::String minusSign() noexcept { return utf8 ("\xe2\x88\x92"); }    // −
+inline juce::String infinityGlyph() noexcept { return utf8 ("\xe2\x88\x9e"); } // ∞
+inline juce::String emDash() noexcept { return utf8 ("\xe2\x80\x94"); }       // —
+inline juce::String prevGlyph() noexcept { return utf8 ("\xe2\x80\xb9"); }    // ‹
+inline juce::String nextGlyph() noexcept { return utf8 ("\xe2\x80\xba"); }    // ›
+
+
 /**
  * Build a juce::Font from a design-system typography style.
  * JUCE 8 prefers FontOptions; JUCE 7 uses the classic Font(name, height, style) ctor.
@@ -59,21 +73,15 @@ inline juce::String applyCase (const juce::String& text, const char* textCase)
 inline juce::String formatDb (float db, float numericFloorDb = meter::numericFloorDb)
 {
     if (db <= numericFloorDb || ! std::isfinite (db))
-        return juce::String::fromUTF8 ("\xe2\x88\x92\xe2\x88\x9e"); // −∞
+        return minusSign() + infinityGlyph();
     const float v = db;
     juce::String s;
     if (v < 0.0f)
-    {
-        s = juce::String::fromUTF8 ("\xe2\x88\x92") + juce::String (std::abs (v), 1);
-    }
+        s = minusSign() + juce::String (std::abs (v), 1);
     else if (v > 0.0f)
-    {
         s = "+" + juce::String (v, 1);
-    }
     else
-    {
         s = "0.0";
-    }
     return s + " dB";
 }
 

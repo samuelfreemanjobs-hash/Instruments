@@ -35,7 +35,7 @@ void MeterScale::paint (juce::Graphics& g)
         if (std::abs (db) < 0.001f)
             label = "0";
         else
-            label = juce::String::fromUTF8 ("\xe2\x88\x92") + juce::String ((int) std::abs (db));
+            label = minusSign() + juce::String ((int) std::abs (db));
         g.drawText (label, column.withY (y - 6.0f).withHeight (12.0f).toNearestInt(),
                     juce::Justification::centred, false);
     }

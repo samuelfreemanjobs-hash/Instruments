@@ -53,7 +53,7 @@ void ValueReadout::setFromDb (float db)
     if (db <= meter::numericFloorDb || ! std::isfinite (db))
     {
         setState (State::floor);
-        setValueText (juce::String::fromUTF8 ("\xe2\x88\x92\xe2\x88\x9e"), "dB");
+        setValueText (minusSign() + infinityGlyph(), "dB");
         return;
     }
     if (db > meter::overThresholdDb)

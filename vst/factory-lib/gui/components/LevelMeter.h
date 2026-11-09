@@ -28,8 +28,12 @@ public:
     void mouseDown (const juce::MouseEvent&) override;
     bool keyPressed (const juce::KeyPress&) override;
 
-    /** Sample a pixel colour for render tests (local coords). */
-    juce::Colour samplePixel (int x, int y) const;
+    /** Local Y of a dB value within the bar (top of component coords). */
+    float yForDb (float db) const noexcept;
+
+    /** Peak-bar fill bounds (half-width column) after resized(). */
+    juce::Rectangle<float> getBarBounds() const noexcept { return barBounds; }
+    juce::Rectangle<float> getPeakColumnBounds() const noexcept;
 
     float getPeakDb() const noexcept { return peakDb; }
     float getRmsDb() const noexcept { return rmsDb; }
