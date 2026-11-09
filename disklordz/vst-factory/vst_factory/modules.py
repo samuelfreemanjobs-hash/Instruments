@@ -132,3 +132,16 @@ def materialize_creative_brief(plugin_class: str, plugin_name: str, prompt: str,
         dsp_modules=", ".join(spec.get("dsp_modules", [])),
         gui_modules=", ".join(spec.get("gui_modules", [])),
     )
+
+
+@lru_cache(maxsize=1)
+def load_full_lifecycle_workflow() -> dict[str, Any]:
+    """Load modules/workflows/full-lifecycle.json (10-stage pipeline)."""
+    path = modules_root() / "workflows" / "full-lifecycle.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=1)
+def load_features() -> dict[str, Any]:
+    path = modules_root() / "features.json"
+    return json.loads(path.read_text(encoding="utf-8"))

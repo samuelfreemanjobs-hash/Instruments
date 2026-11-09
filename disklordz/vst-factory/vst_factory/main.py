@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 from vst_factory import __version__
 from vst_factory.build_broker import windows_chord_instructions
 from vst_factory.db import FactoryDB
-from vst_factory.models import CursorPromptOut, ProjectCreate, ProjectOut, RunOut
+from vst_factory.models import CursorPromptOut, PipelineOut, ProjectCreate, ProjectOut, RunOut
 from vst_factory import modules as modlib
 from vst_factory.orchestrator import Orchestrator
 from vst_factory.portfolio import load_product_library, merge_with_db_projects
@@ -33,14 +33,18 @@ def _shutdown() -> None:
 
 
 def _project_out(p: dict) -> ProjectOut:
+    enriched = orch.enrich_project(p) if "phase" not in p else p
     return ProjectOut(
-        id=p["id"],
-        plugin_name=p["plugin_name"],
-        plugin_class=p["plugin_class"],
-        state=p["state"],
-        spec=p["spec"],
-        apc_path=p.get("apc_path"),
-        vst_path=p.get("vst_path"),
+        id=enriched["id"],
+        plugin_name=enriched["plugin_name"],
+        plugin_class=enriched["plugin_class"],
+        state=enriched["state"],
+        spec=enriched["spec"],
+        apc_path=enriched.get("apc_path"),
+        vst_path=enriched.get("vst_path"),
+        phase=enriched.get("phase"),
+        validation=enriched.get("validation"),
+        apc_phase=enriched.get("apc_phase"),
     )
 
 
@@ -89,6 +93,11 @@ def api_dsp_blocks() -> list[dict]:
 @app.get("/api/modules/gui")
 def api_gui_blocks() -> list[dict]:
     return modlib.list_gui_blocks()
+
+
+@app.get("/api/modules/features")
+def api_features() -> dict:
+    return modlib.load_features()
 
 
 @app.get("/api/references/chord-engine")
@@ -150,6 +159,24 @@ def get_product_wo(project_id: int) -> dict:
     return wo
 
 
+@app.post("/api/projects/{project_id}/sync", response_model=ProjectOut)
+def sync_project(project_id: int) -> ProjectOut:
+    try:
+        proj = orch.sync_phase(project_id)
+        return _project_out(proj)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="project not found") from exc
+
+
+@app.get("/api/projects/{project_id}/pipeline", response_model=PipelineOut)
+def project_pipeline(project_id: int) -> PipelineOut:
+    try:
+        data = orch.pipeline(project_id)
+        return PipelineOut(**data)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="project not found") from exc
+
+
 @app.post("/api/projects/{project_id}/scaffold", response_model=ProjectOut)
 def scaffold_project(project_id: int) -> ProjectOut:
     try:
@@ -185,6 +212,16 @@ def certify_project(project_id: int) -> dict:
         return orch.certify(project_id)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="project not found") from exc
+
+
+@app.post("/api/projects/{project_id}/ship")
+def ship_project(project_id: int) -> dict:
+    try:
+        return orch.ship(project_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="project not found") from exc
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
 
 
 @app.get("/api/projects/{project_id}/runs", response_model=list[RunOut])

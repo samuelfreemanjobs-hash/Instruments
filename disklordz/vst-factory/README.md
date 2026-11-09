@@ -23,6 +23,7 @@ pytest -q
 $env:VST_FACTORY_DB = "$env:TEMP\factory_projects.sqlite"
 $env:VST_FACTORY_SLACK_WEBHOOK_URL = ""   # leave empty — Slack no-op
 $env:VST_FACTORY_PUBLIC_URL = "http://127.0.0.1:8790"
+$env:VST_FACTORY_URL = "http://127.0.0.1:8790"
 uvicorn vst_factory.main:app --host 127.0.0.1 --port 8790
 ```
 
@@ -37,6 +38,17 @@ export VST_FACTORY_URL=http://127.0.0.1:8790
 
 Never commit a Slack webhook URL. Setup: [docs/VST_FACTORY_SLACK_SETUP.md](../../docs/VST_FACTORY_SLACK_SETUP.md).
 
+## Lifecycle API (quick)
+
+| Step | Call |
+|------|------|
+| Sync APC | `POST /api/projects/{id}/sync` |
+| Pipeline | `GET /api/projects/{id}/pipeline` |
+| Scaffold | `POST /api/projects/{id}/scaffold` (needs `approve_architecture`) |
+| Ship | `POST /api/projects/{id}/ship` (needs certify + `approve_release`) |
+
+Workflow definition: [`modules/workflows/full-lifecycle.json`](modules/workflows/full-lifecycle.json).
+
 ## MeterTap smoke
 
 With the factory already listening on port 8790:
@@ -46,5 +58,7 @@ python scripts/complete_metertap.py
 # or
 bash scripts/smoke_metertap.sh
 ```
+
+Exercises health → create → approve_architecture → **/sync** → **/pipeline** → portfolio/taxonomy.
 
 Optional: `--through-scaffold` (writes `vst/` — only after Dream/Plan/Design).

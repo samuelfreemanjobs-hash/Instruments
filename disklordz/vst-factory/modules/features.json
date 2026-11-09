@@ -1,0 +1,56 @@
+{
+  "schema_version": "factory-features/v1",
+  "description": "Feature registry aligned with product-taxonomy categories and DSP/GUI module catalog",
+  "features": [
+    {
+      "id": "feat.metering.peak_rms",
+      "label": "Peak / RMS metering",
+      "product_categories": ["fx.metering"],
+      "dsp_modules": ["analysis.peak_rms"],
+      "gui_modules": ["gui.meter"],
+      "dogfood_sku": "MeterTap"
+    },
+    {
+      "id": "feat.dynamics.compress",
+      "label": "Dynamics compression",
+      "product_categories": ["fx.dynamics"],
+      "dsp_modules": ["dyn.compressor"],
+      "gui_modules": ["gui.meter", "gui.rotary-knob"]
+    },
+    {
+      "id": "feat.fx.saturation",
+      "label": "Saturation / waveshape",
+      "product_categories": ["fx.dynamics"],
+      "dsp_modules": ["fx.saturation"],
+      "gui_modules": ["gui.rotary-knob"]
+    },
+    {
+      "id": "feat.fx.delay",
+      "label": "Stereo delay",
+      "product_categories": ["fx.dynamics"],
+      "dsp_modules": ["fx.delay"],
+      "gui_modules": ["gui.rotary-knob"]
+    },
+    {
+      "id": "feat.synth.subtractive_core",
+      "label": "Subtractive oscillator + filter",
+      "product_categories": ["synth.subtractive"],
+      "dsp_modules": ["osc.saw", "osc.square", "filter.ladder", "env.adsr"],
+      "gui_modules": ["gui.keyboard", "gui.adsr-panel", "gui.rotary-knob"]
+    },
+    {
+      "id": "feat.midi.chord_pads",
+      "label": "Chord pad grid",
+      "product_categories": ["midi.chord"],
+      "dsp_modules": ["midi.chord-pads", "midi.voicing", "theory.scale"],
+      "gui_modules": ["gui.pad-grid", "gui.key-selector"]
+    },
+    {
+      "id": "feat.sampler.rompler",
+      "label": "Rompler playback",
+      "product_categories": ["sampler.rompler"],
+      "dsp_modules": [],
+      "gui_modules": ["gui.waveform", "gui.keyboard"]
+    }
+  ]
+}
