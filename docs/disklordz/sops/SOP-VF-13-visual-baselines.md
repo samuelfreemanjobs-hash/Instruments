@@ -25,15 +25,22 @@ Comparing against a different JUCE tag or changed font bytes fails closed until 
 Environment mismatch (FreeType / fontconfig / GPU vs software) is not a reason to widen tolerances. Loosening to ~8–10% of pixels lets real regressions (LED colour, focus ring, hold line, over cap) pass. Instead:
 
 1. Land the intentional UI change on the PR branch.
-2. Trigger a CI re-baseline on that branch:
+2. Trigger a CI re-baseline on that branch (pick one):
 
 ```bash
+# Preferred (operators / tokens with actions:write):
 gh workflow run design-system.yml --ref <branch> -f rebaseline=true
 # optional selective: -f only='HeaderBar*,PresetBrowser*'
+
+# Fallback (Cloud agents whose ghs_ token cannot workflow_dispatch):
+# commit an empty-or-glob file, then push — design-system removes it in the bot commit.
+echo -n '' > tests/visual/.rebaseline-on-ci          # full suite
+# echo -n 'HeaderBar*,PresetBrowser*' > tests/visual/.rebaseline-on-ci  # selective
+git add tests/visual/.rebaseline-on-ci && git commit -m "ci: request visual re-baseline on runner" && git push
 ```
 
-3. The golden cell runs `tools/visual_diff.py --update` (writes `REVIEW.md` + `_review/` thumbs), commits as `github-actions[bot]` with message `visual: re-baseline on CI runner (<run url>)`, and uploads the golden tree as artifact `factory-gui-goldens-rebaseline`.
-4. Pull the bot commit; open `REVIEW.md` before merge. A following normal design-system run must pass at the strict tolerances against those CI-authored goldens.
+3. The golden cell runs `tools/visual_diff.py --update` (writes `REVIEW.md` + `_review/` thumbs), verifies the new goldens against the same CI renders at strict tol, commits as `github-actions[bot]` with message `visual: re-baseline on CI runner (<run url>)`, and uploads artifact `factory-gui-goldens-rebaseline`.
+4. Pull the bot commit; open `REVIEW.md` before merge. Push a follow-up commit if needed so a **normal** design-system run (no sentinel) passes at the strict tolerances — Actions does not re-trigger workflows from `GITHUB_TOKEN` pushes.
 
 ## How to add a component to visual tests
 
