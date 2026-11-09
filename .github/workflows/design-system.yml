@@ -50,8 +50,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             g++-12 cmake ninja-build pkg-config \
-            libasound2-dev libfreetype6-dev libx11-dev libxinerama-dev \
-            libxrandr-dev libxcursor-dev libgl1-mesa-dev xvfb
+            libasound2-dev libfreetype6-dev libfontconfig1-dev \
+            libx11-dev libxinerama-dev libxrandr-dev libxcursor-dev \
+            libgl1-mesa-dev xvfb
+          # JUCE 8 juceaide needs ft2build.h + fontconfig at configure time
+          pkg-config --exists freetype2
+          pkg-config --exists fontconfig
+          pkg-config --cflags freetype2 fontconfig
 
       - name: Configure factory GUI (Release, pinned JUCE, no LTO)
         run: |
