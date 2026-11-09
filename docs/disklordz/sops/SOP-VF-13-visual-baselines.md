@@ -56,9 +56,11 @@ python3 tools/visual_diff.py \
 Rules:
 
 - Same PR as the intentional UI change.
-- Reviewer **must** open the HTML report (or the new PNGs) before merge.
+- Reviewer **must** open `REVIEW.md` (written next to `MANIFEST.json` by `--update`) and the HTML diff report before merge. `REVIEW.md` lists every changed golden with before/after thumbnail links under `_review/`.
+- Selective re-baseline: `--only 'HeaderBar*' --only 'PresetBrowser*' --only 'ValueReadout*'` (repeatable globs). Stop if unexpected components also differ.
 - Update `MANIFEST.json` travels with `--update` (JUCE tag + font hashes).
 - Never re-baseline to silence a failure you have not inspected (L-0005).
+- Do **not** bake known bugs into goldens while a fix PR is still open — wait for merge, then re-baseline only the fixed surfaces.
 
 ## MeterTap editor goldens (follow-up)
 

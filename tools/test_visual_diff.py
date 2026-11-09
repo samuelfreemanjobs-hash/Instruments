@@ -183,6 +183,66 @@ class VisualDiffTests(unittest.TestCase):
         self.assertFalse(report.ok)
         self.assertTrue(any("missing golden" in r.reason for r in report.image_results))
 
+    def test_update_writes_review_md_with_before_after(self) -> None:
+        _write_png(self.theme_g / "Widget-default@1x.png", (10, 20, 30, 255))
+        _write_sidecar(self.theme_g / "Widget-default@1x.json", "HELLO")
+        # Actual differs by one bright pixel
+        img = Image.new("RGBA", (32, 16), (10, 20, 30, 255))
+        img.putpixel((0, 0), (255, 0, 0, 255))
+        img.save(self.theme_a / "Widget-default@1x.png")
+        _write_sidecar(self.theme_a / "Widget-default@1x.json", "HELLO")
+
+        report = vd.run_compare(
+            self.actual,
+            self.golden,
+            self.out,
+            channel_tol=8,
+            max_diff_ratio=0.002,
+            expected_juce="8.0.15",
+            update=True,
+        )
+        self.assertTrue(report.ok, vd.write_summary_md(report))
+        review = self.golden / "REVIEW.md"
+        self.assertTrue(review.is_file(), "REVIEW.md must be written next to MANIFEST")
+        body = review.read_text(encoding="utf-8")
+        self.assertIn("Widget-default@1x.png", body)
+        self.assertIn("_review/before/", body)
+        self.assertIn("_review/after/", body)
+        before = self.golden / "_review" / "before" / "test" / "Widget-default@1x.png"
+        after = self.golden / "_review" / "after" / "test" / "Widget-default@1x.png"
+        self.assertTrue(before.is_file())
+        self.assertTrue(after.is_file())
+
+    def test_update_only_filters_component_prefix(self) -> None:
+        _write_png(self.theme_g / "HeaderBar-longest@1x.png", (1, 1, 1, 255))
+        _write_png(self.theme_g / "LevelMeter-hot@1x.png", (2, 2, 2, 255))
+        _write_sidecar(self.theme_g / "HeaderBar-longest@1x.json", "H")
+        _write_sidecar(self.theme_g / "LevelMeter-hot@1x.json", "M")
+        _write_png(self.theme_a / "HeaderBar-longest@1x.png", (9, 9, 9, 255))
+        _write_png(self.theme_a / "LevelMeter-hot@1x.png", (8, 8, 8, 255))
+        _write_sidecar(self.theme_a / "HeaderBar-longest@1x.json", "H2")
+        _write_sidecar(self.theme_a / "LevelMeter-hot@1x.json", "M2")
+
+        vd.run_compare(
+            self.actual,
+            self.golden,
+            self.out,
+            channel_tol=8,
+            max_diff_ratio=0.002,
+            expected_juce="8.0.15",
+            update=True,
+            only=["HeaderBar*"],
+        )
+        # HeaderBar re-baselined
+        with Image.open(self.theme_g / "HeaderBar-longest@1x.png") as im:
+            self.assertEqual(im.getpixel((0, 0))[:3], (9, 9, 9))
+        # LevelMeter untouched
+        with Image.open(self.theme_g / "LevelMeter-hot@1x.png") as im:
+            self.assertEqual(im.getpixel((0, 0))[:3], (2, 2, 2))
+        body = (self.golden / "REVIEW.md").read_text(encoding="utf-8")
+        self.assertIn("HeaderBar-longest@1x.png", body)
+        self.assertNotIn("LevelMeter-hot@1x.png", body)
+
     def test_bounds_outside_fails(self) -> None:
         _write_png(self.theme_g / "Widget-default@1x.png", (10, 20, 30, 255))
         _write_png(self.theme_a / "Widget-default@1x.png", (10, 20, 30, 255))

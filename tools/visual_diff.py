@@ -13,12 +13,14 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import hashlib
 import json
 import os
 import shutil
 import sys
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +34,8 @@ except ImportError as exc:  # pragma: no cover
 
 DEFAULT_CHANNEL_TOLERANCE = 8
 DEFAULT_MAX_DIFF_RATIO = 0.002  # 0.2%
+REVIEW_DIR_NAME = "_review"
+THUMB_MAX = 240
 
 
 @dataclass
@@ -302,7 +306,12 @@ def check_manifest(
 def iter_theme_dirs(root: Path) -> list[Path]:
     if not root.is_dir():
         return []
-    themes = [p for p in sorted(root.iterdir()) if p.is_dir() and not p.name.startswith(".")]
+    skip = {REVIEW_DIR_NAME, "__pycache__"}
+    themes = [
+        p
+        for p in sorted(root.iterdir())
+        if p.is_dir() and not p.name.startswith(".") and p.name not in skip
+    ]
     return themes
 
 
@@ -313,14 +322,177 @@ def collect_stems(theme_dir: Path) -> set[str]:
     return stems
 
 
-def update_goldens(actual_root: Path, golden_root: Path, manifest: dict[str, Any] | None) -> None:
+def _matches_only(rel: str, stem: str, only: list[str] | None) -> bool:
+    """Match --only globs against theme/stem.png, stem, or component prefix."""
+    if not only:
+        return True
+    name_no_scale = stem.split("@", 1)[0]  # HeaderBar-longest
+    component = name_no_scale.split("-", 1)[0]  # HeaderBar
+    candidates = [rel, f"{stem}.png", stem, name_no_scale, component]
+    for pattern in only:
+        for c in candidates:
+            if fnmatch.fnmatch(c, pattern):
+                return True
+        # Allow HeaderBar* to match theme/HeaderBar-…@1x.png
+        if fnmatch.fnmatch(rel, f"*/{pattern}") or fnmatch.fnmatch(f"{stem}.png", pattern):
+            return True
+    return False
+
+
+def _file_digest(path: Path) -> str | None:
+    if not path.is_file():
+        return None
+    return sha256_file(path)
+
+
+def _write_thumb(src: Path, dest: Path, max_edge: int = THUMB_MAX) -> None:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with Image.open(src) as img:
+        im = img.convert("RGBA")
+        im.thumbnail((max_edge, max_edge), Image.Resampling.LANCZOS)
+        im.save(dest)
+
+
+def write_review_md(
+    golden_root: Path,
+    changes: list[dict[str, str]],
+    *,
+    only: list[str] | None,
+) -> Path:
+    """Write REVIEW.md next to MANIFEST.json listing every changed golden."""
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%SZ")
+    lines = [
+        "# Visual golden re-baseline review",
+        "",
+        f"- Generated: `{ts}` (UTC)",
+        f"- Suite: `{golden_root.as_posix()}`",
+        f"- Filter (`--only`): `{', '.join(only) if only else '(all)'}`",
+        f"- Changed goldens: **{len(changes)}**",
+        "",
+        "Reviewer: open each before/after pair (and the HTML diff report from",
+        "`tools/visual_diff.py --out …`) before approving this PR. Do **not**",
+        "re-baseline to silence an uninspected failure (L-0005).",
+        "",
+        "| Golden | Change | Before thumb | After thumb |",
+        "|--------|--------|--------------|-------------|",
+    ]
+    for c in changes:
+        lines.append(
+            f"| `{c['rel']}` | {c['kind']} | "
+            f"[before]({c['before_thumb']}) | [after]({c['after_thumb']}) |"
+        )
+    if not changes:
+        lines.append("| _(none)_ | — | — | — |")
+    lines.append("")
+    lines.append("## Paths")
+    lines.append("")
+    lines.append(f"- Thumbnails live under `{REVIEW_DIR_NAME}/before/` and `{REVIEW_DIR_NAME}/after/`.")
+    lines.append("- Sidecar JSON changes are listed when the paired `.png` changed or the JSON digest differs.")
+    lines.append("")
+    path = golden_root / "REVIEW.md"
+    path.write_text("\n".join(lines), encoding="utf-8")
+    return path
+
+
+def update_goldens(
+    actual_root: Path,
+    golden_root: Path,
+    manifest: dict[str, Any] | None,
+    *,
+    only: list[str] | None = None,
+) -> list[dict[str, str]]:
+    """Copy actual → golden and write REVIEW.md with before/after thumbnails.
+
+    Returns the list of change records written into REVIEW.md.
+    """
     golden_root.mkdir(parents=True, exist_ok=True)
+    review_root = golden_root / REVIEW_DIR_NAME
+    before_root = review_root / "before"
+    after_root = review_root / "after"
+    # Fresh review artefacts for this --update invocation
+    if review_root.exists():
+        shutil.rmtree(review_root)
+    before_root.mkdir(parents=True)
+    after_root.mkdir(parents=True)
+
+    changes: list[dict[str, str]] = []
+
     for theme_dir in iter_theme_dirs(actual_root):
-        dest = golden_root / theme_dir.name
-        if dest.exists():
-            shutil.rmtree(dest)
-        shutil.copytree(theme_dir, dest)
-    # Copy BUILD_INFO if present
+        theme = theme_dir.name
+        dest_theme = golden_root / theme
+        dest_theme.mkdir(parents=True, exist_ok=True)
+
+        actual_stems = collect_stems(theme_dir)
+        golden_stems = collect_stems(dest_theme) if dest_theme.is_dir() else set()
+
+        for stem in sorted(actual_stems | golden_stems):
+            rel = f"{theme}/{stem}.png"
+            if not _matches_only(rel, stem, only):
+                continue
+
+            apng = theme_dir / f"{stem}.png"
+            gpng = dest_theme / f"{stem}.png"
+            ajson = theme_dir / f"{stem}.json"
+            gjson = dest_theme / f"{stem}.json"
+
+            before_digest = _file_digest(gpng)
+            after_digest = _file_digest(apng)
+            before_json = _file_digest(gjson)
+            after_json = _file_digest(ajson)
+
+            if after_digest is None and before_digest is None:
+                continue
+
+            if before_digest == after_digest and before_json == after_json:
+                continue  # unchanged — skip REVIEW entry
+
+            if before_digest is None and after_digest is not None:
+                kind = "added"
+            elif before_digest is not None and after_digest is None:
+                kind = "removed"
+            elif before_digest != after_digest:
+                kind = "pixels-changed"
+            else:
+                kind = "sidecar-changed"
+
+            before_thumb_rel = f"{REVIEW_DIR_NAME}/before/{theme}/{stem}.png"
+            after_thumb_rel = f"{REVIEW_DIR_NAME}/after/{theme}/{stem}.png"
+            before_thumb = golden_root / before_thumb_rel
+            after_thumb = golden_root / after_thumb_rel
+
+            if gpng.is_file():
+                _write_thumb(gpng, before_thumb)
+            else:
+                # Placeholder for added goldens
+                before_thumb.parent.mkdir(parents=True, exist_ok=True)
+                Image.new("RGBA", (64, 32), (60, 60, 60, 255)).save(before_thumb)
+
+            if apng.is_file():
+                _write_thumb(apng, after_thumb)
+            else:
+                after_thumb.parent.mkdir(parents=True, exist_ok=True)
+                Image.new("RGBA", (64, 32), (60, 20, 20, 255)).save(after_thumb)
+
+            # Apply update for this stem
+            if apng.is_file():
+                shutil.copy2(apng, gpng)
+            elif gpng.is_file():
+                gpng.unlink()
+
+            if ajson.is_file():
+                shutil.copy2(ajson, gjson)
+            elif gjson.is_file():
+                gjson.unlink()
+
+            changes.append(
+                {
+                    "rel": rel,
+                    "kind": kind,
+                    "before_thumb": before_thumb_rel,
+                    "after_thumb": after_thumb_rel,
+                }
+            )
+
     bi = actual_root / "BUILD_INFO.json"
     if bi.is_file():
         shutil.copy2(bi, golden_root / "BUILD_INFO.json")
@@ -329,6 +501,9 @@ def update_goldens(actual_root: Path, golden_root: Path, manifest: dict[str, Any
             json.dumps(manifest, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
         )
+
+    write_review_md(golden_root, changes, only=only)
+    return changes
 
 
 def build_default_manifest(actual_root: Path, juce_tag: str) -> dict[str, Any]:
@@ -392,6 +567,7 @@ def run_compare(
     max_diff_ratio: float,
     expected_juce: str | None,
     update: bool,
+    only: list[str] | None = None,
 ) -> Report:
     report = Report()
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -402,10 +578,10 @@ def run_compare(
 
     if update:
         manifest = build_default_manifest(actual_root, expected_juce or "8.0.15")
-        update_goldens(actual_root, golden_root, manifest)
+        changes = update_goldens(actual_root, golden_root, manifest, only=only)
         report.manifest_ok = True
-        report.manifest_reason = "updated"
-        # After update, compare should be identical — fall through.
+        report.manifest_reason = f"updated ({len(changes)} changed; see REVIEW.md)"
+        # After update, compare should be identical for updated stems — fall through.
 
     if not manifest_path.is_file():
         report.manifest_ok = False
@@ -571,7 +747,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument(
         "--update",
         action="store_true",
-        help="Re-baseline goldens from --actual (explicit flag required)",
+        help="Re-baseline goldens from --actual (explicit flag required; writes REVIEW.md)",
+    )
+    p.add_argument(
+        "--only",
+        action="append",
+        default=None,
+        metavar="GLOB",
+        help=(
+            "With --update, only re-baseline matching goldens "
+            "(fnmatch on theme/stem.png, stem, or component prefix). Repeatable."
+        ),
     )
     p.add_argument("--summary", type=Path, default=None, help="Write markdown summary here")
     return p.parse_args(argv)
@@ -587,6 +773,7 @@ def main(argv: list[str] | None = None) -> int:
         max_diff_ratio=args.max_diff_ratio,
         expected_juce=args.expected_juce,
         update=args.update,
+        only=args.only,
     )
     html = write_html_report(report, args.out)
     summary = write_summary_md(report)
@@ -598,9 +785,18 @@ def main(argv: list[str] | None = None) -> int:
     if gh_summary:
         with open(gh_summary, "a", encoding="utf-8") as fh:
             fh.write(summary)
+            review = args.golden / "REVIEW.md"
+            if args.update and review.is_file():
+                fh.write("\n#### REVIEW.md (re-baseline)\n\n")
+                fh.write(review.read_text(encoding="utf-8")[:4000])
+                fh.write("\n")
 
     sys.stdout.write(summary)
     sys.stdout.write(f"HTML report: {html}\n")
+    if args.update:
+        review = args.golden / "REVIEW.md"
+        if review.is_file():
+            sys.stdout.write(f"REVIEW.md: {review}\n")
     return 0 if report.ok else 1
 
 
