@@ -1,5 +1,5 @@
 {
-  "last_tick_at": "2026-11-09T08:00:30Z",
+  "last_tick_at": "2026-11-09T16:00:31Z",
   "completed_ids": [
     "cloud-coach-script-hygiene",
     "cloud-bridge-docs",
@@ -10,7 +10,8 @@
     "cloud-post-merge-112-main",
     "cloud-coach-playbook-github-ci",
     "tick-progress-staleness",
-    "cloud-handoff-bundle-ci"
+    "cloud-handoff-bundle-ci",
+    "cloud-next-factory-ci-line"
   ],
   "last_completed": {
     "cloud-coach-script-hygiene": "2026-11-08T08:00:42Z",
@@ -22,6 +23,7 @@
     "cloud-post-merge-112-main": "2026-11-09T00:00:24Z",
     "cloud-coach-playbook-github-ci": "2026-11-09T04:00:24Z",
     "tick-progress-staleness": "2026-11-09T06:28:37Z",
-    "cloud-handoff-bundle-ci": "2026-11-09T08:00:30Z"
+    "cloud-handoff-bundle-ci": "2026-11-09T08:00:30Z",
+    "cloud-next-factory-ci-line": "2026-11-09T16:00:31Z"
   }
 }
