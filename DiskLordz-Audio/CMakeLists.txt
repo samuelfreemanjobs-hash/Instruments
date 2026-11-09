@@ -1,17 +1,18 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(DiskLordzAudio VERSION 0.1.0 LANGUAGES CXX)
+# JUCE 8 juceaide needs a C compiler in the project languages list.
+project(DiskLordzAudio VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/../JUCE_VERSION")
-  file(READ "${CMAKE_CURRENT_LIST_DIR}/../JUCE_VERSION" JUCE_PINNED_VERSION)
-  string(STRIP "${JUCE_PINNED_VERSION}" JUCE_PINNED_VERSION)
-else()
-  set(JUCE_PINNED_VERSION "8.0.15")
+if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/../JUCE_VERSION")
+  message(FATAL_ERROR "Missing ../JUCE_VERSION — pin the monorepo JUCE tag there (single source of truth).")
 endif()
+file(READ "${CMAKE_CURRENT_LIST_DIR}/../JUCE_VERSION" JUCE_PINNED_VERSION)
+string(STRIP "${JUCE_PINNED_VERSION}" JUCE_PINNED_VERSION)
+message(STATUS "DiskLordz-Audio JUCE pin: ${JUCE_PINNED_VERSION}")
 
 include(FetchContent)
 FetchContent_Declare(

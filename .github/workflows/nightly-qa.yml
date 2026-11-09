@@ -27,9 +27,16 @@ jobs:
           sudo apt-get install -y build-essential g++-12 libstdc++-12-dev \
             libasound2-dev libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev \
             libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev \
-            libcurl4-openssl-dev unzip
+            libcurl4-openssl-dev unzip xvfb
+
+      - name: Cache pluginval binary
+        uses: actions/cache@v4
+        with:
+          path: build/tools/pluginval
+          key: pluginval-${{ runner.os }}-1.0.4
 
       - name: Full business pipeline
         env:
           PYTHONUNBUFFERED: "1"
-        run: python3 -u vst-testing-ops/run_business.py --profile full
+          CI: true
+        run: xvfb-run -a python3 -u vst-testing-ops/run_business.py --profile full

@@ -4,20 +4,24 @@
 
 Cursor enforces this in `.cursor/rules/06-vst-vsti-template.mdc`.
 
+## JUCE version policy
+
+The monorepo pins **one** JUCE tag in the repo-root file [`/JUCE_VERSION`](../JUCE_VERSION) (currently **8.0.15**). Root CMake, `MyFirstPlugin`, `DiskLordz-Audio`, `vst/template*`, `tools/build-vst.sh`, and CI all read that file — do not hard-code a tag in CMake or workflows. To bump: edit `/JUCE_VERSION`, open a PR that builds every JUCE target on CI, and re-baseline golden WAV / visual render tests in the **same** PR if output changes. `tools/build-vst.sh` clones that tag into `vst/JUCE` when the tree is missing (there is no `vst/JUCE` git submodule).
+
 ## Quick start
 
-### 1. JUCE (one time per clone)
+### 1. JUCE (one time per clone, or automatic)
 
 ```bash
-cd ~/code/Instruments   # your repo root
-git submodule update --init vst/JUCE
+# Preferred: let the build script clone the pin
+./tools/build-vst.sh MeterTap
+
+# Or clone manually using the pin:
+TAG="$(tr -d '[:space:]' < JUCE_VERSION)"
+git clone --depth 1 --branch "$TAG" https://github.com/juce-framework/JUCE.git vst/JUCE
 ```
 
-If submodule is missing, add it once:
-
-```bash
-git submodule add https://github.com/juce-framework/JUCE.git vst/JUCE
-```
+Templates also FetchContent the `/JUCE_VERSION` tag when `vst/JUCE` is absent.
 
 ### 2. New plugin from template
 
@@ -44,7 +48,7 @@ Artifacts (paths vary by OS): `build/MySynth_artefacts/Release/VST3/`
 |------|---------|
 | `vst/template/` | **Do not build shipping products here** — copy only |
 | `vst/<PluginName>/` | Your actual plugins |
-| `vst/JUCE/` | JUCE submodule (not committed until you `submodule add`) |
+| `vst/JUCE/` | Local JUCE checkout at the `/JUCE_VERSION` tag (gitignored / not a submodule) |
 
 ## logue SDK vs VST
 

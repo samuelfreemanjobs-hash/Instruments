@@ -4,11 +4,28 @@ project(TemplateSynth VERSION 1.0.0)
 
 set(SHARED_DSP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../shared/dsp)
 
-# JUCE: git submodule at vst/JUCE (see vst/README.md)
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../JUCE/CMakeLists.txt")
-  message(FATAL_ERROR "JUCE not found. From repo root: git submodule update --init vst/JUCE")
+# JUCE: prefer local vst/JUCE checkout; else FetchContent from repo-root JUCE_VERSION.
+set(_juce_local "${CMAKE_CURRENT_SOURCE_DIR}/../JUCE")
+if(EXISTS "${_juce_local}/CMakeLists.txt")
+  add_subdirectory("${_juce_local}" JUCE)
+else()
+  if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../JUCE_VERSION")
+    message(FATAL_ERROR
+      "JUCE not found. Clone the pin from /JUCE_VERSION into vst/JUCE "
+      "(tools/build-vst.sh does this) or keep JUCE_VERSION at the repo root for FetchContent.")
+  endif()
+  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../../JUCE_VERSION" JUCE_PINNED_VERSION)
+  string(STRIP "${JUCE_PINNED_VERSION}" JUCE_PINNED_VERSION)
+  include(FetchContent)
+  message(STATUS "template: FetchContent JUCE ${JUCE_PINNED_VERSION}")
+  FetchContent_Declare(
+    JUCE
+    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
+    GIT_TAG ${JUCE_PINNED_VERSION}
+    GIT_SHALLOW TRUE
+  )
+  FetchContent_MakeAvailable(JUCE)
 endif()
-add_subdirectory(../JUCE JUCE)
 
 juce_add_plugin(TemplateSynth
     COMPANY_NAME "Instruments"

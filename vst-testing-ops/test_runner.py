@@ -73,17 +73,22 @@ def install_pluginval_to_bin() -> int:
     if not ORCHESTRATOR.is_file():
         print(f"Missing orchestrator: {ORCHESTRATOR}", file=sys.stderr)
         return 2
+    # Stream stderr so download retry logs are visible; capture stdout for the binary path.
     proc = subprocess.run(
         [sys.executable, str(ORCHESTRATOR), "--install-only"],
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=None,
         text=True,
         cwd=str(REPO_ROOT),
         check=False,
     )
     cached = (proc.stdout or "").strip().splitlines()[-1] if proc.stdout else ""
-    if proc.returncode != 0 or not cached:
-        print(proc.stderr or proc.stdout, file=sys.stderr)
-        return proc.returncode or 1
+    if proc.returncode != 0:
+        # Orchestrator already printed PLUGINVAL_DOWNLOAD_FAILED (distinct from validation).
+        return proc.returncode
+    if not cached:
+        print("pluginval install failed: empty binary path", file=sys.stderr)
+        return 1
     src = Path(cached)
     if not src.is_file():
         print(f"Install failed: {src}", file=sys.stderr)

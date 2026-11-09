@@ -6,12 +6,13 @@
 #   ./tools/build-vst.sh --list
 #   ./tools/build-vst.sh --all
 #
-# Requires: git submodule update --init vst/JUCE
+# JUCE: clones the tag in /JUCE_VERSION into vst/JUCE when missing (not a git submodule).
 
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 JUCE_DIR="${ROOT}/vst/JUCE"
+JUCE_VERSION_FILE="${ROOT}/JUCE_VERSION"
 
 is_template_dir() {
   case "$(basename "$1")" in
@@ -29,11 +30,36 @@ list_plugins() {
   done
 }
 
-ensure_juce() {
-  if [[ ! -f "${JUCE_DIR}/CMakeLists.txt" ]]; then
-    echo "JUCE missing. Run from repo root:" >&2
-    echo "  git submodule update --init vst/JUCE" >&2
+read_juce_pin() {
+  if [[ ! -f "${JUCE_VERSION_FILE}" ]]; then
+    echo "Missing ${JUCE_VERSION_FILE} — cannot resolve JUCE pin." >&2
     exit 1
+  fi
+  tr -d '[:space:]' < "${JUCE_VERSION_FILE}"
+}
+
+ensure_juce() {
+  if [[ -f "${JUCE_DIR}/CMakeLists.txt" ]]; then
+    return 0
+  fi
+  local tag
+  tag="$(read_juce_pin)"
+  if [[ -z "${tag}" ]]; then
+    echo "JUCE_VERSION is empty." >&2
+    exit 1
+  fi
+  echo "JUCE missing under vst/JUCE — cloning pinned ${tag}" >&2
+  git clone --depth 1 --branch "${tag}" \
+    https://github.com/juce-framework/JUCE.git "${JUCE_DIR}"
+}
+
+prefer_compilers() {
+  # Match AGENTS.md / CI: prefer g++-12 when present (default c++ may lack libstdc++).
+  if [[ -z "${CXX:-}" ]] && command -v g++-12 >/dev/null 2>&1; then
+    export CXX=g++-12
+  fi
+  if [[ -z "${CC:-}" ]] && command -v gcc-12 >/dev/null 2>&1; then
+    export CC=gcc-12
   fi
 }
 
@@ -48,9 +74,12 @@ build_one() {
     echo "Skip template: ${name}" >&2
     return 1
   fi
-  echo "==> Building vst/${name}"
+  prefer_compilers
+  echo "==> Building vst/${name} (CC=${CC:-cc} CXX=${CXX:-c++})"
   cd "${vst}"
-  cmake -B build -DCMAKE_BUILD_TYPE=Release
+  cmake -B build -DCMAKE_BUILD_TYPE=Release \
+    ${CC:+-DCMAKE_C_COMPILER="${CC}"} \
+    ${CXX:+-DCMAKE_CXX_COMPILER="${CXX}"}
   cmake --build build --config Release -j"$(nproc 2>/dev/null || echo 4)"
   local artefact
   artefact="$(find build -name '*.vst3' 2>/dev/null | head -1 || true)"
@@ -78,6 +107,8 @@ case "${cmd}" in
   -h|--help|help|"")
     cat <<EOF
 Usage: $0 <PluginName> | --list | --all
+
+JUCE is resolved from /JUCE_VERSION (cloned into vst/JUCE when missing).
 EOF
     exit 0
     ;;
