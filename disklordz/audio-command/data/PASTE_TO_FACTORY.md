@@ -1,6 +1,6 @@
 # PASTE_TO_FACTORY (generated)
 
-_Generated 2026-11-09 00:00 UTC · task `plugin-skeleton`_
+_Generated 2026-11-09 23:50 UTC · task `plugin-skeleton`_
 
 **Blocker:** human-windows  
 **Next owner:** Samuel (Windows build + DAW)  
@@ -29,3 +29,13 @@ VST3: printed at end of `build-windows.ps1` (search under `DiskLordz-Audio\Build
 **Factory chat:** only if build fails — paste this file + log; rule `disklordz-audio-engineering-lane`.
 
 **Parallel:** Antigravity WO-PREP (docs/batch) — not required for compile.
+---
+
+## VST Factory studio
+
+- UI: http://127.0.0.1:8790/
+- Greenfield APC projects (SQLite): **1**
+- CHORD reference id: `chord-engine` — see `GET /api/references/chord-engine`
+- Module catalog: `disklordz/vst-factory/modules/catalog.json`
+
+VST Factory Phase 1 — greenfield via APC; CHORD tracked as reference.
