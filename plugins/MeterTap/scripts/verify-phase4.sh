@@ -19,10 +19,7 @@ cmake --build "$ANALYSIS_BUILD" -j"$(nproc 2>/dev/null || echo 4)"
 ctest --test-dir "$ANALYSIS_BUILD" --output-on-failure | tee "$LOG_DIR/analysis-ctest.log"
 
 echo "==> (c) tools/build-vst.sh MeterTap (also builds processor tests)"
-if [[ ! -f "$ROOT/vst/JUCE/CMakeLists.txt" ]]; then
-  echo "JUCE missing under vst/JUCE — cloning pinned 7.0.12" >&2
-  git clone --depth 1 --branch 7.0.12 https://github.com/juce-framework/JUCE.git "$ROOT/vst/JUCE"
-fi
+# tools/build-vst.sh clones/refreshes vst/JUCE to match /JUCE_VERSION.
 bash "$ROOT/tools/build-vst.sh" MeterTap | tee "$LOG_DIR/build-vst.log"
 
 echo "==> (b) processor contract tests (V3/V4/V5)"
@@ -33,7 +30,43 @@ if [[ -x "$PROC_BIN" ]]; then
   "$PROC_BIN" | tee -a "$LOG_DIR/processor-ctest.log"
 fi
 
-echo "==> (d) run_business.py --profile factory --plugin MeterTap"
+echo "==> (d) editor render tests (theme disklordz @100%/@200%)"
+ctest --test-dir "$ROOT/vst/MeterTap/build" --output-on-failure -R MeterTapEditorRender \
+  | tee "$LOG_DIR/editor-render-disklordz.log"
+EDITOR_BIN="$ROOT/vst/MeterTap/build/MeterTapEditorRenderTests_artefacts/Release/MeterTapEditorRenderTests"
+if [[ -x "$EDITOR_BIN" ]]; then
+  "$EDITOR_BIN" | tee -a "$LOG_DIR/editor-render-disklordz.log"
+fi
+# Copy PNGs into evidence/
+EVIDENCE="$ROOT/plugins/MeterTap/evidence/editor-renders"
+mkdir -p "$EVIDENCE/disklordz"
+if [[ -d "$ROOT/vst/MeterTap/build/editor-renders/disklordz" ]]; then
+  cp -f "$ROOT/vst/MeterTap/build/editor-renders/disklordz/"*.png "$EVIDENCE/disklordz/" || true
+fi
+
+echo "==> (e) re-theme build (THEME studio-light, no code change) + editor renders"
+RETHEME_BUILD="${METERTAP_STUDIO_BUILD:-/tmp/metertap-studio-light-build}"
+rm -rf "$RETHEME_BUILD"
+cmake -S "$ROOT/vst/MeterTap" -B "$RETHEME_BUILD" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_COMPILER="${CXX}" \
+  -DCMAKE_C_COMPILER="${CC}" \
+  -DMETERTAP_THEME=studio-light \
+  -DFACTORY_GUI_BUILD_GALLERY=OFF \
+  -DFACTORY_GUI_BUILD_TESTS=OFF
+cmake --build "$RETHEME_BUILD" -j"$(nproc 2>/dev/null || echo 4)" --target MeterTapEditorRenderTests
+ctest --test-dir "$RETHEME_BUILD" --output-on-failure -R MeterTapEditorRender \
+  | tee "$LOG_DIR/editor-render-studio-light.log"
+STUDIO_BIN="$RETHEME_BUILD/MeterTapEditorRenderTests_artefacts/Release/MeterTapEditorRenderTests"
+if [[ -x "$STUDIO_BIN" ]]; then
+  "$STUDIO_BIN" | tee -a "$LOG_DIR/editor-render-studio-light.log"
+fi
+mkdir -p "$EVIDENCE/studio-light"
+if [[ -d "$RETHEME_BUILD/editor-renders/studio-light" ]]; then
+  cp -f "$RETHEME_BUILD/editor-renders/studio-light/"*.png "$EVIDENCE/studio-light/" || true
+fi
+
+echo "==> (f) run_business.py --profile factory --plugin MeterTap"
 # Prefer local pluginval if present (offline / flaky CDN)
 if [[ -x "$ROOT/vst-testing-ops/bin/pluginval" ]]; then
   export PLUGINVAL_BIN="$ROOT/vst-testing-ops/bin/pluginval"

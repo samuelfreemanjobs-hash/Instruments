@@ -36,6 +36,7 @@ Supporting SOPs: [VF-03 theme](SOP-VF-03-design-system-theme.md) · [VF-09 debug
 5. **Every product doc starts from a template** (`bin/apc template`), so every product is reviewable the same way.
 6. **Branch per phase or per agent**, draft PR, CI green before merge. Never push to `main` directly.
 7. **Evidence tags** on decision surfaces (PR, report): `[executed]`, `[inspected]`, `[assumed]`.
+8. **Memory:** recall lessons before each stage and record new verified ones after it (`scripts/agent_memory.py`, [SOP-019](SOP-019-agent-memory.md)). Inspect artefacts yourself; passing tests are not evidence that renders or packages are right.
 
 ## Roles
 

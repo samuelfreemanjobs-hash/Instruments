@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - "vst/MeterTap/**"
-      - "vst/factory-lib/analysis/**"
+      - "vst/factory-lib/**"
       - "plugins/MeterTap/**"
       - ".github/workflows/metertap.yml"
       - "tools/build-vst.sh"
@@ -13,7 +13,7 @@ on:
   pull_request:
     paths:
       - "vst/MeterTap/**"
-      - "vst/factory-lib/analysis/**"
+      - "vst/factory-lib/**"
       - "plugins/MeterTap/**"
       - ".github/workflows/metertap.yml"
       - "tools/build-vst.sh"

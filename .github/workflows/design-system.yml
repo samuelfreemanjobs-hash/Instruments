@@ -17,11 +17,6 @@ on:
 jobs:
   tokens-and-render:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # Pinned repo default (JUCE_VERSION) + optional JUCE 8 compatibility entry
-        juce_tag: ["from-file", "8.0.15"]
     steps:
       - uses: actions/checkout@v4
 
@@ -29,11 +24,7 @@ jobs:
         id: juce
         run: |
           set -euo pipefail
-          if [ "${{ matrix.juce_tag }}" = "from-file" ]; then
-            TAG="$(tr -d '[:space:]' < JUCE_VERSION)"
-          else
-            TAG="${{ matrix.juce_tag }}"
-          fi
+          TAG="$(tr -d '[:space:]' < JUCE_VERSION)"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "Resolved FACTORY_GUI_JUCE_TAG=$TAG"
 

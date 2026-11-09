@@ -20,6 +20,17 @@ void SectionPanel::setTitle (const juce::String& titleText)
                    juce::dontSendNotification);
 }
 
+void SectionPanel::setTitleExtraLeft (int px)
+{
+    titleExtraLeft = juce::jmax (0, px);
+    resized();
+}
+
+juce::String SectionPanel::getTitleText() const
+{
+    return title.getText();
+}
+
 juce::Rectangle<int> SectionPanel::getContentArea() const
 {
     return getLocalBounds().reduced (12).withTrimmedTop (title.getText().isEmpty() ? 0 : 18);
@@ -35,7 +46,8 @@ void SectionPanel::resized()
 {
     bodyPath.clear();
     bodyPath.addRoundedRectangle (getLocalBounds().toFloat(), radius::md);
-    title.setBounds (12, 8, getWidth() - 24, 14);
+    const int left = 12 + titleExtraLeft;
+    title.setBounds (left, 8, juce::jmax (0, getWidth() - left - 12), 14);
 }
 
 } // namespace gui

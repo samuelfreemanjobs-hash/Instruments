@@ -94,6 +94,16 @@
       "allowlist": ["disklordz/audio-command/data/"],
       "context_paths": ["DiskLordz-Audio/BUILD.md"],
       "priority": 9
+    },
+    {
+      "id": "cloud-handoff-bundle-ci",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Handoff bundle: Windows VST3 CI path on main",
+      "acceptance": "AUDIO_PREP_HANDOFF_BUNDLE cites workflow + BUILD.md",
+      "allowlist": ["docs/"],
+      "context_paths": ["DiskLordz-Audio/BUILD.md"],
+      "priority": 10
     }
   ]
 }

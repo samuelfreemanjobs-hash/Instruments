@@ -87,9 +87,18 @@ build_one() {
   prefer_compilers
   echo "==> Building vst/${name} (CC=${CC:-cc} CXX=${CXX:-c++})"
   cd "${vst}"
-  cmake -B build -DCMAKE_BUILD_TYPE=Release \
-    ${CC:+-DCMAKE_C_COMPILER="${CC}"} \
-    ${CXX:+-DCMAKE_CXX_COMPILER="${CXX}"}
+  local cmake_args=(-B build -DCMAKE_BUILD_TYPE=Release)
+  if [[ -n "${CC:-}" ]]; then
+    cmake_args+=(-DCMAKE_C_COMPILER="${CC}")
+  fi
+  if [[ -n "${CXX:-}" ]]; then
+    cmake_args+=(-DCMAKE_CXX_COMPILER="${CXX}")
+  fi
+  # Optional theme override for re-theme verify (e.g. METERTAP_THEME=studio-light)
+  if [[ -n "${METERTAP_THEME:-}" && "${name}" == "MeterTap" ]]; then
+    cmake_args+=(-DMETERTAP_THEME="${METERTAP_THEME}")
+  fi
+  cmake "${cmake_args[@]}"
   cmake --build build --config Release -j"$(nproc 2>/dev/null || echo 4)"
   local artefact
   artefact="$(find build -name '*.vst3' 2>/dev/null | head -1 || true)"

@@ -290,6 +290,13 @@ void checkHeader (float scale)
     const auto bg = img.getPixelAt (2, 2);
     expect (colourClose (bg, fds::gui::argb (fds::color::bg::chassis), 30),
             "HeaderBar bg should be chassis");
+    const auto nameBounds = header.getProductNameBounds();
+    expect (header.getLocalBounds().contains (nameBounds),
+            "HeaderBar productName must lie inside header");
+    expect (nameBounds.getHeight()
+                >= juce::jmin (fds::typography::style::productName.lineHeight,
+                               header.getHeight()),
+            "HeaderBar productName height covers theme lineHeight");
     writePng (img, outDir().getChildFile ("HeaderBar@" + juce::String (scale, 1) + "x.png"));
     header.setLookAndFeel (nullptr);
 }
@@ -299,9 +306,18 @@ void checkReadout (float scale)
     fds::gui::FactoryLookAndFeel lnf;
     fds::gui::ValueReadout r;
     r.setLookAndFeel (&lnf);
-    r.setFromDb (1.5f);
-    r.setSize (120, 32);
+    r.setLarge (true);
+    // 80 px well, no unit — must show full −10.0 / −96.0 / +12.0 without ellipsis.
+    r.setSize (80, 28);
+    r.setState (fds::gui::ValueReadout::State::normal);
+    r.setValueText (fds::gui::minusSign() + "10.0", {});
     r.resized();
+    expect (r.getValueText() == fds::gui::minusSign() + "10.0", "ValueReadout −10.0 text");
+    expect (r.valueTextFitsWithoutEllipsis(), "ValueReadout −10.0 fits 80px well");
+    r.setValueText (fds::gui::minusSign() + "96.0", {});
+    expect (r.valueTextFitsWithoutEllipsis(), "ValueReadout −96.0 fits 80px well");
+    r.setValueText ("+12.0", {});
+    expect (r.valueTextFitsWithoutEllipsis(), "ValueReadout +12.0 fits 80px well");
     auto img = renderComponent (r, scale);
     expect (imageNonBlank (img), "ValueReadout blank");
     writePng (img, outDir().getChildFile ("ValueReadout@" + juce::String (scale, 1) + "x.png"));

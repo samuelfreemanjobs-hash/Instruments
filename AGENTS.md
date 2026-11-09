@@ -2,6 +2,16 @@
 
 Read **`/ARCHITECTURE.md`** first, then the product `ARCHITECTURE.md` for the area you edit.
 
+## Agent memory (every agent, every task)
+
+Lessons from previous agents live in **[disklordz/agents/memory/MEMORY.md](disklordz/agents/memory/MEMORY.md)** ([SOP-019](docs/disklordz/sops/SOP-019-agent-memory.md)).
+
+```bash
+python3 scripts/agent_memory.py recall --agent <id> <task keywords>   # at start (vst-factory-director | shared | profit agent id)
+python3 scripts/agent_memory.py add --agent <id> --kind learning ...  # at end, for each new verified lesson
+python3 scripts/agent_memory.py check                                 # must pass before you report done
+```
+
 ## Disklordz agent fleet (repo-wide)
 
 All profit agents are **company-wide** in this monorepo — not only under `disklordz/agents/`.
