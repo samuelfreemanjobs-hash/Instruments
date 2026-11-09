@@ -2,7 +2,9 @@
 
 Master map for the **12-system** commercial audio development platform. Phase 1 orchestration lives in [DISKLORDZ_VST_FACTORY.md](DISKLORDZ_VST_FACTORY.md); this document indexes standards, intelligence, and roadmap.
 
-**Dogfood rule:** Shared blocks in `vst/factory-lib/`, tests in `vst-testing-ops/`, and factory conventions must be used to ship the next SKU (including internal tools like MeterTap).
+**Dogfood rule:** Shared blocks in `vst/factory-lib/`, tests in `vst-testing-ops/`, and factory conventions must be used to ship the next SKU.
+
+**Operator order (locked):** **B** — **MeterTap** first (factory proof), then **market-research SKU #1** from audio-business-copilot. Implementation obeys [DPCS.md](DPCS.md) (phase-locked; Phase 4 = scripts exit 0).
 
 ## Twelve systems
 

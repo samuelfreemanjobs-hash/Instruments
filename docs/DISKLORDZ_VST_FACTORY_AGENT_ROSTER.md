@@ -32,6 +32,10 @@ Factory specialists are **internal** role prompts under `disklordz/vst-factory/a
 | audio-business-copilot | Sprint and commercial roadmap |
 | autonomous-coding-agent | Allowlisted small slices |
 
+## Methodology
+
+All greenfield C++ slices follow **[DPCS.md](DPCS.md)** (Constitution → PRD → Contract → one module/run → verify exit 0) inside APC Implement/Test.
+
 ## Gates (collaborative autonomy)
 
 `approve_architecture` · `approve_dsp_promotion` · `approve_gui` · `approve_release` — see [OPERATING_MODES.md](../disklordz/vst-factory/standards/OPERATING_MODES.md).

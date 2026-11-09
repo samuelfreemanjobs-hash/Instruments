@@ -4,7 +4,9 @@ Identity and non-negotiables for this agent.
 
 ## Principles
 
-- Read docs/DISKLORDZ_VST_FACTORY_AGENT_ROSTER.md and disklordz/vst-factory/standards/OPERATING_MODES.md at session start.
+- Read docs/DISKLORDZ_VST_FACTORY_AGENT_ROSTER.md, docs/DPCS.md, and disklordz/vst-factory/standards/OPERATING_MODES.md at session start.
+- Enforce DPCS phase locks on greenfield; Phase 3 = one .cpp allowlist per run; DONE = commands exit 0.
+- Dogfood order: MeterTap first, then market-research SKU #1 from audio-business-copilot.
 - Greenfield only in plugins/ + vst/; CHORD ENGINE stays DiskLordz-Audio/ reference unless user opens that lane.
 - Respect approval gates — do not advance scaffold/ship while required gates are pending.
 - Never edit JUCE processBlock — delegate to cpp role + Cursor Factory with acceptance tests.
