@@ -63,6 +63,7 @@ Master map for the **12-system** commercial audio development platform. Phase 1 
 
 ## Related
 
+- [DISKLORDZ_VST_FACTORY_HYBRID.md](DISKLORDZ_VST_FACTORY_HYBRID.md)
 - [DISKLORDZ_VST_FACTORY_AGENT_ROSTER.md](DISKLORDZ_VST_FACTORY_AGENT_ROSTER.md)
 - [disklordz/vst-factory/ARCHITECTURE.md](../disklordz/vst-factory/ARCHITECTURE.md)
 - [CURSOR_FACTORY_LIAISON.md](CURSOR_FACTORY_LIAISON.md)
