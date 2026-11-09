@@ -4,9 +4,10 @@
 
 ## Your visual spec (source of truth)
 
-**[../docs/UI_CONCEPT_VOYAGER-V.png](../docs/UI_CONCEPT_VOYAGER-V.png)** — Systems Engineering Audio **VOYAGER-V** panel (wood rails, metal face, large filter, performance surface).
-
-Structured checklist: [`../docs/UI_CONCEPT.md`](../docs/UI_CONCEPT.md)
+1. **Hero:** [../docs/UI_CONCEPT_VOYAGER-V.png](../docs/UI_CONCEPT_VOYAGER-V.png) — pixel reference
+2. **Design system:** [../docs/UI_DESIGN_SYSTEM.md](../docs/UI_DESIGN_SYSTEM.md) — tokens, layout, components, DoD
+3. **Zone map:** [../docs/UI_CONCEPT.md](../docs/UI_CONCEPT.md) — APVTS ↔ panel zones
+4. **C++ tokens:** [../VoyagerUiTokens.h](../VoyagerUiTokens.h) — change with the design system doc
 
 ## Mission
 
@@ -35,10 +36,11 @@ Close the gap between the **mockup** and [`SynthEditor.cpp`](../SynthEditor.cpp)
 
 ## Loop
 
-1. Open mockup PNG and capture a **diff screenshot** vs Standalone editor.
-2. File small, visual-only PRs into `SynthEditor.cpp` / `SynthEditor.h`.
-3. Record before/after in `/opt/cursor/artifacts/` for review.
-4. Do **not** edit `SynthProcessor` without `cursor-v-voyager` acceptance.
+1. Read **UI_DESIGN_SYSTEM.md**; confirm tokens match `VoyagerUiTokens.h`.
+2. Open hero PNG and capture a **diff screenshot** vs Standalone editor.
+3. File small PRs into `SynthEditor.*` / `VoyagerUiTokens.h` (update design system doc when tokens change).
+4. Record before/after in `/opt/cursor/artifacts/` for review.
+5. Do **not** edit `SynthProcessor` without `cursor-v-voyager` acceptance.
 
 ## Work order
 

@@ -2,16 +2,18 @@
 #include "MoogStackLineage.h"
 #include "SynthParameterIds.h"
 #include "VoyagerPresetBank.h"
+#include "VoyagerUiTokens.h"
 
 namespace
 {
-const juce::Colour kPanelMetal { 0xff3a3d42 };
-const juce::Colour kPanelMetalHi { 0xff5c6168 };
-const juce::Colour kPanelInset { 0xff25282c };
-const juce::Colour kPanelWood { 0xff6b4423 };
-const juce::Colour kPanelWoodDark { 0xff3d2614 };
-const juce::Colour kAccent { 0xfff4a62a };
-const juce::Colour kSectionText { 0xfff0f2f5 };
+namespace c = voyagerui::colours;
+const juce::Colour& kPanelMetal = c::panelMetal;
+const juce::Colour& kPanelMetalHi = c::panelMetalHi;
+const juce::Colour& kPanelInset = c::panelInset;
+const juce::Colour& kPanelWood = c::panelWood;
+const juce::Colour& kPanelWoodDark = c::panelWoodDark;
+const juce::Colour& kAccent = c::defaultAccent;
+const juce::Colour& kSectionText = c::sectionText;
 
 void drawSection(juce::Graphics& g, juce::Rectangle<int> r, const juce::String& title)
 {
@@ -139,7 +141,7 @@ void WaveformSelectorStrip::bind(MoogVoyagerAudioProcessor& processor, std::stri
     for (int i = 0; i < 4; ++i)
     {
         waveButtons[static_cast<size_t>(i)].setButtonText(labels[i]);
-        waveButtons[static_cast<size_t>(i)].setRadioGroupId(90110 + oscIndex);
+        waveButtons[static_cast<size_t>(i)].setRadioGroupId(voyagerui::components::waveSelectorRadioBaseId + oscIndex);
         waveButtons[static_cast<size_t>(i)].setClickingTogglesState(true);
         waveButtons[static_cast<size_t>(i)].setColour(juce::TextButton::buttonColourId, kPanelInset);
         waveButtons[static_cast<size_t>(i)].setColour(juce::TextButton::textColourOffId, kSectionText.withAlpha(0.8f));
@@ -471,8 +473,8 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
 
     titleLabel.setText("VOYAGER-V", juce::dontSendNotification);
     titleLabel.setJustificationType(juce::Justification::centredLeft);
-    titleLabel.setColour(juce::Label::textColourId, juce::Colour(0xffe8b44a));
-    titleLabel.setFont(juce::FontOptions(30.0f, juce::Font::bold));
+    titleLabel.setColour(juce::Label::textColourId, voyagerui::colours::titleGold);
+    titleLabel.setFont(juce::FontOptions(voyagerui::type::titlePt, juce::Font::bold));
     addAndMakeVisible(titleLabel);
 
     subtitleLabel.setText("FOUR-STACK MOOG ENGINE  ·  SYSTEMS ENGINEERING AUDIO", juce::dontSendNotification);
@@ -501,7 +503,7 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     {
         auto& btn = stackModeSwitch[static_cast<size_t>(i)];
         btn.setButtonText(shortNames[i]);
-        btn.setRadioGroupId(88001);
+        btn.setRadioGroupId(voyagerui::components::stackModeRadioGroupId);
         btn.setClickingTogglesState(true);
         btn.setColour(juce::TextButton::buttonColourId, kPanelInset);
         btn.setColour(juce::TextButton::textColourOffId, kSectionText);
@@ -569,7 +571,7 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     for (int i = 0; i < 3; ++i)
     {
         oversampleSwitch[static_cast<size_t>(i)].setButtonText(osLabels[i]);
-        oversampleSwitch[static_cast<size_t>(i)].setRadioGroupId(88002);
+        oversampleSwitch[static_cast<size_t>(i)].setRadioGroupId(voyagerui::components::oversampleRadioGroupId);
         oversampleSwitch[static_cast<size_t>(i)].setClickingTogglesState(true);
         oversampleSwitch[static_cast<size_t>(i)].setColour(juce::TextButton::buttonColourId, kPanelInset);
         oversampleSwitch[static_cast<size_t>(i)].onClick = [this, i]() {
@@ -763,7 +765,7 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     for (int i = 0; i < 4; ++i)
     {
         filterKbStepSwitch[static_cast<size_t>(i)].setButtonText(kbLabels[i]);
-        filterKbStepSwitch[static_cast<size_t>(i)].setRadioGroupId(88004);
+        filterKbStepSwitch[static_cast<size_t>(i)].setRadioGroupId(voyagerui::components::filterKbTrackRadioGroupId);
         filterKbStepSwitch[static_cast<size_t>(i)].setClickingTogglesState(true);
         filterKbStepSwitch[static_cast<size_t>(i)].setColour(juce::TextButton::buttonColourId, kPanelInset);
         filterKbStepSwitch[static_cast<size_t>(i)].onClick = [this, i]() { setFilterKbStep(i); };
@@ -774,8 +776,9 @@ MoogVoyagerAudioProcessorEditor::MoogVoyagerAudioProcessorEditor(MoogVoyagerAudi
     panelLookAndFeel.setColour(juce::ResizableWindow::backgroundColourId, kPanelMetal);
     applyLookAndFeelToControls();
 
-    setResizeLimits(1000, 680, 1520, 980);
-    setSize(1180, 820);
+    setResizeLimits(voyagerui::layout::minEditorWidthPx, voyagerui::layout::minEditorHeightPx,
+                    voyagerui::layout::maxEditorWidthPx, voyagerui::layout::maxEditorHeightPx);
+    setSize(voyagerui::layout::defaultEditorWidthPx, voyagerui::layout::defaultEditorHeightPx);
     startTimerHz(28);
 }
 
@@ -855,18 +858,7 @@ MoogVoyagerAudioProcessorEditor::~MoogVoyagerAudioProcessorEditor()
 
 juce::Colour MoogVoyagerAudioProcessorEditor::accentForLineage(moogstack::Lineage lineage)
 {
-    switch (lineage)
-    {
-        case moogstack::Lineage::voyager:
-            return juce::Colour(0xfff4a62a);
-        case moogstack::Lineage::subPhatty:
-            return juce::Colour(0xffe85d4a);
-        case moogstack::Lineage::subsequent37:
-            return juce::Colour(0xff4ec9e0);
-        case moogstack::Lineage::modelD:
-            return juce::Colour(0xff6fa8dc);
-    }
-    return juce::Colour(0xfff4a62a);
+    return voyagerui::colours::accentForLineage(lineage);
 }
 
 juce::Colour MoogVoyagerAudioProcessorEditor::accentForCurrentStack() const
@@ -988,7 +980,7 @@ void MoogVoyagerAudioProcessorEditor::refreshPatchReadout()
 void MoogVoyagerAudioProcessorEditor::paint(juce::Graphics& g)
 {
     const auto accent = accentForCurrentStack();
-    const int woodW = 44;
+    const int woodW = voyagerui::layout::woodRailWidthPx;
     g.fillAll(kPanelWoodDark);
     g.setColour(kPanelWood);
     g.fillRect(0, 0, woodW, getHeight());
@@ -1037,7 +1029,7 @@ void MoogVoyagerAudioProcessorEditor::paint(juce::Graphics& g)
 
 void MoogVoyagerAudioProcessorEditor::resized()
 {
-    const int woodW = 44;
+    const int woodW = voyagerui::layout::woodRailWidthPx;
     auto panel = getLocalBounds().withTrimmedLeft(woodW).withTrimmedRight(woodW);
 
     titleLabel.setBounds(panel.getX() + 14, 8, 280, 32);

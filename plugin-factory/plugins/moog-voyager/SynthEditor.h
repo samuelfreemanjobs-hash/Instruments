@@ -2,6 +2,7 @@
 
 #include "SynthProcessor.h"
 #include "MoogStackLineage.h"
+#include "VoyagerUiTokens.h"
 #include <JuceHeader.h>
 #include <array>
 

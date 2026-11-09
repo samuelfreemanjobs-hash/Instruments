@@ -1,8 +1,10 @@
-# VOYAGER-V — UI concept (source of truth for editor)
+# VOYAGER-V — UI concept (zone map)
 
-Design reference (UI Agent visual contract):
+**Hero reference (pixels):** [UI_CONCEPT_VOYAGER-V.png](UI_CONCEPT_VOYAGER-V.png)
 
-![VOYAGER-V panel concept](UI_CONCEPT_VOYAGER-V.png)
+**Design system (tokens, layout, components, DoD):** [UI_DESIGN_SYSTEM.md](UI_DESIGN_SYSTEM.md)
+
+**Code tokens:** [`VoyagerUiTokens.h`](../VoyagerUiTokens.h)
 
 Agent: **`v-voyager-ui-agent`** · [`../agents/UI_AGENT.md`](../agents/UI_AGENT.md) · roster [docs/V_VOYAGER_AGENTS.md](../../../../docs/V_VOYAGER_AGENTS.md)
 
