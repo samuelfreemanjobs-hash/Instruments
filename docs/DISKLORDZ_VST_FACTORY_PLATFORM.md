@@ -6,6 +6,8 @@ Master map for the **12-system** commercial audio development platform. Phase 1 
 
 **Operator order (locked):** **B** — **MeterTap** first (factory proof), then **market-research SKU #1** from audio-business-copilot. Implementation obeys [DPCS.md](DPCS.md) (phase-locked; Phase 4 = scripts exit 0).
 
+**QA tier (locked):** **A** — GitHub Actions / Linux: `build-vst.sh` + `run_business.py --profile factory` on factory PRs; **pluginval** and DAW smoke on your Windows machine when online (not a CI blocker day one).
+
 ## Twelve systems
 
 | # | System | Location |
