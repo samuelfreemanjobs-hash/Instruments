@@ -38,7 +38,12 @@ jobs:
       - name: Fetch JUCE
         run: |
           TAG="$(tr -d '[:space:]' < JUCE_VERSION)"
-          if [[ ! -f vst/JUCE/CMakeLists.txt ]]; then
+          HAVE=""
+          if [[ -f vst/JUCE/CMakeLists.txt ]]; then
+            HAVE="$(git -C vst/JUCE describe --tags --exact-match HEAD 2>/dev/null || true)"
+          fi
+          if [[ "${HAVE}" != "${TAG}" ]]; then
+            rm -rf vst/JUCE
             git clone --depth 1 --branch "${TAG}" https://github.com/juce-framework/JUCE.git vst/JUCE
           fi
 

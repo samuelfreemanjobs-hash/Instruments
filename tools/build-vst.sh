@@ -38,17 +38,27 @@ read_juce_pin() {
   tr -d '[:space:]' < "${JUCE_VERSION_FILE}"
 }
 
+local_juce_tag() {
+  # Exact tag at HEAD, else empty (detached/wrong/non-git trees).
+  git -C "${JUCE_DIR}" describe --tags --exact-match HEAD 2>/dev/null || true
+}
+
 ensure_juce() {
-  if [[ -f "${JUCE_DIR}/CMakeLists.txt" ]]; then
-    return 0
-  fi
-  local tag
+  local tag have
   tag="$(read_juce_pin)"
   if [[ -z "${tag}" ]]; then
     echo "JUCE_VERSION is empty." >&2
     exit 1
   fi
-  echo "JUCE missing under vst/JUCE — cloning pinned ${tag}" >&2
+  if [[ -f "${JUCE_DIR}/CMakeLists.txt" ]]; then
+    have="$(local_juce_tag)"
+    if [[ "${have}" == "${tag}" ]]; then
+      return 0
+    fi
+    echo "vst/JUCE is at '${have:-unknown}', want pin ${tag} — replacing checkout" >&2
+    rm -rf "${JUCE_DIR}"
+  fi
+  echo "Cloning JUCE pin ${tag} into vst/JUCE" >&2
   git clone --depth 1 --branch "${tag}" \
     https://github.com/juce-framework/JUCE.git "${JUCE_DIR}"
 }
