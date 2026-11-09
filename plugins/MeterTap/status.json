@@ -2,8 +2,8 @@
   "plugin_name": "MeterTap",
   "track": "apc_greenfield",
   "dpcs_phase": 1,
-  "apc_phase": "plan",
-  "current_phase": "plan_complete",
+  "apc_phase": "design",
+  "current_phase": "design",
   "factory_dogfood": true,
   "product_category": "fx.metering",
   "ui_framework": "juce-native",
@@ -21,7 +21,7 @@
     "parameter_spec_exists": true,
     "architecture_defined": true,
     "ui_framework_selected": true,
-    "design_complete": false
+    "design_complete": true
   },
   "open_issues": [
     "C: bypass transition click (default: literal instant switch)",
@@ -29,5 +29,10 @@
     "E: dl_meter_floor_db fixed, no widget"
   ],
   "phase1_verified_by": "plugins/MeterTap/scripts/verify-phase1.sh",
-  "next_command": "/apc-design MeterTap"
+  "next_command": "approve_architecture + approve_gui in VST Factory, then DPCS Phase 2 contract headers (/apc-impl MeterTap)",
+  "design_system": {
+    "theme": "disklordz",
+    "theme_version": "0.1.0",
+    "contract": "1.0.0"
+  }
 }
