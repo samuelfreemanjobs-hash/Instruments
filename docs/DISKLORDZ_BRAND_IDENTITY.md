@@ -34,6 +34,7 @@ Built for the Underground. Trap, phonk, and hip-hop production tools that ship f
 
 - Dark chrome (`#0A0A0C`), purple highlights, lime for “go” controls
 - Do not ship full circular crest inside small plugin UI — use simplified floppy+crown glyph
+- Full plugin UI system (tokens, components, contrast rules): [DiskLordz Audio Design System](../vst/factory-lib/design-system/ARCHITECTURE.md). It adds a gunmetal neutral ramp, lighter purple tints for thin lines and focus, and **steel cyan reserved for meters and level displays only**.
 
 ## Voice
 

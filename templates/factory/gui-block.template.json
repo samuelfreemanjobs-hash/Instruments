@@ -1,0 +1,8 @@
+{
+  "$comment": "Add this object to the 'blocks' array of disklordz/vst-factory/modules/gui/controls.json (SOP-VF-10) and spec the component in vst/factory-lib/design-system/components.md. Remove this $comment.",
+  "id": "gui.{{BLOCK_ID}}",
+  "name": "{{BLOCK_NAME}}",
+  "juce_stub": "vst/factory-lib/gui/{{BLOCK_CLASS}}.h",
+  "roles": ["semantic.<group>.<role>"],
+  "since": "{{DATE}}"
+}
