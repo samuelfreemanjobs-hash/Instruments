@@ -10,7 +10,7 @@ Run the whole product QA loop without manual DAW checks — configure/build, art
 
 | Path | Role |
 |------|------|
-| `business_pipeline.py` | Stage runners + profiles (`ci`, `full`, `plugin-quick`, `dsp-only`). |
+| `business_pipeline.py` | Stage runners + profiles (`ci`, `full`, `plugin-quick`, `dsp-only`, `factory`). |
 | `run_business.py` | CLI: `python3 vst-testing-ops/run_business.py --profile ci` |
 | `app.py` | Streamlit **Operations Command Center** (fleet status + full pipeline). |
 | `test_runner.py` | Single-VST pluginval + `error_log.txt` / `--watch`. |
@@ -40,7 +40,10 @@ Profile **`full`** adds **disklordz_web** (`npm ci` / `npm run build` + daw-inbo
 python3 vst-testing-ops/run_business.py --profile ci
 python3 vst-testing-ops/run_business.py --profile full    # + SaaS
 python3 vst-testing-ops/run_business.py --profile ci --with-saas
+python3 vst-testing-ops/run_business.py --profile factory --plugin MyPluginName
 ```
+
+Profile **`factory`**: build `vst/<Name>/` via `tools/build-vst.sh`, artefact gate, pluginval on that bundle only.
 
 **Dashboard:**
 

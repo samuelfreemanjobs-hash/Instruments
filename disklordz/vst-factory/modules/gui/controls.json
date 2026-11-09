@@ -1,0 +1,13 @@
+{
+  "category": "gui/controls",
+  "blocks": [
+    {"id": "gui.rotary-knob", "name": "Rotary knob", "juce_stub": "vst/factory-lib/gui/RotaryKnob.h"},
+    {"id": "gui.pad-grid", "name": "16-pad grid", "juce_stub": "vst/factory-lib/gui/PadGrid.h"},
+    {"id": "gui.keyboard", "name": "Mini keyboard", "juce_stub": "vst/factory-lib/gui/MiniKeyboard.h"},
+    {"id": "gui.meter", "name": "Level meter", "juce_stub": "vst/factory-lib/gui/LevelMeter.h"},
+    {"id": "gui.waveform", "name": "Waveform display", "juce_stub": "vst/factory-lib/gui/WaveformDisplay.h"},
+    {"id": "gui.key-selector", "name": "Key / scale selector", "juce_stub": "vst/factory-lib/gui/KeySelector.h"},
+    {"id": "gui.adsr-panel", "name": "ADSR panel", "juce_stub": "vst/factory-lib/gui/ADSRPanel.h"},
+    {"id": "gui.xy-pad", "name": "XY pad", "juce_stub": "vst/factory-lib/gui/XYPad.h"}
+  ]
+}

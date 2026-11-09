@@ -1,0 +1,7 @@
+{
+  "updated_at": "2026-11-09T02:31:48Z",
+  "vst_factory_url": "http://127.0.0.1:8790/",
+  "note": "VST Factory Phase 1 \u2014 greenfield via APC; CHORD tracked as reference.",
+  "active_greenfield_count": 1,
+  "chord_reference": "chord-engine"
+}

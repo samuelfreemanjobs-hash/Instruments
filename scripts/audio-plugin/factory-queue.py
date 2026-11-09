@@ -16,6 +16,7 @@ PROGRESS = REPO / "disklordz/audio-command/data/progress.json"
 PLAYBOOKS = REPO / "disklordz/audio-command/data/task-playbooks.json"
 OUT = REPO / "disklordz/audio-command/data/PASTE_TO_FACTORY.md"
 STATE = REPO / "disklordz/audio-command/data/factory-queue-state.json"
+VST_FACTORY_LIAISON = REPO / "disklordz/vst-factory/data/liaison-status.json"
 
 # Roadmap §18 stage hints by sprint task id
 STAGE_BY_TASK = {
@@ -117,6 +118,32 @@ VST3: printed at end of `build-windows.ps1` (search under `DiskLordz-Audio\\Buil
 """
 
 
+def append_vst_factory_section(body: str) -> str:
+    if not VST_FACTORY_LIAISON.is_file():
+        return body
+    try:
+        data = json.loads(VST_FACTORY_LIAISON.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return body
+    url = data.get("vst_factory_url") or "http://127.0.0.1:8790/"
+    note = data.get("note") or ""
+    count = data.get("active_greenfield_count", 0)
+    chord = data.get("chord_reference", "chord-engine")
+    section = f"""
+---
+
+## VST Factory studio
+
+- UI: {url}
+- Greenfield APC projects (SQLite): **{count}**
+- CHORD reference id: `{chord}` — see `GET /api/references/chord-engine`
+- Module catalog: `disklordz/vst-factory/modules/catalog.json`
+
+{note}
+"""
+    return body.rstrip() + section
+
+
 def render_blocked(reason: str, task_id: str | None) -> str:
     return f"""# PASTE_TO_FACTORY (blocked)
 
@@ -134,7 +161,7 @@ No Factory prompt until blocker cleared.
 
 def main() -> int:
     if not PROGRESS.is_file() or not PLAYBOOKS.is_file():
-        OUT.write_text(render_blocked("missing-data", None), encoding="utf-8")
+        OUT.write_text(append_vst_factory_section(render_blocked("missing-data", None)), encoding="utf-8")
         print(f"Wrote {OUT} (blocked)")
         return 1
 
@@ -144,7 +171,7 @@ def main() -> int:
 
     if not nxt:
         body = "# PASTE_TO_FACTORY (idle)\n\nSprint checklist complete or no `cursor`-owned tasks.\n"
-        OUT.write_text(body, encoding="utf-8")
+        OUT.write_text(append_vst_factory_section(body), encoding="utf-8")
         print("queue idle")
         return 0
 
@@ -152,17 +179,17 @@ def main() -> int:
     block = blocker(progress, task_id)
     if block == "human-windows" and task_id == "plugin-skeleton":
         stage = STAGE_BY_TASK.get(task_id, ("B", pb.get("headline", task_id)))
-        OUT.write_text(render_samuel_build(task_id, pb, stage), encoding="utf-8")
+        OUT.write_text(append_vst_factory_section(render_samuel_build(task_id, pb, stage)), encoding="utf-8")
         print(f"blocked={block} factory_next={task_id}")
         print(f"Wrote {OUT}")
         return 0
     if block:
-        OUT.write_text(render_blocked(block, task_id), encoding="utf-8")
+        OUT.write_text(append_vst_factory_section(render_blocked(block, task_id)), encoding="utf-8")
         print(f"blocked={block}")
         return 0
 
     stage = STAGE_BY_TASK.get(task_id, ("B", pb.get("headline", task_id)))
-    OUT.write_text(render_factory(task_id, pb, stage), encoding="utf-8")
+    OUT.write_text(append_vst_factory_section(render_factory(task_id, pb, stage)), encoding="utf-8")
     state = {
         "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "task_id": task_id,

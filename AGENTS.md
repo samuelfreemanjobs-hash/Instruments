@@ -123,6 +123,18 @@ Install today: [docs/NTS1_INSTALL_TODAY.md](docs/NTS1_INSTALL_TODAY.md). Catalog
 
 New plugins under `vst/`: [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-setup` … `/apc-ship` · [docs/vst-lifecycle.md](docs/vst-lifecycle.md).
 
+## DiskLordz VST Factory (AI plugin studio)
+
+```bash
+cd disklordz/vst-factory && python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]" && pytest tests -q
+uvicorn vst_factory.main:app --reload --port 8790
+```
+
+See [disklordz/vst-factory/ARCHITECTURE.md](disklordz/vst-factory/ARCHITECTURE.md) · [docs/DISKLORDZ_VST_FACTORY.md](docs/DISKLORDZ_VST_FACTORY.md).
+
+QA for a scaffolded APC plugin: `python3 vst-testing-ops/run_business.py --profile factory --plugin <Name>`.
+
 ## SynthForge (preset workstation)
 
 ```bash

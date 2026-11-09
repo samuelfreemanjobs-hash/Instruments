@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.audio/schemas/factory-spec-v1.json",
+  "title": "DiskLordz VST Factory project spec v1",
+  "type": "object",
+  "required": ["schema_version", "plugin_name", "plugin_class", "prompt", "target_format"],
+  "properties": {
+    "schema_version": { "const": "factory-spec/v1" },
+    "plugin_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9]*$"
+    },
+    "plugin_class": {
+      "type": "string",
+      "enum": ["synth", "effect", "midi", "sampler"]
+    },
+    "target_format": { "type": "string", "enum": ["vst3"] },
+    "target_os": { "type": "string", "enum": ["windows_x64", "linux_ci", "macos_universal"] },
+    "prompt": { "type": "string", "minLength": 1, "maxLength": 16000 },
+    "manufacturer_code": { "type": "string", "maxLength": 4 },
+    "plugin_code": { "type": "string", "maxLength": 4 },
+    "buses": {
+      "type": "object",
+      "properties": {
+        "midi_in": { "type": "boolean" },
+        "midi_out": { "type": "boolean" },
+        "audio_in": { "type": "boolean" },
+        "audio_out": { "type": "boolean" }
+      }
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "type"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "type": { "type": "string", "enum": ["float", "bool", "choice", "int"] },
+          "default": {},
+          "min": { "type": "number" },
+          "max": { "type": "number" }
+        }
+      }
+    },
+    "dsp_modules": {
+      "type": "array",
+      "items": { "type": "string", "description": "library block id" }
+    },
+    "ui_sketch": { "type": "string" },
+    "acceptance_tests": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "track": {
+      "type": "string",
+      "enum": ["apc_greenfield", "disklordz_audio_reference"]
+    }
+  }
+}
