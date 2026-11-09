@@ -1,0 +1,39 @@
+#pragma once
+
+#include "../GuiHelpers.h"
+#include <juce_gui_basics/juce_gui_basics.h>
+
+namespace fds {
+namespace gui {
+
+class PresetBrowser : public juce::Component
+{
+public:
+    PresetBrowser();
+
+    void setPresetName (const juce::String& name, bool modified = false);
+    juce::String getPresetName() const;
+    void setPresetList (juce::StringArray factoryPresets, juce::StringArray userPresets = {});
+
+    std::function<void (int index)> onPresetChosen;
+    std::function<void()> onPrev, onNext;
+    std::function<void (const juce::String& action)> onMenuAction;
+
+    void paint (juce::Graphics&) override;
+    void resized() override;
+
+private:
+    void showMenu();
+
+    juce::TextButton prev { juce::String::fromUTF8 ("\xe2\x80\xb9") }; // ‹
+    juce::TextButton next { juce::String::fromUTF8 ("\xe2\x80\xba") }; // ›
+    juce::TextButton nameButton;
+    juce::StringArray factoryList, userList;
+    juce::Path wellPath;
+    bool modified = false;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetBrowser)
+};
+
+} // namespace gui
+} // namespace fds

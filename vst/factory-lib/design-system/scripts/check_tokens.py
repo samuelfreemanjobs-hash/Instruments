@@ -5,6 +5,7 @@ Usage:
     python3 vst/factory-lib/design-system/scripts/check_tokens.py              # all themes
     python3 vst/factory-lib/design-system/scripts/check_tokens.py --theme disklordz
     python3 vst/factory-lib/design-system/scripts/check_tokens.py --check-preview
+    python3 vst/factory-lib/design-system/scripts/check_tokens.py --check-generated
 """
 from __future__ import annotations
 
@@ -222,6 +223,11 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--theme", action="append", help="theme id (repeatable); default: all themes")
     ap.add_argument("--check-preview", action="store_true", help="fail if previews/<theme>.html is stale")
+    ap.add_argument(
+        "--check-generated",
+        action="store_true",
+        help="fail if gui/generated/<theme>/DesignTokens.h is stale (runs gen_juce_tokens --check)",
+    )
     ap.add_argument("--quiet", action="store_true")
     args = ap.parse_args()
 
@@ -251,6 +257,14 @@ def main() -> int:
                 print(f"  - {e}", file=sys.stderr)
         else:
             print(f"PASS [{theme_id}]")
+
+    if args.check_generated and failed == 0:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import gen_juce_tokens  # noqa: E402
+
+        for theme_id in themes:
+            if gen_juce_tokens.write_theme(theme_id, check_only=True) != 0:
+                failed = 1
     return 1 if failed else 0
 
 
