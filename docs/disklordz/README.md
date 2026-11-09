@@ -23,6 +23,10 @@ Operational playbooks for **Cursor Cloud**, **IDE Agent**, and **profit-agent fl
 | Open-source batch (35 refs) | [sops/SOP-010-open-source-integration-batch.md](sops/SOP-010-open-source-integration-batch.md) |
 | Roadmap backlog automation | [sops/SOP-011-roadmap-automation.md](sops/SOP-011-roadmap-automation.md) · `./scripts/complete-roadmap-automation.sh` |
 | Operator autopilot | [sops/SOP-018-operator-autopilot.md](sops/SOP-018-operator-autopilot.md) · [../OPERATOR_AUTOPILOT.md](../OPERATOR_AUTOPILOT.md) |
+| **VST Factory: build a plugin end to end** | [SOP-VF-00 master](sops/SOP-VF-00-vst-factory-master.md) → stage SOPs below · templates: [templates/apc/README.md](../../templates/apc/README.md) |
+| VST: intake & dream / plan / UI design / theme | [VF-01](sops/SOP-VF-01-intake-dream.md) · [VF-04](sops/SOP-VF-04-plan.md) · [VF-02](sops/SOP-VF-02-ui-design.md) · [VF-03](sops/SOP-VF-03-design-system-theme.md) |
+| VST: contract & implement / verify / release | [VF-05](sops/SOP-VF-05-contract-implement.md) · [VF-06](sops/SOP-VF-06-verify-test.md) · [VF-08](sops/SOP-VF-08-release-ship.md) |
+| VST: factory ops / debug / reusable module / agents / Windows | [VF-07](sops/SOP-VF-07-factory-operations.md) · [VF-09](sops/SOP-VF-09-debug-repair.md) · [VF-10](sops/SOP-VF-10-reusable-module.md) · [VF-11](sops/SOP-VF-11-agent-delegation.md) · [VF-12](sops/SOP-VF-12-windows-operator.md) |
 | **SparkLE elite lanes** (gangsta trap, Memphis, ATL, hardware, regional, rage) | [spark-le/ARCHITECTURE.md](spark-le/ARCHITECTURE.md) · [SOP-012](sops/SOP-012-spark-le-elite-system-charter.md) · [LANES.md](spark-le/LANES.md) · [TRAP-HAT-LOOP-DNA.md](spark-le/TRAP-HAT-LOOP-DNA.md) · [PRODUCER-LANE-INDEX.md](spark-le/PRODUCER-LANE-INDEX.md) · [SUBAGENTS](spark-le/SUBAGENTS.md) · [MEMORY-AND-CI](spark-le/MEMORY-AND-CI.md) · Skills: `spark-trap-loop-architect`, `spark-le-memory-ci` in `.claude/skills/` → [013](sops/SOP-013-spark-le-phase-1-feed-spark.md)–[017](sops/SOP-017-spark-le-phase-5-elite-leadership.md) |
 
 ---
@@ -39,6 +43,9 @@ Operational playbooks for **Cursor Cloud**, **IDE Agent**, and **profit-agent fl
 | [TEMPLATE-integration-manifest-row.md](templates/TEMPLATE-integration-manifest-row.md) | New row in integrations manifest |
 | [TEMPLATE-spark-le-session-review.md](templates/TEMPLATE-spark-le-session-review.md) | Phase 3 keeper / scoring session |
 | [TEMPLATE-spark-le-manifest.json](templates/TEMPLATE-spark-le-manifest.json) | 8-pad SparkLE pack metadata |
+| [TEMPLATE-factory-cloud-agent-prompt.md](templates/TEMPLATE-factory-cloud-agent-prompt.md) | Cloud agent job for VST Factory work (SOP-VF-11) |
+| [templates/apc/](../../templates/apc/README.md) | Every plugin phase doc (`bin/apc template <Name> <phase>`) |
+| [templates/factory/](../../templates/factory/) | Factory-lib DSP/GUI catalog entries + C++ contract header |
 
 ---
 
