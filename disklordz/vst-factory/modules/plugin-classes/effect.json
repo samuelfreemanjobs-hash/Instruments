@@ -1,0 +1,14 @@
+{
+  "id": "plugin-class/effect",
+  "label": "Effects Builder",
+  "vst_type": "effect",
+  "default_buses": {
+    "midi_in": false,
+    "midi_out": false,
+    "audio_in": true,
+    "audio_out": true
+  },
+  "suggested_dsp_modules": ["filter.biquad", "fx.saturation", "fx.delay", "dyn.compressor"],
+  "suggested_gui_modules": ["gui.rotary-knob", "gui.meter", "gui.xy-pad"],
+  "apc_template": "templates/apc/creative-brief-effect.md"
+}

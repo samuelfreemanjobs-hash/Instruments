@@ -1,0 +1,99 @@
+:root {
+  --bg: #0f1115;
+  --panel: #1a1d24;
+  --text: #e8eaed;
+  --muted: #9aa0a6;
+  --accent: #c94b2a;
+  --border: #2c313a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+header h1 { margin: 0; font-size: 1.35rem; letter-spacing: 0.06em; }
+.tagline { margin: 0.35rem 0 0; color: var(--muted); font-size: 0.9rem; }
+.layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  padding: 1rem 1.5rem 2rem;
+}
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.panel h2 { margin-top: 0; font-size: 1rem; color: var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem; }
+.chip {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.chip.active { border-color: var(--accent); color: var(--accent); }
+textarea, input {
+  width: 100%;
+  margin-bottom: 0.65rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+button {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+.log {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem;
+  max-height: 240px;
+  overflow: auto;
+  font-size: 0.75rem;
+  white-space: pre-wrap;
+}
+.approval-banner {
+  background: #3d2a00;
+  border: 1px solid #c9a227;
+  color: #ffe9a8;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+.approval-banner.hidden {
+  display: none;
+}
+.approval-banner button {
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.log.small { max-height: 160px; }
+.module-grid { display: flex; flex-wrap: wrap; gap: 0.35rem; font-size: 0.75rem; color: var(--muted); }
+.module-grid span {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+}

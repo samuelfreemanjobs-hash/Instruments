@@ -1,0 +1,19 @@
+{
+  "schema_version": "factory-modules/v1",
+  "plugin_classes": [
+    "plugin-classes/synth.json",
+    "plugin-classes/effect.json",
+    "plugin-classes/midi.json",
+    "plugin-classes/sampler.json"
+  ],
+  "dsp": [
+    "dsp/oscillators.json",
+    "dsp/filters.json",
+    "dsp/envelopes.json",
+    "dsp/effects.json",
+    "dsp/analysis.json",
+    "dsp/midi.json"
+  ],
+  "gui": ["gui/controls.json"],
+  "workflows": ["workflows/scaffold-default.json"]
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": "product-library/v1",
+  "products": [
+    {
+      "sku": "MeterTap",
+      "plugin_name": "MeterTap",
+      "plugin_class": "effect",
+      "product_category": "fx.metering",
+      "track": "apc_greenfield",
+      "status": "dogfood",
+      "prompt": "DiskLordz factory dogfood: stereo peak and RMS meter effect with dl_mix_level gain and gui.meter; uses factory-lib analysis.peak_rms only.",
+      "dsp_modules": ["analysis.peak_rms"],
+      "gui_modules": ["gui.meter"],
+      "notes": "Internal factory proof SKU before market-research SKU #1."
+    }
+  ]
+}

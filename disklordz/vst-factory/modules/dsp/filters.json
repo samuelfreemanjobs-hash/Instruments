@@ -1,0 +1,23 @@
+{
+  "category": "dsp/filters",
+  "blocks": [
+    {
+      "id": "filter.ladder",
+      "name": "Ladder low-pass",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/filters/LadderLPF.h"
+    },
+    {
+      "id": "filter.biquad",
+      "name": "Biquad filter",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/filters/Biquad.h"
+    },
+    {
+      "id": "filter.hpf",
+      "name": "High-pass",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/filters/OnePoleHPF.h"
+    }
+  ]
+}

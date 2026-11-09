@@ -16,6 +16,7 @@
 | **Agent fleet (31)** | [agents/ARCHITECTURE.md](agents/ARCHITECTURE.md) · [../DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) | `./scripts/run-agent-fleet-now.sh` |
 | **DAW inbox** | [daw-inbox/ARCHITECTURE.md](daw-inbox/ARCHITECTURE.md) | `cd daw-inbox && npm start` |
 | **Audio Command (PWA)** | [audio-command/ARCHITECTURE.md](audio-command/ARCHITECTURE.md) | `python3 -m http.server 8765 -d disklordz/audio-command/pwa` |
+| **VST Factory (AI plugin studio)** | [vst-factory/ARCHITECTURE.md](vst-factory/ARCHITECTURE.md) | `uvicorn vst_factory.main:app --port 8790` in `disklordz/vst-factory/` |
 | **808 Lab** (index) | [docs/disklordz/808-LAB.md](../docs/disklordz/808-LAB.md) | MPC500 + SparkLE + PC stack |
 | **Phonk Box** (PC engine) | [phonk-box/ARCHITECTURE.md](phonk-box/ARCHITECTURE.md) | `python phonk_engine.py --self-test` in `phonk-box/engine/` |
 | **Antigravity bridge** | [antigravity/ARCHITECTURE.md](antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "agent_count": 35,
+  "agent_count": 36,
   "agents": [
     {
       "id": "workflow-automation",
@@ -512,6 +512,13 @@
         ]
       },
       "automation_path": "disklordz/agents/workflows/agents/autonomous-coding-agent/automation.yaml"
+    },
+    {
+      "id": "vst-factory-director",
+      "title": "VST Factory Director",
+      "announcement": "",
+      "automation": {},
+      "automation_path": "disklordz/agents/workflows/agents/vst-factory-director/automation.yaml"
     },
     {
       "id": "hardware-preset-designer",

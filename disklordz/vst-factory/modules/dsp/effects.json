@@ -1,0 +1,23 @@
+{
+  "category": "dsp/effects",
+  "blocks": [
+    {
+      "id": "fx.saturation",
+      "name": "Waveshaper saturation",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/effects/Saturation.h"
+    },
+    {
+      "id": "fx.delay",
+      "name": "Stereo delay",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/effects/DelayLine.h"
+    },
+    {
+      "id": "dyn.compressor",
+      "name": "Compressor",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/dynamics/Compressor.h"
+    }
+  ]
+}

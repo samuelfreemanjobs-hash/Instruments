@@ -2,7 +2,7 @@
 
 **Intent:** Claude Code owns **C++ / DPF implementation** in the terminal. Antigravity on **Windows** finishes the slow, parallel parts so Claude Code does not stall on builds, fixtures, or data prep.
 
-*(If you meant **DPF** — DiskLordz Plugin Framework — this doc is the right lane. There is no separate “DPCS” package in-repo.)*
+Greenfield VST slices use **[DPCS.md](DPCS.md)** (phase-locked build). CHORD / DPF terminal work uses **DPF** under `DiskLordz-Audio/`.
 
 ## Who does what
 

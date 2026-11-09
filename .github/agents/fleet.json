@@ -10,7 +10,7 @@
     "workflow-automation",
     "pm-agent"
   ],
-  "agent_count": 35,
+  "agent_count": 36,
   "agents": [
     {
       "id": "workflow-automation",
@@ -624,6 +624,16 @@
       "profit_entry": "disklordz/agents/profit/autonomous-coding-agent/agent.md",
       "copilot_skill": ".github/skills/disklordz-autonomous-coding-agent/SKILL.md",
       "automation_path": "disklordz/agents/workflows/agents/autonomous-coding-agent/automation.yaml"
+    },
+    {
+      "id": "vst-factory-director",
+      "title": "VST Factory Director",
+      "activation": "manual",
+      "announcement": "",
+      "automation": {},
+      "profit_entry": "disklordz/agents/profit/vst-factory-director/agent.md",
+      "copilot_skill": ".github/skills/disklordz-vst-factory-director/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/vst-factory-director/automation.yaml"
     },
     {
       "id": "hardware-preset-designer",

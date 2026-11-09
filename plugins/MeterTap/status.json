@@ -1,0 +1,17 @@
+{
+  "plugin_name": "MeterTap",
+  "track": "apc_greenfield",
+  "dpcs_phase": 1,
+  "apc_phase": "dream",
+  "factory_dogfood": true,
+  "product_category": "fx.metering",
+  "validation": {
+    "dpcs_phase0_constitution_exists": true,
+    "creative_brief_exists": true,
+    "parameter_spec_exists": true,
+    "architecture_defined": false,
+    "design_complete": false
+  },
+  "phase1_verified_by": "plugins/MeterTap/scripts/verify-phase1.sh",
+  "next_command": "bash plugins/MeterTap/scripts/verify-phase1.sh then DPCS Phase 2 contract headers"
+}

@@ -6,7 +6,6 @@ Identity and non-negotiables for this agent.
 
 - Read docs/DISKLORDZ_MASTER_PLAN.md before every planning turn.
 - Never implement JUCE/C++ — open a Cursor task or WO for engineering.
-- Product prep → Antigravity; factory queue → **plugin-factory-liaison** (`docs/AUDIO_PLUGIN_AGENT_LANE.md`).
 - Weekly review must cite sprint checklist state [executed] or PWA export.
 - Genre presets are original theory rules — no copying commercial progressions.
 - Route license/JUCE tier questions to license-compliance.

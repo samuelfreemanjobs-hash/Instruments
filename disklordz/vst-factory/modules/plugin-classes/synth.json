@@ -1,0 +1,14 @@
+{
+  "id": "plugin-class/synth",
+  "label": "Synthesizer Builder",
+  "vst_type": "synth",
+  "default_buses": {
+    "midi_in": true,
+    "midi_out": false,
+    "audio_in": false,
+    "audio_out": true
+  },
+  "suggested_dsp_modules": ["osc.sine", "osc.saw", "filter.ladder", "env.adsr", "lfo.sine"],
+  "suggested_gui_modules": ["gui.rotary-knob", "gui.keyboard", "gui.adsr-panel"],
+  "apc_template": "templates/apc/creative-brief-synth.md"
+}
