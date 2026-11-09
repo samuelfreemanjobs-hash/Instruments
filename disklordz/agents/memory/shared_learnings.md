@@ -81,3 +81,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** #127 retargeted; #124 mergeable UNKNOWN right after #123 merged, MERGEABLE 15 s later
 - **confidence:** executed
 - **status:** active
+
+### L-0009 · Path-filtered workflows leave contract checks unrun
+- **date:** 2026-11-09
+- **area:** ci, github-actions, workflows, coverage
+- **when:** adding a check that should guard the whole repo
+- **lesson:** Checks wired only into path-filtered workflows (e.g. design-system.yml) never ran for changes elsewhere; templates, doc links, memory and factory tests had no CI at all before repo-health.
+- **do:** Put repo-wide contracts in .github/workflows/repo-health.yml (always-on, continue-on-error steps + summary that fails the job); mirror locally with bash scripts/repo_health.sh.
+- **evidence:** PR #130 run 42580463051 (9 steps, 22 s)
+- **confidence:** executed
+- **status:** active

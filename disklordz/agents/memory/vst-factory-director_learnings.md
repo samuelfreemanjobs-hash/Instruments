@@ -161,3 +161,13 @@ Factory, plugin (APC/DPCS), design-system and JUCE work. Format and rules: [MEMO
 - **evidence:** PR #127 68c7d6d4 design-system 8.0.15 failure; fixed in 749c83e0
 - **confidence:** executed
 - **status:** active
+
+### L-0017 · Factory pytest rewrites tracked liaison-status.json
+- **date:** 2026-11-09
+- **area:** factory, pytest, git, tests
+- **when:** running disklordz/vst-factory tests locally or in a repo-wide health script
+- **lesson:** The factory test suite writes disklordz/vst-factory/data/liaison-status.json, leaving the working tree dirty after a green run.
+- **do:** Short term: git checkout -- disklordz/vst-factory/data/liaison-status.json after the suite (scripts/repo_health.sh does). Proper fix: tests write to a tmp path via env override, never to tracked data.
+- **evidence:** PR #130 repo_health.sh local run; git status clean only after checkout
+- **confidence:** executed
+- **status:** active
