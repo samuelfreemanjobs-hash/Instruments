@@ -2,16 +2,34 @@
   "plugin_name": "MeterTap",
   "track": "apc_greenfield",
   "dpcs_phase": 1,
-  "apc_phase": "dream",
+  "apc_phase": "plan",
+  "current_phase": "plan_complete",
   "factory_dogfood": true,
   "product_category": "fx.metering",
+  "ui_framework": "juce-native",
+  "complexity_score": 2,
+  "complexity_tier": "L0",
+  "complexity_structure_override": "L1-style factory-lib split per constitution non-negotiable 1",
+  "framework_selection": {
+    "decision": "juce-native",
+    "rationale": "Two meter bars + bypass + optional trim; template builds with JUCE_WEB_BROWSER=0; gui.meter is a JUCE factory-lib stub reused by later SKUs.",
+    "implementation_strategy": "factory-lib LevelMeter widget + thin editor; 30 Hz Timer pulls lock-free meter bridge"
+  },
   "validation": {
     "dpcs_phase0_constitution_exists": true,
     "creative_brief_exists": true,
     "parameter_spec_exists": true,
-    "architecture_defined": false,
+    "architecture_defined": true,
+    "ui_framework_selected": true,
     "design_complete": false
   },
+  "open_issues": [
+    "A: over-0 dBFS output (default: no clip, over indicator)",
+    "B: RMS reference for -12 dBFS sine (default: unweighted, -15.01 dBFS)",
+    "C: bypass transition click (default: literal instant switch)",
+    "D: dl_mix_level vs dl_input_trim_db (default: parameter-spec v1)",
+    "E: dl_meter_floor_db fixed, no widget"
+  ],
   "phase1_verified_by": "plugins/MeterTap/scripts/verify-phase1.sh",
-  "next_command": "bash plugins/MeterTap/scripts/verify-phase1.sh then DPCS Phase 2 contract headers"
+  "next_command": "/apc-design MeterTap"
 }

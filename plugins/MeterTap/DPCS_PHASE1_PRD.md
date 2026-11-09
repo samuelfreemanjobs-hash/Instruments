@@ -9,7 +9,7 @@ Phase 1 delivers **behaviour only** per [docs/DPCS.md](../../docs/DPCS.md) — n
 | File | Role |
 |------|------|
 | [.ideas/creative-brief.md](.ideas/creative-brief.md) | PRD: audio + UI behaviour |
-| [parameter-spec.md](parameter-spec.md) | APVTS parameter contract |
+| [.ideas/parameter-spec.md](.ideas/parameter-spec.md) | APVTS parameter contract |
 | [DPCS_PHASE0_CONSTITUTION.md](DPCS_PHASE0_CONSTITUTION.md) | Phase 0 scope |
 | [status.json](status.json) | APC / DPCS tracker |
 

@@ -103,5 +103,6 @@ python3 vst-testing-ops/run_business.py --profile factory --plugin MeterTap
 ## Links
 
 - Constitution: [../DPCS_PHASE0_CONSTITUTION.md](../DPCS_PHASE0_CONSTITUTION.md)
-- Parameters: [../parameter-spec.md](../parameter-spec.md)
+- Parameters: [parameter-spec.md](parameter-spec.md)
+- Architecture (Plan): [architecture.md](architecture.md) · [apc-plan.md](apc-plan.md)
 - DPCS index: [../DPCS_PHASE1_PRD.md](../DPCS_PHASE1_PRD.md)
