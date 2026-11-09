@@ -111,3 +111,13 @@ Factory, plugin (APC/DPCS), design-system and JUCE work. Format and rules: [MEMO
 - **evidence:** PRs #124, #125, #126 built in parallel; LevelMeter fix routed to the design-system agent
 - **confidence:** executed
 - **status:** active
+
+### L-0012 · Assert rendered UI text, not just pixels
+- **date:** 2026-11-09
+- **area:** ui, testing, juce, text, review
+- **when:** a component draws values in fixed-width boxes (readouts, headers, labels) and tests only sample colours
+- **lesson:** Render tests passed while RMS readouts showed '...' and a header name was clipped: colour-pixel assertions cannot see truncation or clipping.
+- **do:** Assert the drawn string equals the expected text (no ellipsis) and that text bounds sit inside the component, for every theme at 1x and 2x; size boxes from the longest value (e.g. −96.0, +12.0).
+- **evidence:** PR #127 review 2 @1bf4cce4: disklordz RMS '...', studio-light RMS '-1...', 'MeterTap' descender clipped
+- **confidence:** inspected
+- **status:** active
