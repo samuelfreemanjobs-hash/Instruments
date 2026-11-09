@@ -6,12 +6,20 @@ on:
       - "vst/factory-lib/**"
       - ".github/workflows/design-system.yml"
       - "JUCE_VERSION"
+      - "tools/visual_diff.py"
+      - "tools/test_visual_diff.py"
+      - "tests/visual/**"
+      - "docs/disklordz/sops/SOP-VF-06-verify-test.md"
+      - "docs/disklordz/sops/SOP-VF-13-visual-baselines.md"
   push:
     branches: [main, cursor/design-system]
     paths:
       - "vst/factory-lib/**"
       - ".github/workflows/design-system.yml"
       - "JUCE_VERSION"
+      - "tools/visual_diff.py"
+      - "tools/test_visual_diff.py"
+      - "tests/visual/**"
   workflow_dispatch:
 
 jobs:
@@ -20,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Pinned repo default (JUCE_VERSION) + optional JUCE 8 compatibility entry
+        # Pinned repo default (JUCE_VERSION) + golden cell JUCE 8.0.15
         juce_tag: ["from-file", "8.0.15"]
     steps:
       - uses: actions/checkout@v4
@@ -44,6 +52,12 @@ jobs:
           python3 "$DS/scripts/check_tokens.py" --check-preview --check-generated
           python3 "$DS/scripts/gen_juce_tokens.py" --all --check
           python3 -m unittest discover -s "$DS/scripts" -p "test_*.py" -v
+
+      - name: Visual diff unit tests
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user Pillow
+          python3 -m unittest discover -s tools -p "test_visual_diff.py" -v
 
       - name: Install build deps
         run: |
@@ -78,6 +92,25 @@ jobs:
         run: |
           cd "build-factory-gui-${{ steps.juce.outputs.tag }}"
           xvfb-run -a ctest --output-on-failure -R 'FactoryGuiRenderTests_'
+
+      - name: Visual regression (golden cell JUCE 8.0.15)
+        if: steps.juce.outputs.tag == '8.0.15'
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user Pillow
+          python3 tools/visual_diff.py \
+            --actual "build-factory-gui-${{ steps.juce.outputs.tag }}/gui-renders" \
+            --golden tests/visual/golden/factory-gui \
+            --out build/visual-diff \
+            --expected-juce 8.0.15
+
+      - name: Upload visual diff report (on failure)
+        if: failure() && steps.juce.outputs.tag == '8.0.15'
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diff-report-juce-${{ steps.juce.outputs.tag }}
+          path: build/visual-diff/
+          if-no-files-found: warn
 
       - name: Upload PNG renders
         if: always()

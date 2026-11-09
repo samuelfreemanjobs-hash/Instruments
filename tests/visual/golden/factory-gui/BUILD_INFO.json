@@ -1,0 +1,10 @@
+{
+  "juce_version": "JUCE v8.0.15",
+  "juce_major": 8,
+  "juce_minor": 0,
+  "juce_build": 15,
+  "theme": "studio-light",
+  "theme_version": "0.1.0",
+  "os": "Linux",
+  "os_detail": "Linux"
+}

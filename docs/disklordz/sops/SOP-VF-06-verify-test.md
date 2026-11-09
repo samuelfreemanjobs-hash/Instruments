@@ -28,6 +28,25 @@ bash plugins/<Name>/scripts/verify-phase4.sh            # exit 0
 
 Intentional DSP output changes: `tests/golden/refresh_golden.sh`, commit the WAVs, explain in the PR.
 
+## Visual regression
+
+Factory GUI components must pass image + text golden comparison before certify:
+
+```bash
+# After FactoryGuiRenderTests (JUCE 8.0.15 golden cell)
+python3 tools/visual_diff.py \
+  --actual build-factory-gui-8.0.15/gui-renders \
+  --golden tests/visual/golden/factory-gui \
+  --out build/visual-diff \
+  --expected-juce 8.0.15
+# exit 0 required; on failure open build/visual-diff/report.html
+```
+
+- PNGs + text sidecars come from `FactoryGuiRenderTests` (`gui-renders/<theme>/<component>-<state>@<scale>x.{png,json}`).
+- Unit tests for the differ: `python3 -m unittest discover -s tools -p 'test_visual_diff.py'`.
+- Intentional UI changes: re-baseline with `--update` in the **same PR**; reviewer opens the HTML report ([SOP-VF-13](SOP-VF-13-visual-baselines.md)).
+- MeterTap **editor** goldens are a follow-up after PR #127 — not part of the factory-gui suite yet.
+
 ## Related
 
-[DPCS.md](../../DPCS.md) (debug protocol, mutation testing) · [vst-testing-ops/ARCHITECTURE.md](../../../vst-testing-ops/ARCHITECTURE.md) · [SOP-VF-09 Debug](SOP-VF-09-debug-repair.md)
+[DPCS.md](../../DPCS.md) (debug protocol, mutation testing) · [vst-testing-ops/ARCHITECTURE.md](../../../vst-testing-ops/ARCHITECTURE.md) · [SOP-VF-09 Debug](SOP-VF-09-debug-repair.md) · [SOP-VF-13 Visual baselines](SOP-VF-13-visual-baselines.md)

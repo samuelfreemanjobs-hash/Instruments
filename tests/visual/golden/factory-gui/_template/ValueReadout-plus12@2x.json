@@ -1,0 +1,12 @@
+{
+  "component": "ValueReadout",
+  "state": "plus12",
+  "scale": 2.0,
+  "theme": "_template",
+  "width": 140,
+  "height": 32,
+  "texts": [
+    {"string": "+12.0", "bounds": {"x":8.000,"y":8.000,"w":36.364,"h":16.000}},
+    {"string": "dB", "bounds": {"x":92.000,"y":11.000,"w":11.668,"h":10.000}}
+  ]
+}

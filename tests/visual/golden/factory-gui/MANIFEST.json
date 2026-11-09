@@ -1,0 +1,36 @@
+{
+  "channel_tolerance": 8,
+  "fonts": {
+    "vst/factory-lib/gui/fonts/IBMPlexMono/IBMPlexMono-Bold.ttf": "74e5eedcfa4596497d34e19023cabdabd3a8c852b903007a5654a59591a72ffb",
+    "vst/factory-lib/gui/fonts/IBMPlexMono/IBMPlexMono-Medium.ttf": "98fbd727aae340b236955879dabed4d991aac9e8e90b3b2a67ce4a59221cc97c",
+    "vst/factory-lib/gui/fonts/IBMPlexMono/IBMPlexMono-Regular.ttf": "7c6fbddca4b700be918f5f6183d9bd4464fa427fe435f0b480d77fe2bb8c5a43",
+    "vst/factory-lib/gui/fonts/IBMPlexMono/IBMPlexMono-SemiBold.ttf": "f04d7c488ddf7d1fa99f2574efc3406ea4cbe17bb1af3a1ab960f84d0c96a172",
+    "vst/factory-lib/gui/fonts/IBMPlexSans/IBMPlexSans-Bold.ttf": "9e6c74a889a700d707613d24548fe4ffa6bc59559a0689d2cf9e133bdcdafb2f",
+    "vst/factory-lib/gui/fonts/IBMPlexSans/IBMPlexSans-Medium.ttf": "331c8639d7598b2cde62a911a71db195e30cb655cd6bdf2e324a7e984955f907",
+    "vst/factory-lib/gui/fonts/IBMPlexSans/IBMPlexSans-Regular.ttf": "975dcda37d80f038dcd143c22e33ca2d97a0cc5a929aace1c749153b0fe1afa5",
+    "vst/factory-lib/gui/fonts/IBMPlexSans/IBMPlexSans-SemiBold.ttf": "a20caf8286023a6a7a85e40b1d2a4ae9fc3e3b1f9eda8f4c542dd4986af67bb1",
+    "vst/factory-lib/gui/fonts/Inter/Inter-Bold.ttf": "288316099b1e0a47a4716d159098005eef7c0066921f34e3200393dbdb01947f",
+    "vst/factory-lib/gui/fonts/Inter/Inter-Medium.ttf": "97ad806f526e41546d46365bb3a393145f75b7b1568913db74549ad8b8dba872",
+    "vst/factory-lib/gui/fonts/Inter/Inter-Regular.ttf": "40d692fce188e4471e2b3cba937be967878f631ad3ebbbdcd587687c7ebe0c82",
+    "vst/factory-lib/gui/fonts/Inter/Inter-SemiBold.ttf": "78a843fade9d4612a5567302fb595b56976eb5fcebf4fea5a5912d638bafcde3",
+    "vst/factory-lib/gui/fonts/JetBrainsMono/JetBrainsMono-Bold.ttf": "5590990c82e097397517f275f430af4546e1c45cff408bde4255dad142479dcb",
+    "vst/factory-lib/gui/fonts/JetBrainsMono/JetBrainsMono-Medium.ttf": "31c92d01a8a08528b718a43addf0ad3df0af2ca4b7b3290a452f70f358e14d3d",
+    "vst/factory-lib/gui/fonts/JetBrainsMono/JetBrainsMono-Regular.ttf": "a0bf60ef0f83c5ed4d7a75d45838548b1f6873372dfac88f71804491898d138f",
+    "vst/factory-lib/gui/fonts/JetBrainsMono/JetBrainsMono-SemiBold.ttf": "1b3bfa1ed5665a4ce3f9feb68d2d4e40e70bf8b4b7d9a3edd418f321b4e166a0"
+  },
+  "juce_tag": "8.0.15",
+  "juce_version": "JUCE v8.0.15",
+  "max_diff_ratio": 0.002,
+  "notes": "Golden cell = ubuntu-latest + JUCE 8.0.15. Re-baseline only with visual_diff.py --update in the same PR as the UI change.",
+  "os": "Linux",
+  "scales": [
+    "1x",
+    "2x"
+  ],
+  "suite": "factory-gui",
+  "themes": [
+    "_template",
+    "disklordz",
+    "studio-light"
+  ]
+}

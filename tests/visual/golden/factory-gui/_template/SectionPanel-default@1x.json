@@ -1,0 +1,11 @@
+{
+  "component": "SectionPanel",
+  "state": "default",
+  "scale": 1.0,
+  "theme": "_template",
+  "width": 200,
+  "height": 100,
+  "texts": [
+    {"string": "DYNAMICS", "bounds": {"x":12.000,"y":9.000,"w":60.779,"h":12.000}}
+  ]
+}

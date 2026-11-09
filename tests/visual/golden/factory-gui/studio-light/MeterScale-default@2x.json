@@ -1,0 +1,10 @@
+{
+  "component": "MeterScale",
+  "state": "default",
+  "scale": 2.0,
+  "theme": "studio-light",
+  "width": 40,
+  "height": 160,
+  "texts": [
+  ]
+}
