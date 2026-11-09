@@ -1,6 +1,6 @@
 # Components
 
-Each component lists anatomy, sizes, tokens, states, behaviour, keyboard map and accessibility. Visual reference: [`preview.html`](preview.html). Shared interaction values come from `tokens.json → interaction`.
+Each component lists anatomy, sizes, tokens, states, behaviour, keyboard map and accessibility. Components bind to **contract roles only** (`contract/roles.json`), so every spec here works with any theme. Visual reference per theme: `previews/<theme>.html`. Shared interaction values come from the theme's `interaction` tokens.
 
 The factory catalog id (`disklordz/vst-factory/modules/gui/controls.json`) is given where one exists.
 
@@ -66,8 +66,8 @@ Products using keyboard control must set `EDITOR_WANTS_KEYBOARD_FOCUS TRUE` in C
 
 | Role | LED on | Example |
 |------|--------|---------|
-| standard | `active.default` (lime) + 6 px glow | Hold, Sync, Link |
-| caution | `state.caution` (amber) + glow | **Bypass**, Mute: states where the product is *not* doing its job |
+| standard | `active.default` + 6 px glow | Hold, Sync, Link |
+| caution | `state.caution` + glow | **Bypass**, Mute: states where the product is *not* doing its job |
 
 - LED off = `state.ledOff`, no glow. The legend never changes colour between on and off; the LED carries the state.
 - Accessibility: role toggle button; state announced as "on"/"off".
@@ -102,7 +102,7 @@ Click to edit when the readout is bound to a parameter (see conventions).
 
 ## 7. Level meter (`gui.meter`)
 
-The one component allowed to use cyan, amber and red for signal level.
+The one component allowed to use the `meter.*` roles (and the only place `meter.hot` / `meter.over` appear).
 
 **Anatomy (vertical bar):**
 
@@ -159,7 +159,7 @@ Every DiskLordz plugin uses this header unchanged, so users always know where pr
 ## 12. Popup menu
 
 - `bg.overlay`, overlay elevation, radius sm, `body` style rows 24 px tall.
-- Hover row: `brand.subtle` background. Checked item: 6 px lime LED in the left gutter. Separators `border.subtle`. Disabled rows `text.disabled`.
+- Hover row: `brand.subtle` background. Checked item: 6 px `active.default` LED in the left gutter. Separators `border.subtle`. Disabled rows `text.disabled`.
 
 ## 13. Premium badge
 

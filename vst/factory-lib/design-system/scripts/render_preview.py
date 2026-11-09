@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""Render preview.html (a visual reference sheet) from tokens.json.
+"""Render previews/<theme>.html (a visual reference sheet) from each theme's tokens.json.
 
 Output is deterministic so check_tokens.py --check-preview can detect drift.
 
 Usage:
-    python3 vst/factory-lib/design-system/scripts/render_preview.py
+    python3 vst/factory-lib/design-system/scripts/render_preview.py               # all themes
+    python3 vst/factory-lib/design-system/scripts/render_preview.py --theme disklordz
 """
 from __future__ import annotations
 
+import argparse
 import html
 import math
 import sys
@@ -15,7 +17,18 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from check_tokens import PREVIEW, contrast, leaves, load_tokens, resolve, resolve_path  # noqa: E402
+from check_tokens import (  # noqa: E402
+    PREVIEWS,
+    contrast,
+    effective_pairs,
+    leaves,
+    list_themes,
+    load_contract,
+    load_theme,
+    preview_path,
+    resolve,
+    resolve_path,
+)
 
 
 def css_vars(t: dict) -> str:
@@ -64,6 +77,7 @@ def knob_svg(t: dict, d: int, value: float, origin: float = 0.0, state: str = "d
     px0, py0 = _pt(cx, cy, body_r * 0.35, a_val)
     px1, py1 = _pt(cx, cy, body_r * 0.85, a_val)
     gid = f"kg{d}{state}{int(value * 100)}"
+    ds = t["elevation"]["raised"]["dropShadow"]
     focus = ""
     if state == "focused":
         fr = ring_r + arc_w / 2 + t["stroke"]["focusOffset"] + t["stroke"]["focus"] / 2
@@ -85,7 +99,7 @@ def knob_svg(t: dict, d: int, value: float, origin: float = 0.0, state: str = "d
         f'stroke-width="{arc_w}" stroke-linecap="round"/>'
         f'<path d="{arc(cx, cy, ring_r, a_org, a_val)}" fill="none" stroke="{stroke}" '
         f'stroke-width="{arc_w}" stroke-linecap="round"/>'
-        f'<circle cx="{cx}" cy="{cy + 2}" r="{body_r}" fill="#000" opacity="0.55"/>'
+        f'<circle cx="{cx}" cy="{cy + ds["offsetY"]}" r="{body_r}" fill="{ds["color"]}" opacity="{ds["alpha"]}"/>'
         f'<circle cx="{cx}" cy="{cy}" r="{body_r}" fill="url(#{gid})" stroke="{c(t, "control.rim")}" '
         f'stroke-width="{t["stroke"]["rim"]}"/>'
         f'<line x1="{px0:.2f}" y1="{py0:.2f}" x2="{px1:.2f}" y2="{py1:.2f}" stroke="{pointer}" '
@@ -160,14 +174,15 @@ def swatches(t: dict) -> str:
         sem.append(f'<div class="sw"><div class="chip" style="background:{hexv}"></div>'
                    f'<div class="mono">{path.removeprefix("semantic.")}</div><div class="mono dim">{hexv}</div></div>')
     restr = "".join(f"<li><b>{r['primitive']}</b> only under {', '.join(r['allowedUnder'])}: "
-                    f"{html.escape(r['reason'])}</li>" for r in t["usageRestrictions"])
+                    f"{html.escape(r['reason'])}</li>" for r in t.get("usageRestrictions", []))
+    restr_block = f"<h3>Usage restrictions (enforced)</h3><ul>{restr}</ul>" if restr else ""
     return ("<h3>Primitives</h3>" + "".join(rows) + "<h3>Semantic</h3>" + f'<div class="row">{"".join(sem)}</div>'
-            + f"<h3>Usage restrictions (enforced)</h3><ul>{restr}</ul>")
+            + restr_block)
 
 
-def contrast_table(t: dict) -> str:
+def contrast_table(t: dict, contract: dict) -> str:
     rows = []
-    for p in t["contrast"]:
+    for p in effective_pairs(t, contract):
         fg, bg = resolve_path(t, p["fg"]), resolve_path(t, p["bg"])
         r = contrast(fg, bg)
         rows.append(f'<tr><td><span class="pair" style="background:{bg};color:{fg}">Aa ▮</span></td>'
@@ -264,28 +279,41 @@ def meters(t: dict) -> str:
         f'<div class="mcol">{meter_html(t, wv, 120, -18, -10, -7, False)}<div class="mono dim c">{k}</div></div>'
         for k, wv in t["size"]["meterBar"].items())
     return (f"<div class='row'>{stereo}<div class='note'>"
-            "<p><b>RMS</b>: full-width, dim cyan. <b>Peak</b>: centre half-width, bright cyan; "
-            f"amber above {str(t['meter']['hotThresholdDb']).replace('-', '−')} dBFS. <b>Hold</b>: 2 px white line. "
-            "<b>Over</b>: red cap above the bar plus a red readout, latched until the meter is clicked.</p>"
+            "<p><b>RMS</b>: full width, <code>meter.rms</code>. <b>Peak</b>: centre half-width, <code>meter.peak</code>; "
+            f"<code>meter.hot</code> above {str(t['meter']['hotThresholdDb']).replace('-', '−')} dBFS. "
+            f"<b>Hold</b>: {t['meter']['holdLineThickness']} px <code>meter.hold</code> line. "
+            "<b>Over</b>: <code>meter.over</code> cap above the bar plus a <code>state.danger</code> readout, "
+            "latched until the meter is clicked.</p>"
             "<p>Left: normal programme. Right: clipped signal with over latched.</p></div></div>"
             f"<h3>Bar widths</h3><div class='row'>{small}</div>")
 
 
-def header_bar() -> str:
+def header_bar(t: dict) -> str:
     glyph = ('<svg width="22" height="22" viewBox="0 0 22 22" aria-label="DiskLordz glyph placeholder">'
              '<rect x="2" y="5" width="18" height="15" rx="2" fill="none" stroke="var(--brand-stroke)" stroke-width="1.5"/>'
              '<rect x="6" y="5" width="9" height="5" fill="var(--brand-stroke)"/>'
              '<path d="M5 4 L8 1 L11 4 L14 1 L17 4" fill="none" stroke="var(--premium-badge)" stroke-width="1.5"/>'
              "</svg>")
     return ('<div class="header">'
-            f'<div class="hl">{glyph}<span class="product">MeterTap</span><span class="micro dim">DiskLordz</span></div>'
+            f'<div class="hl">{glyph}<span class="product">{html.escape(t.get("previewProduct", "MeterTap"))}</span>'
+            f'<span class="micro dim">{html.escape(t["brandName"])}</span></div>'
             '<div class="preset"><button class="arrow" aria-label="previous preset">‹</button>'
             '<span>Init</span><button class="arrow" aria-label="next preset">›</button></div>'
             '<div class="hr"><span class="micro dim">v0.1.0</span>'
             '<button class="toggle caution"><i class="led"></i>Bypass</button></div></div>')
 
 
-def render(t: dict) -> str:
+def shadow(spec: dict | None, inset: bool = False) -> str:
+    if not spec:
+        return "0 0 0 transparent"
+    h = spec["color"].lstrip("#")
+    r, g, b = (int(h[i : i + 2], 16) for i in (0, 2, 4))
+    return (f"{'inset ' if inset else ''}0 {spec['offsetY']}px {spec.get('blur', 0)}px "
+            f"rgba({r},{g},{b},{spec['alpha']})")
+
+
+def render(t: dict, contract: dict | None = None) -> str:
+    contract = contract or load_contract()
     fam = t["typography"]["family"]
     sans = f"'{fam['sans']['name']}', {fam['sans']['fallback']}, 'Segoe UI', sans-serif"
     mono = f"'{fam['mono']['name']}', {fam['mono']['fallback']}, Consolas, monospace"
@@ -297,6 +325,9 @@ def render(t: dict) -> str:
 :root {{
 {css_vars(t)}
   --sans: {sans};
+  --raised-shadow: {shadow(e['raised'].get('topHighlight'), True)}, {shadow(e['raised']['dropShadow'])};
+  --well-shadow: {shadow(e['well']['innerShadow'], True)}, {shadow(e['well']['bottomHighlight'], True)};
+  --overlay-shadow: {shadow(e['overlay']['dropShadow'])};
   --mono: {mono};
 }}
 * {{ box-sizing: border-box; }}
@@ -327,13 +358,10 @@ th {{ color: var(--text-tertiary); font-weight: 600; font-size: 11px; text-trans
   display: flex; align-items: flex-end; padding: 4px; }}
 .elev {{ width: 150px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: {r['sm']}px;
   color: var(--text-secondary); }}
-.well-sample {{ background: var(--bg-well); box-shadow: inset 0 {e['well']['innerShadow']['offsetY']}px {e['well']['innerShadow']['blur']}px rgba(0,0,0,{e['well']['innerShadow']['alpha']}),
-  inset 0 -1px 0 rgba(255,255,255,{e['well']['bottomHighlight']['alpha']}); }}
+.well-sample {{ background: var(--bg-well); box-shadow: var(--well-shadow); }}
 .flat-sample {{ background: var(--bg-section); }}
-.raised-sample {{ background: linear-gradient(var(--control-bodyTop), var(--control-body));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,{e['raised']['topHighlight']['alpha']}), 0 {e['raised']['dropShadow']['offsetY']}px {e['raised']['dropShadow']['blur']}px rgba(0,0,0,{e['raised']['dropShadow']['alpha']}); }}
-.overlay-sample {{ background: var(--bg-overlay); border: 1px solid var(--border-overlay);
-  box-shadow: 0 {e['overlay']['dropShadow']['offsetY']}px {e['overlay']['dropShadow']['blur']}px rgba(0,0,0,{e['overlay']['dropShadow']['alpha']}); }}
+.raised-sample {{ background: linear-gradient(var(--control-bodyTop), var(--control-body)); box-shadow: var(--raised-shadow); }}
+.overlay-sample {{ background: var(--bg-overlay); border: 1px solid var(--border-overlay); box-shadow: var(--overlay-shadow); }}
 .ctl {{ display: flex; flex-direction: column; align-items: center; gap: {size['legendGap']}px; min-width: 72px; }}
 .legend {{ font-size: {st['legend']['size']}px; line-height: {st['legend']['lineHeight']}px; letter-spacing: {st['legend']['tracking']}em;
   text-transform: uppercase; font-weight: 600; color: var(--text-primary); }}
@@ -343,7 +371,7 @@ button {{ font-family: var(--sans); }}
   background: linear-gradient(var(--control-bodyTop), var(--control-body)); color: var(--text-primary);
   font-size: {st['legend']['size']}px; letter-spacing: {st['legend']['tracking']}em; text-transform: uppercase; font-weight: 600;
   display: inline-flex; align-items: center; gap: 8px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 2px 4px rgba(0,0,0,.55); }}
+  box-shadow: var(--raised-shadow); }}
 .btn {{ height: {size['button']['md']}px; }}
 .led {{ width: {size['led']}px; height: {size['led']}px; border-radius: 50%; background: var(--state-ledOff); display: inline-block; }}
 .toggle.on .led {{ background: var(--active-default); box-shadow: 0 0 6px var(--active-default); }}
@@ -368,21 +396,21 @@ button:disabled {{ color: var(--text-disabled); box-shadow: none; background: va
 .slider .fill {{ height: 100%; background: var(--brand-stroke); border-radius: 2px; }}
 .slider .thumb {{ position: absolute; top: 6px; width: {size['slider']['thumbLength']}px; height: {size['slider']['thumbThickness']}px;
   margin-left: -10px; border-radius: {r['xs']}px; background: linear-gradient(var(--control-bodyTop), var(--control-body));
-  border: 1px solid var(--control-rim); box-shadow: 0 2px 4px rgba(0,0,0,.55); }}
+  border: 1px solid var(--control-rim); box-shadow: var(--raised-shadow); }}
 .readout {{ background: var(--bg-well); border-radius: {r['xs']}px; padding: 6px 10px; min-width: 112px; display: flex;
   justify-content: space-between; align-items: baseline; gap: 8px;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,.7), inset 0 -1px 0 rgba(255,255,255,.05); }}
+  box-shadow: var(--well-shadow); }}
 .readout .v {{ font-family: var(--mono); font-size: {st['valueLarge']['size']}px; color: var(--text-primary); }}
 .readout .u {{ font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }}
 .readout.over .v, .readout.over .u, .over-text {{ color: var(--state-danger); }}
 .tooltip {{ max-width: {size['tooltipMaxWidth']}px; background: var(--bg-overlay); border: 1px solid var(--border-overlay);
-  border-radius: {r['sm']}px; padding: 8px 10px; box-shadow: 0 6px 16px rgba(0,0,0,.6); }}
+  border-radius: {r['sm']}px; padding: 8px 10px; box-shadow: var(--overlay-shadow); }}
 .meter-group {{ display: flex; gap: 6px; align-items: flex-start; background: var(--bg-section); padding: 16px; border-radius: {r['md']}px; }}
 .mcol {{ display: flex; flex-direction: column; gap: 4px; }}
 .meter {{ display: flex; flex-direction: column; gap: 2px; }}
 .over-cap {{ border-radius: 1px; }}
 .meter-well {{ position: relative; background: var(--meter-track); overflow: hidden; border-radius: 1px;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,.7); }}
+  box-shadow: var(--well-shadow); }}
 .scale {{ position: relative; width: 36px; }}
 .tick {{ position: absolute; left: 0; right: 0; height: 0; }}
 .tick::before, .tick::after {{ content: ""; position: absolute; top: 0; width: 5px; border-top: 1px solid var(--meter-tick); }}
@@ -396,31 +424,40 @@ button:disabled {{ color: var(--text-disabled); box-shadow: none; background: va
 .hl, .hr {{ display: flex; align-items: center; gap: 10px; }}
 .product {{ font-size: {st['productName']['size']}px; font-weight: 700; letter-spacing: {st['productName']['tracking']}em; text-transform: uppercase; }}
 .preset {{ display: flex; align-items: center; gap: 8px; background: var(--bg-well); border-radius: {r['xs']}px; padding: 0 4px;
-  height: {size['button']['sm']}px; min-width: 180px; justify-content: space-between; box-shadow: inset 0 1px 2px rgba(0,0,0,.7); }}
+  height: {size['button']['sm']}px; min-width: 180px; justify-content: space-between; box-shadow: var(--well-shadow); }}
 .arrow {{ background: none; border: 0; color: var(--text-secondary); font-size: 16px; width: {size['hitTargetMin']}px; height: {size['hitTargetMin']}px; }}
 """
+    fonts = " and ".join(f"{f['name']} ({f['license']})" for f in fam.values())
     body = (
-        f"<main><h1>{html.escape(t['name'])}</h1>"
-        f"<div class='mono dim'>v{t['version']} · generated from tokens.json by scripts/render_preview.py — do not edit</div>"
-        + section("Header (product chrome)", header_bar())
+        f"<main><h1>{html.escape(t['name'])} theme</h1>"
+        f"<div class='mono dim'>theme {t['id']} v{t['version']} · contract {contract['contractVersion']} · "
+        f"generated from themes/{t['id']}/tokens.json by scripts/render_preview.py — do not edit</div>"
+        + section("Header (product chrome)", header_bar(t))
         + section("Colour", swatches(t))
-        + section("Contrast (WCAG 2.x)", contrast_table(t))
+        + section("Contrast (WCAG 2.x)", contrast_table(t, contract))
         + section("Typography", type_specimens(t)
-                  + "<p class='dim'>Inter and JetBrains Mono (both OFL-1.1) are embedded in plugins; this page falls back "
+                  + f"<p class='dim'>{html.escape(fonts)} are embedded in plugins; this page falls back "
                     "to system fonts if they are not installed.</p>")
         + section("Space, radius, elevation", spacing(t))
         + section("Controls", controls(t))
-        + section("Meters (steel cyan is reserved for these)", meters(t))
+        + section("Meters", meters(t))
         + "</main>"
     )
     return ("<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\">"
-            f"<title>{html.escape(t['name'])} v{t['version']}</title>"
+            f"<title>{html.escape(t['name'])} theme v{t['version']}</title>"
             f"<style>{css}</style></head><body>{body}</body></html>\n")
 
 
 def main() -> int:
-    PREVIEW.write_text(render(load_tokens()), encoding="utf-8", newline="\n")
-    print(f"wrote {PREVIEW}")
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--theme", action="append", help="theme id (repeatable); default: all themes")
+    args = ap.parse_args()
+    contract = load_contract()
+    PREVIEWS.mkdir(exist_ok=True)
+    for theme_id in args.theme or list_themes():
+        out = preview_path(theme_id)
+        out.write_text(render(load_theme(theme_id), contract), encoding="utf-8", newline="\n")
+        print(f"wrote {out}")
     return 0
 
 
