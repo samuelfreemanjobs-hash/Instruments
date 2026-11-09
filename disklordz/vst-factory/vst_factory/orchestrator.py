@@ -273,6 +273,32 @@ class Orchestrator:
         pclass = proj["plugin_class"]
         spec = proj["spec"]
 
+        existing_apc = apc_bridge.plugins_dir(root) / name
+        existing_vst = apc_bridge.vst_dir(root) / name
+        # Dogfood / resume: if both trees already exist, advance without rewriting.
+        if existing_apc.is_dir() and existing_vst.is_dir():
+            spec["vst_rel"] = f"vst/{name}"
+            spec["plugins_rel"] = f"plugins/{name}"
+            spec["scaffold_reused"] = True
+            self.db.update_project(
+                project_id,
+                state=FactoryState.SCAFFOLD.value,
+                spec=spec,
+                apc_path=str(existing_apc.relative_to(root)),
+                vst_path=str(existing_vst.relative_to(root)),
+            )
+            self.db.add_run(
+                project_id,
+                "scaffold",
+                True,
+                f"reused existing APC: {existing_apc}\nVST: {existing_vst}\n",
+            )
+            self.db.upsert_product_wo(
+                project_id, build_product_wo(self.db.get_project(project_id) or {})
+            )
+            references.update_liaison_greenfield_count(self.db.count_greenfield())
+            return self.enrich_project(self.db.get_project(project_id) or {})
+
         apc_path = apc_bridge.init_apc_workspace(root, name)
         brief = modules.materialize_creative_brief(pclass, name, spec.get("prompt", ""), spec)
         (apc_path / ".ideas" / "creative-brief.md").write_text(brief, encoding="utf-8")

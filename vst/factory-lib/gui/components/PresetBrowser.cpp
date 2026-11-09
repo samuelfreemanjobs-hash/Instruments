@@ -11,6 +11,8 @@ PresetBrowser::PresetBrowser()
         b->getProperties().set (FactoryLookAndFeel::buttonVariantProperty, "secondary");
         addAndMakeVisible (b);
     }
+    // Preset name follows body case (as-is), not legend uppercase — design-spec "Init".
+    nameButton.getProperties().set (FactoryLookAndFeel::buttonTextCaseProperty, "none");
     prev.onClick = [this] { if (onPrev) onPrev(); };
     next.onClick = [this] { if (onNext) onNext(); };
     nameButton.onClick = [this] { showMenu(); };

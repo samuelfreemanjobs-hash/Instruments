@@ -413,6 +413,7 @@ void captureReadouts (float scale)
     {
         r.setState (fds::gui::ValueReadout::State::normal);
         r.setValueText (fds::gui::minusSign() + "96.0", "dB");
+        expect (r.valueTextFitsWithoutEllipsis(), "ValueReadout-neg96 fits");
     });
     // +12.0 as a normal (non-over) glyph fit check — overThresholdDb is 0, so setFromDb(+12)
     // would force OVER; set the digits explicitly.
@@ -420,22 +421,39 @@ void captureReadouts (float scale)
     {
         r.setState (fds::gui::ValueReadout::State::normal);
         r.setValueText ("+12.0", "dB");
+        expect (r.valueTextFitsWithoutEllipsis(), "ValueReadout-plus12 fits");
     });
     captureOne ("over", [] (fds::gui::ValueReadout& r) { r.setFromDb (3.0f); });
+}
+
+void applyDiskLordzGlyph (fds::gui::HeaderBar& header)
+{
+    // Same floppy+crown paths as MeterTap editor (design-system preview 22×22).
+    juce::Path outline, fill, accent;
+    outline.addRoundedRectangle (2.0f, 5.0f, 18.0f, 15.0f, 2.0f);
+    fill.addRectangle (6.0f, 5.0f, 9.0f, 5.0f);
+    accent.startNewSubPath (5.0f, 4.0f);
+    accent.lineTo (8.0f, 1.0f);
+    accent.lineTo (11.0f, 4.0f);
+    accent.lineTo (14.0f, 1.0f);
+    accent.lineTo (17.0f, 4.0f);
+    header.setGlyphPaths (std::move (outline), std::move (fill), std::move (accent));
 }
 
 void captureHeader (float scale)
 {
     fds::gui::FactoryLookAndFeel lnf;
-    // Pin a single product name across hosts. Auto-picking the longest fitting
-    // candidate drifted between Cloud and ubuntu-latest (FreeType metrics),
-    // which poisoned HeaderBar goldens. "CHORD ENGINE" fits the 180 px slot
+    // Pin a single product name across hosts. "CHORD ENGINE" fits the 180 px slot
     // even when productName is uppercase (disklordz / _template).
     const auto chosen = fds::gui::utf8 ("CHORD ENGINE");
     fds::gui::HeaderBar header (chosen, "0.2.0");
     header.setLookAndFeel (&lnf);
+    applyDiskLordzGlyph (header);
     header.setSize (720, fds::size::headerHeight);
     header.resized();
+    const auto nameBounds = header.getProductNameBounds();
+    expect (header.getLocalBounds().contains (nameBounds),
+            "HeaderBar-longest productName inside header");
     capture (header, "HeaderBar", "longest", scale);
     std::cout << "ASSERT HeaderBar longest='" << chosen << "' theme=" << fds::themeId << std::endl;
     header.setLookAndFeel (nullptr);
@@ -560,6 +578,52 @@ void captureButtonStates (float scale)
     }
 }
 
+/** Contract from PR #127: productName bounds + lineHeight; chassis fill. */
+void checkHeader (float scale)
+{
+    fds::gui::FactoryLookAndFeel lnf;
+    fds::gui::HeaderBar header ("MeterTap", "0.2.0");
+    header.setLookAndFeel (&lnf);
+    header.setSize (640, fds::size::headerHeight);
+    header.resized();
+    auto img = renderComponent (header, scale);
+    expect (imageNonBlank (img), "HeaderBar blank");
+    const auto bg = img.getPixelAt (2, 2);
+    expect (colourClose (bg, fds::gui::argb (fds::color::bg::chassis), 30),
+            "HeaderBar bg should be chassis");
+    const auto nameBounds = header.getProductNameBounds();
+    expect (header.getLocalBounds().contains (nameBounds),
+            "HeaderBar productName must lie inside header");
+    expect (nameBounds.getHeight()
+                >= juce::jmin (fds::typography::style::productName.lineHeight,
+                               header.getHeight()),
+            "HeaderBar productName height covers theme lineHeight");
+    header.setLookAndFeel (nullptr);
+}
+
+/** Contract from PR #127: 80 px well, no unit — −10.0 / −96.0 / +12.0 without ellipsis. */
+void checkReadout (float scale)
+{
+    fds::gui::FactoryLookAndFeel lnf;
+    fds::gui::ValueReadout r;
+    r.setLookAndFeel (&lnf);
+    r.setLarge (true);
+    r.setSize (80, 28);
+    r.setState (fds::gui::ValueReadout::State::normal);
+    r.setValueText (fds::gui::minusSign() + "10.0", {});
+    r.resized();
+    expect (r.getValueText() == fds::gui::minusSign() + "10.0", "ValueReadout −10.0 text");
+    expect (r.valueTextFitsWithoutEllipsis(), "ValueReadout −10.0 fits 80px well");
+    r.setValueText (fds::gui::minusSign() + "96.0", {});
+    expect (r.valueTextFitsWithoutEllipsis(), "ValueReadout −96.0 fits 80px well");
+    r.setValueText ("+12.0", {});
+    expect (r.valueTextFitsWithoutEllipsis(), "ValueReadout +12.0 fits 80px well");
+    auto img = renderComponent (r, scale);
+    expect (imageNonBlank (img), "ValueReadout blank");
+    r.setLookAndFeel (nullptr);
+    juce::ignoreUnused (scale);
+}
+
 void captureSection (float scale)
 {
     fds::gui::FactoryLookAndFeel lnf;
@@ -576,7 +640,8 @@ void capturePreset (float scale)
     fds::gui::FactoryLookAndFeel lnf;
     fds::gui::PresetBrowser b;
     b.setLookAndFeel (&lnf);
-    b.setPresetName ("Punch", true);
+    // Design-spec default "Init" — must keep body case (not INIT). PR #127.
+    b.setPresetName ("Init", false);
     b.setSize (220, 24);
     b.resized();
     capture (b, "PresetBrowser", "default", scale);
@@ -640,6 +705,8 @@ void runAll()
     {
         checkMeterOver (scale);
         checkMeterPeakHotSplit (scale);
+        checkHeader (scale);
+        checkReadout (scale);
         captureMeters (scale);
         captureReadouts (scale);
         captureHeader (scale);

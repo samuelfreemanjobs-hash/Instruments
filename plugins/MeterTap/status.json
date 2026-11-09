@@ -1,9 +1,10 @@
 {
   "plugin_name": "MeterTap",
+  "version": "1.0.0",
   "track": "apc_greenfield",
   "dpcs_phase": 4,
-  "apc_phase": "test",
-  "current_phase": "test",
+  "apc_phase": "ship",
+  "current_phase": "ship",
   "vst_path": "vst/MeterTap",
   "factory_dogfood": true,
   "product_category": "fx.metering",
@@ -24,20 +25,53 @@
     "ui_framework_selected": true,
     "design_complete": true,
     "code_complete": true,
-    "tests_passed": true
+    "tests_passed": true,
+    "ship_ready": true
   },
   "open_issues": [
     "C: bypass transition click (default: literal instant switch)",
     "D: dl_mix_level vs dl_input_trim_db (default: parameter-spec v1)",
     "E: dl_meter_floor_db fixed, no widget",
-    "Editor: GenericAudioProcessorEditor until vst/factory-lib/gui design-system lands"
+    "pluginval reports Num programs: 0 despite getNumPrograms()==1 (VST3 unit-info quirk)"
   ],
   "phase1_verified_by": "plugins/MeterTap/scripts/verify-phase1.sh",
   "phase4_verified_by": "plugins/MeterTap/scripts/verify-phase4.sh",
-  "next_command": "custom editor (design-system gui) then /apc-ship MeterTap",
   "design_system": {
     "theme": "disklordz",
     "theme_version": "0.1.0",
     "contract": "1.0.0"
-  }
+  },
+  "phase_history": [
+    {
+      "phase": "dream",
+      "at": "2026-11-08T00:00:00Z",
+      "note": "creative-brief + parameter-spec"
+    },
+    {
+      "phase": "plan",
+      "at": "2026-11-08T00:00:00Z",
+      "note": "architecture.md"
+    },
+    {
+      "phase": "design",
+      "at": "2026-11-08T00:00:00Z",
+      "note": "design-spec.md (disklordz)"
+    },
+    {
+      "phase": "impl",
+      "at": "2026-11-09T00:00:00Z",
+      "note": "DSP Phase 2-4 + design-system editor"
+    },
+    {
+      "phase": "test",
+      "at": "2026-11-09T06:00:00Z",
+      "note": "verify-phase4 + factory profile"
+    },
+    {
+      "phase": "ship",
+      "at": "2026-11-09T06:40:00Z",
+      "note": "1.0.0 package + factory e2e"
+    }
+  ],
+  "next_command": "done — release/MeterTap/MeterTap-1.0.0-vst3.zip"
 }

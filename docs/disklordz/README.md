@@ -23,6 +23,7 @@ Operational playbooks for **Cursor Cloud**, **IDE Agent**, and **profit-agent fl
 | Open-source batch (35 refs) | [sops/SOP-010-open-source-integration-batch.md](sops/SOP-010-open-source-integration-batch.md) |
 | Roadmap backlog automation | [sops/SOP-011-roadmap-automation.md](sops/SOP-011-roadmap-automation.md) · `./scripts/complete-roadmap-automation.sh` |
 | Operator autopilot | [sops/SOP-018-operator-autopilot.md](sops/SOP-018-operator-autopilot.md) · [../OPERATOR_AUTOPILOT.md](../OPERATOR_AUTOPILOT.md) |
+| **Agent memory / continuous improvement** (every agent) | [SOP-019](sops/SOP-019-agent-memory.md) · [disklordz/agents/memory/MEMORY.md](../../disklordz/agents/memory/MEMORY.md) · `python3 scripts/agent_memory.py recall\|add\|check` |
 | **VST Factory: build a plugin end to end** | [SOP-VF-00 master](sops/SOP-VF-00-vst-factory-master.md) → stage SOPs below · templates: [templates/apc/README.md](../../templates/apc/README.md) |
 | VST: intake & dream / plan / UI design / theme | [VF-01](sops/SOP-VF-01-intake-dream.md) · [VF-04](sops/SOP-VF-04-plan.md) · [VF-02](sops/SOP-VF-02-ui-design.md) · [VF-03](sops/SOP-VF-03-design-system-theme.md) |
 | VST: contract & implement / verify / release | [VF-05](sops/SOP-VF-05-contract-implement.md) · [VF-06](sops/SOP-VF-06-verify-test.md) · [VF-08](sops/SOP-VF-08-release-ship.md) |

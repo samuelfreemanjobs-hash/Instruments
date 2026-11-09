@@ -6,7 +6,8 @@
 namespace fds {
 namespace gui {
 
-class ValueReadout : public juce::Component
+class ValueReadout : public juce::Component,
+                     public juce::SettableTooltipClient
 {
 public:
     enum class State { normal, floor, over };
@@ -17,6 +18,24 @@ public:
     void setFromDb (float db);
     void setState (State s);
     void setLarge (bool large);
+
+    juce::String getValueText() const { return valueLabel.getText(); }
+    State getState() const noexcept { return state; }
+
+    /** True when the current value string fits the value label without ellipsis. */
+    bool valueTextFitsWithoutEllipsis() const
+    {
+        const auto text = valueLabel.getText();
+        if (text.isEmpty())
+            return true;
+        const auto font = valueLabel.getFont();
+        // JUCE Label ellipsizes when string width exceeds bounds at minimumHorizontalScale.
+        const float minScale = valueLabel.getMinimumHorizontalScale();
+        const float avail = (float) valueLabel.getWidth() / juce::jmax (0.01f, minScale);
+        return stringWidth (font, text) <= avail + 0.5f;
+    }
+
+    juce::Rectangle<int> getValueLabelBounds() const { return valueLabel.getBounds(); }
 
     std::function<void (const juce::String&)> onTextCommit;
 
