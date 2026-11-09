@@ -47,10 +47,10 @@
     "owner": "cursor",
     "minutes": 0,
     "steps": [
-      "Open a Cursor agent (VST lane) with docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md §18 Stage B.",
-      "Require: Windows x64 VST3 artifact path + DAW load screenshot.",
-      "You only review the agent's build log — do not write C++ yourself unless you want to.",
-      "When green, mark done in Coach."
+      "git pull origin main on C:\\dev\\Instruments.",
+      "Build: GitHub Actions → DiskLordz Audio (Windows VST3) → download chord-engine-vst3 artifact — OR powershell -ExecutionPolicy Bypass -File .\\DiskLordz-Audio\\build-windows.ps1",
+      "Install CHORD ENGINE.vst3; rescan REAPER or FL and open the plugin.",
+      "When green, mark done in Coach (screenshot or §18.3 note optional)."
     ],
     "done_when": "You have evidence the plugin scans and opens in REAPER or FL."
   },

@@ -84,6 +84,16 @@
       "allowlist": ["docs/", "disklordz/autonomous-coder/factory-escalation/"],
       "context_paths": ["docs/AUDIO_PLUGIN_AGENT_LANE.md"],
       "priority": 8
+    },
+    {
+      "id": "cloud-coach-playbook-github-ci",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Coach playbook: plugin-skeleton via GH Actions or build-windows.ps1",
+      "acceptance": "task-playbooks plugin-skeleton steps cite main + Actions workflow name",
+      "allowlist": ["disklordz/audio-command/data/"],
+      "context_paths": ["DiskLordz-Audio/BUILD.md"],
+      "priority": 9
     }
   ]
 }
