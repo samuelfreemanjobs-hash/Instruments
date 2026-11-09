@@ -1,9 +1,10 @@
 {
   "plugin_name": "MeterTap",
   "track": "apc_greenfield",
-  "dpcs_phase": 1,
-  "apc_phase": "design",
-  "current_phase": "design",
+  "dpcs_phase": 4,
+  "apc_phase": "test",
+  "current_phase": "test",
+  "vst_path": "vst/MeterTap",
   "factory_dogfood": true,
   "product_category": "fx.metering",
   "ui_framework": "juce-native",
@@ -21,15 +22,19 @@
     "parameter_spec_exists": true,
     "architecture_defined": true,
     "ui_framework_selected": true,
-    "design_complete": true
+    "design_complete": true,
+    "code_complete": true,
+    "tests_passed": true
   },
   "open_issues": [
     "C: bypass transition click (default: literal instant switch)",
     "D: dl_mix_level vs dl_input_trim_db (default: parameter-spec v1)",
-    "E: dl_meter_floor_db fixed, no widget"
+    "E: dl_meter_floor_db fixed, no widget",
+    "Editor: GenericAudioProcessorEditor until vst/factory-lib/gui design-system lands"
   ],
   "phase1_verified_by": "plugins/MeterTap/scripts/verify-phase1.sh",
-  "next_command": "approve_architecture + approve_gui in VST Factory, then DPCS Phase 2 contract headers (/apc-impl MeterTap)",
+  "phase4_verified_by": "plugins/MeterTap/scripts/verify-phase4.sh",
+  "next_command": "custom editor (design-system gui) then /apc-ship MeterTap",
   "design_system": {
     "theme": "disklordz",
     "theme_version": "0.1.0",
