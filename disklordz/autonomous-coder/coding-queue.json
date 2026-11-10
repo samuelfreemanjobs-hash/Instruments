@@ -154,6 +154,16 @@
       "allowlist": ["docs/"],
       "context_paths": ["docs/AUDIO_PLUGIN_AGENT_LANE.md"],
       "priority": 15
+    },
+    {
+      "id": "cloud-audio-lane-ci-accuracy",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "AUDIO_PLUGIN_AGENT_LANE: Windows CI + plugin-skeleton gate",
+      "acceptance": "Lane doc cites disklordz-audio-windows.yml; blocker text human-windows",
+      "allowlist": ["docs/"],
+      "context_paths": ["DiskLordz-Audio/BUILD.md"],
+      "priority": 16
     }
   ]
 }
