@@ -134,6 +134,16 @@
       "allowlist": ["disklordz/autonomous-coder/"],
       "context_paths": ["DiskLordz-Audio/BUILD.md"],
       "priority": 13
+    },
+    {
+      "id": "cloud-progress-notes-ci-main",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "progress.json notes: main + Windows CI landed",
+      "acceptance": "weekly note cites PR #112 and GH VST3 workflow; plugin-skeleton still open",
+      "allowlist": ["disklordz/audio-command/data/"],
+      "context_paths": ["docs/AUDIO_PREP_HANDOFF_BUNDLE.md"],
+      "priority": 14
     }
   ]
 }
