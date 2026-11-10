@@ -2,7 +2,7 @@ name: DiskLordz 808-Punisher
 
 on:
   push:
-    branches: [main, "cursor/**"]
+    branches: [main]
     paths:
       - "vst/Punisher808/**"
       - "shared/dsp/**"
@@ -13,6 +13,10 @@ on:
       - "vst/Punisher808/**"
       - "shared/dsp/**"
       - ".github/workflows/punisher808.yml"
+
+concurrency:
+  group: punisher808-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   linux-build-test:
@@ -51,28 +55,32 @@ jobs:
           xvfb-run -a python3 scripts/vst/run_pluginval.py --strictness 5 --discover vst/Punisher808/build
 
   windows-build-pluginval:
-    runs-on: windows-latest
+    runs-on: windows-2022
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: vst/Punisher808
     steps:
       - uses: actions/checkout@v4
 
-      - uses: ilammy/msvc-dev-cmd@v1
-
       - name: Fetch JUCE 8.0.6
         working-directory: ${{ github.workspace }}
-        shell: bash
-        run: git clone --branch 8.0.6 --depth 1 https://github.com/juce-framework/JUCE.git vst/JUCE
+        shell: pwsh
+        run: |
+          git clone --branch 8.0.6 --depth 1 https://github.com/juce-framework/JUCE.git vst/JUCE
 
-      - name: Configure and build (Visual Studio 2022)
-        shell: cmd
+      - name: Configure (Visual Studio 2022 x64)
+        shell: pwsh
         run: |
           cmake -B build -G "Visual Studio 17 2022" -A x64
-          cmake --build build --config Release --target Punisher808_VST3 Punisher808ProcessorTests
+
+      - name: Build VST3 and processor tests (Release)
+        shell: pwsh
+        run: |
+          cmake --build build --config Release --target Punisher808_VST3 Punisher808ProcessorTests -- /m
 
       - name: Processor contract tests
-        shell: cmd
+        shell: pwsh
         run: ctest --test-dir build -C Release -R Punisher808ProcessorContracts --output-on-failure
 
       - name: Install pluginval (Windows)
@@ -83,21 +91,32 @@ jobs:
           $url = "https://github.com/Tracktion/pluginval/releases/download/v$ver/pluginval_Windows.zip"
           $zip = "$env:RUNNER_TEMP\pluginval.zip"
           Invoke-WebRequest -Uri $url -OutFile $zip
-          Expand-Archive -Path $zip -DestinationPath "$env:RUNNER_TEMP\pluginval"
-          $bin = Get-ChildItem -Path "$env:RUNNER_TEMP\pluginval" -Recurse -Filter pluginval.exe | Select-Object -First 1
-          echo "PLUGINVAL_BIN=$($bin.FullName)" >> $env:GITHUB_ENV
+          Expand-Archive -Path $zip -DestinationPath "$env:RUNNER_TEMP\pluginval" -Force
+          $bin = Get-ChildItem -Path "$env:RUNNER_TEMP\pluginval" -Recurse -Filter "pluginval.exe" | Select-Object -First 1
+          if (-not $bin) { throw "pluginval.exe not found in release zip" }
+          "PLUGINVAL_BIN=$($bin.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: pluginval (Windows, strictness 5)
         working-directory: ${{ github.workspace }}
         env:
           CI: true
         shell: pwsh
+        run: python scripts/vst/run_pluginval.py --strictness 5 --discover vst/Punisher808/build
+
+      - name: Resolve VST3 bundle for artifact
+        id: vst3
+        shell: pwsh
         run: |
-          python scripts/vst/run_pluginval.py --strictness 5 --discover vst/Punisher808/build
+          $bundles = Get-ChildItem -Path build -Recurse -Filter "DiskLordz 808-Punisher.vst3" -Directory -ErrorAction SilentlyContinue
+          if (-not $bundles) {
+            Get-ChildItem -Path build -Recurse -Filter "*.vst3" -Directory | ForEach-Object { $_.FullName }
+            throw "DiskLordz 808-Punisher.vst3 bundle not found under build/"
+          }
+          "bundle_path=$($bundles[0].FullName)" >> $env:GITHUB_OUTPUT
 
       - name: Upload VST3 artefact
         uses: actions/upload-artifact@v4
         with:
           name: DiskLordz-808-Punisher-vst3-windows
-          path: vst/Punisher808/build/Punisher808_artefacts/Release/VST3/*.vst3
+          path: ${{ steps.vst3.outputs.bundle_path }}
           if-no-files-found: error
