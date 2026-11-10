@@ -36,19 +36,14 @@ const PresetRecord& PresetLibrary::get (int index) const
     return empty;
 }
 
-void PresetLibrary::applyToState (juce::AudioProcessorValueTreeState& state, int index) const
+void PresetLibrary::applyParamsObject (juce::AudioProcessorValueTreeState& state, const juce::var& o) const
 {
-    const auto& rec = get (index);
-    if (rec.name.isEmpty())
-        return;
-
     auto set = [&] (const char* id, float val)
     {
         if (auto* p = state.getParameter (id))
             p->setValueNotifyingHost (p->convertTo0to1 (val));
     };
 
-    const auto& o = rec.params;
     auto f = [&] (const char* k, float def) -> float
     {
         return float (o.getProperty (k, def));
@@ -77,7 +72,23 @@ void PresetLibrary::applyToState (juce::AudioProcessorValueTreeState& state, int
     set ("macroDirt", f ("macroDirt", 0.2f));
     set ("macroMovement", f ("macroMovement", 0.2f));
     set ("macroSpace", f ("macroSpace", 0.25f));
-    set ("bankMode", float (rec.bank));
+    set ("filterType", f ("filterType", 0));
+    set ("arpRate", f ("arpRate", 4));
+    set ("arpGate", f ("arpGate", 0.65f));
+    if (auto* arp = state.getParameter ("arp"))
+    {
+        const bool on = static_cast<bool> (o.getProperty ("arp", false));
+        arp->setValueNotifyingHost (on ? 1.f : 0.f);
+    }
+    set ("bankMode", f ("bank", 0));
+}
+
+void PresetLibrary::applyToState (juce::AudioProcessorValueTreeState& state, int index) const
+{
+    const auto& rec = get (index);
+    if (rec.name.isEmpty())
+        return;
+    applyParamsObject (state, rec.params);
 }
 
 juce::StringArray PresetLibrary::categories() const

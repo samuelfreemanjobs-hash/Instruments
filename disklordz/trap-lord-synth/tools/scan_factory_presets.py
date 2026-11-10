@@ -37,7 +37,7 @@ def main() -> int:
 
     for i, preset in enumerate(presets):
         wav = OUT_DIR / f"preset_{i:03d}.wav"
-        subprocess.check_call([str(CLI), "preset-probe", str(i), str(wav)], cwd=ROOT)
+        subprocess.check_call([str(CLI), "category-probe", str(i), str(wav)], cwd=ROOT)
         m = analyze_file(wav)
         row = {
             "index": i,

@@ -57,7 +57,7 @@ def cmake_build_cli() -> None:
 
 def normalize_lufs(path: Path, target_lufs: float = -14.0, tp_db: float = -1.0) -> None:
     tmp = path.with_suffix(".norm.wav")
-    filt = f"loudnorm=I={target_lufs}:TP={tp_db}:LRA=11:linear=true"
+    filt = f"highpass=f=25,loudnorm=I={target_lufs}:TP={tp_db}:LRA=11:linear=true"
     try:
         run(
             [
@@ -157,7 +157,8 @@ def main() -> int:
     cmake_build_cli()
     run([sys.executable, str(ROOT / "tests/test_trap_lord_audio_qa.py")], cwd=ROOT)
 
-    run([str(CLI), "auditions", str(stage)], cwd=ROOT)
+    run([sys.executable, str(TOOLS / "pick_distinct_auditions.py")], cwd=ROOT)
+    run([str(CLI), "auditions", str(stage), str(MANIFEST)], cwd=ROOT)
     wavs = sorted(stage.glob("*.wav"))
     if len(wavs) != 24:
         raise SystemExit(f"Expected 24 WAV files, got {len(wavs)}")

@@ -72,7 +72,7 @@ private:
     double hostBpm = 120.;
     void generateArp (juce::MidiBuffer&, int);
     double arpPeriodSeconds() const;
-    void prepareOfflineRender (double sampleRate);
+    void prepareOfflineRender (double sampleRate, bool preservePatchParams = false);
     void finishOfflineRender();
     int currentPresetIndex = 0;
     double offlineSavedRate = 44100.;

@@ -20,6 +20,7 @@ public:
     int count() const { return int (presets.size()); }
     const PresetRecord& get (int index) const;
     void applyToState (juce::AudioProcessorValueTreeState& state, int index) const;
+    void applyParamsObject (juce::AudioProcessorValueTreeState& state, const juce::var& params) const;
 
     juce::StringArray categories() const;
     juce::Array<int> indicesForCategory (const juce::String& category) const;

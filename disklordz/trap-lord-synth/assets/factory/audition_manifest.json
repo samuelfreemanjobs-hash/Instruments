@@ -3,146 +3,146 @@
     {
       "category": "Bass",
       "slot": 1,
-      "index": 400,
-      "name": "Bass Midnight 808 401"
+      "index": 32,
+      "name": "Bass Distort Shadow 808 12"
     },
     {
       "category": "Bass",
       "slot": 2,
-      "index": 401,
-      "name": "Bass Frozen Drone 402"
+      "index": 33,
+      "name": "Bass Distort Cinematic Sub 27"
     },
     {
       "category": "Bells",
       "slot": 1,
-      "index": 366,
-      "name": "Bells Velvet Ping 367"
+      "index": 27,
+      "name": "Bells Glock Stack Cathedral Chime 09"
     },
     {
       "category": "Bells",
       "slot": 2,
-      "index": 367,
-      "name": "Bells Midnight Chime 368"
+      "index": 28,
+      "name": "Bells Glock Stack Cinematic Bell 12"
     },
     {
       "category": "Brass",
       "slot": 1,
-      "index": 230,
-      "name": "Brass Cinematic Horns 231"
+      "index": 17,
+      "name": "Brass Fanfare Midnight Blast 12"
     },
     {
       "category": "Brass",
       "slot": 2,
-      "index": 231,
-      "name": "Brass Southern Stab 232"
+      "index": 18,
+      "name": "Brass Section Evil Stab 14"
     },
     {
       "category": "Choir",
       "slot": 1,
-      "index": 434,
-      "name": "Choir Shadow Vox 435"
+      "index": 34,
+      "name": "Choir Ooh Trap Aahs 07"
     },
     {
       "category": "Choir",
       "slot": 2,
-      "index": 435,
-      "name": "Choir Velvet Oohs 436"
+      "index": 35,
+      "name": "Choir Chant Dark Choir 14"
     },
     {
       "category": "Church Keys/EP",
       "slot": 1,
-      "index": 298,
-      "name": "Church Keys Dark Rhodes 299"
+      "index": 22,
+      "name": "Church Keys Rhodes Velvet Keys 04"
     },
     {
       "category": "Church Keys/EP",
       "slot": 2,
-      "index": 299,
-      "name": "Church Keys Midnight Wurli 300"
+      "index": 23,
+      "name": "Church Keys Rhodes Cinematic Gospel 22"
     },
     {
       "category": "Hits/FX",
       "slot": 1,
-      "index": 467,
-      "name": "Hits Midnight Impact 468"
+      "index": 36,
+      "name": "Hits Impact Shadow FX 15"
     },
     {
       "category": "Hits/FX",
       "slot": 2,
-      "index": 468,
-      "name": "Hits Cathedral Rise 469"
+      "index": 37,
+      "name": "Hits Impact Ominous Rise 18"
     },
     {
       "category": "Leads",
       "slot": 1,
-      "index": 60,
-      "name": "Leads Cinematic Cry 61"
+      "index": 3,
+      "name": "Leads Glide Solo Midnight Solo 05"
     },
     {
       "category": "Leads",
       "slot": 2,
-      "index": 61,
-      "name": "Leads Haunted Lead 62"
+      "index": 4,
+      "name": "Leads Saw Hook Ominous Blade 11"
     },
     {
       "category": "Organ",
       "slot": 1,
-      "index": 332,
-      "name": "Organ Midnight Gospel 333"
+      "index": 24,
+      "name": "Organ Pipe Chrome Organ 09"
     },
     {
       "category": "Organ",
       "slot": 2,
-      "index": 333,
-      "name": "Organ Reverse Church 334"
+      "index": 25,
+      "name": "Organ Drawbar Midnight Church 10"
     },
     {
       "category": "Pads",
       "slot": 1,
       "index": 0,
-      "name": "Pads Haunted Drift 01"
+      "name": "Pads Glassy Midnight Drift 03"
     },
     {
       "category": "Pads",
       "slot": 2,
       "index": 1,
-      "name": "Pads Haunted Drift 02"
+      "name": "Pads Dark Cathedral Pad 17"
     },
     {
       "category": "Strings",
       "slot": 1,
-      "index": 264,
-      "name": "Strings Cinematic Section 265"
+      "index": 20,
+      "name": "Strings Trem Cinematic Section 17"
     },
     {
       "category": "Strings",
       "slot": 2,
-      "index": 265,
-      "name": "Strings Trap Bows 266"
+      "index": 21,
+      "name": "Strings Trem Trap Strings 23"
     },
     {
       "category": "Swells",
       "slot": 1,
-      "index": 180,
-      "name": "Swells Trap Rise 181"
+      "index": 15,
+      "name": "Swells Filter Sweep Cathedral Swell 19"
     },
     {
       "category": "Swells",
       "slot": 2,
-      "index": 181,
-      "name": "Swells Southern Sweep 182"
+      "index": 16,
+      "name": "Swells Rising Ominous Rise 37"
     },
     {
       "category": "Synth Keys",
       "slot": 1,
-      "index": 120,
-      "name": "Synth Keys Chrome Glass 121"
+      "index": 10,
+      "name": "Synth Keys Digipluck Reverse Stack 02"
     },
     {
       "category": "Synth Keys",
       "slot": 2,
-      "index": 121,
-      "name": "Synth Keys Frozen Stack 122"
+      "index": 11,
+      "name": "Synth Keys Glass Arp Grim Digi 12"
     }
   ],
   "wavCount": 24

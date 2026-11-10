@@ -17,7 +17,8 @@ PROBE_DIR = Path("/opt/cursor/artifacts/factory-preset-scan")
 OUT = Path("/opt/cursor/artifacts/factory-preset-diversity.json")
 
 sys.path.insert(0, str(ROOT / "tools"))
-from trap_lord_audio_metrics import correlation, feature_vector, read_wav_mono  # noqa: E402
+from preset_probe import render_category_probe  # noqa: E402
+from trap_lord_audio_metrics import gate_feature_vector  # noqa: E402
 
 DUPLICATE_CORR = 0.92
 BATCH = 500
@@ -32,14 +33,17 @@ def main() -> int:
             cwd=ROOT,
         )
 
+    by_cat: dict[str, list[int]] = {}
+    for i, p in enumerate(presets):
+        by_cat.setdefault(p["category"], []).append(i)
+
     PROBE_DIR.mkdir(parents=True, exist_ok=True)
     vectors: list[np.ndarray] = []
     for i in range(len(presets)):
         wav = PROBE_DIR / f"preset_{i:03d}.wav"
         if not wav.exists():
-            subprocess.check_call([str(CLI), "preset-probe", str(i), str(wav)], cwd=ROOT)
-        x, sr = read_wav_mono(wav)
-        vectors.append(feature_vector(x, sr))
+            render_category_probe(presets[i], i, PROBE_DIR)
+        vectors.append(gate_feature_vector(wav, presets[i]))
 
     n = len(vectors)
     parent = list(range(n))
@@ -55,11 +59,12 @@ def main() -> int:
         if ra != rb:
             parent[rb] = ra
 
-    for i in range(n):
-        for j in range(i + 1, n):
-            corr = float(np.dot(vectors[i], vectors[j]))
-            if corr >= DUPLICATE_CORR:
-                unite(i, j)
+    for cat, cat_indices in by_cat.items():
+        for ai, i in enumerate(cat_indices):
+            for j in cat_indices[ai + 1 :]:
+                corr = float(np.dot(vectors[i], vectors[j]))
+                if corr >= DUPLICATE_CORR:
+                    unite(i, j)
 
     clusters: dict[int, list[int]] = {}
     for i in range(n):

@@ -72,12 +72,22 @@ void printUsage()
 {
     std::cerr
         << "TrapLordSynthRender — headless offline renders\n"
-        << "  auditions <output_dir>              2 WAV per category (24 total)\n"
+        << "  auditions <output_dir> [manifest.json]  category audition WAVs\n"
         << "  audition <preset_index> <wav_path>  single preset audition\n"
         << "  diagnose <output_dir>               init saw / sine / middle C checks\n"
         << "  test-note <midi> <wav> [preset]     single-note render\n"
         << "  preset-probe <index> <wav>          factory preset middle-C probe\n"
-        << "  mpc <preset_index> <parent_dir>     MPC keygroup export\n";
+        << "  category-probe <index> <wav>        category phrase + chord probe\n"
+        << "  category-probe-json <preset.json> <wav>  probe without bank index\n"
+        << "  mpc <preset_index> <parent_dir> [layers]  MPC keygroup export\n";
+}
+
+int phraseVariantForParams (const juce::var& params)
+{
+    const int engine = int (params.getProperty ("engine", 0));
+    const int chord = int (params.getProperty ("chord", 0));
+    const int filterType = int (params.getProperty ("filterType", 0));
+    return juce::jlimit (0, 5, (engine * 2 + chord + filterType) % 6);
 }
 
 bool isSwellAudition (int presetIndex)
@@ -88,7 +98,7 @@ bool isSwellAudition (int presetIndex)
     return static_cast<float> (p.params.getProperty ("swellDepth", 0.)) > 0.25f;
 }
 
-int runAuditions (const juce::String& outDir)
+int runAuditions (const juce::String& outDir, const juce::File& manifestFile)
 {
     const juce::File root (outDir);
     root.createDirectory();
@@ -106,40 +116,107 @@ int runAuditions (const juce::String& outDir)
     for (int i = 0; i < PresetLibrary::instance().count(); ++i)
         byCat[PresetLibrary::instance().get (i).category].push_back (i);
 
-    int written = 0;
-    for (const auto& cat : order)
+    struct AuditionSlot
     {
-        const auto it = byCat.find (cat);
-        if (it == byCat.end())
-            continue;
-        const auto& indices = it->second;
-        for (int slot = 0; slot < 2 && slot < (int) indices.size(); ++slot)
+        juce::String category;
+        int index = 0;
+        int slot = 1;
+    };
+    std::vector<AuditionSlot> slots;
+
+    if (manifestFile.existsAsFile())
+    {
+        const auto parsed = juce::JSON::parse (manifestFile);
+        if (parsed.isObject() && parsed.hasProperty ("auditions"))
         {
-            const int idx = indices[slot];
-            const auto& preset = PresetLibrary::instance().get (idx);
-            const bool swellMod = isSwellAudition (idx);
-            const auto timeline = OfflineAudition::buildTimeline (cat, swellMod);
-            juce::AudioBuffer<float> audio;
-            if (! proc.renderOfflineTimeline (idx, timeline, OfflineAudition::kSampleRate, OfflineAudition::kDurationSec,
-                                               OfflineAudition::kBpm, audio))
+            for (const auto& item : *parsed.getProperty ("auditions", {}).getArray())
             {
-                std::cerr << "Render failed preset " << idx << "\n";
-                return kExitFail;
+                AuditionSlot s;
+                s.category = item.getProperty ("category", "").toString();
+                s.index = int (item.getProperty ("index", 0));
+                s.slot = int (item.getProperty ("slot", 1));
+                slots.push_back (s);
             }
-            const auto file = root.getChildFile (OfflineAudition::safeFilename (cat, preset.name, slot + 1));
-            if (! writeWavFile (file, audio, OfflineAudition::kSampleRate, 24))
-            {
-                std::cerr << "Write failed " << file.getFullPathName() << "\n";
-                return kExitFail;
-            }
-            std::cout << "Wrote " << file.getFileName() << " (#" << idx << " " << preset.name << ")"
-                      << (swellMod ? " [mod wheel]" : "") << "\n";
-            ++written;
         }
     }
 
+    if (slots.empty())
+    {
+        for (const auto& cat : order)
+        {
+            const auto it = byCat.find (cat);
+            if (it == byCat.end())
+                continue;
+            const auto& indices = it->second;
+            for (int s = 0; s < 2 && s < (int) indices.size(); ++s)
+                slots.push_back ({ cat, indices[size_t (s)], s + 1 });
+        }
+    }
+
+    int written = 0;
+    for (const auto& slot : slots)
+    {
+        const int idx = slot.index;
+        const auto& preset = PresetLibrary::instance().get (idx);
+        const bool swellMod = isSwellAudition (idx);
+        const auto timeline =
+            OfflineAudition::buildTimeline (preset.category, swellMod, phraseVariantForParams (preset.params));
+        juce::AudioBuffer<float> audio;
+        if (! proc.renderOfflineTimeline (idx, timeline, OfflineAudition::kSampleRate, OfflineAudition::kDurationSec,
+                                           OfflineAudition::kBpm, audio))
+        {
+            std::cerr << "Render failed preset " << idx << "\n";
+            return kExitFail;
+        }
+        const auto file = root.getChildFile (OfflineAudition::safeFilename (preset.category, preset.name, slot.slot));
+        if (! writeWavFile (file, audio, OfflineAudition::kSampleRate, 24))
+        {
+            std::cerr << "Write failed " << file.getFullPathName() << "\n";
+            return kExitFail;
+        }
+        std::cout << "Wrote " << file.getFileName() << " (#" << idx << " " << preset.name << ")"
+                  << (swellMod ? " [mod wheel]" : "") << "\n";
+        ++written;
+    }
+
     std::cout << "Auditions total: " << written << "\n";
-    return written == 24 ? kExitOk : kExitFail;
+    return written >= 1 ? kExitOk : kExitFail;
+}
+
+int runCategoryProbeJson (const juce::File& jsonFile, const juce::File& wavFile)
+{
+    juce::ScopedJuceInitialiser_GUI juceInit;
+    TrapLordSynthAudioProcessor proc;
+    const auto parsed = juce::JSON::parse (jsonFile);
+    if (! parsed.isObject())
+        return kExitFail;
+    const juce::String category = parsed.getProperty ("category", "Pads").toString();
+    PresetLibrary::instance().applyParamsObject (proc.state, parsed);
+    const float swellDepth = float (parsed.getProperty ("swellDepth", 0.));
+    const bool swellMod = category == "Swells" || swellDepth > 0.25f;
+    const auto timeline = OfflineAudition::buildTimeline (category, swellMod, phraseVariantForParams (parsed));
+    juce::AudioBuffer<float> audio;
+    constexpr double kCategoryProbeSec = 5.5;
+    if (! proc.renderOfflineTimeline (-1, timeline, OfflineAudition::kSampleRate, kCategoryProbeSec,
+                                       OfflineAudition::kBpm, audio))
+        return kExitFail;
+    return writeWavFile (wavFile, audio, OfflineAudition::kSampleRate, 24) ? kExitOk : kExitFail;
+}
+
+int runCategoryProbe (int presetIndex, const juce::File& wavFile)
+{
+    juce::ScopedJuceInitialiser_GUI juceInit;
+    TrapLordSynthAudioProcessor proc;
+    const auto& preset = PresetLibrary::instance().get (presetIndex);
+    const bool swellMod = isSwellAudition (presetIndex);
+    const auto timeline =
+        OfflineAudition::buildTimeline (preset.category, swellMod, phraseVariantForParams (preset.params));
+    juce::AudioBuffer<float> audio;
+    constexpr double kCategoryProbeSec = 5.5;
+    if (! proc.renderOfflineTimeline (presetIndex, timeline, OfflineAudition::kSampleRate, kCategoryProbeSec,
+                                       OfflineAudition::kBpm, audio))
+        return kExitFail;
+    return writeWavFile (wavFile, audio, OfflineAudition::kSampleRate, 24) ? kExitOk : kExitFail;
 }
 
 int runPresetProbe (int presetIndex, const juce::File& wavFile)
@@ -171,7 +248,8 @@ int runSingleAudition (int presetIndex, const juce::File& wavFile)
     TrapLordSynthAudioProcessor proc;
     const auto& preset = PresetLibrary::instance().get (presetIndex);
     const bool swellMod = isSwellAudition (presetIndex);
-    const auto timeline = OfflineAudition::buildTimeline (preset.category, swellMod);
+    const auto timeline =
+        OfflineAudition::buildTimeline (preset.category, swellMod, phraseVariantForParams (preset.params));
     juce::AudioBuffer<float> audio;
     if (! proc.renderOfflineTimeline (presetIndex, timeline, OfflineAudition::kSampleRate, OfflineAudition::kDurationSec,
                                        OfflineAudition::kBpm, audio))
@@ -179,7 +257,7 @@ int runSingleAudition (int presetIndex, const juce::File& wavFile)
     return writeWavFile (wavFile, audio, OfflineAudition::kSampleRate, 24) ? kExitOk : kExitFail;
 }
 
-int runMpcExport (int presetIndex, const juce::File& parentDir)
+int runMpcExport (int presetIndex, const juce::File& parentDir, int velocityLayers)
 {
     juce::ScopedJuceInitialiser_GUI juceInit;
     TrapLordSynthAudioProcessor proc;
@@ -192,7 +270,7 @@ int runMpcExport (int presetIndex, const juce::File& parentDir)
     opts.lowNote = 36;
     opts.highNote = 96;
     opts.semitoneStep = 1;
-    opts.velocityLayers = 2;
+    opts.velocityLayers = juce::jlimit (1, 4, velocityLayers);
     opts.useCategoryTiming = true;
     opts.use24Bit = false;
     opts.maxProgramMegabytes = 120.f;
@@ -221,7 +299,8 @@ int main (int argc, char* argv[])
             printUsage();
             return kExitFail;
         }
-        return runAuditions (argv[2]);
+        const juce::File manifest = argc > 3 ? juce::File (argv[3]) : juce::File();
+        return runAuditions (argv[2], manifest);
     }
 
     if (command == "audition")
@@ -243,7 +322,22 @@ int main (int argc, char* argv[])
     {
         if (argc < 4)
             return kExitFail;
-        return runMpcExport (std::atoi (argv[2]), juce::File (argv[3]));
+        const int layers = argc > 4 ? std::atoi (argv[4]) : 2;
+        return runMpcExport (std::atoi (argv[2]), juce::File (argv[3]), layers);
+    }
+
+    if (command == "category-probe-json")
+    {
+        if (argc < 4)
+            return kExitFail;
+        return runCategoryProbeJson (juce::File (argv[2]), juce::File (argv[3]));
+    }
+
+    if (command == "category-probe")
+    {
+        if (argc < 4)
+            return kExitFail;
+        return runCategoryProbe (std::atoi (argv[2]), juce::File (argv[3]));
     }
 
     if (command == "preset-probe")

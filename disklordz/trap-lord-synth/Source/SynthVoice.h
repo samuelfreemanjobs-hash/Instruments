@@ -17,6 +17,8 @@ struct TrapPatch
     float vibratoRate = 5.5f;
     float swellDepth = 0.f;
     int engine = 0;
+    /** 0 = lowpass, 1 = highpass, 2 = bandpass (StateVariableTPT). */
+    int filterType = 0;
 };
 
 struct TrapSample
@@ -44,6 +46,7 @@ public:
         juce::dsp::ProcessSpec spec { sr, 512, 1 };
         filter.prepare (spec);
         filter.setType (juce::dsp::StateVariableTPTFilterType::lowpass);
+        filterTypeApplied = 0;
         filter.setResonance (1.f / std::sqrt (2.f));
         reset();
     }
@@ -73,6 +76,15 @@ public:
         filter.setCutoffFrequency (safeCutoff);
         const float q = juce::jlimit (0.5f, 1.25f, 0.5f + p.resonance * 0.75f);
         filter.setResonance (q);
+        const int ft = juce::jlimit (0, 2, p.filterType);
+        if (ft != filterTypeApplied)
+        {
+            filterTypeApplied = ft;
+            const auto t = ft == 1   ? juce::dsp::StateVariableTPTFilterType::highpass
+                           : ft == 2 ? juce::dsp::StateVariableTPTFilterType::bandpass
+                                     : juce::dsp::StateVariableTPTFilterType::lowpass;
+            filter.setType (t);
+        }
         pitchDecay = patch.pitchEnvDecaySec > 0.001f
                        ? std::exp (-1. / (patch.pitchEnvDecaySec * sampleRate))
                        : 0.;
@@ -329,6 +341,7 @@ private:
 
     juce::ADSR env;
     juce::dsp::StateVariableTPTFilter<float> filter;
+    int filterTypeApplied = 0;
     TrapPatch patch;
     TrapSamplePtr activeSample;
     std::shared_ptr<const std::vector<TrapSamplePtr>> samples;

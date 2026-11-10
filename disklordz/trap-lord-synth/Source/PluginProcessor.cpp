@@ -94,6 +94,9 @@ Layout TrapLordSynthAudioProcessor::makeLayout()
         juce::ParameterID { "chord", 1 }, "Chord",
         juce::StringArray { "Off", "Minor", "Minor 7", "Diminished", "Sus 2", "Minor 9" }, 0));
     l.add (std::make_unique<juce::AudioParameterChoice> (
+        juce::ParameterID { "filterType", 1 }, "Filter",
+        juce::StringArray { "Lowpass", "Highpass", "Bandpass" }, 0));
+    l.add (std::make_unique<juce::AudioParameterChoice> (
         juce::ParameterID { "bankMode", 1 }, "Sound bank",
         juce::StringArray { "Church Keys", "Dark Brass", "Trap Orchestra" }, 0));
     return l;
@@ -123,6 +126,7 @@ TrapPatch TrapLordSynthAudioProcessor::buildPatch() const
     p.vibratoRate = 4.5f + move * 3.5f;
     p.swellDepth = get (state, "swellDepth");
     p.engine = juce::jlimit (0, 10, int (get (state, "engine")));
+    p.filterType = juce::jlimit (0, 2, int (get (state, "filterType")));
     return p;
 }
 
@@ -402,7 +406,7 @@ void TrapLordSynthAudioProcessor::loadDiagnosticPatch (int kind)
     currentPresetIndex = -1;
 }
 
-void TrapLordSynthAudioProcessor::prepareOfflineRender (double sampleRate)
+void TrapLordSynthAudioProcessor::prepareOfflineRender (double sampleRate, bool preservePatchParams)
 {
     offlineSavedRate = currentRate;
     offlineActive = true;
@@ -410,10 +414,13 @@ void TrapLordSynthAudioProcessor::prepareOfflineRender (double sampleRate)
     hostBpm = 140.;
     prepareToPlay (sampleRate, 512);
     synth.allNotesOff (0, true);
-    if (auto* arp = state.getParameter ("arp"))
-        arp->setValueNotifyingHost (0.f);
-    if (auto* chord = state.getParameter ("chord"))
-        chord->setValueNotifyingHost (0.f);
+    if (! preservePatchParams)
+    {
+        if (auto* arp = state.getParameter ("arp"))
+            arp->setValueNotifyingHost (0.f);
+        if (auto* chord = state.getParameter ("chord"))
+            chord->setValueNotifyingHost (0.f);
+    }
 }
 
 void TrapLordSynthAudioProcessor::finishOfflineRender()
@@ -434,17 +441,19 @@ bool TrapLordSynthAudioProcessor::renderOfflineTimeline (
     double bpm,
     juce::AudioBuffer<float>& buffer)
 {
-    if (presetIndex < 0 || presetIndex >= PresetLibrary::instance().count())
-        return false;
-
-    loadFactoryPreset (presetIndex);
+    if (presetIndex >= 0)
+    {
+        if (presetIndex >= PresetLibrary::instance().count())
+            return false;
+        loadFactoryPreset (presetIndex);
+    }
     hostBpm = bpm;
 
     const int totalSamples = juce::jmax (1, int (std::round (durationSeconds * sampleRate)));
     buffer.setSize (2, totalSamples, false, false, true);
     buffer.clear();
 
-    prepareOfflineRender (sampleRate);
+    prepareOfflineRender (sampleRate, true);
 
     size_t eventIdx = 0;
     const int block = 512;

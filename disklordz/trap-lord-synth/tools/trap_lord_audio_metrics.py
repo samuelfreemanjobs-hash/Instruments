@@ -15,6 +15,47 @@ import numpy as np
 SAMPLE_RATE_DEFAULT = 44100
 
 
+def read_wav_stereo(path: Path) -> tuple[np.ndarray, np.ndarray, int]:
+    path = Path(path)
+    with wave.open(str(path), "rb") as wf:
+        ch = wf.getnchannels()
+        sw = wf.getsampwidth()
+        sr = wf.getframerate()
+        n = wf.getnframes()
+        raw = wf.readframes(n)
+
+    def decode_frame(off: int) -> list[float]:
+        frame: list[float] = []
+        for c in range(ch):
+            base = off + c * sw
+            if sw == 3:
+                b = raw[base : base + 3]
+                v = struct.unpack("<i", b + b"\x00")[0]
+                if v >= 1 << 23:
+                    v -= 1 << 24
+                frame.append(v / float(1 << 23))
+            elif sw == 2:
+                v = struct.unpack("<h", raw[base : base + 2])[0]
+                frame.append(v / 32768.0)
+            else:
+                v = struct.unpack("<f", raw[base : base + 4])[0]
+                frame.append(float(v))
+        return frame
+
+    step = ch * sw
+    left: list[float] = []
+    right: list[float] = []
+    for i in range(0, len(raw), step):
+        frame = decode_frame(i)
+        if ch == 1:
+            left.append(frame[0])
+            right.append(frame[0])
+        else:
+            left.append(frame[0])
+            right.append(frame[1] if len(frame) > 1 else frame[0])
+    return np.array(left, dtype=np.float64), np.array(right, dtype=np.float64), sr
+
+
 def read_wav_mono(path: Path) -> tuple[np.ndarray, int]:
     path = Path(path)
     with wave.open(str(path), "rb") as wf:
@@ -141,6 +182,160 @@ def assert_wav_format(path: Path, sample_rate: int = 44100, sample_width_bytes: 
             raise AssertionError(f"{path.name}: sample rate {wf.getframerate()} != {sample_rate}")
         if wf.getsampwidth() != sample_width_bytes:
             raise AssertionError(f"{path.name}: width {wf.getsampwidth()} != {sample_width_bytes}")
+
+
+def estimate_attack_release_sec(x: np.ndarray, sr: int) -> tuple[float, float]:
+    env = envelope_rms(x, max(8, sr // 120))
+    peak = float(np.max(env)) + 1e-12
+    attack_ix = int(np.argmax(env >= 0.9 * peak) if np.any(env >= 0.9 * peak) else np.argmax(env))
+    attack_s = attack_ix / sr
+    tail = env[int(len(env) * 0.75) :]
+    release_ix = 0
+    for i, v in enumerate(tail):
+        if v < peak * 0.12:
+            release_ix = i
+            break
+    release_s = max(0.05, release_ix / sr)
+    return attack_s, release_s
+
+
+def brightness_ratio(x: np.ndarray, sr: int) -> float:
+    w = np.hanning(len(x))
+    spec = np.abs(np.fft.rfft(x * w))
+    freqs = np.fft.rfftfreq(len(x), 1.0 / sr)
+    power = spec * spec
+    total = float(np.sum(power)) + 1e-20
+    bright = float(np.sum(power[freqs >= 2000.0]))
+    return bright / total
+
+
+def stereo_width_lr(left: np.ndarray, right: np.ndarray) -> float:
+    mid = (left + right) * 0.5
+    side = (left - right) * 0.5
+    mid_e = float(np.mean(mid * mid)) + 1e-12
+    side_e = float(np.mean(side * side))
+    return side_e / (mid_e + side_e)
+
+
+def vibrato_mod_index(x: np.ndarray, sr: int) -> float:
+    """Rough AM energy in 3–7 Hz band (proxy for vibrato / movement)."""
+    if len(x) < sr:
+        return 0.0
+    env = envelope_rms(x, max(8, sr // 200))
+    env = env - np.mean(env)
+    if len(env) < 64:
+        return 0.0
+    spec = np.abs(np.fft.rfft(env * np.hanning(len(env))))
+    freqs = np.fft.rfftfreq(len(env), 1.0 / sr)
+    band = (freqs >= 3.0) & (freqs <= 7.0)
+    return float(np.sum(spec[band])) / (float(np.sum(spec)) + 1e-12)
+
+
+def centroid_trajectory(x: np.ndarray, sr: int, frames: int = 48) -> np.ndarray:
+    hop = max(sr // 40, 256)
+    out: list[float] = []
+    for start in range(0, len(x) - hop, hop):
+        chunk = x[start : start + hop * 3]
+        c, _, _ = spectral_features(chunk, sr)
+        out.append(c)
+        if len(out) >= frames:
+            break
+    arr = np.array(out, dtype=np.float64)
+    if arr.size == 0:
+        return np.zeros(frames, dtype=np.float64)
+    arr = arr[:frames]
+    if arr.size < frames:
+        arr = np.pad(arr, (0, frames - arr.size))
+    denom = float(np.max(arr)) + 1e-9
+    return arr / denom
+
+
+def log_band_energies(x: np.ndarray, sr: int, bands: int = 32) -> np.ndarray:
+    w = np.hanning(len(x))
+    spec = np.abs(np.fft.rfft(x * w))
+    freqs = np.fft.rfftfreq(len(x), 1.0 / sr)
+    edges = np.logspace(np.log10(40.0), np.log10(min(16000.0, sr * 0.45)), num=bands + 1)
+    out = np.zeros(bands, dtype=np.float64)
+    for i in range(bands):
+        mask = (freqs >= edges[i]) & (freqs < edges[i + 1])
+        out[i] = float(np.sum(spec[mask] ** 2))
+    out = np.log1p(out)
+    return out / (np.linalg.norm(out) + 1e-12)
+
+
+def category_feature_vector(path: Path) -> np.ndarray:
+    """Features for within-category diversity gate (category phrase renders)."""
+    left, right, sr = read_wav_stereo(path)
+    mono = (left + right) * 0.5
+    cent = centroid_trajectory(mono, sr, frames=32)
+    cent_mean = float(np.mean(cent))
+    cent_std = float(np.std(cent))
+
+    attack, release = estimate_attack_release_sec(mono, sr)
+    timing = np.array(
+        [
+            attack,
+            release,
+            brightness_ratio(mono, sr),
+            stereo_width_lr(left, right),
+            vibrato_mod_index(mono, sr),
+            cent_mean,
+            cent_std,
+        ]
+    )
+
+    bands = log_band_energies(mono, sr, bands=40)
+    vec = np.concatenate([bands, cent, timing])
+    vec = vec / (np.linalg.norm(vec) + 1e-12)
+    return vec
+
+
+def preset_param_vector(p: dict) -> np.ndarray:
+    def f(k: str, default: float = 0.0) -> float:
+        v = p.get(k, default)
+        if isinstance(v, bool):
+            return 1.0 if v else 0.0
+        return float(v)
+
+    raw = np.array(
+        [
+            f("engine") / 10.0,
+            f("filterType") / 2.0,
+            f("cutoff") / 16000.0,
+            f("detune") / 24.0,
+            f("drive") / 4.5,
+            f("resonance"),
+            f("attack") / 3.0,
+            f("release") / 3.0,
+            f("macroDarkness"),
+            f("macroDirt"),
+            f("macroMovement"),
+            f("macroSpace"),
+            f("swellDepth"),
+            f("chord") / 5.0,
+            1.0 if p.get("arp") else 0.0,
+            f("reverb"),
+            f("delay"),
+            f("pulseWidth"),
+            f("vibratoDepth"),
+        ],
+        dtype=np.float64,
+    )
+    return raw / (np.linalg.norm(raw) + 1e-12)
+
+
+def gate_feature_vector(wav_path: Path, preset: dict | None = None) -> np.ndarray:
+    """Within-category gate: audio-only on category phrase renders (corr ≤ 0.92)."""
+    del preset
+    return category_feature_vector(wav_path)
+
+
+def feature_correlation(a: Path | np.ndarray, b: Path | np.ndarray) -> float:
+    if isinstance(a, Path):
+        a = category_feature_vector(a)
+    if isinstance(b, Path):
+        b = category_feature_vector(b)
+    return float(np.dot(a, b))
 
 
 def feature_vector(x: np.ndarray, sr: int) -> np.ndarray:
