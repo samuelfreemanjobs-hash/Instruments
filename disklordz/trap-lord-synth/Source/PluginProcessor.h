@@ -31,6 +31,8 @@ public:
     bool loadSampleMap (const juce::File&);
     bool exportKeygroup (const juce::File& folder, int root = 60);
     void loadFactoryPreset (int index);
+    /** kind 0 = init saw, 1 = sine-heavy, 2 = middle-C check (same as 0). */
+    void loadDiagnosticPatch (int kind);
     int getCurrentPresetIndex() const { return currentPresetIndex; }
     void setCurrentPresetIndex (int i) { currentPresetIndex = i; }
     bool exportMpcKeygroupOffline (const juce::File& parentFolder,
@@ -43,6 +45,7 @@ public:
                                 double durationSeconds,
                                 double bpm,
                                 juce::AudioBuffer<float>& buffer);
+    bool renderNoteOffline (int midiNote, int velocity, juce::AudioBuffer<float>& buffer, double sampleRate);
     juce::AudioProcessorValueTreeState state;
     static const juce::StringArray& factoryNames();
     static int factoryPresetCount();
@@ -64,7 +67,6 @@ private:
     double hostBpm = 120.;
     void generateArp (juce::MidiBuffer&, int);
     double arpPeriodSeconds() const;
-    bool renderNoteOffline (int midiNote, int velocity, juce::AudioBuffer<float>& buffer, double sampleRate);
     void prepareOfflineRender (double sampleRate);
     void finishOfflineRender();
     int currentPresetIndex = 0;

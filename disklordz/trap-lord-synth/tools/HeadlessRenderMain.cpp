@@ -11,20 +11,61 @@ namespace
 constexpr int kExitOk = 0;
 constexpr int kExitFail = 1;
 
-bool writeWav24 (const juce::File& file, const juce::AudioBuffer<float>& buffer, double sampleRate)
+bool writeWavFile (const juce::File& file,
+                 const juce::AudioBuffer<float>& buffer,
+                 double sampleRate,
+                 int bitsPerSample)
 {
     file.getParentDirectory().createDirectory();
-    std::unique_ptr<juce::FileOutputStream> stream (file.createOutputStream());
+    file.deleteFile();
+
+    juce::AudioFormatWriterOptions opts;
+    opts = opts.withSampleRate (sampleRate)
+             .withNumChannels ((int) buffer.getNumChannels())
+             .withBitsPerSample (bitsPerSample);
+
+    opts = opts.withSampleFormat (juce::AudioFormatWriterOptions::SampleFormat::integral);
+
+    juce::WavAudioFormat wav;
+    std::unique_ptr<juce::OutputStream> stream (file.createOutputStream());
     if (! stream)
         return false;
 
-    juce::WavAudioFormat wav;
-    std::unique_ptr<juce::AudioFormatWriter> writer (
-        wav.createWriterFor (stream.get(), sampleRate, (unsigned int) buffer.getNumChannels(), 24, {}, 0));
+    std::unique_ptr<juce::AudioFormatWriter> writer (wav.createWriterFor (stream, opts));
     if (! writer)
         return false;
-    stream.release();
-    return writer->writeFromAudioSampleBuffer (buffer, 0, buffer.getNumSamples());
+
+    const bool ok = writer->writeFromAudioSampleBuffer (buffer, 0, buffer.getNumSamples());
+    writer.reset();
+    return ok;
+}
+
+int runDiagnose (const juce::File& outDir)
+{
+    outDir.createDirectory();
+    juce::ScopedJuceInitialiser_GUI juceInit;
+    TrapLordSynthAudioProcessor proc;
+
+    struct Case
+    {
+        const char* name;
+        int kind;
+        int note;
+    };
+    const Case cases[] = { { "init_saw", 0, 60 }, { "sine", 1, 60 }, { "middle_c", 0, 60 } };
+
+    for (const auto& c : cases)
+    {
+        proc.loadDiagnosticPatch (c.kind);
+        juce::AudioBuffer<float> audio (2, int (OfflineAudition::kSampleRate * 3.));
+        if (! proc.renderNoteOffline (c.note, 110, audio, OfflineAudition::kSampleRate))
+            return kExitFail;
+        const auto file = outDir.getChildFile (juce::String (c.name) + ".wav");
+        if (! writeWavFile (file, audio, OfflineAudition::kSampleRate, 24))
+            return kExitFail;
+        std::cout << "Diagnose wrote " << file.getFileName() << "\n";
+    }
+    return kExitOk;
 }
 
 void printUsage()
@@ -33,6 +74,8 @@ void printUsage()
         << "TrapLordSynthRender — headless offline renders\n"
         << "  auditions <output_dir>              2 WAV per category (24 total)\n"
         << "  audition <preset_index> <wav_path>  single preset audition\n"
+        << "  diagnose <output_dir>               init saw / sine / middle C checks\n"
+        << "  test-note <midi> <wav> [preset]     single-note render\n"
         << "  mpc <preset_index> <parent_dir>     MPC keygroup export\n";
 }
 
@@ -74,7 +117,7 @@ int runAuditions (const juce::String& outDir)
             const int idx = indices[slot];
             const auto& preset = PresetLibrary::instance().get (idx);
             const bool swellMod = isSwellAudition (idx);
-            const auto timeline = OfflineAudition::buildTimeline (swellMod);
+            const auto timeline = OfflineAudition::buildTimeline (cat, swellMod);
             juce::AudioBuffer<float> audio;
             if (! proc.renderOfflineTimeline (idx, timeline, OfflineAudition::kSampleRate, OfflineAudition::kDurationSec,
                                                OfflineAudition::kBpm, audio))
@@ -83,7 +126,7 @@ int runAuditions (const juce::String& outDir)
                 return kExitFail;
             }
             const auto file = root.getChildFile (OfflineAudition::safeFilename (cat, preset.name, slot + 1));
-            if (! writeWav24 (file, audio, OfflineAudition::kSampleRate))
+            if (! writeWavFile (file, audio, OfflineAudition::kSampleRate, 24))
             {
                 std::cerr << "Write failed " << file.getFullPathName() << "\n";
                 return kExitFail;
@@ -98,17 +141,29 @@ int runAuditions (const juce::String& outDir)
     return written == 24 ? kExitOk : kExitFail;
 }
 
+int runTestNote (int note, const juce::File& wavFile, int presetIndex)
+{
+    juce::ScopedJuceInitialiser_GUI juceInit;
+    TrapLordSynthAudioProcessor proc;
+    proc.loadFactoryPreset (presetIndex);
+    juce::AudioBuffer<float> audio (2, int (OfflineAudition::kSampleRate * 3.));
+    if (! proc.renderNoteOffline (note, 110, audio, OfflineAudition::kSampleRate))
+        return kExitFail;
+    return writeWavFile (wavFile, audio, OfflineAudition::kSampleRate, 24) ? kExitOk : kExitFail;
+}
+
 int runSingleAudition (int presetIndex, const juce::File& wavFile)
 {
     juce::ScopedJuceInitialiser_GUI juceInit;
     TrapLordSynthAudioProcessor proc;
+    const auto& preset = PresetLibrary::instance().get (presetIndex);
     const bool swellMod = isSwellAudition (presetIndex);
-    const auto timeline = OfflineAudition::buildTimeline (swellMod);
+    const auto timeline = OfflineAudition::buildTimeline (preset.category, swellMod);
     juce::AudioBuffer<float> audio;
     if (! proc.renderOfflineTimeline (presetIndex, timeline, OfflineAudition::kSampleRate, OfflineAudition::kDurationSec,
                                        OfflineAudition::kBpm, audio))
         return kExitFail;
-    return writeWav24 (wavFile, audio, OfflineAudition::kSampleRate) ? kExitOk : kExitFail;
+    return writeWavFile (wavFile, audio, OfflineAudition::kSampleRate, 24) ? kExitOk : kExitFail;
 }
 
 int runMpcExport (int presetIndex, const juce::File& parentDir)
@@ -119,14 +174,17 @@ int runMpcExport (int presetIndex, const juce::File& parentDir)
     const auto& preset = PresetLibrary::instance().get (presetIndex);
 
     KeygroupExportOptions opts;
-    opts.programName = preset.name.replaceCharacters ("/\\:*?\"<>|", "_______").substring (0, 48);
-    opts.lowNote = 48;
-    opts.highNote = 72;
-    opts.semitoneStep = 6;
+    opts.programName = preset.name;
+    opts.folderPrefix = "DL_";
+    opts.lowNote = 36;
+    opts.highNote = 96;
+    opts.semitoneStep = 1;
     opts.velocityLayers = 2;
-    opts.bodySeconds = 2.f;
-    opts.releaseTailSeconds = 0.5f;
-    opts.use24Bit = true;
+    opts.bodySeconds = 1.15f;
+    opts.releaseTailSeconds = 0.35f;
+    opts.use24Bit = false;
+    opts.ampReleaseSeconds = 0.35f;
+    opts.maxProgramMegabytes = 48.f;
 
     std::atomic<bool> abort { false };
     const bool ok = proc.exportMpcKeygroupOffline (parentDir, opts, abort, nullptr);
@@ -162,11 +220,26 @@ int main (int argc, char* argv[])
         return runSingleAudition (std::atoi (argv[2]), juce::File (argv[3]));
     }
 
+    if (command == "test-note")
+    {
+        if (argc < 4)
+            return kExitFail;
+        const int preset = argc >= 5 ? std::atoi (argv[4]) : 0;
+        return runTestNote (std::atoi (argv[2]), juce::File (argv[3]), preset);
+    }
+
     if (command == "mpc")
     {
         if (argc < 4)
             return kExitFail;
         return runMpcExport (std::atoi (argv[2]), juce::File (argv[3]));
+    }
+
+    if (command == "diagnose")
+    {
+        if (argc < 3)
+            return kExitFail;
+        return runDiagnose (juce::File (argv[2]));
     }
 
     printUsage();

@@ -6,6 +6,11 @@ juce::String xmlEscape (const juce::String& s)
 {
     return s.replace ("&", "&amp;").replace ("<", "&lt;").replace (">", "&gt;").replace ("\"", "&quot;");
 }
+
+juce::String fmt6 (double v)
+{
+    return juce::String (v, 6, false);
+}
 } // namespace
 
 juce::String MpcXpmWriter::makeSafeName (const juce::String& input, int maxLen)
@@ -13,64 +18,84 @@ juce::String MpcXpmWriter::makeSafeName (const juce::String& input, int maxLen)
     juce::String out;
     for (auto c : input)
     {
-        if (juce::CharacterFunctions::isLetterOrDigit (c) || c == '_' || c == '-')
-            out << c;
-        else if (c == ' ' || c == '/')
+        if (juce::CharacterFunctions::isLetterOrDigit (c) || c == '_')
+            out << (juce::CharacterFunctions::isLowerCase (c) ? juce::CharacterFunctions::toUpperCase (c) : c);
+        else if (c == ' ' || c == '-' || c == '/')
             out << '_';
     }
+    while (out.contains ("__"))
+        out = out.replace ("__", "_");
     if (out.isEmpty())
-        out = "TrapLordProgram";
+        out = "TRAP_PROGRAM";
     return out.substring (0, maxLen);
+}
+
+juce::String MpcXpmWriter::makeSampleFilename (int rootNote, int layerIndex)
+{
+    return "DL_N" + juce::String (rootNote).paddedLeft ('0', 3) + "_L" + juce::String (layerIndex + 1) + ".WAV";
 }
 
 bool MpcXpmWriter::writeKeygroupProgram (const juce::File& programFolder,
                                          const juce::String& programName,
-                                         const std::vector<MpcSampleZone>& zones)
+                                         const std::vector<MpcKeygroupZone>& keygroups,
+                                         float pitchBendRange)
 {
-    if (zones.empty())
+    if (keygroups.empty())
         return false;
 
     juce::String xml;
     xml << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
     xml << "<KeygroupProgram>\n";
     xml << "  <Version>\n";
-    xml << "    <FileVersion>5000</FileVersion>\n";
+    xml << "    <FileVersion>" << kFileVersion << "</FileVersion>\n";
     xml << "  </Version>\n";
     xml << "  <Program>\n";
     xml << "    <ProgramName>" << xmlEscape (programName) << "</ProgramName>\n";
     xml << "    <ProgramType>keygroup</ProgramType>\n";
-    xml << "    <PitchBendRange>2.000000</PitchBendRange>\n";
-    xml << "    <NumKeygroups>" << zones.size() << "</NumKeygroups>\n";
+    xml << "    <PitchBendRange>" << fmt6 (pitchBendRange) << "</PitchBendRange>\n";
+    xml << "    <NumKeygroups>" << keygroups.size() << "</NumKeygroups>\n";
     xml << "    <Instruments>\n";
 
-    for (const auto& zone : zones)
+    for (const auto& kg : keygroups)
     {
+        const int layerCount = juce::jlimit (0, 4, int (kg.layers.size()));
+        if (layerCount == 0)
+            continue;
+
         xml << "      <Instrument>\n";
-        xml << "        <LowNote>" << zone.lowNote << "</LowNote>\n";
-        xml << "        <HighNote>" << zone.highNote << "</HighNote>\n";
+        xml << "        <LowNote>" << kg.lowNote << "</LowNote>\n";
+        xml << "        <HighNote>" << kg.highNote << "</HighNote>\n";
+        xml << "        <IgnoreBaseNote>False</IgnoreBaseNote>\n";
         xml << "        <VelocityToAmpAmount>1.000000</VelocityToAmpAmount>\n";
         xml << "        <VolumeAttack>0.000000</VolumeAttack>\n";
-        xml << "        <VolumeDecay>0.500000</VolumeDecay>\n";
+        xml << "        <VolumeHold>0.000000</VolumeHold>\n";
+        xml << "        <VolumeDecay>0.000000</VolumeDecay>\n";
         xml << "        <VolumeSustain>1.000000</VolumeSustain>\n";
-        xml << "        <VolumeRelease>0.250000</VolumeRelease>\n";
+        xml << "        <VolumeRelease>" << fmt6 (kg.volumeRelease) << "</VolumeRelease>\n";
         xml << "        <TriggerMode>0</TriggerMode>\n";
         xml << "        <Layers>\n";
-        xml << "          <Layer>\n";
-        xml << "            <Active>true</Active>\n";
-        xml << "            <Volume>0.800000</Volume>\n";
-        xml << "            <Pan>0.000000</Pan>\n";
-        xml << "            <Pitch>0.000000</Pitch>\n";
-        xml << "            <VelStart>" << zone.velLow << "</VelStart>\n";
-        xml << "            <VelEnd>" << zone.velHigh << "</VelEnd>\n";
-        xml << "            <RootNote>" << (zone.rootNote + 1) << "</RootNote>\n";
-        xml << "            <KeyTrack>true</KeyTrack>\n";
-        xml << "            <SampleName>" << xmlEscape (zone.sampleName) << "</SampleName>\n";
-        xml << "            <SampleStart>0</SampleStart>\n";
-        xml << "            <SampleEnd>" << juce::jmax (0, zone.sampleFrames) << "</SampleEnd>\n";
-        xml << "            <LoopStart>0</LoopStart>\n";
-        xml << "            <LoopEnd>0</LoopEnd>\n";
-        xml << "            <SampleFile>" << xmlEscape (zone.sampleName) << "</SampleFile>\n";
-        xml << "          </Layer>\n";
+
+        for (int li = 0; li < layerCount; ++li)
+        {
+            const auto& layer = kg.layers[size_t (li)];
+            xml << "          <Layer>\n";
+            xml << "            <Active>true</Active>\n";
+            xml << "            <Volume>0.800000</Volume>\n";
+            xml << "            <Pan>0.000000</Pan>\n";
+            xml << "            <Pitch>0.000000</Pitch>\n";
+            xml << "            <VelStart>" << layer.velLow << "</VelStart>\n";
+            xml << "            <VelEnd>" << layer.velHigh << "</VelEnd>\n";
+            xml << "            <RootNote>" << (layer.rootNote + 1) << "</RootNote>\n";
+            xml << "            <KeyTrack>true</KeyTrack>\n";
+            xml << "            <SampleName>" << xmlEscape (layer.sampleName) << "</SampleName>\n";
+            xml << "            <SampleStart>0</SampleStart>\n";
+            xml << "            <SampleEnd>" << juce::jmax (0, layer.sampleFrames) << "</SampleEnd>\n";
+            xml << "            <LoopStart>0</LoopStart>\n";
+            xml << "            <LoopEnd>0</LoopEnd>\n";
+            xml << "            <SampleFile>" << xmlEscape (layer.sampleName) << "</SampleFile>\n";
+            xml << "          </Layer>\n";
+        }
+
         xml << "        </Layers>\n";
         xml << "      </Instrument>\n";
     }

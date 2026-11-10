@@ -9,6 +9,29 @@ namespace
 {
 using Layout = juce::AudioProcessorValueTreeState::ParameterLayout;
 
+bool writeKeygroupWav (const juce::File& file, const juce::AudioBuffer<float>& buffer, double sampleRate, int bits)
+{
+    file.getParentDirectory().createDirectory();
+    file.deleteFile();
+
+    juce::AudioFormatWriterOptions opts;
+    opts = opts.withSampleRate (sampleRate)
+             .withNumChannels (buffer.getNumChannels())
+             .withBitsPerSample (bits)
+             .withSampleFormat (juce::AudioFormatWriterOptions::SampleFormat::integral);
+
+    juce::WavAudioFormat wav;
+    std::unique_ptr<juce::OutputStream> stream (file.createOutputStream());
+    if (! stream)
+        return false;
+
+    std::unique_ptr<juce::AudioFormatWriter> writer (wav.createWriterFor (stream, opts));
+    if (! writer)
+        return false;
+
+  return writer->writeFromAudioSampleBuffer (buffer, 0, buffer.getNumSamples());
+}
+
 void param (Layout& l, const char* id, const char* label, float lo, float hi, float def)
 {
     l.add (std::make_unique<juce::AudioParameterFloat> (
@@ -141,6 +164,9 @@ double TrapLordSynthAudioProcessor::arpPeriodSeconds() const
 
 void TrapLordSynthAudioProcessor::generateArp (juce::MidiBuffer& midi, int samples)
 {
+    if (offlineActive)
+        return;
+
     juce::MidiBuffer generated;
     const bool enabled = get (state, "arp") > .5f;
     const int chord = juce::jlimit (0, 5, int (get (state, "chord")));
@@ -213,6 +239,8 @@ void TrapLordSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     if (currentRate <= 0.)
         return;
 
+    buffer.clear();
+
     if (auto* head = getPlayHead())
         if (auto pos = head->getPosition())
             if (auto bpm = pos->getBpm())
@@ -250,8 +278,9 @@ void TrapLordSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     if (rotaryDepth > 0.01f)
         applyRotary (buffer, rotaryDepth);
 
-    const float wet = juce::jlimit (0.f, 0.7f, get (state, "delay") + space * 0.28f);
-    if (wet > 0.f)
+    const float wet = juce::jlimit (0.f, 0.55f, get (state, "delay") + space * 0.22f);
+    constexpr float kDelayFeedback = 0.18f;
+    if (wet > 0.001f)
     {
         for (int i = 0; i < buffer.getNumSamples(); ++i)
         {
@@ -259,20 +288,10 @@ void TrapLordSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
             const float r = buffer.getSample (1, i);
             const float dl = delay.popSample (0);
             const float dr = delay.popSample (1);
-            delay.pushSample (0, l + dl * .35f);
-            delay.pushSample (1, r + dr * .35f);
-            buffer.setSample (0, i, l + dl * wet);
-            buffer.setSample (1, i, r + dr * wet);
-        }
-    }
-    else
-    {
-        for (int i = 0; i < buffer.getNumSamples(); ++i)
-        {
-            delay.popSample (0);
-            delay.popSample (1);
-            delay.pushSample (0, buffer.getSample (0, i));
-            delay.pushSample (1, buffer.getSample (1, i));
+            delay.pushSample (0, juce::jlimit (-1.5f, 1.5f, l + dl * kDelayFeedback));
+            delay.pushSample (1, juce::jlimit (-1.5f, 1.5f, r + dr * kDelayFeedback));
+            buffer.setSample (0, i, juce::jlimit (-1.f, 1.f, l + dl * wet));
+            buffer.setSample (1, i, juce::jlimit (-1.f, 1.f, r + dr * wet));
         }
     }
 
@@ -330,23 +349,57 @@ void TrapLordSynthAudioProcessor::loadFactoryPreset (int idx)
     currentPresetIndex = idx;
 }
 
+void TrapLordSynthAudioProcessor::loadDiagnosticPatch (int kind)
+{
+    auto set = [&] (const char* id, float val)
+    {
+        if (auto* p = state.getParameter (id))
+            p->setValueNotifyingHost (p->convertTo0to1 (val));
+    };
+
+    set ("attack", 0.02f);
+    set ("decay", 0.25f);
+    set ("sustain", 0.65f);
+    set ("release", 0.35f);
+    set ("cutoff", 12000.f);
+    set ("gain", 0.28f);
+    set ("drive", 1.f);
+    set ("detune", kind == 0 ? 8.f : 0.f);
+    set ("reverb", 0.f);
+    set ("delay", 0.f);
+    set ("chord", 0);
+    set ("resonance", 0.55f);
+    set ("macroDarkness", 0.f);
+    set ("macroDirt", 0.f);
+    set ("macroMovement", 0.f);
+    set ("macroSpace", 0.f);
+    set ("swellDepth", 0.f);
+    set ("engine", float (kind == 1 ? 4 : 6)); // 4 ≈ sine-weighted bass, 6 = lead saw
+    set ("arp", 0.f);
+    currentPresetIndex = -1;
+}
+
 void TrapLordSynthAudioProcessor::prepareOfflineRender (double sampleRate)
 {
     offlineSavedRate = currentRate;
     offlineActive = true;
-    suspendProcessing (true);
+    setNonRealtime (true);
     hostBpm = 140.;
     prepareToPlay (sampleRate, 512);
+    synth.allNotesOff (0, true);
     if (auto* arp = state.getParameter ("arp"))
-        arp->setValueNotifyingHost (arp->getDefaultValue());
+        arp->setValueNotifyingHost (0.f);
+    if (auto* chord = state.getParameter ("chord"))
+        chord->setValueNotifyingHost (0.f);
 }
 
 void TrapLordSynthAudioProcessor::finishOfflineRender()
 {
     if (! offlineActive)
         return;
-    prepareToPlay (offlineSavedRate, 512);
-    suspendProcessing (false);
+    if (offlineSavedRate > 0.)
+        prepareToPlay (offlineSavedRate, 512);
+    setNonRealtime (false);
     offlineActive = false;
 }
 
@@ -377,6 +430,7 @@ bool TrapLordSynthAudioProcessor::renderOfflineTimeline (
     {
         const int len = juce::jmin (block, totalSamples - pos);
         juce::AudioBuffer<float> part (2, len);
+        part.clear();
         juce::MidiBuffer blockMidi;
 
         while (eventIdx < timeline.size() && timeline[eventIdx].first < pos + len)
@@ -394,9 +448,6 @@ bool TrapLordSynthAudioProcessor::renderOfflineTimeline (
     float peak = 0.f;
     for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
         peak = juce::jmax (peak, buffer.getMagnitude (ch, 0, buffer.getNumSamples()));
-    if (peak > 1e-5f && peak > 0.99f)
-        buffer.applyGain (0.95f / peak);
-
     finishOfflineRender();
     return true;
 }
@@ -406,19 +457,16 @@ bool TrapLordSynthAudioProcessor::renderNoteOffline (int midiNote,
                                                       juce::AudioBuffer<float>& buffer,
                                                       double sampleRate)
 {
-    const double savedRate = currentRate;
-    suspendProcessing (true);
-    prepareToPlay (sampleRate, 512);
-
     buffer.clear();
-
     const int total = buffer.getNumSamples();
-  const int noteOffSample = juce::jmax (0, total - int (sampleRate * 0.05));
+    const int noteOffSample = juce::jmin (total - 1, juce::jmax (1, int (sampleRate * 1.4)));
+    prepareOfflineRender (sampleRate);
 
     for (int pos = 0; pos < total; pos += 512)
     {
         const int len = juce::jmin (512, total - pos);
         juce::AudioBuffer<float> part (2, len);
+        part.clear();
         juce::MidiBuffer blockMidi;
         if (pos == 0)
             blockMidi.addEvent (juce::MidiMessage::noteOn (1, midiNote, (juce::uint8) velocity), 0);
@@ -429,8 +477,7 @@ bool TrapLordSynthAudioProcessor::renderNoteOffline (int midiNote,
             buffer.copyFrom (ch, pos, part, ch, 0, len);
     }
 
-    prepareToPlay (savedRate, 512);
-    suspendProcessing (false);
+    finishOfflineRender();
     return true;
 }
 
@@ -442,35 +489,79 @@ bool TrapLordSynthAudioProcessor::exportMpcKeygroupOffline (const juce::File& pa
     if (! parentFolder.isDirectory() && ! parentFolder.createDirectory().wasOk())
         return false;
 
-    const juce::String programName = MpcXpmWriter::makeSafeName (options.programName);
-    const auto programFolder = parentFolder.getChildFile (programName);
+    juce::File exportRoot = parentFolder;
+    if (options.useExpansionsLayout)
+    {
+        exportRoot = parentFolder.getChildFile ("Expansions")
+                        .getChildFile (MpcXpmWriter::makeSafeName (options.expansionsPackName, 24));
+        if (! exportRoot.createDirectory().wasOk())
+            return false;
+    }
+
+    const juce::String programName = options.folderPrefix
+                                     + MpcXpmWriter::makeSafeName (options.programName, 28);
+    const auto programFolder = exportRoot.getChildFile (programName);
+    if (programFolder.exists())
+        programFolder.deleteRecursively();
     if (! programFolder.createDirectory().wasOk())
         return false;
 
     const double sr = 44100.;
-    const int totalSamples = int ((options.bodySeconds + options.releaseTailSeconds) * sr);
-    std::vector<MpcSampleZone> zones;
+    const int layers = juce::jlimit (1, 4, options.velocityLayers);
+    const int velSplits[][4][2] = {
+        { { 1, 127 } },
+        { { 1, 70 }, { 71, 127 } },
+        { { 1, 45 }, { 46, 90 }, { 91, 127 } },
+        { { 1, 40 }, { 41, 75 }, { 76, 105 }, { 106, 127 } }
+    };
 
-    const int layers = juce::jlimit (1, 3, options.velocityLayers);
-    const int velSplits[][3][2] = { { { 1, 127 } }, { { 1, 70 }, { 71, 127 } }, { { 1, 50 }, { 51, 90 }, { 91, 127 } } };
-
-    int steps = 0;
+    int keyCount = 0;
     for (int n = options.lowNote; n <= options.highNote; n += juce::jmax (1, options.semitoneStep))
-        steps++;
-    const int totalOps = juce::jmax (1, steps * layers);
+        ++keyCount;
+
+    const int bytesPerSample = options.use24Bit ? 3 : 2;
+    const int channels = 2;
+    const int64 totalWavBytesIfUnbounded =
+        int64 (keyCount) * layers * channels * bytesPerSample
+        * int64 ((options.bodySeconds + options.releaseTailSeconds) * sr);
+    const int64 maxBytes = int64 (options.maxProgramMegabytes * 1024.0 * 1024.0);
+
+    float bodySeconds = options.bodySeconds;
+    float tailSeconds = options.releaseTailSeconds;
+    if (totalWavBytesIfUnbounded > maxBytes && keyCount > 0 && layers > 0)
+    {
+        const double maxSeconds =
+            double (maxBytes) / (double (keyCount * layers * channels * bytesPerSample) * sr);
+        tailSeconds = juce::jmin (tailSeconds, 0.25f);
+        bodySeconds = juce::jmax (0.45f, float (maxSeconds - tailSeconds));
+    }
+
+    const int totalSamples = juce::jmax (1, int ((bodySeconds + tailSeconds) * sr));
+    std::vector<MpcKeygroupZone> keygroups;
+    keygroups.reserve (size_t (keyCount));
+
+    const int totalOps = juce::jmax (1, keyCount * layers);
     int op = 0;
 
-    juce::AudioFormatManager fm;
-    fm.registerBasicFormats();
+    const float ampRelease = juce::jlimit (0.05f, 8.f, options.ampReleaseSeconds);
 
     for (int note = options.lowNote; note <= options.highNote; note += juce::jmax (1, options.semitoneStep))
     {
+        if (abortFlag.load())
+            return false;
+
+        MpcKeygroupZone kg;
+        kg.lowNote = note;
+        kg.highNote = note;
+        kg.rootNote = note;
+        kg.volumeRelease = ampRelease;
+
         for (int layer = 0; layer < layers; ++layer)
         {
             if (abortFlag.load())
                 return false;
 
-            const int vel = layer == 0 ? 54 : (layer == 1 ? 96 : 118);
+            const int vel = layer == 0 ? 58 : (layer == 1 ? 104 : (layer == 2 ? 72 : 118));
             juce::AudioBuffer<float> audio (2, totalSamples);
             audio.clear();
             if (! renderNoteOffline (note, vel, audio, sr))
@@ -484,43 +575,33 @@ bool TrapLordSynthAudioProcessor::exportMpcKeygroupOffline (const juce::File& pa
             if (peak > 0.99f)
                 audio.applyGain (0.95f / peak);
 
-            const auto wavName = juce::String ("TL_N") + juce::String (note) + "_V"
-                               + juce::String (velSplits[layers - 1][layer][0]) + "_"
-                               + juce::String (velSplits[layers - 1][layer][1]) + ".WAV";
+            const auto wavName = MpcXpmWriter::makeSampleFilename (note, layer);
             const auto wavFile = programFolder.getChildFile (wavName);
-            auto stream = wavFile.createOutputStream();
-            if (! stream)
-                return false;
-
-            juce::WavAudioFormat wav;
             const int bits = options.use24Bit ? 24 : 16;
-            auto writer = std::unique_ptr<juce::AudioFormatWriter> (
-                wav.createWriterFor (stream.get(), sr, 2, bits, {}, 0));
-            if (! writer)
+            if (! writeKeygroupWav (wavFile, audio, sr, bits))
                 return false;
-            stream.release();
-            writer->writeFromAudioSampleBuffer (audio, 0, audio.getNumSamples());
 
-            MpcSampleZone zone;
-            zone.rootNote = note;
-            zone.lowNote = juce::jmax (options.lowNote, note - 1);
-            zone.highNote = juce::jmin (options.highNote, note + 1);
-            zone.velLow = velSplits[layers - 1][layer][0];
-            zone.velHigh = velSplits[layers - 1][layer][1];
-            zone.sampleName = wavName;
-            zone.sampleFrames = audio.getNumSamples();
-            zones.push_back (zone);
+            MpcSampleLayer sampleLayer;
+            sampleLayer.rootNote = note;
+            sampleLayer.velLow = velSplits[layers - 1][layer][0];
+            sampleLayer.velHigh = velSplits[layers - 1][layer][1];
+            sampleLayer.sampleName = wavName;
+            sampleLayer.sampleFrames = audio.getNumSamples();
+            kg.layers.push_back (sampleLayer);
 
             ++op;
             if (onProgress)
                 onProgress (float (op) / float (totalOps), "Rendering " + wavName);
         }
+
+        if (! kg.layers.empty())
+            keygroups.push_back (std::move (kg));
     }
 
-    if (zones.empty() || abortFlag.load())
+    if (keygroups.empty() || abortFlag.load())
         return false;
 
-    if (! MpcXpmWriter::writeKeygroupProgram (programFolder, programName, zones))
+    if (! MpcXpmWriter::writeKeygroupProgram (programFolder, programName, keygroups))
         return false;
 
     if (onProgress)
@@ -632,24 +713,11 @@ bool TrapLordSynthAudioProcessor::exportKeygroup (const juce::File& folder, int 
         }
 
         const auto filename = juce::String ("TL_") + juce::String (note) + ".wav";
-        auto stream = folder.getChildFile (filename).createOutputStream();
-        if (! stream)
+        if (! writeKeygroupWav (folder.getChildFile (filename), audio, sr, 16))
         {
             suspendProcessing (false);
             return false;
         }
-
-        juce::WavAudioFormat wav;
-        auto writer = std::unique_ptr<juce::AudioFormatWriter> (
-            wav.createWriterFor (stream.get(), sr, 2, 16, {}, 0));
-        if (! writer)
-        {
-            suspendProcessing (false);
-            return false;
-        }
-
-        stream.release();
-        writer->writeFromAudioSampleBuffer (audio, 0, audio.getNumSamples());
 
         auto item = std::make_unique<juce::DynamicObject>();
         item->setProperty ("file", filename);

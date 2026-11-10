@@ -263,11 +263,14 @@ void TrapLordSynthAudioProcessorEditor::startMpcExport()
                               KeygroupExportOptions opts;
                               const int preset = processor.getCurrentPresetIndex();
                               opts.programName = PresetLibrary::instance().get (preset).name;
-                              opts.lowNote = 24;
-                              opts.highNote = 84;
-                              opts.semitoneStep = 3;
+                              opts.lowNote = 36;
+                              opts.highNote = 96;
+                              opts.semitoneStep = 1;
                               opts.velocityLayers = 2;
-                              opts.use24Bit = true;
+                              opts.use24Bit = false;
+                              opts.folderPrefix = "DL_";
+                              if (auto* rel = processor.state.getRawParameterValue ("release"))
+                                  opts.ampReleaseSeconds = juce::jmax (0.12f, rel->load());
                               progressValue = 0;
                               exportMpc.setEnabled (false);
 

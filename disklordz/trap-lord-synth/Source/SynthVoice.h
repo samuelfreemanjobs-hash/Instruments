@@ -87,6 +87,7 @@ public:
 
     void startNote (int note, float vel, juce::SynthesiserSound*, int wheel) override
     {
+        velocity = juce::jlimit (0.f, 1.f, vel);
         const double newFreq = juce::MidiMessage::getMidiNoteInHertz (note);
         midiNote = note;
         frequency = newFreq;
