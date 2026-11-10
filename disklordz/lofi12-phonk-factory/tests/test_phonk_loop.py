@@ -45,27 +45,31 @@ class PhonkLoopTests(unittest.TestCase):
         self.assertEqual(parse_bpm_from_prompt("memphis 92 bpm"), 92.0)
 
     def test_artist_lane_detection(self) -> None:
-        lane = resolve_memphis_lane("dirty 808 dj paul memphis")
+        lane = resolve_memphis_lane("dirty 808 bounce cowbell memphis")
         self.assertIsNotNone(lane)
         assert lane is not None
-        self.assertEqual(lane.lane_id, "dj_paul")
-        self.assertEqual(parse_bpm_from_prompt("dj paul style"), 84.0)
+        self.assertEqual(lane.lane_id, "bounce_cowbell")
+        self.assertEqual(parse_bpm_from_prompt("bounce style 118"), 118.0)
 
     def test_lane_in_loop_meta(self) -> None:
         _, meta = render_phonk_loop(
-            prompt="juicy j phonk memphis", bpm=86, bars=2, variation=0
+            prompt="hard dirt phonk memphis", bpm=122, bars=2, variation=0
         )
-        self.assertEqual(meta["memphisLane"], "juicy_j")
+        self.assertEqual(meta["memphisLane"], "hard_dirt_808")
 
     def test_toomp_lane_and_engine(self) -> None:
-        lane = resolve_memphis_lane("dj toomp atlanta trap 808")
+        lane = resolve_memphis_lane("traproom tape atlanta trap 808")
         self.assertIsNotNone(lane)
         assert lane is not None
-        self.assertEqual(lane.lane_id, "dj_toomp")
+        self.assertEqual(lane.lane_id, "traproom_tape")
         _, meta = render_phonk_loop(
-            prompt="dj toomp memphis", bpm=78, bars=2, variation=0, engine_id="dj_toomp"
+            prompt="traproom tape memphis",
+            bpm=78,
+            bars=2,
+            variation=0,
+            engine_id="traproom_tape",
         )
-        self.assertEqual(meta["drumEngine"], "dj_toomp")
+        self.assertEqual(meta["drumEngine"], "traproom_tape")
 
 
 if __name__ == "__main__":

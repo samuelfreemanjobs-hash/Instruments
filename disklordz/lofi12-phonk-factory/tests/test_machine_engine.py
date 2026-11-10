@@ -16,8 +16,9 @@ from phonk_synth import resolve_phonk_params  # noqa: E402
 
 class MachineEngineTests(unittest.TestCase):
     def test_resolve_keywords(self) -> None:
-        self.assertEqual(resolve_engine_id("juicy j memphis dirty"), "juicy_j")
-        self.assertEqual(resolve_engine_id("dj toomp atlanta trap"), "dj_toomp")
+        self.assertEqual(resolve_engine_id("dirty memphis hard dirt"), "hard_dirt_808")
+        self.assertEqual(resolve_engine_id("traproom sp 1200"), "traproom_tape")
+        self.assertEqual(resolve_engine_id("", override="juicy_j"), "hard_dirt_808")
         self.assertEqual(resolve_engine_id("pure tr909 beat"), "tr909")
         self.assertEqual(resolve_engine_id("boss dr660"), "boss_dr660")
         self.assertEqual(resolve_engine_id("splice tape pack"), "mr_tape")

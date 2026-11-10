@@ -2,14 +2,21 @@
 
 ## Purpose
 
-Batch-generate **Memphis / drift phonk** one-shots sized for the **SONICWARE LIVEN Lofi-12** (mono PCM, 24 kHz ≈ 2 s or 12 kHz ≈ 4 s per slot). Output is a **named bank folder** you sample from line-in or archive for SysEx round-trips.
+**Phase 1 — DiskLordz Drum Factory:** synthesize commercial drum kits (~150 one-shots + loops + MIDI) via `scripts/phonk_kit_factory.py` and `scripts/drum_kit_builder.py`. Eleven factory modes (`scripts/factory_modes.py`) including `occult_tape` and `black_cassette`. All audio is **procedural** (no external samples).
+
+**Lofi-12 banks:** batch **Memphis / drift phonk** one-shots sized for the **SONICWARE LIVEN Lofi-12** (mono PCM, 24 kHz ≈ 2 s or 12 kHz ≈ 4 s per slot). Output is a **named bank folder** you sample from line-in or archive for SysEx round-trips.
 
 ## Build & run
 
 ```bash
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_kit_factory.py \
+  --mode occult_tape --kit-size demo --out ~/Music/DiskLordz/OccultDemo
+
 python3 disklordz/lofi12-phonk-factory/scripts/phonk_factory.py \
   --prompt "dirty memphis 808 cowbell 140" \
   --out ~/Music/Lofi12/PhonkFactory/bank_a
+
+bash tools/build-phonk-kit-products.sh
 
 python3 -m unittest discover -s disklordz/lofi12-phonk-factory/tests -q
 ```

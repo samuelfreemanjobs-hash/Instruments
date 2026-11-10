@@ -23,7 +23,7 @@ class PhonkFmTests(unittest.TestCase):
 
     def test_juicy_engine_uses_fm_cowbell(self) -> None:
         params = resolve_phonk_params("juicy j memphis", 0)
-        pcm = render_machine_voice("juicy_j", "cowbell_low", params)
+        pcm = render_machine_voice("hard_dirt_808", "cowbell_low", params)
         self.assertGreater(len(pcm), 500)
 
 

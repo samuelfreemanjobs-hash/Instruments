@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import math
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Literal
 
 from phonk_synth import PhonkParams, SRC_RATE, noise, sine
@@ -32,15 +32,22 @@ VoiceKey = Literal[
     "fx_riser",
 ]
 
+ENGINE_LEGACY_ALIASES: dict[str, str] = {
+    "juicy_j": "hard_dirt_808",
+    "dj_toomp": "traproom_tape",
+    "dj_screw": "tape_slowdown",
+    "dj_paul": "hard_dirt_808",
+}
+
 ENGINE_IDS = (
-    "juicy_j",
-    "dj_toomp",
+    "hard_dirt_808",
+    "traproom_tape",
+    "tape_slowdown",
     "tr808",
     "tr909",
     "boss_dr660",
     "alesis_sr16",
     "roland_r8mk2",
-    "dj_screw",
     "mr_tape",
     "classic",
 )
@@ -71,9 +78,9 @@ class MachineProfile:
 
 
 PROFILES: dict[str, MachineProfile] = {
-    "juicy_j": MachineProfile(
-        "juicy_j",
-        "Dirty Memphis / Juicy J (808 + tape)",
+    "hard_dirt_808": MachineProfile(
+        "hard_dirt_808",
+        "Hard Dirt 808 (Memphis tape)",
         0.14,
         5.6,
         1.22,
@@ -93,9 +100,9 @@ PROFILES: dict[str, MachineProfile] = {
         snare_crunch=1.35,
         fm_perc=1.0,
     ),
-    "dj_toomp": MachineProfile(
-        "dj_toomp",
-        "DJ Toomp (SP-1200 grit + trap 808)",
+    "traproom_tape": MachineProfile(
+        "traproom_tape",
+        "Traproom Tape (SP-1200 grit + 808)",
         0.26,
         4.9,
         1.08,
@@ -205,9 +212,9 @@ PROFILES: dict[str, MachineProfile] = {
         1.2,
         0.02,
     ),
-    "dj_screw": MachineProfile(
-        "dj_screw",
-        "DJ Screw / slowed tape",
+    "tape_slowdown": MachineProfile(
+        "tape_slowdown",
+        "Tape Slowdown (screwed pitch)",
         0.06,
         4.8,
         1.45,
@@ -261,10 +268,21 @@ PROFILES: dict[str, MachineProfile] = {
     ),
 }
 
+for _legacy, _canonical in ENGINE_LEGACY_ALIASES.items():
+    if _canonical in PROFILES:
+        PROFILES[_legacy] = replace(PROFILES[_canonical], engine_id=_legacy)
+
+
+def _canonical_engine(engine_id: str) -> str:
+    return ENGINE_LEGACY_ALIASES.get(engine_id, engine_id)
+
 
 def resolve_engine_id(prompt: str, override: str | None = None) -> str:
     if override:
         key = override.strip().lower().replace("-", "_")
+        if key in ENGINE_LEGACY_ALIASES:
+            return ENGINE_LEGACY_ALIASES[key]
+        key = _canonical_engine(key)
         if key in PROFILES:
             return key
         for eid in ENGINE_IDS:
@@ -272,23 +290,21 @@ def resolve_engine_id(prompt: str, override: str | None = None) -> str:
                 return eid
     p = prompt.lower()
     rules: list[tuple[str, str]] = [
-        (r"\b(toomp|dj\s*toomp)\b", "dj_toomp"),
-        (r"\bjuicy\s*j\b|\bjuicy\b", "juicy_j"),
-        (r"\b(dirty\s*memphis|memphis\s*dirty)\b", "juicy_j"),
-        (r"\bdj\s*paul\b|\bthree\s*6\b", "juicy_j"),
+        (r"\b(traproom|sp\s*1200)\b", "traproom_tape"),
+        (r"\b(hard\s*dirt|dirty\s*memphis|memphis\s*dirty)\b", "hard_dirt_808"),
         (r"\b(mr\s*tape|splice|tape\s*pack)\b", "mr_tape"),
-        (r"\b(screw|dj\s*screw|slowed)\b", "dj_screw"),
+        (r"\b(screw|slowed|tape\s*slow)\b", "tape_slowdown"),
         (r"\b(909|tr\s*909)\b", "tr909"),
         (r"\b(808|tr\s*808)\b", "tr808"),
         (r"\b(dr\s*660|dr660|boss)\b", "boss_dr660"),
         (r"\b(sr\s*16|sr16|alesis)\b", "alesis_sr16"),
         (r"\b(r\s*8|r8mk2|r8\s*mk)\b", "roland_r8mk2"),
-        (r"\b(memphis|phonk|90s)\b", "juicy_j"),
+        (r"\b(memphis|phonk|90s)\b", "hard_dirt_808"),
     ]
     for pat, eid in rules:
         if re.search(pat, p):
             return eid
-    return "juicy_j"
+    return "hard_dirt_808"
 
 
 def _bitcrush(samples: list[float], bits: int) -> list[float]:
@@ -476,7 +492,12 @@ def _cowbell(prof: MachineProfile, params: PhonkParams, freq: float) -> list[flo
         from phonk_fm import fm_cowbell_808, fm_cowbell_memphis, normalize_peak
 
         grit = params.grit * prof.dirt
-        if prof.engine_id in ("juicy_j", "dj_toomp", "dj_screw", "mr_tape"):
+        if _canonical_engine(prof.engine_id) in (
+            "hard_dirt_808",
+            "traproom_tape",
+            "tape_slowdown",
+            "mr_tape",
+        ):
             out = normalize_peak(fm_cowbell_memphis(freq, params.seed + 8, grit))
         else:
             out = normalize_peak(fm_cowbell_808(freq, params.seed + 8, grit))
@@ -502,7 +523,8 @@ def _tom(prof: MachineProfile, params: PhonkParams, pitch: float, decay: float) 
 
 
 def render_machine_voice(engine_id: str, key: VoiceKey, params: PhonkParams) -> list[float]:
-    prof = PROFILES.get(engine_id, PROFILES["mr_tape"])
+    engine_id = _canonical_engine(engine_id)
+    prof = PROFILES.get(engine_id, PROFILES.get(_canonical_engine(engine_id), PROFILES["mr_tape"]))
     if engine_id == "classic":
         from phonk_synth import RENDERERS
 

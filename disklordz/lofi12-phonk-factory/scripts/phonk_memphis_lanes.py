@@ -24,13 +24,19 @@ class MemphisLane:
     grit_delta: float = 0.0
 
 
+LANE_LEGACY_ALIASES: dict[str, str] = {
+    "dj_paul": "bounce_cowbell",
+    "juicy_j": "hard_dirt_808",
+    "dj_toomp": "traproom_tape",
+}
+
 # Template order: (0,6,8), (0,10), (0,3,6,11), (0,8,14), (0,6,8,14)
 LANES: tuple[MemphisLane, ...] = (
     MemphisLane(
-        "dj_paul",
-        "DJ Paul",
-        (r"dj\s*paul", r"\bpaul\b", r"three\s*6", r"36 mafia", r"triple\s*6"),
-        84.0,
+        "bounce_cowbell",
+        "Bounce & Cowbell",
+        (r"\bbounce\b", r"cowbell\s*grid"),
+        118.0,
         (1.0, 0.6, 2.2, 0.9, 1.1),
         1.0,
         1,
@@ -41,10 +47,10 @@ LANES: tuple[MemphisLane, ...] = (
         grit_delta=0.08,
     ),
     MemphisLane(
-        "juicy_j",
-        "Juicy J",
-        (r"juicy\s*j", r"\bjuicy\b"),
-        86.0,
+        "hard_dirt_808",
+        "Hard Dirt 808",
+        (r"hard\s*dirt", r"dirty\s*808"),
+        122.0,
         (1.1, 0.7, 1.8, 1.0, 1.2),
         1.05,
         1,
@@ -55,10 +61,10 @@ LANES: tuple[MemphisLane, ...] = (
         grit_delta=0.06,
     ),
     MemphisLane(
-        "dj_toomp",
-        "DJ Toomp",
-        (r"dj\s*toomp", r"\btoomp\b", r"atlanta\s*trap", r"\bzone\s*6\b"),
-        78.0,
+        "traproom_tape",
+        "Traproom Tape",
+        (r"traproom", r"trap\s*room"),
+        118.0,
         (1.25, 1.0, 1.4, 0.85, 1.15),
         0.92,
         0,
@@ -71,8 +77,23 @@ LANES: tuple[MemphisLane, ...] = (
         grit_delta=0.1,
     ),
     MemphisLane(
-        "dj_zirk",
-        "DJ Zirk",
+        "tape_lag",
+        "Tape Lag",
+        (r"tape\s*lag", r"behind\s*beat", r"sparse\s*tape"),
+        116.0,
+        (0.8, 1.6, 0.6, 1.4, 0.5),
+        0.65,
+        0,
+        0.82,
+        0.48,
+        0.04,
+        kick_pitch_delta=-4,
+        kick_decay_mult=1.2,
+        snare_snap_mult=0.92,
+    ),
+    MemphisLane(
+        "grid_zirk",
+        "Grid Zirk",
         (r"dj\s*zirk", r"\bzirk\b"),
         80.0,
         (1.2, 1.4, 0.7, 1.3, 0.6),
@@ -175,6 +196,7 @@ LANE_BY_ID = {lane.lane_id: lane for lane in LANES}
 def resolve_memphis_lane(prompt: str, lane_override: str | None = None) -> MemphisLane | None:
     if lane_override:
         key = lane_override.strip().lower().replace("-", "_").replace(" ", "_")
+        key = LANE_LEGACY_ALIASES.get(key, key)
         if key in LANE_BY_ID:
             return LANE_BY_ID[key]
         for lane in LANES:

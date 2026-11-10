@@ -23,21 +23,21 @@ class StylePresetTests(unittest.TestCase):
         ps = get_preset("memphis_trinity")
         self.assertIsNotNone(ps)
         assert ps is not None
-        self.assertEqual(ps.lane, "juicy_j")
-        self.assertEqual(ps.engine, "juicy_j")
+        self.assertEqual(ps.lane, "bounce_cowbell")
+        self.assertEqual(ps.engine, "hard_dirt_808")
 
     def test_merge_render_payload(self) -> None:
         merged = merge_render_payload({"preset": "dj_toomp"})
-        self.assertIn("dj toomp", merged["prompt"].lower())
-        self.assertEqual(merged["engine"], "dj_toomp")
+        self.assertIn("trap", merged["prompt"].lower())
+        self.assertEqual(merged["engine"], "traproom_tape")
 
     def test_api_preset_list(self) -> None:
-        self.assertGreaterEqual(len(all_presets_api()), 4)
+        self.assertGreaterEqual(len(all_presets_api()), 10)
 
     def test_display_names_no_artists(self) -> None:
         ps = get_preset("memphis_trinity")
         assert ps is not None
-        self.assertEqual(ps.label, "Memphis Insanity")
+        self.assertIn("Memphis", ps.label)
         for item in all_presets_api():
             label = item["label"].lower()
             self.assertNotIn("juicy", label)

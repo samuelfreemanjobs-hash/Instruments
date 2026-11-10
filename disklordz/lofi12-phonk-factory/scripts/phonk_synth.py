@@ -115,6 +115,21 @@ def kick_distorted(params: PhonkParams) -> list[float]:
     return [math.tanh(s * drive) / math.tanh(drive) for s in base]
 
 
+def kick_woody_box(params: PhonkParams) -> list[float]:
+    """Boxy acoustic-style thump for tape-dark layers."""
+    n = int(SRC_RATE * 0.22)
+    out: list[float] = []
+    pitch = max(52.0, params.kick_pitch + 28)
+    for i in range(n):
+        t = i / SRC_RATE
+        env = math.exp(-t / 0.055)
+        thump = sine(pitch * (1.0 + 2.5 * math.exp(-t * 40)), t)
+        box = sine(pitch * 0.5, t) * 0.35
+        click = noise(t, params.seed + 3) * 0.12 * math.exp(-t / 0.008)
+        out.append((thump + box + click) * env * 0.95)
+    return out
+
+
 def kick_sub(params: PhonkParams) -> list[float]:
     n = int(SRC_RATE * 0.7)
     out: list[float] = []

@@ -57,7 +57,7 @@ def resolve_vocal_params(prompt: str, variation: int = 0, lane: MemphisLane | No
         if lane.lane_id in ("shawty_pimp", "toy_wright_iii", "kingpin_skinny_pimp"):
             screw *= 0.94
             pitch -= 6
-        if lane.lane_id in ("dj_paul", "juicy_j", "blackout"):
+        if lane.lane_id in ("bounce_cowbell", "hard_dirt_808", "blackout"):
             grit = min(0.88, grit + 0.08)
 
     j = lambda i: (((seed >> (i * 3)) & 0xFF) / 255.0 - 0.5) * 0.12
@@ -164,7 +164,7 @@ def syllable_pattern_for_lane(lane: MemphisLane | None, seed: int, bars: int) ->
         ("oh", 0.24),
         ("c", 0.04),
     ]
-    if lane and lane.lane_id in ("dj_paul", "juicy_j"):
+    if lane and lane.lane_id in ("bounce_cowbell", "hard_dirt_808"):
         base = [("ay", 0.16), ("uh", 0.2), ("ah", 0.18), ("oh", 0.22), ("uh", 0.15)]
     if lane and lane.lane_id in ("shawty_pimp", "toy_wright_iii"):
         base = [("uh", 0.28), ("oh", 0.3), ("uh", 0.26)]

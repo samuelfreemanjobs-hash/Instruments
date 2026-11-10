@@ -1,43 +1,52 @@
 # Drum machine sound engine
 
-Procedural **original** drum voices modeled after machines common in **1990s Memphis rap** and modern **phonk** (in the spirit of lo-fi tape/sample-pack aesthetics — not copies of commercial sample libraries).
+Procedural **original** drum voices modeled after machines common in **1990s Memphis rap** and modern **phonk** — algorithmic synthesis only, not commercial sample libraries.
 
-## Engines
+## Synthesized-only (Drum Factory Phase 1)
+
+**DiskLordz Drum Factory** (`phonk_kit_factory.py`, `drum_kit_builder.py`, catalog `full_kit` products) renders **exclusively synthesized** audio. No external one-shots, no licensed WAV imports, and no pre-rendered `*phonk*.wav` loop stems in export ZIPs. Recipes + seeds provide bit-exact reproduction.
+
+The Lofi-12 **hardware workflow** (line-in sampling from generated banks) is separate: you may still record the factory’s synthesized WAVs into hardware — that does not violate the synthesis rule.
+
+> **Doc fix (former “Honest limits”):** Older text suggested layering recorded or licensed one-shots for commercial releases. That applies only if you **manually** augment kits outside this factory. Phase 1 automated kits are **synthesis-only by policy**.
+
+## Engines (neutral IDs)
 
 | ID | Machine / vibe | Character |
 |----|----------------|-----------|
-| **`juicy_j`** | Dirty Memphis / Juicy J | **Default for memphis/phonk** — 808+sub, parallel dirt, 10-bit, tape hiss, crunchy snare |
-| **`dj_toomp`** | DJ Toomp | SP-1200-style 12-bit + trap 808 click/sub; use with `--lane dj_toomp` or `--preset dj_toomp` |
+| **`hard_dirt_808`** | Memphis dirt 808 | **Default for memphis/phonk** — 808+sub, parallel dirt, 10-bit, tape hiss, crunchy snare |
+| **`traproom_tape`** | SP-1200-style trap | 12-bit grit + trap 808 click/sub |
 | `tr808` | Roland TR-808 | Long sine kick, noisy snare, short hats |
 | `tr909` | Roland TR-909 | Tighter kick click, brighter snare, sharper hats |
 | `boss_dr660` | Boss DR-660 | 12-bit lean, boxy transients |
 | `alesis_sr16` | Alesis SR-16 | Duller 90s sample-style filter |
 | `roland_r8mk2` | Roland R-8 MKII | Fuller snare body, electronic punch |
-| `dj_screw` | DJ Screw tape | Slowed pitch, wow, heavy tape + bit crush |
-| `mr_tape` | Tape-warped kit | Hiss, warmth, 12-bit, Splice-pack *style* |
+| `tape_slowdown` | Slowed tape | Wow, heavy tape + bit crush |
+| `mr_tape` | Tape-warped kit | Hiss, warmth, 12-bit lo-fi |
 | `classic` | Legacy synth | Original simple `phonk_synth` voices |
 
-## Prompt keywords
+Legacy ids `juicy_j`, `dj_toomp`, `dj_screw` → alias table in `phonk_machine_engine.ENGINE_LEGACY_ALIASES`.
 
-- `juicy`, `juicy j`, `memphis`, `phonk`, `dirty memphis`
-- `808`, `909`, `dr660`, `boss`, `sr16`, `alesis`, `r8`, `screw`, `splice`, `mr tape`
+## Prompt keywords (neutral)
+
+- `hard dirt`, `dirty memphis`, `memphis`, `phonk`, `traproom`, `tape slow`, `screw`, `808`, `909`, `splice`, `mr tape`
 
 ## CLI
 
 ```bash
 python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
   --engine mr_tape \
-  --prompt "1990s memphis phonk dj paul 84" \
+  --prompt "1990s memphis phonk bounce 118" \
   --batch 4 --out ~/Music/Lofi12/PhonkLoops
 
-python3 disklordz/lofi12-phonk-factory/scripts/phonk_factory.py \
-  --engine roland_r8mk2 --prompt "memphis r8 snare" --out ~/Music/Lofi12/bank_r8
+python3 disklordz/lofi12-phonk-factory/scripts/phonk_kit_factory.py \
+  --mode phonk_drift --kit-size full --out ~/Music/DiskLordz/DriftKit
 ```
 
-Implementation: `scripts/phonk_machine_engine.py` + **`scripts/phonk_fm.py`** (2-operator FM for cowbells, rim, clave-style perc). No external FM plugin required.
+Implementation: `scripts/phonk_machine_engine.py` + **`scripts/phonk_fm.py`** (2-operator FM for cowbells, rim, clave-style perc).
 
-Cowbells/rim use **FM** when `fm_perc ≥ 0.5` (default on). `juicy_j` / tape engines use a darker Memphis FM bell; `tr808`-style engines use dual FM burst cowbell.
+Cowbells/rim use **FM** when `fm_perc ≥ 0.5` (default on). `hard_dirt_808` / tape engines use a darker Memphis FM bell; `tr808`-style engines use dual FM burst cowbell.
 
 ## Honest limits
 
-This is **algorithmic** approximation — not sampled ROMs from Roland/Boss/Alesis and **not** a clone of any third-party Splice pack. For commercial releases, layer recorded one-shots or licensed kits on top.
+Algorithmic approximation — not sampled ROMs from Roland/Boss/Alesis. For **factory export**, do not bolt on unverified third-party samples; extend DSP/recipes instead.

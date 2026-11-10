@@ -77,6 +77,21 @@ for p in products:
             cmd.extend(["--bpm", str(p["bpm"])])
         subprocess.check_call(cmd)
 
+    elif p["type"] == "full_kit":
+        cmd = [
+            sys.executable,
+            str(factory / "scripts/phonk_kit_factory.py"),
+            "--out",
+            str(dest),
+            "--mode",
+            p.get("factoryMode") or p.get("preset") or "memphis_underground",
+            "--kit-size",
+            p.get("kitSize", "demo"),
+            "--seed",
+            str(p.get("seed", 0)),
+        ]
+        subprocess.check_call(cmd)
+
     elif p["type"] == "disklordz_6":
         subprocess.check_call(
             [

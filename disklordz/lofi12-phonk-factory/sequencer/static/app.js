@@ -21,10 +21,17 @@ const SLOT_BASE = 36;
 const PATTERN_BANK_KEY = "lofi12_pattern_bank_v1";
 /** Fictional UI labels for lane ids returned by the API (no artist names in status). */
 const LANE_UI_LABELS = {
+  hard_dirt_808: "Hard Dirt 808",
+  bounce_cowbell: "Bounce & Cowbell",
+  traproom_tape: "Traproom Tape",
+  tape_lag: "Tape Lag",
+  grid_zirk: "Grid Zirk",
+  memphis_insanity_pack: "Memphis Insanity",
+  memphis_underground: "Underground Memphis",
+  occult_tape: "Occult Tape",
   juicy_j: "Hard Dirt 808",
   dj_paul: "Bounce & Cowbell",
   dj_toomp: "Traproom Tape",
-  dj_zirk: "Zirk bounce",
   memphis_trinity: "Memphis Insanity",
 };
 
@@ -638,7 +645,7 @@ async function loadPresets() {
       opt.textContent = p.label;
       sel.appendChild(opt);
     });
-    sel.value = "memphis_trinity";
+    sel.value = "memphis_insanity_pack";
     applyPresetFromUi();
   } catch (_) {
     sel.innerHTML = '<option value="">— presets unavailable —</option>';

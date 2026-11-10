@@ -1,9 +1,105 @@
 {
   "format": "DISKLORDZ_PHONK_PRODUCT_CATALOG",
-  "version": 1,
+  "version": 2,
   "outputRoot": "release/phonk-kits",
   "licenseFile": "LICENSE.txt",
   "products": [
+    {
+      "sku": "DL-DF-MODE-MEMPHIS-UNDERGROUND-DEMO",
+      "title": "Underground Memphis — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "memphis_underground",
+      "kitSize": "demo",
+      "seed": 11
+    },
+    {
+      "sku": "DL-DF-MODE-MEMPHIS-DARK-DEMO",
+      "title": "Dark Memphis — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "memphis_dark",
+      "kitSize": "demo",
+      "seed": 12
+    },
+    {
+      "sku": "DL-DF-MODE-MEMPHIS-RAW-DEMO",
+      "title": "Raw Southern — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "memphis_raw_southern",
+      "kitSize": "demo",
+      "seed": 13
+    },
+    {
+      "sku": "DL-DF-MODE-VINTAGE-DRUMS-DEMO",
+      "title": "Vintage Drum Machine — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "memphis_vintage_drums",
+      "kitSize": "demo",
+      "seed": 14
+    },
+    {
+      "sku": "DL-DF-MODE-DIRTY-CASSETTE-DEMO",
+      "title": "Dirty Cassette — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "memphis_dirty_cassette",
+      "kitSize": "demo",
+      "seed": 15
+    },
+    {
+      "sku": "DL-DF-MODE-PHONK-OG-DEMO",
+      "title": "OG Phonk — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "phonk_og",
+      "kitSize": "demo",
+      "seed": 16
+    },
+    {
+      "sku": "DL-DF-MODE-PHONK-RARE-DEMO",
+      "title": "Rare Phonk — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "phonk_rare",
+      "kitSize": "demo",
+      "seed": 17
+    },
+    {
+      "sku": "DL-DF-MODE-PHONK-DRIFT-DEMO",
+      "title": "Drift Phonk — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "phonk_drift",
+      "kitSize": "demo",
+      "seed": 18
+    },
+    {
+      "sku": "DL-DF-MODE-PHONK-TRAP-DEMO",
+      "title": "Phonk Trap — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "phonk_trap",
+      "kitSize": "demo",
+      "seed": 19
+    },
+    {
+      "sku": "DL-DF-MODE-BLACK-CASSETTE-DEMO",
+      "title": "Black Cassette — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "black_cassette",
+      "kitSize": "demo",
+      "seed": 20
+    },
+    {
+      "sku": "DL-DF-MODE-OCCULT-TAPE-DEMO",
+      "title": "Occult Tape — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "occult_tape",
+      "kitSize": "demo",
+      "seed": 21
+    },
+    {
+      "sku": "DL-DF-MODE-OCCULT-TAPE-FULL",
+      "title": "Occult Tape — Full Kit (150+)",
+      "type": "full_kit",
+      "factoryMode": "occult_tape",
+      "kitSize": "full",
+      "seed": 9001
+    },
     {
       "sku": "DL-PHONK-BANK-DRIFT-01",
       "title": "Drift Phonk — Lofi-12 Bank (16 one-shots)",
@@ -13,36 +109,12 @@
       "variation": 0
     },
     {
-      "sku": "DL-PHONK-BANK-MEMPHIS-TRINITY-01",
+      "sku": "DL-PHONK-BANK-MEMPHIS-01",
       "title": "Memphis Insanity — Lofi-12 Bank (16 one-shots)",
       "type": "bank",
-      "preset": "memphis_trinity",
+      "preset": "memphis_insanity_pack",
       "prompt": "",
       "variation": 0
-    },
-    {
-      "sku": "DL-PHONK-BANK-TOOMP-01",
-      "title": "Traproom Tape — Lofi-12 Bank (16 one-shots)",
-      "type": "bank",
-      "preset": "dj_toomp",
-      "prompt": "",
-      "variation": 1
-    },
-    {
-      "sku": "DL-PHONK-LOOPS-TRINITY-01",
-      "title": "Memphis Phonk Loops x4",
-      "type": "loops",
-      "preset": "memphis_trinity",
-      "prompt": "",
-      "batch": 4,
-      "bpm": 0
-    },
-    {
-      "sku": "DL-PHONK-6PACK-MIDNIGHT-01",
-      "title": "Midnight Circuit — MPC 6-Pack (44.1 kHz)",
-      "type": "disklordz_6",
-      "presetId": "midnight-circuit",
-      "prompt": "drift phonk 808 memphis snap cowbell"
     }
   ]
 }

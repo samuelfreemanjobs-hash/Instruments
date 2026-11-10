@@ -90,7 +90,7 @@ def render_pattern_stem(
         "trackIndex": track_index,
         "trackName": tr.get("name", stem),
         "drumEngine": engine,
-        "drumEngineLabel": PROFILES.get(engine, PROFILES["juicy_j"]).label,
+        "drumEngineLabel": PROFILES.get(engine, PROFILES["hard_dirt_808"]).label,
         "fx": fx_dict(fx_params),
         "source": "sequencer_pattern",
     }
