@@ -1,0 +1,105 @@
+{
+  "product_id": "disklordz-custom-bass-oscillators",
+  "version": "1.0.0",
+  "oscillator_count": 14,
+  "units": [
+    {
+      "v1_dir": "oscillators/tr808-kick",
+      "project": "nts1_tr808_kick",
+      "mkii_slug": "tr808_kick_phonk",
+      "store_name": "Phonk 808 Kick",
+      "store_blurb": "808-style kick and sub shots for phonk and trap."
+    },
+    {
+      "v1_dir": "oscillators/west-coast-moog",
+      "project": "nts1_west_coast_moog",
+      "mkii_slug": "west_coast_moog_funk",
+      "store_name": "West Coast Funk Stack",
+      "store_blurb": "P-funk and west-coast inspired dual-osc bass and lead."
+    },
+    {
+      "v1_dir": "oscillators/juno-rnb",
+      "project": "nts1_juno_rnb",
+      "mkii_slug": "juno_106_rnb_bass",
+      "store_name": "80s Poly Chorus Bass",
+      "store_blurb": "Chorus-rich poly bass inspired by classic 80s R&B polysynths."
+    },
+    {
+      "v1_dir": "oscillators/dilla-bass",
+      "project": "nts1_dilla_bass",
+      "mkii_slug": "dilla_type_bass",
+      "store_name": "Loose Hip-Hop Bass",
+      "store_blurb": "Loose, behind-the-beat electric bass feel for hip-hop and neo-soul."
+    },
+    {
+      "v1_dir": "oscillators/sub-phatty",
+      "project": "nts1_sub_phatty",
+      "mkii_slug": "moog_sub_phatty_bass",
+      "store_name": "Fat Analog Sub Bass",
+      "store_blurb": "Thick subtractive bass with multidrive-style saturation."
+    },
+    {
+      "v1_dir": "oscillators/prophet-funk",
+      "project": "nts1_prophet_funk",
+      "mkii_slug": "prophet5_funk_rnb_bass",
+      "store_name": "Classic Poly Funk Bass",
+      "store_blurb": "Vintage poly synth funk and R&B bass character."
+    },
+    {
+      "v1_dir": "oscillators/dx7-lately",
+      "project": "nts1_dx7_lately",
+      "mkii_slug": "dx7_lately_bass",
+      "store_name": "FM Electric Bass",
+      "store_blurb": "FM electric bass texture inspired by late-80s digital bass patches."
+    },
+    {
+      "v1_dir": "oscillators/sh101-babyface",
+      "project": "nts1_sh101_babyface",
+      "mkii_slug": "sh101_babyface_bass",
+      "store_name": "Mono Pulse Bass",
+      "store_blurb": "Warm pulse and hollow FM bass from a classic mono synth lineage."
+    },
+    {
+      "v1_dir": "oscillators/moog-voyager-se",
+      "project": "nts1_voyager_se",
+      "mkii_slug": "moog_voyager_se1_squelch",
+      "store_name": "Analog Squelch Stack",
+      "store_blurb": "Three-oscillator analog-style stack with glide and resonant filter squelch."
+    },
+    {
+      "v1_dir": "oscillators/cardo-gfunk",
+      "project": "nts1_cardo_gfunk",
+      "mkii_slug": "cardo_got_wings_gfunk",
+      "store_name": "G-Funk Sub Stack",
+      "store_blurb": "West-coast G-funk sub with warm mid presence."
+    },
+    {
+      "v1_dir": "oscillators/larry-june",
+      "project": "nts1_larry_june",
+      "mkii_slug": "larry_june_bay_cruise_bass",
+      "store_name": "Bay Cruise Bass",
+      "store_blurb": "Rubbery PWM cruise bass for laid-back hip-hop."
+    },
+    {
+      "v1_dir": "oscillators/khalifa-haze",
+      "project": "nts1_khalifa_haze",
+      "mkii_slug": "khalifa_haze_stoner_bass",
+      "store_name": "Hazy Cloud Sub",
+      "store_blurb": "Cloudy sub and low-end for slow, hazy beats."
+    },
+    {
+      "v1_dir": "oscillators/memphis-juicy",
+      "project": "nts1_memphis_juicy",
+      "mkii_slug": "juicy_j_three6_memphis_bass",
+      "store_name": "Memphis Trunk Sub",
+      "store_blurb": "Phase-locked trunk sub for southern hip-hop."
+    },
+    {
+      "v1_dir": "oscillators/ensoniq-eps1",
+      "project": "nts1_ensoniq_eps1",
+      "mkii_slug": "ensoniq_eps1_memphis_bass",
+      "store_name": "Dark Wavetable Sub",
+      "store_blurb": "Wavetable grit with dark filtered sub."
+    }
+  ]
+}
