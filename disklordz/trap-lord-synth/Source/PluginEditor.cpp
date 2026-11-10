@@ -325,9 +325,9 @@ void TrapLordSynthAudioProcessorEditor::resized()
     }
     for (int i = 0; i < macroCount; ++i)
     {
-        const int x = 18 + i * 155;
-        macroLabels[static_cast<size_t> (i)].setBounds (x, 438, 140, 20);
-        macroKnobs[static_cast<size_t> (i)].setBounds (x, 458, 140, 100);
+        const int x = 18 + i * 118;
+        macroLabels[static_cast<size_t> (i)].setBounds (x, 432, 108, 18);
+        macroKnobs[static_cast<size_t> (i)].setBounds (x, 450, 108, 96);
     }
 
     searchBox.setBounds (20, 358, 200, 26);

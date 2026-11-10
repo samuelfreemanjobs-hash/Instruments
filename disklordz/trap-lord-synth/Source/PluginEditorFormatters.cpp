@@ -8,8 +8,12 @@ namespace
 juce::String formatSeconds (double seconds)
 {
     if (seconds < 1.0)
-        return juce::String (seconds * 1000.0, seconds < 0.1 ? 1 : 0) + " ms";
-    return juce::String (seconds, seconds < 10.0 ? 2 : 1) + " s";
+    {
+        const int decimals = seconds < 0.095 ? 1 : 0;
+        return juce::String (seconds * 1000.0, decimals) + " ms";
+    }
+    const int decimals = seconds < 10.0 ? 2 : 1;
+    return juce::String (seconds, decimals) + " s";
 }
 
 juce::String formatPercent (double normalized)
