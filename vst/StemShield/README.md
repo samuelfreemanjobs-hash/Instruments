@@ -2,7 +2,7 @@
 
 Sub-bus peak containment and master stem balancer for beat stem exports.
 
-- **Ceiling:** default -0.5 dBTP with lookahead true-peak limiting
+- **Ceiling:** default -0.5 dBTP with lookahead limiting and **ITU-R BS.1770-4 Annex 2** true-peak detection (4× polyphase FIR sidechain; base-rate audio path)
 - **Sub Balance:** dynamic sub-band gain vs full-band energy
 - **~20 factory presets** for BeatStars / Airbit / artist delivery workflows
 

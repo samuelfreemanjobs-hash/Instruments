@@ -7,7 +7,7 @@
  *   Input gain -> Linkwitz-Riley sub split -> dynamic sub-band gain (SUB BALANCE)
  *   -> sum -> lookahead buffer -> 4x true-peak measurement -> linked gain reduction -> output
  *
- * Latency = lookahead samples + 4x oversampling analysis latency (reported to host).
+ * Latency = lookahead samples + BS.1770 detector group delay (reported to host).
  */
 #include <atomic>
 #include <cmath>
@@ -15,6 +15,7 @@
 
 #include <juce_dsp/juce_dsp.h>
 
+#include "Bs1770TruePeak.h"
 #include "parameter_smoothing.h"
 
 struct StemShieldMeterState {
@@ -37,25 +38,27 @@ public:
   void setInputGainDb(float db) noexcept { inputGainDbTarget_ = db; }
 
   int getLatencySamples() const noexcept { return latencySamples_; }
+  int getDetectorGroupDelaySamples() const noexcept { return detectorGroupDelay_; }
+  int getLookaheadSamples() const noexcept { return lookaheadSamples_; }
+  const Bs1770TruePeak& getTruePeakDetector() const noexcept { return truePeakDetector_; }
+
   StemShieldMeterState& getMeters() noexcept { return meters_; }
   const StemShieldMeterState& getMeters() const noexcept { return meters_; }
 
   void process(juce::AudioBuffer<float>& buffer);
 
-  /** Offline / contract tests: estimate true peak (4x linear oversample). */
-  static float estimateTruePeak4x(const float* x, int count) noexcept;
-
 private:
-  float truePeakAtDelayIndex(int channel, int index) const noexcept;
+  float linkedTruePeakInRange(int startIndex, int endIndex, int writeIndex) const noexcept;
 
   juce::dsp::LinkwitzRileyFilter<float> crossover_;
-  std::unique_ptr<juce::dsp::Oversampling<float>> peakOversampling_;
+  Bs1770TruePeak truePeakDetector_;
 
   std::vector<std::vector<float>> delayBuffer_;
   std::vector<float> limitedScratch_;
   int delaySize_ = 0;
   int writePos_ = 0;
   int lookaheadSamples_ = 0;
+  int detectorGroupDelay_ = 0;
   int latencySamples_ = 0;
 
   DspParamSmooth ceilingSmooth_;

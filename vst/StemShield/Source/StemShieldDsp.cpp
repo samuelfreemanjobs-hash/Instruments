@@ -22,24 +22,15 @@ float releaseCoeffFromMs(float ms, double sampleRate) noexcept {
   return 1.0f - std::exp(-1.0f / (tau * static_cast<float>(sampleRate)));
 }
 
-} // namespace
-
-float StemShieldDsp::estimateTruePeak4x(const float* x, int count) noexcept {
-  if (count <= 0) {
-    return 0.0f;
+int wrapIndex(int index, int size) noexcept {
+  int w = index % size;
+  if (w < 0) {
+    w += size;
   }
-  float peak = 0.0f;
-  for (int i = 0; i < count - 1; ++i) {
-    const float a = x[i];
-    const float b = x[i + 1];
-    peak = std::fmax(peak, std::fabs(a));
-    peak = std::fmax(peak, std::fabs(0.25f * a + 0.75f * b));
-    peak = std::fmax(peak, std::fabs(0.5f * a + 0.5f * b));
-    peak = std::fmax(peak, std::fabs(0.75f * a + 0.25f * b));
-  }
-  peak = std::fmax(peak, std::fabs(x[count - 1]));
-  return peak;
+  return w;
 }
+
+} // namespace
 
 void StemShieldDsp::prepare(const juce::dsp::ProcessSpec& spec) {
   sampleRate_ = spec.sampleRate;
@@ -50,18 +41,18 @@ void StemShieldDsp::prepare(const juce::dsp::ProcessSpec& spec) {
   crossover_.setType(juce::dsp::LinkwitzRileyFilterType::allpass);
   crossover_.setCutoffFrequency(safeCrossover(static_cast<float>(crossoverTargetHz_), sampleRate_));
 
-  peakOversampling_ = std::make_unique<juce::dsp::Oversampling<float>>(
-      1, 2, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR, true, false);
-  peakOversampling_->initProcessing(static_cast<size_t>(juce::jmax(64, maxBlockSize_)));
-  peakOversampling_->reset();
+  truePeakDetector_.prepare(sampleRate_);
+  detectorGroupDelay_ = truePeakDetector_.getGroupDelaySamples();
 
   const int maxLookahead = msToSamples(12.0f, sampleRate_);
   lookaheadSamples_ = msToSamples(lookaheadMsTarget_, sampleRate_);
-  delaySize_ = maxBlockSize_ + maxLookahead + 64;
-  latencySamples_ = lookaheadSamples_ + static_cast<int>(peakOversampling_->getLatencyInSamples());
+  delaySize_ = maxBlockSize_ + maxLookahead + detectorGroupDelay_ + 96;
+
+  latencySamples_ = lookaheadSamples_ + detectorGroupDelay_;
 
   delayBuffer_.assign(static_cast<size_t>(numChannels_), std::vector<float>(static_cast<size_t>(delaySize_), 0.0f));
   limitedScratch_.assign(static_cast<size_t>(numChannels_), 0.0f);
+
   ceilingSmooth_.setTargetCoeff(20.0f, static_cast<float>(sampleRate_));
   subBalanceSmooth_.setTargetCoeff(25.0f, static_cast<float>(sampleRate_));
   crossoverSmooth_.setTargetCoeff(35.0f, static_cast<float>(sampleRate_));
@@ -85,9 +76,6 @@ void StemShieldDsp::prepare(const juce::dsp::ProcessSpec& spec) {
 
 void StemShieldDsp::reset() {
   crossover_.reset();
-  if (peakOversampling_) {
-    peakOversampling_->reset();
-  }
   for (auto& ch : delayBuffer_) {
     std::fill(ch.begin(), ch.end(), 0.0f);
   }
@@ -96,15 +84,27 @@ void StemShieldDsp::reset() {
   subFullEnv_ = 0.0f;
 }
 
-float StemShieldDsp::truePeakAtDelayIndex(int channel, int index) const noexcept {
-  const auto& line = delayBuffer_[static_cast<size_t>(channel)];
-  if (index < 0 || index >= delaySize_) {
-    return 0.0f;
+float StemShieldDsp::linkedTruePeakInRange(int startIndex, int endIndex, int writeIndex) const noexcept {
+  float linked = 0.0f;
+  int idx = startIndex;
+  for (;;) {
+    for (int ch = 0; ch < numChannels_; ++ch) {
+      const auto& line = delayBuffer_[static_cast<size_t>(ch)];
+      auto fetch = [&](int sampleIndex) -> float {
+        if (sampleIndex == writeIndex) {
+          return limitedScratch_[static_cast<size_t>(ch)];
+        }
+        const int w = wrapIndex(sampleIndex, delaySize_);
+        return line[static_cast<size_t>(w)];
+      };
+      linked = std::fmax(linked, truePeakDetector_.measureAt(fetch, idx));
+    }
+    if (idx == endIndex) {
+      break;
+    }
+    idx = wrapIndex(idx + 1, delaySize_);
   }
-  if (index + 1 < delaySize_) {
-    return estimateTruePeak4x(&line[static_cast<size_t>(index)], 2);
-  }
-  return std::fabs(line[static_cast<size_t>(index)]);
+  return linked;
 }
 
 void StemShieldDsp::process(juce::AudioBuffer<float>& buffer) {
@@ -122,7 +122,7 @@ void StemShieldDsp::process(juce::AudioBuffer<float>& buffer) {
   const int newLookahead = msToSamples(lookaheadSmooth_.process(lookaheadMsTarget_), sampleRate_);
   if (newLookahead != lookaheadSamples_) {
     lookaheadSamples_ = newLookahead;
-    latencySamples_ = lookaheadSamples_ + static_cast<int>(peakOversampling_->getLatencyInSamples());
+    latencySamples_ = lookaheadSamples_ + detectorGroupDelay_;
   }
 
   const float releaseMs = releaseSmooth_.process(releaseMsTarget_);
@@ -171,23 +171,10 @@ void StemShieldDsp::process(juce::AudioBuffer<float>& buffer) {
       limitedScratch_[static_cast<size_t>(ch)] = std::isfinite(sum) ? sum : 0.0f;
     }
 
-    const int readPos = (writePos_ - lookaheadSamples_ + delaySize_) % delaySize_;
+    const int readPos =
+        wrapIndex(writePos_ - lookaheadSamples_ - detectorGroupDelay_, delaySize_);
 
-    float linkedPeakAhead = 0.0f;
-    int scanPos = readPos;
-    for (;;) {
-      for (int ch = 0; ch < numChannels; ++ch) {
-        linkedPeakAhead = std::fmax(linkedPeakAhead, truePeakAtDelayIndex(ch, scanPos));
-      }
-      if (scanPos == writePos_) {
-        break;
-      }
-      scanPos = (scanPos + 1) % delaySize_;
-    }
-    for (int ch = 0; ch < numChannels; ++ch) {
-      const float s = limitedScratch_[static_cast<size_t>(ch)];
-      linkedPeakAhead = std::fmax(linkedPeakAhead, std::fabs(s));
-    }
+    const float linkedPeakAhead = linkedTruePeakInRange(readPos, writePos_, writePos_);
 
     float targetGain = 1.0f;
     if (linkedPeakAhead > ceilingLinear) {
@@ -207,13 +194,15 @@ void StemShieldDsp::process(juce::AudioBuffer<float>& buffer) {
       float out = delay[static_cast<size_t>(readPos)] * gainEnvelope_;
       if (!std::isfinite(out)) {
         out = 0.0f;
+      } else if (std::fabs(out) < 1.0e-15f) {
+        out = 0.0f;
       }
       buffer.setSample(ch, i, out);
       blockOutputPeak_ = std::fmax(blockOutputPeak_, std::fabs(out));
       delay[static_cast<size_t>(writePos_)] = limitedScratch_[static_cast<size_t>(ch)];
     }
 
-    writePos_ = (writePos_ + 1) % delaySize_;
+    writePos_ = wrapIndex(writePos_ + 1, delaySize_);
   }
 
   meters_.outputPeakDb.store(juce::Decibels::gainToDecibels(blockOutputPeak_, -100.0f));
