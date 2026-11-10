@@ -1,16 +1,21 @@
 #pragma once
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "KeygroupExportWorker.h"
 
-class TrapLordSynthAudioProcessorEditor final : public juce::AudioProcessorEditor
+class TrapLordSynthAudioProcessorEditor final : public juce::AudioProcessorEditor, private juce::Timer
 {
 public:
     explicit TrapLordSynthAudioProcessorEditor (TrapLordSynthAudioProcessor&);
+    ~TrapLordSynthAudioProcessorEditor() override;
     void paint (juce::Graphics&) override;
     void resized() override;
 
 private:
-    void refreshPresetMenu();
+    void timerCallback() override;
+    void refreshFilteredIndices();
+    void showPresetAtListIndex (int listIndex);
+    void startMpcExport();
 
     TrapLordSynthAudioProcessor& processor;
     using SA = juce::AudioProcessorValueTreeState::SliderAttachment;
@@ -24,12 +29,19 @@ private:
     std::array<juce::Label, macroCount> macroLabels;
     std::array<std::unique_ptr<SA>, count> attachments;
     std::array<std::unique_ptr<SA>, macroCount> macroAttachments;
-    juce::ComboBox engine, chord, presets, bankMode;
+    juce::ComboBox engine, chord, bankMode, categoryFilter;
+    juce::TextEditor searchBox;
+    juce::Label presetTitle;
+    juce::TextButton prevBtn { "<" }, nextBtn { ">" }, exportMpc { "EXPORT KEYGROUP" };
     std::unique_ptr<CA> engineAttachment, chordAttachment, bankAttachment;
     juce::ToggleButton arp { "ARP ON" };
     std::unique_ptr<BA> arpAttachment;
-    juce::TextButton load { "LOAD SAMPLE MAP" }, exportButton { "EXPORT WAV KEYGROUP" };
+    juce::TextButton load { "LOAD SAMPLE MAP" };
     juce::Label status;
-    std::vector<int> visiblePresetIndices;
+    juce::ProgressBar exportProgress { progressValue };
+    double progressValue = 0.;
+    juce::Array<int> filteredPresetIndices;
+    int listIndex = 0;
+    std::unique_ptr<KeygroupExportWorker> exportWorker;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrapLordSynthAudioProcessorEditor)
 };

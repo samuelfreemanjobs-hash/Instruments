@@ -1,4 +1,5 @@
 #include "PluginEditor.h"
+#include "PresetLibrary.h"
 
 TrapLordSynthAudioProcessorEditor::TrapLordSynthAudioProcessorEditor (TrapLordSynthAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
@@ -39,25 +40,51 @@ TrapLordSynthAudioProcessorEditor::TrapLordSynthAudioProcessorEditor (TrapLordSy
                         1);
     chord.addItemList ({ "Off", "Minor", "Minor 7", "Diminished", "Sus 2", "Minor 9" }, 1);
     bankMode.addItemList ({ "Church Keys", "Dark Brass", "Trap Orchestra" }, 1);
+    categoryFilter.addItem ("All categories", 1);
+    for (const auto& cat : PresetLibrary::instance().categories())
+        categoryFilter.addItem (cat, categoryFilter.getNumItems() + 1);
+    categoryFilter.setSelectedId (1, juce::dontSendNotification);
+    categoryFilter.onChange = [this] { refreshFilteredIndices(); };
+
     engineAttachment = std::make_unique<CA> (p.state, "engine", engine);
     chordAttachment = std::make_unique<CA> (p.state, "chord", chord);
     bankAttachment = std::make_unique<CA> (p.state, "bankMode", bankMode);
     addAndMakeVisible (engine);
     addAndMakeVisible (chord);
     addAndMakeVisible (bankMode);
+    addAndMakeVisible (categoryFilter);
+
+    searchBox.setTextToShowWhenEmpty ("Search presets", juce::Colours::grey);
+    searchBox.onTextChange = [this] { refreshFilteredIndices(); };
+    addAndMakeVisible (searchBox);
+
+    presetTitle.setJustificationType (juce::Justification::centredLeft);
+    presetTitle.setColour (juce::Label::textColourId, juce::Colours::white);
+    addAndMakeVisible (presetTitle);
+
+    prevBtn.onClick = [this]
+    {
+        if (filteredPresetIndices.isEmpty())
+            return;
+        listIndex = (listIndex - 1 + filteredPresetIndices.size()) % filteredPresetIndices.size();
+        showPresetAtListIndex (listIndex);
+    };
+    nextBtn.onClick = [this]
+    {
+        if (filteredPresetIndices.isEmpty())
+            return;
+        listIndex = (listIndex + 1) % filteredPresetIndices.size();
+        showPresetAtListIndex (listIndex);
+    };
+    addAndMakeVisible (prevBtn);
+    addAndMakeVisible (nextBtn);
+
+    exportMpc.onClick = [this] { startMpcExport(); };
+    addAndMakeVisible (exportMpc);
+    addAndMakeVisible (exportProgress);
 
     arpAttachment = std::make_unique<BA> (p.state, "arp", arp);
     addAndMakeVisible (arp);
-
-    bankMode.onChange = [this] { refreshPresetMenu(); };
-    refreshPresetMenu();
-    presets.onChange = [this]
-    {
-        const int id = presets.getSelectedId();
-        if (id >= 2 && id - 2 < (int) visiblePresetIndices.size())
-            processor.loadFactoryPreset (visiblePresetIndices[static_cast<size_t> (id - 2)]);
-    };
-    addAndMakeVisible (presets);
 
     load.onClick = [this]
     {
@@ -70,37 +97,104 @@ TrapLordSynthAudioProcessorEditor::TrapLordSynthAudioProcessorEditor (TrapLordSy
                                                   juce::dontSendNotification);
                               });
     };
-    exportButton.onClick = [this]
-    {
-        auto chooser = std::make_shared<juce::FileChooser> ("Export keygroup folder");
-        chooser->launchAsync (juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectDirectories,
-                              [this, chooser] (const juce::FileChooser& fc)
-                              {
-                                  status.setText (processor.exportKeygroup (fc.getResult()) ? "WAV keygroup exported"
-                                                                                              : "Export failed",
-                                                  juce::dontSendNotification);
-                              });
-    };
     addAndMakeVisible (load);
-    addAndMakeVisible (exportButton);
+
     addAndMakeVisible (status);
     status.setColour (juce::Label::textColourId, juce::Colours::lightgrey);
-    setSize (1020, 560);
+
+    exportWorker = std::make_unique<KeygroupExportWorker> (processor);
+    refreshFilteredIndices();
+    startTimerHz (12);
+    setSize (1020, 600);
 }
 
-void TrapLordSynthAudioProcessorEditor::refreshPresetMenu()
+TrapLordSynthAudioProcessorEditor::~TrapLordSynthAudioProcessorEditor()
 {
-    presets.clear();
-    visiblePresetIndices.clear();
-    presets.addItem ("SELECT ATL CLASSICS PATCH", 1);
-    const int bank = juce::jlimit (0, 2, bankMode.getSelectedItemIndex());
-    const auto& names = TrapLordSynthAudioProcessor::factoryNames();
-    for (int i = 0; i < TrapLordSynthAudioProcessor::factoryPresetCount(); ++i)
+    stopTimer();
+    if (exportWorker != nullptr)
     {
-        if (TrapLordSynthAudioProcessor::presetBank (i) == bank)
+        exportWorker->requestStop();
+        exportWorker->stopThread (8000);
+    }
+}
+
+void TrapLordSynthAudioProcessorEditor::refreshFilteredIndices()
+{
+    const juce::String cat = categoryFilter.getSelectedId() <= 1 ? juce::String()
+                                                                : categoryFilter.getText();
+    filteredPresetIndices = PresetLibrary::instance().search (searchBox.getText(), cat);
+    listIndex = 0;
+    if (! filteredPresetIndices.isEmpty())
+        showPresetAtListIndex (0);
+    else
+        presetTitle.setText ("No presets match filter", juce::dontSendNotification);
+}
+
+void TrapLordSynthAudioProcessorEditor::showPresetAtListIndex (int idx)
+{
+    if (! juce::isPositiveAndBelow (idx, filteredPresetIndices.size()))
+        return;
+    listIndex = idx;
+    const int preset = filteredPresetIndices.getReference (idx);
+    processor.loadFactoryPreset (preset);
+    presetTitle.setText (juce::String (idx + 1) + "/" + juce::String (filteredPresetIndices.size()) + "  "
+                         + PresetLibrary::instance().get (preset).name,
+                         juce::dontSendNotification);
+}
+
+void TrapLordSynthAudioProcessorEditor::startMpcExport()
+{
+    if (exportWorker != nullptr && exportWorker->isThreadRunning())
+    {
+        exportWorker->requestStop();
+        status.setText ("Cancelling export...", juce::dontSendNotification);
+        return;
+    }
+
+    auto chooser = std::make_shared<juce::FileChooser> ("Choose folder for MPC keygroup export");
+    chooser->launchAsync (juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectDirectories,
+                          [this, chooser] (const juce::FileChooser& fc)
+                          {
+                              if (! fc.getResult().exists())
+                                  return;
+
+                              KeygroupExportOptions opts;
+                              const int preset = processor.getCurrentPresetIndex();
+                              opts.programName = PresetLibrary::instance().get (preset).name;
+                              opts.lowNote = 24;
+                              opts.highNote = 84;
+                              opts.semitoneStep = 3;
+                              opts.velocityLayers = 2;
+                              opts.use24Bit = true;
+                              progressValue = 0;
+                              exportMpc.setEnabled (false);
+
+                              exportWorker->startExport (
+                                  fc.getResult(),
+                                  opts,
+                                  [this] (float p, const juce::String& msg)
+                                  {
+                                      juce::MessageManager::callAsync ([this, p, msg]
+                                                                       {
+                                                                           progressValue = double (p);
+                                                                           status.setText (msg, juce::dontSendNotification);
+                                                                       });
+                                  });
+                          });
+}
+
+void TrapLordSynthAudioProcessorEditor::timerCallback()
+{
+    if (exportWorker == nullptr)
+        return;
+
+    if (! exportWorker->isThreadRunning())
+    {
+        if (! exportMpc.isEnabled())
         {
-            visiblePresetIndices.push_back (i);
-            presets.addItem (names[i], (int) visiblePresetIndices.size() + 1);
+            exportMpc.setEnabled (true);
+            progressValue = exportWorker->succeeded() ? 1. : 0.;
+            status.setText (exportWorker->resultMessage(), juce::dontSendNotification);
         }
     }
 }
@@ -113,10 +207,9 @@ void TrapLordSynthAudioProcessorEditor::paint (juce::Graphics& g)
     g.drawText ("DISKLORDZ  /  TRAP LORD SYNTH", 22, 10, 900, 36, juce::Justification::centredLeft);
     g.setColour (juce::Colours::grey);
     g.setFont (13.f);
-    g.drawText ("ATL CLASSICS SOUND BANK  |  CHURCH KEYS  ·  DARK BRASS  ·  TRAP ORCHESTRA", 24, 48, 900, 22,
-                juce::Justification::centredLeft);
+    g.drawText ("ATL CLASSICS — 500 PRESETS — MPC KEYGROUP EXPORT", 24, 48, 900, 22, juce::Justification::centredLeft);
     g.setColour (juce::Colours::gold);
-    g.drawText ("GLOBAL MACROS", 24, 395, 200, 18, juce::Justification::centredLeft);
+    g.drawText ("GLOBAL MACROS", 24, 418, 200, 18, juce::Justification::centredLeft);
 }
 
 void TrapLordSynthAudioProcessorEditor::resized()
@@ -131,15 +224,22 @@ void TrapLordSynthAudioProcessorEditor::resized()
     for (int i = 0; i < macroCount; ++i)
     {
         const int x = 18 + i * 155;
-        macroLabels[static_cast<size_t> (i)].setBounds (x, 415, 140, 20);
-        macroKnobs[static_cast<size_t> (i)].setBounds (x, 435, 140, 100);
+        macroLabels[static_cast<size_t> (i)].setBounds (x, 438, 140, 20);
+        macroKnobs[static_cast<size_t> (i)].setBounds (x, 458, 140, 100);
     }
-    bankMode.setBounds (20, 348, 165, 28);
-    engine.setBounds (195, 348, 165, 28);
-    chord.setBounds (370, 348, 140, 28);
-    presets.setBounds (520, 348, 220, 28);
-    arp.setBounds (750, 348, 85, 28);
-    load.setBounds (520, 380, 145, 28);
-    exportButton.setBounds (675, 380, 160, 28);
-    status.setBounds (20, 522, 970, 22);
+
+    searchBox.setBounds (20, 358, 200, 26);
+    categoryFilter.setBounds (230, 358, 145, 26);
+    prevBtn.setBounds (385, 358, 36, 26);
+    nextBtn.setBounds (425, 358, 36, 26);
+    presetTitle.setBounds (470, 358, 430, 26);
+    exportMpc.setBounds (20, 390, 165, 28);
+    exportProgress.setBounds (195, 395, 300, 18);
+
+    bankMode.setBounds (510, 390, 155, 28);
+    engine.setBounds (675, 390, 155, 28);
+    chord.setBounds (840, 390, 140, 28);
+    arp.setBounds (900, 358, 85, 26);
+    load.setBounds (510, 425, 145, 28);
+    status.setBounds (20, 568, 970, 22);
 }

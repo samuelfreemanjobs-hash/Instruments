@@ -25,6 +25,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(JUCE)
 
+juce_add_binary_data(TrapLordSynthFactoryData SOURCES assets/factory/preset_bank.json)
+
 juce_add_plugin(TrapLordSynth
     COMPANY_NAME "DiskLordz Audio"
     BUNDLE_ID com.disklordz.audio.traplordsynth
@@ -45,8 +47,13 @@ target_sources(TrapLordSynth PRIVATE
     Source/PluginEditor.cpp
     Source/PluginEditor.h
     Source/SynthVoice.h
-    Source/AtlFactoryPresets.cpp
-    Source/AtlFactoryPresets.h)
+    Source/PresetLibrary.cpp
+    Source/PresetLibrary.h
+    Source/MpcXpmWriter.cpp
+    Source/MpcXpmWriter.h
+    Source/KeygroupExportWorker.cpp
+    Source/KeygroupExportWorker.h
+    Source/KeygroupExportOptions.h)
 
 target_compile_definitions(TrapLordSynth
     PUBLIC
@@ -56,6 +63,7 @@ target_compile_definitions(TrapLordSynth
         JUCE_DISPLAY_SPLASH_SCREEN=0)
 
 target_link_libraries(TrapLordSynth PRIVATE
+    TrapLordSynthFactoryData
     juce::juce_audio_utils
     juce::juce_audio_processors
     juce::juce_audio_formats

@@ -1,0 +1,49 @@
+{
+  "auditions": [
+    {
+      "category": "Bass",
+      "index": 335,
+      "name": "Bass Evil Organ 336"
+    },
+    {
+      "category": "Bells",
+      "index": 224,
+      "name": "Bells Cathedral Organ 225"
+    },
+    {
+      "category": "Brass",
+      "index": 0,
+      "name": "Brass Ominous Bell 01"
+    },
+    {
+      "category": "Hits/FX",
+      "index": 445,
+      "name": "Hits/FX Ominous Choir 446"
+    },
+    {
+      "category": "Keys",
+      "index": 112,
+      "name": "Keys Shadow Keys 113"
+    },
+    {
+      "category": "Leads",
+      "index": 280,
+      "name": "Leads Evil Cathedral 281"
+    },
+    {
+      "category": "Organ",
+      "index": 168,
+      "name": "Organ Cathedral Organ 169"
+    },
+    {
+      "category": "Pads/Choir",
+      "index": 390,
+      "name": "Pads/Choir Ominous Bell 391"
+    },
+    {
+      "category": "Strings",
+      "index": 56,
+      "name": "Strings Ominous Pulse 57"
+    }
+  ]
+}

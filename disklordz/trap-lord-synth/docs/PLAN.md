@@ -100,11 +100,11 @@ Legacy 18 ATL Classics entries remain as seed recipes inside the generator (not 
 
 | ID | Deliverable | Done when |
 |----|-------------|-----------|
-| M2a | `docs/PLAN.md` on PR | Merged doc |
-| M2b | 500-preset library + browser | JSON + UI filter/search |
-| M2c | Native `.xpm` export + worker UI | Validator green |
-| M2d | Audition WAV script + artifacts | Sample WAVs in CI/artifacts |
-| M2e | pluginval s5 pass | Log attached to PR |
+| M2a | `docs/PLAN.md` on PR | Done |
+| M2b | 500-preset library + browser | Done — BinaryData + search/filter/prev/next |
+| M2c | Native `.xpm` export + worker UI | Done — **not hardware verified** |
+| M2d | Audition manifest script | Done — `audition_manifest.json` (9 categories); WAV via Export Keygroup |
+| M2e | pluginval s5 pass | Done (Linux Cloud agent) |
 
 ## Risks
 

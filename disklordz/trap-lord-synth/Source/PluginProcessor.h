@@ -1,7 +1,10 @@
 #pragma once
 #include <JuceHeader.h>
 #include "SynthVoice.h"
+#include "KeygroupExportOptions.h"
 #include <array>
+#include <atomic>
+#include <functional>
 
 class TrapLordSynthAudioProcessor final : public juce::AudioProcessor
 {
@@ -28,10 +31,17 @@ public:
     bool loadSampleMap (const juce::File&);
     bool exportKeygroup (const juce::File& folder, int root = 60);
     void loadFactoryPreset (int index);
+    int getCurrentPresetIndex() const { return currentPresetIndex; }
+    void setCurrentPresetIndex (int i) { currentPresetIndex = i; }
+    bool exportMpcKeygroupOffline (const juce::File& parentFolder,
+                                   const KeygroupExportOptions& options,
+                                   std::atomic<bool>& abortFlag,
+                                   const std::function<void (float, const juce::String&)>& onProgress);
     juce::AudioProcessorValueTreeState state;
     static const juce::StringArray& factoryNames();
     static int factoryPresetCount();
     static int presetBank (int index);
+    static juce::String presetCategory (int index);
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout makeLayout();
@@ -48,5 +58,7 @@ private:
     double hostBpm = 120.;
     void generateArp (juce::MidiBuffer&, int);
     double arpPeriodSeconds() const;
+    bool renderNoteOffline (int midiNote, int velocity, juce::AudioBuffer<float>& buffer, double sampleRate);
+    int currentPresetIndex = 0;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrapLordSynthAudioProcessor)
 };
