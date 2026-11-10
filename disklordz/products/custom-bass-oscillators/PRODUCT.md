@@ -1,6 +1,6 @@
 # DiskLordz Custom Bass Oscillators — product brief (internal + store draft)
 
-**SKU idea:** `DLZ-CBOSC-14` · **Version:** 1.0.0
+**Bundle SKU:** `DLZ-CBOSC-BUNDLE` · **Singles:** `DLZ-CBOSC-001` … `014` · **Version:** 1.0.0
 
 ## Proposed product names (customer-facing — no third-party trademarks)
 
@@ -43,15 +43,23 @@
 - **In-device display names** in some files may still show legacy internal titles (e.g. panel name from manifest). Before retail, Sam may want a header pass + Korg `dev_id` allocation.
 - **Risk:** Genre marketing that implies endorsement by vintage brands — keep “inspired by” only in blog posts if needed, not product title.
 
+## Singles vs bundle (store strategy)
+
+- **15 SKUs** in `catalog.json`: **1 bundle** + **14 singles** (same four-platform binaries per osc).
+- Each single zip includes `PRODUCT.md`, quick start, control chart + manifest presets, EULA placeholder.
+- **Upsell:** singles at **$4.99–$7.99** (suggestion); bundle **$34** — collect 5+ singles and bundle is cheaper than à la carte.
+
 ## Suggested price range (suggestion only)
 
-| Tier | Price (USD) | Reasoning |
-|------|-------------|-----------|
-| Launch intro | **$29–39** | 14 units × 4 platforms ≈ 56 binaries; comparable to niche sample packs but reusable on hardware |
-| Standard | **$49** | After demo videos + hardware sign-off |
-| Bundle upsell | **$69** with future DiskLordz kit | If sold beside phonk/808 content |
+| SKU | Price (USD) | Notes |
+|-----|-------------|-------|
+| `DLZ-CBOSC-BUNDLE` | **$34** | All 14 oscillators |
+| Singles (most) | **$5.99** | One osc × 4 platforms |
+| `DLZ-CBOSC-009` (Analog Squelch) | **$7.99** | Multi-osc stack |
+| `DLZ-CBOSC-001` (Phonk 808 Kick) | **$4.99** | Kick / entry SKU |
+| `DLZ-CBOSC-014` (Dark Wavetable) | **$6.99** | Wavetable complexity |
 
-**Suggestion:** Launch at **$34** single SKU until demo audio and 2-minute install video exist.
+See generated **`release/products/SKU_TABLE-1.0.0.md`** after packaging.
 
 ## Assets still needed (Sam)
 

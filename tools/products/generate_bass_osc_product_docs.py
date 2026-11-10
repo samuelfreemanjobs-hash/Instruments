@@ -186,8 +186,17 @@ def write_docs(out_dir: Path) -> None:
 if __name__ == "__main__":
     import sys
 
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <bundle-output-dir>", file=sys.stderr)
+    if len(sys.argv) == 2:
+        write_docs(Path(sys.argv[1]))
+        print(f"Wrote docs under {sys.argv[1]}")
+    elif len(sys.argv) == 1:
+        from package_bass_catalog import package_all
+
+        package_all(ROOT)
+    else:
+        print(
+            f"Usage: {sys.argv[0]} [<bundle-output-dir>]\n"
+            "  (no args) = full bundle + singles via package_bass_catalog",
+            file=sys.stderr,
+        )
         raise SystemExit(1)
-    write_docs(Path(sys.argv[1]))
-    print(f"Wrote docs under {sys.argv[1]}")
