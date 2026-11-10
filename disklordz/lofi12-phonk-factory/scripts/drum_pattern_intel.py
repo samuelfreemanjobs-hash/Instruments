@@ -35,7 +35,9 @@ def pick_bpm(mode: FactoryModeProfile, seed: int) -> float:
 def pick_swing(mode: FactoryModeProfile, seed: int) -> float:
     span = mode.swing_hi - mode.swing_lo
     frac = ((seed >> 8) % 1000) / 1000.0
-    return mode.swing_lo + span * frac
+    base = mode.swing_lo + span * frac
+    density_bias = (mode.fusion.density_swing - 0.5) * 0.08
+    return min(0.64, max(0.50, base + density_bias))
 
 
 @dataclass
@@ -46,7 +48,7 @@ class PatternNote:
     micro_ms: float = 0.0
 
 
-def _memphis_bar(bar: int, *, swing: float, seed: int) -> list[PatternNote]:
+def _memphis_bar(bar: int, *, swing: float, seed: int, density_swing: float) -> list[PatternNote]:
     notes: list[PatternNote] = []
     kicks = (0, 6, 8) if bar % 2 == 0 else (0, 10)
     if (seed + bar) % 5 == 0:
@@ -59,7 +61,8 @@ def _memphis_bar(bar: int, *, swing: float, seed: int) -> list[PatternNote]:
         notes.append(PatternNote(st, "snare", 115))
     for st in (2, 7, 9, 13):
         notes.append(PatternNote(st, "cowbell", 88))
-    hat_steps = list(range(0, 16, 2))
+    step = 2 if density_swing < 0.55 else 1
+    hat_steps = list(range(0, 16, step))
     if bar == 1 and (seed % 3) == 0:
         hat_steps.extend([14, 15])  # pitch-drop roll proxy (denser at end)
     for i, st in enumerate(hat_steps):
@@ -140,7 +143,9 @@ def build_pattern(
         elif mode.phonk_pattern:
             notes.extend(_phonk_bar(bar, swing=swing, seed=seed, black_cassette=black))
         else:
-            notes.extend(_memphis_bar(bar, swing=swing, seed=seed))
+            notes.extend(
+                _memphis_bar(bar, swing=swing, seed=seed, density_swing=mode.fusion.density_swing)
+            )
     return notes, bpm, swing, key
 
 

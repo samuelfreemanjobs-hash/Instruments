@@ -53,7 +53,18 @@ KIT_SIZES: dict[str, KitSizeSpec] = {
         "demo", 4, 4, 3, 4, 3, 3, 3, 4, 3, texture_loops=1
     ),
     "full": KitSizeSpec(
-        "full", 18, 22, 12, 18, 11, 12, 12, 25, 18, texture_loops=4
+        # Targets spec bands summed to ~150 one-shots (kicks 20, snares 25, …)
+        "full",
+        20,
+        25,
+        15,
+        20,
+        12,
+        15,
+        15,
+        28,
+        18,
+        texture_loops=4,
     ),
     "lofi12": KitSizeSpec(
         "lofi12", 4, 4, 2, 2, 2, 2, 2, 2, 0, texture_loops=0
