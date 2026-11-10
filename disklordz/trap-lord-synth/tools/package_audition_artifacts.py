@@ -149,8 +149,10 @@ def qa_file(metrics, wav_path: Path) -> None:
 def main() -> int:
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
     stage = ARTIFACTS / "trap-lord-auditions-staging"
+    if stage.exists() and not stage.is_dir():
+        stage.unlink()
     shutil.rmtree(stage, ignore_errors=True)
-    stage.mkdir(parents=True)
+    stage.mkdir(parents=True, exist_ok=True)
 
     cmake_build_cli()
     run([sys.executable, str(ROOT / "tests/test_trap_lord_audio_qa.py")], cwd=ROOT)
