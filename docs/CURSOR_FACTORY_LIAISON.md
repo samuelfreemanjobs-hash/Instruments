@@ -79,6 +79,16 @@ When the DiskLordz VST Factory service is running (`uvicorn` on `:8790`):
 
 See [disklordz/vst-factory/ARCHITECTURE.md](../disklordz/vst-factory/ARCHITECTURE.md) and [DISKLORDZ_VST_FACTORY_PLATFORM.md](DISKLORDZ_VST_FACTORY_PLATFORM.md).
 
+## Current gate (`plugin-skeleton`, 2026-11)
+
+**Blocker `human-windows`:** Stage B JUCE shell is on **`main`**. Samuel proves VST3 in a DAW — **do not** open Factory for greenfield CMake.
+
+| Path | Action |
+|------|--------|
+| `PASTE_TO_FACTORY.md` | Build script + optional **DiskLordz Audio (Windows VST3)** artifact |
+| Operator tiers | [CURSOR_OPERATOR_ON_20_PRO.md](CURSOR_OPERATOR_ON_20_PRO.md) |
+| Factory chat | Only after a **failed** local or CI build (paste log + this file) |
+
 ## Related
 
 - [DISKLORDZ_MASTER_PLAN.md](DISKLORDZ_MASTER_PLAN.md)  

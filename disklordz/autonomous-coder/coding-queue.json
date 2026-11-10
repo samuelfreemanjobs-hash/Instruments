@@ -164,6 +164,16 @@
       "allowlist": ["docs/"],
       "context_paths": ["DiskLordz-Audio/BUILD.md"],
       "priority": 16
+    },
+    {
+      "id": "cloud-liaison-doc-human-windows",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "CURSOR_FACTORY_LIAISON: human-windows = Samuel not Factory",
+      "acceptance": "Section cites PASTE_TO_FACTORY, Windows CI, operator doc",
+      "allowlist": ["docs/"],
+      "context_paths": ["disklordz/audio-command/data/PASTE_TO_FACTORY.md"],
+      "priority": 17
     }
   ]
 }
