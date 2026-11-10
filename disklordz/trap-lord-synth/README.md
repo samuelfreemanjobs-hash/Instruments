@@ -23,6 +23,10 @@ cmake --build disklordz/trap-lord-synth/build --config Release `
 
 Artefacts: `build/TrapLordSynth_artefacts/Release/VST3/` and `Standalone/`.
 
+## ATL Classics sound bank
+
+Eighteen neutral-named factory presets across **Church Keys**, **Dark Brass**, and **Trap Orchestra**, plus macros **Darkness**, **Dirt**, **Movement**, and **Space**. Details: `docs/ATL_CLASSICS.md`. Demo melody: `assets/demo_f_harmonic_minor_140bpm.mid`.
+
 ## Validation
 
 From repo root:
