@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "AtlFactoryPresets.h"
 #include <cmath>
 
 namespace
@@ -45,14 +46,55 @@ Layout TrapLordSynthAudioProcessor::makeLayout()
     param (l, "delay", "Delay mix", 0.f, .7f, 0.f);
     param (l, "arpRate", "Arp division", 1.f, 16.f, 4.f);
     param (l, "arpGate", "Arp gate", .1f, .95f, .65f);
+    param (l, "resonance", "Resonance", 0.f, 1.f, 0.55f);
+    param (l, "pitchEnvSemi", "Pitch env semi", 0.f, 12.f, 0.f);
+    param (l, "pitchEnvMs", "Pitch env ms", 1.f, 500.f, 45.f);
+    param (l, "pulseWidth", "Pulse width", 0.05f, 0.95f, 0.5f);
+    param (l, "portamentoMs", "Portamento ms", 0.f, 800.f, 0.f);
+    param (l, "vibratoDepth", "Vibrato depth", 0.f, 1.f, 0.f);
+    param (l, "macroDarkness", "Darkness", 0.f, 1.f, 0.2f);
+    param (l, "macroDirt", "Dirt", 0.f, 1.f, 0.2f);
+    param (l, "macroMovement", "Movement", 0.f, 1.f, 0.2f);
+    param (l, "macroSpace", "Space", 0.f, 1.f, 0.25f);
     l.add (std::make_unique<juce::AudioParameterChoice> (
         juce::ParameterID { "engine", 1 }, "Engine",
-        juce::StringArray { "Brass", "Organ", "Strings", "FM Bell", "Bass", "Choir", "Lead", "Multisample" }, 0));
+        juce::StringArray { "Brass", "Organ", "Strings", "FM Bell", "Bass", "Choir", "Lead", "Multisample",
+                            "Analog Pulse", "Bright EP", "Haunted FM" },
+        0));
     l.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { "arp", 1 }, "Arpeggiator", false));
     l.add (std::make_unique<juce::AudioParameterChoice> (
         juce::ParameterID { "chord", 1 }, "Chord",
         juce::StringArray { "Off", "Minor", "Minor 7", "Diminished", "Sus 2", "Minor 9" }, 0));
+    l.add (std::make_unique<juce::AudioParameterChoice> (
+        juce::ParameterID { "bankMode", 1 }, "Sound bank",
+        juce::StringArray { "Church Keys", "Dark Brass", "Trap Orchestra" }, 0));
     return l;
+}
+
+TrapPatch TrapLordSynthAudioProcessor::buildPatch() const
+{
+    const float dark = get (state, "macroDarkness");
+    const float dirt = get (state, "macroDirt");
+    const float move = get (state, "macroMovement");
+
+    TrapPatch p;
+    p.attack = get (state, "attack");
+    p.decay = get (state, "decay");
+    p.sustain = get (state, "sustain");
+    p.release = get (state, "release");
+    p.cutoff = get (state, "cutoff") * juce::jmap (dark, 1.f, 0.42f);
+    p.gain = get (state, "gain");
+    p.drive = get (state, "drive") + dirt * 2.8f;
+    p.detune = get (state, "detune") + move * 6.f;
+    p.resonance = get (state, "resonance") + dark * 0.12f;
+    p.pitchEnvSemi = get (state, "pitchEnvSemi");
+    p.pitchEnvDecaySec = juce::jmax (0.001f, get (state, "pitchEnvMs") * 0.001f);
+    p.pulseWidth = get (state, "pulseWidth");
+    p.portamentoSec = get (state, "portamentoMs") * 0.001f;
+    p.vibratoDepth = get (state, "vibratoDepth") + move * 0.18f;
+    p.vibratoRate = 4.5f + move * 3.5f;
+    p.engine = juce::jlimit (0, 10, int (get (state, "engine")));
+    return p;
 }
 
 void TrapLordSynthAudioProcessor::prepareToPlay (double sr, int block)
@@ -69,7 +111,12 @@ void TrapLordSynthAudioProcessor::prepareToPlay (double sr, int block)
     delay.prepare (spec);
     delay.reset();
     delay.setDelay (juce::jmin (96000.f, float (sr * .375)));
+    chorus.prepare (spec);
+    chorus.reset();
+    chorus.setCentreDelay (7.f);
+    chorus.setFeedback (0.08f);
     arpPhase = 0.;
+    rotaryPhase = 0.;
     arpStep = 0;
     held.fill (false);
 }
@@ -167,16 +214,7 @@ void TrapLordSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
                     hostBpm = *bpm;
 
     const auto bankSnapshot = bank;
-    TrapPatch p;
-    p.attack = get (state, "attack");
-    p.decay = get (state, "decay");
-    p.sustain = get (state, "sustain");
-    p.release = get (state, "release");
-    p.cutoff = get (state, "cutoff");
-    p.gain = get (state, "gain");
-    p.drive = get (state, "drive");
-    p.detune = get (state, "detune");
-    p.engine = juce::jlimit (0, 7, int (get (state, "engine")));
+    const TrapPatch p = buildPatch();
 
     for (int i = 0; i < synth.getNumVoices(); ++i)
         if (auto* v = dynamic_cast<TrapVoice*> (synth.getVoice (i)))
@@ -188,7 +226,25 @@ void TrapLordSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     generateArp (midi, buffer.getNumSamples());
     synth.renderNextBlock (buffer, midi, 0, buffer.getNumSamples());
 
-    const float wet = get (state, "delay");
+    const float move = get (state, "macroMovement");
+    const float space = get (state, "macroSpace");
+    const float dark = get (state, "macroDarkness");
+
+    chorus.setRate (0.45f + move * 1.2f);
+    chorus.setDepth (move * 0.55f);
+    chorus.setMix (move * 0.35f);
+    {
+        juce::dsp::AudioBlock<float> block (buffer);
+        juce::dsp::ProcessContextReplacing<float> chorusCtx (block);
+        chorus.process (chorusCtx);
+    }
+
+    const int engine = p.engine;
+    const float rotaryDepth = juce::jlimit (0.f, 1.f, move * 0.7f + (engine == 1 ? 0.35f : 0.f));
+    if (rotaryDepth > 0.01f)
+        applyRotary (buffer, rotaryDepth);
+
+    const float wet = juce::jlimit (0.f, 0.7f, get (state, "delay") + space * 0.28f);
     if (wet > 0.f)
     {
         for (int i = 0; i < buffer.getNumSamples(); ++i)
@@ -217,8 +273,9 @@ void TrapLordSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     juce::dsp::Reverb::Parameters rp;
     rp.roomSize = .65f;
     rp.damping = .5f;
-    rp.wetLevel = juce::jlimit (0.f, 1.f, get (state, "reverb") * .4f);
+    rp.wetLevel = juce::jlimit (0.f, 1.f, get (state, "reverb") * .4f + space * 0.35f);
     rp.dryLevel = juce::jlimit (0.f, 1.f, 1.f - rp.wetLevel);
+    rp.damping = juce::jlimit (0.2f, 0.95f, 0.45f + dark * 0.4f);
     rp.width = 1.f;
     reverb.setParameters (rp);
 
@@ -239,33 +296,44 @@ void TrapLordSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
 
 const juce::StringArray& TrapLordSynthAudioProcessor::factoryNames()
 {
-    static const juce::StringArray names {
-        "Frost Brass", "Stab Stack", "Cathedral Organ", "Street Strings",
-        "Crystal Bell", "Sub Commander", "Ghost Choir", "Saw Lead",
-        "Cold Pad", "Dirty Glide", "Midnight Organ", "Ice Bell",
-        "Menace Strings", "Pulse Lead", "Haunted Bells", "Trap March"
-    };
-    return names;
+    return AtlFactoryPresets::names();
+}
+
+int TrapLordSynthAudioProcessor::factoryPresetCount()
+{
+    return AtlFactoryPresets::kPresetCount;
+}
+
+int TrapLordSynthAudioProcessor::presetBank (int index)
+{
+    return int (AtlFactoryPresets::bankForIndex (index));
 }
 
 void TrapLordSynthAudioProcessor::loadFactoryPreset (int idx)
 {
-    static constexpr int engines[] = { 0, 0, 1, 2, 3, 4, 5, 6, 2, 4, 1, 3, 2, 6, 3, 0 };
-    if (idx < 0 || idx >= factoryNames().size())
-        return;
+    AtlFactoryPresets::apply (state, idx);
+}
 
-    auto set = [this] (const char* id, float val)
+void TrapLordSynthAudioProcessor::applyRotary (juce::AudioBuffer<float>& buffer, float depth)
+{
+    auto* l = buffer.getWritePointer (0);
+    auto* r = buffer.getWritePointer (1);
+    const int n = buffer.getNumSamples();
+    const double inc = 6.2 / juce::jmax (1., currentRate);
+
+    for (int i = 0; i < n; ++i)
     {
-        if (auto* p = state.getParameter (id))
-            p->setValueNotifyingHost (p->convertTo0to1 (val));
-    };
-
-    set ("engine", float (engines[idx]));
-    set ("attack", idx == 3 || idx == 8 ? .8f : .01f);
-    set ("release", idx == 3 || idx == 8 ? 2.f : .35f);
-    set ("cutoff", idx == 5 ? 350.f : idx == 4 ? 10000.f : 4500.f);
-    set ("drive", idx == 1 || idx == 9 ? 2.5f : 1.f);
-    set ("reverb", idx == 5 ? .05f : .25f);
+        rotaryPhase += inc;
+        if (rotaryPhase > 1.)
+            rotaryPhase -= 1.;
+        const float mod = std::sin (float (rotaryPhase * juce::MathConstants<double>::twoPi));
+        const float trem = 1.f - depth * 0.28f * (1.f - mod);
+        const float pan = depth * 0.35f * mod;
+        const float li = l[i] * trem * (1.f - pan);
+        const float ri = r[i] * trem * (1.f + pan);
+        l[i] = std::isfinite (li) ? li : 0.f;
+        r[i] = std::isfinite (ri) ? ri : 0.f;
+    }
 }
 
 bool TrapLordSynthAudioProcessor::loadSampleMap (const juce::File& jsonFile)

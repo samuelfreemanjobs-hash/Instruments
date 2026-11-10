@@ -7,7 +7,14 @@
 struct TrapPatch
 {
     float attack = .01f, decay = .3f, sustain = .7f, release = .4f;
-    float cutoff = 7000.f, gain = .2f, drive = 1.f, detune = 7.f, mix = .0f;
+    float cutoff = 7000.f, gain = .2f, drive = 1.f, detune = 7.f;
+    float resonance = 0.707f;
+    float pitchEnvSemi = 0.f;
+    float pitchEnvDecaySec = 0.045f;
+    float pulseWidth = .5f;
+    float portamentoSec = 0.f;
+    float vibratoDepth = 0.f;
+    float vibratoRate = 5.5f;
     int engine = 0;
 };
 
@@ -46,6 +53,8 @@ public:
         phase = phase2 = phase3 = 0;
         samplePosition = 0;
         fastReleaseGain = 1.f;
+        pitchEnv = 0.f;
+        vibratoPhase = 0.;
         filter.reset();
     }
 
@@ -58,7 +67,13 @@ public:
         e.sustain = p.sustain;
         e.release = p.release;
         env.setParameters (e);
-        filter.setCutoffFrequency (juce::jlimit (20.f, float (sampleRate * .45f), patch.cutoff));
+        const float safeCutoff = juce::jlimit (20.f, float (sampleRate * .45f), p.cutoff);
+        filter.setCutoffFrequency (safeCutoff);
+        const float q = juce::jlimit (0.5f, 1.25f, 0.5f + p.resonance * 0.75f);
+        filter.setResonance (q);
+        pitchDecay = patch.pitchEnvDecaySec > 0.001f
+                       ? std::exp (-1. / (patch.pitchEnvDecaySec * sampleRate))
+                       : 0.;
     }
 
     void setSamples (std::shared_ptr<const std::vector<TrapSamplePtr>> bank) { samples = std::move (bank); }
@@ -70,11 +85,18 @@ public:
 
     void startNote (int note, float vel, juce::SynthesiserSound*, int wheel) override
     {
+        const double newFreq = juce::MidiMessage::getMidiNoteInHertz (note);
         midiNote = note;
-        frequency = juce::MidiMessage::getMidiNoteInHertz (note);
+        frequency = newFreq;
+        targetFreq = newFreq;
+        if (patch.portamentoSec > 0.001f && glideFreq > 0. && isVoiceActive())
+        { /* glide from current glideFreq */ }
+        else
+            glideFreq = newFreq;
         phase = phase2 = phase3 = 0;
         samplePosition = 0;
         fastReleaseGain = 1.f;
+        pitchEnv = patch.pitchEnvSemi > 0.01f ? 1.f : 0.f;
         activeSample.reset();
 
         if (samples != nullptr && patch.engine == 7)
@@ -127,12 +149,36 @@ public:
             return;
 
         filter.setCutoffFrequency (safeCutoff);
-        const double step = juce::jlimit (1e-9, 0.5, frequency * bend / sampleRate);
-        const double step2 = step * std::pow (2., patch.detune / 1200.);
-        const double step3 = step * 0.5;
+
+        const double portAlpha = patch.portamentoSec > 0.001f
+                                   ? std::exp (-1. / (patch.portamentoSec * sampleRate))
+                                   : 0.;
 
         for (int i = 0; i < n; ++i)
         {
+            if (portAlpha > 0.)
+                glideFreq = glideFreq * portAlpha + targetFreq * (1. - portAlpha);
+            else
+                glideFreq = targetFreq;
+
+            const double pitchMod = pitchEnv > 0.0001f
+                                      ? std::pow (2., (patch.pitchEnvSemi * pitchEnv) / 12.)
+                                      : 1.;
+            if (pitchEnv > 0.0001f)
+                pitchEnv *= float (pitchDecay);
+
+            const double vibrato = patch.vibratoDepth > 0.001f
+                                     ? std::pow (2., patch.vibratoDepth * std::sin (tau * vibratoPhase) / 12.)
+                                     : 1.;
+            vibratoPhase += patch.vibratoRate / sampleRate;
+            if (vibratoPhase > 1.)
+                vibratoPhase -= 1.;
+
+            const double baseFreq = glideFreq * bend * pitchMod * vibrato;
+            const double step = juce::jlimit (1e-9, 0.5, baseFreq / sampleRate);
+            const double step2 = step * std::pow (2., patch.detune / 1200.);
+            const double step3 = step * 0.5;
+
             float x = 0.f;
 
             if (patch.engine == 7)
@@ -141,27 +187,47 @@ public:
             }
             else
             {
-                const float a = float (phase);
-                const float b = float (phase2);
                 switch (patch.engine)
                 {
-                    case 0: x = 0.55f * blepSaw (phase, step) + 0.45f * blepSaw (phase2, step2); break;
+                    case 0:
+                        x = 0.55f * blepSaw (phase, step) + 0.45f * blepSaw (phase2, step2);
+                        break;
                     case 1:
-                        x = 0.6f * std::sin (tau * phase) + 0.22f * std::sin (tau * phase * 2.)
-                          + 0.12f * std::sin (tau * phase * 3.) + 0.06f * std::sin (tau * phase * 4.);
+                        x = 0.34f * std::sin (tau * phase) + 0.26f * std::sin (tau * phase * 2.)
+                          + 0.18f * std::sin (tau * phase * 3.) + 0.12f * std::sin (tau * phase * 4.)
+                          + 0.1f * std::sin (tau * phase * 6.);
                         break;
                     case 2:
-                        x = 0.45f * blepSaw (phase, step) + 0.35f * blepSaw (phase2, step2)
-                          + 0.2f * triangle (float (phase3));
+                        x = 0.42f * blepSaw (phase, step) + 0.33f * blepSaw (phase2, step2)
+                          + 0.25f * blepSaw (phase3, step3);
                         break;
-                    case 3: x = std::sin (tau * phase + 2.5f * std::sin (tau * phase * 2.71)); break;
-                    case 4: x = 0.65f * std::sin (tau * phase) + 0.35f * triangle (a); break;
+                    case 3:
+                        x = std::sin (tau * phase + 2.5f * std::sin (tau * phase * 2.71));
+                        break;
+                    case 4:
+                        x = 0.65f * std::sin (tau * phase) + 0.35f * triangle (float (phase));
+                        break;
                     case 5:
                         x = 0.5f * std::sin (tau * phase) + 0.3f * std::sin (tau * phase * 2.02)
                           + 0.2f * std::sin (tau * phase * 3.97);
                         break;
-                    case 6: x = 0.65f * blepSaw (phase, step) + 0.35f * triangle (b); break;
-                    default: x = std::sin (tau * phase); break;
+                    case 6:
+                        x = 0.65f * blepSaw (phase, step) + 0.35f * triangle (float (phase2));
+                        break;
+                    case 8:
+                        x = blepPulse (phase, step, patch.pulseWidth);
+                        break;
+                    case 9: // bright EP / tine
+                        x = 0.55f * std::sin (tau * phase + 1.8f * std::sin (tau * phase * 3.2))
+                          + 0.25f * std::sin (tau * phase * 2.) + 0.12f * blepSaw (phase2, step2);
+                        break;
+                    case 10: // haunted metallic FM
+                        x = std::sin (tau * phase * 1.13 + 4.2f * std::sin (tau * phase * 2.37))
+                          + 0.35f * std::sin (tau * phase * 3.91);
+                        break;
+                    default:
+                        x = std::sin (tau * phase);
+                        break;
                 }
 
                 phase = wrap (phase + step);
@@ -171,8 +237,8 @@ public:
 
             const float filtered = filter.processSample (0, std::isfinite (x) ? x : 0.f);
             const float normDrive = std::max (.001f, std::tanh (juce::jmax (0.01f, patch.drive)));
-            const float driven = std::tanh (filtered * patch.drive) / normDrive;
-            float y = driven * env.getNextSample() * velocity * patch.gain;
+            float y = (std::tanh (filtered * patch.drive) / normDrive)
+                    * env.getNextSample() * velocity * patch.gain;
             if (! std::isfinite (y))
                 y = 0.f;
 
@@ -223,6 +289,16 @@ private:
         return float (naive - (double) polyBlep (phase, dt) + (double) polyBlep (wrap (phase + dt), dt));
     }
 
+    static float blepPulse (double phase, double dt, float width)
+    {
+        const float w = juce::jlimit (0.05f, 0.95f, width);
+        const double naive = phase < w ? 1. : -1.;
+        float out = float (naive);
+        out -= polyBlep (phase, dt);
+        out += polyBlep (wrap (phase - w), dt);
+        return out;
+    }
+
     float readSample()
     {
         if (activeSample == nullptr || activeSample->audio.getNumSamples() < 2)
@@ -245,8 +321,9 @@ private:
     TrapPatch patch;
     TrapSamplePtr activeSample;
     std::shared_ptr<const std::vector<TrapSamplePtr>> samples;
-    double sampleRate = 44100., frequency = 440., bend = 1., phase = 0., phase2 = 0., phase3 = 0.,
-           samplePosition = 0.;
-    float velocity = 0.f, fastReleaseGain = 1.f;
+    double sampleRate = 44100., frequency = 440., targetFreq = 440., glideFreq = 440., bend = 1.;
+    double phase = 0., phase2 = 0., phase3 = 0., samplePosition = 0., vibratoPhase = 0.;
+    double pitchDecay = 0.;
+    float velocity = 0.f, fastReleaseGain = 1.f, pitchEnv = 0.f;
     int midiNote = 60;
 };

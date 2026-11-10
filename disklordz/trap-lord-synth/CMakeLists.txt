@@ -44,7 +44,9 @@ target_sources(TrapLordSynth PRIVATE
     Source/PluginProcessor.h
     Source/PluginEditor.cpp
     Source/PluginEditor.h
-    Source/SynthVoice.h)
+    Source/SynthVoice.h
+    Source/AtlFactoryPresets.cpp
+    Source/AtlFactoryPresets.h)
 
 target_compile_definitions(TrapLordSynth
     PUBLIC

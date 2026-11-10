@@ -30,14 +30,19 @@ public:
     void loadFactoryPreset (int index);
     juce::AudioProcessorValueTreeState state;
     static const juce::StringArray& factoryNames();
+    static int factoryPresetCount();
+    static int presetBank (int index);
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout makeLayout();
+    TrapPatch buildPatch() const;
+    void applyRotary (juce::AudioBuffer<float>& buffer, float depth);
     juce::Synthesiser synth;
     std::shared_ptr<const std::vector<TrapSamplePtr>> bank;
     juce::dsp::Reverb reverb;
+    juce::dsp::Chorus<float> chorus;
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> delay { 96000 };
-    double currentRate = 44100., arpPhase = 0.;
+    double currentRate = 44100., arpPhase = 0., rotaryPhase = 0.;
     int arpStep = 0;
     std::array<bool, 128> held {};
     double hostBpm = 120.;
