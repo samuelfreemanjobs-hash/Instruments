@@ -8,7 +8,8 @@
 
 | Layer | Command |
 |-------|---------|
-| **Scheduler (GitHub)** | `.github/workflows/autonomous-coding-agent.yml` — every 6h |
+| **Scheduler (GitHub)** | `.github/workflows/autonomous-coding-agent.yml` — every 6h on **`main`** |
+| **Windows VST3 CI** | `.github/workflows/disklordz-audio-windows.yml` — CHORD ENGINE artifact (human DAW gate: Coach `plugin-skeleton`) |
 | **Scheduler (Cursor)** | Timer `autonomous-coding-agent-24-7` — every 4h Cloud run |
 | **Tick (deterministic)** | `python3 scripts/autonomous-coder/tick.py` |
 | **Cloud slice** | `python3 scripts/autonomous-coder/tick.py --emit-slice` → read `.cursor/autonomous-coder/NEXT_SLICE.md` |

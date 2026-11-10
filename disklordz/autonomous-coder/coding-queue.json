@@ -124,6 +124,16 @@
       "allowlist": ["docs/"],
       "context_paths": [".cursor/autonomous-coder/NEXT_SLICE.md"],
       "priority": 12
+    },
+    {
+      "id": "cloud-autonomous-arch-main-ci",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "ARCHITECTURE: main branch + Windows VST3 CI note",
+      "acceptance": "disklordz/autonomous-coder/ARCHITECTURE.md cites disklordz-audio-windows.yml",
+      "allowlist": ["disklordz/autonomous-coder/"],
+      "context_paths": ["DiskLordz-Audio/BUILD.md"],
+      "priority": 13
     }
   ]
 }
