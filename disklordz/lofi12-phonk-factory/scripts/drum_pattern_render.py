@@ -13,6 +13,20 @@ SLOT_MAP = {
     "hat_open": "hat_open",
     "cowbell": "cowbell_low",
     "rim": "snare_rim",
+    "tom": "tom_tune_lo",
+    "crash": "crash_cymbal",
+}
+
+
+ATL_SLOT_MAP = {
+    "kick": "kick_atl_round",
+    "snare": "snare_atl_bridged",
+    "clap": "clap_atl_grit",
+    "hat": "hat_atl_closed",
+    "hat_open": "hat_atl_open",
+    "tom": "tom_descend",
+    "crash": "crash_cymbal",
+    "rim": "fm_rim",
 }
 
 
@@ -32,6 +46,8 @@ def render_pattern_loop(
     params,
     engine_id: str,
     cowbell_detune: float = 0.97,
+    atl_trap: bool = False,
+    trap_hard: bool = False,
 ) -> list[float]:
     beat = 60.0 / bpm
     step_sec = beat / 4.0
@@ -42,15 +58,19 @@ def render_pattern_loop(
     for n in notes:
         t = n.step * step_sec + n.micro_ms / 1000.0
         offset = int(t * SRC_RATE)
-        slot = SLOT_MAP.get(n.instrument, "perc_snap")
+        slot_map = ATL_SLOT_MAP if atl_trap else SLOT_MAP
+        slot = slot_map.get(n.instrument, "perc_snap")
+        if atl_trap and n.instrument == "kick" and trap_hard:
+            slot = "kick_atl_hard"
         if n.instrument == "cowbell":
             from dataclasses import replace
 
             p = replace(params, cowbell_tone=params.cowbell_tone * cowbell_detune)
             hit = render_slot(slot, p, engine_id)
         elif n.instrument == "snare":
-            body = render_slot("snare_memphis", params, engine_id)
-            if n.velocity > 100:
+            body_slot = slot_map["snare"] if atl_trap else "snare_memphis"
+            body = render_slot(body_slot, params, engine_id)
+            if not atl_trap and n.velocity > 100:
                 rim = render_slot("snare_rim", params, engine_id)
                 nlen = max(len(body), len(rim))
                 body = [
@@ -58,7 +78,7 @@ def render_pattern_loop(
                     for i in range(nlen)
                 ]
             hit = body
-        elif n.instrument == "kick":
+        elif n.instrument == "kick" and not atl_trap:
             from phonk_synth import kick_sub, kick_woody_box
 
             wood = kick_woody_box(params)

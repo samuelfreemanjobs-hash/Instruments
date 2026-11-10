@@ -17,6 +17,8 @@ GM = {
     "hat_open": 46,
     "cowbell": 56,
     "rim": 37,
+    "tom": 45,
+    "crash": 49,
 }
 
 NOTE_NAMES = ("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
@@ -102,6 +104,43 @@ def _occult_tape_bar(bar: int, *, seed: int) -> list[PatternNote]:
     return notes
 
 
+def _mpc_swing_ms(step: int, swing: float, bpm: float) -> float:
+    """Delay even 16th-note positions (steps 1,3,5,…) MPC-style."""
+    if step % 2 == 1:
+        sixteenth_ms = (60_000.0 / bpm) / 4.0
+        return (swing - 0.5) * sixteenth_ms * 0.9
+    return 0.0
+
+
+def _atl_early_trap_bar(
+    bar: int, *, swing: float, seed: int, hard: bool, bpm: float = 144.0
+) -> list[PatternNote]:
+    notes: list[PatternNote] = []
+    kicks = (0,) if bar % 2 == 0 else (0, 8)
+    for st in kicks:
+        notes.append(PatternNote(st, "kick", 115 if st == 0 else 95))
+    notes.append(PatternNote(8, "snare", 112 if not hard else 120))
+    notes.append(PatternNote(12, "clap", 98))
+    for st in range(0, 16, 2):
+        micro = _mpc_swing_ms(st + 1, swing, bpm) if st + 1 < 16 else 0.0
+        notes.append(PatternNote(st, "hat", 62 + (st % 4) * 4, micro))
+    for st in range(1, 16, 2):
+        notes.append(PatternNote(st, "hat", 58, _mpc_swing_ms(st, swing, bpm)))
+    if (seed + bar) % 2 == 0:
+        for k in range(4):
+            vel = int(52 + 48 * (1.0 - math.exp(-k * 0.65)))
+            notes.append(PatternNote(14, "hat", vel, k * 6.5))
+        for k in range(3):
+            vel = int(48 + 40 * (1.0 - math.exp(-k * 0.55)))
+            notes.append(PatternNote(15, "hat", vel, k * 4.2))
+    if bar == 1 or (hard and bar == 0):
+        for st, vel in ((10, 90), (11, 85), (12, 88)):
+            notes.append(PatternNote(st, "tom", vel))
+    if bar == 0 and (seed % 4) == 0:
+        notes.append(PatternNote(0, "crash", 100))
+    return notes
+
+
 def _phonk_bar(bar: int, *, swing: float, seed: int, black_cassette: bool) -> list[PatternNote]:
     notes: list[PatternNote] = []
     kick_steps = (0, 4, 8, 10, 12) if bar % 2 == 0 else (0, 3, 6, 8, 12)
@@ -140,6 +179,16 @@ def build_pattern(
     for bar in range(bars):
         if mode.mode_id == "occult_tape":
             notes.extend(_occult_tape_bar(bar, seed=seed + bar))
+        elif mode.atl_trap:
+            notes.extend(
+                _atl_early_trap_bar(
+                    bar,
+                    swing=swing,
+                    seed=seed + bar,
+                    hard=mode.mode_id == "trap_hard_2006",
+                    bpm=bpm,
+                )
+            )
         elif mode.phonk_pattern:
             notes.extend(_phonk_bar(bar, swing=swing, seed=seed, black_cassette=black))
         else:

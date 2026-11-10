@@ -44,13 +44,45 @@ class KitSizeSpec:
     subs_808: int
     cowbells: int
     perc_fx: int
+    toms: int
+    crashes: int
     drum_loops: int
     texture_loops: int = 0
 
 
+def _slot_for(mode: FactoryModeProfile, category: str, i: int) -> str:
+    if mode.atl_trap:
+        if category == "kick":
+            return "kick_atl_hard" if mode.mode_id == "trap_hard_2006" else "kick_atl_round"
+        if category == "clap":
+            return "clap_atl_grit"
+        if category == "sub":
+            return "sub_atl_long" if mode.mode_id == "atl_modern" else "kick_sub"
+        if category == "tom":
+            return "tom_tune_hi" if i % 2 else "tom_tune_lo"
+        if category == "crash":
+            return "crash_cymbal" if i % 2 == 0 else "ride_cymbal"
+        if category == "snare":
+            return "snare_atl_bridged" if i % 3 else "fm_rim"
+        if category == "hat" or category == "hat_closed":
+            return "hat_atl_closed"
+        if category == "hat_open":
+            return "hat_atl_open"
+        if category == "cowbell":
+            return "fm_cowbell_atl" if i % 2 == 0 else "fm_woodblock"
+    return {
+        "kick": "kick_808" if i % 3 else "kick_dist",
+        "snare": "snare_memphis" if i % 4 else "snare_rim",
+        "clap": "clap",
+        "sub": "kick_sub",
+        "tom": "tom_tune_lo" if i % 2 else "tom_tune_hi",
+        "crash": "crash_cymbal" if i % 2 == 0 else "ride_cymbal",
+    }.get(category, "perc_snap")
+
+
 KIT_SIZES: dict[str, KitSizeSpec] = {
     "demo": KitSizeSpec(
-        "demo", 4, 4, 3, 4, 3, 3, 3, 4, 3, texture_loops=1
+        "demo", 4, 4, 3, 4, 3, 3, 3, 4, 2, 2, 3, texture_loops=1
     ),
     "full": KitSizeSpec(
         # Targets spec bands summed to ~150 one-shots (kicks 20, snares 25, …)
@@ -63,12 +95,12 @@ KIT_SIZES: dict[str, KitSizeSpec] = {
         15,
         15,
         28,
+        8,
+        6,
         18,
         texture_loops=4,
     ),
-    "lofi12": KitSizeSpec(
-        "lofi12", 4, 4, 2, 2, 2, 2, 2, 2, 0, texture_loops=0
-    ),
+    "lofi12": KitSizeSpec("lofi12", 4, 4, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0),
 }
 
 
@@ -116,9 +148,21 @@ def _render_voice(
         raw = black_cassette_bus(apply_fusion_post(raw, fusion), fusion)
     elif mode.mode_id == "occult_tape":
         raw = occult_tape_bus(apply_fusion_post(raw, fusion), fusion, seed=variation)
+    elif mode.mode_id == "atl_trap_2005":
+        from atl_trap_dsp import sampler_2005_character
+
+        raw = sampler_2005_character(apply_fusion_post(raw, fusion))
+    elif mode.mode_id == "atl_modern":
+        from atl_trap_dsp import engine_c_polish
+
+        raw = engine_c_polish(apply_fusion_post(raw, fusion))
+    elif mode.atl_trap and mode.mode_id == "trap_hard_2006":
+        from drum_dsp import apply_saturation
+
+        raw = apply_saturation(apply_fusion_post(raw, fusion), mode.fusion.drive * 5)
     else:
         raw = apply_fusion_post(raw, fusion)
-    if slot.startswith("kick"):
+    if slot in ("kick_808", "kick_dist") and not mode.atl_trap:
         from phonk_synth import kick_woody_box
 
         sub = kick_sub(params)
@@ -131,6 +175,10 @@ def _render_voice(
 
             layered = hard_clip(layered, 0.72)
         raw = _mix(raw, layered[: len(raw)]) if len(raw) else layered
+    elif slot in ("kick_atl_round", "kick_atl_hard"):
+        sub_slot = "sub_atl_long" if mode.mode_id == "atl_modern" else "kick_sub"
+        sub = render_slot(sub_slot, params, engine)
+        raw = _mix(raw, sub[: len(raw)])
     cleaned, _ = process_one_shot(raw)
     recipe = DrumRecipe(
         recipe_id=str(uuid.uuid4()),
@@ -182,25 +230,41 @@ def build_kit(
         )
 
     for i in range(spec.kicks):
-        emit("kicks", f"kick_{i+1:02d}.wav", "kick_808" if i % 3 else "kick_dist", i)
+        emit("kicks", f"kick_{i+1:02d}.wav", _slot_for(mode, "kick", i), i)
     for i in range(spec.snares):
-        slot = "snare_memphis" if i % 4 else "snare_rim"
-        emit("snares", f"snare_{i+1:02d}.wav", slot, 100 + i)
+        emit("snares", f"snare_{i+1:02d}.wav", _slot_for(mode, "snare", i), 100 + i)
     for i in range(spec.claps):
-        emit("claps", f"clap_{i+1:02d}.wav", "clap", 200 + i)
+        emit("claps", f"clap_{i+1:02d}.wav", _slot_for(mode, "clap", i), 200 + i)
     for i in range(spec.hats_closed):
-        emit("closed_hats", f"hat_closed_{i+1:02d}.wav", "hat_closed", 300 + i)
+        emit(
+            "closed_hats",
+            f"hat_closed_{i+1:02d}.wav",
+            _slot_for(mode, "hat_closed", i),
+            300 + i,
+        )
     for i in range(spec.hats_open):
-        emit("open_hats", f"hat_open_{i+1:02d}.wav", "hat_open", 350 + i)
+        emit("open_hats", f"hat_open_{i+1:02d}.wav", _slot_for(mode, "hat_open", i), 350 + i)
     for i in range(spec.subs_808):
         key = SUB_KEYS[i % len(SUB_KEYS)]
-        emit("808s", f"sub808_{key}_{i+1:02d}.wav", "kick_sub", 400 + i)
+        emit("808s", f"sub808_{key}_{i+1:02d}.wav", _slot_for(mode, "sub", i), 400 + i)
     for i in range(spec.cowbells):
         key = SUB_KEYS[(i * 2) % len(SUB_KEYS)]
-        slot = "cowbell_low" if i % 2 == 0 else "cowbell_high"
+        slot = (
+            _slot_for(mode, "cowbell", i)
+            if mode.atl_trap
+            else ("cowbell_low" if i % 2 == 0 else "cowbell_high")
+        )
         emit("cowbells", f"cowbell_{key}_{i+1:02d}.wav", slot, 500 + i)
+    for i in range(spec.toms):
+        key = SUB_KEYS[(i * 3) % len(SUB_KEYS)]
+        emit("toms", f"tom_{key}_{i+1:02d}.wav", _slot_for(mode, "tom", i), 550 + i)
+    for i in range(spec.crashes):
+        emit("crashes", f"crash_{i+1:02d}.wav", _slot_for(mode, "crash", i), 580 + i)
     for i in range(spec.perc_fx):
-        slots = ("perc_snap", "tom_low", "tom_hi", "fx_impact", "fx_riser")
+        if mode.atl_trap:
+            slots = ("fm_rim", "fm_woodblock", "fm_cowbell_atl", "tom_descend", "fx_impact")
+        else:
+            slots = ("perc_snap", "tom_low", "tom_hi", "fx_impact", "fx_riser")
         emit("perc_fx", f"perc_{i+1:02d}.wav", slots[i % len(slots)], 600 + i)
 
     loops_meta: list[dict] = []
@@ -232,6 +296,21 @@ def build_kit(
             mixed = occult_tape_bus(mixed, mode.fusion, seed=seed + i + 99)
             pcm, _ = process_loop(mixed)
             meta = {"bpm": bpm, "swing": swing, "engine": engine, "pattern": "occult_tape"}
+        elif mode.atl_trap:
+            p = fusion_to_phonk_params(
+                mode.prompt, seed + i, mode, lane=resolve_memphis_lane(mode.prompt, lane), seed_override=seed + i
+            )
+            pcm = render_pattern_loop(
+                notes,
+                bpm=bpm,
+                bars=mode.loop_bars,
+                params=p,
+                engine_id=engine,
+                atl_trap=True,
+                trap_hard=mode.mode_id == "trap_hard_2006",
+            )
+            pcm, _ = process_loop(pcm)
+            meta = {"bpm": bpm, "pattern": mode.mode_id, "engine": engine}
         else:
             pcm, meta = render_phonk_loop(
                 prompt=mode.prompt,
@@ -245,7 +324,8 @@ def build_kit(
             if mode.mode_id == "black_cassette":
                 pcm = black_cassette_bus(pcm, mode.fusion)
             pcm, _ = process_loop(pcm)
-        name = f"loop_{int(bpm)}bpm_{key}_{i+1:02d}.wav"
+        label_bpm = mode.halftime_bpm_label or bpm
+        name = f"loop_{int(label_bpm)}bpm_{key}_{i+1:02d}.wav"
         rel = Path("Loops") / name
         _write_wav(out_dir / rel, pcm)
         midi_path = out_dir / "MIDI" / name.replace(".wav", ".mid")
@@ -289,5 +369,14 @@ def build_kit(
         "loops": loops_meta,
         "textureLoops": textures,
     }
+    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
+    from mpc_export import export_mpc_pack
+
+    export_mpc_pack(
+        out_dir,
+        mpc2000=mode.mode_id == "atl_trap_2005",
+        write_xpm=True,
+    )
+    manifest["mpcExport"] = "MPC_Export"
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
     return manifest

@@ -255,6 +255,71 @@ def fx_riser(params: PhonkParams) -> list[float]:
     return out
 
 
+ATL_SLOT_KEYS = frozenset(
+    {
+        "kick_atl_round",
+        "kick_atl_hard",
+        "sub_atl_long",
+        "clap_atl_grit",
+        "snare_atl_bridged",
+        "hat_atl_closed",
+        "hat_atl_open",
+        "tom_descend",
+        "tom_tune_hi",
+        "tom_tune_lo",
+        "crash_cymbal",
+        "ride_cymbal",
+        "fm_rim",
+        "fm_woodblock",
+        "fm_cowbell_atl",
+    }
+)
+
+
+def _render_atl_slot(key: str, params: PhonkParams) -> list[float]:
+    from atl_trap_voices import (
+        clap_atl_grit,
+        crash_cymbal,
+        fm_cowbell_atl,
+        fm_rim,
+        fm_woodblock,
+        hat_atl_closed,
+        hat_atl_open,
+        kick_atl_hard,
+        kick_atl_round,
+        ride_cymbal,
+        snare_atl_bridged,
+        sub_atl_long,
+        tom_descending,
+        tom_tuned,
+    )
+
+    table: dict[str, Callable[[PhonkParams], list[float]]] = {
+        "kick_atl_round": kick_atl_round,
+        "kick_atl_hard": kick_atl_hard,
+        "sub_atl_long": sub_atl_long,
+        "clap_atl_grit": clap_atl_grit,
+        "snare_atl_bridged": snare_atl_bridged,
+        "hat_atl_closed": hat_atl_closed,
+        "hat_atl_open": hat_atl_open,
+        "hat_closed": hat_atl_closed,
+        "hat_open": hat_atl_open,
+        "snare_memphis": snare_atl_bridged,
+        "tom_descend": tom_descending,
+        "tom_tune_hi": lambda p: tom_tuned(p, pitch_hz=140 * (p.seed % 5 + 1) / 3),
+        "tom_tune_lo": lambda p: tom_tuned(p, pitch_hz=95 * (p.seed % 4 + 1) / 2),
+        "crash_cymbal": crash_cymbal,
+        "ride_cymbal": ride_cymbal,
+        "fm_rim": fm_rim,
+        "fm_woodblock": fm_woodblock,
+        "fm_cowbell_atl": fm_cowbell_atl,
+        "cowbell_low": fm_cowbell_atl,
+        "cowbell_high": fm_cowbell_atl,
+    }
+    fn = table[key]
+    return fn(params)
+
+
 RENDERERS: dict[str, Callable[[PhonkParams], list[float]]] = {
     "kick_808": lambda p: kick_808(p),
     "kick_dist": lambda p: kick_distorted(p),
@@ -276,6 +341,8 @@ RENDERERS: dict[str, Callable[[PhonkParams], list[float]]] = {
 
 
 def render_slot(key: str, params: PhonkParams, engine_id: str | None = None) -> list[float]:
+    if key in ATL_SLOT_KEYS:
+        return _render_atl_slot(key, params)
     if engine_id and engine_id != "classic":
         from phonk_machine_engine import render_machine_voice
 

@@ -20,6 +20,9 @@ FACTORY_MODE_IDS = (
     "phonk_trap",
     "black_cassette",
     "occult_tape",
+    "atl_trap_2005",
+    "trap_hard_2006",
+    "atl_modern",
 )
 
 # Backward-compatible preset id → factory mode
@@ -58,6 +61,8 @@ class FactoryModeProfile:
     prompt: str
     loop_bars: int = 4
     phonk_pattern: bool = False  # True = cowbell lines, fast hats
+    atl_trap: bool = False
+    halftime_bpm_label: float | None = None  # sparse half-time display BPM for loops
 
 
 def _fm(**kwargs: float) -> FusionMacros:
@@ -269,6 +274,75 @@ MODES: dict[str, FactoryModeProfile] = {
         ),
         "occult tape slow dragging menacing worn 4-track 115 bpm",
         loop_bars=2,
+    ),
+    "atl_trap_2005": FactoryModeProfile(
+        "atl_trap_2005",
+        "Atlanta Trap 2005",
+        "traproom_tape",
+        None,
+        140.0,
+        150.0,
+        0.51,
+        0.54,
+        _fm(
+            memphis_phonk_blend=0.55,
+            drive=0.38,
+            vintage_character=0.32,
+            transient_aggression=0.52,
+            low_frequency_weight=0.48,
+            metallic_character=0.42,
+            density_swing=0.36,
+        ),
+        "atlanta trap 2005 rounded kick sparse halftime 72 bpm",
+        loop_bars=4,
+        atl_trap=True,
+        halftime_bpm_label=72.0,
+    ),
+    "trap_hard_2006": FactoryModeProfile(
+        "trap_hard_2006",
+        "Trap Hard 2006",
+        "hard_dirt_808",
+        None,
+        142.0,
+        152.0,
+        0.5,
+        0.53,
+        _fm(
+            memphis_phonk_blend=0.62,
+            drive=0.72,
+            vintage_character=0.28,
+            transient_aggression=0.78,
+            low_frequency_weight=0.62,
+            metallic_character=0.4,
+            density_swing=0.48,
+        ),
+        "trap hard 2006 saturated kick long 808 clap fills 74 bpm",
+        loop_bars=4,
+        atl_trap=True,
+        halftime_bpm_label=74.0,
+    ),
+    "atl_modern": FactoryModeProfile(
+        "atl_modern",
+        "Atlanta Modern Trap",
+        "tr909",
+        None,
+        138.0,
+        148.0,
+        0.51,
+        0.54,
+        _fm(
+            memphis_phonk_blend=0.58,
+            drive=0.45,
+            vintage_character=0.18,
+            transient_aggression=0.55,
+            low_frequency_weight=0.65,
+            metallic_character=0.35,
+            density_swing=0.4,
+        ),
+        "atlanta modern trap extended sub glide clean hats sparse 73 bpm",
+        loop_bars=4,
+        atl_trap=True,
+        halftime_bpm_label=73.0,
     ),
     "black_cassette": FactoryModeProfile(
         "black_cassette",

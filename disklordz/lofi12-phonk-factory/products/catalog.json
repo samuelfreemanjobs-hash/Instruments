@@ -85,6 +85,30 @@
       "seed": 20
     },
     {
+      "sku": "DL-DF-MODE-ATL-TRAP-2005-DEMO",
+      "title": "Atlanta Trap 2005 — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "atl_trap_2005",
+      "kitSize": "demo",
+      "seed": 31
+    },
+    {
+      "sku": "DL-DF-MODE-TRAP-HARD-2006-DEMO",
+      "title": "Trap Hard 2006 — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "trap_hard_2006",
+      "kitSize": "demo",
+      "seed": 32
+    },
+    {
+      "sku": "DL-DF-MODE-ATL-MODERN-DEMO",
+      "title": "Atlanta Modern Trap — Demo Kit",
+      "type": "full_kit",
+      "factoryMode": "atl_modern",
+      "kitSize": "demo",
+      "seed": 33
+    },
+    {
       "sku": "DL-DF-MODE-OCCULT-TAPE-DEMO",
       "title": "Occult Tape — Demo Kit",
       "type": "full_kit",
