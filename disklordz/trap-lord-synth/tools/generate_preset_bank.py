@@ -53,23 +53,25 @@ ADJECTIVES = [
     "Reverse",
 ]
 
-NOUNS = [
-    "Brass",
-    "Strings",
-    "Keys",
-    "Organ",
-    "Bell",
-    "Lead",
-    "Bass",
-    "Pad",
-    "Hit",
-    "Stab",
-    "Stack",
-    "Choir",
-    "Pulse",
-    "Swell",
-    "Cathedral",
-]
+CATEGORY_NOUNS: dict[str, list[str]] = {
+    "Pads": ["Pad", "Wash", "Drift", "Mist", "Layer", "Cloud"],
+    "Leads": ["Lead", "Saw", "Hook", "Cry", "Blade", "Solo"],
+    "Synth Keys": ["Keys", "Stack", "Pluck", "Glass", "Tine", "Digi"],
+    "Swells": ["Swell", "Rise", "Bloom", "Tide", "Lift", "Sweep"],
+    "Brass": ["Brass", "Section", "Stab", "Fanfare", "Horns", "Blast"],
+    "Strings": ["Strings", "Legato", "Section", "Arc", "Bows", "Line"],
+    "Church Keys/EP": ["EP", "Keys", "Rhodes", "Wurli", "Gospel", "Tines"],
+    "Organ": ["Organ", "Drawbar", "Pipes", "Gospel", "Church", "Rotary"],
+    "Bells": ["Bell", "Chime", "Glock", "Tine", "Spark", "Ping"],
+    "Bass": ["808", "Sub", "Low End", "Drone", "Punch", "Thump"],
+    "Choir": ["Choir", "Vox", "Oohs", "Aahs", "Chant", "Stack"],
+    "Hits/FX": ["Hit", "Stab", "FX", "Impact", "Rise", "Crash"],
+}
+
+SHORT_CATEGORY = {
+    "Church Keys/EP": "Church Keys",
+    "Hits/FX": "Hits",
+}
 
 BASE_RECIPES = [
     {
@@ -244,12 +246,13 @@ def fingerprint(p: dict) -> str:
 
 
 def make_name(category: str, rng: random.Random, idx: int) -> str:
-    short = category.replace("/", " ")
+    short = SHORT_CATEGORY.get(category, category.replace("/", " "))
+    nouns = CATEGORY_NOUNS.get(category, ["Stack"])
     for _ in range(40):
-        name = f"{short} {rng.choice(ADJECTIVES)} {rng.choice(NOUNS)} {idx:02d}"
+        name = f"{short} {rng.choice(ADJECTIVES)} {rng.choice(nouns)} {idx:02d}"
         if not FORBIDDEN.search(name):
             return name
-    return f"{short} Neutral Stack {idx:02d}"
+    return f"{short} Neutral {nouns[0]} {idx:02d}"
 
 
 def pick_recipe(category: str, rng: random.Random) -> dict:

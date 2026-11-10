@@ -144,6 +144,9 @@ void TrapLordSynthAudioProcessor::prepareToPlay (double sr, int block)
     chorus.reset();
     chorus.setCentreDelay (7.f);
     chorus.setFeedback (0.08f);
+
+    hpStateL = hpStateR = hpPrevInL = hpPrevInR = 0.f;
+
     arpPhase = 0.;
     rotaryPhase = 0.;
     arpStep = 0;
@@ -317,6 +320,26 @@ void TrapLordSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
             d[i] = std::isfinite (x) ? x : 0.f;
         }
     }
+
+    const float hpCoeff = currentRate > 0.
+                            ? std::exp (-juce::MathConstants<float>::twoPi * 20.f / float (currentRate))
+                            : 0.f;
+    if (hpCoeff > 0.f && buffer.getNumChannels() >= 2)
+    {
+        auto* l = buffer.getWritePointer (0);
+        auto* r = buffer.getWritePointer (1);
+        for (int i = 0; i < buffer.getNumSamples(); ++i)
+        {
+            const float inL = l[i];
+            const float inR = r[i];
+            hpStateL = hpCoeff * (hpStateL + inL - hpPrevInL);
+            hpStateR = hpCoeff * (hpStateR + inR - hpPrevInR);
+            hpPrevInL = inL;
+            hpPrevInR = inR;
+            l[i] = std::isfinite (hpStateL) ? hpStateL : 0.f;
+            r[i] = std::isfinite (hpStateR) ? hpStateR : 0.f;
+        }
+    }
 }
 
 const juce::StringArray& TrapLordSynthAudioProcessor::factoryNames()
@@ -455,11 +478,13 @@ bool TrapLordSynthAudioProcessor::renderOfflineTimeline (
 bool TrapLordSynthAudioProcessor::renderNoteOffline (int midiNote,
                                                       int velocity,
                                                       juce::AudioBuffer<float>& buffer,
-                                                      double sampleRate)
+                                                      double sampleRate,
+                                                      float noteHoldSeconds)
 {
     buffer.clear();
     const int total = buffer.getNumSamples();
-    const int noteOffSample = juce::jmin (total - 1, juce::jmax (1, int (sampleRate * 1.4)));
+    const float holdSec = noteHoldSeconds > 0.f ? noteHoldSeconds : 1.4f;
+    const int noteOffSample = juce::jmin (total - 1, juce::jmax (1, int (std::round (holdSec * sampleRate))));
     prepareOfflineRender (sampleRate);
 
     for (int pos = 0; pos < total; pos += 512)
@@ -519,15 +544,36 @@ bool TrapLordSynthAudioProcessor::exportMpcKeygroupOffline (const juce::File& pa
     for (int n = options.lowNote; n <= options.highNote; n += juce::jmax (1, options.semitoneStep))
         ++keyCount;
 
+    const auto& presetRec = PresetLibrary::instance().get (currentPresetIndex);
+    auto categoryTiming = [] (const juce::String& cat) -> std::tuple<float, float, bool>
+    {
+        if (cat == "Pads" || cat == "Swells" || cat == "Strings" || cat == "Choir")
+            return { 5.2f, 1.25f, true };
+        if (cat == "Synth Keys" || cat == "Church Keys/EP" || cat == "Organ" || cat == "Bells" || cat == "Leads")
+            return { 2.6f, 0.55f, false };
+        return { 1.15f, 0.35f, false };
+    };
+
+    float bodySeconds = options.bodySeconds;
+    float tailSeconds = options.releaseTailSeconds;
+    bool sustainLoop = false;
+    if (options.useCategoryTiming)
+    {
+        const auto [b, t, loop] = categoryTiming (presetRec.category);
+        bodySeconds = b;
+        tailSeconds = t;
+        sustainLoop = loop;
+    }
+
+    const TrapPatch patchEnvelope = buildPatch();
+
     const int bytesPerSample = options.use24Bit ? 3 : 2;
     const int channels = 2;
     const int64 totalWavBytesIfUnbounded =
         int64 (keyCount) * layers * channels * bytesPerSample
-        * int64 ((options.bodySeconds + options.releaseTailSeconds) * sr);
+        * int64 ((bodySeconds + tailSeconds) * sr);
     const int64 maxBytes = int64 (options.maxProgramMegabytes * 1024.0 * 1024.0);
 
-    float bodySeconds = options.bodySeconds;
-    float tailSeconds = options.releaseTailSeconds;
     if (totalWavBytesIfUnbounded > maxBytes && keyCount > 0 && layers > 0)
     {
         const double maxSeconds =
@@ -554,7 +600,10 @@ bool TrapLordSynthAudioProcessor::exportMpcKeygroupOffline (const juce::File& pa
         kg.lowNote = note;
         kg.highNote = note;
         kg.rootNote = note;
-        kg.volumeRelease = ampRelease;
+        kg.volumeAttack = patchEnvelope.attack;
+        kg.volumeDecay = patchEnvelope.decay;
+        kg.volumeSustain = patchEnvelope.sustain;
+        kg.volumeRelease = juce::jlimit (0.05f, 8.f, patchEnvelope.release);
 
         for (int layer = 0; layer < layers; ++layer)
         {
@@ -564,7 +613,7 @@ bool TrapLordSynthAudioProcessor::exportMpcKeygroupOffline (const juce::File& pa
             const int vel = layer == 0 ? 58 : (layer == 1 ? 104 : (layer == 2 ? 72 : 118));
             juce::AudioBuffer<float> audio (2, totalSamples);
             audio.clear();
-            if (! renderNoteOffline (note, vel, audio, sr))
+            if (! renderNoteOffline (note, vel, audio, sr, bodySeconds))
                 return false;
 
             float peak = 0.f;
@@ -587,6 +636,19 @@ bool TrapLordSynthAudioProcessor::exportMpcKeygroupOffline (const juce::File& pa
             sampleLayer.velHigh = velSplits[layers - 1][layer][1];
             sampleLayer.sampleName = wavName;
             sampleLayer.sampleFrames = audio.getNumSamples();
+            if (sustainLoop && sampleLayer.sampleFrames > 8192)
+            {
+                const int holdSamples = juce::jmin (sampleLayer.sampleFrames - 1,
+                                                    int (std::round (bodySeconds * sr)));
+                const int loopStart = juce::jmin (holdSamples - 512,
+                                                int (std::round ((patchEnvelope.attack + patchEnvelope.decay) * sr)) + 512);
+                const int loopEnd = juce::jmax (loopStart + 4096, holdSamples - int (sr * 0.08));
+                if (loopEnd < sampleLayer.sampleFrames && loopEnd > loopStart + 2048)
+                {
+                    sampleLayer.loopStart = loopStart;
+                    sampleLayer.loopEnd = juce::jmin (loopEnd, sampleLayer.sampleFrames - 1);
+                }
+            }
             kg.layers.push_back (sampleLayer);
 
             ++op;

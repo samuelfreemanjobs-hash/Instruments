@@ -14,7 +14,7 @@ CLI = ROOT / "build" / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLor
 BANK = ROOT / "assets" / "factory" / "preset_bank.json"
 
 sys.path.insert(0, str(TOOLS))
-from trap_lord_audio_metrics import analyze_file, correlation, read_wav_mono  # noqa: E402
+from trap_lord_audio_metrics import analyze_file, assert_wav_format, correlation  # noqa: E402
 
 FX_CATEGORIES = {"Hits/FX"}
 NON_FX_CENTROID_MAX_HZ = 6000.0
@@ -51,7 +51,11 @@ def assert_diagnose() -> None:
     diag_dir.mkdir(parents=True, exist_ok=True)
     subprocess.check_call([str(CLI), "diagnose", str(diag_dir)], cwd=ROOT)
 
-    mid = analyze_file(diag_dir / "middle_c.wav")
+    for name in ("init_saw.wav", "sine.wav", "middle_c.wav"):
+        assert_wav_format(diag_dir / name, sample_rate=44100, sample_width_bytes=3)
+
+    mid_path = diag_dir / "middle_c.wav"
+    mid = analyze_file(mid_path)
     assert mid.peak > 0.02, "middle_c render is near-silent"
     assert mid.peak <= PEAK_MAX, f"middle_c peak {mid.peak} exceeds {PEAK_MAX}"
     assert abs(mid.fundamental_hz - FUNDAMENTAL_TARGET_HZ) <= FUNDAMENTAL_TOLERANCE, (
@@ -96,6 +100,13 @@ def assert_preset_diversity() -> None:
                 f"{m.path} centroid {m.centroid_hz} Hz > {NON_FX_CENTROID_MAX_HZ}"
             )
         assert abs(m.dc_offset) < 0.02, f"{m.path} dc offset {m.dc_offset}"
+
+
+def test_audition_wav_contract(stage_wav: Path | None = None) -> None:
+    """If staging WAV exists from package run, assert 44.1 kHz / 24-bit."""
+    path = stage_wav or (ROOT / "build" / "audio_qa_presets" / "pad.wav")
+    if path.exists():
+        assert_wav_format(path, sample_rate=44100, sample_width_bytes=3)
 
 
 def test_trap_lord_audio_qa() -> None:

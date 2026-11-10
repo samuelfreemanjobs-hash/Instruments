@@ -45,7 +45,11 @@ public:
                                 double durationSeconds,
                                 double bpm,
                                 juce::AudioBuffer<float>& buffer);
-    bool renderNoteOffline (int midiNote, int velocity, juce::AudioBuffer<float>& buffer, double sampleRate);
+    bool renderNoteOffline (int midiNote,
+                            int velocity,
+                            juce::AudioBuffer<float>& buffer,
+                            double sampleRate,
+                            float noteHoldSeconds = -1.f);
     juce::AudioProcessorValueTreeState state;
     static const juce::StringArray& factoryNames();
     static int factoryPresetCount();
@@ -61,6 +65,7 @@ private:
     juce::dsp::Reverb reverb;
     juce::dsp::Chorus<float> chorus;
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> delay { 96000 };
+    float hpStateL = 0.f, hpStateR = 0.f, hpPrevInL = 0.f, hpPrevInR = 0.f;
     double currentRate = 44100., arpPhase = 0., rotaryPhase = 0.;
     int arpStep = 0;
     std::array<bool, 128> held {};

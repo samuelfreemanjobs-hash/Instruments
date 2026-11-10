@@ -17,7 +17,7 @@ CLI = BUILD / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLordSynthRen
 TOOLS = ROOT / "tools"
 sys.path.insert(0, str(TOOLS))
 
-from trap_lord_audio_metrics import analyze_file, write_metrics_csv  # noqa: E402
+from trap_lord_audio_metrics import analyze_file, assert_wav_format, write_metrics_csv  # noqa: E402
 
 ARTIFACTS = Path("/opt/cursor/artifacts")
 AUDITION_ZIP = ARTIFACTS / "trap-lord-synth-auditions-24.zip"
@@ -29,6 +29,7 @@ PEAK_MAX = 0.99
 TAIL_MAX_DBFS = -60.0
 CENTROID_MAX_HZ = 6000.0
 FX_CATEGORIES = {"Hits/FX"}
+DC_MAX = 0.01
 
 
 def run(cmd: list[str], **kwargs) -> None:
@@ -69,6 +70,10 @@ def normalize_lufs(path: Path, target_lufs: float = -14.0, tp_db: float = -1.0) 
                 str(path),
                 "-af",
                 filt,
+                "-ar",
+                "44100",
+                "-c:a",
+                "pcm_s24le",
                 str(tmp),
             ]
         )
@@ -129,9 +134,11 @@ def make_spectrogram(path: Path, out_png: Path) -> None:
         print("matplotlib not installed; skipping spectrogram", path.name)
 
 
-def qa_file(metrics) -> None:
+def qa_file(metrics, wav_path: Path) -> None:
+    assert_wav_format(wav_path, sample_rate=44100, sample_width_bytes=3)
     assert metrics.peak > 1e-4, f"{metrics.path}: silent render"
     assert metrics.peak <= PEAK_MAX, f"{metrics.path}: peak {metrics.peak}"
+    assert abs(metrics.dc_offset) <= DC_MAX, f"{metrics.path}: dc {metrics.dc_offset}"
     # Full 8s phrase auditions intentionally retain short FX tail; strict tail gate lives in test_trap_lord_audio_qa (diagnose).
     if metrics.category and metrics.category not in FX_CATEGORIES:
         assert metrics.centroid_hz < CENTROID_MAX_HZ, (
@@ -160,7 +167,7 @@ def main() -> int:
     for w in wavs:
         cat = category_from_filename(w.name)
         m = analyze_file(w, category=cat)
-        qa_file(m)
+        qa_file(m, w)
         metrics_rows.append(m)
 
     write_metrics_csv(metrics_rows, CSV_OUT)

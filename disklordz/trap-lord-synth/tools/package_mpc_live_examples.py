@@ -6,13 +6,14 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
-import zipfile
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "build"
 CLI = BUILD / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLordSynthRenderCLI"
 ARTIFACTS = Path("/opt/cursor/artifacts")
+BUILD_OUT = ROOT / "build" / "mpc-live-release"
 STAGING = ARTIFACTS / "mpc-live-staging"
 
 README = """# TRAP LORD SYNTH — MPC Live keygroup (DiskLordz)
@@ -81,22 +82,35 @@ def export_preset(category: str, preset_index: int, zip_name: str) -> Path:
         encoding="utf-8",
     )
 
-    out_zip = ARTIFACTS / zip_name
-    with zipfile.ZipFile(out_zip, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        for path in folder.rglob("*"):
-            if path.is_file():
-                zf.write(path, path.relative_to(work).as_posix())
+    BUILD_OUT.mkdir(parents=True, exist_ok=True)
+    out_zip = BUILD_OUT / zip_name
+    artifacts_copy = ARTIFACTS / zip_name
+    import tempfile
+
+    archive_base = out_zip.with_suffix("")
+    if out_zip.exists():
+        out_zip.unlink(missing_ok=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_base = Path(tmp) / "archive"
+        shutil.make_archive(str(tmp_base), "zip", work, folder.name)
+        shutil.copyfile(tmp_base.with_suffix(".zip"), out_zip)
+    try:
+        shutil.copyfile(out_zip, artifacts_copy)
+    except OSError as err:
+        print(f"WARN: could not copy {out_zip.name} to artifacts ({err}); kept under {out_zip}")
+    else:
+        print(f"Wrote {artifacts_copy} ({folder.name})")
     print(f"Wrote {out_zip} ({folder.name})")
     return folder
 
 
 def main() -> int:
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
-    if STAGING.exists():
-        import shutil
+    import shutil
 
+    if STAGING.exists():
         shutil.rmtree(STAGING)
-    STAGING.mkdir(parents=True)
+    STAGING.mkdir(parents=True, exist_ok=True)
 
     if not BUILD.exists():
         run(

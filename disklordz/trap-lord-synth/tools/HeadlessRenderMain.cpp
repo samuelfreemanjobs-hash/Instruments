@@ -76,6 +76,7 @@ void printUsage()
         << "  audition <preset_index> <wav_path>  single preset audition\n"
         << "  diagnose <output_dir>               init saw / sine / middle C checks\n"
         << "  test-note <midi> <wav> [preset]     single-note render\n"
+        << "  preset-probe <index> <wav>          factory preset middle-C probe\n"
         << "  mpc <preset_index> <parent_dir>     MPC keygroup export\n";
 }
 
@@ -141,6 +142,18 @@ int runAuditions (const juce::String& outDir)
     return written == 24 ? kExitOk : kExitFail;
 }
 
+int runPresetProbe (int presetIndex, const juce::File& wavFile)
+{
+    juce::ScopedJuceInitialiser_GUI juceInit;
+    TrapLordSynthAudioProcessor proc;
+    proc.loadFactoryPreset (presetIndex);
+    const double sr = OfflineAudition::kSampleRate;
+    juce::AudioBuffer<float> audio (2, int (sr * 3.5));
+    if (! proc.renderNoteOffline (60, 110, audio, sr, 2.0f))
+        return kExitFail;
+    return writeWavFile (wavFile, audio, sr, 24) ? kExitOk : kExitFail;
+}
+
 int runTestNote (int note, const juce::File& wavFile, int presetIndex)
 {
     juce::ScopedJuceInitialiser_GUI juceInit;
@@ -180,11 +193,9 @@ int runMpcExport (int presetIndex, const juce::File& parentDir)
     opts.highNote = 96;
     opts.semitoneStep = 1;
     opts.velocityLayers = 2;
-    opts.bodySeconds = 1.15f;
-    opts.releaseTailSeconds = 0.35f;
+    opts.useCategoryTiming = true;
     opts.use24Bit = false;
-    opts.ampReleaseSeconds = 0.35f;
-    opts.maxProgramMegabytes = 48.f;
+    opts.maxProgramMegabytes = 120.f;
 
     std::atomic<bool> abort { false };
     const bool ok = proc.exportMpcKeygroupOffline (parentDir, opts, abort, nullptr);
@@ -233,6 +244,13 @@ int main (int argc, char* argv[])
         if (argc < 4)
             return kExitFail;
         return runMpcExport (std::atoi (argv[2]), juce::File (argv[3]));
+    }
+
+    if (command == "preset-probe")
+    {
+        if (argc < 4)
+            return kExitFail;
+        return runPresetProbe (std::atoi (argv[2]), juce::File (argv[3]));
     }
 
     if (command == "diagnose")

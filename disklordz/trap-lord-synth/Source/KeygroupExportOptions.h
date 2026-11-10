@@ -15,6 +15,7 @@ struct KeygroupExportOptions
     bool use24Bit = false;
     float ampReleaseSeconds = 0.35f;
     float maxProgramMegabytes = 48.f;
+    bool useCategoryTiming = true;
     bool useExpansionsLayout = false;
     juce::String expansionsPackName { "DiskLordz_TrapLord" };
     juce::String folderPrefix { "DL_" };

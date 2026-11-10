@@ -67,10 +67,10 @@ bool MpcXpmWriter::writeKeygroupProgram (const juce::File& programFolder,
         xml << "        <HighNote>" << kg.highNote << "</HighNote>\n";
         xml << "        <IgnoreBaseNote>False</IgnoreBaseNote>\n";
         xml << "        <VelocityToAmpAmount>1.000000</VelocityToAmpAmount>\n";
-        xml << "        <VolumeAttack>0.000000</VolumeAttack>\n";
+        xml << "        <VolumeAttack>" << fmt6 (kg.volumeAttack) << "</VolumeAttack>\n";
         xml << "        <VolumeHold>0.000000</VolumeHold>\n";
-        xml << "        <VolumeDecay>0.000000</VolumeDecay>\n";
-        xml << "        <VolumeSustain>1.000000</VolumeSustain>\n";
+        xml << "        <VolumeDecay>" << fmt6 (kg.volumeDecay) << "</VolumeDecay>\n";
+        xml << "        <VolumeSustain>" << fmt6 (kg.volumeSustain) << "</VolumeSustain>\n";
         xml << "        <VolumeRelease>" << fmt6 (kg.volumeRelease) << "</VolumeRelease>\n";
         xml << "        <TriggerMode>0</TriggerMode>\n";
         xml << "        <Layers>\n";
@@ -90,8 +90,8 @@ bool MpcXpmWriter::writeKeygroupProgram (const juce::File& programFolder,
             xml << "            <SampleName>" << xmlEscape (layer.sampleName) << "</SampleName>\n";
             xml << "            <SampleStart>0</SampleStart>\n";
             xml << "            <SampleEnd>" << juce::jmax (0, layer.sampleFrames) << "</SampleEnd>\n";
-            xml << "            <LoopStart>0</LoopStart>\n";
-            xml << "            <LoopEnd>0</LoopEnd>\n";
+            xml << "            <LoopStart>" << juce::jmax (0, layer.loopStart) << "</LoopStart>\n";
+            xml << "            <LoopEnd>" << juce::jmax (0, layer.loopEnd) << "</LoopEnd>\n";
             xml << "            <SampleFile>" << xmlEscape (layer.sampleName) << "</SampleFile>\n";
             xml << "          </Layer>\n";
         }

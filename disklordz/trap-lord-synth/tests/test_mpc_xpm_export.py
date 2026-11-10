@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ASCII_WAV = re.compile(r"^DL_N\d{3}_L[1-4]\.WAV$")
-MAX_PROGRAM_BYTES = 52 * 1024 * 1024
+MAX_PROGRAM_BYTES = 125 * 1024 * 1024
 EXPECTED_FILE_VERSION = "5000"
 
 

@@ -64,6 +64,7 @@ class AudioMetrics:
     centroid_hz: float
     fundamental_hz: float
     fundamental_ratio: float
+    sub30_energy_ratio: float = 0.0
     category: str = ""
 
 
@@ -111,6 +112,14 @@ def analyze_file(path: Path, category: str = "", tail_fraction: float = 0.12) ->
 
     centroid, fundamental, fund_ratio = spectral_features(x, sr)
 
+    w = np.hanning(len(x))
+    spec = np.abs(np.fft.rfft(x * w))
+    freqs = np.fft.rfftfreq(len(x), 1.0 / sr)
+    power = spec * spec
+    total_p = float(np.sum(power)) + 1e-20
+    sub30 = float(np.sum(power[freqs < 30.0]))
+    sub30_ratio = sub30 / total_p
+
     return AudioMetrics(
         path=path.name,
         peak=peak,
@@ -120,8 +129,18 @@ def analyze_file(path: Path, category: str = "", tail_fraction: float = 0.12) ->
         centroid_hz=centroid,
         fundamental_hz=fundamental,
         fundamental_ratio=fund_ratio,
+        sub30_energy_ratio=sub30_ratio,
         category=category,
     )
+
+
+def assert_wav_format(path: Path, sample_rate: int = 44100, sample_width_bytes: int = 3) -> None:
+    path = Path(path)
+    with wave.open(str(path), "rb") as wf:
+        if wf.getframerate() != sample_rate:
+            raise AssertionError(f"{path.name}: sample rate {wf.getframerate()} != {sample_rate}")
+        if wf.getsampwidth() != sample_width_bytes:
+            raise AssertionError(f"{path.name}: width {wf.getsampwidth()} != {sample_width_bytes}")
 
 
 def feature_vector(x: np.ndarray, sr: int) -> np.ndarray:
@@ -161,6 +180,7 @@ def write_metrics_csv(rows: list[AudioMetrics], out: Path) -> None:
                 "centroid_hz",
                 "fundamental_hz",
                 "fundamental_ratio",
+                "sub30_energy_ratio",
             ]
         )
         for m in rows:
@@ -175,5 +195,6 @@ def write_metrics_csv(rows: list[AudioMetrics], out: Path) -> None:
                     f"{m.centroid_hz:.1f}",
                     f"{m.fundamental_hz:.1f}",
                     f"{m.fundamental_ratio:.4f}",
+                    f"{m.sub30_energy_ratio:.4f}",
                 ]
             )
