@@ -7,6 +7,7 @@ Channel map (Slack workspace `revenuesystem-4o91279`):
 | **#disklordz** | `C0C2AK80XCN` | **Audio Coach** daily nudge (`DISKLORDZ_COACH_WEBHOOK_URL`) |
 | **#disklordz-ci** | `C0C1X6RMGTZ` | GitHub CI (`SLACK_WEBHOOK_URL`, `ci-slack-notify.yml`) |
 | **#disklordz-dev** | `C0C1X6S61B9` | Antigravity handoffs (`SLACK_WEBHOOK_ANTIGRAVITY_URL`) |
+| **Factory liaison** | `#disklordz` if `human-windows`; `#disklordz-dev` if unblocked Factory paste | Timer `plugin-factory-liaison-daily` (15:35 UTC) |
 
 Machine-readable: [`disklordz/integrations/slack-channels.json`](../disklordz/integrations/slack-channels.json)
 

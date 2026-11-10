@@ -144,6 +144,16 @@
       "allowlist": ["disklordz/audio-command/data/"],
       "context_paths": ["docs/AUDIO_PREP_HANDOFF_BUNDLE.md"],
       "priority": 14
+    },
+    {
+      "id": "cloud-slack-doc-factory-liaison",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "SLACK_DISKLOORDZ: factory liaison human-windows → #disklordz",
+      "acceptance": "Row for plugin-factory-liaison timer vs #disklordz-dev",
+      "allowlist": ["docs/"],
+      "context_paths": ["docs/AUDIO_PLUGIN_AGENT_LANE.md"],
+      "priority": 15
     }
   ]
 }
