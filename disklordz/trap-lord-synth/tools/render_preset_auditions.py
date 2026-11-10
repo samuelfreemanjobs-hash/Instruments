@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pick one preset per category and write audit manifest for audition renders."""
+"""Write audition manifest (2 presets per category). Run package_audition_artifacts.py for WAV/ZIP."""
 
 from __future__ import annotations
 
@@ -11,6 +11,21 @@ ROOT = Path(__file__).resolve().parents[1]
 BANK = ROOT / "assets/factory/preset_bank.json"
 OUT = ROOT / "assets/factory/audition_manifest.json"
 
+ORDER = [
+    "Pads",
+    "Leads",
+    "Synth Keys",
+    "Swells",
+    "Brass",
+    "Strings",
+    "Church Keys/EP",
+    "Organ",
+    "Bells",
+    "Bass",
+    "Choir",
+    "Hits/FX",
+]
+
 
 def main() -> int:
     data = json.loads(BANK.read_text(encoding="utf-8"))
@@ -19,14 +34,15 @@ def main() -> int:
     for i, p in enumerate(presets):
         by_cat.setdefault(p["category"], []).append({"index": i, "name": p["name"]})
     manifest = []
-    for cat in sorted(by_cat):
-        pick = by_cat[cat][0]
-        manifest.append({"category": cat, **pick})
+    for cat in ORDER:
+        picks = by_cat.get(cat, [])[:2]
+        for slot, pick in enumerate(picks, start=1):
+            manifest.append({"category": cat, "slot": slot, **pick})
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps({"auditions": manifest}, indent=2), encoding="utf-8")
+    OUT.write_text(json.dumps({"auditions": manifest, "wavCount": len(manifest)}, indent=2), encoding="utf-8")
     print(f"Wrote {OUT} ({len(manifest)} entries)")
     for m in manifest:
-        print(f"  {m['category']}: #{m['index']} {m['name']}")
+        print(f"  {m['category']} #{m['slot']}: idx {m['index']} {m['name']}")
     return 0
 
 

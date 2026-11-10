@@ -53,7 +53,9 @@ target_sources(TrapLordSynth PRIVATE
     Source/MpcXpmWriter.h
     Source/KeygroupExportWorker.cpp
     Source/KeygroupExportWorker.h
-    Source/KeygroupExportOptions.h)
+    Source/KeygroupExportOptions.h
+    Source/OfflineAudition.cpp
+    Source/OfflineAudition.h)
 
 target_compile_definitions(TrapLordSynth
     PUBLIC
@@ -72,3 +74,29 @@ target_link_libraries(TrapLordSynth PRIVATE
     juce::juce_recommended_warning_flags)
 
 juce_generate_juce_header(TrapLordSynth)
+
+juce_add_console_app(TrapLordSynthRenderCLI PRODUCT_NAME "TrapLordSynthRender")
+target_sources(TrapLordSynthRenderCLI PRIVATE tools/HeadlessRenderMain.cpp)
+target_include_directories(TrapLordSynthRenderCLI PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source
+    ${CMAKE_BINARY_DIR}/TrapLordSynth_artefacts/JuceLibraryCode)
+target_compile_definitions(TrapLordSynthRenderCLI
+    PRIVATE
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+        JUCE_DISPLAY_SPLASH_SCREEN=0
+        JUCE_PLUGINHOST_VST=0
+        JUCE_PLUGINHOST_VST3=0
+        JUCE_PLUGINHOST_AU=0)
+foreach(_flag IN ITEMS INTERPROCEDURAL_OPTIMIZATION INTERPROCEDURAL_OPTIMIZATION_RELEASE)
+  set_target_properties(TrapLordSynthRenderCLI PROPERTIES ${_flag} FALSE)
+endforeach()
+target_link_libraries(TrapLordSynthRenderCLI
+    PRIVATE
+        TrapLordSynth
+        TrapLordSynthFactoryData
+        juce::juce_audio_utils
+        juce::juce_audio_formats
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_warning_flags)

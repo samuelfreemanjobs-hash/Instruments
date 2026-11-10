@@ -37,6 +37,12 @@ public:
                                    const KeygroupExportOptions& options,
                                    std::atomic<bool>& abortFlag,
                                    const std::function<void (float, const juce::String&)>& onProgress);
+    bool renderOfflineTimeline (int presetIndex,
+                                const std::vector<std::pair<int, juce::MidiMessage>>& timeline,
+                                double sampleRate,
+                                double durationSeconds,
+                                double bpm,
+                                juce::AudioBuffer<float>& buffer);
     juce::AudioProcessorValueTreeState state;
     static const juce::StringArray& factoryNames();
     static int factoryPresetCount();
@@ -59,6 +65,10 @@ private:
     void generateArp (juce::MidiBuffer&, int);
     double arpPeriodSeconds() const;
     bool renderNoteOffline (int midiNote, int velocity, juce::AudioBuffer<float>& buffer, double sampleRate);
+    void prepareOfflineRender (double sampleRate);
+    void finishOfflineRender();
     int currentPresetIndex = 0;
+    double offlineSavedRate = 44100.;
+    bool offlineActive = false;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrapLordSynthAudioProcessor)
 };

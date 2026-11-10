@@ -330,6 +330,77 @@ void TrapLordSynthAudioProcessor::loadFactoryPreset (int idx)
     currentPresetIndex = idx;
 }
 
+void TrapLordSynthAudioProcessor::prepareOfflineRender (double sampleRate)
+{
+    offlineSavedRate = currentRate;
+    offlineActive = true;
+    suspendProcessing (true);
+    hostBpm = 140.;
+    prepareToPlay (sampleRate, 512);
+    if (auto* arp = state.getParameter ("arp"))
+        arp->setValueNotifyingHost (arp->getDefaultValue());
+}
+
+void TrapLordSynthAudioProcessor::finishOfflineRender()
+{
+    if (! offlineActive)
+        return;
+    prepareToPlay (offlineSavedRate, 512);
+    suspendProcessing (false);
+    offlineActive = false;
+}
+
+bool TrapLordSynthAudioProcessor::renderOfflineTimeline (
+    int presetIndex,
+    const std::vector<std::pair<int, juce::MidiMessage>>& timeline,
+    double sampleRate,
+    double durationSeconds,
+    double bpm,
+    juce::AudioBuffer<float>& buffer)
+{
+    if (presetIndex < 0 || presetIndex >= PresetLibrary::instance().count())
+        return false;
+
+    loadFactoryPreset (presetIndex);
+    hostBpm = bpm;
+
+    const int totalSamples = juce::jmax (1, int (std::round (durationSeconds * sampleRate)));
+    buffer.setSize (2, totalSamples, false, false, true);
+    buffer.clear();
+
+    prepareOfflineRender (sampleRate);
+
+    size_t eventIdx = 0;
+    const int block = 512;
+
+    for (int pos = 0; pos < totalSamples; pos += block)
+    {
+        const int len = juce::jmin (block, totalSamples - pos);
+        juce::AudioBuffer<float> part (2, len);
+        juce::MidiBuffer blockMidi;
+
+        while (eventIdx < timeline.size() && timeline[eventIdx].first < pos + len)
+        {
+            const int offset = juce::jlimit (0, len - 1, timeline[eventIdx].first - pos);
+            blockMidi.addEvent (timeline[eventIdx].second, offset);
+            ++eventIdx;
+        }
+
+        processBlock (part, blockMidi);
+        for (int ch = 0; ch < 2; ++ch)
+            buffer.copyFrom (ch, pos, part, ch, 0, len);
+    }
+
+    float peak = 0.f;
+    for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+        peak = juce::jmax (peak, buffer.getMagnitude (ch, 0, buffer.getNumSamples()));
+    if (peak > 1e-5f && peak > 0.99f)
+        buffer.applyGain (0.95f / peak);
+
+    finishOfflineRender();
+    return true;
+}
+
 bool TrapLordSynthAudioProcessor::renderNoteOffline (int midiNote,
                                                       int velocity,
                                                       juce::AudioBuffer<float>& buffer,

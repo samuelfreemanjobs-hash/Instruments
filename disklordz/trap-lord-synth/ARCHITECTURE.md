@@ -10,6 +10,7 @@ Sixteen-voice hybrid synthesizer for trap production: DSP engines, optional WAV 
 |--------|--------------|--------|
 | VST3 | `TrapLordSynth_VST3` | `build/TrapLordSynth_artefacts/Release/VST3/TRAP LORD SYNTH.vst3` |
 | Standalone | `TrapLordSynth_Standalone` | `build/TrapLordSynth_artefacts/Release/Standalone/` |
+| Headless CLI | `TrapLordSynthRenderCLI` | `build/TrapLordSynthRenderCLI_artefacts/Release/` — auditions + MPC export offline |
 
 JUCE 8+ via `FetchContent` in `CMakeLists.txt` (tag from `JUCE_VERSION` at repo root, floor 8.0.15).
 

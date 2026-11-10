@@ -2,63 +2,148 @@
   "auditions": [
     {
       "category": "Bass",
+      "slot": 1,
       "index": 400,
       "name": "Bass Dark Pulse 401"
     },
     {
+      "category": "Bass",
+      "slot": 2,
+      "index": 401,
+      "name": "Bass Shadow Stack 402"
+    },
+    {
       "category": "Bells",
+      "slot": 1,
       "index": 366,
       "name": "Bells Cathedral Stack 367"
     },
     {
+      "category": "Bells",
+      "slot": 2,
+      "index": 367,
+      "name": "Bells Velvet Choir 368"
+    },
+    {
       "category": "Brass",
+      "slot": 1,
       "index": 230,
       "name": "Brass Haunted Cathedral 231"
     },
     {
+      "category": "Brass",
+      "slot": 2,
+      "index": 231,
+      "name": "Brass Haunted Bell 232"
+    },
+    {
       "category": "Choir",
+      "slot": 1,
       "index": 434,
       "name": "Choir Dusty Lead 435"
     },
     {
+      "category": "Choir",
+      "slot": 2,
+      "index": 435,
+      "name": "Choir Shadow Swell 436"
+    },
+    {
       "category": "Church Keys/EP",
+      "slot": 1,
       "index": 298,
       "name": "Church Keys EP Haunted Bass 299"
     },
     {
+      "category": "Church Keys/EP",
+      "slot": 2,
+      "index": 299,
+      "name": "Church Keys EP Haunted Keys 300"
+    },
+    {
       "category": "Hits/FX",
+      "slot": 1,
       "index": 467,
       "name": "Hits FX Dark Stab 468"
     },
     {
+      "category": "Hits/FX",
+      "slot": 2,
+      "index": 468,
+      "name": "Hits FX Cathedral Cathedral 469"
+    },
+    {
       "category": "Leads",
+      "slot": 1,
       "index": 60,
       "name": "Leads Cinematic Cathedral 61"
     },
     {
+      "category": "Leads",
+      "slot": 2,
+      "index": 61,
+      "name": "Leads Haunted Cathedral 62"
+    },
+    {
       "category": "Organ",
+      "slot": 1,
       "index": 332,
       "name": "Organ Velvet Keys 333"
     },
     {
+      "category": "Organ",
+      "slot": 2,
+      "index": 333,
+      "name": "Organ Cinematic Brass 334"
+    },
+    {
       "category": "Pads",
+      "slot": 1,
       "index": 0,
       "name": "Pads Haunted Bell 01"
     },
     {
+      "category": "Pads",
+      "slot": 2,
+      "index": 1,
+      "name": "Pads Haunted Bell 02"
+    },
+    {
       "category": "Strings",
+      "slot": 1,
       "index": 264,
       "name": "Strings Reverse Bass 265"
     },
     {
+      "category": "Strings",
+      "slot": 2,
+      "index": 265,
+      "name": "Strings Cinematic Lead 266"
+    },
+    {
       "category": "Swells",
+      "slot": 1,
       "index": 180,
       "name": "Swells Rising Stack 181"
     },
     {
+      "category": "Swells",
+      "slot": 2,
+      "index": 181,
+      "name": "Swells Rising Strings 182"
+    },
+    {
       "category": "Synth Keys",
+      "slot": 1,
       "index": 120,
       "name": "Synth Keys Frozen Bell 121"
+    },
+    {
+      "category": "Synth Keys",
+      "slot": 2,
+      "index": 121,
+      "name": "Synth Keys Midnight Bass 122"
     }
-  ]
+  ],
+  "wavCount": 24
 }
