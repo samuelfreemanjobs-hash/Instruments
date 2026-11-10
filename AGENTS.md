@@ -60,6 +60,8 @@ Root **`.cursorrules`** — delegation to Antigravity, Factory liaison, business
 
 Do not mix lanes: **audio-business-copilot** = sprint; **plugin-factory-liaison** = Factory prompts/CI triage; **Cursor Factory** = JUCE/C++.
 
+**Milestone 001 (now):** Stage B on `DiskLordz-Audio/` · Windows VST3 CI [`.github/workflows/disklordz-audio-windows.yml`](.github/workflows/disklordz-audio-windows.yml) · build [`DiskLordz-Audio/BUILD.md`](DiskLordz-Audio/BUILD.md) · Coach gate **`plugin-skeleton`** (DAW proof).
+
 ## Disklordz SaaS (web)
 
 ```bash
