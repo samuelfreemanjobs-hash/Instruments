@@ -2,48 +2,63 @@
   "auditions": [
     {
       "category": "Bass",
-      "index": 335,
-      "name": "Bass Evil Organ 336"
+      "index": 400,
+      "name": "Bass Dark Pulse 401"
     },
     {
       "category": "Bells",
-      "index": 224,
-      "name": "Bells Cathedral Organ 225"
+      "index": 366,
+      "name": "Bells Cathedral Stack 367"
     },
     {
       "category": "Brass",
-      "index": 0,
-      "name": "Brass Ominous Bell 01"
+      "index": 230,
+      "name": "Brass Haunted Cathedral 231"
+    },
+    {
+      "category": "Choir",
+      "index": 434,
+      "name": "Choir Dusty Lead 435"
+    },
+    {
+      "category": "Church Keys/EP",
+      "index": 298,
+      "name": "Church Keys EP Haunted Bass 299"
     },
     {
       "category": "Hits/FX",
-      "index": 445,
-      "name": "Hits/FX Ominous Choir 446"
-    },
-    {
-      "category": "Keys",
-      "index": 112,
-      "name": "Keys Shadow Keys 113"
+      "index": 467,
+      "name": "Hits FX Dark Stab 468"
     },
     {
       "category": "Leads",
-      "index": 280,
-      "name": "Leads Evil Cathedral 281"
+      "index": 60,
+      "name": "Leads Cinematic Cathedral 61"
     },
     {
       "category": "Organ",
-      "index": 168,
-      "name": "Organ Cathedral Organ 169"
+      "index": 332,
+      "name": "Organ Velvet Keys 333"
     },
     {
-      "category": "Pads/Choir",
-      "index": 390,
-      "name": "Pads/Choir Ominous Bell 391"
+      "category": "Pads",
+      "index": 0,
+      "name": "Pads Haunted Bell 01"
     },
     {
       "category": "Strings",
-      "index": 56,
-      "name": "Strings Ominous Pulse 57"
+      "index": 264,
+      "name": "Strings Reverse Bass 265"
+    },
+    {
+      "category": "Swells",
+      "index": 180,
+      "name": "Swells Rising Stack 181"
+    },
+    {
+      "category": "Synth Keys",
+      "index": 120,
+      "name": "Synth Keys Frozen Bell 121"
     }
   ]
 }

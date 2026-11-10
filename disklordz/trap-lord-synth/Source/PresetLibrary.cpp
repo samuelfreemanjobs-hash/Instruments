@@ -72,6 +72,7 @@ void PresetLibrary::applyToState (juce::AudioProcessorValueTreeState& state, int
     set ("pulseWidth", f ("pulseWidth", 0.5f));
     set ("portamentoMs", f ("portamentoMs", 0));
     set ("vibratoDepth", f ("vibratoDepth", 0));
+    set ("swellDepth", f ("swellDepth", 0.f));
     set ("macroDarkness", f ("macroDarkness", 0.2f));
     set ("macroDirt", f ("macroDirt", 0.2f));
     set ("macroMovement", f ("macroMovement", 0.2f));
@@ -81,11 +82,18 @@ void PresetLibrary::applyToState (juce::AudioProcessorValueTreeState& state, int
 
 juce::StringArray PresetLibrary::categories() const
 {
+    static const juce::StringArray order {
+        "Pads", "Leads", "Synth Keys", "Swells", "Brass", "Strings", "Church Keys/EP",
+        "Organ", "Bells", "Bass", "Choir", "Hits/FX"
+    };
     juce::StringArray cats;
+    for (const auto& name : order)
+        for (const auto& p : presets)
+            if (p.category == name && ! cats.contains (name))
+                cats.add (name);
     for (const auto& p : presets)
         if (! cats.contains (p.category))
             cats.add (p.category);
-    cats.sort (true);
     return cats;
 }
 

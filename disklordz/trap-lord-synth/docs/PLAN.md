@@ -48,7 +48,8 @@ Macros stack on top of per-preset base values from the library.
 ## Preset system (500)
 
 - **Storage:** `assets/factory/preset_bank.json` embedded via `juce_add_binary_data` (regenerate with `tools/generate_preset_bank.py`).
-- **Categories (9):** Brass, Strings, Keys, Organ, Bells, Leads, Bass, Pads/Choir, Hits/FX.
+- **Categories (12):** Pads (60), Leads (60), Synth Keys (60), Swells (50); Brass, Strings, Church Keys/EP, Organ, Bells, Bass (34 each); Choir, Hits/FX (33 each).
+- **Swells:** slow-attack evolving timbres; `swellDepth` on patch; **mod wheel (CC1)** scales filter cutoff and output swell.
 - **Generation:** Seeded PRNG from six curated base recipes + constrained random offsets; forbidden-name filter; near-duplicate rejection (quantized param fingerprint); parameter sanity clamps.
 - **Validation (generate time):** min/max envelope, gain, drive; reject empty names / forbidden tokens.
 - **Loudness (optional offline):** `tools/render_preset_auditions.py` renders sample set after build; peak gate in generator targets −18 to −8 dBFS nominal via gain cap.

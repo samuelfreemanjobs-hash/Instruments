@@ -10,7 +10,7 @@ Original synthesis only. Preset and file names use neutral descriptive language 
 | **Dark Brass** | Dark brass, aggressive leads, ominous synth strings |
 | **Trap Orchestra** | Dramatic strings, hits, layered brass, cinematic textures |
 
-Use the **Sound bank** selector to filter the factory patch list (six patches per mode, eighteen total).
+Use the **Sound bank** selector for quick ATL-style grouping. The main factory library ships **500** neutral presets in **12 browser categories** (Pads, Leads, Synth Keys, Swells, Brass, Strings, Church Keys/EP, Organ, Bells, Bass, Choir, Hits/FX). On **Swells** patches, the mod wheel deepens filter and amplitude swells.
 
 ## Global macros
 

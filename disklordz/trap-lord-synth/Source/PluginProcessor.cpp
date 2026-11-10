@@ -56,6 +56,7 @@ Layout TrapLordSynthAudioProcessor::makeLayout()
     param (l, "pulseWidth", "Pulse width", 0.05f, 0.95f, 0.5f);
     param (l, "portamentoMs", "Portamento ms", 0.f, 800.f, 0.f);
     param (l, "vibratoDepth", "Vibrato depth", 0.f, 1.f, 0.f);
+    param (l, "swellDepth", "Swell depth", 0.f, 1.f, 0.f);
     param (l, "macroDarkness", "Darkness", 0.f, 1.f, 0.2f);
     param (l, "macroDirt", "Dirt", 0.f, 1.f, 0.2f);
     param (l, "macroMovement", "Movement", 0.f, 1.f, 0.2f);
@@ -97,6 +98,7 @@ TrapPatch TrapLordSynthAudioProcessor::buildPatch() const
     p.portamentoSec = get (state, "portamentoMs") * 0.001f;
     p.vibratoDepth = get (state, "vibratoDepth") + move * 0.18f;
     p.vibratoRate = 4.5f + move * 3.5f;
+    p.swellDepth = get (state, "swellDepth");
     p.engine = juce::jlimit (0, 10, int (get (state, "engine")));
     return p;
 }

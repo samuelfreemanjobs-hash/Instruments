@@ -15,6 +15,7 @@ struct TrapPatch
     float portamentoSec = 0.f;
     float vibratoDepth = 0.f;
     float vibratoRate = 5.5f;
+    float swellDepth = 0.f;
     int engine = 0;
 };
 
@@ -55,6 +56,7 @@ public:
         fastReleaseGain = 1.f;
         pitchEnv = 0.f;
         vibratoPhase = 0.;
+        modWheel01 = 0.f;
         filter.reset();
     }
 
@@ -137,18 +139,20 @@ public:
 
     void pitchWheelMoved (int v) override { bend = std::pow (2., (v - 8192.) / 8192. * 2. / 12.); }
 
-    void controllerMoved (int, int) override {}
+    void controllerMoved (int cc, int value) override
+    {
+        if (cc == 1)
+            modWheel01 = juce::jlimit (0.f, 1.f, value / 127.f);
+    }
 
     void renderNextBlock (juce::AudioBuffer<float>& out, int start, int n) override
     {
         if (! isVoiceActive())
             return;
 
-        const float safeCutoff = juce::jlimit (20.f, float (sampleRate * .45f), patch.cutoff);
-        if (! std::isfinite (safeCutoff))
+        const float baseCutoff = juce::jlimit (20.f, float (sampleRate * .45f), patch.cutoff);
+        if (! std::isfinite (baseCutoff))
             return;
-
-        filter.setCutoffFrequency (safeCutoff);
 
         const double portAlpha = patch.portamentoSec > 0.001f
                                    ? std::exp (-1. / (patch.portamentoSec * sampleRate))
@@ -178,6 +182,11 @@ public:
             const double step = juce::jlimit (1e-9, 0.5, baseFreq / sampleRate);
             const double step2 = step * std::pow (2., patch.detune / 1200.);
             const double step3 = step * 0.5;
+
+            const float swellAmt = patch.swellDepth * (0.15f + 0.85f * modWheel01);
+            const float dynamicCutoff = juce::jlimit (20.f, float (sampleRate * .45f),
+                                                    baseCutoff * juce::jmap (swellAmt, 0.f, 1.f, 0.5f, 1.45f));
+            filter.setCutoffFrequency (dynamicCutoff);
 
             float x = 0.f;
 
@@ -237,8 +246,9 @@ public:
 
             const float filtered = filter.processSample (0, std::isfinite (x) ? x : 0.f);
             const float normDrive = std::max (.001f, std::tanh (juce::jmax (0.01f, patch.drive)));
-            float y = (std::tanh (filtered * patch.drive) / normDrive)
-                    * env.getNextSample() * velocity * patch.gain;
+            const float envAmp = env.getNextSample();
+            const float swellGain = 1.f + swellAmt * (0.35f + 0.45f * envAmp);
+            float y = (std::tanh (filtered * patch.drive) / normDrive) * envAmp * velocity * patch.gain * swellGain;
             if (! std::isfinite (y))
                 y = 0.f;
 
@@ -324,6 +334,6 @@ private:
     double sampleRate = 44100., frequency = 440., targetFreq = 440., glideFreq = 440., bend = 1.;
     double phase = 0., phase2 = 0., phase3 = 0., samplePosition = 0., vibratoPhase = 0.;
     double pitchDecay = 0.;
-    float velocity = 0.f, fastReleaseGain = 1.f, pitchEnv = 0.f;
+    float velocity = 0.f, fastReleaseGain = 1.f, pitchEnv = 0.f, modWheel01 = 0.f;
     int midiNote = 60;
 };
