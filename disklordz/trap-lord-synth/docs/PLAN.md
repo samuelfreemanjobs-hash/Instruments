@@ -54,6 +54,7 @@ Macros stack on top of per-preset base values from the library.
 - **Validation (generate time):** min/max envelope, gain, drive; reject empty names / forbidden tokens.
 - **Headless renders:** CMake target `TrapLordSynthRenderCLI` (`TrapLordSynthRender` product name). Timeline: F-minor chord phrase + F harmonic minor melody @ 140 BPM, 8 s, 44.1 kHz / 24-bit. Swells get mod-wheel automation (CC1).
 - **Packaging:** `python3 tools/package_audition_artifacts.py` → 24 audition WAVs ZIP + Brass MPC example ZIP; `tests/test_mpc_xpm_export.py` validates the export folder.
+- **UI screenshots (Standalone + Xvfb):** `python3 tools/capture_standalone_screenshots.py` — sets `TRAP_LORD_SCREENSHOT_CATEGORY` / `TRAP_LORD_SCREENSHOT_PATH`, paints the live window, PNG via `paintEntireComponent` (Pad + Swell browser states).
 - **UI browser:** category filter, text search, prev/next, index label `n/500`.
 
 Legacy 18 ATL Classics entries remain as seed recipes inside the generator (not a separate runtime list).

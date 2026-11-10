@@ -106,6 +106,58 @@ TrapLordSynthAudioProcessorEditor::TrapLordSynthAudioProcessorEditor (TrapLordSy
     refreshFilteredIndices();
     startTimerHz (12);
     setSize (1020, 600);
+    maybeRunScreenshotCapture();
+}
+
+void TrapLordSynthAudioProcessorEditor::selectCategoryAndShowFirst (const juce::String& category)
+{
+    for (int i = 1; i < categoryFilter.getNumItems(); ++i)
+    {
+        if (categoryFilter.getItemText (i) == category)
+        {
+            categoryFilter.setSelectedItemIndex (i, juce::dontSendNotification);
+            refreshFilteredIndices();
+            return;
+        }
+    }
+    categoryFilter.setSelectedId (1, juce::dontSendNotification);
+    refreshFilteredIndices();
+}
+
+void TrapLordSynthAudioProcessorEditor::maybeRunScreenshotCapture()
+{
+    const juce::String path = juce::SystemStats::getEnvironmentVariable ("TRAP_LORD_SCREENSHOT_PATH", {});
+    if (path.isEmpty())
+        return;
+
+    const juce::String category = juce::SystemStats::getEnvironmentVariable ("TRAP_LORD_SCREENSHOT_CATEGORY", {});
+
+    juce::Timer::callAfterDelay (
+        900,
+        [this, path, category]() mutable
+        {
+            if (category.isNotEmpty())
+                selectCategoryAndShowFirst (category);
+
+            repaint();
+            resized();
+
+            if (auto* top = getTopLevelComponent())
+            {
+                const auto bounds = top->getLocalBounds();
+                juce::Image img (juce::Image::ARGB, bounds.getWidth(), bounds.getHeight(), true);
+                juce::Graphics g (img);
+                top->paintEntireComponent (g, false);
+
+                const juce::File out (path);
+                out.getParentDirectory().createDirectory();
+                if (auto stream = out.createOutputStream())
+                    juce::PNGImageFormat().writeImageToStream (img, *stream);
+            }
+
+            if (auto* app = juce::JUCEApplicationBase::getInstance())
+                app->systemRequestedQuit();
+        });
 }
 
 TrapLordSynthAudioProcessorEditor::~TrapLordSynthAudioProcessorEditor()

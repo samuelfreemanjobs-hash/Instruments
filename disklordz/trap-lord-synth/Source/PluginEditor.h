@@ -10,8 +10,10 @@ public:
     ~TrapLordSynthAudioProcessorEditor() override;
     void paint (juce::Graphics&) override;
     void resized() override;
+    void selectCategoryAndShowFirst (const juce::String& category);
 
 private:
+    void maybeRunScreenshotCapture();
     void timerCallback() override;
     void refreshFilteredIndices();
     void showPresetAtListIndex (int listIndex);
