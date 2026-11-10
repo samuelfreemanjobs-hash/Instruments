@@ -16,6 +16,7 @@ private:
     void maybeRunScreenshotCapture();
     void timerCallback() override;
     void refreshFilteredIndices();
+    juce::String activeCategoryFilter() const;
     void showPresetAtListIndex (int listIndex);
     void startMpcExport();
 
@@ -32,6 +33,7 @@ private:
     std::array<std::unique_ptr<SA>, count> attachments;
     std::array<std::unique_ptr<SA>, macroCount> macroAttachments;
     juce::ComboBox engine, chord, bankMode, categoryFilter;
+    juce::Label bankModeLabel, engineLabel, chordLabel, sampleMapLabel;
     juce::TextEditor searchBox;
     juce::Label presetTitle;
     juce::TextButton prevBtn { "<" }, nextBtn { ">" }, exportMpc { "EXPORT KEYGROUP" };

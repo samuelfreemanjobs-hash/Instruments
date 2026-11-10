@@ -28,6 +28,13 @@ def build_standalone() -> None:
         raise SystemExit(f"Standalone missing: {STANDALONE}")
 
 
+def png_valid(path: Path) -> bool:
+    data = path.read_bytes()
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        return False
+    return data.endswith(b"IEND\xaeB`\x82")
+
+
 def png_non_blank(path: Path) -> bool:
     data = path.read_bytes()
     if data[:8] != b"\x89PNG\r\n\x1a\n":
@@ -85,6 +92,8 @@ def capture(category: str, out: Path) -> None:
     subprocess.check_call(cmd, env=env, cwd=STANDALONE.parent, timeout=120)
     if not out.exists():
         raise SystemExit(f"Screenshot not written: {out}")
+    if not png_valid(out):
+        raise SystemExit(f"PNG not well-formed (bad IEND): {out}")
     if not png_non_blank(out):
         raise SystemExit(f"Screenshot appears blank: {out}")
     print(f"OK {out} ({out.stat().st_size} bytes)")

@@ -55,7 +55,9 @@ target_sources(TrapLordSynth PRIVATE
     Source/KeygroupExportWorker.h
     Source/KeygroupExportOptions.h
     Source/OfflineAudition.cpp
-    Source/OfflineAudition.h)
+    Source/OfflineAudition.h
+    Source/PluginEditorFormatters.cpp
+    Source/PluginEditorFormatters.h)
 
 target_compile_definitions(TrapLordSynth
     PUBLIC
