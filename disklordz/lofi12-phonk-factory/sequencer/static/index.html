@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LIVEN LOFI-12 — Phonk Factory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar panel">
+        <div class="sidebar-brand">LIVEN LOFI-12</div>
+        <nav class="sidebar-nav" aria-label="Main menu">
+          <button type="button" class="nav-item active" data-view="sequencer">Step sequencer</button>
+          <button type="button" class="nav-item disabled" disabled title="Coming soon">Sample chopper</button>
+          <button type="button" class="nav-item disabled" disabled title="Coming soon">Lofi engine</button>
+          <button type="button" class="nav-item" data-scroll="fxRack" title="Jump to loop FX rack">FX matrix</button>
+          <button type="button" class="nav-item disabled" disabled title="Coming soon">System settings</button>
+          <button type="button" class="nav-item disabled" disabled title="Coming soon">MIDI map</button>
+          <button type="button" class="nav-item disabled" disabled title="Coming soon">Bank presets</button>
+        </nav>
+        <div class="sidebar-meter">
+          <span class="meter-label">32.1 kHz</span>
+          <div class="meter-wave" aria-hidden="true"></div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="top-bar">
+          <div class="top-bar-titles">
+            <h1>Phonk factory + step sequencers</h1>
+            <p class="sub">Per-track seq · stem export · cassette / bit crush · ZIP pack</p>
+          </div>
+          <div class="top-bar-transport">
+            <div class="lcd-block">
+              <span class="lcd-label">BPM</span>
+              <input type="number" id="bpm" class="lcd-bpm" min="60" max="190" value="86" step="0.1" />
+            </div>
+            <div class="lcd-block">
+              <span class="lcd-label">STEP</span>
+              <span class="lcd-readout" id="patDisplay">01</span>
+              <span class="lcd-label dim">/16</span>
+            </div>
+            <div class="lcd-block swing-block">
+              <span class="lcd-label">SWING</span>
+              <input type="range" id="swing" min="50" max="62" value="54" />
+              <span class="lcd-readout small" id="swingDisplay">54%</span>
+            </div>
+            <label class="lcd-block">Bank
+              <select id="patternSlot">
+                <option value="0">01</option>
+                <option value="1">02</option>
+                <option value="2">03</option>
+                <option value="3">04</option>
+                <option value="4">05</option>
+                <option value="5">06</option>
+                <option value="6">07</option>
+                <option value="7">08</option>
+                <option value="8">09</option>
+                <option value="9">10</option>
+                <option value="10">11</option>
+                <option value="11">12</option>
+                <option value="12">13</option>
+                <option value="13">14</option>
+                <option value="14">15</option>
+                <option value="15">16</option>
+              </select>
+            </label>
+            <button type="button" id="saveSlot" title="Save pattern to bank slot">Save slot</button>
+            <button type="button" id="loadSlot" title="Load pattern from bank slot">Load slot</button>
+            <button type="button" id="play" class="primary glow">Play</button>
+            <button type="button" id="stop">Stop</button>
+            <label class="check"><input type="checkbox" id="backingOn" checked /> Loop backing on Play</label>
+            <label>MIDI
+              <select id="midiOut"><option value="">— output —</option></select>
+            </label>
+            <button type="button" id="refreshMidi">Refresh</button>
+          </div>
+        </header>
+
+        <div class="deck-row">
+          <section class="factory-deck panel">
+            <h2>Phonk factory deck</h2>
+            <label>Preset
+              <select id="stylePreset"><option value="">— loading —</option></select>
+            </label>
+            <button type="button" id="applyPreset">Apply</button>
+            <canvas id="waveCanvas" class="wave-canvas" width="480" height="72" aria-label="Loop waveform"></canvas>
+            <details class="prompt-details">
+              <summary>Sound prompt (advanced)</summary>
+              <input
+                type="text"
+                id="groovePrompt"
+                class="prompt-input"
+                value="dirty memphis phonk sp1200 86 bpm"
+              />
+            </details>
+            <button type="button" id="genNewLoop" class="primary glow wide">Generate drum loop</button>
+            <div class="deck-actions">
+              <button type="button" id="genSamplePack">Sample pack (ZIP)</button>
+              <button type="button" id="loadGroove">Load groove → grid</button>
+              <label class="check"><input type="checkbox" id="autoDownloadWav" /> Auto-download WAV</label>
+              <button type="button" id="downloadBacking">Download last loop</button>
+              <label class="file-btn">Load WAV<input type="file" id="loadBackingFile" accept="audio/wav" hidden /></label>
+            </div>
+            <p class="fx-mode" id="fxModeTag">MODE: PHONK · ANALOG GLITCH</p>
+          </section>
+
+          <section class="fx-rack panel" id="fxRack">
+            <h2>Loop FX</h2>
+            <p class="hint">12-bit tape &amp; down-sample bus</p>
+            <div class="fader-bank">
+              <div class="fader-col"><div class="led-col" data-led-for="fxFilter"></div><label class="fader"><span>Filter</span><input type="range" id="fxFilter" min="0" max="1" step="0.01" value="0.5" orient="vertical" /></label></div>
+              <div class="fader-col"><div class="led-col" data-led-for="fxBitcrush"></div><label class="fader"><span>Crush</span><input type="range" id="fxBitcrush" min="0" max="1" step="0.01" value="0.25" orient="vertical" /></label></div>
+              <div class="fader-col"><div class="led-col" data-led-for="fxDrive"></div><label class="fader"><span>Drive</span><input type="range" id="fxDrive" min="0" max="1" step="0.01" value="0.28" orient="vertical" /></label></div>
+              <div class="fader-col"><div class="led-col" data-led-for="fxCassette"></div><label class="fader"><span>Cassette</span><input type="range" id="fxCassette" min="0" max="1" step="0.01" value="0.18" orient="vertical" /></label></div>
+              <div class="fader-col"><div class="led-col" data-led-for="fxGain"></div><label class="fader"><span>Gain</span><input type="range" id="fxGain" min="0" max="1" step="0.01" value="0.75" orient="vertical" /></label></div>
+            </div>
+            <details class="advanced-fx" id="advancedFx">
+              <summary>Advanced FX</summary>
+              <label>Reverb <input type="range" id="fxReverb" min="0" max="1" step="0.01" value="0.22" /></label>
+              <label>Wobble <input type="range" id="fxTape" min="0" max="1" step="0.01" value="0.22" /></label>
+            </details>
+          </section>
+        </div>
+
+        <section class="sequencer panel">
+          <nav id="trackTabBar" class="track-tab-bar" aria-label="Track tabs"></nav>
+          <p class="seq-header" id="seqHeader">Sequence · Track 1 · 16 steps</p>
+          <div id="singleTrackGrid" class="single-track-grid matrix-4x4"></div>
+          <div class="track-actions">
+            <label class="velocity-slider">Velocity
+              <input type="range" id="editVelSlider" min="1" max="127" value="100" />
+            </label>
+            <label>MIDI note <input type="number" id="editNote" min="24" max="127" /></label>
+            <label>Velocity <input type="number" id="editVel" min="1" max="127" /></label>
+            <button type="button" id="applyEdit">Apply to step</button>
+            <button type="button" id="clearTrack">Clear track</button>
+            <button type="button" id="exportTrackGrid">Export loop (grid)</button>
+            <button type="button" id="exportTrackFactory">Export loop (factory)</button>
+            <button type="button" id="focusPad" class="pad-btn">Hit pad</button>
+          </div>
+          <details class="master-grid-wrap">
+            <summary>All tracks (6×16 overview)</summary>
+            <div id="grid" class="grid"></div>
+            <button type="button" id="clear">Clear all</button>
+            <button type="button" id="saveJson">Save pattern JSON</button>
+            <label class="file-btn">Load pattern<input type="file" id="loadJson" accept="application/json" hidden /></label>
+          </details>
+        </section>
+
+        <p id="status" class="status">Ready — press Generate, then Play when your machine is ready.</p>
+      </main>
+    </div>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,48 @@
+{
+  "format": "DISKLORDZ_PHONK_PRODUCT_CATALOG",
+  "version": 1,
+  "outputRoot": "release/phonk-kits",
+  "licenseFile": "LICENSE.txt",
+  "products": [
+    {
+      "sku": "DL-PHONK-BANK-DRIFT-01",
+      "title": "Drift Phonk — Lofi-12 Bank (16 one-shots)",
+      "type": "bank",
+      "preset": null,
+      "prompt": "drift phonk distorted cowbell 155 bpm",
+      "variation": 0
+    },
+    {
+      "sku": "DL-PHONK-BANK-MEMPHIS-TRINITY-01",
+      "title": "Memphis Insanity — Lofi-12 Bank (16 one-shots)",
+      "type": "bank",
+      "preset": "memphis_trinity",
+      "prompt": "",
+      "variation": 0
+    },
+    {
+      "sku": "DL-PHONK-BANK-TOOMP-01",
+      "title": "Traproom Tape — Lofi-12 Bank (16 one-shots)",
+      "type": "bank",
+      "preset": "dj_toomp",
+      "prompt": "",
+      "variation": 1
+    },
+    {
+      "sku": "DL-PHONK-LOOPS-TRINITY-01",
+      "title": "Memphis Phonk Loops x4",
+      "type": "loops",
+      "preset": "memphis_trinity",
+      "prompt": "",
+      "batch": 4,
+      "bpm": 0
+    },
+    {
+      "sku": "DL-PHONK-6PACK-MIDNIGHT-01",
+      "title": "Midnight Circuit — MPC 6-Pack (44.1 kHz)",
+      "type": "disklordz_6",
+      "presetId": "midnight-circuit",
+      "prompt": "drift phonk 808 memphis snap cowbell"
+    }
+  ]
+}
