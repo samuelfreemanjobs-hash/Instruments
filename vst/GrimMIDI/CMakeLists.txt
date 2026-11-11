@@ -24,11 +24,14 @@ juce_add_plugin(GrimMIDI
     EDITOR_WANTS_KEYBOARD_FOCUS FALSE
     COPY_PLUGIN_AFTER_BUILD FALSE)
 
+option(GRIMMIDI_BUILD_EXPORT_PACK "Build offline MIDI pack exporter" OFF)
+
 target_sources(GrimMIDI
     PRIVATE
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
-        Source/GrimChordEngine.cpp)
+        Source/GrimChordEngine.cpp
+        Source/ProgressionMidiBuilder.cpp)
 
 target_compile_definitions(GrimMIDI
     PUBLIC
@@ -65,3 +68,14 @@ target_link_libraries(GrimMIDIProcessorTests
         GrimMIDI
         juce::juce_audio_utils)
 add_test(NAME GrimMIDIProcessorContracts COMMAND GrimMIDIProcessorTests)
+
+if(GRIMMIDI_BUILD_EXPORT_PACK)
+  juce_add_console_app(GrimMIDIExportPack PRODUCT_NAME "GrimMIDIExportPack")
+  target_sources(GrimMIDIExportPack PRIVATE tools/ExportMidiPack.cpp Source/GrimChordEngine.cpp
+      Source/ProgressionMidiBuilder.cpp)
+  target_include_directories(GrimMIDIExportPack PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Source)
+  target_compile_definitions(GrimMIDIExportPack
+      PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_DISPLAY_SPLASH_SCREEN=0)
+  target_link_libraries(GrimMIDIExportPack PRIVATE juce::juce_audio_basics juce::juce_core
+      juce::juce_events juce::juce_data_structures)
+endif()

@@ -51,8 +51,23 @@ struct GrimChordEngine {
 
   static int degreeToRootMidi(int keyPc, ScaleType scale, int degree1to7, int octaveShift) noexcept;
 
+  enum class TriggerMode : int {
+    NearestDegree = 0,
+    DegreePads,
+    ChromaticRoot,
+    kCount
+  };
+
   /** Map incoming pitch class to closest diatonic degree root (MIDI note). */
   static int rootMidiFromTrigger(int triggerNote, int keyPc, ScaleType scale, int octaveShift) noexcept;
+
+  static int rootMidiDegreePads(int triggerNote, int keyPc, ScaleType scale,
+                                 int octaveShift) noexcept;
+
+  static int rootMidiChromatic(int triggerNote, int octaveShift) noexcept;
+
+  static int resolveTriggerRoot(TriggerMode mode, int triggerNote, int keyPc, ScaleType scale,
+                                int octaveShift) noexcept;
 
 private:
   static const int* scaleIntervals(ScaleType scale) noexcept;

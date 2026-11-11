@@ -9,6 +9,8 @@
     { "id": "spread", "name": "Spread", "type": "float", "min": 0, "max": 100, "default": 45 },
     { "id": "strum_ms", "name": "Strum", "type": "float", "min": 0, "max": 120, "default": 22 },
     { "id": "velocity_humanize", "name": "Vel Humanize", "type": "int", "min": 0, "max": 40, "default": 12 },
-    { "id": "octave", "name": "Octave", "type": "int", "min": -2, "max": 2, "default": 0 }
-  ]
+    { "id": "octave", "name": "Octave", "type": "int", "min": -2, "max": 2, "default": 0 },
+    { "id": "trigger_mode", "name": "Trigger Mode", "type": "choice", "choices": ["Nearest Degree", "Degree Pads", "Chromatic Root"], "default": 1 }
+  ],
+  "programs": 100
 }

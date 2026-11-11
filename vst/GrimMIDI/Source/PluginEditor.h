@@ -35,6 +35,7 @@ private:
   juce::ComboBox scaleBox_;
   juce::ComboBox chordBox_;
   juce::ComboBox inversionBox_;
+  juce::ComboBox triggerModeBox_;
 
   juce::Label spreadLabel_;
   juce::Label strumLabel_;
@@ -50,6 +51,7 @@ private:
 
   std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> scaleAttach_;
   std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> chordAttach_;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> triggerAttach_;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GrimMIDIAudioProcessorEditor)
 };

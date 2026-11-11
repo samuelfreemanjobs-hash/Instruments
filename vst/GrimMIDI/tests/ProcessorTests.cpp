@@ -71,6 +71,8 @@ int main() {
   constexpr double kSr = 48000.0;
   constexpr int kBlock = 256;
 
+  expect(kProgressionPresetCount == 100, "progression library has 100 presets");
+
   GrimMIDIAudioProcessor proc;
   proc.prepareToPlay(kSr, kBlock);
 
@@ -134,6 +136,28 @@ int main() {
     buf.addEvent(juce::MidiMessage::controllerEvent(1, 123, 0), 0);
     proc.processBlock(audio, buf);
     expect(countNoteOffs(collectMessages(buf)) >= 3, "CC123 releases chord");
+  }
+
+  // --- degree pad mode: different white keys -> different roots ---
+  {
+    GrimMIDIAudioProcessor pPad;
+    setParamChoice(pPad, GrimMIDIAudioProcessor::kParamTriggerMode, 1);
+    setParamChoice(pPad, GrimMIDIAudioProcessor::kParamRootKey, 0);
+    pPad.prepareToPlay(kSr, kBlock);
+    juce::AudioBuffer<float> audio(2, kBlock);
+    auto rootsFor = [&](int note) {
+      juce::MidiBuffer buf;
+      buf.addEvent(juce::MidiMessage::noteOn(1, note, static_cast<juce::uint8>(100)), 0);
+      pPad.processBlock(audio, buf);
+      int lowest = 127;
+      for (const auto& m : collectMessages(buf)) {
+        if (m.isNoteOn()) {
+          lowest = std::min(lowest, m.getNoteNumber());
+        }
+      }
+      return lowest;
+    };
+    expect(rootsFor(60) != rootsFor(64), "degree pads map C vs E to different roots");
   }
 
   // --- progression MIDI export has events ---

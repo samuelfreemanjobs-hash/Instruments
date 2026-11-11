@@ -8,7 +8,7 @@
 #include <juce_audio_basics/juce_audio_basics.h>
 
 #include "GrimChordEngine.h"
-#include "ProgressionPresets.h"
+#include "ProgressionPresetsData.h"
 
 class GrimMIDIAudioProcessor : public juce::AudioProcessor,
                                private juce::AudioProcessorValueTreeState::Listener {
@@ -52,8 +52,13 @@ public:
   static constexpr const char* kParamStrumMs = "strum_ms";
   static constexpr const char* kParamVelHumanize = "velocity_humanize";
   static constexpr const char* kParamOctave = "octave";
+  static constexpr const char* kParamTriggerMode = "trigger_mode";
 
   void requestReleaseAllVoices() noexcept;
+
+  bool writeProgressionMidiToFile(const juce::File& file) const;
+
+  static void applyProgressionPresetToApvts(juce::AudioProcessorValueTreeState& apvts, int presetIndex);
 
 private:
   struct HeldChord {
@@ -107,6 +112,7 @@ private:
   double strumSamples_ = 0.0;
   int velHumanize_ = 12;
   int octaveShift_ = 0;
+  GrimChordEngine::TriggerMode triggerMode_ = GrimChordEngine::TriggerMode::DegreePads;
 
   uint64_t paramFingerprint_ = 0;
   uint64_t computeParamFingerprint() const noexcept;

@@ -1,6 +1,7 @@
 #include "PluginProcessor.h"
 
 #include "PluginEditor.h"
+#include "ProgressionMidiBuilder.h"
 
 namespace {
 
@@ -9,6 +10,8 @@ constexpr const char* kScaleChoices[] = {"Natural Minor", "Harmonic Minor", "Phr
 constexpr const char* kChordChoices[] = {"Minor Triad",   "Minor 7",       "Minor 9",
                                          "Minor 11",      "Sus2 Minor",    "Minor Add9",
                                          "Diminished 7",  "Power 5th"};
+constexpr const char* kTriggerModeChoices[] = {"Nearest Degree", "Degree Pads (white keys)",
+                                               "Chromatic Root"};
 
 uint64_t hashCombine(uint64_t h, uint64_t v) noexcept {
   return h ^ (v + 0x9e3779b97f4a7c15ULL + (h << 6) + (h >> 2));
@@ -29,6 +32,7 @@ GrimMIDIAudioProcessor::GrimMIDIAudioProcessor()
   apvts_.addParameterListener(kParamStrumMs, this);
   apvts_.addParameterListener(kParamVelHumanize, this);
   apvts_.addParameterListener(kParamOctave, this);
+  apvts_.addParameterListener(kParamTriggerMode, this);
   setCurrentProgram(0);
 }
 
@@ -41,6 +45,30 @@ GrimMIDIAudioProcessor::~GrimMIDIAudioProcessor() {
   apvts_.removeParameterListener(kParamStrumMs, this);
   apvts_.removeParameterListener(kParamVelHumanize, this);
   apvts_.removeParameterListener(kParamOctave, this);
+  apvts_.removeParameterListener(kParamTriggerMode, this);
+}
+
+void GrimMIDIAudioProcessor::applyProgressionPresetToApvts(juce::AudioProcessorValueTreeState& apvts,
+                                                         int presetIndex) {
+  presetIndex = juce::jlimit(0, kProgressionPresetCount - 1, presetIndex);
+  const auto& preset = kProgressionPresets[static_cast<size_t>(presetIndex)];
+
+  auto setChoice = [&](const char* id, int index) {
+    if (auto* p = apvts.getParameter(id)) {
+      p->setValueNotifyingHost(p->convertTo0to1(static_cast<float>(index)));
+    }
+  };
+  auto setInt = [&](const char* id, int value) {
+    if (auto* p = apvts.getParameter(id)) {
+      p->setValueNotifyingHost(p->convertTo0to1(static_cast<float>(value)));
+    }
+  };
+
+  setChoice(kParamScale, preset.scale);
+  setChoice(kParamChordType, preset.chordQuality);
+  if (preset.keyPc < 12) {
+    setInt(kParamRootKey, preset.keyPc);
+  }
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout GrimMIDIAudioProcessor::createParameterLayout() {
@@ -83,6 +111,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout GrimMIDIAudioProcessor::crea
 
   params.push_back(std::make_unique<juce::AudioParameterInt>(
       juce::ParameterID{kParamOctave, 1}, "Octave", -2, 2, 0));
+
+  juce::StringArray triggerNames;
+  for (const auto* t : kTriggerModeChoices) {
+    triggerNames.add(t);
+  }
+  params.push_back(std::make_unique<juce::AudioParameterChoice>(
+      juce::ParameterID{kParamTriggerMode, 1}, "Trigger Mode", triggerNames,
+      static_cast<int>(GrimChordEngine::TriggerMode::DegreePads)));
 
   return {params.begin(), params.end()};
 }
@@ -130,6 +166,8 @@ void GrimMIDIAudioProcessor::readRuntimeParams() noexcept {
   strumSamples_ = (strumMs * 0.001) * sampleRate_;
   velHumanize_ = static_cast<int>(std::lround(apvts_.getRawParameterValue(kParamVelHumanize)->load()));
   octaveShift_ = static_cast<int>(std::lround(apvts_.getRawParameterValue(kParamOctave)->load()));
+  triggerMode_ = static_cast<GrimChordEngine::TriggerMode>(static_cast<int>(std::lround(
+      apvts_.getRawParameterValue(kParamTriggerMode)->load())));
 }
 
 uint64_t GrimMIDIAudioProcessor::computeParamFingerprint() const noexcept {
@@ -142,6 +180,7 @@ uint64_t GrimMIDIAudioProcessor::computeParamFingerprint() const noexcept {
   h = hashCombine(h, static_cast<uint64_t>(static_cast<int>(strumSamples_)));
   h = hashCombine(h, static_cast<uint64_t>(velHumanize_));
   h = hashCombine(h, static_cast<uint64_t>(octaveShift_));
+  h = hashCombine(h, static_cast<uint64_t>(static_cast<int>(triggerMode_)));
   h = hashCombine(h, static_cast<uint64_t>(currentProgram_));
   return h;
 }
@@ -155,7 +194,8 @@ void GrimMIDIAudioProcessor::requestReleaseAllVoices() noexcept {
 }
 
 int GrimMIDIAudioProcessor::mapTriggerToRoot(int triggerNote) const noexcept {
-  return GrimChordEngine::rootMidiFromTrigger(triggerNote, rootKeyPc_, scale_, octaveShift_);
+  return GrimChordEngine::resolveTriggerRoot(triggerMode_, triggerNote, rootKeyPc_, scale_,
+                                             octaveShift_);
 }
 
 GrimChordEngine::VoicingRequest GrimMIDIAudioProcessor::makeVoicingRequest(int triggerNote,
@@ -346,58 +386,36 @@ bool GrimMIDIAudioProcessor::buildProgressionMidiFile(juce::MidiFile& file) cons
   }
   const auto& preset = kProgressionPresets[static_cast<size_t>(currentProgram_)];
 
-  file.setTicksPerQuarterNote(480);
-  juce::MidiMessageSequence seq;
+  ProgressionRenderParams render;
+  render.rootKeyPc = rootKeyPc_;
+  render.scale = scale_;
+  render.chordQuality = chordQuality_;
+  render.inversion = inversion_;
+  render.spreadPct = spread_;
+  render.octaveShift = octaveShift_;
+  const double strumMs = apvts_.getRawParameterValue(kParamStrumMs)->load();
+  const double strumTotal = (strumMs * 0.001);
+  render.strumTotalSeconds = strumTotal;
 
-  const double bpm = static_cast<double>(preset.bpm);
-  seq.addEvent(juce::MidiMessage::tempoMetaEvent(static_cast<int>(60000000.0 / bpm)), 0);
-  const double secondsPerBeat = 60.0 / bpm;
-  double timeSec = 0.0;
+  return ::buildProgressionMidiFile(preset, render, file);
+}
 
-  for (int s = 0; s < preset.numSteps; ++s) {
-    const auto& step = preset.steps[static_cast<size_t>(s)];
-    if (step.degree <= 0 || step.beats == 0) {
-      continue;
-    }
-
-    const int root = GrimChordEngine::degreeToRootMidi(rootKeyPc_, scale_, step.degree, octaveShift_);
-
-    GrimChordEngine::VoicingRequest req;
-    req.rootMidi = root;
-    req.scale = scale_;
-    req.quality = chordQuality_;
-    req.inversion = inversion_;
-    req.spreadPct = spread_;
-    req.octaveShift = 0;
-    req.velocity = 100;
-    req.velocityHumanize = 0;
-    req.addPhrygianColor = true;
-
-    GrimChordEngine::VoicingResult chord;
-    GrimChordEngine::buildVoicing(req, chord);
-
-    const double stepDur = secondsPerBeat * static_cast<double>(step.beats);
-    const double strumStep =
-        (chord.numNotes > 1) ? (strumSamples_ / sampleRate_) / static_cast<double>(chord.numNotes - 1) : 0.0;
-
-    for (int i = 0; i < chord.numNotes; ++i) {
-      const double noteOnSec = timeSec + strumStep * static_cast<double>(i);
-      const double noteOffSec = timeSec + stepDur;
-      seq.addEvent(juce::MidiMessage::noteOn(1, chord.notes[static_cast<size_t>(i)],
-                                             static_cast<juce::uint8>(chord.velocities[static_cast<size_t>(i)])),
-                   noteOnSec);
-      seq.addEvent(juce::MidiMessage::noteOff(1, chord.notes[static_cast<size_t>(i)]), noteOffSec);
-    }
-
-    timeSec += stepDur;
+bool GrimMIDIAudioProcessor::writeProgressionMidiToFile(const juce::File& file) const {
+  juce::MidiFile midi;
+  if (!buildProgressionMidiFile(midi)) {
+    return false;
   }
-
-  file.addTrack(seq);
+  juce::FileOutputStream stream(file);
+  if (!stream.openedOk()) {
+    return false;
+  }
+  midi.writeTo(stream);
   return true;
 }
 
 void GrimMIDIAudioProcessor::setCurrentProgram(int index) {
   currentProgram_ = juce::jlimit(0, kProgressionPresetCount - 1, index);
+  applyProgressionPresetToApvts(apvts_, currentProgram_);
   releaseAllRequested_.store(true, std::memory_order_release);
 }
 

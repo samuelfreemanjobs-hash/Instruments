@@ -46,6 +46,12 @@ int GrimChordEngine::degreeToRootMidi(int keyPc, ScaleType scale, int degree1to7
   return clampMidi(baseOct * 12 + pc);
 }
 
+namespace {
+
+constexpr int kDegreePadMap[12] = {1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6, 7};
+
+} // namespace
+
 int GrimChordEngine::rootMidiFromTrigger(int triggerNote, int keyPc, ScaleType scale,
                                          int octaveShift) noexcept {
   const int pc = ((triggerNote % 12) + 12) % 12;
@@ -67,6 +73,32 @@ int GrimChordEngine::rootMidiFromTrigger(int triggerNote, int keyPc, ScaleType s
   const int octave = triggerNote / 12;
   const int root = octave * 12 + degreePc + octaveShift * 12;
   return clampMidi(root);
+}
+
+int GrimChordEngine::rootMidiDegreePads(int triggerNote, int keyPc, ScaleType scale,
+                                       int octaveShift) noexcept {
+  const int pc = ((triggerNote % 12) + 12) % 12;
+  const int degree = kDegreePadMap[pc];
+  const int octave = triggerNote / 12;
+  const int pcRoot = scaleDegreeSemitone(scale, degree, keyPc) % 12;
+  return clampMidi(octave * 12 + pcRoot + octaveShift * 12);
+}
+
+int GrimChordEngine::rootMidiChromatic(int triggerNote, int octaveShift) noexcept {
+  return clampMidi(triggerNote + octaveShift * 12);
+}
+
+int GrimChordEngine::resolveTriggerRoot(TriggerMode mode, int triggerNote, int keyPc, ScaleType scale,
+                                       int octaveShift) noexcept {
+  switch (mode) {
+    case TriggerMode::DegreePads:
+      return rootMidiDegreePads(triggerNote, keyPc, scale, octaveShift);
+    case TriggerMode::ChromaticRoot:
+      return rootMidiChromatic(triggerNote, octaveShift);
+    case TriggerMode::NearestDegree:
+    default:
+      return rootMidiFromTrigger(triggerNote, keyPc, scale, octaveShift);
+  }
 }
 
 void GrimChordEngine::chordIntervals(ChordQuality q, bool phrygianColor, int& outCount,

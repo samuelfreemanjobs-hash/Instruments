@@ -2,7 +2,7 @@
 
 namespace {
 constexpr int kWidth = 560;
-constexpr int kHeight = 420;
+constexpr int kHeight = 452;
 
 void styleSlider(juce::Slider& s) {
   s.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
@@ -51,6 +51,8 @@ GrimMIDIAudioProcessorEditor::GrimMIDIAudioProcessorEditor(GrimMIDIAudioProcesso
   for (int i = 0; i < 4; ++i) {
     inversionBox_.addItem("Inv " + juce::String(i), i + 1);
   }
+  triggerModeBox_.addItemList(
+      juce::StringArray{"Nearest Degree", "Degree Pads (white keys)", "Chromatic Root"}, 1);
 
   styleSlider(spreadSlider_);
   styleSlider(strumSlider_);
@@ -70,7 +72,8 @@ GrimMIDIAudioProcessorEditor::GrimMIDIAudioProcessorEditor(GrimMIDIAudioProcesso
         static_cast<juce::Component*>(&spreadLabel_), static_cast<juce::Component*>(&strumLabel_),
         static_cast<juce::Component*>(&velLabel_), static_cast<juce::Component*>(&octaveLabel_),
         static_cast<juce::Component*>(&keyBox_), static_cast<juce::Component*>(&scaleBox_),
-        static_cast<juce::Component*>(&chordBox_), static_cast<juce::Component*>(&inversionBox_)}) {
+        static_cast<juce::Component*>(&chordBox_), static_cast<juce::Component*>(&inversionBox_),
+        static_cast<juce::Component*>(&triggerModeBox_)}) {
     addAndMakeVisible(c);
   }
 
@@ -93,6 +96,8 @@ GrimMIDIAudioProcessorEditor::GrimMIDIAudioProcessorEditor(GrimMIDIAudioProcesso
       apvts, GrimMIDIAudioProcessor::kParamScale, scaleBox_);
   chordAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
       apvts, GrimMIDIAudioProcessor::kParamChordType, chordBox_);
+  triggerAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
+      apvts, GrimMIDIAudioProcessor::kParamTriggerMode, triggerModeBox_);
 
   keyBox_.setSelectedId(static_cast<int>(apvts.getRawParameterValue(GrimMIDIAudioProcessor::kParamRootKey)->load())
                         + 1);
@@ -120,11 +125,12 @@ void GrimMIDIAudioProcessorEditor::resized() {
   presetBox_.setBounds(area.removeFromTop(28).removeFromRight(300));
 
   auto selectors = area.removeFromTop(34);
-  const int selW = selectors.getWidth() / 4;
+  const int selW = selectors.getWidth() / 5;
   keyBox_.setBounds(selectors.removeFromLeft(selW).reduced(2));
   scaleBox_.setBounds(selectors.removeFromLeft(selW).reduced(2));
   chordBox_.setBounds(selectors.removeFromLeft(selW).reduced(2));
-  inversionBox_.setBounds(selectors.reduced(2));
+  inversionBox_.setBounds(selectors.removeFromLeft(selW).reduced(2));
+  triggerModeBox_.setBounds(selectors.reduced(2));
 
   exportDragButton_.setBounds(area.removeFromBottom(32).reduced(60, 0));
 
