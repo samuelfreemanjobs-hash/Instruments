@@ -3,170 +3,170 @@
     {
       "category": "Bass",
       "slot": 1,
-      "index": 139,
-      "name": "Bass Distort Southern Thump 24",
+      "index": 60,
+      "name": "Bass Distort Cathedral Punch 24",
       "subStyle": "Distort"
     },
     {
       "category": "Bass",
       "slot": 2,
-      "index": 142,
-      "name": "Bass Sub Shadow Low End 05",
-      "subStyle": "Sub"
+      "index": 61,
+      "name": "Bass 808 Reverse 808 49",
+      "subStyle": "808"
     },
     {
       "category": "Bells",
       "slot": 1,
-      "index": 123,
-      "name": "Bells Glock Stack Reverse Chime 51",
-      "subStyle": "Glock Stack"
+      "index": 58,
+      "name": "Bells Trap Bell Midnight Tine 43",
+      "subStyle": "Trap Bell"
     },
     {
       "category": "Bells",
       "slot": 2,
-      "index": 125,
-      "name": "Bells Glock Stack Evil Bell 48",
-      "subStyle": "Glock Stack"
+      "index": 57,
+      "name": "Bells Trap Bell Southern Glock 52",
+      "subStyle": "Trap Bell"
     },
     {
       "category": "Brass",
       "slot": 1,
-      "index": 74,
-      "name": "Brass Stab Frozen Section 34",
-      "subStyle": "Stab"
-    },
-    {
-      "category": "Brass",
-      "slot": 2,
-      "index": 83,
-      "name": "Brass Section Frozen Section 32",
+      "index": 38,
+      "name": "Brass Section Haunted Horns 20",
       "subStyle": "Section"
+    },
+    {
+      "category": "Brass",
+      "slot": 2,
+      "index": 39,
+      "name": "Brass Stab Cathedral Horns 04",
+      "subStyle": "Stab"
     },
     {
       "category": "Choir",
       "slot": 1,
-      "index": 152,
+      "index": 72,
       "name": "Choir Chant Shadow Oohs 92",
       "subStyle": "Chant"
     },
     {
       "category": "Choir",
       "slot": 2,
-      "index": 146,
-      "name": "Choir Chant Rising Aahs 32",
+      "index": 73,
+      "name": "Choir Chant Trap Vox 77",
       "subStyle": "Chant"
     },
     {
       "category": "Church Keys/EP",
       "slot": 1,
-      "index": 107,
-      "name": "Church Keys Rhodes Rising EP 22",
-      "subStyle": "Rhodes"
+      "index": 50,
+      "name": "Church Keys Wurli Trap Gospel 14",
+      "subStyle": "Wurli"
     },
     {
       "category": "Church Keys/EP",
       "slot": 2,
-      "index": 109,
+      "index": 51,
       "name": "Church Keys Gospel Dark Rhodes 39",
       "subStyle": "Gospel"
     },
     {
       "category": "Hits/FX",
       "slot": 1,
-      "index": 162,
-      "name": "Hits Stab Southern Stab 70",
-      "subStyle": "Stab"
+      "index": 77,
+      "name": "Hits Rise Velvet Rise 47",
+      "subStyle": "Rise"
     },
     {
       "category": "Hits/FX",
       "slot": 2,
-      "index": 166,
-      "name": "Hits Rise Cinematic Hit 17",
+      "index": 78,
+      "name": "Hits Rise Midnight FX 65",
       "subStyle": "Rise"
     },
     {
       "category": "Leads",
       "slot": 1,
-      "index": 23,
-      "name": "Leads FM Blade Rising Cry 18",
+      "index": 10,
+      "name": "Leads FM Blade Cathedral Solo 03",
       "subStyle": "FM Blade"
     },
     {
       "category": "Leads",
       "slot": 2,
-      "index": 32,
-      "name": "Leads Saw Hook Dark Blade 01",
-      "subStyle": "Saw Hook"
+      "index": 13,
+      "name": "Leads Pulse Cry Cinematic Blade 12",
+      "subStyle": "Pulse Cry"
     },
     {
       "category": "Organ",
       "slot": 1,
-      "index": 114,
-      "name": "Organ Drawbar Reverse Pipes 04",
-      "subStyle": "Drawbar"
+      "index": 56,
+      "name": "Organ Rotary Cinematic Organ 32",
+      "subStyle": "Rotary"
     },
     {
       "category": "Organ",
       "slot": 2,
-      "index": 120,
-      "name": "Organ Drawbar Reverse Church 28",
+      "index": 55,
+      "name": "Organ Drawbar Dusty Rotary 28",
       "subStyle": "Drawbar"
     },
     {
       "category": "Pads",
       "slot": 1,
-      "index": 11,
-      "name": "Pads Dark Rising Drift 132",
-      "subStyle": "Dark"
-    },
-    {
-      "category": "Pads",
-      "slot": 2,
-      "index": 14,
-      "name": "Pads Evolving Cathedral Cloud 35",
+      "index": 5,
+      "name": "Pads Evolving Evil Wash 120",
       "subStyle": "Evolving"
+    },
+    {
+      "category": "Pads",
+      "slot": 2,
+      "index": 6,
+      "name": "Pads Airy Cinematic Pad 49",
+      "subStyle": "Airy"
     },
     {
       "category": "Strings",
       "slot": 1,
-      "index": 99,
+      "index": 43,
+      "name": "Strings Trem Reverse Line 104",
+      "subStyle": "Trem"
+    },
+    {
+      "category": "Strings",
+      "slot": 2,
+      "index": 46,
       "name": "Strings Legato Frozen Strings 28",
       "subStyle": "Legato"
     },
     {
-      "category": "Strings",
-      "slot": 2,
-      "index": 102,
-      "name": "Strings Cinematic Rising Bows 48",
-      "subStyle": "Cinematic"
-    },
-    {
       "category": "Swells",
       "slot": 1,
-      "index": 64,
-      "name": "Swells EP Bloom Shadow Swell 116",
+      "index": 26,
+      "name": "Swells EP Bloom Southern Bloom 64",
       "subStyle": "EP Bloom"
     },
     {
       "category": "Swells",
       "slot": 2,
-      "index": 71,
+      "index": 32,
       "name": "Swells EP Bloom Cathedral Tide 88",
       "subStyle": "EP Bloom"
     },
     {
       "category": "Synth Keys",
       "slot": 1,
-      "index": 44,
+      "index": 15,
       "name": "Synth Keys Glass Arp Grim Keys 88",
       "subStyle": "Glass Arp"
     },
     {
       "category": "Synth Keys",
       "slot": 2,
-      "index": 48,
-      "name": "Synth Keys Wurli Dirt Rising Keys 59",
-      "subStyle": "Wurli Dirt"
+      "index": 17,
+      "name": "Synth Keys Glass Arp Dusty Tine 40",
+      "subStyle": "Glass Arp"
     }
   ],
   "wavCount": 24,

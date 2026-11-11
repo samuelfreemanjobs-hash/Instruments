@@ -68,6 +68,8 @@ def find_program_folder(parent: Path, prefix: str) -> Path:
 
 def export_preset(category: str, preset_index: int, zip_name: str) -> Path:
     work = STAGING / zip_name.replace(".zip", "")
+    if work.exists():
+        shutil.rmtree(work)
     work.mkdir(parents=True, exist_ok=True)
     run([str(CLI), "mpc", str(preset_index), str(work)])
     folder = find_program_folder(work, "DL_")
@@ -145,18 +147,24 @@ def main() -> int:
     export_preset("Pads", manifest_idx("Pads", 1), "trap-lord-mpc-live-pad.zip")
     export_preset("Swells", manifest_idx("Swells", 1), "trap-lord-mpc-live-swell.zip")
 
+    import zipfile
+
     for name in ("trap-lord-mpc-live-pad", "trap-lord-mpc-live-swell"):
         full = BUILD_OUT / f"{name}.zip"
         artifact = ARTIFACTS / f"{name}.zip"
-        if full.exists() and full.stat().st_size > 48 * 1024 * 1024 and not artifact.exists():
-            splits = sorted(ARTIFACTS.glob(f"{name}-c*.zip"))
-            if len(splits) >= 3:
-                import zipfile
-
-                with zipfile.ZipFile(artifact, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
-                    for part in splits:
-                        zf.write(part, part.name)
-                print(f"Wrote bundled {artifact} from {len(splits)} splits (full export stays under {full})")
+        splits = sorted(ARTIFACTS.glob(f"{name}-c*.zip"))
+        artifact_bad = (
+            not artifact.exists() or artifact.stat().st_size < 1024
+        )
+        full_too_large = full.exists() and full.stat().st_size > 48 * 1024 * 1024
+        if len(splits) >= 3 and artifact_bad and (full_too_large or not full.exists()):
+            with zipfile.ZipFile(artifact, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
+                for part in splits:
+                    zf.write(part, part.name)
+            print(
+                f"Wrote bundled {artifact} ({artifact.stat().st_size} bytes) "
+                f"from {len(splits)} splits"
+            )
     return 0
 
 
