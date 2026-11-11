@@ -1,11 +1,19 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { createClient } from "@/lib/supabase/client";
 
+type Mode = "sign-in" | "sign-up";
+
+const MIN_PASSWORD_LENGTH = 6;
+
 export function LoginForm() {
+  const router = useRouter();
+  const [mode, setMode] = useState<Mode>("sign-in");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -19,14 +27,27 @@ export function LoginForm() {
       setLoading(false);
       return;
     }
-    const origin = window.location.origin;
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: `${origin}/auth/callback?next=/dashboard` },
-    });
+    const credentials = { email: email.trim(), password };
+    const { data, error } =
+      mode === "sign-in"
+        ? await supabase.auth.signInWithPassword(credentials)
+        : await supabase.auth.signUp(credentials);
     setLoading(false);
-    if (error) setMessage(error.message);
-    else setMessage("Check your email for the sign-in link.");
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+    if (!data.session) {
+      setMessage("Account created. Check your email to confirm it, then sign in.");
+      return;
+    }
+    router.replace("/dashboard");
+    router.refresh();
+  };
+
+  const switchMode = () => {
+    setMode(mode === "sign-in" ? "sign-up" : "sign-in");
+    setMessage(null);
   };
 
   return (
@@ -36,8 +57,21 @@ export function LoginForm() {
         <input
           type="email"
           required
+          autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="mt-1 w-full rounded-lg border border-bfm-border bg-bfm-bg-2 px-3 py-2 text-white"
+        />
+      </label>
+      <label className="block text-sm">
+        Password
+        <input
+          type="password"
+          required
+          minLength={MIN_PASSWORD_LENGTH}
+          autoComplete={mode === "sign-in" ? "current-password" : "new-password"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           className="mt-1 w-full rounded-lg border border-bfm-border bg-bfm-bg-2 px-3 py-2 text-white"
         />
       </label>
@@ -46,7 +80,10 @@ export function LoginForm() {
         disabled={loading}
         className="w-full rounded-lg bg-bfm-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
       >
-        {loading ? "Sending…" : "Email magic link"}
+        {loading ? "Please wait…" : mode === "sign-in" ? "Sign in" : "Create account"}
+      </button>
+      <button type="button" onClick={switchMode} className="w-full text-sm text-bfm-accent hover:underline">
+        {mode === "sign-in" ? "New here? Create an account" : "Already have an account? Sign in"}
       </button>
       {message && <p className="text-sm text-bfm-muted">{message}</p>}
     </form>
