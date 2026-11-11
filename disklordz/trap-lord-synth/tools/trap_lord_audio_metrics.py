@@ -28,6 +28,7 @@ CATEGORY_SPECTRAL_RULES: dict[str, dict[str, float]] = {
 
 MPC_PROGRAM_PEAK_MIN = 0.84  # program loudest note ~ -1 dBFS after offline normalize
 MPC_PROGRAM_PEAK_MAX = 0.95
+MPC_NOTE_LEVEL_SPREAD_DB_MAX = 12.0
 
 
 def read_wav_stereo(path: Path) -> tuple[np.ndarray, np.ndarray, int]:
@@ -221,6 +222,58 @@ def category_spectral_passes(metrics: AudioMetrics, category: str) -> tuple[bool
     if "centroid_max" in rules and metrics.centroid_hz > rules["centroid_max"]:
         return False, f"centroid {metrics.centroid_hz:.1f} > {rules['centroid_max']}"
     return True, ""
+
+
+def mpc_note_peak_levels(program_folder: Path) -> dict[int, float]:
+    """Peak abs per MIDI note (max L/R) for MPC program WAVs."""
+    import re
+
+    note_re = re.compile(r"DL_N(\d{3})_L\d+\.WAV", re.I)
+    levels: dict[int, float] = {}
+    wavs = sorted(
+        {p for p in program_folder.rglob("*") if p.is_file() and p.suffix.lower() == ".wav"}
+    )
+    for wav in wavs:
+        m = note_re.match(wav.name)
+        if not m:
+            continue
+        note = int(m.group(1))
+        left, right, _ = read_wav_stereo(wav)
+        levels[note] = max(float(np.max(np.abs(left))), float(np.max(np.abs(right))))
+    return levels
+
+
+def mpc_program_level_spread_db(program_folder: Path) -> tuple[float, dict[int, float]]:
+    levels = mpc_note_peak_levels(program_folder)
+    if not levels:
+        return 999.0, levels
+    top = max(levels.values())
+    if top < 1e-6:
+        return 999.0, levels
+    worst_db = 0.0
+    for peak in levels.values():
+        if peak < 1e-8:
+            db = -120.0
+        else:
+            db = 20.0 * math.log10(peak / top)
+        worst_db = min(worst_db, db)
+    return float(-worst_db), levels
+
+
+def mpc_program_levels_ok(
+    program_folder: Path, max_spread_db: float = MPC_NOTE_LEVEL_SPREAD_DB_MAX
+) -> tuple[bool, float, str]:
+    spread, levels = mpc_program_level_spread_db(program_folder)
+    ok = spread <= max_spread_db
+    worst_note = -1
+    if levels:
+        top = max(levels.values())
+        for n, p in levels.items():
+            if p < 1e-8 or 20.0 * math.log10(p / top) < -max_spread_db:
+                worst_note = n
+                break
+    msg = f"spread {spread:.1f} dB worst_note={worst_note}"
+    return ok, spread, msg
 
 
 def mpc_program_peak_ok(program_folder: Path) -> tuple[bool, float, int]:

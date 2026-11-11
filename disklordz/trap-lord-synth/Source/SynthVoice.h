@@ -51,6 +51,7 @@ public:
     void prepare (double sr);
     void reset();
     void setPatch (const TrapPatch& p);
+    void setModWheel01 (float v) { modWheel01 = juce::jlimit (0.f, 1.f, v); }
     void setSamples (std::shared_ptr<const std::vector<TrapSamplePtr>> bank);
     bool canPlaySound (juce::SynthesiserSound* sound) override;
     void startNote (int note, float vel, juce::SynthesiserSound*, int wheel) override;
@@ -90,6 +91,6 @@ private:
     double pitchDecay = 0.;
     int midiNote = 60;
     float voiceDrift = 0.f;
-    float voiceHpL = 0.f, voiceHpR = 0.f, voiceHpInL = 0.f, voiceHpInR = 0.f;
+    float pitchTrackedCutoff (float baseHz) const;
     static constexpr double tau = juce::MathConstants<double>::twoPi;
 };

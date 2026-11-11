@@ -54,15 +54,29 @@ def main() -> int:
     auditions = []
     for category in sorted(by_cat):
         vecs: dict[int, np.ndarray] = {}
+        peaks: dict[int, float] = {}
         for idx in by_cat[category]:
             wav = probe_wav_path(PROBE_DIR, idx)
             if not wav.exists():
                 render_category_probe(presets[idx], idx, PROBE_DIR)
-            if analyze_file(wav).peak < 0.02:
+            pk = analyze_file(wav).peak
+            peaks[idx] = pk
+            if pk < 0.02:
                 continue
             if not is_audible_audition(idx, presets[idx]):
                 continue
             vecs[idx] = category_feature_vector(wav)
+        if len(vecs) < 2:
+            ranked = sorted(peaks.keys(), key=lambda i: peaks[i], reverse=True)
+            for idx in ranked:
+                if idx in vecs:
+                    continue
+                wav = probe_wav_path(PROBE_DIR, idx)
+                if not wav.exists():
+                    render_category_probe(presets[idx], idx, PROBE_DIR)
+                vecs[idx] = category_feature_vector(wav)
+                if len(vecs) >= 2:
+                    break
         a, b = farthest_pair(vecs)
         picks = [a] if a == b else [a, b]
         for slot, idx in enumerate(picks[:2], start=1):

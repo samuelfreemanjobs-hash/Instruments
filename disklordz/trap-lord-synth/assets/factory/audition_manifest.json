@@ -50,6 +50,13 @@
       "subStyle": "Chant"
     },
     {
+      "category": "Choir",
+      "slot": 2,
+      "index": 146,
+      "name": "Choir Chant Rising Aahs 32",
+      "subStyle": "Chant"
+    },
+    {
       "category": "Church Keys/EP",
       "slot": 1,
       "index": 107,
@@ -80,8 +87,8 @@
     {
       "category": "Leads",
       "slot": 1,
-      "index": 25,
-      "name": "Leads FM Blade Cathedral Solo 03",
+      "index": 23,
+      "name": "Leads FM Blade Rising Cry 18",
       "subStyle": "FM Blade"
     },
     {
@@ -162,6 +169,6 @@
       "subStyle": "Wurli Dirt"
     }
   ],
-  "wavCount": 23,
+  "wavCount": 24,
   "selection": "farthest_pair_category_probe"
 }

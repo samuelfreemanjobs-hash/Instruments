@@ -151,7 +151,7 @@ TrapPatch TrapLordSynthAudioProcessor::buildPatch() const
     p.fmRatio = juce::jlimit (0.5f, 8.f, 1.2f + get (state, "pulseWidth") * 3.8f);
     if (p.engine == 8 || p.engine == 17 || p.engine == 6)
         p.fmRatio = juce::jmax (p.fmRatio, 1.85f);
-    p.keyTrack = juce::jlimit (0.55f, 2.2f, 0.9f + dark * 0.45f);
+    p.keyTrack = juce::jlimit (0.55f, 1.f, 1.f - dark * 0.18f);
     p.engine = juce::jlimit (0, 23, int (get (state, "engine")));
     p.filterType = juce::jlimit (0, 5, int (get (state, "filterType")));
     return p;
@@ -478,6 +478,9 @@ void TrapLordSynthAudioProcessor::prepareOfflineRender (double sampleRate, bool 
     hostBpm = 140.;
     prepareToPlay (sampleRate, 512);
     synth.allNotesOff (0, true);
+    for (int vi = 0; vi < synth.getNumVoices(); ++vi)
+        if (auto* v = dynamic_cast<TrapVoice*> (synth.getVoice (vi)))
+            v->setModWheel01 (1.f);
     if (! preservePatchParams)
     {
         if (auto* arp = state.getParameter ("arp"))
@@ -559,6 +562,9 @@ bool TrapLordSynthAudioProcessor::renderNoteOffline (int midiNote,
     const float holdSec = noteHoldSeconds > 0.f ? noteHoldSeconds : 1.4f;
     const int noteOffSample = juce::jmin (total - 1, juce::jmax (1, int (std::round (holdSec * sampleRate))));
     prepareOfflineRender (sampleRate);
+    for (int vi = 0; vi < synth.getNumVoices(); ++vi)
+        if (auto* v = dynamic_cast<TrapVoice*> (synth.getVoice (vi)))
+            v->reset();
 
     for (int pos = 0; pos < total; pos += 512)
     {
@@ -567,7 +573,10 @@ bool TrapLordSynthAudioProcessor::renderNoteOffline (int midiNote,
         part.clear();
         juce::MidiBuffer blockMidi;
         if (pos == 0)
+        {
+            blockMidi.addEvent (juce::MidiMessage::controllerEvent (1, 1, 127), 0);
             blockMidi.addEvent (juce::MidiMessage::noteOn (1, midiNote, (juce::uint8) velocity), 0);
+        }
         if (pos <= noteOffSample && pos + len > noteOffSample)
             blockMidi.addEvent (juce::MidiMessage::noteOff (1, midiNote), noteOffSample - pos);
         processBlock (part, blockMidi);
@@ -689,12 +698,9 @@ bool TrapLordSynthAudioProcessor::exportMpcKeygroupOffline (const juce::File& pa
             if (! renderNoteOffline (note, vel, audio, sr, bodySeconds))
                 return false;
 
-            float peak = bufferPeakAbs (audio);
-            if (peak < 1e-4f)
-            {
-                audio.applyGain (12.f);
-                peak = bufferPeakAbs (audio);
-            }
+            const float peak = bufferPeakAbs (audio);
+            if (peak < 1e-5f)
+                continue;
 
             const auto wavName = MpcXpmWriter::makeSampleFilename (note, layer);
             PendingMpcLayer pl;

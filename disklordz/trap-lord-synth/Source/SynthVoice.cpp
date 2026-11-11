@@ -60,6 +60,17 @@ void TrapVoice::reset()
         f.reset();
 }
 
+float TrapVoice::pitchTrackedCutoff (float baseHz) const
+{
+    const float semitones = float (midiNote - 60);
+    const bool bassEngine = patch.engine == 4 || patch.engine == 22;
+    const float amount = bassEngine ? juce::jlimit (0.2f, 0.55f, patch.keyTrack * 0.45f) : 1.f;
+    const float fromPatch = baseHz * std::pow (2.f, semitones * amount / 12.f);
+    const float fundHz = float (juce::MidiMessage::getMidiNoteInHertz (midiNote));
+    const float minBrightHz = fundHz * (bassEngine ? 1.6f : 4.2f);
+    return juce::jlimit (20.f, float (sampleRate * .45f), juce::jmax (fromPatch, minBrightHz));
+}
+
 void TrapVoice::seedPhases()
 {
     phase2 = wrap (phase + 0.37);
@@ -303,7 +314,7 @@ float TrapVoice::synthesizeEngine (int engine, double basePhase, double step, fl
 float TrapVoice::applyFilter (float x, float cutoffHz, float res)
 {
     const float sr = float (sampleRate);
-    cutoffHz = juce::jlimit (20.f, sr * 0.45f, cutoffHz * patch.keyTrack);
+    cutoffHz = juce::jlimit (20.f, sr * 0.45f, cutoffHz);
     const float q = juce::jlimit (0.5f, 1.4f, 0.5f + res * 0.95f);
 
     switch (filterTypeApplied)
@@ -357,7 +368,7 @@ void TrapVoice::renderNextBlock (juce::AudioBuffer<float>& out, int start, int n
     if (! isVoiceActive())
         return;
 
-    const float baseCutoff = juce::jlimit (20.f, float (sampleRate * .45f), patch.cutoff);
+    const float baseCutoff = pitchTrackedCutoff (patch.cutoff);
     if (! std::isfinite (baseCutoff))
         return;
 
@@ -411,14 +422,6 @@ void TrapVoice::renderNextBlock (juce::AudioBuffer<float>& out, int start, int n
         float y = (std::tanh (filtered * patch.drive) / normDrive) * envAmp * velocity * patch.gain * swellGain;
         if (! std::isfinite (y))
             y = 0.f;
-
-        const bool bassEngine = patch.engine == 4 || patch.engine == 22;
-        if (! bassEngine && midiNote >= 52)
-        {
-            const float hpCoeff = float (std::exp (-juce::MathConstants<double>::twoPi * 78.0 / sampleRate));
-            voiceHpL += (y - voiceHpL) * (1.f - hpCoeff);
-            y -= voiceHpL;
-        }
 
         if (fastReleaseGain < 1.f)
         {

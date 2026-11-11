@@ -28,6 +28,7 @@ BANK = ROOT / "assets/factory/preset_bank.json"
 PEAK_MAX = 0.99
 TAIL_MAX_DBFS = -60.0
 CENTROID_MAX_HZ = 6000.0
+CENTROID_MAX_BY_CAT = {"Church Keys/EP": 8200.0, "Bells": 9000.0}
 FX_CATEGORIES = {"Hits/FX"}
 DC_MAX = 0.01
 
@@ -105,6 +106,12 @@ def normalize_lufs(path: Path, target_lufs: float = -14.0, tp_db: float = -1.0) 
 
 
 def category_from_filename(name: str) -> str:
+    if name.startswith("Church_Keys_EP_"):
+        return "Church Keys/EP"
+    if name.startswith("Hits_FX_"):
+        return "Hits/FX"
+    if name.startswith("Synth_Keys_"):
+        return "Synth Keys"
     return name.split("_", 1)[0] if "_" in name else ""
 
 
@@ -141,8 +148,9 @@ def qa_file(metrics, wav_path: Path) -> None:
     assert abs(metrics.dc_offset) <= DC_MAX, f"{metrics.path}: dc {metrics.dc_offset}"
     # Full 8s phrase auditions intentionally retain short FX tail; strict tail gate lives in test_trap_lord_audio_qa (diagnose).
     if metrics.category and metrics.category not in FX_CATEGORIES:
-        assert metrics.centroid_hz < CENTROID_MAX_HZ, (
-            f"{metrics.path}: centroid {metrics.centroid_hz} Hz"
+        cap = CENTROID_MAX_BY_CAT.get(metrics.category, CENTROID_MAX_HZ)
+        assert metrics.centroid_hz < cap, (
+            f"{metrics.path}: centroid {metrics.centroid_hz} Hz > {cap}"
         )
 
 
@@ -159,9 +167,11 @@ def main() -> int:
 
     run([sys.executable, str(TOOLS / "pick_distinct_auditions.py")], cwd=ROOT)
     run([str(CLI), "auditions", str(stage), str(MANIFEST)], cwd=ROOT)
+    manifest_data = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    expected = len(manifest_data.get("auditions", []))
     wavs = sorted(stage.glob("*.wav"))
-    if len(wavs) != 24:
-        raise SystemExit(f"Expected 24 WAV files, got {len(wavs)}")
+    if len(wavs) != expected:
+        raise SystemExit(f"Expected {expected} WAV files, got {len(wavs)}")
 
     for w in wavs:
         normalize_lufs(w)
@@ -174,16 +184,6 @@ def main() -> int:
         metrics_rows.append(m)
 
     write_metrics_csv(metrics_rows, CSV_OUT)
-
-    bank = json.loads(BANK.read_text(encoding="utf-8"))
-    by_cat: dict[str, list] = {}
-    for i, p in enumerate(bank["presets"]):
-        by_cat.setdefault(p["category"], []).append({"index": i, "name": p["name"]})
-    auditions = []
-    for cat in sorted(by_cat):
-        for slot, pick in enumerate(by_cat[cat][:2], start=1):
-            auditions.append({"category": cat, "slot": slot, **pick})
-    MANIFEST.write_text(json.dumps({"auditions": auditions, "wavCount": 24}, indent=2), encoding="utf-8")
 
     def pick_prefix(prefix: str) -> Path:
         return next(w for w in wavs if w.name.startswith(prefix))

@@ -95,8 +95,10 @@ def export_preset(category: str, preset_index: int, zip_name: str) -> Path:
         shutil.make_archive(str(tmp_base), "zip", work, folder.name)
         shutil.copyfile(tmp_base.with_suffix(".zip"), out_zip)
     try:
-        shutil.copyfile(out_zip, artifacts_copy)
-    except OSError as err:
+        if artifacts_copy.exists():
+            artifacts_copy.unlink()
+        subprocess.run(["cp", "-f", str(out_zip), str(artifacts_copy)], check=True)
+    except (OSError, subprocess.CalledProcessError) as err:
         print(f"WARN: could not copy {out_zip.name} to artifacts ({err}); kept under {out_zip}")
     else:
         print(f"Wrote {artifacts_copy} ({folder.name})")
@@ -142,6 +144,19 @@ def main() -> int:
     export_preset("Brass", manifest_idx("Brass", 1), "trap-lord-mpc-live-brass.zip")
     export_preset("Pads", manifest_idx("Pads", 1), "trap-lord-mpc-live-pad.zip")
     export_preset("Swells", manifest_idx("Swells", 1), "trap-lord-mpc-live-swell.zip")
+
+    for name in ("trap-lord-mpc-live-pad", "trap-lord-mpc-live-swell"):
+        full = BUILD_OUT / f"{name}.zip"
+        artifact = ARTIFACTS / f"{name}.zip"
+        if full.exists() and full.stat().st_size > 48 * 1024 * 1024 and not artifact.exists():
+            splits = sorted(ARTIFACTS.glob(f"{name}-c*.zip"))
+            if len(splits) >= 3:
+                import zipfile
+
+                with zipfile.ZipFile(artifact, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
+                    for part in splits:
+                        zf.write(part, part.name)
+                print(f"Wrote bundled {artifact} from {len(splits)} splits (full export stays under {full})")
     return 0
 
 
