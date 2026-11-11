@@ -40,8 +40,14 @@ export async function sendMagicLink(input: { email: string; origin: string; next
         hint: "Add this URL under Supabase → Authentication → URL Configuration → Redirect URLs.",
       };
     }
-    if (/rate|limit|too many/i.test(msg)) {
-      return { ok: false as const, error: "rate_limited", detail: msg };
+    if (/rate|limit|too many|exceeded/i.test(msg)) {
+      return {
+        ok: false as const,
+        error: "rate_limited",
+        detail: msg,
+        hint:
+          "Supabase’s shared mailer caps OTP emails (~4/hour on free tier). Wait 60 minutes, or enable Authentication → SMTP with your own provider.",
+      };
     }
     return { ok: false as const, error: "send_failed", detail: msg };
   }

@@ -20,7 +20,7 @@ Missing redirect URLs often cause API errors (shown on the login form after the 
 
 1. **Authentication → Logs** — look for `user.sign_in` / mail events and errors.
 2. **Spam / Promotions** — default Supabase mail is easy to filter.
-3. **Rate limits** — free tier caps OTP sends per hour; wait and retry.
+3. **Rate limits** — error `email rate limit exceeded` means Supabase’s **default** mail hit the cap (often ~4 OTP emails/hour/project on free tier, shared IP). **Wait ~60 minutes** or set up **Authentication → SMTP** (Resend, SendGrid, AWS SES, etc.) and retry; custom SMTP uses your provider’s limits instead.
 4. **SMTP (recommended)** — Authentication → SMTP: connect SendGrid, Resend, or similar for reliable delivery.
 5. **Templates** — Authentication → Email Templates → “Magic Link” enabled.
 

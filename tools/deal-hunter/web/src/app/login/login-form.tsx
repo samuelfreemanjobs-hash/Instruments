@@ -30,7 +30,8 @@ export function LoginForm() {
         );
         setHint(res.hint ?? null);
       } else if (res.error === "rate_limited") {
-        setMessage("Too many attempts — wait a few minutes and try again.");
+        setMessage("Email rate limit exceeded on Supabase’s built-in mailer.");
+        setHint(res.hint ?? "Wait about an hour, then try again — or add custom SMTP in Supabase.");
       } else if (res.error === "invalid_email") {
         setMessage("Enter a valid email address.");
       } else {
