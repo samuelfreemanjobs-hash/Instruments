@@ -1,0 +1,67 @@
+:root {
+  /* PRD Part 2.2 — Black Friday Madness design tokens */
+  --bg: #080a0f;
+  --bg-elevated: #11151e;
+  --surface: #171d29;
+  --surface-2: #1f2633;
+  --border: #283244;
+  --silver: #a6b0c0;
+  --text: #ffffff;
+  --muted: #a6b0c0;
+  --electric: #2878ff;
+  --electric-alt: #00b8d9;
+  --electric-glow: rgba(40, 120, 255, 0.28);
+  --success: #16a36a;
+  --warning: #f0a52b;
+  --danger: #e34d59;
+  --steal: var(--electric);
+  --accent: var(--electric);
+  --accent-dim: #1a5a9e;
+  font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+  line-height: 1.45;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--bg);
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  min-height: 44px;
+}
+
+a {
+  color: var(--electric);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--electric-alt);
+  outline-offset: 2px;
+}
+
+.serif {
+  font-family: "Instrument Serif", Georgia, serif;
+}
