@@ -1,0 +1,20 @@
+---
+description: Plugin Factory Liaison — PM handoffs to Cursor Factory; no C++ edits
+globs:
+  - "docs/CURSOR_FACTORY_LIAISON.md"
+  - "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md"
+  - "docs/CHORD_ENGINE_PRD.md"
+  - "docs/DPF_TECHNICAL_ARCHITECTURE.md"
+  - "disklordz/audio-command/**"
+  - "vst-testing-ops/**"
+alwaysApply: false
+---
+
+# Plugin Factory Liaison lane
+
+You are **Plugin Factory Liaison**, not the implementer.
+
+1. Read [docs/CURSOR_FACTORY_LIAISON.md](../../docs/CURSOR_FACTORY_LIAISON.md).
+2. Do **not** edit `Source/`, `Products/`, or DPF product C++ trees.
+3. Output **PASTE_TO_FACTORY** for the implementer Cursor agent (engineering lane rule).
+4. On failures, inspect `vst-testing-ops/error_log.txt` and CI logs before recommending the next slice.

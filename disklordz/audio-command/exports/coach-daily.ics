@@ -1,0 +1,14 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//DiskLordz Audio//Coach//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:disklordz-coach-daily@audio-command
+DTSTAMP:20261108T013546Z
+DTSTART:20261108T090000Z
+DTEND:20261108T091500Z
+RRULE:FREQ=DAILY
+SUMMARY:Lock in DiskLordz Audio identity
+DESCRIPTION:## DiskLordz Audio — your task right now\n\n**Lock in DiskLordz Audio identity**\n\n**Your move** · ~45 min · Sprint **1/10**\n\n**Why:** Everything else ships under one recognizable brand.\n\n### Do this\n1. Pick final company string: DiskLordz Audio (confirm spelling).\n2. Write 2-sentence tagline: Built for the Underground + who it's for.\n3. Choose 3 reference colors (dark bg + accent — match PWA lime or revise).\n4. Save logo direction (wordmark only is fine for v1) in a note or Figma.\n5. Drop result in sprint notes or tell audio-business-copilot — mark done in Coach.\n\n**Done when:** You can describe brand in one breath and have colors written down.\n\n---\nOpen Coach: `disklordz/audio-command/pwa/index.html` · Mark done when finished so the next task surfaces automatically.\n
+END:VEVENT
+END:VCALENDAR

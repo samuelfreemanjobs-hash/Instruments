@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "agent_count": 32,
+  "agent_count": 36,
   "agents": [
     {
       "id": "workflow-automation",
@@ -280,6 +280,42 @@
       "entry": "disklordz/agents/profit/release-notes/agent.md",
       "skill": "disklordz/agents/profit/release-notes/skill.md",
       "upstream_repo": "https://github.com/github/github-mcp-server"
+    },
+    {
+      "id": "audio-business-copilot",
+      "title": "Audio Business Copilot",
+      "profit_lever": "Shippable plugin business without Cursor doing PM work",
+      "path": "disklordz/agents/profit/audio-business-copilot",
+      "entry": "disklordz/agents/profit/audio-business-copilot/agent.md",
+      "skill": "disklordz/agents/profit/audio-business-copilot/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "plugin-factory-liaison",
+      "title": "Plugin Factory Liaison",
+      "profit_lever": "Cursor Factory stays fed with minimal tasks \u2014 no Claude Code required",
+      "path": "disklordz/agents/profit/plugin-factory-liaison",
+      "entry": "disklordz/agents/profit/plugin-factory-liaison/agent.md",
+      "skill": "disklordz/agents/profit/plugin-factory-liaison/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "autonomous-coding-agent",
+      "title": "Autonomous Coding Agent (24/7)",
+      "profit_lever": "DiskLordz ships while Samuel runs the business \u2014 24/7 queue drain without human babysitting",
+      "path": "disklordz/agents/profit/autonomous-coding-agent",
+      "entry": "disklordz/agents/profit/autonomous-coding-agent/agent.md",
+      "skill": "disklordz/agents/profit/autonomous-coding-agent/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "vst-factory-director",
+      "title": "VST Factory Director",
+      "profit_lever": "One foreman coordinates the factory dev team without bloating the fleet or mixing CHORD liaison lanes",
+      "path": "disklordz/agents/profit/vst-factory-director",
+      "entry": "disklordz/agents/profit/vst-factory-director/agent.md",
+      "skill": "disklordz/agents/profit/vst-factory-director/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
     },
     {
       "id": "hardware-preset-designer",

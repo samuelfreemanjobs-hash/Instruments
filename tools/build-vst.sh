@@ -50,7 +50,22 @@ build_one() {
   fi
   echo "==> Building vst/${name}"
   cd "${vst}"
-  cmake -B build -DCMAKE_BUILD_TYPE=Release
+  local cmake_args=(-B build -DCMAKE_BUILD_TYPE=Release)
+  if [[ -n "${CXX:-}" ]]; then
+    cmake_args+=(-DCMAKE_CXX_COMPILER="${CXX}")
+  elif command -v g++-12 >/dev/null 2>&1; then
+    cmake_args+=(-DCMAKE_CXX_COMPILER=g++-12)
+  fi
+  if [[ -n "${CC:-}" ]]; then
+    cmake_args+=(-DCMAKE_C_COMPILER="${CC}")
+  elif command -v gcc-12 >/dev/null 2>&1; then
+    cmake_args+=(-DCMAKE_C_COMPILER=gcc-12)
+  fi
+  # Optional theme override for re-theme verify (e.g. METERTAP_THEME=studio-light)
+  if [[ -n "${METERTAP_THEME:-}" && "${name}" == "MeterTap" ]]; then
+    cmake_args+=(-DMETERTAP_THEME="${METERTAP_THEME}")
+  fi
+  cmake "${cmake_args[@]}"
   cmake --build build --config Release -j"$(nproc 2>/dev/null || echo 4)"
   local artefact
   artefact="$(find build -name '*.vst3' 2>/dev/null | head -1 || true)"

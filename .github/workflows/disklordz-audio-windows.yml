@@ -1,0 +1,59 @@
+name: DiskLordz Audio (Windows VST3)
+
+on:
+  push:
+    branches: [main, "cursor/**"]
+    paths:
+      - "DiskLordz-Audio/**"
+      - "JUCE_VERSION"
+      - ".github/workflows/disklordz-audio-windows.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "DiskLordz-Audio/**"
+      - "JUCE_VERSION"
+      - ".github/workflows/disklordz-audio-windows.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: disklordz-audio-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chord-engine-vst3:
+    runs-on: windows-2022
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure (VS 2022 x64)
+        shell: pwsh
+        run: |
+          cmake -B DiskLordz-Audio/Build/Windows -S DiskLordz-Audio `
+            -G "Visual Studio 17 2022" -A x64
+
+      - name: Build ChordEngine_VST3 (Release)
+        shell: pwsh
+        run: |
+          cmake --build DiskLordz-Audio/Build/Windows --config Release `
+            --target ChordEngine_VST3 -- /m
+
+      - name: Resolve VST3 bundle path
+        id: vst3
+        shell: pwsh
+        run: |
+          $root = "DiskLordz-Audio/Build/Windows"
+          $bundles = Get-ChildItem -Path $root -Recurse -Filter "CHORD ENGINE.vst3" -Directory -ErrorAction SilentlyContinue
+          if (-not $bundles) { throw "CHORD ENGINE.vst3 bundle not found under $root" }
+          $path = $bundles[0].FullName
+          echo "path=$path" >> $env:GITHUB_OUTPUT
+          Get-ChildItem -Recurse $path | Select-Object -First 20 FullName
+
+      - name: Upload CHORD ENGINE.vst3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chord-engine-vst3-windows-${{ github.run_number }}
+          path: ${{ steps.vst3.outputs.path }}
+          if-no-files-found: error
+          retention-days: 14

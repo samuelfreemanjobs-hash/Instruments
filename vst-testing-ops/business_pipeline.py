@@ -36,6 +36,10 @@ class StageId(str, Enum):
     WAVE9090_TESTS = "wave9090_tests"
     PLUGINVAL = "pluginval"
     DISKLORDZ_WEB = "disklordz_web"
+    FACTORY_VST_BUILD = "factory_vst_build"
+    FACTORY_VST_ARTEFACT = "factory_vst_artefact"
+    FACTORY_PLUGINVAL = "factory_pluginval"
+    FACTORY_AUDIO = "factory_audio"
 
 
 @dataclass
@@ -62,6 +66,7 @@ class PipelineConfig:
     pluginval: bool = True
     disklordz_web: bool = False
     build_jobs: int | None = None
+    factory_plugin: str | None = None
 
 
 @dataclass
@@ -213,6 +218,111 @@ def stage_wave9090_tests() -> StageResult:
     return StageResult(StageId.WAVE9090_TESTS, code == 0, time.time() - t0, out)
 
 
+def _factory_vst3_bundle(plugin_name: str) -> Path | None:
+    base = REPO_ROOT / "vst" / plugin_name / "build"
+    if not base.is_dir():
+        return None
+    for path in sorted(base.rglob("*.vst3")):
+        if path.is_dir():
+            return path
+    return None
+
+
+def stage_factory_vst_build(plugin_name: str) -> StageResult:
+    t0 = time.time()
+    script = REPO_ROOT / "tools/build-vst.sh"
+    if not script.is_file():
+        return StageResult(
+            StageId.FACTORY_VST_BUILD,
+            False,
+            time.time() - t0,
+            "tools/build-vst.sh not found\n",
+        )
+    juce = REPO_ROOT / "vst/JUCE/CMakeLists.txt"
+    if not juce.is_file():
+        return StageResult(
+            StageId.FACTORY_VST_BUILD,
+            False,
+            time.time() - t0,
+            "JUCE missing — git submodule update --init vst/JUCE\n",
+        )
+    code, out = _run(["bash", str(script), plugin_name], timeout_s=3600)
+    BUILD_LOG.write_text(out, encoding="utf-8")
+    return StageResult(StageId.FACTORY_VST_BUILD, code == 0, time.time() - t0, out)
+
+
+def stage_factory_vst_artefact(plugin_name: str) -> StageResult:
+    t0 = time.time()
+    bundle = _factory_vst3_bundle(plugin_name)
+    if bundle is None:
+        return StageResult(
+            StageId.FACTORY_VST_ARTEFACT,
+            False,
+            time.time() - t0,
+            f"No .vst3 under vst/{plugin_name}/build\n",
+        )
+    return StageResult(
+        StageId.FACTORY_VST_ARTEFACT,
+        True,
+        time.time() - t0,
+        f"[OK] {bundle.relative_to(REPO_ROOT)}\n",
+    )
+
+
+def stage_factory_pluginval(plugin_name: str) -> StageResult:
+    t0 = time.time()
+    bundle = _factory_vst3_bundle(plugin_name)
+    if bundle is None or not ORCHESTRATOR.is_file():
+        return StageResult(
+            StageId.FACTORY_PLUGINVAL,
+            False,
+            time.time() - t0,
+            "Missing bundle or run_pluginval.py\n",
+        )
+    env = os.environ.copy()
+    bin_pv = OPS_ROOT / "bin" / "pluginval"
+    if bin_pv.is_file():
+        env["PLUGINVAL_BIN"] = str(bin_pv)
+    code, out = _run(
+        [sys.executable, str(ORCHESTRATOR), "--plugin", str(bundle)],
+        env=env,
+        timeout_s=300,
+    )
+    return StageResult(StageId.FACTORY_PLUGINVAL, code == 0, time.time() - t0, out)
+
+
+def stage_factory_audio(plugin_name: str) -> StageResult:
+    t0 = time.time()
+    script = REPO_ROOT / "disklordz/vst-factory/tools/analyze_wav.py"
+    if not script.is_file():
+        return StageResult(
+            StageId.FACTORY_AUDIO,
+            True,
+            time.time() - t0,
+            "skip: analyze_wav.py missing\n",
+        )
+    dogfood = REPO_ROOT / "disklordz/vst-factory/data/meter-tap-dogfood.json"
+    wav: Path | None = None
+    if dogfood.is_file():
+        try:
+            meta = json.loads(dogfood.read_text(encoding="utf-8"))
+            if meta.get("plugin_name") == plugin_name:
+                candidate = REPO_ROOT / meta.get("fixture_wav", "")
+                if candidate.is_file():
+                    wav = candidate
+        except json.JSONDecodeError:
+            pass
+    if wav is None:
+        return StageResult(
+            StageId.FACTORY_AUDIO,
+            True,
+            time.time() - t0,
+            f"skip: no factory-audio fixture for {plugin_name}\n",
+        )
+    code, out = _run([sys.executable, str(script), str(wav)], timeout_s=120)
+    return StageResult(StageId.FACTORY_AUDIO, code == 0, time.time() - t0, out)
+
+
 def stage_pluginval() -> StageResult:
     t0 = time.time()
     if not ORCHESTRATOR.is_file():
@@ -313,10 +423,44 @@ PROFILES: dict[str, PipelineConfig] = {
         pluginval=False,
         disklordz_web=False,
     ),
+    "factory": PipelineConfig(
+        configure=False,
+        build_all=False,
+        check_artefacts=False,
+        determinism=False,
+        golden=False,
+        wave9090_tests=False,
+        pluginval=False,
+        disklordz_web=False,
+        factory_plugin=None,
+    ),
+    "factory-audio": PipelineConfig(
+        configure=False,
+        build_all=False,
+        check_artefacts=False,
+        determinism=False,
+        golden=False,
+        wave9090_tests=False,
+        pluginval=False,
+        disklordz_web=False,
+        factory_plugin=None,
+    ),
 }
 
 
-def resolve_stages(config: PipelineConfig) -> list[tuple[StageId, Callable[[], StageResult]]]:
+def resolve_stages(
+    config: PipelineConfig,
+    profile: str = "ci",
+) -> list[tuple[StageId, Callable[[], StageResult]]]:
+    if config.factory_plugin:
+        name = config.factory_plugin
+        if profile == "factory-audio":
+            return [(StageId.FACTORY_AUDIO, lambda n=name: stage_factory_audio(n))]
+        return [
+            (StageId.FACTORY_VST_BUILD, lambda n=name: stage_factory_vst_build(n)),
+            (StageId.FACTORY_VST_ARTEFACT, lambda n=name: stage_factory_vst_artefact(n)),
+            (StageId.FACTORY_PLUGINVAL, lambda n=name: stage_factory_pluginval(n)),
+        ]
     stages: list[tuple[StageId, Callable[[], StageResult]]] = []
     if config.configure:
         stages.append((StageId.CONFIGURE, STAGE_RUNNERS[StageId.CONFIGURE]))
@@ -351,7 +495,7 @@ def run_pipeline(
     run = PipelineRun(profile=profile, started_at=time.time())
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    for stage_id, runner in resolve_stages(cfg):
+    for stage_id, runner in resolve_stages(cfg, profile=profile):
         result = runner()
         run.stages.append(result)
         if progress_cb:

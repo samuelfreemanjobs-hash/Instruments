@@ -1,0 +1,22 @@
+{
+  "writable_prefixes": [
+    "docs/",
+    "scripts/",
+    "disklordz/autonomous-coder/",
+    "disklordz/antigravity/",
+    "disklordz/audio-command/scripts/",
+    "disklordz/audio-command/data/",
+    "disklordz/automation/scripts/",
+    "disklordz/integrations/scripts/",
+    ".cursor/autonomous-coder/",
+    ".github/workflows/autonomous-coding-agent.yml"
+  ],
+  "never_write_without_escalation": [
+    "Source/",
+    "Products/",
+    "DPF-",
+    "Wave9090/",
+    "SP1200/",
+    "disklordz/website/src/app/api/"
+  ]
+}

@@ -17,8 +17,21 @@ jobs:
           python3 -c "import json; f=json.load(open('.github/agents/fleet.json')); assert f['agent_count'] >= 32, f"
           test -f DISKLORDZ_AGENTS.md
 
-      - name: Remote integration verify
-        if: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL != '' }}
-        run: bash disklordz/integrations/scripts/verify-integrations.sh
+      - name: Resolve production verify URL
         env:
-          DISKLORDZ_URL: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL }}
+          VERIFY_BASE: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL }}
+          GO_LIVE_URL: ${{ secrets.DISKORDZ_URL }}
+        run: |
+          url="${VERIFY_BASE:-$GO_LIVE_URL}"
+          url="${url%/}"
+          if [ -n "$url" ]; then
+            echo "DISKLORDZ_URL=$url" >> "$GITHUB_ENV"
+          fi
+
+      - name: Remote integration verify
+        run: |
+          if [ -n "${DISKLORDZ_URL:-}" ]; then
+            bash disklordz/integrations/scripts/verify-integrations.sh
+          else
+            echo "SKIP remote verify: set DISKLORDZ_VERIFY_BASE_URL or DISKLORDZ_URL"
+          fi

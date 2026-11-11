@@ -4,6 +4,8 @@
 
 **HISE sketch lane:** [HISE_ANTIGRAVITY_LANE.md](HISE_ANTIGRAVITY_LANE.md) (handoff) · [HISE_SKETCH_LANE.md](HISE_SKETCH_LANE.md) (full) — **Business Planner + Marketing** gate every customer-facing SKU.
 
+**DiskLordz Audio (CHORD ENGINE / DPF):** Commercial plugin line — [DISKLORDZ_MASTER_PLAN.md](DISKLORDZ_MASTER_PLAN.md) · operator agent **`audio-business-copilot`** · VST implementation stays on **Cursor factory** track.
+
 ## Tracks on `main` today
 
 | Track | Product | Path | Stack | Priority |

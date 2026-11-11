@@ -1,0 +1,14 @@
+{
+  "id": "plugin-class/midi",
+  "label": "MIDI Builder",
+  "vst_type": "synth",
+  "default_buses": {
+    "midi_in": true,
+    "midi_out": true,
+    "audio_in": false,
+    "audio_out": false
+  },
+  "suggested_dsp_modules": ["midi.chord-pads", "midi.voicing", "theory.scale"],
+  "suggested_gui_modules": ["gui.pad-grid", "gui.key-selector"],
+  "apc_template": "templates/apc/creative-brief-midi.md"
+}

@@ -6,7 +6,7 @@ export default function LoginPage() {
     <div className="mx-auto max-w-md space-y-4">
       <h2 className="text-lg font-semibold">Sign in</h2>
       <p className="text-sm text-bfm-muted">
-        Magic link via Supabase Auth. Wishlists, alerts, and budgets sync when RLS tables are live.
+        Sign in with your email and password. Wishlists, alerts, and budgets sync to your account.
       </p>
       {!isSupabaseConfigured() ? (
         <p className="rounded-lg border border-bfm-border bg-bfm-card p-4 text-sm">

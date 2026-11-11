@@ -1,8 +1,18 @@
 {
   "plugin_name": "",
   "version": "v0.0.0",
+  "track": "apc_greenfield",
+  "product_category": "",
+  "plugin_class": "",
   "current_phase": "ideation",
+  "apc_phase": "dream",
+  "dpcs_phase": 0,
   "ui_framework": "pending",
+  "design_system": {
+    "theme": "disklordz",
+    "theme_version": "",
+    "contract": ""
+  },
   "complexity_score": 0,
   "complexity_tier": "L0",
   "vst_path": "",
@@ -10,6 +20,7 @@
   "last_modified": "",
   "phase_history": [],
   "validation": {
+    "dpcs_phase0_constitution_exists": false,
     "creative_brief_exists": false,
     "parameter_spec_exists": false,
     "reference_audio_analyzed": false,
@@ -25,6 +36,8 @@
     "rationale": "",
     "implementation_strategy": "pending"
   },
+  "open_issues": [],
+  "next_command": "/apc-dream",
   "error_recovery": {
     "last_backup": null,
     "rollback_available": false,

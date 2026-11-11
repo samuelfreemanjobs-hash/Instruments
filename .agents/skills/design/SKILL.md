@@ -9,12 +9,19 @@ Read `status.json` → `ui_framework`.
 
 ## juce-native (default)
 
-Write `plugins/<Name>/.ideas/design-spec.md`:
+Follow **[SOP-VF-02 UI design](../../../docs/disklordz/sops/SOP-VF-02-ui-design.md)**. Start from the template:
 
-- Window size
-- Control layout (grid)
-- Label text per parameter ID
-- Color palette (hex)
+```bash
+bin/apc template <Name> design
+```
+
+Write `plugins/<Name>/.ideas/design-spec.md` using the factory design system (`vst/factory-lib/design-system/`):
+
+- Theme id + version and contract version (record in `status.json → design_system`)
+- Window size, exact rects on the 4 px grid, ASCII wireframe
+- Control map: every parameter ID → design-system component → tooltip
+- States, interaction, tab order, accessibility
+- **Colours, type and sizes as role names only — never hex.** A new brand look = a new theme ([SOP-VF-03](../../../docs/disklordz/sops/SOP-VF-03-design-system-theme.md)), not ad-hoc colours.
 
 No C++ required unless user asks for prototype.
 

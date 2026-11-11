@@ -1,0 +1,15 @@
+{
+  "id": "chord-engine",
+  "track": "disklordz_audio_reference",
+  "name": "CHORD ENGINE",
+  "stage": "B",
+  "root_path": "DiskLordz-Audio/Products/ChordEngine",
+  "build_windows_ps1": "DiskLordz-Audio/build-windows.ps1",
+  "ci_workflow": "DiskLordz Audio (Windows VST3)",
+  "liaison_task": "plugin-skeleton",
+  "docs": [
+    "DiskLordz-Audio/MILESTONE_001_FACTORY.md",
+    "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md",
+    "docs/CHORD_ENGINE_PRD.md"
+  ]
+}

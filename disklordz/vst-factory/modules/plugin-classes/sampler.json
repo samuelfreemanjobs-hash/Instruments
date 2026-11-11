@@ -1,0 +1,14 @@
+{
+  "id": "plugin-class/sampler",
+  "label": "Sampler Builder",
+  "vst_type": "synth",
+  "default_buses": {
+    "midi_in": true,
+    "midi_out": false,
+    "audio_in": false,
+    "audio_out": true
+  },
+  "suggested_dsp_modules": ["sampler.one-shot", "sampler.slice", "env.adsr", "filter.hpf"],
+  "suggested_gui_modules": ["gui.waveform", "gui.pad-grid", "gui.keyboard"],
+  "apc_template": "templates/apc/creative-brief-sampler.md"
+}
