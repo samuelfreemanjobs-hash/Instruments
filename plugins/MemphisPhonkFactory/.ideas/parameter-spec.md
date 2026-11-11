@@ -10,4 +10,8 @@
 | `mpf_preview` | Loop preview | bool | off/on | on | Audition loop in plugin |
 | `mpf_master` | Master | float | 0–1 | 0.85 | Output level |
 
-Export actions (UI, not APVTS): **Export full MPC kit**, **Export loops only**.
+| `mpf_batch_count` | Batch kits | int | 1–16 | 4 | Kits per batch export |
+
+Pattern (UI + state props `kickMask` / `snareMask` / `openHatMask`): 16-step kick, snare, open hat.
+
+Export actions: **Export kit**, **Batch export** (timestamped `Memphis_Phonk_Batch_* / Kit_NNN /`).
