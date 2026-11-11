@@ -67,25 +67,34 @@ def assert_diagnose() -> None:
     assert saw.centroid_hz < NON_FX_CENTROID_MAX_HZ, f"init saw centroid too bright: {saw.centroid_hz}"
 
 
-def pick_presets_by_category() -> dict[str, int]:
+def pick_audible_preset_index(category: str, tmp: Path, max_try: int = 12) -> int:
     bank = json.loads(BANK.read_text(encoding="utf-8"))
-    out: dict[str, int] = {}
+    tried = 0
     for i, p in enumerate(bank["presets"]):
-        cat = p["category"]
-        if cat not in out:
-            out[cat] = i
-    return out
+        if p["category"] != category:
+            continue
+        if tried >= max_try:
+            break
+        tried += 1
+        wav = tmp / f"probe_{category.replace('/', '_')}_{i}.wav"
+        json_path = tmp / f"probe_{i}.json"
+        json_path.write_text(json.dumps(p), encoding="utf-8")
+        subprocess.check_call([str(CLI), "category-probe-json", str(json_path), str(wav)], cwd=ROOT)
+        metrics = analyze_file(wav, category=category)
+        if metrics.peak > 0.02:
+            return i
+    raise AssertionError(f"no audible preset found for category {category}")
 
 
 def assert_preset_diversity() -> None:
-    picks = pick_presets_by_category()
-    assert "Pads" in picks and "Bass" in picks
     tmp = ROOT / "build" / "audio_qa_presets"
     tmp.mkdir(parents=True, exist_ok=True)
+    pad_ix = pick_audible_preset_index("Pads", tmp)
+    bass_ix = pick_audible_preset_index("Bass", tmp)
     pad_wav = tmp / "pad.wav"
     bass_wav = tmp / "bass.wav"
-    subprocess.check_call([str(CLI), "audition", str(picks["Pads"]), str(pad_wav)], cwd=ROOT)
-    subprocess.check_call([str(CLI), "audition", str(picks["Bass"]), str(bass_wav)], cwd=ROOT)
+    subprocess.check_call([str(CLI), "audition", str(pad_ix), str(pad_wav)], cwd=ROOT)
+    subprocess.check_call([str(CLI), "audition", str(bass_ix), str(bass_wav)], cwd=ROOT)
 
     pad = analyze_file(pad_wav, category="Pads")
     bass = analyze_file(bass_wav, category="Bass")

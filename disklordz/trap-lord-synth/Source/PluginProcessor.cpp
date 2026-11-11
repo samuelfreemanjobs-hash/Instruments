@@ -86,8 +86,10 @@ Layout TrapLordSynthAudioProcessor::makeLayout()
     param (l, "macroSpace", "Space", 0.f, 1.f, 0.25f);
     l.add (std::make_unique<juce::AudioParameterChoice> (
         juce::ParameterID { "engine", 1 }, "Engine",
-        juce::StringArray { "Brass", "Organ", "Strings", "FM Bell", "Bass", "Choir", "Lead", "Multisample",
-                            "Analog Pulse", "Bright EP", "Haunted FM" },
+        juce::StringArray { "Supersaw", "Organ", "Strings", "FM Bell", "Sub 808", "Choir", "Sync Lead",
+                            "Wavetable", "Pulse PWM", "Bright EP", "Haunt FM", "Ring Mod", "Noise Pad",
+                            "FM Shimmer", "Comb Bow", "Tri Pad", "Brass", "Soft PWM", "Dig Wave", "Bowed",
+                            "Swell Bed", "Pluck Keys", "Dist 808", "Impact" },
         0));
     l.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { "arp", 1 }, "Arpeggiator", false));
     l.add (std::make_unique<juce::AudioParameterChoice> (
@@ -95,7 +97,7 @@ Layout TrapLordSynthAudioProcessor::makeLayout()
         juce::StringArray { "Off", "Minor", "Minor 7", "Diminished", "Sus 2", "Minor 9" }, 0));
     l.add (std::make_unique<juce::AudioParameterChoice> (
         juce::ParameterID { "filterType", 1 }, "Filter",
-        juce::StringArray { "Lowpass", "Highpass", "Bandpass" }, 0));
+        juce::StringArray { "Lowpass", "Highpass", "Bandpass", "Ladder", "Comb", "Formant" }, 0));
     l.add (std::make_unique<juce::AudioParameterChoice> (
         juce::ParameterID { "bankMode", 1 }, "Sound bank",
         juce::StringArray { "Church Keys", "Dark Brass", "Trap Orchestra" }, 0));
@@ -125,8 +127,15 @@ TrapPatch TrapLordSynthAudioProcessor::buildPatch() const
     p.vibratoDepth = get (state, "vibratoDepth") + move * 0.18f;
     p.vibratoRate = 4.5f + move * 3.5f;
     p.swellDepth = get (state, "swellDepth");
-    p.engine = juce::jlimit (0, 10, int (get (state, "engine")));
-    p.filterType = juce::jlimit (0, 2, int (get (state, "filterType")));
+    p.oscMorph = get (state, "pulseWidth");
+    p.unisonVoices = juce::jlimit (1, 7, 1 + int (get (state, "detune") / 5.5f));
+    p.noiseMix = juce::jlimit (0.f, 1.f, dirt * 0.55f + dark * 0.15f);
+    p.ringModDepth = juce::jlimit (0.f, 1.f, move * 0.55f + dirt * 0.25f);
+    p.fmIndex = juce::jlimit (0.2f, 9.f, 1.f + dirt * 6.f + get (state, "pitchEnvSemi") * 0.18f);
+    p.fmRatio = juce::jlimit (0.5f, 8.f, 1.2f + get (state, "pulseWidth") * 3.8f);
+    p.keyTrack = juce::jlimit (0.55f, 2.2f, 0.9f + dark * 0.45f);
+    p.engine = juce::jlimit (0, 23, int (get (state, "engine")));
+    p.filterType = juce::jlimit (0, 5, int (get (state, "filterType")));
     return p;
 }
 
@@ -270,6 +279,7 @@ void TrapLordSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     const float move = get (state, "macroMovement");
     const float space = get (state, "macroSpace");
     const float dark = get (state, "macroDarkness");
+    const float dirt = get (state, "macroDirt");
 
     chorus.setRate (0.45f + move * 1.2f);
     chorus.setDepth (move * 0.55f);
@@ -278,6 +288,42 @@ void TrapLordSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
         juce::dsp::AudioBlock<float> block (buffer);
         juce::dsp::ProcessContextReplacing<float> chorusCtx (block);
         chorus.process (chorusCtx);
+    }
+
+    if (move > 0.12f)
+    {
+        static float apL[6]{}, apR[6]{};
+        const float rate = 0.002f + move * 0.012f;
+        for (int i = 0; i < buffer.getNumSamples(); ++i)
+        {
+            for (int ch = 0; ch < 2; ++ch)
+            {
+                float* d = buffer.getWritePointer (ch);
+                float* ap = ch == 0 ? apL : apR;
+                float x = d[i];
+                for (int s = 0; s < 4; ++s)
+                {
+                    const float coeff = rate * (1.f + s * 0.22f);
+                    const float delayed = ap[s];
+                    const float y = -coeff * x + delayed + coeff * x;
+                    ap[s] = x;
+                    x = y;
+                }
+                d[i] = juce::jlimit (-1.f, 1.f, x * (1.f - move * 0.25f) + d[i] * (0.75f + move * 0.25f));
+            }
+        }
+    }
+
+    if (dirt > 0.62f)
+    {
+        const int bits = juce::jmax (6, 14 - int (dirt * 10.f));
+        const float crush = std::pow (2.f, float (bits));
+        for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+        {
+            auto* d = buffer.getWritePointer (ch);
+            for (int i = 0; i < buffer.getNumSamples(); ++i)
+                d[i] = std::round (d[i] * crush) / crush;
+        }
     }
 
     const int engine = p.engine;
@@ -303,11 +349,11 @@ void TrapLordSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     }
 
     juce::dsp::Reverb::Parameters rp;
-    rp.roomSize = .65f;
-    rp.damping = .5f;
-    rp.wetLevel = juce::jlimit (0.f, 1.f, get (state, "reverb") * .4f + space * 0.35f);
-    rp.dryLevel = juce::jlimit (0.f, 1.f, 1.f - rp.wetLevel);
+    rp.roomSize = juce::jlimit (0.25f, 0.92f, 0.55f + space * 0.35f);
     rp.damping = juce::jlimit (0.2f, 0.95f, 0.45f + dark * 0.4f);
+    rp.wetLevel = juce::jlimit (0.f, 1.f, get (state, "reverb") * .45f + space * 0.4f);
+    rp.dryLevel = juce::jlimit (0.f, 1.f, 1.f - rp.wetLevel);
+    rp.freezeMode = space > 0.65f ? 1.f : 0.f;
     rp.width = 1.f;
     reverb.setParameters (rp);
 

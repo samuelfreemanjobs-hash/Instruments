@@ -47,6 +47,7 @@ target_sources(TrapLordSynth PRIVATE
     Source/PluginEditor.cpp
     Source/PluginEditor.h
     Source/SynthVoice.h
+    Source/SynthVoice.cpp
     Source/PresetLibrary.cpp
     Source/PresetLibrary.h
     Source/MpcXpmWriter.cpp

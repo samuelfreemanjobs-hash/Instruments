@@ -52,7 +52,7 @@ int runDiagnose (const juce::File& outDir)
         int kind;
         int note;
     };
-    const Case cases[] = { { "init_saw", 0, 60 }, { "sine", 1, 60 }, { "middle_c", 0, 60 } };
+    const Case cases[] = { { "init_saw", 0, 60 }, { "sine", 1, 60 }, { "middle_c", 1, 60 } };
 
     for (const auto& c : cases)
     {

@@ -18,7 +18,13 @@ MANIFEST = ROOT / "assets" / "factory" / "audition_manifest.json"
 
 sys.path.insert(0, str(ROOT / "tools"))
 from preset_probe import probe_wav_path, render_category_probe  # noqa: E402
-from trap_lord_audio_metrics import category_feature_vector  # noqa: E402
+from trap_lord_audio_metrics import analyze_file, category_feature_vector  # noqa: E402
+
+
+def is_audible_audition(idx: int, preset: dict) -> bool:
+    wav = PROBE_DIR / f"aud_check_{idx:04d}.wav"
+    subprocess.check_call([str(CLI), "audition", str(idx), str(wav)], cwd=ROOT)
+    return analyze_file(wav).peak > 0.02
 
 
 def farthest_pair(vectors: dict[int, np.ndarray]) -> tuple[int, int]:
@@ -52,6 +58,10 @@ def main() -> int:
             wav = probe_wav_path(PROBE_DIR, idx)
             if not wav.exists():
                 render_category_probe(presets[idx], idx, PROBE_DIR)
+            if analyze_file(wav).peak < 0.02:
+                continue
+            if not is_audible_audition(idx, presets[idx]):
+                continue
             vecs[idx] = category_feature_vector(wav)
         a, b = farthest_pair(vecs)
         picks = [a] if a == b else [a, b]

@@ -73,8 +73,14 @@ def filter_program(src: Path, dst: Path, lo: int, hi: int) -> None:
 
 def export_and_split(preset_index: int, label: str) -> list[Path]:
     staging = ARTIFACTS / f"mpc-split-staging-{label}"
-    shutil.rmtree(staging, ignore_errors=True)
-    staging.mkdir(parents=True)
+    try:
+        if staging.is_dir():
+            shutil.rmtree(staging)
+        elif staging.exists():
+            staging.unlink()
+    except OSError:
+        pass
+    staging.mkdir(parents=True, exist_ok=True)
     subprocess.check_call([str(CLI), "mpc", str(preset_index), str(staging), "1"], cwd=ROOT)
     prog_dirs = [p for p in staging.iterdir() if p.is_dir()]
     if not prog_dirs:
@@ -117,8 +123,28 @@ def main() -> int:
                 return i
         return 0
 
-    export_and_split(pick_example_index("Pads"), "pad")
-    export_and_split(pick_example_index("Swells"), "swell")
+    def export_cat(cat: str, label: str) -> None:
+        indices = []
+        if manifest_path.exists():
+            man = json.loads(manifest_path.read_text(encoding="utf-8"))
+            for row in man.get("auditions", []):
+                if row.get("category") == cat:
+                    indices.append(int(row["index"]))
+        indices.append(pick_example_index(cat))
+        seen: set[int] = set()
+        for ix in indices:
+            if ix in seen:
+                continue
+            seen.add(ix)
+            try:
+                export_and_split(ix, label)
+                return
+            except subprocess.CalledProcessError:
+                continue
+        raise SystemExit(f"MPC export failed for category {cat}")
+
+    export_cat("Pads", "pad")
+    export_cat("Swells", "swell")
     return 0
 
 

@@ -299,8 +299,8 @@ def preset_param_vector(p: dict) -> np.ndarray:
 
     raw = np.array(
         [
-            f("engine") / 10.0,
-            f("filterType") / 2.0,
+            f("engine") / 24.0,
+            f("filterType") / 5.0,
             f("cutoff") / 16000.0,
             f("detune") / 24.0,
             f("drive") / 4.5,

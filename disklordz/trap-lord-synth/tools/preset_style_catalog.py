@@ -11,7 +11,7 @@ SUB_STYLES: dict[str, list[StyleSpec]] = {
     "Pads": [
         {
             "label": "Warm",
-            "engines": [5, 1, 2],
+            "engines": [7, 12, 15, 5, 0, 14],
             "filterType": 0,
             "cutoff": (800, 3200),
             "attack": (0.35, 1.4),
@@ -31,7 +31,7 @@ SUB_STYLES: dict[str, list[StyleSpec]] = {
         },
         {
             "label": "Dark",
-            "engines": [2, 6, 0],
+            "engines": [2, 20, 14, 6, 5, 4],
             "filterType": 0,
             "cutoff": (280, 1400),
             "attack": (0.5, 1.8),
@@ -51,7 +51,7 @@ SUB_STYLES: dict[str, list[StyleSpec]] = {
         },
         {
             "label": "Glassy",
-            "engines": [10, 9, 3],
+            "engines": [10, 9, 13, 7, 18, 3],
             "filterType": 2,
             "cutoff": (1800, 6500),
             "attack": (0.08, 0.45),
@@ -71,7 +71,7 @@ SUB_STYLES: dict[str, list[StyleSpec]] = {
         },
         {
             "label": "Airy",
-            "engines": [1, 5, 9],
+            "engines": [1, 7, 15, 12, 19, 5],
             "filterType": 1,
             "cutoff": (400, 1800),
             "attack": (0.2, 0.9),
@@ -91,7 +91,7 @@ SUB_STYLES: dict[str, list[StyleSpec]] = {
         },
         {
             "label": "Evolving",
-            "engines": [2, 5, 6],
+            "engines": [20, 2, 7, 0, 15, 14],
             "filterType": 0,
             "cutoff": (450, 2200),
             "attack": (0.6, 2.2),
@@ -113,20 +113,20 @@ SUB_STYLES: dict[str, list[StyleSpec]] = {
         },
     ],
     "Leads": [
-        {"label": "Saw Hook", "engines": [6, 0], "filterType": 0, "cutoff": (900, 4200), "attack": (0.002, 0.04), "decay": (0.08, 0.35), "sustain": (0.55, 0.85), "release": (0.12, 0.45), "detune": (6, 14), "drive": (1.2, 2.8), "chord": [0], "arp": 0.25, "macroDarkness": (0.25, 0.6), "macroDirt": (0.3, 0.7), "macroMovement": (0.1, 0.4), "macroSpace": (0.05, 0.25), "portamentoMs": (0, 120)},
-        {"label": "Pulse Cry", "engines": [8], "filterType": 0, "cutoff": (600, 2600), "attack": (0.002, 0.02), "decay": (0.1, 0.28), "sustain": (0.5, 0.8), "release": (0.15, 0.4), "drive": (1.5, 3.5), "pulseWidth": (0.08, 0.38), "chord": [0], "arp": 0.35, "macroDarkness": (0.4, 0.8), "macroDirt": (0.35, 0.65), "macroMovement": (0.15, 0.45), "macroSpace": (0.05, 0.2)},
-        {"label": "FM Blade", "engines": [10, 3], "filterType": 2, "cutoff": (1200, 8000), "attack": (0.003, 0.05), "decay": (0.12, 0.4), "sustain": (0.45, 0.75), "release": (0.2, 0.55), "detune": (2, 8), "drive": (1.0, 2.2), "chord": [0], "arp": 0.4, "macroDarkness": (0.2, 0.55), "macroDirt": (0.2, 0.5), "macroMovement": (0.35, 0.75), "macroSpace": (0.1, 0.35)},
+        {"label": "Saw Hook", "engines": [6, 0, 16, 11, 8], "filterType": 0, "cutoff": (900, 4200), "attack": (0.002, 0.04), "decay": (0.08, 0.35), "sustain": (0.55, 0.85), "release": (0.12, 0.45), "detune": (6, 14), "drive": (1.2, 2.8), "chord": [0], "arp": 0.25, "macroDarkness": (0.25, 0.6), "macroDirt": (0.3, 0.7), "macroMovement": (0.1, 0.4), "macroSpace": (0.05, 0.25), "portamentoMs": (0, 120)},
+        {"label": "Pulse Cry", "engines": [8, 17, 6, 10], "filterType": 0, "cutoff": (600, 2600), "attack": (0.002, 0.02), "decay": (0.1, 0.28), "sustain": (0.5, 0.8), "release": (0.15, 0.4), "drive": (1.5, 3.5), "pulseWidth": (0.08, 0.38), "chord": [0], "arp": 0.35, "macroDarkness": (0.4, 0.8), "macroDirt": (0.35, 0.65), "macroMovement": (0.15, 0.45), "macroSpace": (0.05, 0.2)},
+        {"label": "FM Blade", "engines": [10, 13, 3, 11], "filterType": 2, "cutoff": (1200, 8000), "attack": (0.003, 0.05), "decay": (0.12, 0.4), "sustain": (0.45, 0.75), "release": (0.2, 0.55), "detune": (2, 8), "drive": (1.0, 2.2), "chord": [0], "arp": 0.4, "macroDarkness": (0.2, 0.55), "macroDirt": (0.2, 0.5), "macroMovement": (0.35, 0.75), "macroSpace": (0.1, 0.35)},
         {"label": "Brass Lead", "engines": [0], "filterType": 0, "cutoff": (1400, 5200), "attack": (0.004, 0.08), "decay": (0.14, 0.35), "sustain": (0.6, 0.88), "release": (0.12, 0.35), "detune": (8, 16), "drive": (1.8, 4.0), "pitchEnvSemi": (1, 6), "chord": [0], "arp": 0.15, "macroDarkness": (0.15, 0.45), "macroDirt": (0.5, 0.85), "macroMovement": (0.05, 0.25), "macroSpace": (0.05, 0.2)},
         {"label": "Glide Solo", "engines": [6, 8], "filterType": 0, "cutoff": (700, 3000), "attack": (0.008, 0.06), "decay": (0.15, 0.35), "sustain": (0.65, 0.9), "release": (0.2, 0.5), "portamentoMs": (80, 420), "vibratoDepth": (0.08, 0.35), "chord": [0], "arp": 0.1, "macroDarkness": (0.3, 0.65), "macroDirt": (0.25, 0.55), "macroMovement": (0.25, 0.6), "macroSpace": (0.08, 0.25)},
     ],
     "Synth Keys": [
-        {"label": "Bright Stack", "engines": [9, 3], "filterType": 0, "cutoff": (3500, 12000), "attack": (0.002, 0.02), "decay": (0.2, 0.55), "sustain": (0.55, 0.85), "release": (0.25, 0.65), "detune": (4, 10), "chord": [2, 5], "arp": 0.55, "macroSpace": (0.15, 0.35), "reverb": (0.12, 0.35)},
+        {"label": "Bright Stack", "engines": [18, 21, 9, 17, 7], "filterType": 0, "cutoff": (3500, 12000), "attack": (0.002, 0.02), "decay": (0.2, 0.55), "sustain": (0.55, 0.85), "release": (0.25, 0.65), "detune": (4, 10), "chord": [2, 5], "arp": 0.55, "macroSpace": (0.15, 0.35), "reverb": (0.12, 0.35)},
         {"label": "Digipluck", "engines": [10, 8], "filterType": 2, "cutoff": (2000, 9000), "attack": (0.001, 0.012), "decay": (0.08, 0.35), "sustain": (0.2, 0.55), "release": (0.15, 0.45), "detune": (2, 7), "chord": [0, 4], "arp": 0.65, "macroMovement": (0.2, 0.5), "delay": (0.08, 0.25)},
         {"label": "Wurli Dirt", "engines": [9, 1], "filterType": 0, "cutoff": (1800, 6500), "attack": (0.004, 0.025), "decay": (0.25, 0.7), "sustain": (0.5, 0.8), "release": (0.3, 0.8), "drive": (1.2, 2.6), "chord": [2, 5], "arp": 0.4, "macroDirt": (0.35, 0.7), "macroSpace": (0.2, 0.45)},
         {"label": "Glass Arp", "engines": [10], "filterType": 1, "cutoff": (900, 4200), "attack": (0.002, 0.015), "decay": (0.12, 0.4), "sustain": (0.35, 0.65), "release": (0.2, 0.55), "chord": [4], "arp": 0.85, "arpRate": (2, 8), "macroSpace": (0.25, 0.55), "reverb": (0.2, 0.45)},
     ],
     "Swells": [
-        {"label": "Rising", "engines": [2, 5], "filterType": 0, "cutoff": (280, 1600), "attack": (0.8, 2.4), "decay": (0.35, 0.9), "sustain": (0.75, 0.95), "release": (1.2, 2.8), "swellDepth": (0.65, 1.0), "chord": [1], "arp": 0.0, "macroSpace": (0.35, 0.7), "pitchEnvSemi": (-6, -1)},
+        {"label": "Rising", "engines": [20, 2, 7, 15, 14], "filterType": 0, "cutoff": (280, 1600), "attack": (0.8, 2.4), "decay": (0.35, 0.9), "sustain": (0.75, 0.95), "release": (1.2, 2.8), "swellDepth": (0.65, 1.0), "chord": [1], "arp": 0.0, "macroSpace": (0.35, 0.7), "pitchEnvSemi": (-6, -1)},
         {"label": "Orchestral", "engines": [2, 1], "filterType": 0, "cutoff": (500, 2400), "attack": (1.0, 2.6), "decay": (0.4, 1.1), "sustain": (0.8, 0.98), "release": (1.5, 3.2), "detune": (12, 22), "swellDepth": (0.5, 0.9), "chord": [1, 2]},
         {"label": "Filter Sweep", "engines": [6, 0], "filterType": 0, "cutoff": (220, 1200), "attack": (0.5, 1.8), "decay": (0.3, 0.8), "sustain": (0.7, 0.92), "release": (0.9, 2.0), "swellDepth": (0.7, 1.0), "drive": (1.2, 2.4), "macroMovement": (0.4, 0.8)},
         {"label": "EP Bloom", "engines": [9], "filterType": 2, "cutoff": (600, 3500), "attack": (0.6, 1.6), "decay": (0.45, 1.0), "sustain": (0.65, 0.88), "release": (1.0, 2.4), "swellDepth": (0.55, 0.95), "reverb": (0.35, 0.62)},
@@ -157,7 +157,7 @@ SUB_STYLES: dict[str, list[StyleSpec]] = {
         {"label": "Glock Stack", "engines": [9, 10], "filterType": 1, "cutoff": (2500, 14000), "attack": (0.001, 0.01), "decay": (0.12, 0.4), "sustain": (0.15, 0.4), "release": (0.6, 1.6), "detune": (3, 9), "arp": 0.35},
     ],
     "Bass": [
-        {"label": "808", "engines": [4], "filterType": 0, "cutoff": (120, 650), "attack": (0.002, 0.02), "decay": (0.35, 1.2), "sustain": (0.55, 0.92), "release": (0.4, 1.2), "drive": (1.2, 2.8), "detune": (0, 4), "macroDarkness": (0.35, 0.75)},
+        {"label": "808", "engines": [4, 22, 4, 11], "filterType": 0, "cutoff": (120, 650), "attack": (0.002, 0.02), "decay": (0.35, 1.2), "sustain": (0.55, 0.92), "release": (0.4, 1.2), "drive": (1.2, 2.8), "detune": (0, 4), "macroDarkness": (0.35, 0.75)},
         {"label": "Sub", "engines": [4], "filterType": 0, "cutoff": (80, 320), "attack": (0.003, 0.025), "decay": (0.5, 1.4), "sustain": (0.7, 0.98), "release": (0.5, 1.4), "gain": (0.18, 0.38), "detune": (0, 2)},
         {"label": "Distort", "engines": [4, 6], "filterType": 1, "cutoff": (200, 900), "attack": (0.002, 0.015), "decay": (0.2, 0.65), "sustain": (0.45, 0.8), "release": (0.2, 0.6), "drive": (2.2, 4.5), "macroDirt": (0.55, 0.9)},
     ],

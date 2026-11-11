@@ -43,6 +43,21 @@ TARGET_QUOTAS: dict[str, int] = {
     "Hits/FX": 33,
 }
 
+ENGINE_ROTATION: dict[str, list[int]] = {
+    "Pads": [7, 12, 15, 20, 5, 0, 14, 2, 19, 1, 13, 18, 7, 12, 15, 20, 5, 0, 14, 2],
+    "Swells": [20, 14, 7, 15, 2, 0, 12, 19, 5, 20, 14, 23, 7, 15, 2],
+    "Synth Keys": [18, 21, 9, 17, 7, 8, 10, 13, 3, 18, 21, 9, 17, 7, 8],
+    "Leads": [6, 8, 10, 16, 11, 0, 17, 13, 6, 8, 10, 16, 11, 0],
+    "Bass": [4, 22, 11, 4, 23, 6, 4, 22, 11, 4, 23],
+    "Bells": [3, 10, 13, 9, 21, 3, 10, 13, 9, 21],
+    "Brass": [16, 0, 2, 6, 16, 0, 2, 6],
+    "Strings": [2, 19, 1, 5, 14, 2, 19, 1],
+    "Church Keys/EP": [9, 21, 18, 17, 1, 9, 21, 18],
+    "Organ": [1, 5, 14, 1, 5, 14],
+    "Choir": [5, 1, 19, 2, 5, 1, 19],
+    "Hits/FX": [23, 16, 10, 6, 23, 16, 10, 6],
+}
+
 BANK_BY_CAT = {
     "Church Keys/EP": 0,
     "Synth Keys": 0,
@@ -167,11 +182,13 @@ def build_from_style(category: str, style: dict, variant: int, rng: random.Rando
         if p["swellDepth"] < 0.35:
             p["swellDepth"] = rng.uniform(0.45, 1.0)
 
-    # variant skew — spread within sub-style (engine + macro islands)
-    eng_list = style.get("engines", [p["engine"]])
-    engine_pick = (variant + rng.randint(0, max(0, len(eng_list) - 1))) % len(eng_list)
-    p["engine"] = eng_list[engine_pick]
-    p["filterType"] = int(style.get("filterType", 0) + (variant % 3)) % 3
+    rot = ENGINE_ROTATION.get(category, style.get("engines", [p["engine"]]))
+    p["engine"] = rot[variant % len(rot)]
+    p["filterType"] = int(style.get("filterType", 0) + (variant % 4)) % 6
+    if p["filterType"] == 1 and category in {"Pads", "Swells", "Strings", "Choir"}:
+        p["cutoff"] = clamp(p["cutoff"], 80.0, 320.0)
+    elif p["filterType"] == 1:
+        p["cutoff"] = clamp(p["cutoff"], 350.0, 5200.0)
     spread = 0.45 + (variant % 13) * 0.09
     p["cutoff"] = clamp(p["cutoff"] * spread, 120, 16000)
     p["detune"] = clamp(p["detune"] + (variant % 9) * 2.2, 0, 24)

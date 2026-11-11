@@ -33,7 +33,7 @@ Parameter changes flow through `AudioProcessorValueTreeState` on the audio threa
 | Path | Role |
 |------|------|
 | `Source/PluginProcessor.*` | APVTS, arp/chord MIDI, FX chain, preset/state, sample map load, keygroup export |
-| `Source/SynthVoice.h` | `TrapVoice` DSP: PolyBLEP saws, SVF lowpass, ADSR, multisample playback |
+| `Source/SynthVoice.h` / `SynthVoice.cpp` | `TrapVoice` DSP: 24 synthesis engines, SVF/ladder/comb/formant filters, unison, FM, wavetable morph (synth-only factory bank) |
 | `Source/PluginEditor.*` | Rotary UI, factory patch picker, sample map load/export buttons |
 
 ## Extension points
