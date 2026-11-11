@@ -35,7 +35,7 @@ int main() {
                              .getChildFile("memphis_phonk_test");
   tmp.deleteRecursively();
   tmp.createDirectory();
-  const juce::String result = engine.exportMpcKit(tmp, 0.03f);
+  const juce::String result = engine.exportMpcKit(tmp, 118.0f, 0.03f);
   EXPECT(result.contains("Exported"), result.toStdString());
 
   const juce::File kit = tmp.getChildFile("Memphis_Phonk_MPC_Kit");
@@ -44,7 +44,19 @@ int main() {
     (void)f;
     ++wavCount;
   }
-  EXPECT(wavCount == 23, "expected 23 wav files");
+  EXPECT(wavCount == 23, "expected 23 wav files with classic tempos at 118 BPM");
+
+  const juce::File tmpCustom = juce::File::getSpecialLocation(juce::File::tempDirectory)
+                                   .getChildFile("memphis_phonk_custom_bpm");
+  tmpCustom.deleteRecursively();
+  tmpCustom.createDirectory();
+  EXPECT(engine.exportMpcKit(tmpCustom, 97.5f, 0.02f, DrumPattern::memphisClassic(), false)
+             .contains("Exported"),
+         "custom bpm export");
+  EXPECT(tmpCustom.getChildFile("Memphis_Phonk_MPC_Kit")
+             .getChildFile("Memphis_Loop_98BPM.wav")
+             .existsAsFile(),
+         "loop file at rounded BPM");
 
   DrumPattern sparse = DrumPattern::trapSparse();
   const auto sparseLoop = engine.generateDrumLoop(120.0f, 1, 0.0f, sparse);
@@ -54,7 +66,7 @@ int main() {
                                   .getChildFile("memphis_phonk_batch_test");
   batchTmp.deleteRecursively();
   batchTmp.createDirectory();
-  const juce::String batchMsg = engine.exportBatchKits(batchTmp, 3, 0.03f, sparse);
+  const juce::String batchMsg = engine.exportBatchKits(batchTmp, 3, 120.0f, 0.03f, sparse, false);
   EXPECT(batchMsg.contains("Batch exported"), batchMsg.toStdString());
 
   if (failures == 0) {

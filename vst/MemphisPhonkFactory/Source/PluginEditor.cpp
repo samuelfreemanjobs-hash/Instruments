@@ -9,6 +9,7 @@ constexpr const char *kParamVariation = "mpf_variation";
 constexpr const char *kParamPreview = "mpf_preview";
 constexpr const char *kParamMaster = "mpf_master";
 constexpr const char *kParamBatchCount = "mpf_batch_count";
+constexpr const char *kParamClassicLoops = "mpf_classic_loops";
 
 void styleSlider(juce::Slider &s, const juce::String &suffix = {}) {
   s.setSliderStyle(juce::Slider::LinearHorizontal);
@@ -28,7 +29,14 @@ MemphisPhonkFactoryAudioProcessorEditor::MemphisPhonkFactoryAudioProcessorEditor
   };
   addAndMakeVisible(patternGrid_);
 
-  styleSlider(bpmSlider_);
+  bpmSlider_.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+  bpmSlider_.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+  bpmSlider_.setRange(70.0, 170.0, 0.1);
+  bpmSlider_.setSkewFactorFromMidPoint(120.0);
+  bpmValueLabel_.setJustificationType(juce::Justification::centred);
+  bpmValueLabel_.setFont(juce::Font(18.0f, juce::Font::bold));
+  bpmValueLabel_.setColour(juce::Label::textColourId, juce::Colour(0xffe86c2a));
+
   styleSlider(swingSlider_);
   styleSlider(driveSlider_);
   styleSlider(hissSlider_);
@@ -41,6 +49,10 @@ MemphisPhonkFactoryAudioProcessorEditor::MemphisPhonkFactoryAudioProcessorEditor
   batchCountSlider_.setRange(1, 16, 1);
 
   addAndMakeVisible(bpmSlider_);
+  addAndMakeVisible(bpmDown_);
+  addAndMakeVisible(bpmUp_);
+  addAndMakeVisible(bpmValueLabel_);
+  addAndMakeVisible(classicLoopsButton_);
   addAndMakeVisible(swingSlider_);
   addAndMakeVisible(driveSlider_);
   addAndMakeVisible(hissSlider_);
@@ -53,6 +65,11 @@ MemphisPhonkFactoryAudioProcessorEditor::MemphisPhonkFactoryAudioProcessorEditor
   addAndMakeVisible(statusLabel_);
 
   previewButton_.setButtonText("Loop preview");
+  classicLoopsButton_.setButtonText("Also export 112 / 118 / 124 loops");
+
+  bpmDown_.onClick = [this] { nudgeBpm(-1.0f); };
+  bpmUp_.onClick = [this] { nudgeBpm(1.0f); };
+  bpmSlider_.onValueChange = [this] { syncBpmLabel(); };
 
   statusLabel_.setJustificationType(juce::Justification::centredLeft);
   statusLabel_.setText("Edit pattern, preview, export one kit or a timestamped batch.", juce::dontSendNotification);
@@ -68,6 +85,8 @@ MemphisPhonkFactoryAudioProcessorEditor::MemphisPhonkFactoryAudioProcessorEditor
   previewAtt_ =
       std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(apvts, kParamPreview,
                                                                              previewButton_);
+  classicAtt_ = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+      apvts, kParamClassicLoops, classicLoopsButton_);
 
   exportButton_.onClick = [this] { exportKit(); };
   batchExportButton_.onClick = [this] { exportBatch(); };
@@ -78,7 +97,24 @@ MemphisPhonkFactoryAudioProcessorEditor::MemphisPhonkFactoryAudioProcessorEditor
   apvts.addParameterListener(kParamHiss, this);
   apvts.addParameterListener(kParamVariation, this);
 
+  syncBpmLabel();
   processor_.refreshPreviewLoop();
+}
+
+void MemphisPhonkFactoryAudioProcessorEditor::nudgeBpm(float delta) {
+  auto &apvts = processor_.getAPVTS();
+  if (auto *p = apvts.getParameter(kParamLoopBpm)) {
+    const float next =
+        juce::jlimit(70.0f, 170.0f, apvts.getRawParameterValue(kParamLoopBpm)->load() + delta);
+    p->setValueNotifyingHost(p->convertTo0to1(next));
+    syncBpmLabel();
+    processor_.refreshPreviewLoop();
+  }
+}
+
+void MemphisPhonkFactoryAudioProcessorEditor::syncBpmLabel() {
+  const float bpm = processor_.getAPVTS().getRawParameterValue(kParamLoopBpm)->load();
+  bpmValueLabel_.setText(juce::String(bpm, 1) + " BPM", juce::dontSendNotification);
 }
 
 MemphisPhonkFactoryAudioProcessorEditor::~MemphisPhonkFactoryAudioProcessorEditor() {
@@ -99,9 +135,9 @@ void MemphisPhonkFactoryAudioProcessorEditor::paint(juce::Graphics &g) {
   g.setColour(juce::Colours::white.withAlpha(0.7f));
   g.setFont(12.0f);
   const int baseY = 300;
-  g.drawText("BPM", 16, baseY, 72, 18, juce::Justification::centredLeft);
-  g.drawText("Swing", 16, baseY + 32, 72, 18, juce::Justification::centredLeft);
-  g.drawText("Drive", 16, baseY + 64, 72, 18, juce::Justification::centredLeft);
+  g.drawText("Loop tempo", 16, baseY - 4, 120, 18, juce::Justification::centredLeft);
+  g.drawText("Swing", 200, baseY + 8, 72, 18, juce::Justification::centredLeft);
+  g.drawText("Drive", 200, baseY + 40, 72, 18, juce::Justification::centredLeft);
   g.drawText("Hiss", 360, baseY, 72, 18, juce::Justification::centredLeft);
   g.drawText("Variation", 360, baseY + 32, 72, 18, juce::Justification::centredLeft);
   g.drawText("Batch #", 360, baseY + 64, 72, 18, juce::Justification::centredLeft);
@@ -118,10 +154,18 @@ void MemphisPhonkFactoryAudioProcessorEditor::resized() {
   auto place = [&](juce::Slider &s, int x, int y, int w) {
     s.setBounds(x, y, w, 24);
   };
-  place(bpmSlider_, 88, baseY, 240);
-  place(swingSlider_, 88, baseY + 32, 240);
-  place(driveSlider_, 88, baseY + 64, 240);
-  place(masterSlider_, 88, baseY + 96, 240);
+
+  auto bpmBlock = juce::Rectangle<int>(16, baseY, 160, 120);
+  bpmSlider_.setBounds(bpmBlock.removeFromLeft(88).reduced(2));
+  auto bpmSide = bpmBlock.reduced(4);
+  bpmValueLabel_.setBounds(bpmSide.removeFromTop(28));
+  bpmUp_.setBounds(bpmSide.removeFromTop(26).reduced(2));
+  bpmDown_.setBounds(bpmSide.removeFromTop(26).reduced(2));
+
+  place(swingSlider_, 272, baseY + 4, 220);
+  place(driveSlider_, 272, baseY + 36, 220);
+  place(masterSlider_, 88, baseY + 96, 404);
+  classicLoopsButton_.setBounds(16, baseY + 124, 280, 24);
   place(hissSlider_, 430, baseY, 260);
   place(variationSlider_, 430, baseY + 32, 260);
   place(batchCountSlider_, 430, baseY + 64, 260);
@@ -135,6 +179,9 @@ void MemphisPhonkFactoryAudioProcessorEditor::resized() {
 
 void MemphisPhonkFactoryAudioProcessorEditor::parameterChanged(const juce::String &parameterID,
                                                                 float) {
+  if (parameterID == kParamLoopBpm) {
+    syncBpmLabel();
+  }
   if (parameterID == kParamLoopBpm || parameterID == kParamSwing || parameterID == kParamDrive ||
       parameterID == kParamHiss || parameterID == kParamVariation) {
     processor_.refreshPreviewLoop();

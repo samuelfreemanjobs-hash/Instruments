@@ -267,8 +267,23 @@ bool MemphisPhonkEngine::writeMonoWav(const juce::File &file, const std::vector<
   return writer->writeFromAudioSampleBuffer(buffer, 0, buffer.getNumSamples());
 }
 
-juce::String MemphisPhonkEngine::exportMpcKit(const juce::File &outputDirectory, float swing,
-                                                const DrumPattern &pattern,
+namespace {
+bool exportLoopWav(const MemphisPhonkEngine &engine, const juce::File &kitDir, float bpm,
+                   float swing, const DrumPattern &pattern, double sampleRate) {
+  const juce::String name =
+      "Memphis_Loop_" + juce::String(juce::roundToInt(bpm)) + "BPM.wav";
+  const juce::File dest = kitDir.getChildFile(name);
+  if (dest.existsAsFile()) {
+    return true;
+  }
+  return MemphisPhonkEngine::writeMonoWav(
+      dest, engine.generateDrumLoop(bpm, 2, swing, pattern), sampleRate);
+}
+} // namespace
+
+juce::String MemphisPhonkEngine::exportMpcKit(const juce::File &outputDirectory, float primaryBpm,
+                                                float swing, const DrumPattern &pattern,
+                                                bool includeClassicTempos,
                                                 bool wrapInMpcKitFolder) const {
   const juce::File kitDir =
       wrapInMpcKitFolder ? outputDirectory.getChildFile("Memphis_Phonk_MPC_Kit") : outputDirectory;
@@ -305,22 +320,33 @@ juce::String MemphisPhonkEngine::exportMpcKit(const juce::File &outputDirectory,
     }
   }
 
-  const float bpms[] = {112.0f, 118.0f, 124.0f};
-  for (float bpm : bpms) {
-    const juce::String name =
-        "Memphis_Loop_" + juce::String(static_cast<int>(bpm)) + "BPM.wav";
-    if (!writeMonoWav(kitDir.getChildFile(name), generateDrumLoop(bpm, 2, swing, pattern),
-                      sampleRate_)) {
-      return "Failed writing loop " + name;
+  int loopFiles = 0;
+  if (!exportLoopWav(*this, kitDir, primaryBpm, swing, pattern, sampleRate_)) {
+    return "Failed writing loop at " + juce::String(juce::roundToInt(primaryBpm)) + " BPM";
+  }
+  ++loopFiles;
+
+  if (includeClassicTempos) {
+    for (float bpm : {112.0f, 118.0f, 124.0f}) {
+      if (std::abs(bpm - primaryBpm) < 0.05f) {
+        continue;
+      }
+      if (!exportLoopWav(*this, kitDir, bpm, swing, pattern, sampleRate_)) {
+        return "Failed writing loop at " + juce::String(juce::roundToInt(bpm)) + " BPM";
+      }
+      ++loopFiles;
     }
   }
 
-  return "Exported 23 WAVs to " + kitDir.getFullPathName();
+  const int total = 20 + loopFiles;
+  return "Exported " + juce::String(total) + " WAVs (loop " +
+         juce::String(juce::roundToInt(primaryBpm)) + " BPM) to " + kitDir.getFullPathName();
 }
 
 juce::String MemphisPhonkEngine::exportBatchKits(const juce::File &parentDirectory, int count,
-                                                 float swing,
-                                                 const DrumPattern &pattern) const {
+                                                 float primaryBpm, float swing,
+                                                 const DrumPattern &pattern,
+                                                 bool includeClassicTempos) const {
   if (count < 1) {
     return "Batch count must be at least 1";
   }
@@ -344,8 +370,8 @@ juce::String MemphisPhonkEngine::exportBatchKits(const juce::File &parentDirecto
     variant.setSettings(s);
 
     const juce::String kitName = "Kit_" + juce::String(kit).paddedLeft('0', 3);
-    const juce::String msg =
-        variant.exportMpcKit(batchRoot.getChildFile(kitName), swing, pattern, false);
+    const juce::String msg = variant.exportMpcKit(batchRoot.getChildFile(kitName), primaryBpm,
+                                                  swing, pattern, includeClassicTempos, false);
     if (!msg.contains("Exported")) {
       return msg;
     }

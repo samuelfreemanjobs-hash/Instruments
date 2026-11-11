@@ -36,16 +36,17 @@ public:
       const;
 
   /**
-   * Writes 20 one-shots + 3 loops (23 WAVs).
+   * Writes 20 one-shots plus loop WAVs at `primaryBpm` (and optionally 112/118/124).
    * If `wrapInMpcKitFolder` is true, creates `outputDirectory/Memphis_Phonk_MPC_Kit/`.
    */
-  juce::String exportMpcKit(const juce::File &outputDirectory, float swing = 0.03f,
+  juce::String exportMpcKit(const juce::File &outputDirectory, float primaryBpm, float swing = 0.03f,
                             const DrumPattern &pattern = DrumPattern::memphisClassic(),
-                            bool wrapInMpcKitFolder = true) const;
+                            bool includeClassicTempos = true, bool wrapInMpcKitFolder = true) const;
 
   /** Writes `count` kits to `parent/Batch_NNN/Kit_MMM/` with unique seeds. */
-  juce::String exportBatchKits(const juce::File &parentDirectory, int count, float swing,
-                               const DrumPattern &pattern) const;
+  juce::String exportBatchKits(const juce::File &parentDirectory, int count, float primaryBpm,
+                               float swing, const DrumPattern &pattern,
+                               bool includeClassicTempos = true) const;
 
   static bool writeMonoWav(const juce::File &file, const std::vector<float> &samples,
                            double sampleRate);

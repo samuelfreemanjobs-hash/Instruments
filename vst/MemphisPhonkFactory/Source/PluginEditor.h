@@ -21,6 +21,10 @@ private:
 
   PatternGridComponent patternGrid_;
   juce::Slider bpmSlider_;
+  juce::TextButton bpmDown_{"−"};
+  juce::TextButton bpmUp_{"+"};
+  juce::Label bpmValueLabel_;
+  juce::ToggleButton classicLoopsButton_;
   juce::Slider swingSlider_;
   juce::Slider driveSlider_;
   juce::Slider hissSlider_;
@@ -35,7 +39,10 @@ private:
   using Att = juce::AudioProcessorValueTreeState::SliderAttachment;
   std::unique_ptr<Att> bpmAtt_, swingAtt_, driveAtt_, hissAtt_, masterAtt_, variationAtt_,
       batchAtt_;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> previewAtt_;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> previewAtt_, classicAtt_;
+
+  void nudgeBpm(float delta);
+  void syncBpmLabel();
 
   void timerCallback() override;
   void exportKit();

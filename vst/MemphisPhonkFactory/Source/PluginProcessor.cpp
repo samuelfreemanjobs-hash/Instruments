@@ -10,6 +10,7 @@ constexpr const char *kParamVariation = "mpf_variation";
 constexpr const char *kParamPreview = "mpf_preview";
 constexpr const char *kParamMaster = "mpf_master";
 constexpr const char *kParamBatchCount = "mpf_batch_count";
+constexpr const char *kParamClassicLoops = "mpf_classic_loops";
 } // namespace
 
 MemphisPhonkFactoryAudioProcessor::MemphisPhonkFactoryAudioProcessor()
@@ -23,8 +24,10 @@ MemphisPhonkFactoryAudioProcessor::~MemphisPhonkFactoryAudioProcessor() = defaul
 juce::AudioProcessorValueTreeState::ParameterLayout
 MemphisPhonkFactoryAudioProcessor::createParameterLayout() {
   std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
-  params.push_back(std::make_unique<juce::AudioParameterFloat>(
-      kParamLoopBpm, "Loop BPM", juce::NormalisableRange<float>(90.0f, 140.0f, 0.1f), 118.0f));
+  juce::NormalisableRange<float> bpmRange(70.0f, 170.0f, 0.1f);
+  bpmRange.setSkewForCentre(120.0f);
+  params.push_back(std::make_unique<juce::AudioParameterFloat>(kParamLoopBpm, "Loop BPM", bpmRange,
+                                                               118.0f));
   params.push_back(std::make_unique<juce::AudioParameterFloat>(
       kParamSwing, "Swing", juce::NormalisableRange<float>(0.0f, 0.08f, 0.001f), 0.03f));
   params.push_back(std::make_unique<juce::AudioParameterFloat>(
@@ -38,6 +41,9 @@ MemphisPhonkFactoryAudioProcessor::createParameterLayout() {
       kParamMaster, "Master", juce::NormalisableRange<float>(0.0f, 1.0f, 0.001f), 0.85f));
   params.push_back(
       std::make_unique<juce::AudioParameterInt>(kParamBatchCount, "Batch kits", 1, 16, 4));
+  params.push_back(std::make_unique<juce::AudioParameterBool>(kParamClassicLoops,
+                                                              "Classic loop tempos (112/118/124)",
+                                                              true));
   return {params.begin(), params.end()};
 }
 
@@ -70,15 +76,19 @@ void MemphisPhonkFactoryAudioProcessor::refreshPreviewLoop() {
 
 juce::String MemphisPhonkFactoryAudioProcessor::exportKitToFolder(const juce::File &parentDir) {
   applyEngineSettingsFromParams();
+  const float bpm = apvts_.getRawParameterValue(kParamLoopBpm)->load();
   const float swing = apvts_.getRawParameterValue(kParamSwing)->load();
-  return engine_.exportMpcKit(parentDir, swing, pattern_);
+  const bool classic = apvts_.getRawParameterValue(kParamClassicLoops)->load() > 0.5f;
+  return engine_.exportMpcKit(parentDir, bpm, swing, pattern_, classic);
 }
 
 juce::String MemphisPhonkFactoryAudioProcessor::exportBatchToFolder(const juce::File &parentDir) {
   applyEngineSettingsFromParams();
+  const float bpm = apvts_.getRawParameterValue(kParamLoopBpm)->load();
   const float swing = apvts_.getRawParameterValue(kParamSwing)->load();
   const int count = static_cast<int>(apvts_.getRawParameterValue(kParamBatchCount)->load());
-  return engine_.exportBatchKits(parentDir, count, swing, pattern_);
+  const bool classic = apvts_.getRawParameterValue(kParamClassicLoops)->load() > 0.5f;
+  return engine_.exportBatchKits(parentDir, count, bpm, swing, pattern_, classic);
 }
 
 void MemphisPhonkFactoryAudioProcessor::prepareToPlay(double sampleRate, int) {
