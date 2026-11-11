@@ -1,0 +1,50 @@
+name: vsti-one-shot
+
+on:
+  pull_request:
+    paths:
+      - "tools/vsti-one-shot/**"
+      - "CMakeLists.txt"
+      - ".github/workflows/vsti-one-shot.yml"
+      - "scripts/boom.sh"
+  push:
+    branches: [main]
+    paths:
+      - "tools/vsti-one-shot/**"
+      - "CMakeLists.txt"
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential g++-12 libstdc++-12-dev \
+            libasound2-dev libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev \
+            libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev \
+            libcurl4-openssl-dev xvfb
+
+      - name: Configure and build VstiOneShotRender
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+          cmake --build build -j$(nproc) --target VstiOneShotRender Wave9090_VST3
+
+      - name: Python tests
+        run: |
+          pip install pytest
+          python3 -m pytest tools/vsti-one-shot/tests -v
+
+      - name: Integration smoke (hybrid matcher, 3 slots)
+        run: |
+          xvfb-run -a python3 tools/vsti-one-shot/boom.py \
+            --style "ci smoke melodic" \
+            --vst3 "build/Wave9090/Wave9090_artefacts/Release/VST3/WAVE-9090.vst3" \
+            --out /tmp/vsti_ci_pack \
+            --count 3 \
+            --match-mode hybrid
+          test "$(ls /tmp/vsti_ci_pack/*.wav | wc -l)" -eq 3

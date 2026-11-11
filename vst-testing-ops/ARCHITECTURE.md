@@ -79,7 +79,7 @@ GitHub Actions **Build** job: configure + build, then `run_business.py --profile
 | **Gate on every PR** | `build.yml` → build + `run_business.py --profile ci-verify` | Require **`cmake`** check — [docs/REPO_AUTOMATION.md](../docs/REPO_AUTOMATION.md) |
 | **Nightly full business** | [`.github/workflows/nightly-qa.yml`](../.github/workflows/nightly-qa.yml) | `run_business.py --profile full` |
 | **Slack on fail** | `ci-slack-notify.yml` + `SLACK_WEBHOOK_URL` | [docs/REPO_AUTOMATION.md](../docs/REPO_AUTOMATION.md) |
-| **VST3 DSP via bundle** | Not built | Future: headless host MIDI→WAV through `.vst3` (complement `OfflineRender`) |
+| **VST3 DSP via bundle** | `VstiOneShotRender` + `tools/vsti-one-shot/boom.py` | Headless VST3 MIDI→WAV; see [tools/vsti-one-shot/ARCHITECTURE.md](../tools/vsti-one-shot/ARCHITECTURE.md) |
 | **Dashboard** | Streamlit `app.py` | Optional long-running service on dev machine only |
 
 **Cursor should:** after C++ plugin edits, run `python3 vst-testing-ops/run_business.py --profile ci` (or `dsp-only` for DSP-only diffs); on failure read `vst-testing-ops/error_log.txt`, patch, re-run until green; update golden WAVs only via `tests/golden/refresh_golden.sh` when DSP output intentionally changes.

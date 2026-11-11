@@ -8,6 +8,7 @@ Command-line binaries built from `tools/` and registered in the root `CMakeLists
 |--------|--------|------|
 | `GenerateCleanroomRom` | `GenerateCleanroomRom.cpp` | Synthesize `jdupg_cleanroom.rom` at build time (256 waves, multisample metadata). |
 | `OfflineRender` | `OfflineRender.cpp` | Instantiate `JDUpgradedAudioProcessor`, feed MIDI, write stereo 24-bit WAV. |
+| `VstiOneShotRender` | `vsti-one-shot/VstiOneShotRender.cpp` | Host any **VST3**, render one-shot WAVs from `job.json`. Orchestrated by [`vsti-one-shot/boom.py`](vsti-one-shot/boom.py). |
 | `SpectralDiff` | `SpectralDiff.cpp`, `WavCompare.h` | Peak-normalized mono comparison; RMS and mean spectral bin error. |
 | `ExportPreset` | `ExportPreset.cpp` | Write `.jdpreset` APVTS XML for a factory program index. |
 
