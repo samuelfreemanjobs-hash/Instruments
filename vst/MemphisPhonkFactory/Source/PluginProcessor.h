@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include "Dsp/DrumPattern.h"
 #include "Dsp/MemphisPhonkEngine.h"
 
 class MemphisPhonkFactoryAudioProcessor : public juce::AudioProcessor {
@@ -38,16 +39,20 @@ public:
   juce::AudioProcessorValueTreeState &getAPVTS() { return apvts_; }
   MemphisPhonkEngine &getEngine() { return engine_; }
 
-  /** Regenerates preview loop from current APVTS (call from message thread). */
+  DrumPattern getPattern() const;
+  void setPattern(const DrumPattern &pattern);
+
   void refreshPreviewLoop();
 
   juce::String exportKitToFolder(const juce::File &parentDir);
+  juce::String exportBatchToFolder(const juce::File &parentDir);
 
   static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 private:
   juce::AudioProcessorValueTreeState apvts_;
   MemphisPhonkEngine engine_;
+  DrumPattern pattern_;
 
   std::shared_ptr<const std::vector<float>> previewLoop_;
   std::atomic<int64_t> playhead_{0};

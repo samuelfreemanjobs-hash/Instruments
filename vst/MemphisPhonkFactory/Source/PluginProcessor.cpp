@@ -9,12 +9,14 @@ constexpr const char *kParamHiss = "mpf_hiss";
 constexpr const char *kParamVariation = "mpf_variation";
 constexpr const char *kParamPreview = "mpf_preview";
 constexpr const char *kParamMaster = "mpf_master";
+constexpr const char *kParamBatchCount = "mpf_batch_count";
 } // namespace
 
 MemphisPhonkFactoryAudioProcessor::MemphisPhonkFactoryAudioProcessor()
     : AudioProcessor(BusesProperties().withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       apvts_(*this, nullptr, "PARAMETERS", createParameterLayout()),
-      engine_(44100.0) {}
+      engine_(44100.0),
+      pattern_(DrumPattern::memphisClassic()) {}
 
 MemphisPhonkFactoryAudioProcessor::~MemphisPhonkFactoryAudioProcessor() = default;
 
@@ -34,7 +36,16 @@ MemphisPhonkFactoryAudioProcessor::createParameterLayout() {
       std::make_unique<juce::AudioParameterBool>(kParamPreview, "Loop Preview", true));
   params.push_back(std::make_unique<juce::AudioParameterFloat>(
       kParamMaster, "Master", juce::NormalisableRange<float>(0.0f, 1.0f, 0.001f), 0.85f));
+  params.push_back(
+      std::make_unique<juce::AudioParameterInt>(kParamBatchCount, "Batch kits", 1, 16, 4));
   return {params.begin(), params.end()};
+}
+
+DrumPattern MemphisPhonkFactoryAudioProcessor::getPattern() const { return pattern_; }
+
+void MemphisPhonkFactoryAudioProcessor::setPattern(const DrumPattern &pattern) {
+  pattern_ = pattern;
+  refreshPreviewLoop();
 }
 
 void MemphisPhonkFactoryAudioProcessor::applyEngineSettingsFromParams() {
@@ -51,7 +62,8 @@ void MemphisPhonkFactoryAudioProcessor::refreshPreviewLoop() {
   applyEngineSettingsFromParams();
   const float bpm = apvts_.getRawParameterValue(kParamLoopBpm)->load();
   const float swing = apvts_.getRawParameterValue(kParamSwing)->load();
-  auto loop = std::make_shared<std::vector<float>>(engine_.generateDrumLoop(bpm, 2, swing));
+  auto loop =
+      std::make_shared<std::vector<float>>(engine_.generateDrumLoop(bpm, 2, swing, pattern_));
   previewLoop_ = loop;
   playhead_.store(0);
 }
@@ -59,7 +71,14 @@ void MemphisPhonkFactoryAudioProcessor::refreshPreviewLoop() {
 juce::String MemphisPhonkFactoryAudioProcessor::exportKitToFolder(const juce::File &parentDir) {
   applyEngineSettingsFromParams();
   const float swing = apvts_.getRawParameterValue(kParamSwing)->load();
-  return engine_.exportMpcKit(parentDir, swing);
+  return engine_.exportMpcKit(parentDir, swing, pattern_);
+}
+
+juce::String MemphisPhonkFactoryAudioProcessor::exportBatchToFolder(const juce::File &parentDir) {
+  applyEngineSettingsFromParams();
+  const float swing = apvts_.getRawParameterValue(kParamSwing)->load();
+  const int count = static_cast<int>(apvts_.getRawParameterValue(kParamBatchCount)->load());
+  return engine_.exportBatchKits(parentDir, count, swing, pattern_);
 }
 
 void MemphisPhonkFactoryAudioProcessor::prepareToPlay(double sampleRate, int) {
@@ -112,6 +131,9 @@ juce::AudioProcessorEditor *MemphisPhonkFactoryAudioProcessor::createEditor() {
 
 void MemphisPhonkFactoryAudioProcessor::getStateInformation(juce::MemoryBlock &destData) {
   auto state = apvts_.copyState();
+  state.setProperty("kickMask", static_cast<int>(pattern_.kick), nullptr);
+  state.setProperty("snareMask", static_cast<int>(pattern_.snare), nullptr);
+  state.setProperty("openHatMask", static_cast<int>(pattern_.openHat), nullptr);
   std::unique_ptr<juce::XmlElement> xml(state.createXml());
   copyXmlToBinary(*xml, destData);
 }
@@ -119,7 +141,15 @@ void MemphisPhonkFactoryAudioProcessor::getStateInformation(juce::MemoryBlock &d
 void MemphisPhonkFactoryAudioProcessor::setStateInformation(const void *data, int sizeInBytes) {
   std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
   if (xml != nullptr && xml->hasTagName(apvts_.state.getType())) {
-    apvts_.replaceState(juce::ValueTree::fromXml(*xml));
+    auto state = juce::ValueTree::fromXml(*xml);
+    apvts_.replaceState(state);
+    pattern_.kick = static_cast<uint16_t>(static_cast<int>(state.getProperty("kickMask", 0)));
+    pattern_.snare = static_cast<uint16_t>(static_cast<int>(state.getProperty("snareMask", 0)));
+    pattern_.openHat =
+        static_cast<uint16_t>(static_cast<int>(state.getProperty("openHatMask", 0)));
+    if (pattern_.kick == 0 && pattern_.snare == 0 && pattern_.openHat == 0) {
+      pattern_ = DrumPattern::memphisClassic();
+    }
     refreshPreviewLoop();
   }
 }

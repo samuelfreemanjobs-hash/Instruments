@@ -13,8 +13,10 @@ Artifacts: `vst/MemphisPhonkFactory/build/MemphisPhonkFactory_artefacts/Release/
 ## Use
 
 - Adjust loop BPM, swing, tape drive, hiss, and variation (1–4).
-- Toggle **Loop preview** to hear the break in the plugin.
-- **Export MPC Kit** writes `Memphis_Phonk_MPC_Kit/` with 23 files.
+- **Pattern editor:** 16-step kick / snare / open-hat grid (Memphis & Trap sparse presets).
+- Toggle **Loop preview** to hear the current pattern at the selected BPM.
+- **Export kit** → `Memphis_Phonk_MPC_Kit/` (23 WAVs).
+- **Batch export** → `Memphis_Phonk_Batch_<timestamp>/Kit_001…` (batch count param × 23 WAVs each, unique grit per kit).
 
 ## Tests
 

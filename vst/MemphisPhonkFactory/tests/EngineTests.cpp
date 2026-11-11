@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include <juce_core/juce_core.h>
+#include "Dsp/DrumPattern.h"
 #include "Dsp/MemphisPhonkEngine.h"
 
 static int failures = 0;
@@ -44,6 +45,17 @@ int main() {
     ++wavCount;
   }
   EXPECT(wavCount == 23, "expected 23 wav files");
+
+  DrumPattern sparse = DrumPattern::trapSparse();
+  const auto sparseLoop = engine.generateDrumLoop(120.0f, 1, 0.0f, sparse);
+  EXPECT(peak(sparseLoop) > 0.02f, "sparse pattern loop should have audio");
+
+  const juce::File batchTmp = juce::File::getSpecialLocation(juce::File::tempDirectory)
+                                  .getChildFile("memphis_phonk_batch_test");
+  batchTmp.deleteRecursively();
+  batchTmp.createDirectory();
+  const juce::String batchMsg = engine.exportBatchKits(batchTmp, 3, 0.03f, sparse);
+  EXPECT(batchMsg.contains("Batch exported"), batchMsg.toStdString());
 
   if (failures == 0) {
     std::cout << "MemphisPhonkEngineTests: OK\n";

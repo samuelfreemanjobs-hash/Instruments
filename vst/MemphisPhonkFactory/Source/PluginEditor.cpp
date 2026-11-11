@@ -8,10 +8,11 @@ constexpr const char *kParamHiss = "mpf_hiss";
 constexpr const char *kParamVariation = "mpf_variation";
 constexpr const char *kParamPreview = "mpf_preview";
 constexpr const char *kParamMaster = "mpf_master";
+constexpr const char *kParamBatchCount = "mpf_batch_count";
 
 void styleSlider(juce::Slider &s, const juce::String &suffix = {}) {
   s.setSliderStyle(juce::Slider::LinearHorizontal);
-  s.setTextBoxStyle(juce::Slider::TextBoxRight, false, 64, 20);
+  s.setTextBoxStyle(juce::Slider::TextBoxRight, false, 56, 18);
   s.setTextValueSuffix(suffix);
 }
 } // namespace
@@ -19,7 +20,13 @@ void styleSlider(juce::Slider &s, const juce::String &suffix = {}) {
 MemphisPhonkFactoryAudioProcessorEditor::MemphisPhonkFactoryAudioProcessorEditor(
     MemphisPhonkFactoryAudioProcessor &p)
     : AudioProcessorEditor(&p), processor_(p) {
-  setSize(560, 360);
+  setSize(720, 520);
+
+  patternGrid_.setPattern(processor_.getPattern());
+  patternGrid_.onPatternChanged = [this](const DrumPattern &pat) {
+    processor_.setPattern(pat);
+  };
+  addAndMakeVisible(patternGrid_);
 
   styleSlider(bpmSlider_);
   styleSlider(swingSlider_);
@@ -27,8 +34,11 @@ MemphisPhonkFactoryAudioProcessorEditor::MemphisPhonkFactoryAudioProcessorEditor
   styleSlider(hissSlider_);
   styleSlider(masterSlider_);
   variationSlider_.setSliderStyle(juce::Slider::LinearHorizontal);
-  variationSlider_.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 20);
+  variationSlider_.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 18);
   variationSlider_.setRange(1, 4, 1);
+  batchCountSlider_.setSliderStyle(juce::Slider::LinearHorizontal);
+  batchCountSlider_.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 18);
+  batchCountSlider_.setRange(1, 16, 1);
 
   addAndMakeVisible(bpmSlider_);
   addAndMakeVisible(swingSlider_);
@@ -36,14 +46,16 @@ MemphisPhonkFactoryAudioProcessorEditor::MemphisPhonkFactoryAudioProcessorEditor
   addAndMakeVisible(hissSlider_);
   addAndMakeVisible(masterSlider_);
   addAndMakeVisible(variationSlider_);
+  addAndMakeVisible(batchCountSlider_);
   addAndMakeVisible(previewButton_);
   addAndMakeVisible(exportButton_);
+  addAndMakeVisible(batchExportButton_);
   addAndMakeVisible(statusLabel_);
 
   previewButton_.setButtonText("Loop preview");
 
   statusLabel_.setJustificationType(juce::Justification::centredLeft);
-  statusLabel_.setText("Generate Memphis phonk one-shots + 112/118/124 BPM loops.", juce::dontSendNotification);
+  statusLabel_.setText("Edit pattern, preview, export one kit or a timestamped batch.", juce::dontSendNotification);
 
   auto &apvts = processor_.getAPVTS();
   bpmAtt_ = std::make_unique<Att>(apvts, kParamLoopBpm, bpmSlider_);
@@ -52,11 +64,13 @@ MemphisPhonkFactoryAudioProcessorEditor::MemphisPhonkFactoryAudioProcessorEditor
   hissAtt_ = std::make_unique<Att>(apvts, kParamHiss, hissSlider_);
   masterAtt_ = std::make_unique<Att>(apvts, kParamMaster, masterSlider_);
   variationAtt_ = std::make_unique<Att>(apvts, kParamVariation, variationSlider_);
+  batchAtt_ = std::make_unique<Att>(apvts, kParamBatchCount, batchCountSlider_);
   previewAtt_ =
       std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(apvts, kParamPreview,
                                                                              previewButton_);
 
   exportButton_.onClick = [this] { exportKit(); };
+  batchExportButton_.onClick = [this] { exportBatch(); };
 
   apvts.addParameterListener(kParamLoopBpm, this);
   apvts.addParameterListener(kParamSwing, this);
@@ -64,7 +78,6 @@ MemphisPhonkFactoryAudioProcessorEditor::MemphisPhonkFactoryAudioProcessorEditor
   apvts.addParameterListener(kParamHiss, this);
   apvts.addParameterListener(kParamVariation, this);
 
-  startTimerHz(4);
   processor_.refreshPreviewLoop();
 }
 
@@ -81,36 +94,43 @@ void MemphisPhonkFactoryAudioProcessorEditor::paint(juce::Graphics &g) {
   g.fillAll(juce::Colour(0xff1a1410));
   g.setColour(juce::Colour(0xffe86c2a));
   g.setFont(juce::Font(22.0f, juce::Font::bold));
-  g.drawText("Memphis Phonk Factory", 16, 8, getWidth() - 32, 32, juce::Justification::centredLeft);
-  g.setColour(juce::Colours::white.withAlpha(0.75f));
-  g.setFont(13.0f);
-  g.drawText("Loop BPM", 16, 52, 90, 20, juce::Justification::centredLeft);
-  g.drawText("Swing", 16, 92, 90, 20, juce::Justification::centredLeft);
-  g.drawText("Tape drive", 16, 132, 90, 20, juce::Justification::centredLeft);
-  g.drawText("Hiss", 16, 172, 90, 20, juce::Justification::centredLeft);
-  g.drawText("Variation", 16, 212, 90, 20, juce::Justification::centredLeft);
-  g.drawText("Master", 16, 252, 90, 20, juce::Justification::centredLeft);
+  g.drawText("Memphis Phonk Factory", 16, 8, getWidth() - 32, 28, juce::Justification::centredLeft);
+
+  g.setColour(juce::Colours::white.withAlpha(0.7f));
+  g.setFont(12.0f);
+  const int baseY = 300;
+  g.drawText("BPM", 16, baseY, 72, 18, juce::Justification::centredLeft);
+  g.drawText("Swing", 16, baseY + 32, 72, 18, juce::Justification::centredLeft);
+  g.drawText("Drive", 16, baseY + 64, 72, 18, juce::Justification::centredLeft);
+  g.drawText("Hiss", 360, baseY, 72, 18, juce::Justification::centredLeft);
+  g.drawText("Variation", 360, baseY + 32, 72, 18, juce::Justification::centredLeft);
+  g.drawText("Batch #", 360, baseY + 64, 72, 18, juce::Justification::centredLeft);
+  g.drawText("Master", 16, baseY + 96, 72, 18, juce::Justification::centredLeft);
 }
 
 void MemphisPhonkFactoryAudioProcessorEditor::resized() {
-  auto r = getLocalBounds().reduced(16);
-  r.removeFromTop(40);
-  auto row = [&](int y) {
-    auto line = r.withY(y).withHeight(28);
-    line.removeFromLeft(100);
-    return line.reduced(0, 4);
-  };
-  bpmSlider_.setBounds(row(48));
-  swingSlider_.setBounds(row(88));
-  driveSlider_.setBounds(row(128));
-  hissSlider_.setBounds(row(168));
-  variationSlider_.setBounds(row(208));
-  masterSlider_.setBounds(row(248));
+  auto bounds = getLocalBounds().reduced(12);
+  bounds.removeFromTop(36);
+  patternGrid_.setBounds(bounds.removeFromTop(150));
+  bounds.removeFromTop(8);
 
-  auto bottom = getLocalBounds().removeFromBottom(72).reduced(16);
-  previewButton_.setBounds(bottom.removeFromLeft(140).reduced(4));
-  exportButton_.setBounds(bottom.removeFromLeft(160).reduced(4));
-  statusLabel_.setBounds(bottom.reduced(4));
+  const int baseY = 300;
+  auto place = [&](juce::Slider &s, int x, int y, int w) {
+    s.setBounds(x, y, w, 24);
+  };
+  place(bpmSlider_, 88, baseY, 240);
+  place(swingSlider_, 88, baseY + 32, 240);
+  place(driveSlider_, 88, baseY + 64, 240);
+  place(masterSlider_, 88, baseY + 96, 240);
+  place(hissSlider_, 430, baseY, 260);
+  place(variationSlider_, 430, baseY + 32, 260);
+  place(batchCountSlider_, 430, baseY + 64, 260);
+
+  auto bottom = getLocalBounds().removeFromBottom(56).reduced(12);
+  previewButton_.setBounds(bottom.removeFromLeft(110).reduced(2));
+  exportButton_.setBounds(bottom.removeFromLeft(100).reduced(2));
+  batchExportButton_.setBounds(bottom.removeFromLeft(110).reduced(2));
+  statusLabel_.setBounds(bottom.reduced(2));
 }
 
 void MemphisPhonkFactoryAudioProcessorEditor::parameterChanged(const juce::String &parameterID,
@@ -125,14 +145,28 @@ void MemphisPhonkFactoryAudioProcessorEditor::timerCallback() {}
 
 void MemphisPhonkFactoryAudioProcessorEditor::exportKit() {
   auto chooser = std::make_shared<juce::FileChooser>(
-      "Choose folder for Memphis_Phonk_MPC_Kit", juce::File::getSpecialLocation(juce::File::userHomeDirectory));
+      "Export Memphis_Phonk_MPC_Kit", juce::File::getSpecialLocation(juce::File::userHomeDirectory));
   chooser->launchAsync(juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectDirectories,
                        [this, chooser](const juce::FileChooser &fc) {
                          const auto dir = fc.getResult();
                          if (dir == juce::File{}) {
                            return;
                          }
-                         const juce::String msg = processor_.exportKitToFolder(dir);
-                         statusLabel_.setText(msg, juce::dontSendNotification);
+                         statusLabel_.setText(processor_.exportKitToFolder(dir),
+                                              juce::dontSendNotification);
+                       });
+}
+
+void MemphisPhonkFactoryAudioProcessorEditor::exportBatch() {
+  auto chooser = std::make_shared<juce::FileChooser>(
+      "Export batch kits", juce::File::getSpecialLocation(juce::File::userHomeDirectory));
+  chooser->launchAsync(juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectDirectories,
+                       [this, chooser](const juce::FileChooser &fc) {
+                         const auto dir = fc.getResult();
+                         if (dir == juce::File{}) {
+                           return;
+                         }
+                         statusLabel_.setText(processor_.exportBatchToFolder(dir),
+                                              juce::dontSendNotification);
                        });
 }

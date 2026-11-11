@@ -8,7 +8,8 @@
     { "id": "mpf_hiss", "name": "Hiss", "type": "float", "min": 0, "max": 0.02, "default": 0.004 },
     { "id": "mpf_variation", "name": "Variation", "type": "int", "min": 1, "max": 4, "default": 1 },
     { "id": "mpf_preview", "name": "Loop Preview", "type": "bool", "default": true },
-    { "id": "mpf_master", "name": "Master", "type": "float", "min": 0, "max": 1, "default": 0.85 }
+    { "id": "mpf_master", "name": "Master", "type": "float", "min": 0, "max": 1, "default": 0.85 },
+    { "id": "mpf_batch_count", "name": "Batch kits", "type": "int", "min": 1, "max": 16, "default": 4 }
   ],
-  "presets": [{ "name": "Init", "values": { "mpf_loop_bpm": 118, "mpf_swing": 0.03, "mpf_drive": 2.5, "mpf_hiss": 0.004, "mpf_variation": 1, "mpf_preview": true, "mpf_master": 0.85 } }]
+  "presets": [{ "name": "Init", "values": { "mpf_loop_bpm": 118, "mpf_swing": 0.03, "mpf_drive": 2.5, "mpf_hiss": 0.004, "mpf_variation": 1, "mpf_preview": true, "mpf_master": 0.85, "mpf_batch_count": 4 } }]
 }

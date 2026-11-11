@@ -2,6 +2,7 @@
 
 #include <juce_core/juce_core.h>
 #include <vector>
+#include "DrumPattern.h"
 
 /** Procedural Memphis phonk drum kit + loop generator (Python reference parity). */
 class MemphisPhonkEngine {
@@ -30,10 +31,21 @@ public:
 
   std::vector<float> generateCowbell(float duration = 0.38f, float rootFreq = 540.0f) const;
 
-  std::vector<float> generateDrumLoop(float bpm, int bars = 2, float swing = 0.03f) const;
+  std::vector<float> generateDrumLoop(float bpm, int bars = 2, float swing = 0.03f,
+                                    const DrumPattern &pattern = DrumPattern::memphisClassic())
+      const;
 
-  /** Writes 20 one-shots + 3 loops (23 WAVs) into `outputDirectory`. */
-  juce::String exportMpcKit(const juce::File &outputDirectory, float swing = 0.03f) const;
+  /**
+   * Writes 20 one-shots + 3 loops (23 WAVs).
+   * If `wrapInMpcKitFolder` is true, creates `outputDirectory/Memphis_Phonk_MPC_Kit/`.
+   */
+  juce::String exportMpcKit(const juce::File &outputDirectory, float swing = 0.03f,
+                            const DrumPattern &pattern = DrumPattern::memphisClassic(),
+                            bool wrapInMpcKitFolder = true) const;
+
+  /** Writes `count` kits to `parent/Batch_NNN/Kit_MMM/` with unique seeds. */
+  juce::String exportBatchKits(const juce::File &parentDirectory, int count, float swing,
+                               const DrumPattern &pattern) const;
 
   static bool writeMonoWav(const juce::File &file, const std::vector<float> &samples,
                            double sampleRate);

@@ -197,7 +197,8 @@ std::vector<float> MemphisPhonkEngine::generateCowbell(float duration, float roo
   return cassetteFx(std::move(bell), 2.6f, 12, settings_.hissLevel, 8000.0f);
 }
 
-std::vector<float> MemphisPhonkEngine::generateDrumLoop(float bpm, int bars, float swing) const {
+std::vector<float> MemphisPhonkEngine::generateDrumLoop(float bpm, int bars, float swing,
+                                                        const DrumPattern &pattern) const {
   const float beatDur = 60.0f / bpm;
   const float stepDur = beatDur / 4.0f;
   const int totalSteps = bars * 16;
@@ -209,34 +210,21 @@ std::vector<float> MemphisPhonkEngine::generateDrumLoop(float bpm, int bars, flo
   const auto ch = generateHihat(0.09f, false);
   const auto oh = generateHihat(0.09f, true);
 
-  const int kickSteps[] = {0, 3, 7, 10, 14};
-  const int snareSteps[] = {4, 12};
-  const int ohSteps[] = {2, 10};
-
-  auto inSteps = [](int step, const int *arr, int n) {
-    const int barStep = step % 16;
-    for (int i = 0; i < n; ++i) {
-      if (arr[i] == barStep) {
-        return true;
-      }
-    }
-    return false;
-  };
-
   for (int step = 0; step < totalSteps; ++step) {
+    const int barStep = step % 16;
     const float swingOffset = (step % 2 == 1) ? (stepDur * swing) : 0.0f;
     const int pos = static_cast<int>((step * stepDur + swingOffset) * sampleRate_);
 
-    if (inSteps(step, ohSteps, 3)) {
+    if (pattern.stepOpenHat(barStep)) {
       addInPlace(loop, pos, oh, 0.55f);
     } else {
       const float vel = (step % 2 == 0) ? 0.55f : 0.35f;
       addInPlace(loop, pos, ch, vel);
     }
-    if (inSteps(step, kickSteps, 5)) {
+    if (pattern.stepKick(barStep)) {
       addInPlace(loop, pos, kick, 0.95f);
     }
-    if (inSteps(step, snareSteps, 2)) {
+    if (pattern.stepSnare(barStep)) {
       addInPlace(loop, pos, snare, 0.90f);
     }
   }
@@ -279,9 +267,11 @@ bool MemphisPhonkEngine::writeMonoWav(const juce::File &file, const std::vector<
   return writer->writeFromAudioSampleBuffer(buffer, 0, buffer.getNumSamples());
 }
 
-juce::String MemphisPhonkEngine::exportMpcKit(const juce::File &outputDirectory,
-                                              float swing) const {
-  const juce::File kitDir = outputDirectory.getChildFile("Memphis_Phonk_MPC_Kit");
+juce::String MemphisPhonkEngine::exportMpcKit(const juce::File &outputDirectory, float swing,
+                                                const DrumPattern &pattern,
+                                                bool wrapInMpcKitFolder) const {
+  const juce::File kitDir =
+      wrapInMpcKitFolder ? outputDirectory.getChildFile("Memphis_Phonk_MPC_Kit") : outputDirectory;
   if (!kitDir.createDirectory()) {
     return "Could not create directory: " + kitDir.getFullPathName();
   }
@@ -319,10 +309,49 @@ juce::String MemphisPhonkEngine::exportMpcKit(const juce::File &outputDirectory,
   for (float bpm : bpms) {
     const juce::String name =
         "Memphis_Loop_" + juce::String(static_cast<int>(bpm)) + "BPM.wav";
-    if (!writeMonoWav(kitDir.getChildFile(name), generateDrumLoop(bpm, 2, swing), sampleRate_)) {
+    if (!writeMonoWav(kitDir.getChildFile(name), generateDrumLoop(bpm, 2, swing, pattern),
+                      sampleRate_)) {
       return "Failed writing loop " + name;
     }
   }
 
   return "Exported 23 WAVs to " + kitDir.getFullPathName();
+}
+
+juce::String MemphisPhonkEngine::exportBatchKits(const juce::File &parentDirectory, int count,
+                                                 float swing,
+                                                 const DrumPattern &pattern) const {
+  if (count < 1) {
+    return "Batch count must be at least 1";
+  }
+  if (count > 64) {
+    count = 64;
+  }
+
+  const auto stamp =
+      juce::Time::getCurrentTime().formatted("%Y%m%d_%H%M%S");
+  const juce::File batchRoot = parentDirectory.getChildFile("Memphis_Phonk_Batch_" + stamp);
+  if (!batchRoot.createDirectory()) {
+    return "Could not create batch folder: " + batchRoot.getFullPathName();
+  }
+
+  const auto saved = settings_;
+  int exported = 0;
+  for (int kit = 1; kit <= count; ++kit) {
+    MemphisPhonkEngine variant(sampleRate_);
+    auto s = saved;
+    s.seed = saved.seed + kit * 104729;
+    variant.setSettings(s);
+
+    const juce::String kitName = "Kit_" + juce::String(kit).paddedLeft('0', 3);
+    const juce::String msg =
+        variant.exportMpcKit(batchRoot.getChildFile(kitName), swing, pattern, false);
+    if (!msg.contains("Exported")) {
+      return msg;
+    }
+    ++exported;
+  }
+
+  return "Batch exported " + juce::String(exported) + " kits (" +
+         juce::String(exported * 23) + " WAVs) to " + batchRoot.getFullPathName();
 }
