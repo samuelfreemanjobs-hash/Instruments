@@ -250,7 +250,10 @@ float TrapVoice::synthesizeEngine (int engine, double basePhase, double step, fl
         case 7: // wavetable morph (synth only)
             return wavetableMorph (ph, morph);
         case 8:
-            return blepPulse (ph, step, morph);
+        {
+            const float pw = juce::jlimit (0.12f, 0.88f, morph);
+            return blepPulse (ph, step, pw);
+        }
         case 9: // EP tine
             return 0.45f * std::sin (tau * ph + 2.2f * std::sin (tau * ph * 3.2)) + 0.35f * std::sin (tau * ph * 2.)
                  + 0.12f * blepSaw (wrap (ph + 0.5), step * 2.);
@@ -318,12 +321,13 @@ float TrapVoice::applyFilter (float x, float cutoffHz, float res)
         }
         case 4: // comb
         {
-            const int delay = juce::jlimit (8, 4000, int (sr / juce::jmax (40.f, cutoffHz)));
+            const float minCut = (patch.engine == 4 || patch.engine == 22) ? 40.f : 140.f;
+            const int delay = juce::jlimit (8, 4000, int (sr / juce::jmax (minCut, cutoffHz)));
             int idx = combWrite - delay;
             if (idx < 0)
                 idx += int (std::size (combBuf));
             const float delayed = combBuf[size_t (idx)];
-            const float fb = juce::jlimit (0.1f, 0.88f, res);
+            const float fb = juce::jlimit (0.1f, 0.72f, res);
             const float y = x + delayed * fb;
             combBuf[size_t (combWrite)] = y;
             combWrite = (combWrite + 1) % int (std::size (combBuf));
@@ -407,6 +411,14 @@ void TrapVoice::renderNextBlock (juce::AudioBuffer<float>& out, int start, int n
         float y = (std::tanh (filtered * patch.drive) / normDrive) * envAmp * velocity * patch.gain * swellGain;
         if (! std::isfinite (y))
             y = 0.f;
+
+        const bool bassEngine = patch.engine == 4 || patch.engine == 22;
+        if (! bassEngine && midiNote >= 52)
+        {
+            const float hpCoeff = float (std::exp (-juce::MathConstants<double>::twoPi * 78.0 / sampleRate));
+            voiceHpL += (y - voiceHpL) * (1.f - hpCoeff);
+            y -= voiceHpL;
+        }
 
         if (fastReleaseGain < 1.f)
         {

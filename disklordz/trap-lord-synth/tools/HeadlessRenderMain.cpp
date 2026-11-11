@@ -272,7 +272,7 @@ int runMpcExport (int presetIndex, const juce::File& parentDir, int velocityLaye
     opts.semitoneStep = 1;
     opts.velocityLayers = juce::jlimit (1, 4, velocityLayers);
     opts.useCategoryTiming = true;
-    opts.use24Bit = false;
+    opts.use24Bit = true;
     opts.maxProgramMegabytes = 120.f;
 
     std::atomic<bool> abort { false };

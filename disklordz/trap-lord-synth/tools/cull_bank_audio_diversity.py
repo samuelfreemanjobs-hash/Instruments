@@ -20,7 +20,12 @@ CORR_MAX = 0.92
 
 sys.path.insert(0, str(ROOT / "tools"))
 from generate_preset_bank import select_diverse_presets  # noqa: E402
-from trap_lord_audio_metrics import category_feature_vector  # noqa: E402
+from trap_lord_audio_metrics import (  # noqa: E402
+    CROSS_CATEGORY_CORR_MAX,
+    analyze_file,
+    category_feature_vector,
+    category_spectral_passes,
+)
 
 
 def main() -> int:
@@ -34,6 +39,9 @@ def main() -> int:
     PROBE_DIR.mkdir(parents=True, exist_ok=True)
     achieved: dict[str, int] = {}
     keep_indices: list[int] = []
+    global_kept: list[tuple[str, np.ndarray]] = []
+    spectral_rejects = 0
+    cross_rejects = 0
 
     def probe_index(i: int, preset: dict) -> tuple[int, np.ndarray]:
         wav = PROBE_DIR / f"p_{i:04d}.wav"
@@ -57,16 +65,36 @@ def main() -> int:
                     i, v = fut.result()
                     vec_map[i] = v
         vecs = []
+        filtered_idxs: list[int] = []
         for i in idxs:
             wav = PROBE_DIR / f"p_{i:04d}.wav"
             if i not in vec_map:
                 vec_map[i] = category_feature_vector(wav)
-            vecs.append(vec_map[i])
-        print(f"{cat}: probing {len(idxs)} presets…", flush=True)
+            metrics = analyze_file(wav, category=cat)
+            ok, _reason = category_spectral_passes(metrics, cat)
+            if not ok:
+                spectral_rejects += 1
+                continue
+            v = vec_map[i]
+            too_close = False
+            for other_cat, ov in global_kept:
+                if other_cat == cat:
+                    continue
+                if float(np.dot(v, ov)) > CROSS_CATEGORY_CORR_MAX:
+                    too_close = True
+                    break
+            if too_close:
+                cross_rejects += 1
+                continue
+            filtered_idxs.append(i)
+            vecs.append(v)
+        print(f"{cat}: probing {len(idxs)} presets, eligible {len(filtered_idxs)}…", flush=True)
         quota = int(target.get(cat, len(idxs)))
-        fake = [{"bankIndex": i} for i in idxs]
-        picked, _ = select_diverse_presets(fake, vecs, min(quota, len(idxs)), CORR_MAX, None)
+        fake = [{"bankIndex": i} for i in filtered_idxs]
+        picked, _ = select_diverse_presets(fake, vecs, min(quota, len(filtered_idxs)), CORR_MAX, None)
         cat_keep = [p["bankIndex"] for p in picked]
+        for bi in cat_keep:
+            global_kept.append((cat, vec_map[bi]))
         achieved[cat] = len(cat_keep)
         keep_indices.extend(cat_keep)
 
@@ -79,8 +107,11 @@ def main() -> int:
         "achievedQuotas": achieved,
         "diversityGate": {
             "audioCorrMax": CORR_MAX,
+            "crossCategoryCorrMax": CROSS_CATEGORY_CORR_MAX,
             "mode": "post_cull_category_probe_json",
             "feature": "category_probe_audio",
+            "spectralRejects": spectral_rejects,
+            "crossCategoryRejects": cross_rejects,
         },
         "categoryQuotas": achieved,
         "presets": new_presets,

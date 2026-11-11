@@ -41,7 +41,7 @@ Optional Expansions-style layout is not used in these ZIPs; each ZIP is one self
 
 ## Technical notes
 
-- Sample rate **44.1 kHz**, **16-bit** stereo WAV (MPC-friendly size, under ~50 MB per program).
+- Sample rate **44.1 kHz**, **24-bit** stereo WAV; levels normalized per program (~-1 dBFS peak on the loudest sample).
 - **2 velocity layers** per note, **≤4 layers** per keygroup (MPC limit).
 - Filename pattern: `DL_N036_L1.WAV` (ASCII, short names).
 - Root note / key tracking enabled for chromatic playback.
@@ -109,7 +109,7 @@ def main() -> int:
     import shutil
 
     if STAGING.exists():
-        shutil.rmtree(STAGING)
+        shutil.rmtree(STAGING, ignore_errors=True)
     STAGING.mkdir(parents=True, exist_ok=True)
 
     if not BUILD.exists():
@@ -128,15 +128,20 @@ def main() -> int:
 
     bank = json.loads((ROOT / "assets/factory/preset_bank.json").read_text(encoding="utf-8"))
 
-    def first_idx(cat: str) -> int:
+    manifest = json.loads((ROOT / "assets/factory/audition_manifest.json").read_text(encoding="utf-8"))
+
+    def manifest_idx(cat: str, slot: int = 1) -> int:
+        for entry in manifest.get("auditions", []):
+            if entry.get("category") == cat and int(entry.get("slot", 1)) == slot:
+                return int(entry["index"])
         for i, p in enumerate(bank["presets"]):
             if p["category"] == cat:
                 return i
         raise SystemExit(f"No preset in category {cat}")
 
-    export_preset("Brass", first_idx("Brass"), "trap-lord-mpc-live-brass.zip")
-    export_preset("Pads", first_idx("Pads"), "trap-lord-mpc-live-pad.zip")
-    export_preset("Swells", first_idx("Swells"), "trap-lord-mpc-live-swell.zip")
+    export_preset("Brass", manifest_idx("Brass", 1), "trap-lord-mpc-live-brass.zip")
+    export_preset("Pads", manifest_idx("Pads", 1), "trap-lord-mpc-live-pad.zip")
+    export_preset("Swells", manifest_idx("Swells", 1), "trap-lord-mpc-live-swell.zip")
     return 0
 
 

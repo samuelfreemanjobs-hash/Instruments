@@ -90,5 +90,6 @@ private:
     double pitchDecay = 0.;
     int midiNote = 60;
     float voiceDrift = 0.f;
+    float voiceHpL = 0.f, voiceHpR = 0.f, voiceHpInL = 0.f, voiceHpInR = 0.f;
     static constexpr double tau = juce::MathConstants<double>::twoPi;
 };

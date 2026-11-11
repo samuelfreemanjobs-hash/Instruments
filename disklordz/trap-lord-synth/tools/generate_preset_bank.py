@@ -47,12 +47,12 @@ ENGINE_ROTATION: dict[str, list[int]] = {
     "Pads": [7, 12, 15, 20, 5, 0, 14, 2, 19, 1, 13, 18, 7, 12, 15, 20, 5, 0, 14, 2],
     "Swells": [20, 14, 7, 15, 2, 0, 12, 19, 5, 20, 14, 23, 7, 15, 2],
     "Synth Keys": [18, 21, 9, 17, 7, 8, 10, 13, 3, 18, 21, 9, 17, 7, 8],
-    "Leads": [6, 8, 10, 16, 11, 0, 17, 13, 6, 8, 10, 16, 11, 0],
+    "Leads": [6, 8, 10, 16, 0, 17, 13, 6, 8, 10, 16, 0, 17, 13],
     "Bass": [4, 22, 11, 4, 23, 6, 4, 22, 11, 4, 23],
-    "Bells": [3, 10, 13, 9, 21, 3, 10, 13, 9, 21],
+    "Bells": [3, 10, 13, 5, 0, 16, 3, 10, 13, 5],
     "Brass": [16, 0, 2, 6, 16, 0, 2, 6],
     "Strings": [2, 19, 1, 5, 14, 2, 19, 1],
-    "Church Keys/EP": [9, 21, 18, 17, 1, 9, 21, 18],
+    "Church Keys/EP": [9, 21, 18, 17, 1, 8, 7, 9, 21, 18],
     "Organ": [1, 5, 14, 1, 5, 14],
     "Choir": [5, 1, 19, 2, 5, 1, 19],
     "Hits/FX": [23, 16, 10, 6, 23, 16, 10, 6],
@@ -174,9 +174,21 @@ def build_from_style(category: str, style: dict, variant: int, rng: random.Rando
         p["arp"] = False
         p["swellDepth"] = 0.0
     if category == "Hits/FX":
-        p["attack"] = clamp(p["attack"], 0.001, 0.05)
+        p["attack"] = clamp(p["attack"], 0.001, 0.03)
+        p["decay"] = clamp(p["decay"], 0.04, 0.35)
+        p["sustain"] = clamp(p["sustain"], 0.0, 0.12)
+        p["release"] = clamp(p["release"], 0.05, 0.4)
         p["swellDepth"] = 0.0
         p["chord"] = 0
+        p["reverb"] = clamp(p["reverb"], 0.0, 0.35)
+        p["macroDirt"] = clamp(p["macroDirt"], 0.0, 0.25)
+    if category in ("Church Keys/EP", "Bells"):
+        p["macroDirt"] = clamp(p["macroDirt"], 0.0, 0.28)
+        p["drive"] = clamp(p["drive"], 0.9, 3.2)
+    if category == "Leads":
+        p["cutoff"] = clamp(p["cutoff"], 450.0, 14000.0)
+        if p["filterType"] == 1:
+            p["cutoff"] = clamp(p["cutoff"], 280.0, 5200.0)
     if category == "Swells":
         p["swellDepth"] = clamp(p["swellDepth"], 0.4, 1.0)
         if p["swellDepth"] < 0.35:
@@ -213,10 +225,22 @@ def param_fingerprint(p: dict) -> str:
     return hashlib.sha256(rounded.encode()).hexdigest()[:16]
 
 
-def make_name(category: str, style_label: str, rng: random.Random, idx: int) -> str:
+def make_name(category: str, style_label: str, rng: random.Random, idx: int, preset: dict | None = None) -> str:
     short = SHORT_CATEGORY.get(category, category.replace("/", " "))
     nouns = CATEGORY_NOUNS.get(category, ["Stack"])
-    name = f"{short} {style_label} {rng.choice(ADJECTIVES)} {rng.choice(nouns)} {idx:02d}"
+    noun = rng.choice(nouns)
+    if category == "Hits/FX" and preset is not None:
+        label = style_label.lower()
+        if "impact" in label or "hit" in label:
+            noun = rng.choice(["Hit", "Impact", "Stab"])
+        elif "crash" in label:
+            noun = "Crash" if preset.get("cutoff", 2000) > 900 else "Thump"
+        elif "stab" in label:
+            noun = "Stab"
+        sustain = float(preset.get("sustain", 0.2))
+        if sustain > 0.2 and noun in {"Impact", "Hit"}:
+            noun = "Stab"
+    name = f"{short} {style_label} {rng.choice(ADJECTIVES)} {noun} {idx:02d}"
     return name if not FORBIDDEN.search(name) else f"{short} {style_label} Stack {idx:02d}"
 
 
@@ -233,7 +257,7 @@ def generate_candidates(category: str, count: int, rng: random.Random) -> list[d
             variant += 1
             continue
         seen.add(fp)
-        p["name"] = make_name(category, style.get("label", "Core"), rng, variant + 1)
+        p["name"] = make_name(category, style.get("label", "Core"), rng, variant + 1, p)
         out.append(p)
         variant += 1
     return out
@@ -280,18 +304,22 @@ def phrase_variant(p: dict) -> int:
     return int((int(p.get("engine", 0)) * 2 + int(p.get("chord", 0)) + int(p.get("filterType", 0))) % 6)
 
 
-def _render_probe(local_i: int, preset: dict) -> tuple[int, np.ndarray]:
+def _render_probe(local_i: int, preset: dict) -> tuple[int, np.ndarray | None]:
     sys.path.insert(0, str(ROOT / "tools"))
-    from trap_lord_audio_metrics import gate_feature_vector
+    from trap_lord_audio_metrics import analyze_file, category_spectral_passes, gate_feature_vector
 
     json_path = PROBE_DIR / f"candidate_{local_i:05d}.json"
     wav = PROBE_DIR / f"candidate_{local_i:05d}.wav"
     json_path.write_text(json.dumps(preset), encoding="utf-8")
     subprocess.check_call([str(CLI), "category-probe-json", str(json_path), str(wav)], cwd=ROOT)
+    metrics = analyze_file(wav, category=str(preset.get("category", "")))
+    ok, _ = category_spectral_passes(metrics, str(preset.get("category", "")))
+    if not ok:
+        return local_i, None
     return local_i, gate_feature_vector(wav, preset)
 
 
-def render_candidate_pool(candidates: list[dict]) -> list[np.ndarray]:
+def render_candidate_pool(candidates: list[dict]) -> tuple[list[dict], list[np.ndarray]]:
     PROBE_DIR.mkdir(parents=True, exist_ok=True)
     workers = min(6, max(2, (os.cpu_count() or 4)))
     vecs: list[np.ndarray | None] = [None] * len(candidates)
@@ -300,7 +328,13 @@ def render_candidate_pool(candidates: list[dict]) -> list[np.ndarray]:
         for fut in as_completed(futures):
             idx, vec = fut.result()
             vecs[idx] = vec
-    return [v for v in vecs if v is not None]
+    out_cands: list[dict] = []
+    out_vecs: list[np.ndarray] = []
+    for i, p in enumerate(candidates):
+        if vecs[i] is not None:
+            out_cands.append(p)
+            out_vecs.append(vecs[i])
+    return out_cands, out_vecs
 
 
 def select_diverse_presets(
@@ -354,8 +388,14 @@ def run_generation(seed: int, target: dict[str, int], audio_gate: bool) -> tuple
     rng = random.Random(seed)
     all_presets: list[dict] = []
     achieved: dict[str, int] = {}
-    gate_meta: dict = {"corrMax": CORR_MAX, "feature": "category_probe_audio", "categories": {}}
+    gate_meta: dict = {
+        "corrMax": CORR_MAX,
+        "crossCategoryCorrMax": 0.96,
+        "feature": "category_probe_audio",
+        "categories": {},
+    }
     out_path = ROOT / "assets" / "factory" / "preset_bank.json"
+    cross_category_refs: list[np.ndarray] = []
 
     if audio_gate:
         build_cli()
@@ -373,10 +413,22 @@ def run_generation(seed: int, target: dict[str, int], audio_gate: bool) -> tuple
             cands = generate_candidates(category, pool_size, rng)
 
             if audio_gate:
-                vectors = render_candidate_pool(cands)
-                picked, new_vecs = select_diverse_presets(cands, vectors, need, CORR_MAX, accepted_vecs)
+                filtered_cands, vectors = render_candidate_pool(cands)
+                cross_ok_c: list[dict] = []
+                cross_ok_v: list[np.ndarray] = []
+                for c, v in zip(filtered_cands, vectors):
+                    if cross_category_refs:
+                        worst = max(float(np.dot(v, r)) for r in cross_category_refs)
+                        if worst > 0.96:
+                            continue
+                    cross_ok_c.append(c)
+                    cross_ok_v.append(v)
+                picked, new_vecs = select_diverse_presets(
+                    cross_ok_c, cross_ok_v, need, CORR_MAX, accepted_vecs
+                )
                 accepted.extend(picked)
                 accepted_vecs.extend(new_vecs)
+                cross_category_refs.extend(new_vecs)
             else:
                 accepted.extend(cands[:need])
 

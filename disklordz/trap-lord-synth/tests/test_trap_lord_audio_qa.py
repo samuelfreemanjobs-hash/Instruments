@@ -14,7 +14,14 @@ CLI = ROOT / "build" / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLor
 BANK = ROOT / "assets" / "factory" / "preset_bank.json"
 
 sys.path.insert(0, str(TOOLS))
-from trap_lord_audio_metrics import analyze_file, assert_wav_format, correlation  # noqa: E402
+from trap_lord_audio_metrics import (  # noqa: E402
+    CROSS_CATEGORY_CORR_MAX,
+    analyze_file,
+    assert_wav_format,
+    category_spectral_passes,
+    correlation,
+    mpc_program_peak_ok,
+)
 
 FX_CATEGORIES = {"Hits/FX"}
 NON_FX_CENTROID_MAX_HZ = 6000.0
@@ -22,7 +29,6 @@ PEAK_MAX = 0.99
 TAIL_MAX_DBFS = -60.0
 FUNDAMENTAL_TARGET_HZ = 261.63
 FUNDAMENTAL_TOLERANCE = 8.0
-CROSS_CATEGORY_CORR_MAX = 0.9
 
 
 def build_cli() -> None:
@@ -109,6 +115,25 @@ def assert_preset_diversity() -> None:
                 f"{m.path} centroid {m.centroid_hz} Hz > {NON_FX_CENTROID_MAX_HZ}"
             )
         assert abs(m.dc_offset) < 0.02, f"{m.path} dc offset {m.dc_offset}"
+        ok, reason = category_spectral_passes(m, m.category)
+        assert ok, f"{m.path} failed category spectral gate: {reason}"
+
+
+def assert_mpc_program_normalize() -> None:
+    tmp = ROOT / "build" / "audio_qa_mpc"
+    tmp.mkdir(parents=True, exist_ok=True)
+    bank = json.loads(BANK.read_text(encoding="utf-8"))
+    pad_ix = next(i for i, p in enumerate(bank["presets"]) if p["category"] == "Pads")
+    out_dir = tmp / "pad_program"
+    subprocess.check_call([str(CLI), "mpc", str(pad_ix), str(out_dir), "1"], cwd=ROOT)
+    ok, peak, bits = mpc_program_peak_ok(out_dir)
+    assert bits == 3, f"MPC WAV bit depth {bits}, expected 24-bit"
+    assert ok, f"MPC program peak {peak:.4f} outside normalized band"
+
+
+def assert_cross_category_gate_script() -> None:
+    script = TOOLS / "verify_cross_category_gate.py"
+    subprocess.check_call([sys.executable, str(script)], cwd=ROOT)
 
 
 def test_audition_wav_contract(stage_wav: Path | None = None) -> None:
@@ -122,6 +147,8 @@ def test_trap_lord_audio_qa() -> None:
     build_cli()
     assert_diagnose()
     assert_preset_diversity()
+    assert_mpc_program_normalize()
+    assert_cross_category_gate_script()
 
 
 if __name__ == "__main__":
