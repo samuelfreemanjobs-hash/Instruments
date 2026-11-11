@@ -11,7 +11,7 @@
     "dev:server": "tsx watch server/index.ts",
     "build": "npm run build:server && npm run build:web",
     "build:server": "tsc --noEmit",
-    "build:web": "npm run export:hosted-catalog && npm run build --prefix web",
+    "build:web": "npm run build --prefix web",
     "export:hosted-catalog": "tsx scripts/export-hosted-catalog.ts",
     "build:legacy": "tsc --noEmit && vite build",
     "preview": "vite preview",
