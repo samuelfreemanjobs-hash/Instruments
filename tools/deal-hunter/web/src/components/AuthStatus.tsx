@@ -19,7 +19,10 @@ export async function AuthStatus() {
 
   if (!user) {
     return (
-      <Link href="/login" className="text-sm text-bfm-accent hover:underline">
+      <Link
+        href="/login"
+        className="inline-block self-start rounded-full bg-bfm-accent px-5 py-2.5 text-base font-semibold text-white"
+      >
         Sign in
       </Link>
     );
