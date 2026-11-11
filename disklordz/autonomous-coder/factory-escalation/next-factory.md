@@ -39,6 +39,7 @@ Open Antigravity inbox (docs/batch — not VST compile):
 
 | Handoff | WO | Status |
 |---------|-----|--------|
+| `HO-20261111-3A89` | WO-AG-002 (UI theme tokens batch) | open |
 | `HO-20261109-2C87` | WO-AG-001 (genre rules JSON) | open |
 | `HO-20261108-AD94` | WO-PREP-003 (Milestone 001 README) | open |
 | `HO-20261108-6B03` | WO-PREP-004 (REAPER smoke template) | open |
