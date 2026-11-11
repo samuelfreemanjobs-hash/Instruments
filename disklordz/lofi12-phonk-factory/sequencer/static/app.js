@@ -25,14 +25,10 @@ const LANE_UI_LABELS = {
   bounce_cowbell: "Bounce & Cowbell",
   traproom_tape: "Traproom Tape",
   tape_lag: "Tape Lag",
-  grid_zirk: "Grid Zirk",
+  sparse_machine_grid: "Sparse Machine Grid",
   memphis_insanity_pack: "Memphis Insanity",
   memphis_underground: "Underground Memphis",
   occult_tape: "Occult Tape",
-  juicy_j: "Hard Dirt 808",
-  dj_paul: "Bounce & Cowbell",
-  dj_toomp: "Traproom Tape",
-  memphis_trinity: "Memphis Insanity",
 };
 
 /** @type {{ on: boolean, note: number, velocity: number }[][]} */
@@ -467,7 +463,7 @@ function loadFromJson(obj) {
 }
 
 async function loadGrooveFromApi() {
-  const prompt = document.getElementById("groovePrompt").value || "dj paul memphis 84";
+  const prompt = document.getElementById("groovePrompt").value || "bounce cowbell memphis 84";
   const body = { prompt, bpm: Number(bpmEl.value) || 84 };
   const preset = selectedPresetId();
   if (preset) body.preset = preset;
@@ -490,7 +486,7 @@ function downloadBackingBuffer(buf) {
 }
 
 async function generateBacking(variationOverride) {
-  const prompt = document.getElementById("groovePrompt").value || "juicy j memphis phonk 84";
+  const prompt = document.getElementById("groovePrompt").value || "hard dirt memphis phonk 84";
   const genBtn = document.getElementById("genNewLoop");
   genBtn?.classList.add("is-generating");
   setStatus("Rendering backing loop…", true);

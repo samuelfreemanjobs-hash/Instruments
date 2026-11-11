@@ -38,7 +38,7 @@ def parse_bpm_from_prompt(
     lane = resolve_memphis_lane(prompt, lane_id)
     if lane:
         return validate_bpm(lane.default_bpm)
-    if re.search(r"\b(toomp|dj\s*toomp)\b", prompt.lower()):
+    if re.search(r"\b(traproom|atlanta\s*trap)\b", prompt.lower()):
         return 78.0
     if re.search(r"\b(screw|slow|memphis|90s)\b", prompt.lower()):
         return 78.0
@@ -87,7 +87,7 @@ def main() -> None:
     p.add_argument(
         "--preset",
         default=None,
-        help=f"Juicy J / DJ Paul / Toomp stack ({preset_help})",
+        help=f"Factory mode or memphis_insanity_pack ({preset_help})",
     )
     args = p.parse_args()
 

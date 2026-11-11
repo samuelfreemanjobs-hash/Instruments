@@ -32,7 +32,7 @@ class BarPattern:
 KICK_TEMPLATES: tuple[tuple[int, ...], ...] = (
     (0, 6, 8),  # on the 1, syncopated &, 3
     (0, 10),  # half-time lean
-    (0, 3, 6, 11),  # DJ Paul bounce
+    (0, 3, 6, 11),  # Bounce cowbell grid
     (0, 8, 14),  # sparse hard
     (0, 6, 8, 14),  # four-on-floor variant with tail kick
 )

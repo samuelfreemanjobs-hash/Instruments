@@ -18,31 +18,29 @@ from phonk_style_presets import (  # noqa: E402
 
 
 class StylePresetTests(unittest.TestCase):
-    def test_trinity_preset_exists(self) -> None:
-        self.assertIn("memphis_trinity", list_preset_ids())
-        ps = get_preset("memphis_trinity")
+    def test_insanity_pack_preset(self) -> None:
+        self.assertIn("memphis_insanity_pack", list_preset_ids())
+        ps = get_preset("memphis_insanity_pack")
         self.assertIsNotNone(ps)
         assert ps is not None
         self.assertEqual(ps.lane, "bounce_cowbell")
         self.assertEqual(ps.engine, "hard_dirt_808")
 
-    def test_merge_render_payload(self) -> None:
-        merged = merge_render_payload({"preset": "dj_toomp"})
+    def test_merge_render_payload_traproom(self) -> None:
+        merged = merge_render_payload({"preset": "phonk_trap"})
         self.assertIn("trap", merged["prompt"].lower())
         self.assertEqual(merged["engine"], "traproom_tape")
 
     def test_api_preset_list(self) -> None:
         self.assertGreaterEqual(len(all_presets_api()), 10)
 
-    def test_display_names_no_artists(self) -> None:
-        ps = get_preset("memphis_trinity")
-        assert ps is not None
-        self.assertIn("Memphis", ps.label)
+    def test_display_names_neutral(self) -> None:
+        from factory_neutral_policy import find_policy_violations
+
         for item in all_presets_api():
-            label = item["label"].lower()
-            self.assertNotIn("juicy", label)
-            self.assertNotIn("dj paul", label)
-            self.assertNotIn("toomp", label)
+            blob = f"{item['id']} {item['label']} {item['prompt']}"
+            hits = find_policy_violations(blob)
+            self.assertEqual(hits, [], msg=f"preset {item['id']}: {hits}")
 
 
 if __name__ == "__main__":

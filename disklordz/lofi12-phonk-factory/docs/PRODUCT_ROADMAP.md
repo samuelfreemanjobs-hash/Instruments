@@ -34,7 +34,7 @@
 python3 disklordz/lofi12-phonk-factory/sequencer/serve.py
 
 python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
-  --prompt "juicy j dirty memphis" --filter 0.45 --reverb 0.35 --tape 0.3 \
+  --prompt "hard dirt dirty memphis" --filter 0.45 --reverb 0.35 --tape 0.3 \
   --out ~/Music/Lofi12/Loops
 ```
 

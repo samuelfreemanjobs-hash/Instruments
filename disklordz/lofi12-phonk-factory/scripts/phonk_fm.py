@@ -70,7 +70,7 @@ def fm_cowbell_808(base_hz: float, seed: int = 0, grit: float = 0.0) -> list[flo
 
 
 def fm_cowbell_memphis(base_hz: float, seed: int = 0, grit: float = 0.35) -> list[float]:
-    """Darker, dirtier bell for phonk / Juicy J lane."""
+    """Darker, dirtier bell for phonk / hard dirt lane."""
     core = fm_two_op(
         carrier_hz=base_hz,
         mod_ratio=2.17,

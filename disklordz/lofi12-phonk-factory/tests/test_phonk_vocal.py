@@ -17,7 +17,7 @@ class PhonkVocalTests(unittest.TestCase):
         bpm = 84.0
         bars = 2
         pcm, meta = render_vocal_loop(
-            prompt="dj paul memphis screw vocal", bpm=bpm, bars=bars, variation=0
+            prompt="bounce cowbell memphis screw vocal", bpm=bpm, bars=bars, variation=0
         )
         expected = (60.0 / bpm) * 4 * bars
         self.assertAlmostEqual(len(pcm) / 44100, expected, delta=0.05)

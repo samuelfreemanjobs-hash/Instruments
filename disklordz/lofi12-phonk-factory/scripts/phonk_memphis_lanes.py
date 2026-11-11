@@ -1,4 +1,4 @@
-"""Memphis artist / producer lanes — prompt tags → groove + tone bias."""
+"""Memphis groove lanes — neutral prompt tags → groove + tone bias."""
 
 from __future__ import annotations
 
@@ -24,11 +24,7 @@ class MemphisLane:
     grit_delta: float = 0.0
 
 
-LANE_LEGACY_ALIASES: dict[str, str] = {
-    "dj_paul": "bounce_cowbell",
-    "juicy_j": "hard_dirt_808",
-    "dj_toomp": "traproom_tape",
-}
+LANE_LEGACY_ALIASES: dict[str, str] = {}
 
 # Template order: (0,6,8), (0,10), (0,3,6,11), (0,8,14), (0,6,8,14)
 LANES: tuple[MemphisLane, ...] = (
@@ -92,9 +88,9 @@ LANES: tuple[MemphisLane, ...] = (
         snare_snap_mult=0.92,
     ),
     MemphisLane(
-        "grid_zirk",
-        "Grid Zirk",
-        (r"dj\s*zirk", r"\bzirk\b"),
+        "sparse_machine_grid",
+        "Sparse Machine Grid",
+        (r"sparse\s*grid", r"machine\s*grid"),
         80.0,
         (1.2, 1.4, 0.7, 1.3, 0.6),
         0.85,
@@ -106,9 +102,9 @@ LANES: tuple[MemphisLane, ...] = (
         grit_delta=0.04,
     ),
     MemphisLane(
-        "shawty_pimp",
-        "Shawty Pimp",
-        (r"shawty\s*pimp", r"\bshawty\b"),
+        "slow_hat_drag",
+        "Slow Hat Drag",
+        (r"slow\s*hat", r"minimal\s*hat"),
         74.0,
         (0.8, 1.6, 0.6, 1.4, 0.5),
         0.65,
@@ -121,13 +117,12 @@ LANES: tuple[MemphisLane, ...] = (
         snare_snap_mult=0.92,
     ),
     MemphisLane(
-        "kingpin_skinny_pimp",
-        "Kingpin Skinny Pimp",
+        "deep_knock_memphis",
+        "Deep Knock Memphis",
         (
-            r"kingpin",
-            r"skinny\s*pimp",
-            r"short\s*pimp",
-            r"kingpin\s*skinny",
+            r"deep\s*knock",
+            r"laid\s*back\s*memphis",
+            r"lean\s*pattern",
         ),
         76.0,
         (1.0, 1.5, 0.9, 1.2, 0.7),
@@ -154,9 +149,9 @@ LANES: tuple[MemphisLane, ...] = (
         snare_snap_mult=1.08,
     ),
     MemphisLane(
-        "toy_wright_iii",
-        "Toy Wright III",
-        (r"toy\s*wright", r"wright\s*iii", r"toy\s*wright\s*iii"),
+        "ultra_slow_bounce",
+        "Ultra Slow Bounce",
+        (r"ultra\s*slow", r"72\s*bpm\s*drag"),
         72.0,
         (0.7, 1.7, 0.5, 1.5, 0.4),
         0.6,
@@ -168,14 +163,12 @@ LANES: tuple[MemphisLane, ...] = (
         grit_delta=0.05,
     ),
     MemphisLane(
-        "apoc_crisis",
-        "Apoc / crisis Memphis",
+        "horror_memphis",
+        "Horror Memphis",
         (
-            r"apoc",
-            r"apocalypse",
-            r"crisis",
-            r"apoc\s*crisis",
-            r"666",
+            r"horror\s*memphis",
+            r"dark\s*crisis",
+            r"occult\s*crunch",
         ),
         79.0,
         (1.1, 1.2, 0.8, 1.4, 0.8),

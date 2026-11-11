@@ -20,7 +20,7 @@ Import Memphis groove from factory:
 
 ```bash
 python3 disklordz/lofi12-phonk-factory/sequencer/scripts/pattern_from_groove.py \
-  --prompt "dj paul memphis 84" --out my_pattern.json
+  --prompt "bounce cowbell memphis 84" --out my_pattern.json
 ```
 
 ## Data flow

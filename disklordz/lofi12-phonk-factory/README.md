@@ -45,11 +45,11 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_factory.py \
 
 ## Drum machine sound engine
 
-Loops and one-shot banks use **`phonk_machine_engine.py`**: TR-808, TR-909, Boss DR-660, Alesis SR-16, Roland R-8 MKII, **DJ Screw tape**, and **`mr_tape`** (lo-fi tape pack *style* — good starting point for Splice-like warmth). See [docs/DRUM_MACHINE_ENGINES.md](docs/DRUM_MACHINE_ENGINES.md).
+Loops and one-shot banks use **`phonk_machine_engine.py`**: TR-808, TR-909, Boss DR-660, Alesis SR-16, Roland R-8 MKII, **`tape_slowdown`**, and **`mr_tape`** (lo-fi tape pack *style* — good starting point for Splice-like warmth). See [docs/DRUM_MACHINE_ENGINES.md](docs/DRUM_MACHINE_ENGINES.md).
 
 ```bash
 python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
-  --engine mr_tape --prompt "memphis phonk splice dj paul 84" --out ~/Music/Lofi12/PhonkLoops
+  --engine mr_tape --prompt "memphis phonk splice bounce cowbell 84" --out ~/Music/Lofi12/PhonkLoops
 ```
 
 ## Memphis phonk **loops** (60–190 BPM)
@@ -81,7 +81,7 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_vocal_factory.py \
   --prompt "memphis screw dark vocal" --chops-only --batch 4 --out ~/Music/Lofi12/PhonkVocals
 
 python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
-  --prompt "dj paul phonk 84" --with-vocals --out ~/Music/Lofi12/PhonkLoops
+  --prompt "bounce cowbell phonk 84" --with-vocals --out ~/Music/Lofi12/PhonkLoops
 ```
 
 ## Loop FX (generator + Lofi CC)
@@ -90,7 +90,7 @@ Mix-bus filter, reverb, tape, and drive on rendered loops. Prompt words (`dirty`
 
 ```bash
 python3 disklordz/lofi12-phonk-factory/scripts/phonk_loop_factory.py \
-  --prompt "juicy j dirty memphis 86" --filter 0.45 --reverb 0.35 --tape 0.3 \
+  --prompt "hard dirt dirty memphis 86" --filter 0.45 --reverb 0.35 --tape 0.3 \
   --out ~/Music/Lofi12/PhonkLoops
 ```
 
@@ -105,7 +105,7 @@ python3 disklordz/lofi12-phonk-factory/sequencer/serve.py
 # http://127.0.0.1:8765 — Generate backing loop → Play (restarts loop + grid) → edit steps → MIDI OUT
 
 python3 disklordz/lofi12-phonk-factory/sequencer/scripts/pattern_from_groove.py \
-  --prompt "dj paul memphis 84" --out ~/Music/Lofi12/pattern.json
+  --prompt "bounce cowbell memphis 84" --out ~/Music/Lofi12/pattern.json
 ```
 
 See [sequencer/ARCHITECTURE.md](sequencer/ARCHITECTURE.md).

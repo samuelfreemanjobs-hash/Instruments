@@ -107,7 +107,7 @@ class Handler(BaseHTTPRequestHandler):
             from phonk_style_presets import merge_render_payload
 
             payload = merge_render_payload(payload)
-            prompt = str(payload.get("prompt", "juicy j dj paul dirty memphis 86"))
+            prompt = str(payload.get("prompt", "bounce cowbell dirty memphis 86"))
             bpm = float(payload.get("bpm", 84))
             bars = int(payload.get("bars", 2))
             variation = int(payload.get("variation", 0))
@@ -151,7 +151,7 @@ class Handler(BaseHTTPRequestHandler):
             from phonk_style_presets import merge_render_payload
 
             payload = merge_render_payload(payload)
-            prompt = str(payload.get("prompt", "juicy j dirty memphis phonk"))
+            prompt = str(payload.get("prompt", "hard dirt dirty memphis phonk"))
             variation = int(payload.get("variation", 0))
             with tempfile.TemporaryDirectory() as tmp:
                 out = Path(tmp) / "bank_a"
@@ -184,7 +184,7 @@ class Handler(BaseHTTPRequestHandler):
             from phonk_style_presets import get_preset, merge_render_payload
 
             payload = merge_render_payload(payload)
-            prompt = str(payload.get("prompt", "juicy j dj paul dirty memphis 86"))
+            prompt = str(payload.get("prompt", "bounce cowbell dirty memphis 86"))
             bpm = float(payload.get("bpm", 84))
             pat: Pattern = groove_to_pattern(prompt, bpm, int(payload.get("variation", 0)))
             preset_id = payload.get("preset")

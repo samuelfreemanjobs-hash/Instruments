@@ -28,7 +28,7 @@ class SequencerPatternTests(unittest.TestCase):
             self.assertTrue(loaded.tracks[0].steps[0].on)
 
     def test_groove_import_has_hits(self) -> None:
-        pat = groove_to_pattern("dj paul memphis phonk", 84.0, 0)
+        pat = groove_to_pattern("bounce cowbell memphis phonk", 84.0, 0)
         self.assertEqual(len(pat.tracks), 6)
         kicks = sum(1 for s in pat.tracks[0].steps if s.on)
         snares = sum(1 for s in pat.tracks[1].steps if s.on)

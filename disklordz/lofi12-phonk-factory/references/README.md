@@ -1,10 +1,11 @@
-# Memphis reference audio (optional)
+# Reference audio (optional)
 
-Place **short drum loops or one-shots** you want the factory to imitate — label files with BPM and lane:
+Place **your own** reference WAVs here for A/B listening. The factory does not ship third-party samples.
 
-- `dj_paul_84bpm_loop.wav`
-- `shawty_pimp_72_kit/`
+Suggested neutral filenames:
 
-Supported lane tags match [PHONK_PROGRAMMING_PLAYBOOK.md](../docs/PHONK_PROGRAMMING_PLAYBOOK.md): Juicy J, DJ Paul, DJ Zirk, Shawty Pimp, Kingpin Skinny Pimp, Blackout, Toy Wright III, Apoc/crisis Memphis.
+- `bounce_cowbell_118bpm_loop.wav`
+- `traproom_tape_78bpm_loop.wav`
+- `slow_hat_drag_72_kit/`
 
-Future: automated density/envelope comparison vs `phonk_loop_factory` output.
+Lane tags match [PHONK_PROGRAMMING_PLAYBOOK.md](../docs/PHONK_PROGRAMMING_PLAYBOOK.md).

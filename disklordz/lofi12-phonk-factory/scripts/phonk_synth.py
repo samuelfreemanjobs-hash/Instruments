@@ -74,7 +74,7 @@ def resolve_phonk_params(prompt: str, variation: int = 0, lane: object | None = 
     if re.search(r"\b(dirty|grit|memphis|phonk|distort)\b", p):
         grit = min(0.85, grit + 0.25)
         snare_snap *= 1.12
-    if re.search(r"\bjuicy\b", p):
+    if re.search(r"\b(raw\s*southern|hard\s*dirt)\b", p):
         grit = min(0.9, grit + 0.12)
         kick_decay *= 1.08
         snare_snap = min(0.82, snare_snap * 1.08)

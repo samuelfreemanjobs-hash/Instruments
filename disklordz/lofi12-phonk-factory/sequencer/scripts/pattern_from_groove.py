@@ -75,7 +75,7 @@ def groove_to_pattern(prompt: str, bpm: float, variation: int = 0) -> Pattern:
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--prompt", default="juicy j dj paul dirty memphis 86")
+    p.add_argument("--prompt", default="bounce cowbell dirty memphis 86")
     p.add_argument("--bpm", type=float, default=0)
     p.add_argument("--variation", type=int, default=0)
     p.add_argument("--out", type=Path, required=True)

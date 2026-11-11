@@ -33,10 +33,7 @@ VoiceKey = Literal[
 ]
 
 ENGINE_LEGACY_ALIASES: dict[str, str] = {
-    "juicy_j": "hard_dirt_808",
-    "dj_toomp": "traproom_tape",
-    "dj_screw": "tape_slowdown",
-    "dj_paul": "hard_dirt_808",
+    "tape_screw": "tape_slowdown",
 }
 
 ENGINE_IDS = (

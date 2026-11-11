@@ -1,4 +1,4 @@
-"""Curated factory presets (neutral naming; legacy ids alias to factory modes)."""
+"""Curated factory presets (neutral naming; aliases map engine/lane ids to modes)."""
 
 from __future__ import annotations
 
@@ -59,23 +59,6 @@ PRESETS["memphis_insanity_pack"] = StylePreset(
     _fx_from_mode("memphis_underground"),
     factory_mode="memphis_underground",
 )
-
-# Legacy aliases (backward compatible)
-for old_id, mode_id in PRESET_ALIASES.items():
-    if old_id in PRESETS:
-        continue
-    base = PRESETS[mode_id]
-    PRESETS[old_id] = StylePreset(
-        old_id,
-        base.label,
-        base.prompt,
-        base.lane,
-        base.engine,
-        base.bpm,
-        base.fx,
-        factory_mode=mode_id,
-    )
-
 
 def list_preset_ids() -> list[str]:
     return list(PRESETS.keys())

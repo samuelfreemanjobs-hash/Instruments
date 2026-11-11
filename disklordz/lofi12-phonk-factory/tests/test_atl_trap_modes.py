@@ -13,9 +13,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from atl_trap_voices import crash_cymbal, kick_atl_round  # noqa: E402
 from drum_kit_builder import build_kit  # noqa: E402
 from factory_modes import FACTORY_MODE_IDS, MODES, get_mode  # noqa: E402
+from factory_neutral_policy import find_policy_violations  # noqa: E402
 from phonk_synth import PhonkParams, resolve_phonk_params  # noqa: E402
-
-BANNED = ("trap or die", "snow", "t.i.", "ti ", "producer", "juicy", "toomp", "66.6")
 
 
 class AtlTrapModeTests(unittest.TestCase):
@@ -27,9 +26,9 @@ class AtlTrapModeTests(unittest.TestCase):
     def test_neutral_copy(self) -> None:
         for mid in ("atl_trap_2005", "trap_hard_2006", "atl_modern"):
             m = get_mode(mid)
-            blob = f"{mid} {m.title} {m.prompt}".lower()
-            for bad in BANNED:
-                self.assertNotIn(bad, blob)
+            blob = f"{mid} {m.title} {m.prompt}"
+            hits = find_policy_violations(blob)
+            self.assertEqual(hits, [], msg=f"{mid}: {hits}")
 
     def test_atl_voices_render(self) -> None:
         p = resolve_phonk_params("atlanta trap sparse 72", 0)

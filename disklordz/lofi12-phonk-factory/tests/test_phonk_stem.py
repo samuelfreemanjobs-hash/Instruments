@@ -17,10 +17,10 @@ from phonk_pattern_render import render_pattern_stem  # noqa: E402
 class PhonkStemTests(unittest.TestCase):
     def test_factory_kick_stem(self) -> None:
         full, _ = render_phonk_loop(
-            prompt="juicy j memphis 86", bpm=86, bars=2, variation=3
+            prompt="hard dirt memphis 86", bpm=86, bars=2, variation=3
         )
         kick, meta = render_phonk_loop(
-            prompt="juicy j memphis 86",
+            prompt="hard dirt memphis 86",
             bpm=86,
             bars=2,
             variation=3,

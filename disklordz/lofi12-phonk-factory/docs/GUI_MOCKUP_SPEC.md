@@ -50,7 +50,7 @@ Sidebar is **navigation shell** only in v1 — no new backend until Phase 2.
 
 | Mockup | App id / API |
 |--------|----------------|
-| Preset `Memphis Insanity` | `#stylePreset` (map to `memphis_trinity` or custom label) |
+| Preset `Memphis Insanity` | `#stylePreset` (map to `memphis_insanity_pack`) |
 | Waveform display | Visual only; optional: last loop waveform **Phase 2** |
 | **GENERATE DRUM LOOP** | `#genNewLoop` → `/api/render_loop` |
 | AUTO WAV EXPORT | `#autoDownloadWav` |
@@ -67,7 +67,7 @@ Sidebar is **navigation shell** only in v1 — no new backend until Phase 2.
 | DRIVE | `fxDrive` → `drive` |
 | CASSETTE | `fxCassette` → `cassette` |
 | GAIN | **New** — output trim post-FX (implement `gain` 0–1 in `phonk_loop_fx.py`) |
-| MODE 2: PHONK | Preset indicator (Juicy/Paul/Toomp) |
+| MODE 2: PHONK | Preset indicator (factory mode / lane labels) |
 | ANALOG GLITCH (ACTIVE) | Status when cassette+crush > threshold |
 
 **Reverb / Wobble:** mockup A omits; keep in **FX MATRIX** sub-panel or “Advanced” row (Frame B has REVERB + WOBBLE).

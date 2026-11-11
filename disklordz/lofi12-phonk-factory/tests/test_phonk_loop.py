@@ -57,7 +57,7 @@ class PhonkLoopTests(unittest.TestCase):
         )
         self.assertEqual(meta["memphisLane"], "hard_dirt_808")
 
-    def test_toomp_lane_and_engine(self) -> None:
+    def test_traproom_lane_and_engine(self) -> None:
         lane = resolve_memphis_lane("traproom tape atlanta trap 808")
         self.assertIsNotNone(lane)
         assert lane is not None

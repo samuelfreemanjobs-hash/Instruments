@@ -25,12 +25,8 @@ FACTORY_MODE_IDS = (
     "atl_modern",
 )
 
-# Backward-compatible preset id → factory mode
+# Non-artist preset id → factory mode (engine/lane ids only)
 PRESET_ALIASES: dict[str, str] = {
-    "memphis_trinity": "memphis_underground",
-    "juicy_j": "memphis_raw_southern",
-    "dj_paul": "memphis_underground",
-    "dj_toomp": "phonk_trap",
     "hard_dirt_808": "memphis_raw_southern",
     "bounce_cowbell": "memphis_underground",
     "traproom_tape": "phonk_trap",

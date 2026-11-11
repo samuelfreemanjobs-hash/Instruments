@@ -21,8 +21,8 @@ class PhonkFmTests(unittest.TestCase):
         self.assertGreater(len(a), 1000)
         self.assertNotEqual(a[:400], b[:400])
 
-    def test_juicy_engine_uses_fm_cowbell(self) -> None:
-        params = resolve_phonk_params("juicy j memphis", 0)
+    def test_hard_dirt_prompt_uses_fm_cowbell(self) -> None:
+        params = resolve_phonk_params("hard dirt memphis", 0)
         pcm = render_machine_voice("hard_dirt_808", "cowbell_low", params)
         self.assertGreater(len(pcm), 500)
 
