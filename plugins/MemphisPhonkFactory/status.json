@@ -1,10 +1,14 @@
 {
   "plugin_name": "MemphisPhonkFactory",
-  "current_phase": "implement",
+  "current_phase": "test",
   "validation": {
     "creative_brief_exists": true,
     "parameter_spec_exists": true,
     "architecture_defined": true,
-    "design_complete": true
-  }
+    "design_complete": true,
+    "local_build": true,
+    "engine_contract_tests": true,
+    "pr_ci_green": true
+  },
+  "notes": "MPC pack maker v2 — merge PR #142 then optional /apc-ship for release zip."
 }
