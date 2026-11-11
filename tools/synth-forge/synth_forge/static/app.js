@@ -20,6 +20,44 @@ function synthId() {
   return document.getElementById("synthSelect").value;
 }
 
+document.querySelectorAll("#xdProfiles .chip").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.getElementById("category").value = btn.dataset.cat;
+  });
+});
+
+document.getElementById("btnXdLibrarian").addEventListener("click", async () => {
+  const body = {
+    count: Number(document.getElementById("count").value),
+    category: document.getElementById("category").value,
+  };
+  const res = await fetch("/api/librarian/xd/batch", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `xd_forge_${body.category}_${body.count}.zip`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById("btnDiff").addEventListener("click", async () => {
+  const a = document.getElementById("diffA").files[0];
+  const b = document.getElementById("diffB").files[0];
+  if (!a || !b) return;
+  const fd = new FormData();
+  fd.append("file_a", a);
+  fd.append("file_b", b);
+  const res = await fetch("/api/bin-diff", { method: "POST", body: fd });
+  const data = await res.json();
+  document.getElementById("diffOut").textContent = JSON.stringify(data, null, 2);
+});
+
 document.getElementById("btnBatch").addEventListener("click", async () => {
   const body = {
     synth_id: synthId(),
@@ -105,8 +143,15 @@ async function refreshVault() {
     exp.textContent = "Export";
     exp.style.width = "auto";
     exp.addEventListener("click", async () => {
-      const info = await api(`/api/export/${p.id}`);
-      alert(`Export ${info.size} bytes · ${info.hex_preview}`);
+      const fmt = p.synth_id === "minilogue_xd" ? "mnlgxdprog" : p.synth_id === "zenology" ? "svz" : "prog";
+      const res = await fetch(`/api/export/${p.id}/download?format=${fmt}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${p.name}.${fmt === "mnlgxdprog" ? "mnlgxdprog" : fmt}`;
+      a.click();
+      URL.revokeObjectURL(url);
     });
     actions.append(preview, exp);
     li.appendChild(actions);

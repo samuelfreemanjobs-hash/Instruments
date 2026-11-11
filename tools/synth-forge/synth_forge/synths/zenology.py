@@ -1,28 +1,28 @@
-"""Roland Zenology adapter (stub — .sve patch envelope reserved)."""
+"""Roland Zenology adapter — .svz librarian via ZenologySvzEngine (verify in ZENOLOGY Pro)."""
 
 from __future__ import annotations
 
 from synth_forge.models import SynthParameters
 from synth_forge.safety import clamp_for_hardware
 from synth_forge.synths.base import SynthAdapter
-from synth_forge.synths.util import embed_params_block, payload_to_params
+from synth_forge.synths.zenology_svz import ZenologySvzEngine
 
 
 class ZenologyAdapter(SynthAdapter):
     synth_id = "zenology"
     display_name = "Roland Zenology"
     stub = True
-    SVE_SIZE = 1536
-    PARAM_OFFSET = 96
+    librarian_svz = True
+
+    def __init__(self) -> None:
+        self._engine = ZenologySvzEngine()
 
     def pack(self, params: SynthParameters) -> bytes:
         safe = clamp_for_hardware(params)
-        blob = bytearray(b"SVE\x00" + bytes(self.SVE_SIZE - 4))
-        embed_params_block(blob, self.PARAM_OFFSET, safe)
-        return bytes(blob)
+        return self._engine.pack_svz(safe, safe.category[:16] or "FRG Patch")
 
     def unpack(self, data: bytes) -> SynthParameters:
-        if len(data) != self.SVE_SIZE or data[:3] != b"SVE":
-            raise ValueError("invalid Zenology .sve stub container")
-        payload = data[self.PARAM_OFFSET : self.PARAM_OFFSET + 88]
-        return clamp_for_hardware(payload_to_params(payload))
+        return clamp_for_hardware(self._engine.unpack_parameters(data))
+
+    def pack_bank(self, presets: list[tuple[SynthParameters, str]]) -> bytes:
+        return self._engine.pack_svz_bank(presets)

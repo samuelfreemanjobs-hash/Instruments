@@ -18,9 +18,22 @@
           <select id="synthSelect"></select>
         </label>
         <label>Category <input id="category" value="luxury_west_coast" /></label>
+        <div class="chips" id="xdProfiles">
+          <button type="button" class="chip" data-cat="xd_bass">XD Bass</button>
+          <button type="button" class="chip" data-cat="xd_pad">XD Pad</button>
+          <button type="button" class="chip" data-cat="xd_lead">XD Lead</button>
+        </div>
         <label>Count <input id="count" type="number" min="1" max="32" value="8" /></label>
         <button id="btnBatch">Generate batch</button>
+        <button type="button" id="btnXdLibrarian">Export XD .mnlgxdprog ZIP</button>
         <pre id="batchOut"></pre>
+      </section>
+      <section class="panel">
+        <h2>Binary diff inspector</h2>
+        <input id="diffA" type="file" />
+        <input id="diffB" type="file" />
+        <button type="button" id="btnDiff">Compare</button>
+        <pre id="diffOut"></pre>
       </section>
       <section class="panel">
         <h2>Prompt copilot</h2>
