@@ -15,6 +15,11 @@ PatternGridComponent::PatternGridComponent() {
   addAndMakeVisible(presetMemphis_);
   addAndMakeVisible(presetTrap_);
   addAndMakeVisible(clearButton_);
+  addAndMakeVisible(shiftL_);
+  addAndMakeVisible(shiftR_);
+  addAndMakeVisible(savePat_);
+  addAndMakeVisible(loadPat_);
+  addAndMakeVisible(abPat_);
 
   presetMemphis_.onClick = [this] {
     setPattern(DrumPattern::memphisClassic());
@@ -27,6 +32,31 @@ PatternGridComponent::PatternGridComponent() {
   clearButton_.onClick = [this] {
     setPattern({});
     notifyChange();
+  };
+  shiftL_.onClick = [this] {
+    if (onShiftLeft) {
+      onShiftLeft();
+    }
+  };
+  shiftR_.onClick = [this] {
+    if (onShiftRight) {
+      onShiftRight();
+    }
+  };
+  savePat_.onClick = [this] {
+    if (onSavePattern) {
+      onSavePattern();
+    }
+  };
+  loadPat_.onClick = [this] {
+    if (onLoadPattern) {
+      onLoadPattern();
+    }
+  };
+  abPat_.onClick = [this] {
+    if (onToggleAB) {
+      onToggleAB();
+    }
   };
 
   syncFromPattern();
@@ -85,9 +115,14 @@ void PatternGridComponent::resized() {
   auto area = getLocalBounds().reduced(4);
   area.removeFromTop(20);
   auto presetRow = area.removeFromTop(28);
-  presetMemphis_.setBounds(presetRow.removeFromLeft(90).reduced(2));
-  presetTrap_.setBounds(presetRow.removeFromLeft(90).reduced(2));
-  clearButton_.setBounds(presetRow.removeFromLeft(70).reduced(2));
+  presetMemphis_.setBounds(presetRow.removeFromLeft(72).reduced(2));
+  presetTrap_.setBounds(presetRow.removeFromLeft(72).reduced(2));
+  clearButton_.setBounds(presetRow.removeFromLeft(52).reduced(2));
+  shiftL_.setBounds(presetRow.removeFromLeft(36).reduced(2));
+  shiftR_.setBounds(presetRow.removeFromLeft(36).reduced(2));
+  savePat_.setBounds(presetRow.removeFromLeft(48).reduced(2));
+  loadPat_.setBounds(presetRow.removeFromLeft(48).reduced(2));
+  abPat_.setBounds(presetRow.removeFromLeft(40).reduced(2));
 
   const int labelW = 64;
   const int stepH = 26;

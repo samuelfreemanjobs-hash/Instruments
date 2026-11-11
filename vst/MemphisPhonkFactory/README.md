@@ -1,27 +1,37 @@
 # Memphis Phonk Factory
 
-JUCE **Standalone + VST3** app that procedurally generates a Memphis phonk MPC kit (20 one-shots + 3 loop WAVs). DSP matches `tools/memphis_phonk_generator.py`.
+**MPC pack maker** — procedural Memphis phonk kits (Standalone + VST3). Tagline: *never the same pack twice.*
+
+## Sound design
+
+- **Dust** macro — tape drive, hiss, wow/flutter, bit depth (Variation still shifts RNG seed).
+- **Tighten drums to tempo** — shortens kick/snare decay to fit the loop BPM.
+
+## Pattern workflow
+
+- 16-step kick / snare / open-hat grid; **<< / >>** shift, **Save/Load** JSON, **A/B** patterns.
+- **Loop bars:** 1 / 2 / 4 · **Half-time** preview · **Sync DAW BPM** · **Tap** tempo.
+
+## Export (background thread + progress bar)
+
+| Output | Default |
+|--------|---------|
+| 20 one-shots | always |
+| `Memphis_Loop_<bpm>BPM.wav` | your tempo + bar count |
+| Classic 112/118/124 | optional |
+| `Stems/` kick·snare·hats·mix | on |
+| `Memphis_Pattern.mid` | on |
+| `PACK_MANIFEST.json` + `README_MPC.txt` | on |
+
+**Batch:** kit count + optional **BPM sweep** (from/to across kits).
 
 ## Build
 
 ```bash
 ./tools/build-vst.sh MemphisPhonkFactory
-```
-
-Artifacts: `vst/MemphisPhonkFactory/build/MemphisPhonkFactory_artefacts/Release/`
-
-## Use
-
-- Adjust loop BPM, swing, tape drive, hiss, and variation (1–4).
-- **Loop tempo:** rotary **70–170 BPM** (fine adjust around 120), **+/−** nudge; preview and export use this value (`Memphis_Loop_<bpm>BPM.wav`).
-- Optional **Also export 112 / 118 / 124 loops** for the classic triple pack.
-- **Pattern editor:** 16-step kick / snare / open-hat grid (Memphis & Trap sparse presets).
-- Toggle **Loop preview** to hear the current pattern at the selected BPM.
-- **Export kit** → `Memphis_Phonk_MPC_Kit/` (23 WAVs).
-- **Batch export** → `Memphis_Phonk_Batch_<timestamp>/Kit_001…` (batch count param × 23 WAVs each, unique grit per kit).
-
-## Tests
-
-```bash
 cd vst/MemphisPhonkFactory/build && ctest -R MemphisPhonkEngine -V
 ```
+
+## Factory
+
+SKU **MemphisPhonkFactory** in `disklordz/vst-factory/data/product-library.json` · `./scripts/sync-memphis-phonk-factory.sh`

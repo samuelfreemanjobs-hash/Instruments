@@ -12,6 +12,11 @@ public:
   DrumPattern getPattern() const { return pattern_; }
 
   std::function<void(const DrumPattern &)> onPatternChanged;
+  std::function<void()> onShiftLeft;
+  std::function<void()> onShiftRight;
+  std::function<void()> onSavePattern;
+  std::function<void()> onLoadPattern;
+  std::function<void()> onToggleAB;
 
   void paint(juce::Graphics &g) override;
   void resized() override;
@@ -21,6 +26,11 @@ private:
   juce::TextButton presetMemphis_{"Memphis"};
   juce::TextButton presetTrap_{"Trap sparse"};
   juce::TextButton clearButton_{"Clear"};
+  juce::TextButton shiftL_{"<<"};
+  juce::TextButton shiftR_{">>"};
+  juce::TextButton savePat_{"Save"};
+  juce::TextButton loadPat_{"Load"};
+  juce::TextButton abPat_{"A/B"};
 
   struct Row {
     juce::String label;

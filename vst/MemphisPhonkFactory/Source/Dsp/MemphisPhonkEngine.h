@@ -3,8 +3,9 @@
 #include <juce_core/juce_core.h>
 #include <vector>
 #include "DrumPattern.h"
+#include "PackExportOptions.h"
 
-/** Procedural Memphis phonk drum kit + loop generator (Python reference parity). */
+/** Procedural Memphis phonk drum kit + loop generator. */
 class MemphisPhonkEngine {
 public:
   struct Settings {
@@ -12,9 +13,23 @@ public:
     float hissLevel = 0.004f;
     int bitDepth = 12;
     int64_t seed = 0;
+    float dustMacro = 0.35f;
+    float wowDepth = 18.0f;
+    bool tightenToLoop = false;
+    float tightenBpm = 118.0f;
+  };
+
+  struct DrumLoopStems {
+    std::vector<float> kick;
+    std::vector<float> snare;
+    std::vector<float> hats;
+    std::vector<float> mix;
   };
 
   explicit MemphisPhonkEngine(double sampleRate = 44100.0);
+
+  static Settings settingsFromDust(float dustMacro, int variationSeed);
+  static void applyDustMacro(Settings &s, float dust);
 
   void setSampleRate(double sampleRate) { sampleRate_ = sampleRate; }
   double getSampleRate() const { return sampleRate_; }
@@ -31,33 +46,31 @@ public:
 
   std::vector<float> generateCowbell(float duration = 0.38f, float rootFreq = 540.0f) const;
 
-  std::vector<float> generateDrumLoop(float bpm, int bars = 2, float swing = 0.03f,
-                                    const DrumPattern &pattern = DrumPattern::memphisClassic())
-      const;
+  std::vector<float> generateDrumLoop(float bpm, int bars, float swing,
+                                    const DrumPattern &pattern) const;
 
-  /**
-   * Writes 20 one-shots plus loop WAVs at `primaryBpm` (and optionally 112/118/124).
-   * If `wrapInMpcKitFolder` is true, creates `outputDirectory/Memphis_Phonk_MPC_Kit/`.
-   */
-  juce::String exportMpcKit(const juce::File &outputDirectory, float primaryBpm, float swing = 0.03f,
-                            const DrumPattern &pattern = DrumPattern::memphisClassic(),
-                            bool includeClassicTempos = true, bool wrapInMpcKitFolder = true) const;
+  DrumLoopStems generateDrumLoopStems(float bpm, int bars, float swing,
+                                      const DrumPattern &pattern, bool processMixFx) const;
 
-  /** Writes `count` kits to `parent/Batch_NNN/Kit_MMM/` with unique seeds. */
-  juce::String exportBatchKits(const juce::File &parentDirectory, int count, float primaryBpm,
-                               float swing, const DrumPattern &pattern,
-                               bool includeClassicTempos = true) const;
+  juce::String exportMpcKit(const juce::File &outputDirectory, const PackExportOptions &opts,
+                            bool wrapInMpcKitFolder = true) const;
+
+  juce::String exportBatchKits(const juce::File &parentDirectory, int count,
+                               const PackExportOptions &opts) const;
 
   static bool writeMonoWav(const juce::File &file, const std::vector<float> &samples,
                            double sampleRate);
+
+  static juce::String writePackManifest(const juce::File &kitDir, const PackExportOptions &opts,
+                                        const Settings &settings);
 
 private:
   double sampleRate_;
   Settings settings_;
 
-  void setSeed(int64_t seed) const;
   std::vector<float> cassetteFx(std::vector<float> audio, float drive, int bitDepth,
                                 float hissLevel, float lpfCutoff) const;
+  std::vector<float> applyWowFlutter(const std::vector<float> &loop) const;
 
   void filterLowpass(std::vector<float> &data, float cutoffHz, int order) const;
   void filterHighpass(std::vector<float> &data, float cutoffHz, int order) const;

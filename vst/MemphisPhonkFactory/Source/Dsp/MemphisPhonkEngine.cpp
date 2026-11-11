@@ -1,4 +1,6 @@
 #include "MemphisPhonkEngine.h"
+#include "DrumPatternIO.h"
+#include "PatternMidiExport.h"
 #include "biquad.h"
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_audio_formats/juce_audio_formats.h>
@@ -24,8 +26,21 @@ MemphisPhonkEngine::MemphisPhonkEngine(double sampleRate) : sampleRate_(sampleRa
 
 void MemphisPhonkEngine::setSettings(const Settings &s) { settings_ = s; }
 
-void MemphisPhonkEngine::setSeed(int64_t seed) const {
-  (void)seed;
+MemphisPhonkEngine::Settings MemphisPhonkEngine::settingsFromDust(float dustMacro,
+                                                                  int variationSeed) {
+  Settings s;
+  s.seed = 1000 + variationSeed * 7919LL;
+  applyDustMacro(s, dustMacro);
+  return s;
+}
+
+void MemphisPhonkEngine::applyDustMacro(Settings &s, float dust) {
+  dust = juce::jlimit(0.0f, 1.0f, dust);
+  s.dustMacro = dust;
+  s.drive = 1.35f + dust * 3.2f;
+  s.hissLevel = 0.0004f + dust * 0.014f;
+  s.wowDepth = 6.0f + dust * 24.0f;
+  s.bitDepth = dust > 0.72f ? 11 : 12;
 }
 
 float MemphisPhonkEngine::tanhNorm(float x, float drive) {
@@ -112,6 +127,9 @@ std::vector<float> MemphisPhonkEngine::cassetteFx(std::vector<float> audio, floa
 
 std::vector<float> MemphisPhonkEngine::generateKick(float duration, float startFreq, float endFreq,
                                                     float punch) const {
+  if (settings_.tightenToLoop && settings_.tightenBpm > 1.0f) {
+    duration = std::min(duration, 48.0f / settings_.tightenBpm);
+  }
   Rng rng(settings_.seed != 0 ? settings_.seed + 1 : 4242);
   const int n = static_cast<int>(sampleRate_ * duration);
   std::vector<float> kick(static_cast<size_t>(n), 0.0f);
@@ -129,6 +147,11 @@ std::vector<float> MemphisPhonkEngine::generateKick(float duration, float startF
 }
 
 std::vector<float> MemphisPhonkEngine::generateSnare(float duration, float toneFreq) const {
+  float decayScale = 1.0f;
+  if (settings_.tightenToLoop && settings_.tightenBpm > 1.0f) {
+    decayScale = juce::jmax(0.65f, settings_.tightenBpm / 120.0f);
+    duration = std::min(duration, 36.0f / settings_.tightenBpm);
+  }
   Rng rng(settings_.seed != 0 ? settings_.seed + 2 : 5151);
   const int n = static_cast<int>(sampleRate_ * duration);
   std::vector<float> snare(static_cast<size_t>(n), 0.0f);
@@ -144,8 +167,8 @@ std::vector<float> MemphisPhonkEngine::generateSnare(float duration, float toneF
     const float t = static_cast<float>(i) / static_cast<float>(sampleRate_);
     const float pitch = toneFreq + 90.0f * std::exp(-t * 45.0f);
     phase += 2.0 * kPi * pitch / sampleRate_;
-    const float body = static_cast<float>(std::sin(phase)) * std::exp(-t * 18.0f);
-    const float wires = noise[static_cast<size_t>(i)] * std::exp(-t * 12.0f);
+    const float body = static_cast<float>(std::sin(phase)) * std::exp(-t * 18.0f * decayScale);
+    const float wires = noise[static_cast<size_t>(i)] * std::exp(-t * 12.0f * decayScale);
     snare[static_cast<size_t>(i)] = body * 0.65f + wires * 0.85f;
   }
   return cassetteFx(std::move(snare), 2.8f, 12, settings_.hissLevel, 9000.0f);
@@ -234,10 +257,16 @@ std::vector<float> MemphisPhonkEngine::generateDrumLoop(float bpm, int bars, flo
     loop.resize(static_cast<size_t>(exactLen));
   }
 
+  return cassetteFx(applyWowFlutter(loop), 2.4f, settings_.bitDepth, settings_.hissLevel + 0.001f,
+                    8800.0f);
+}
+
+std::vector<float> MemphisPhonkEngine::applyWowFlutter(const std::vector<float> &loop) const {
   std::vector<float> wobbled(loop.size());
   for (size_t i = 0; i < loop.size(); ++i) {
     const float t = static_cast<float>(i) / static_cast<float>(sampleRate_);
-    const float wobble = std::sin(2.0f * static_cast<float>(kPi) * 1.8f * t) * 18.0f;
+    const float wobble =
+        std::sin(2.0f * static_cast<float>(kPi) * 1.8f * t) * settings_.wowDepth;
     const float srcIdx = static_cast<float>(i) + wobble;
     const int i0 = static_cast<int>(std::floor(srcIdx));
     const int i1 = std::min(i0 + 1, static_cast<int>(loop.size()) - 1);
@@ -245,8 +274,58 @@ std::vector<float> MemphisPhonkEngine::generateDrumLoop(float bpm, int bars, flo
     const int clamp0 = std::max(0, i0);
     wobbled[i] = lerp(loop[static_cast<size_t>(clamp0)], loop[static_cast<size_t>(i1)], frac);
   }
+  return wobbled;
+}
 
-  return cassetteFx(std::move(wobbled), 2.4f, 12, 0.005f, 8800.0f);
+MemphisPhonkEngine::DrumLoopStems
+MemphisPhonkEngine::generateDrumLoopStems(float bpm, int bars, float swing,
+                                            const DrumPattern &pattern, bool processMixFx) const {
+  const float beatDur = 60.0f / bpm;
+  const float stepDur = beatDur / 4.0f;
+  const int totalSteps = bars * 16;
+  const int exactLen = static_cast<int>(totalSteps * stepDur * sampleRate_);
+
+  DrumLoopStems stems;
+  stems.kick.assign(static_cast<size_t>(exactLen), 0.0f);
+  stems.snare.assign(static_cast<size_t>(exactLen), 0.0f);
+  stems.hats.assign(static_cast<size_t>(exactLen), 0.0f);
+  stems.mix.assign(static_cast<size_t>(exactLen), 0.0f);
+
+  const auto kick = generateKick();
+  const auto snare = generateSnare();
+  const auto ch = generateHihat(0.09f, false);
+  const auto oh = generateHihat(0.09f, true);
+
+  for (int step = 0; step < totalSteps; ++step) {
+    const int barStep = step % 16;
+    const float swingOffset = (step % 2 == 1) ? (stepDur * swing) : 0.0f;
+    const int pos = static_cast<int>((step * stepDur + swingOffset) * sampleRate_);
+
+    if (pattern.stepOpenHat(barStep)) {
+      addInPlace(stems.hats, pos, oh, 0.55f);
+    } else {
+      const float vel = (step % 2 == 0) ? 0.55f : 0.35f;
+      addInPlace(stems.hats, pos, ch, vel);
+    }
+    if (pattern.stepKick(barStep)) {
+      addInPlace(stems.kick, pos, kick, 0.95f);
+    }
+    if (pattern.stepSnare(barStep)) {
+      addInPlace(stems.snare, pos, snare, 0.90f);
+    }
+  }
+
+  for (int i = 0; i < exactLen; ++i) {
+    stems.mix[static_cast<size_t>(i)] =
+        stems.kick[static_cast<size_t>(i)] + stems.snare[static_cast<size_t>(i)] +
+        stems.hats[static_cast<size_t>(i)];
+  }
+
+  if (processMixFx) {
+    stems.mix = cassetteFx(applyWowFlutter(stems.mix), 2.4f, settings_.bitDepth,
+                           settings_.hissLevel + 0.001f, 8800.0f);
+  }
+  return stems;
 }
 
 bool MemphisPhonkEngine::writeMonoWav(const juce::File &file, const std::vector<float> &samples,
@@ -269,7 +348,7 @@ bool MemphisPhonkEngine::writeMonoWav(const juce::File &file, const std::vector<
 
 namespace {
 bool exportLoopWav(const MemphisPhonkEngine &engine, const juce::File &kitDir, float bpm,
-                   float swing, const DrumPattern &pattern, double sampleRate) {
+                   const PackExportOptions &opts, double sampleRate) {
   const juce::String name =
       "Memphis_Loop_" + juce::String(juce::roundToInt(bpm)) + "BPM.wav";
   const juce::File dest = kitDir.getChildFile(name);
@@ -277,13 +356,42 @@ bool exportLoopWav(const MemphisPhonkEngine &engine, const juce::File &kitDir, f
     return true;
   }
   return MemphisPhonkEngine::writeMonoWav(
-      dest, engine.generateDrumLoop(bpm, 2, swing, pattern), sampleRate);
+      dest, engine.generateDrumLoop(bpm, opts.bars, opts.swing, opts.pattern), sampleRate);
 }
 } // namespace
 
-juce::String MemphisPhonkEngine::exportMpcKit(const juce::File &outputDirectory, float primaryBpm,
-                                                float swing, const DrumPattern &pattern,
-                                                bool includeClassicTempos,
+juce::String MemphisPhonkEngine::writePackManifest(const juce::File &kitDir,
+                                                     const PackExportOptions &opts,
+                                                     const Settings &settings) {
+  auto *root = new juce::DynamicObject();
+  root->setProperty("schema", "memphis_phonk_pack/v1");
+  root->setProperty("pack_id", juce::Uuid().toString());
+  root->setProperty("lane", "memphis_phonk");
+  root->setProperty("tagline", "Never the same pack twice");
+  root->setProperty("factory_sku", "MemphisPhonkFactory");
+  root->setProperty("bpm", opts.primaryBpm);
+  root->setProperty("bars", opts.bars);
+  root->setProperty("swing", opts.swing);
+  root->setProperty("seed", static_cast<juce::int64>(settings.seed));
+  root->setProperty("dust", settings.dustMacro);
+  root->setProperty("pattern",
+                    juce::JSON::parse(DrumPatternIO::toJson(opts.pattern)));
+
+  const juce::File readme = kitDir.getChildFile("README_MPC.txt");
+  readme.replaceWithText(
+      "Memphis Phonk MPC Pack\n"
+      "Load one-shots into a Drum program; import Memphis_Loop_* into Sample Chop.\n"
+      "Pattern MIDI: Memphis_Pattern.mid (16th grid, MPC swing).\n"
+      "Stems folder: optional kick/snare/hat splits for mix.\n");
+
+  const juce::File manifest = kitDir.getChildFile("PACK_MANIFEST.json");
+  return manifest.replaceWithText(juce::JSON::toString(juce::var(root)))
+             ? juce::String()
+             : "Failed writing PACK_MANIFEST.json";
+}
+
+juce::String MemphisPhonkEngine::exportMpcKit(const juce::File &outputDirectory,
+                                                const PackExportOptions &opts,
                                                 bool wrapInMpcKitFolder) const {
   const juce::File kitDir =
       wrapInMpcKitFolder ? outputDirectory.getChildFile("Memphis_Phonk_MPC_Kit") : outputDirectory;
@@ -321,32 +429,55 @@ juce::String MemphisPhonkEngine::exportMpcKit(const juce::File &outputDirectory,
   }
 
   int loopFiles = 0;
-  if (!exportLoopWav(*this, kitDir, primaryBpm, swing, pattern, sampleRate_)) {
-    return "Failed writing loop at " + juce::String(juce::roundToInt(primaryBpm)) + " BPM";
+  if (!exportLoopWav(*this, kitDir, opts.primaryBpm, opts, sampleRate_)) {
+    return "Failed writing loop at " + juce::String(juce::roundToInt(opts.primaryBpm)) + " BPM";
   }
   ++loopFiles;
 
-  if (includeClassicTempos) {
+  if (opts.includeClassicTempos) {
     for (float bpm : {112.0f, 118.0f, 124.0f}) {
-      if (std::abs(bpm - primaryBpm) < 0.05f) {
+      if (std::abs(bpm - opts.primaryBpm) < 0.05f) {
         continue;
       }
-      if (!exportLoopWav(*this, kitDir, bpm, swing, pattern, sampleRate_)) {
+      if (!exportLoopWav(*this, kitDir, bpm, opts, sampleRate_)) {
         return "Failed writing loop at " + juce::String(juce::roundToInt(bpm)) + " BPM";
       }
       ++loopFiles;
     }
   }
 
+  if (opts.exportStems) {
+    const auto stems = generateDrumLoopStems(opts.primaryBpm, opts.bars, opts.swing, opts.pattern,
+                                             true);
+    const juce::File stemDir = kitDir.getChildFile("Stems");
+    stemDir.createDirectory();
+    writeMonoWav(stemDir.getChildFile("Loop_Kick.wav"), stems.kick, sampleRate_);
+    writeMonoWav(stemDir.getChildFile("Loop_Snare.wav"), stems.snare, sampleRate_);
+    writeMonoWav(stemDir.getChildFile("Loop_Hats.wav"), stems.hats, sampleRate_);
+    writeMonoWav(stemDir.getChildFile("Loop_Mix.wav"), stems.mix, sampleRate_);
+  }
+
+  if (opts.exportMidi) {
+    PatternMidiExport::writePatternMidi(
+        kitDir.getChildFile("Memphis_Pattern.mid"), opts.primaryBpm, opts.bars, opts.swing,
+        opts.pattern);
+  }
+
+  if (opts.writeMpcManifest) {
+    const juce::String manifestErr = writePackManifest(kitDir, opts, settings_);
+    if (manifestErr.isNotEmpty()) {
+      return manifestErr;
+    }
+  }
+
   const int total = 20 + loopFiles;
-  return "Exported " + juce::String(total) + " WAVs (loop " +
-         juce::String(juce::roundToInt(primaryBpm)) + " BPM) to " + kitDir.getFullPathName();
+  return "Exported " + juce::String(total) + " WAVs + MPC meta (loop " +
+         juce::String(juce::roundToInt(opts.primaryBpm)) + " BPM, " +
+         juce::String(opts.bars) + " bars) → " + kitDir.getFullPathName();
 }
 
 juce::String MemphisPhonkEngine::exportBatchKits(const juce::File &parentDirectory, int count,
-                                                 float primaryBpm, float swing,
-                                                 const DrumPattern &pattern,
-                                                 bool includeClassicTempos) const {
+                                                 const PackExportOptions &opts) const {
   if (count < 1) {
     return "Batch count must be at least 1";
   }
@@ -370,8 +501,13 @@ juce::String MemphisPhonkEngine::exportBatchKits(const juce::File &parentDirecto
     variant.setSettings(s);
 
     const juce::String kitName = "Kit_" + juce::String(kit).paddedLeft('0', 3);
-    const juce::String msg = variant.exportMpcKit(batchRoot.getChildFile(kitName), primaryBpm,
-                                                  swing, pattern, includeClassicTempos, false);
+    PackExportOptions kitOpts = opts;
+    if (opts.batchBpmSweep && count > 1) {
+      const float t = static_cast<float>(kit - 1) / static_cast<float>(count - 1);
+      kitOpts.primaryBpm = opts.batchBpmFrom + (opts.batchBpmTo - opts.batchBpmFrom) * t;
+    }
+    const juce::String msg =
+        variant.exportMpcKit(batchRoot.getChildFile(kitName), kitOpts, false);
     if (!msg.contains("Exported")) {
       return msg;
     }

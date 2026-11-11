@@ -32,7 +32,8 @@ target_sources(MemphisPhonkFactory
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
         Source/Dsp/MemphisPhonkEngine.cpp
-        Source/Ui/PatternGridComponent.cpp)
+        Source/Ui/PatternGridComponent.cpp
+        Source/Export/ExportWorker.cpp)
 
 target_include_directories(MemphisPhonkFactory PRIVATE
     ${SHARED_DSP_DIR}
