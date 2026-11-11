@@ -5,6 +5,8 @@ import { publicRuntimeConfig } from "@/lib/public-env";
 
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Black Friday Madness",
   description: "AI shopping intelligence — real savings vs history, not retailer discount ads.",

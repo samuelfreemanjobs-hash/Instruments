@@ -18,6 +18,7 @@ supabase db push
 #   migrations/004_notification_preferences.sql
 #   migrations/006_catalog_public_read.sql
 #   migrations/007_user_push_subscriptions.sql
+#   migrations/008_lock_internal_tables.sql
 ```
 
 5. Auth → URL configuration: add redirect URLs:

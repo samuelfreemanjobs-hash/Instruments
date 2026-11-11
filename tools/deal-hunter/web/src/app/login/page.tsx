@@ -10,8 +10,8 @@ export default function LoginPage() {
       </p>
       {!isSupabaseConfigured() ? (
         <p className="rounded-lg border border-bfm-border bg-bfm-card p-4 text-sm">
-          Add <code>NEXT_PUBLIC_SUPABASE_URL</code> and <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> to{" "}
-          <code>web/.env.local</code>.
+          Bind <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> in the published app Secrets (or{" "}
+          <code>web/.env.local</code> for local dev).
         </p>
       ) : (
         <LoginForm />
