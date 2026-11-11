@@ -35,7 +35,15 @@ Paste [`disklordz/audio-command/data/PASTE_TO_FACTORY.md`](../../audio-command/d
 
 ## Parallel (do not block compile)
 
-- Antigravity WO-PREP / WO-CC per `sync-all-antigravity.sh` (tokens not required for skeleton).
+Open Antigravity inbox (docs/batch — not VST compile):
+
+| Handoff | WO | Status |
+|---------|-----|--------|
+| `HO-20261109-2C87` | WO-AG-001 (genre rules JSON) | open |
+| `HO-20261108-AD94` | WO-PREP-003 (Milestone 001 README) | open |
+| `HO-20261108-6B03` | WO-PREP-004 (REAPER smoke template) | open |
+
+Done: `HO-20261108-053B`, `HO-20261108-CAAD`. Windows: `watch-handoffs.ps1 -Once`.
 
 ## Reference
 

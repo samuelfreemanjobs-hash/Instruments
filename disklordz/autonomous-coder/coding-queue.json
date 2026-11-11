@@ -194,6 +194,16 @@
       "allowlist": ["docs/", "disklordz/audio-command/data/", "scripts/audio-plugin/"],
       "context_paths": ["docs/DISKLORDZ_MASTER_PLAN.md"],
       "priority": 19
+    },
+    {
+      "id": "cloud-next-factory-inbox-open",
+      "owner": "cloud",
+      "kind": "factory_escalation",
+      "title": "next-factory: list open Antigravity handoffs (parallel)",
+      "acceptance": "Parallel section names open HO + WO ids; does not block plugin-skeleton",
+      "allowlist": ["disklordz/autonomous-coder/factory-escalation/"],
+      "context_paths": ["disklordz/antigravity/inbox/"],
+      "priority": 20
     }
   ]
 }
