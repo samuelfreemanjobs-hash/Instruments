@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phonk-drum-studio"
+version = "1.0.0"
+description = "Desktop phonk drum VAE trainer and Disklordz factory kit packager"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "torch>=2.0.0",
+  "torchaudio>=2.0.0",
+  "soundfile>=0.12.1",
+  "customtkinter>=5.2.0",
+  "sounddevice>=0.4.6",
+  "numpy>=1.24.0",
+]
+
+[project.scripts]
+phonk-drum-studio = "phonk_drum_studio.app:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["phonk_drum_studio*"]

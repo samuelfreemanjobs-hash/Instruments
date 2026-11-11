@@ -1,0 +1,83 @@
+name: Phonk Drum Studio
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "tools/phonk-drum-studio/**"
+      - "disklordz/sound-factory/kit_from_samples.py"
+      - ".github/workflows/phonk-drum-studio.yml"
+  pull_request:
+    paths:
+      - "tools/phonk-drum-studio/**"
+      - "disklordz/sound-factory/kit_from_samples.py"
+      - ".github/workflows/phonk-drum-studio.yml"
+
+concurrency:
+  group: phonk-drum-studio-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/phonk-drum-studio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            tools/phonk-drum-studio/requirements.txt
+            tools/phonk-drum-studio/pyproject.toml
+      - name: Install dependencies
+        run: |
+          pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+          pip install -e .
+          pip install pytest
+      - name: Unit tests
+        run: python -m pytest tests -v
+
+  build-windows:
+    name: Build Windows desktop app
+    needs: test
+    runs-on: windows-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: tools/phonk-drum-studio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            tools/phonk-drum-studio/requirements.txt
+            tools/phonk-drum-studio/pyproject.toml
+      - name: Install dependencies (CPU PyTorch)
+        shell: pwsh
+        run: |
+          pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+          pip install -e .
+          pip install pyinstaller pytest
+      - name: Build PhonkDrumStudio.exe
+        shell: pwsh
+        run: python build_standalone.py
+      - name: Verify artifact
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "dist/PhonkDrumStudio.exe")) {
+            throw "dist/PhonkDrumStudio.exe was not produced"
+          }
+          Get-Item "dist/PhonkDrumStudio.exe" | Format-List Name,Length,LastWriteTime
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PhonkDrumStudio-Windows-x64
+          path: tools/phonk-drum-studio/dist/PhonkDrumStudio.exe
+          if-no-files-found: error
+          retention-days: 14

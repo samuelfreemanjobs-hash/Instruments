@@ -9,7 +9,13 @@ import json
 import math
 import struct
 import wave
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from kit_from_samples import build_kit_from_samples  # noqa: E402
 
 SAMPLE_RATE = 44100
 NAMES = ("kick", "snare", "hat_closed", "hat_open", "rim", "clap")
@@ -49,7 +55,30 @@ def main() -> None:
     p.add_argument("--preset", required=True)
     p.add_argument("--prompt", required=True)
     p.add_argument("--out", type=Path, required=True)
+    p.add_argument(
+        "--studio-samples-dir",
+        type=Path,
+        default=None,
+        help="Phonk Drum Studio WAV folder → factory_studio_v1 kit (optional --studio-map)",
+    )
+    p.add_argument("--studio-map", type=Path, default=None)
+    p.add_argument("--fill-stubs", action="store_true")
     args = p.parse_args()
+
+    if args.studio_samples_dir is not None:
+        stub_root = None
+        if args.fill_stubs:
+            stub_root = Path(__file__).resolve().parents[2] / "website" / "public" / "samples"
+        manifest = build_kit_from_samples(
+            preset_id=args.preset,
+            prompt=args.prompt,
+            samples_dir=args.studio_samples_dir,
+            out_dir=args.out,
+            map_path=args.studio_map,
+            stub_root=stub_root,
+        )
+        print(json.dumps({"out": str(args.out), "manifest": str(manifest)}, indent=2))
+        return
 
     base = PRESET_BASE.get(args.preset, PRESET_BASE["mpc-ready-808"])
     s = seed_from(args.prompt, args.preset)

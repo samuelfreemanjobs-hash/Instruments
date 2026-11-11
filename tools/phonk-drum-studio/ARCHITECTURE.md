@@ -1,0 +1,67 @@
+# Phonk Drum Studio — Architecture
+
+## Purpose
+
+Phonk Drum Studio is a standalone desktop app for Memphis phonk producers. It trains a lightweight 1D convolutional Audio VAE on a folder of drum one-shots (`.wav` / `.aif`) and generates new variations via latent sampling and mutation.
+
+## Build & run
+
+```bash
+cd tools/phonk-drum-studio
+python -m venv venv
+# Windows: venv\Scripts\activate
+# macOS/Linux: source venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+python -m phonk_drum_studio
+```
+
+Entry points: `run_desktop.py`, `phonk_drum_studio/__main__.py`, console script `phonk-drum-studio` after `pip install -e .`.
+
+Standalone bundle:
+
+```bash
+python build_standalone.py
+```
+
+CI: `.github/workflows/phonk-drum-studio.yml` builds `PhonkDrumStudio.exe` on `windows-latest` and uploads a workflow artifact.
+
+## Data flow
+
+1. **Dataset** (`dataset.py`) scans a user folder, loads via soundfile (torchaudio fallback), downmixes to mono, resamples to 44.1 kHz, crops/pads to 22,050 samples (0.5 s), peak-normalizes, and excludes unreadable files from training.
+2. **Training** (`trainer.py`) runs on a background thread: Adam + multi-scale spectral reconstruction loss + weighted KL. Checkpoints save as `phonk_vae.pth` in the dataset folder.
+3. **Generation** (`app.py` + `model.py`): random latent `z ~ N(0,I)` or encode → jitter → decode; output is peak-normalized and held in memory for preview/export.
+4. **Export** writes 44.1 kHz WAV via soundfile (16-bit PCM or 32-bit float).
+5. **Factory kit** (GUI panel or CLI) calls `disklordz/sound-factory/kit_from_samples.py` to emit a `DISKLORDZ_DRUM_KIT_MANIFEST` pack for the Disklordz website / ZIP pipeline.
+
+```bash
+python3 ../../disklordz/sound-factory/scripts/build_studio_kit.py \
+  --preset midnight-circuit --prompt "…" --samples-dir ./exports --out ./kit --fill-stubs
+```
+
+## Threading / realtime
+
+- CustomTkinter main thread handles UI only.
+- Training, load/generate/mutate, playback, and export run in `threading.Thread` workers.
+- Cooperative training stop via `threading.Event`.
+
+## Key modules
+
+| Module | Responsibility |
+|--------|----------------|
+| `model.py` | `MultiScaleSpectralLoss`, `AudioVAE`, KL helper |
+| `dataset.py` | File scan, preprocessing, `DataLoader` factory |
+| `trainer.py` | Device selection, `TrainingWorker`, checkpoint I/O |
+| `phonk_drum_studio/app.py` | CustomTkinter GUI, audition (sounddevice), waveform canvas |
+| `phonk_drum_studio/paths.py` | Dev vs PyInstaller paths (factory + stubs) |
+| `build_standalone.py` / `PhonkDrumStudio.spec` | PyInstaller desktop bundle |
+
+## Extension points
+
+- Adjust `TrainConfig.epochs`, batch size, or channel schedule in `AudioVAE`.
+- Add data augmentation in `load_and_preprocess`.
+- Swap loss weights in `trainer.py` (`KL_WEIGHT`).
+
+## Related docs
+
+- Repository index: `/ARCHITECTURE.md`

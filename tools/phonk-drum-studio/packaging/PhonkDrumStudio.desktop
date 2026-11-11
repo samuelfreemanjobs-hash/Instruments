@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Phonk Drum Studio
+Comment=Train phonk drum VAE and build Disklordz factory kits
+Exec=PhonkDrumStudio
+Icon=audio-card
+Terminal=false
+Categories=Audio;Music;
+StartupWMClass=PhonkDrumStudio
