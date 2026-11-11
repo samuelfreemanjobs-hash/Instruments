@@ -184,6 +184,16 @@
       "allowlist": ["AGENTS.md"],
       "context_paths": ["docs/AUDIO_PLUGIN_AGENT_LANE.md"],
       "priority": 18
+    },
+    {
+      "id": "cloud-paste-refresh-timestamp",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Refresh PASTE_TO_FACTORY timestamp + ROADMAP Stage B note",
+      "acceptance": "factory-queue.py run; ROADMAP mentions main Stage B / plugin-skeleton",
+      "allowlist": ["docs/", "disklordz/audio-command/data/", "scripts/audio-plugin/"],
+      "context_paths": ["docs/DISKLORDZ_MASTER_PLAN.md"],
+      "priority": 19
     }
   ]
 }
