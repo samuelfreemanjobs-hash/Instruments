@@ -1,0 +1,15 @@
+# Automation — Autonomous Coding Agent (24/7) (`autonomous-coding-agent`)
+
+platform: github
+trigger: every 6h
+primary: .github/workflows/autonomous-coding-agent.yml
+
+## Steps
+1. tick.py
+2. Cursor timer 4h cloud slices
+
+## Invoke agent
+Read: disklordz/agents/profit/autonomous-coding-agent/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#autonomous-coding-agent

@@ -1,0 +1,32 @@
+---
+description: C++ style for JUCE VST/VSTi under vst/
+globs: ["vst/**/*.cpp", "vst/**/*.h", "vst/**/CMakeLists.txt"]
+alwaysApply: false
+---
+
+# VST / JUCE code style
+
+Applies to `vst/**` only (not logue `src/oscillators/`).
+
+## Architecture
+
+- **Processor** — audio, MIDI, parameters, state save/load.
+- **Editor** — UI only; never run DSP in the editor.
+- **Dsp/** (optional) — pure DSP classes with no JUCE UI includes.
+
+## Realtime rules
+
+- No `new`/`delete`, locks, file I/O, or logging in `processBlock`.
+- Preallocate voices/buffers in `prepareToPlay`.
+- Use `juce::ScopedNoDenormals` at the start of `processBlock`.
+
+## Parameters
+
+- Register all automatable params in `AudioProcessorValueTreeState`.
+- Use `SliderAttachment` / `ButtonAttachment` in the editor.
+
+## Naming
+
+- Processor: `<PluginName>AudioProcessor`
+- Editor: `<PluginName>AudioProcessorEditor`
+- Match class names to CMake `juce_add_plugin` target name.

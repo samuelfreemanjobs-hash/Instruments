@@ -1,0 +1,13 @@
+# Automation — VST Factory Director (`vst-factory-director`)
+
+platform: manual
+trigger: manual
+primary: TBD
+
+## Steps
+
+## Invoke agent
+Read: disklordz/agents/profit/vst-factory-director/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#vst-factory-director

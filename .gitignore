@@ -1,10 +1,26 @@
 node_modules/
 
-build/
+.deps/
 _deps/
+build/
+build-factory-gui/
+build-factory-gui-*/
 cmake-build-*/
+
+**/*.ntkdigunit
+**/*.nts1mkiiunit
+src/**/build/
+src/**/tpl
+apc.config.json
+release/
+plugins/*/build/
+vst/*/build/
 MyFirstPlugin/build/
 MyFirstPlugin/build-ninja/
 *.user
 .vs/
 .idea/
+
+disklordz/agents/workflows/fleet-activity.jsonl
+__pycache__/
+vst/JUCE

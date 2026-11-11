@@ -17,8 +17,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(JUCE)
 
-# Pin to post-0.26.0 main (tag 0.26.0 fails on JUCE 8+ headless LegacyAudioParameter layout).
-set(JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG 55525c9858d4b25687be7759a5e0f70eccef218e)
+# Track clap-juce-extensions main (pinned SHA); repin when CI fetch fails.
+set(JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG 6bde108329ff9fc24404b79b8b397261a75cf6a8)
 FetchContent_Declare(
     clap_juce_extensions
     GIT_REPOSITORY https://github.com/free-audio/clap-juce-extensions.git
@@ -182,3 +182,4 @@ target_compile_definitions(SpectralDiff
 add_subdirectory(Wave9090)
 add_subdirectory(SP1200)
 add_subdirectory(HuckabyPatternEngine)
+add_subdirectory(ProphetRev2Trap)

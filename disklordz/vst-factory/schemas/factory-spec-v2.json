@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.audio/schemas/factory-spec-v2.json",
+  "title": "DiskLordz VST Factory project spec v2",
+  "type": "object",
+  "required": ["schema_version", "plugin_name", "plugin_class", "prompt", "target_format"],
+  "properties": {
+    "schema_version": { "const": "factory-spec/v2" },
+    "plugin_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9]*$"
+    },
+    "plugin_class": {
+      "type": "string",
+      "enum": ["synth", "effect", "midi", "sampler"]
+    },
+    "product_category": {
+      "type": "string",
+      "description": "Taxonomy id e.g. fx.metering"
+    },
+    "target_format": { "type": "string", "enum": ["vst3"] },
+    "target_os": { "type": "string", "enum": ["windows_x64", "linux_ci", "macos_universal"] },
+    "prompt": { "type": "string", "minLength": 1, "maxLength": 16000 },
+    "autonomy_mode": {
+      "type": "string",
+      "enum": ["collaborative", "autonomous"]
+    },
+    "buses": { "type": "object" },
+    "parameters": { "type": "array" },
+    "dsp_modules": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "gui_modules": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "acceptance_tests": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "track": {
+      "type": "string",
+      "enum": ["apc_greenfield", "disklordz_audio_reference"]
+    },
+    "commercial": {
+      "type": "object",
+      "properties": {
+        "release_ready": { "type": "boolean" }
+      }
+    },
+    "module_refs": { "type": "object" }
+  }
+}

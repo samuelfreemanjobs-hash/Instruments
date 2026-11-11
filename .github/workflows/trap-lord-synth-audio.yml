@@ -1,0 +1,25 @@
+name: Trap Lord Synth audio QA
+
+on:
+  push:
+    paths:
+      - "disklordz/trap-lord-synth/**"
+      - ".github/workflows/trap-lord-synth-audio.yml"
+  pull_request:
+    paths:
+      - "disklordz/trap-lord-synth/**"
+      - ".github/workflows/trap-lord-synth-audio.yml"
+
+jobs:
+  audio-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++-12 gcc-12
+
+      - name: Audio QA tests
+        run: python3 disklordz/trap-lord-synth/tests/test_trap_lord_audio_qa.py

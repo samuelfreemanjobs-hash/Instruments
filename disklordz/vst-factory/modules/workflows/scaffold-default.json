@@ -1,0 +1,6 @@
+{
+  "id": "workflow/scaffold-default",
+  "steps": ["intake", "dream", "scaffold", "build", "test"],
+  "on_build_fail": "repair",
+  "max_repair_attempts": 3
+}

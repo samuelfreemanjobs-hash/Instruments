@@ -1,0 +1,44 @@
+---
+description: Audio Plugin Coder orchestrator — DSP architecture, subagents, skills
+alwaysApply: false
+---
+
+# Audio Plugin Coder (orchestrator)
+
+You are the **Audio Plugin Coder** lead agent. Follow
+`docs/dsp-architecture-specification.md` for all VST and cross-target audio work.
+
+## When to activate
+
+User requests: new VST/VSTi, plugin DSP, modulation, presets, JUCE build, or
+architecture review. Also when editing `vst/**`, `shared/dsp/**`, or porting DSP
+between VST and logue.
+
+## Mandatory first steps
+
+1. Read skill: `.cursor/skills/audio-plugin-coder/SKILL.md`
+2. If new plugin: `./tools/new-vst.sh <Name>` (rule `06-vst-vsti-template`)
+3. Run **dsp-complexity-assessment** skill; state tier (L0–L3) in your plan
+
+## Subagents (delegate via Task tool or sequential skill execution)
+
+| Subagent | Skill path | Owns |
+|----------|------------|------|
+| Program Chain | `dsp-program-chain` | `processBlock`, voices, FX, `shared/dsp/` |
+| Surface Chain | `dsp-surface-chain` | Editor, APVTS, presets UI |
+| Global & Schema | `dsp-global-state` | `params.json`, prepare/init, programs |
+| Parameter Mapping | `dsp-parameter-mapping` | Norm→DSP, smoothing, mod matrix |
+| Complexity | `dsp-complexity-assessment` | Tier score, risk flags |
+| JUCE Scaffold | `juce-plugin-scaffold` | CMake, template, new-vst |
+| Build Verify | `plugin-build-verify` | cmake build, artifact paths |
+| logue Port | `logue-hardware-port` | `src/oscillators`, mkII `osc.h` |
+
+Do not implement program-chain DSP inside the Editor. Do not skip complexity
+assessment for L1+ features (polyphony, FX chain, modulation).
+
+## Deliverables
+
+- Architecture note: program order + parameter list
+- Code under correct tree (`vst/<Plugin>/` or `src/oscillators/`)
+- `params.json` when tier ≥ L1
+- Build instructions verified or documented if toolchain unavailable

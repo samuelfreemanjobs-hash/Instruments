@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "plugin": "MeterTap",
+  "kind": "effect",
+  "parameters": [
+    {
+      "id": "dl_input_trim_db",
+      "name": "Input trim",
+      "type": "float",
+      "min": -24,
+      "max": 12,
+      "default": 0,
+      "unit": "dB",
+      "automatable": true,
+      "smoothingMs": 20
+    },
+    {
+      "id": "dl_bypass",
+      "name": "Bypass",
+      "type": "bool",
+      "default": false,
+      "automatable": true
+    },
+    {
+      "id": "dl_peak_hold",
+      "name": "Peak hold",
+      "type": "bool",
+      "default": true,
+      "automatable": true
+    },
+    {
+      "id": "dl_meter_floor_db",
+      "name": "Meter floor",
+      "type": "float",
+      "min": -96,
+      "max": -48,
+      "default": -60,
+      "unit": "dB",
+      "automatable": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Init",
+      "values": {
+        "dl_input_trim_db": 0,
+        "dl_bypass": false,
+        "dl_peak_hold": true,
+        "dl_meter_floor_db": -60
+      }
+    }
+  ]
+}

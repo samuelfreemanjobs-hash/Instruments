@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Operator autopilot playbook
+    url: https://github.com/samuelfreemanjobs-hash/Instruments/blob/main/docs/OPERATOR_AUTOPILOT.md
+    about: How to run Cursor Cloud Agent from plain-English tasks
+  - name: Disklordz SOPs
+    url: https://github.com/samuelfreemanjobs-hash/Instruments/blob/main/docs/disklordz/README.md
+    about: Cloud agent tasks, go-live, fleet, integrations

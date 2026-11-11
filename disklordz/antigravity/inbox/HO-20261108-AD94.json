@@ -1,0 +1,22 @@
+{
+  "handoff_id": "HO-20261108-AD94",
+  "direction": "cursor_to_antigravity",
+  "from_agent": "cursor-cloud",
+  "to_agent": "antigravity-docs",
+  "created_at": "2026-11-08T14:30:09Z",
+  "work_order": {
+    "id": "WO-PREP-003",
+    "title": "[Product][Docs] Milestone 001 factory README + build log template",
+    "acceptance_criteria": "docs/drafts/milestone-001/README.md + BUILD_LOG.template.md for Cursor to fill; acceptance checklist from DISKLORDZ_MASTER_PLAN Milestone 001",
+    "branch": "main"
+  },
+  "context_paths": [
+    "docs/HISE_ANTIGRAVITY_LANE.md",
+    "disklordz/antigravity/AGENT_INSTRUCTIONS.md",
+    "docs/DISKLORDZ_MASTER_PLAN.md",
+    "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md"
+  ],
+  "artifacts": [],
+  "status": "open",
+  "notes": "Lane: docs \u2192 antigravity-docs. Active queue dispatch."
+}

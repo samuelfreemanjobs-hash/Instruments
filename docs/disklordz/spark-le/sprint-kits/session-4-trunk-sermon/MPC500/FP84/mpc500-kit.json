@@ -1,0 +1,85 @@
+{
+  "format": "DISKLORDZ_MPC500_KIT",
+  "version": 1,
+  "lane": "FAT-PAT",
+  "bpm": 84,
+  "code": "FP84",
+  "pads": [
+    {
+      "pad": "A01",
+      "role": "808_sub",
+      "sampleName": "FP84_01SUB",
+      "source": "OneShots/01_Sub_Syrupy.wav",
+      "targetLufs": -17
+    },
+    {
+      "pad": "A02",
+      "role": "808_knock",
+      "sampleName": "FP84_02KNK",
+      "source": "OneShots/02_Knock_Trunk.wav",
+      "targetLufs": -16
+    },
+    {
+      "pad": "A03",
+      "role": "snare_body",
+      "sampleName": "FP84_03SNR",
+      "source": "OneShots/03_Snare_Fat.wav",
+      "targetLufs": -14
+    },
+    {
+      "pad": "A04",
+      "role": "snare_snap_clap",
+      "sampleName": "FP84_04CLP",
+      "source": "OneShots/04_Clap_Wide.wav",
+      "targetLufs": -15
+    },
+    {
+      "pad": "A05",
+      "role": "hat_closed",
+      "sampleName": "FP84_05CHH",
+      "source": "OneShots/05_Hat_Lazy.wav",
+      "targetLufs": -18
+    },
+    {
+      "pad": "A06",
+      "role": "hat_open",
+      "sampleName": "FP84_06OHH",
+      "source": "OneShots/06_Hat_Open_Ride.wav",
+      "targetLufs": -18
+    },
+    {
+      "pad": "A07",
+      "role": "rim_perc",
+      "sampleName": "FP84_07RIM",
+      "source": "OneShots/07_Rim_Ride.wav",
+      "targetLufs": -15
+    },
+    {
+      "pad": "A08",
+      "role": "cowbell_fx",
+      "sampleName": "FP84_08FX",
+      "source": "OneShots/08_Perc_Trunk.wav",
+      "targetLufs": -16
+    }
+  ],
+  "loops": [
+    {
+      "sampleName": "FP84_L1TRUN",
+      "source": "Loops/Trunk_Full_2bar.wav",
+      "bars": 2
+    },
+    {
+      "sampleName": "FP84_L2TOPS",
+      "source": "Loops/Tops_Kickless_2bar.wav",
+      "bars": 2
+    },
+    {
+      "sampleName": "FP84_L3RIM",
+      "source": "Loops/Rim_Ride_2bar.wav",
+      "bars": 2
+    }
+  ],
+  "totalBytes": 1654002,
+  "ramBudgetBytes": 16777216,
+  "warnings": []
+}

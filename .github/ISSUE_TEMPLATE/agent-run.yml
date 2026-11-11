@@ -1,0 +1,100 @@
+name: Agent run (operator autopilot)
+description: Plain-English task for Cursor Cloud Agent on Instruments
+title: "[agent-run] "
+labels:
+  - agent-run
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Operator autopilot** — you don't need a full spec. A Cursor Cloud Agent will read the repo, implement, test, and open a **draft PR** with evidence.
+
+        Playbook: [docs/OPERATOR_AUTOPILOT.md](https://github.com/samuelfreemanjobs-hash/Instruments/blob/main/docs/OPERATOR_AUTOPILOT.md)
+
+  - type: textarea
+    id: unknown
+    attributes:
+      label: I don't know how to…
+      description: What feels confusing or out of your comfort zone?
+      placeholder: e.g. Wire Stripe webhook in test mode, fix factory batch API error, add daw-inbox path docs for Windows…
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal (one sentence)
+      description: What should be true when this is done?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: success
+    attributes:
+      label: Success criteria
+      description: Check all that apply (add details in notes if needed)
+      options:
+        - label: "`cd disklordz/website && npm ci && npm run build` passes"
+        - label: "`bash disklordz/website/scripts/verify-go-live.sh` (or documented local equivalent)"
+        - label: UI change has screenshot or video in PR
+        - label: Plugin/C++ change — `python3 vst-testing-ops/run_business.py --profile ci` (or dsp-only if agreed)
+        - label: Docs only — no runtime test required
+        - label: Ops/docs output only (checklist for me; no prod changes)
+
+  - type: input
+    id: profit_agent
+    attributes:
+      label: Profit agent hint (optional)
+      description: Fleet id from DISKLORDZ_AGENTS.md, e.g. product-factory, conversion-qa, daw-inbox-copilot
+      placeholder: conversion-qa
+
+  - type: dropdown
+    id: lane
+    attributes:
+      label: Lane
+      options:
+        - Disklordz SaaS (website / API)
+        - Integrations / agent fleet
+        - Plugin / JUCE (Instruments)
+        - HISE / Antigravity (handoff only — no Cloud impl unless port WO)
+        - Ops / secrets / deploy (may stop at human steps)
+        - Not sure
+
+  - type: checkboxes
+    id: permissions
+    attributes:
+      label: Agent may…
+      options:
+        - label: Edit code and open a draft PR (default)
+        - label: Merge to main (explicit approval — rare)
+        - label: Production deploy / live Stripe (explicit approval — rare)
+        - label: Touch production Supabase schema (explicit approval — rare)
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Extra context (optional)
+      description: Links, error messages, WO id (WO-SAAS-NNN), screenshots
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Cloud Agent prompt (copy after creating the issue)
+
+        Replace `#NNN` with this issue number.
+
+        ```
+        Operator autopilot — issue #NNN
+
+        I don't know how to do: <paste "I don't know how to">
+        Goal: <paste goal>
+        Success criteria: <checked items above>
+        Lane: <lane>
+        Profit agent: <hint or none>
+
+        Read: ARCHITECTURE.md, AGENTS.md, docs/OPERATOR_AUTOPILOT.md
+        Stop at META R10 gates unless this issue explicitly allows prod/merge/schema.
+
+        Branch: cursor/<short>-<suffix>
+        Deliverable: push, draft PR, evidence.
+        ```

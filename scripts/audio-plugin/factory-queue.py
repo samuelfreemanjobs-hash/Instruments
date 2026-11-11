@@ -1,0 +1,205 @@
+#!/usr/bin/env python3
+"""Emit next PASTE_TO_FACTORY block for plugin-factory-liaison (audio plugin lane)."""
+
+from __future__ import annotations
+
+import json
+import os
+from datetime import datetime, timezone
+from pathlib import Path
+
+# Override: FACTORY_GIT_REF=your-branch python3 scripts/audio-plugin/factory-queue.py
+FACTORY_GIT_REF = os.environ.get("FACTORY_GIT_REF", "main").strip() or "main"
+
+REPO = Path(__file__).resolve().parents[2]
+PROGRESS = REPO / "disklordz/audio-command/data/progress.json"
+PLAYBOOKS = REPO / "disklordz/audio-command/data/task-playbooks.json"
+OUT = REPO / "disklordz/audio-command/data/PASTE_TO_FACTORY.md"
+STATE = REPO / "disklordz/audio-command/data/factory-queue-state.json"
+VST_FACTORY_LIAISON = REPO / "disklordz/vst-factory/data/liaison-status.json"
+
+# Roadmap §18 stage hints by sprint task id
+STAGE_BY_TASK = {
+    "plugin-skeleton": ("B", "Blank VST3 shell compiles and loads in DAW"),
+    "midi-output": ("C", "MIDI reaches instrument track"),
+    "theory-engine": ("D", "Music theory unit tests"),
+    "chord-engine": ("E", "Extended chord library data-driven"),
+    "progression-generator": ("F", "4-chord progression generator"),
+    "first-interface": ("G", "Key + grid UI wired"),
+}
+
+
+def load(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def next_open_task(progress: dict, playbooks: dict) -> tuple[str, dict] | None:
+    completed = set(progress.get("completed_ids") or [])
+    for tid in playbooks:
+        if tid not in completed:
+            pb = playbooks[tid]
+            if pb.get("owner") == "cursor":
+                return tid, pb
+    return None
+
+
+def blocker(progress: dict, task_id: str) -> str | None:
+    completed = set(progress.get("completed_ids") or [])
+    if "dev-environment" not in completed and task_id != "dev-environment":
+        return "dev-environment"
+    if task_id == "plugin-skeleton" and task_id not in completed:
+        return "human-windows"
+    return None
+
+
+def render_factory(task_id: str, pb: dict, stage: tuple[str, str]) -> str:
+    letter, blurb = stage
+    return f"""# PASTE_TO_FACTORY (generated)
+
+_Generated {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")} · task `{task_id}`_
+
+**Blocker:** none  
+**Next owner:** Cursor Factory (separate chat)  
+**Liaison:** skill `disklordz-plugin-factory-liaison`
+
+---
+
+DiskLordz Audio — Factory implementer only.
+
+**Implement root:** `DiskLordz-Audio/` (see `DiskLordz-Audio/MILESTONE_001_FACTORY.md`)
+
+**Stage:** {letter} — {blurb}  
+**Slice:** {pb.get("headline", task_id)}  
+**Read:** `docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md` §18, `docs/DPF_TECHNICAL_ARCHITECTURE.md`, `docs/CHORD_ENGINE_PRD.md`  
+**Out of scope:** SaaS website, Stripe, marketing copy
+
+**Acceptance:**
+- {pb.get("done_when", "See CHORD_ENGINE_PRD.md")}
+- Build: cmake artifact path on Windows x64
+- Report §18.3: Completed, Files, Build, Tests, Limitations, Next task
+
+**Parallel:** Antigravity may run WO-PREP / WO-CC per `sync-all-antigravity.sh` — do not wait on it for compile.
+"""
+
+
+def render_samuel_build(task_id: str, pb: dict, stage: tuple[str, str]) -> str:
+    letter, blurb = stage
+    return f"""# PASTE_TO_FACTORY (generated)
+
+_Generated {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")} · task `{task_id}`_
+
+**Blocker:** human-windows  
+**Next owner:** Samuel (Windows build + DAW)  
+**Liaison:** skill `disklordz-plugin-factory-liaison`
+
+---
+
+Stage B **JUCE shell is landed** under `DiskLordz-Audio/Products/ChordEngine/`.
+
+**Stage:** {letter} — {blurb}  
+**Slice:** {pb.get("headline", task_id)}
+
+### Build (from `C:\\dev\\Instruments`)
+
+```powershell
+git pull origin {FACTORY_GIT_REF}
+powershell -ExecutionPolicy Bypass -File .\\DiskLordz-Audio\\build-windows.ps1
+```
+
+VST3: printed at end of `build-windows.ps1` (search under `DiskLordz-Audio\\Build\\Windows\\` for `CHORD ENGINE.vst3`)
+
+**Or CI:** GitHub → Actions → **DiskLordz Audio (Windows VST3)** → download artifact `chord-engine-vst3-windows-*` (no local compile).
+
+**Done when:** {pb.get("done_when", "DAW scan + open")}
+
+**Factory chat:** only if build fails — paste this file + log; rule `disklordz-audio-engineering-lane`.
+
+**Parallel:** Antigravity WO-PREP (docs/batch) — not required for compile.
+"""
+
+
+def append_vst_factory_section(body: str) -> str:
+    if not VST_FACTORY_LIAISON.is_file():
+        return body
+    try:
+        data = json.loads(VST_FACTORY_LIAISON.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return body
+    url = data.get("vst_factory_url") or "http://127.0.0.1:8790/"
+    note = data.get("note") or ""
+    count = data.get("active_greenfield_count", 0)
+    chord = data.get("chord_reference", "chord-engine")
+    section = f"""
+---
+
+## VST Factory studio
+
+- UI: {url}
+- Greenfield APC projects (SQLite): **{count}**
+- CHORD reference id: `{chord}` — see `GET /api/references/chord-engine`
+- Module catalog: `disklordz/vst-factory/modules/catalog.json`
+
+{note}
+"""
+    return body.rstrip() + section
+
+
+def render_blocked(reason: str, task_id: str | None) -> str:
+    return f"""# PASTE_TO_FACTORY (blocked)
+
+_Generated {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}_
+
+**Blocker:** `{reason}`  
+**Next owner:** Samuel (Windows dev box)  
+**Sprint task:** `{task_id or "dev-environment"}`
+
+Finish Coach task **dev-environment** before Factory opens Milestone 001 C++.
+
+No Factory prompt until blocker cleared.
+"""
+
+
+def main() -> int:
+    if not PROGRESS.is_file() or not PLAYBOOKS.is_file():
+        OUT.write_text(append_vst_factory_section(render_blocked("missing-data", None)), encoding="utf-8")
+        print(f"Wrote {OUT} (blocked)")
+        return 1
+
+    progress = load(PROGRESS)
+    playbooks = load(PLAYBOOKS)
+    nxt = next_open_task(progress, playbooks)
+
+    if not nxt:
+        body = "# PASTE_TO_FACTORY (idle)\n\nSprint checklist complete or no `cursor`-owned tasks.\n"
+        OUT.write_text(append_vst_factory_section(body), encoding="utf-8")
+        print("queue idle")
+        return 0
+
+    task_id, pb = nxt
+    block = blocker(progress, task_id)
+    if block == "human-windows" and task_id == "plugin-skeleton":
+        stage = STAGE_BY_TASK.get(task_id, ("B", pb.get("headline", task_id)))
+        OUT.write_text(append_vst_factory_section(render_samuel_build(task_id, pb, stage)), encoding="utf-8")
+        print(f"blocked={block} factory_next={task_id}")
+        print(f"Wrote {OUT}")
+        return 0
+    if block:
+        OUT.write_text(append_vst_factory_section(render_blocked(block, task_id)), encoding="utf-8")
+        print(f"blocked={block}")
+        return 0
+
+    stage = STAGE_BY_TASK.get(task_id, ("B", pb.get("headline", task_id)))
+    OUT.write_text(append_vst_factory_section(render_factory(task_id, pb, stage)), encoding="utf-8")
+    state = {
+        "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "task_id": task_id,
+        "stage": stage[0],
+    }
+    STATE.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+    print(f"factory_next={task_id} stage={stage[0]}")
+    print(f"Wrote {OUT}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

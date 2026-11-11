@@ -1,0 +1,56 @@
+{
+  "id": "milestone-001-sprint",
+  "title": "DiskLordz Audio — Startup Sprint (10/10)",
+  "items": [
+    {
+      "id": "company-identity",
+      "label": "Company identity — naming, logo direction, visual system",
+      "phase": "foundation"
+    },
+    {
+      "id": "dev-environment",
+      "label": "Development environment — C++, JUCE, CMake, Visual Studio verified",
+      "phase": "foundation"
+    },
+    {
+      "id": "github-repo",
+      "label": "GitHub repository — private company repo + folder structure (DPF layout)",
+      "phase": "foundation"
+    },
+    {
+      "id": "plugin-skeleton",
+      "label": "Plugin skeleton — blank VST3 loads in test host",
+      "phase": "milestone-001"
+    },
+    {
+      "id": "midi-output",
+      "label": "MIDI output — generated notes reach DAW instrument",
+      "phase": "milestone-001"
+    },
+    {
+      "id": "theory-engine",
+      "label": "Music theory engine — notes, intervals, keys, scales",
+      "phase": "alpha"
+    },
+    {
+      "id": "chord-engine",
+      "label": "Chord engine — triads, sevenths, extended chords",
+      "phase": "alpha"
+    },
+    {
+      "id": "progression-generator",
+      "label": "Progression generator — validate four-chord progressions",
+      "phase": "alpha"
+    },
+    {
+      "id": "first-interface",
+      "label": "First interface — key selector, chord browser, progression grid",
+      "phase": "alpha"
+    },
+    {
+      "id": "first-alpha",
+      "label": "First alpha — packaged CHORD ENGINE prototype",
+      "phase": "alpha"
+    }
+  ]
+}
