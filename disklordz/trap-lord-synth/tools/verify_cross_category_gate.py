@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -18,10 +20,20 @@ from preset_probe import render_category_probe  # noqa: E402
 from trap_lord_audio_metrics import CROSS_CATEGORY_CORR_MAX, category_feature_vector  # noqa: E402
 
 
+def sync_probe_cache() -> None:
+    fp = hashlib.sha256(BANK.read_bytes()).hexdigest()
+    meta = PROBE_DIR / ".bank_fingerprint"
+    if meta.exists() and meta.read_text(encoding="utf-8").strip() == fp:
+        return
+    shutil.rmtree(PROBE_DIR, ignore_errors=True)
+    PROBE_DIR.mkdir(parents=True, exist_ok=True)
+    meta.write_text(fp, encoding="utf-8")
+
+
 def main() -> int:
     bank = json.loads(BANK.read_text(encoding="utf-8"))
     presets = bank["presets"]
-    PROBE_DIR.mkdir(parents=True, exist_ok=True)
+    sync_probe_cache()
 
     vecs: list[np.ndarray] = []
     cats: list[str] = []
