@@ -19,6 +19,17 @@ DEFAULT_SEED = 301508
 
 PRIORITY_BATCHES = {
     "priority-core": ("Pads", "Swells", "Synth Keys", "Leads"),
+    "thin-first": (
+        "Choir",
+        "Bass",
+        "Strings",
+        "Hits/FX",
+        "Bells",
+        "Church Keys/EP",
+        "Organ",
+        "Brass",
+    ),
+    "top-up": ("Synth Keys", "Leads", "Swells"),
     "rest": tuple(c for c in TARGET_QUOTAS if c not in {"Pads", "Swells", "Synth Keys", "Leads"}),
 }
 

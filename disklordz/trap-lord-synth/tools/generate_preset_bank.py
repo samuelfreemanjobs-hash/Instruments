@@ -48,14 +48,15 @@ ENGINE_ROTATION: dict[str, list[int]] = {
     "Swells": [20, 14, 7, 15, 2, 0, 12, 19, 5, 20, 14, 23, 7, 15, 2],
     "Synth Keys": [18, 21, 9, 17, 7, 8, 10, 13, 3, 18, 21, 9, 17, 7, 8],
     "Leads": [6, 8, 10, 16, 0, 17, 13, 6, 8, 10, 16, 0, 17, 13],
-    "Bass": [4, 22, 11, 4, 23, 6, 4, 22, 11, 4, 23],
-    "Bells": [3, 10, 13, 5, 0, 16, 3, 10, 13, 5],
-    "Brass": [16, 0, 2, 6, 16, 0, 2, 6],
-    "Strings": [2, 19, 1, 5, 14, 2, 19, 1],
-    "Church Keys/EP": [9, 21, 18, 17, 1, 8, 7, 9, 21, 18],
-    "Organ": [1, 5, 14, 1, 5, 14],
-    "Choir": [5, 1, 19, 2, 5, 1, 19],
-    "Hits/FX": [23, 16, 10, 6, 23, 16, 10, 6],
+    # Thin categories: long rotations across distinct engine timbres (not just param jitter).
+    "Bass": [4, 22, 11, 23, 6, 4, 22, 8, 11, 23, 4, 22, 11, 4, 23, 6],
+    "Bells": [3, 10, 13, 21, 9, 16, 17, 3, 10, 13, 21, 9, 16, 13, 3, 10],
+    "Brass": [16, 0, 6, 2, 14, 10, 16, 0, 6, 2, 14, 16, 0, 6, 10, 2],
+    "Strings": [2, 19, 14, 1, 5, 20, 7, 15, 2, 19, 14, 1, 5, 20, 7, 15],
+    "Church Keys/EP": [9, 21, 18, 17, 8, 7, 13, 9, 21, 18, 17, 8, 3, 9, 21, 18],
+    "Organ": [1, 5, 14, 8, 16, 1, 5, 14, 8, 1, 16, 5, 14, 8, 1, 5],
+    "Choir": [5, 2, 19, 14, 1, 7, 15, 20, 12, 5, 2, 19, 14, 1, 7, 15, 20, 12],
+    "Hits/FX": [23, 16, 10, 6, 0, 22, 23, 10, 16, 6, 0, 22, 23, 16, 10, 6],
 }
 
 BANK_BY_CAT = {
@@ -127,6 +128,74 @@ def pick_range(spec: dict, key: str, rng: random.Random, default: tuple[float, f
     return float(band)
 
 
+def apply_engine_texture(category: str, p: dict, engine: int, variant: int, rng: random.Random) -> None:
+    """Pin parameter islands per engine so category-probe vectors stay spectrally separated."""
+    if category == "Bass":
+        if engine in (4, 22):
+            p["cutoff"] = clamp(p["cutoff"] * 0.55, 80, 720)
+            p["drive"] = clamp(p["drive"] * 1.05, 1.0, 3.2)
+        elif engine == 11:
+            p["cutoff"] = clamp(p["cutoff"] * 0.75, 120, 1400)
+            p["drive"] = clamp(p["drive"] * 1.35, 1.4, 4.8)
+        elif engine == 23:
+            p["attack"] = clamp(p["attack"], 0.001, 0.02)
+            p["decay"] = clamp(p["decay"], 0.06, 0.35)
+            p["sustain"] = clamp(p["sustain"], 0.0, 0.2)
+    elif category == "Choir":
+        p["gain"] = clamp(p["gain"] + 0.06 + (variant % 5) * 0.035, 0.16, 0.45)
+        if engine in (5, 1, 2):
+            p["chord"] = rng.choice([1, 2, 4, 5])
+            p["vibratoDepth"] = clamp(p["vibratoDepth"] + 0.08, 0, 0.35)
+        elif engine in (19, 14):
+            p["vibratoDepth"] = clamp(p["vibratoDepth"] + 0.22, 0.12, 0.5)
+            p["macroMovement"] = clamp(p["macroMovement"] + 0.18, 0.15, 0.85)
+        elif engine in (7, 12, 15, 20):
+            p["macroSpace"] = clamp(p["macroSpace"] + 0.2, 0.2, 0.9)
+            p["reverb"] = clamp(p["reverb"] + 0.12, 0.1, 0.8)
+    elif category == "Strings":
+        if engine == 19:
+            p["vibratoDepth"] = clamp(p["vibratoDepth"] + 0.25, 0.15, 0.55)
+        elif engine == 14:
+            p["macroMovement"] = clamp(p["macroMovement"] + 0.25, 0.2, 0.95)
+        elif engine == 20:
+            p["swellDepth"] = clamp(p["swellDepth"] + 0.35, 0.35, 1.0)
+        elif engine in (1, 5):
+            p["chord"] = rng.choice([1, 2, 5])
+    elif category == "Hits/FX":
+        if engine == 23:
+            p["pitchEnvSemi"] = clamp(p["pitchEnvSemi"] + rng.uniform(2, 10), 0, 16)
+        elif engine == 16:
+            p["attack"] = clamp(p["attack"], 0.001, 0.015)
+            p["drive"] = clamp(p["drive"] * 1.2, 1.8, 4.8)
+    elif category == "Bells":
+        if engine in (3, 10, 13):
+            p["decay"] = clamp(p["decay"] * 0.85, 0.05, 0.45)
+            p["reverb"] = clamp(p["reverb"] + 0.1, 0.1, 0.75)
+        elif engine in (21, 17, 9):
+            p["arp"] = variant % 2 == 0
+    elif category == "Church Keys/EP":
+        if engine in (9, 21, 18):
+            p["macroDirt"] = clamp(p["macroDirt"] * 0.7, 0.0, 0.28)
+        elif engine in (17, 8, 7):
+            p["arp"] = variant % 3 != 1
+            p["arpRate"] = clamp(p["arpRate"] + (variant % 5), 2, 14)
+    elif category == "Organ":
+        if engine in (1, 5):
+            p["vibratoDepth"] = clamp(p["vibratoDepth"] + 0.18, 0.08, 0.5)
+            p["macroMovement"] = clamp(p["macroMovement"] + 0.2, 0.2, 0.95)
+        elif engine == 14:
+            p["macroSpace"] = clamp(p["macroSpace"] + 0.15, 0.15, 0.75)
+    elif category == "Brass":
+        if engine == 16:
+            p["attack"] = clamp(p["attack"], 0.002, 0.04)
+            p["drive"] = clamp(p["drive"] * 1.15, 1.6, 4.8)
+        elif engine == 6:
+            p["pitchEnvSemi"] = clamp(p["pitchEnvSemi"] + rng.uniform(1, 6), 0, 12)
+        elif engine == 2:
+            p["sustain"] = clamp(p["sustain"] + 0.08, 0.5, 0.95)
+            p["release"] = clamp(p["release"] + 0.15, 0.2, 1.2)
+
+
 def build_from_style(category: str, style: dict, variant: int, rng: random.Random) -> dict:
     engines = style.get("engines", [0])
     engine = engines[variant % len(engines)]
@@ -169,10 +238,10 @@ def build_from_style(category: str, style: dict, variant: int, rng: random.Rando
     }
 
     if category == "Bass":
-        p["engine"] = style.get("engines", [4])[variant % len(style.get("engines", [4]))]
         p["chord"] = 0
         p["arp"] = False
         p["swellDepth"] = 0.0
+        p["gain"] = clamp(p["gain"] + (variant % 7) * 0.03, 0.14, 0.42)
     if category == "Hits/FX":
         p["attack"] = clamp(p["attack"], 0.001, 0.03)
         p["decay"] = clamp(p["decay"], 0.04, 0.35)
@@ -196,6 +265,7 @@ def build_from_style(category: str, style: dict, variant: int, rng: random.Rando
 
     rot = ENGINE_ROTATION.get(category, style.get("engines", [p["engine"]]))
     p["engine"] = rot[variant % len(rot)]
+    apply_engine_texture(category, p, int(p["engine"]), variant, rng)
     p["filterType"] = int(style.get("filterType", 0) + (variant % 4)) % 6
     if p["filterType"] == 1 and category in {"Pads", "Swells", "Strings", "Choir"}:
         p["cutoff"] = clamp(p["cutoff"], 80.0, 320.0)
