@@ -1,0 +1,102 @@
+# Black Friday Madness: Supabase migrate → auth URLs → catalog sync → live smoke test.
+# Secrets: docs/BFM_GO_LIVE_SECRETS.md
+# Run from phone: GitHub → Actions → this workflow → Run workflow
+
+name: Black Friday Madness go-live
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip_migrations:
+        description: "Skip supabase db push"
+        type: boolean
+        default: false
+      skip_sync:
+        description: "Skip catalog sync"
+        type: boolean
+        default: false
+      skip_verify:
+        description: "Skip live URL smoke test"
+        type: boolean
+        default: false
+  schedule:
+  # Catalog refresh twice daily (requires repository secrets)
+    - cron: "0 6,18 * * *"
+
+jobs:
+  go-live:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/deal-hunter
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preflight secrets
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BFM_LIVE_URL: ${{ secrets.BFM_LIVE_URL }}
+        run: |
+          missing=0
+          for v in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_REF SUPABASE_SERVICE_ROLE_KEY; do
+            if [ -z "${!v}" ]; then
+              echo "::error::Missing secret $v — see docs/BFM_GO_LIVE_SECRETS.md"
+              missing=1
+            fi
+          done
+          [ "$missing" -eq 0 ] || exit 1
+          echo "BFM_LIVE_URL=${BFM_LIVE_URL:-https://black-friday-madness.apps.grok.bot}" >> "$GITHUB_ENV"
+
+      - uses: supabase/setup-cli@v1
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.skip_migrations != true }}
+        with:
+          version: latest
+
+      - name: Supabase db push
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.skip_migrations != true }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: supabase link --project-ref "$SUPABASE_PROJECT_REF" && supabase db push
+
+      - name: Configure Auth redirect URLs
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          BFM_LIVE_URL: ${{ env.BFM_LIVE_URL }}
+        run: bash scripts/bfm-configure-auth-urls.sh
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: tools/deal-hunter/package-lock.json
+
+      - name: Install dependencies
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.skip_sync != true }}
+        run: npm ci
+
+      - name: Sync catalog to Supabase
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.skip_sync != true }}
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          BFM_SUPABASE_URL: ${{ secrets.BFM_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          USE_SUPABASE_CATALOG: "1"
+        run: |
+          export SUPABASE_URL="${BFM_SUPABASE_URL:-https://${SUPABASE_PROJECT_REF}.supabase.co}"
+          npm run sync:supabase
+
+      - name: Live smoke test
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.skip_verify != true }}
+        env:
+          BFM_LIVE_URL: ${{ env.BFM_LIVE_URL }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          BFM_SUPABASE_URL: ${{ secrets.BFM_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          export SUPABASE_URL="${BFM_SUPABASE_URL:-https://${SUPABASE_PROJECT_REF}.supabase.co}"
+          npx tsx scripts/verify-bfm-live.ts
