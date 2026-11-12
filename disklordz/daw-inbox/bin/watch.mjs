@@ -4,7 +4,7 @@
  */
 import { createReadStream, existsSync, mkdirSync, renameSync, readFileSync } from "fs";
 import { homedir } from "os";
-import { basename, dirname, join } from "path";
+import { basename, dirname, join, relative, resolve, isAbsolute } from "path";
 import chokidar from "chokidar";
 import JSZip from "jszip";
 
@@ -53,8 +53,13 @@ async function extractZip(zipPath, destRoot) {
 
   for (const [path, entry] of Object.entries(zip.files)) {
     if (entry.dir) continue;
+    const target = resolve(outDir, path);
+    const rel = relative(outDir, target);
+    if (!rel || rel.startsWith("..") || isAbsolute(rel)) {
+      console.warn(`[disklordz-inbox] skipping unsafe entry: ${path}`);
+      continue;
+    }
     const data = await entry.async("nodebuffer");
-    const target = join(outDir, path);
     mkdirSync(dirname(target), { recursive: true });
     const { writeFileSync } = await import("fs");
     writeFileSync(target, data);
