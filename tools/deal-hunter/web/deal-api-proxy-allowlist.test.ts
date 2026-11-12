@@ -17,4 +17,9 @@ describe("isBlockedPublicApiPath", () => {
     expect(isBlockedPublicApiPath("/api/administrator/ping")).toBe(false);
     expect(isBlockedPublicApiPath("/api/v1/deals")).toBe(false);
   });
+
+  it("blocks traversal-normalized admin paths", () => {
+    expect(isBlockedPublicApiPath("/api/foo/../admin")).toBe(true);
+    expect(isBlockedPublicApiPath("/api/notifications/foo/../../admin")).toBe(true);
+  });
 });

@@ -41,16 +41,27 @@ export async function loadNotificationPrefs(): Promise<
   };
 }
 
+function sanitizePrefs(prefs: NotificationPrefs): NotificationPrefs {
+  return {
+    email_enabled: Boolean(prefs.email_enabled),
+    push_enabled: Boolean(prefs.push_enabled),
+    price_alert_enabled: Boolean(prefs.price_alert_enabled),
+    coupon_alert_enabled: Boolean(prefs.coupon_alert_enabled),
+    deal_alert_enabled: Boolean(prefs.deal_alert_enabled),
+  };
+}
+
 export async function saveNotificationPrefs(prefs: NotificationPrefs) {
   if (!isSupabaseConfigured()) return { ok: false as const, error: "supabase_not_configured" };
   const supabase = await createClient();
   const { data: auth } = await supabase!.auth.getUser();
   if (!auth.user) return { ok: false as const, error: "not_signed_in" };
 
+  const safe = sanitizePrefs(prefs);
   const { error } = await supabase!.from("notification_preferences").upsert(
     {
+      ...safe,
       user_id: auth.user.id,
-      ...prefs,
     },
     { onConflict: "user_id" },
   );

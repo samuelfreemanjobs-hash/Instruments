@@ -2,19 +2,32 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { requireSignedInUser } from "@/lib/require-user";
 
-export async function createPriceAlert(externalDealId: string, targetPrice: number) {
-  if (!isSupabaseConfigured()) return { ok: false as const, error: "supabase_not_configured" };
-  const supabase = await createClient();
-  const { data: userData } = await supabase!.auth.getUser();
-  if (!userData.user) return { ok: false as const, error: "not_signed_in" };
+const MAX_ALERTS_PER_USER = 100;
 
-  const { error } = await supabase!.from("price_alerts").insert({
-    user_id: userData.user.id,
-    external_deal_id: externalDealId,
+export async function createPriceAlert(externalDealId: string, targetPrice: number) {
+  const gate = await requireSignedInUser();
+  if (!gate.ok) return { ok: false as const, error: gate.error };
+
+  const dealId = externalDealId.trim().slice(0, 128);
+  if (!dealId) return { ok: false as const, error: "invalid_deal_id" };
+  if (!Number.isFinite(targetPrice) || targetPrice < 0 || targetPrice > 1_000_000) {
+    return { ok: false as const, error: "invalid_target_price" };
+  }
+
+  const { count, error: countError } = await gate.supabase
+    .from("price_alerts")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", gate.userId);
+  if (countError) return { ok: false as const, error: countError.message };
+  if ((count ?? 0) >= MAX_ALERTS_PER_USER) {
+    return { ok: false as const, error: "alert_quota_exceeded" };
+  }
+
+  const { error } = await gate.supabase.from("price_alerts").insert({
+    user_id: gate.userId,
+    external_deal_id: dealId,
     target_price: targetPrice,
     active: true,
   });

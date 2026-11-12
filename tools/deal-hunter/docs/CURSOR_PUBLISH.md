@@ -35,3 +35,11 @@ Add these in the publish settings secure form (never in chat):
 | `N8N_WEBHOOK_SECRET` | Cron headers to API |
 
 Local dev: `cd tools/deal-hunter && npm run dev` (:3000 + :3847).
+
+## Site unreachable (ERR_CONNECTION_CLOSED / SSL)
+
+If the URL resolves in DNS but TLS fails (browser “connection closed”, `openssl` shows **no peer certificate**), the **Cursor Apps host** for that slug is down or not serving a cert — not a Next.js bug. Recovery:
+
+1. **Cursor → Publish** for `black-friday-madness` → **Republish** the latest `main` commit (redeploy).
+2. If still broken after a successful publish notification, use **Cursor support** / Apps dashboard for the slug; repo changes cannot fix platform routing.
+3. Catalog/sync work (GitHub go-live) only matters **after** the URL loads HTTPS.

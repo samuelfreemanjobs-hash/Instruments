@@ -29,15 +29,34 @@ const BLOCKED_API_SEGMENTS = [
   ["notifications", "dispatch-steals"],
 ] as const;
 
-/** Segment-exact block list (avoids `/api/administrator` false positives). */
-export function isBlockedPublicApiPath(pathname: string): boolean {
+/** Collapse `.` / `..` after decode (blocks `/api/x/../admin` style tricks). */
+export function normalizeRequestPath(pathname: string): string | null {
   let path = pathname;
   try {
     path = decodeURI(pathname);
   } catch {
-    return false;
+    return null;
   }
-  if (!path.startsWith("/")) return false;
+  if (!path.startsWith("/")) return null;
+  path = path.replace(/\\/g, "/");
+  const raw = path.split("/");
+  const segments: string[] = [];
+  for (const seg of raw) {
+    if (!seg || seg === ".") continue;
+    if (seg === "..") {
+      if (segments.length === 0) return null;
+      segments.pop();
+      continue;
+    }
+    segments.push(seg);
+  }
+  return `/${segments.join("/")}`;
+}
+
+/** Segment-exact block list (avoids `/api/administrator` false positives). */
+export function isBlockedPublicApiPath(pathname: string): boolean {
+  const path = normalizeRequestPath(pathname);
+  if (!path) return false;
   const segments = path.split("/").filter(Boolean);
   if (segments[0] !== "api") return false;
   for (const blocked of BLOCKED_API_SEGMENTS) {
