@@ -11,8 +11,9 @@ With **no** `DEAL_API_ORIGIN`, the published build serves the **bundled demo cat
 1. Create project → run `npm run supabase:migrate` from `tools/deal-hunter`.
 2. In Supabase **Authentication → URL Configuration** set **Site URL** to the live app origin and add Redirect URL  
    `https://black-friday-madness.apps.grok.bot/auth/callback`. Sign-in is **email + password** (Confirm email OFF — no OTP mail).
-3. In Cursor app Secrets add: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `USE_SUPABASE_CATALOG=1`.
-4. Republish the app (or confirm pending publish).
+3. In Cursor app Secrets add: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, **`USE_SUPABASE_CATALOG=1`** (required for live catalog search and product pages; without it the bundled demo JSON is used).
+4. Run catalog sync once (admin cron or `npm run sync:supabase` locally against your project).
+5. Republish the app (or confirm pending publish).
 
 Local: `npm run setup:env` then fill `tools/deal-hunter/.env` once; the script mirrors into `web/.env.local`.
 

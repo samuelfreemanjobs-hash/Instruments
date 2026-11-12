@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { ShellNav } from "@/components/ShellNav";
 import { AuthStatus } from "@/components/AuthStatus";
+import { CatalogModeNote } from "@/components/CatalogModeNote";
 import { publicRuntimeConfig } from "@/lib/public-env";
 
 import "./globals.css";
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <AuthStatus />
           </div>
         </header>
+        <CatalogModeNote />
         <ShellNav />
         <main className="mx-auto max-w-5xl px-4 py-6">{children}</main>
       </body>
