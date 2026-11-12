@@ -16,10 +16,13 @@ export function readClientPublicConfig(): ClientPublicConfig {
       }
     }
   }
+  const raw = process.env.NEXT_PUBLIC_USE_SUPABASE_CATALOG ?? "";
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
   return {
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
-    useSupabaseCatalog: process.env.NEXT_PUBLIC_USE_SUPABASE_CATALOG === "1",
+    supabaseUrl: url,
+    supabaseAnonKey: key,
+    useSupabaseCatalog: raw === "1" || (raw !== "0" && Boolean(url && key)),
     vapidPublicKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "",
   };
 }

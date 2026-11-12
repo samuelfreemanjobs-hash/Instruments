@@ -29,15 +29,8 @@ do_auth() {
 }
 
 do_sync() {
-  local url="${SUPABASE_URL:-}"
-  if [[ -z "$url" && -n "${SUPABASE_PROJECT_REF:-}" ]]; then
-    url="https://${SUPABASE_PROJECT_REF}.supabase.co"
-  fi
-  if [[ -z "$url" || -z "${SUPABASE_SERVICE_ROLE_KEY:-}" ]]; then
-    echo "::error::Set SUPABASE_URL (or SUPABASE_PROJECT_REF) and SUPABASE_SERVICE_ROLE_KEY" >&2
-    exit 1
-  fi
-  export SUPABASE_URL="$url"
+  export BFM_SUPABASE_URL="${BFM_SUPABASE_URL:-${SUPABASE_URL:-}}"
+  bash "$ROOT/scripts/bfm-resolve-supabase-env.sh"
   export USE_SUPABASE_CATALOG=1
   (cd "$ROOT" && npm run sync:supabase)
 }

@@ -4,13 +4,18 @@ One-time setup in **GitHub → Settings → Secrets and variables → Actions �
 
 Then run **Actions → “Black Friday Madness go-live” → Run workflow** from a phone or browser (no laptop required).
 
-## Required
+## Required (only two)
 
 | Secret | Purpose |
 |--------|---------|
-| `SUPABASE_ACCESS_TOKEN` | [Account access token](https://supabase.com/dashboard/account/tokens) for `supabase db push` |
-| `SUPABASE_PROJECT_REF` | Supabase project id (subdomain in `https://<ref>.supabase.co`) |
-| `SUPABASE_SERVICE_ROLE_KEY` | **Settings → API → service_role** (server-only; used for catalog sync in CI) |
+| `SUPABASE_ACCESS_TOKEN` | [Account access token](https://supabase.com/dashboard/account/tokens) for `supabase db push` + auto-fetch `service_role` |
+| `SUPABASE_PROJECT_REF` | Supabase project id (subdomain in `https://<ref>.supabase.co`) — or set `BFM_SUPABASE_PROJECT_REF` if you use a different project than Disklordz |
+
+## Optional
+
+| Secret | Purpose |
+|--------|---------|
+| `SUPABASE_SERVICE_ROLE_KEY` | Skip auto-fetch if you prefer storing it in GitHub |
 
 ## Recommended
 
