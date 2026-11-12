@@ -3,105 +3,105 @@
     {
       "category": "Bass",
       "slot": 1,
-      "index": 128,
+      "index": 141,
       "name": "Bass Distort Cathedral Punch 24",
       "subStyle": "Distort"
     },
     {
       "category": "Bass",
       "slot": 2,
-      "index": 129,
+      "index": 142,
       "name": "Bass 808 Reverse 808 49",
       "subStyle": "808"
     },
     {
       "category": "Bells",
       "slot": 1,
-      "index": 126,
+      "index": 139,
       "name": "Bells Trap Bell Midnight Tine 43",
       "subStyle": "Trap Bell"
     },
     {
       "category": "Bells",
       "slot": 2,
-      "index": 127,
+      "index": 140,
       "name": "Bells Trap Bell Dark Tine 07",
       "subStyle": "Trap Bell"
     },
     {
       "category": "Brass",
       "slot": 1,
-      "index": 107,
+      "index": 120,
       "name": "Brass Fanfare Chrome Section 63",
       "subStyle": "Fanfare"
     },
     {
       "category": "Brass",
       "slot": 2,
-      "index": 114,
+      "index": 127,
       "name": "Brass Stab Frozen Section 40",
       "subStyle": "Stab"
     },
     {
       "category": "Choir",
       "slot": 1,
-      "index": 130,
+      "index": 143,
       "name": "Choir Chant Shadow Oohs 92",
       "subStyle": "Chant"
     },
     {
       "category": "Church Keys/EP",
       "slot": 1,
-      "index": 118,
+      "index": 131,
       "name": "Church Keys Wurli Trap Gospel 14",
       "subStyle": "Wurli"
     },
     {
       "category": "Church Keys/EP",
       "slot": 2,
-      "index": 117,
+      "index": 130,
       "name": "Church Keys Gospel Dark Keys 54",
       "subStyle": "Gospel"
     },
     {
       "category": "Hits/FX",
       "slot": 1,
-      "index": 132,
+      "index": 145,
       "name": "Hits Impact Ominous Stab 36",
       "subStyle": "Impact"
     },
     {
       "category": "Hits/FX",
       "slot": 2,
-      "index": 131,
+      "index": 144,
       "name": "Hits Rise Velvet Rise 47",
       "subStyle": "Rise"
     },
     {
       "category": "Leads",
       "slot": 1,
-      "index": 61,
-      "name": "Leads FM Blade Grim Blade 83",
-      "subStyle": "FM Blade"
+      "index": 69,
+      "name": "Leads Pulse Cry Southern Blade 212",
+      "subStyle": "Pulse Cry"
     },
     {
       "category": "Leads",
       "slot": 2,
-      "index": 63,
-      "name": "Leads Pulse Cry Cinematic Blade 12",
-      "subStyle": "Pulse Cry"
+      "index": 75,
+      "name": "Leads Glide Solo Shadow Hook 60",
+      "subStyle": "Glide Solo"
     },
     {
       "category": "Organ",
       "slot": 1,
-      "index": 124,
+      "index": 137,
       "name": "Organ Rotary Cinematic Organ 32",
       "subStyle": "Rotary"
     },
     {
       "category": "Organ",
       "slot": 2,
-      "index": 121,
+      "index": 134,
       "name": "Organ Rotary Grim Rotary 56",
       "subStyle": "Rotary"
     },
@@ -122,42 +122,42 @@
     {
       "category": "Strings",
       "slot": 1,
-      "index": 115,
+      "index": 128,
       "name": "Strings Trem Reverse Line 104",
       "subStyle": "Trem"
     },
     {
       "category": "Strings",
       "slot": 2,
-      "index": 116,
+      "index": 129,
       "name": "Strings Legato Frozen Strings 28",
       "subStyle": "Legato"
     },
     {
       "category": "Swells",
       "slot": 1,
-      "index": 103,
+      "index": 116,
       "name": "Swells Filter Sweep Midnight Swell 131",
       "subStyle": "Filter Sweep"
     },
     {
       "category": "Swells",
       "slot": 2,
-      "index": 96,
+      "index": 109,
       "name": "Swells Rising Chrome Bloom 61",
       "subStyle": "Rising"
     },
     {
       "category": "Synth Keys",
       "slot": 1,
-      "index": 73,
+      "index": 86,
       "name": "Synth Keys Wurli Dirt Cathedral Keys 299",
       "subStyle": "Wurli Dirt"
     },
     {
       "category": "Synth Keys",
       "slot": 2,
-      "index": 79,
+      "index": 92,
       "name": "Synth Keys Digipluck Ominous Glass 54",
       "subStyle": "Digipluck"
     }
