@@ -9,6 +9,7 @@ on:
       - ".github/workflows/metertap.yml"
       - "tools/build-vst.sh"
       - "vst-testing-ops/**"
+      - "JUCE_VERSION"
   pull_request:
     paths:
       - "vst/MeterTap/**"
@@ -17,6 +18,7 @@ on:
       - ".github/workflows/metertap.yml"
       - "tools/build-vst.sh"
       - "vst-testing-ops/**"
+      - "JUCE_VERSION"
   workflow_dispatch:
 
 jobs:
@@ -35,9 +37,23 @@ jobs:
 
       - name: Fetch JUCE
         run: |
-          if [[ ! -f vst/JUCE/CMakeLists.txt ]]; then
-            git clone --depth 1 --branch 7.0.12 https://github.com/juce-framework/JUCE.git vst/JUCE
+          TAG="$(tr -d '[:space:]' < JUCE_VERSION)"
+          HAVE=""
+          if [[ -f vst/JUCE/CMakeLists.txt ]]; then
+            HAVE="$(git -C vst/JUCE describe --tags --exact-match HEAD 2>/dev/null || true)"
           fi
+          if [[ "${HAVE}" != "${TAG}" ]]; then
+            rm -rf vst/JUCE
+            git clone --depth 1 --branch "${TAG}" https://github.com/juce-framework/JUCE.git vst/JUCE
+          fi
+
+      - name: Cache pluginval binary
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/tools/pluginval
+            vst-testing-ops/bin
+          key: pluginval-${{ runner.os }}-1.0.4
 
       - name: Install pluginval
         run: python3 vst-testing-ops/test_runner.py --install-pluginval

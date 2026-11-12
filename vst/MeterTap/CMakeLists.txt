@@ -9,7 +9,7 @@ set(SHARED_DSP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../shared/dsp)
 set(FACTORY_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../factory-lib)
 
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../JUCE/CMakeLists.txt")
-  message(FATAL_ERROR "JUCE not found. From repo root: git clone --branch 7.0.12 https://github.com/juce-framework/JUCE.git vst/JUCE")
+  message(FATAL_ERROR "JUCE not found. From repo root: ./tools/build-vst.sh MeterTap (clones the tag in /JUCE_VERSION into vst/JUCE)")
 endif()
 add_subdirectory(../JUCE JUCE)
 

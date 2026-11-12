@@ -20,10 +20,43 @@ DEFAULT_LINUX_URL = (
     f"https://github.com/Tracktion/pluginval/releases/download/v{DEFAULT_VERSION}/"
     "pluginval_Linux.zip"
 )
+# Download retries: 4 attempts with 5 / 15 / 45 s backoff between tries.
+# Override for tests: PLUGINVAL_DOWNLOAD_ATTEMPTS / PLUGINVAL_DOWNLOAD_BACKOFF (comma-separated seconds).
+DOWNLOAD_ATTEMPTS_DEFAULT = 4
+DOWNLOAD_BACKOFF_DEFAULT = (5, 15, 45)
+DOWNLOAD_FAIL_EXIT = 3
+DOWNLOAD_FAIL_BANNER = (
+    "PLUGINVAL_DOWNLOAD_FAILED: could not download pluginval after retries. "
+    "This is an infrastructure/network failure, not a plugin validation failure."
+)
+
+
+def _download_attempts() -> int:
+    raw = os.environ.get("PLUGINVAL_DOWNLOAD_ATTEMPTS", "").strip()
+    if raw.isdigit() and int(raw) > 0:
+        return int(raw)
+    return DOWNLOAD_ATTEMPTS_DEFAULT
+
+
+def _download_backoff() -> tuple[int, ...]:
+    raw = os.environ.get("PLUGINVAL_DOWNLOAD_BACKOFF", "").strip()
+    if raw:
+        parts = [p.strip() for p in raw.split(",") if p.strip()]
+        try:
+            vals = tuple(int(p) for p in parts)
+            if vals:
+                return vals
+        except ValueError:
+            pass
+    return DOWNLOAD_BACKOFF_DEFAULT
 FAIL_MARKERS = re.compile(
     r"\b(FAILED|FAILURE|ERROR|CRASH|Segmentation fault|assertion failed)\b",
     re.IGNORECASE,
 )
+
+
+class PluginvalDownloadError(RuntimeError):
+    """Raised when pluginval cannot be downloaded (distinct from validation failure)."""
 
 
 @dataclass
@@ -53,6 +86,50 @@ def cache_dir() -> Path:
     return repo_root() / "build" / "tools" / "pluginval"
 
 
+def pluginval_version() -> str:
+    return os.environ.get("PLUGINVAL_VERSION", DEFAULT_VERSION).strip() or DEFAULT_VERSION
+
+
+def default_download_url() -> str:
+    ver = pluginval_version()
+    return (
+        f"https://github.com/Tracktion/pluginval/releases/download/v{ver}/"
+        "pluginval_Linux.zip"
+    )
+
+
+def _download_with_retry(url: str, zip_path: Path) -> None:
+    """Download zip with exponential-ish backoff. Never conflates with validation failure."""
+    attempts = _download_attempts()
+    backoff = _download_backoff()
+    last_err: BaseException | None = None
+    for attempt in range(1, attempts + 1):
+        try:
+            print(
+                f"Downloading pluginval (attempt {attempt}/{attempts}) from {url}",
+                file=sys.stderr,
+            )
+            zip_path.unlink(missing_ok=True)
+            urllib.request.urlretrieve(url, zip_path)
+            if zip_path.is_file() and zip_path.stat().st_size > 0:
+                return
+            raise OSError(f"Downloaded empty file: {zip_path}")
+        except BaseException as exc:  # noqa: BLE001 — network/HTTP/zip prep all retryable
+            last_err = exc
+            print(
+                f"pluginval download attempt {attempt}/{attempts} failed: {exc}",
+                file=sys.stderr,
+            )
+            if attempt >= attempts:
+                break
+            delay = backoff[min(attempt - 1, len(backoff) - 1)]
+            print(f"Retrying pluginval download in {delay}s …", file=sys.stderr)
+            time.sleep(delay)
+    raise PluginvalDownloadError(
+        f"{DOWNLOAD_FAIL_BANNER} url={url} last_error={last_err!r}"
+    )
+
+
 def ensure_pluginval(force_download: bool = False) -> Path:
     explicit = os.environ.get("PLUGINVAL_BIN")
     if explicit:
@@ -66,35 +143,33 @@ def ensure_pluginval(force_download: bool = False) -> Path:
     if binary.is_file() and os.access(binary, os.X_OK) and not force_download:
         return binary
 
-    url = os.environ.get("PLUGINVAL_DOWNLOAD_URL", DEFAULT_LINUX_URL)
+    url = os.environ.get("PLUGINVAL_DOWNLOAD_URL", default_download_url())
     cache.mkdir(parents=True, exist_ok=True)
     zip_path = cache / "pluginval.zip"
 
-    print(f"Downloading pluginval from {url}", file=sys.stderr)
-    # GitHub release CDN occasionally returns 504 — retry with backoff.
-    last_err: Exception | None = None
-    for attempt in range(1, 6):
-        try:
-            urllib.request.urlretrieve(url, zip_path)
-            last_err = None
-            break
-        except Exception as exc:  # noqa: BLE001 — network/CDN flake
-            last_err = exc
-            wait = min(32, 2**attempt)
-            print(
-                f"pluginval download attempt {attempt}/5 failed: {exc}; retry in {wait}s",
-                file=sys.stderr,
-            )
-            time.sleep(wait)
-    if last_err is not None:
-        raise SystemExit(f"Failed to download pluginval after 5 attempts: {last_err}") from last_err
+    try:
+        _download_with_retry(url, zip_path)
+    except PluginvalDownloadError as exc:
+        print(str(exc), file=sys.stderr)
+        raise SystemExit(DOWNLOAD_FAIL_EXIT) from exc
 
-    with zipfile.ZipFile(zip_path) as zf:
-        members = [m for m in zf.namelist() if Path(m).name == "pluginval"]
-        if not members:
-            raise SystemExit(f"No pluginval binary inside {zip_path}")
-        with zf.open(members[0]) as src, open(binary, "wb") as dst:
-            shutil.copyfileobj(src, dst)
+    try:
+        with zipfile.ZipFile(zip_path) as zf:
+            members = [m for m in zf.namelist() if Path(m).name == "pluginval"]
+            if not members:
+                raise PluginvalDownloadError(
+                    f"{DOWNLOAD_FAIL_BANNER} No pluginval binary inside {zip_path}"
+                )
+            with zf.open(members[0]) as src, open(binary, "wb") as dst:
+                shutil.copyfileobj(src, dst)
+    except PluginvalDownloadError as exc:
+        print(str(exc), file=sys.stderr)
+        raise SystemExit(DOWNLOAD_FAIL_EXIT) from exc
+    except Exception as exc:  # noqa: BLE001
+        msg = f"{DOWNLOAD_FAIL_BANNER} extract_error={exc!r}"
+        print(msg, file=sys.stderr)
+        raise SystemExit(DOWNLOAD_FAIL_EXIT) from exc
+
     binary.chmod(0o755)
     zip_path.unlink(missing_ok=True)
     return binary

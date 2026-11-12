@@ -12,7 +12,7 @@ CI builds all three plugin formats on Ubuntu 24.04.
 
 ## JUCE and CLAP wiring
 
-- **JUCE** is pinned in root `CMakeLists.txt` (currently **8.0.15** via `FetchContent`).
+- **JUCE** is pinned once in repo-root [`JUCE_VERSION`](../JUCE_VERSION); root `CMakeLists.txt` (and every other JUCE CMake path) FetchContent that tag.
 - **CLAP** is not a native `juce_add_plugin` format yet; this project uses [clap-juce-extensions](https://github.com/free-audio/clap-juce-extensions) (`FetchContent` + `GIT_SUBMODULES_RECURSE`) and `clap_juce_extensions_plugin()` after `juce_add_plugin`.
 - **CLAP ID:** `com.instruments.jdupgraded` (matches `BUNDLE_ID`).
 - The extensions repo is pinned to a specific commit (newer than tag **0.26.0**) because the tagged wrapper does not compile against JUCE 8’s headless parameter layout.

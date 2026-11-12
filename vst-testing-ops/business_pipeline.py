@@ -238,14 +238,7 @@ def stage_factory_vst_build(plugin_name: str) -> StageResult:
             time.time() - t0,
             "tools/build-vst.sh not found\n",
         )
-    juce = REPO_ROOT / "vst/JUCE/CMakeLists.txt"
-    if not juce.is_file():
-        return StageResult(
-            StageId.FACTORY_VST_BUILD,
-            False,
-            time.time() - t0,
-            "JUCE missing — git submodule update --init vst/JUCE\n",
-        )
+    # tools/build-vst.sh clones the /JUCE_VERSION tag into vst/JUCE when missing.
     code, out = _run(["bash", str(script), plugin_name], timeout_s=3600)
     BUILD_LOG.write_text(out, encoding="utf-8")
     return StageResult(StageId.FACTORY_VST_BUILD, code == 0, time.time() - t0, out)

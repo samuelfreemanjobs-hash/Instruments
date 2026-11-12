@@ -19,7 +19,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libasound2-dev libfreetype-dev libgl1-mesa-dev \
-            libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libgtk-3-dev unzip curl xvfb
+            libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libgtk-3-dev unzip curl xvfb \
+            libfontconfig1-dev
+
+      - name: Cache pluginval binary
+        uses: actions/cache@v4
+        with:
+          path: build/tools/pluginval
+          key: pluginval-${{ runner.os }}-1.0.4
 
       - name: Configure and build
         run: |

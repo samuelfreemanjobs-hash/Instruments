@@ -1,13 +1,18 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(InstrumentsPlugins VERSION 0.0.1 LANGUAGES CXX)
+# JUCE 8 juceaide needs a C compiler in the project languages list.
+project(InstrumentsPlugins VERSION 0.0.1 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/../JUCE_VERSION")
+    message(FATAL_ERROR "Missing ../JUCE_VERSION — pin the monorepo JUCE tag there (single source of truth).")
+endif()
 file(READ "${CMAKE_CURRENT_LIST_DIR}/../JUCE_VERSION" JUCE_PINNED_VERSION)
 string(STRIP "${JUCE_PINNED_VERSION}" JUCE_PINNED_VERSION)
+message(STATUS "MyFirstPlugin JUCE pin: ${JUCE_PINNED_VERSION}")
 
 option(MYFIRSTPLUGIN_COPY_AFTER_BUILD "Copy MyFirstPlugin VST3 to the OS plugin folder after build" OFF)
 option(MYFIRSTSYNTH_COPY_AFTER_BUILD "Copy MyFirstSynth VST3 to the OS plugin folder after build" OFF)

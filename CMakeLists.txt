@@ -9,10 +9,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FetchContent)
 
+# Single pin: repo-root JUCE_VERSION (do not hard-code a tag here).
+file(READ "${CMAKE_SOURCE_DIR}/JUCE_VERSION" JUCE_PINNED_VERSION)
+string(STRIP "${JUCE_PINNED_VERSION}" JUCE_PINNED_VERSION)
+message(STATUS "JUCE pin from JUCE_VERSION: ${JUCE_PINNED_VERSION}")
+
 FetchContent_Declare(
     JUCE
     GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-    GIT_TAG 8.0.15
+    GIT_TAG ${JUCE_PINNED_VERSION}
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(JUCE)

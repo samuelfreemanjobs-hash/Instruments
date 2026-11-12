@@ -24,6 +24,8 @@ The Linux build blocks in `AGENTS.md` (`g++-12`, `make`, `apt-get`, `$(nproc)`) 
 
 ## JUCE VST3 (MyFirstPlugin preset)
 
+JUCE tag comes from repo-root `JUCE_VERSION` (single pin for the monorepo). Do not pass a hard-coded `GIT_TAG` override unless intentionally testing a bump PR.
+
 ```powershell
 cd MyFirstPlugin
 cmake --preset windows-vs-release -DMYFIRSTPLUGIN_COPY_AFTER_BUILD=OFF -DMYFIRSTSYNTH_COPY_AFTER_BUILD=OFF

@@ -92,7 +92,7 @@ Optional **VST/APC** workflow for new JUCE plugins: [vst/README.md](vst/README.m
 
 # MyFirstPlugin (starter)
 
-CMake-native [JUCE](https://juce.com/) effect and synth templates under [`MyFirstPlugin/`](MyFirstPlugin/). JUCE version is pinned in [`JUCE_VERSION`](JUCE_VERSION) (fetched on first configure for that subproject).
+CMake-native [JUCE](https://juce.com/) effect and synth templates under [`MyFirstPlugin/`](MyFirstPlugin/). The whole monorepo shares one pin in [`JUCE_VERSION`](JUCE_VERSION) (FetchContent on first configure). See [vst/README.md](vst/README.md) for the bump procedure.
 
 **Windows:** `MyFirstPlugin/Build Plugin.bat` or see [`MyFirstPlugin/VISUAL_STUDIO.md`](MyFirstPlugin/VISUAL_STUDIO.md).  
 **macOS / Linux:** `cd MyFirstPlugin && ./build.sh`

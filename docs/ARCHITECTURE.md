@@ -65,7 +65,7 @@ Control-rate envelopes advance every `kControlRateDivisor` (32) samples inside e
 ## Build targets
 
 - `JDUpgraded_VST3`, `JDUpgraded_Standalone` — `juce_add_plugin` in root `CMakeLists.txt`.
-- `JDUpgraded_CLAP` — `clap_juce_extensions_plugin` ([INTEGRATION.md](INTEGRATION.md)); JUCE **8.0.15** + pinned [clap-juce-extensions](https://github.com/free-audio/clap-juce-extensions).
+- `JDUpgraded_CLAP` — `clap_juce_extensions_plugin` ([INTEGRATION.md](INTEGRATION.md)); JUCE pin from repo-root [`JUCE_VERSION`](../JUCE_VERSION) + pinned [clap-juce-extensions](https://github.com/free-audio/clap-juce-extensions).
 - SIMD: `-mavx2` when available, else NEON define for ARM.
 
 ## Testing & regression

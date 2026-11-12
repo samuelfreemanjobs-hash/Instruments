@@ -115,6 +115,8 @@ Read AGENTS.md and docs/CLAUDE_VST_ENGINEER.md. Active product: <ProphetRev2Trap
 
 ## JUCE plugin (default Cloud install)
 
+Single pin: repo-root [`JUCE_VERSION`](JUCE_VERSION) (currently **8.0.15**). Every CMake FetchContent / `tools/build-vst.sh` clone reads that file — see [vst/README.md](vst/README.md) for the bump procedure.
+
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
 cmake --build build -j

@@ -17,27 +17,43 @@ option(FACTORY_GUI_BUILD_TESTS "Build FactoryGuiRenderTests" ON)
 option(FACTORY_GUI_USE_SYSTEM_FONTS "Skip vendored OFL TTFs; use JUCE defaults" OFF)
 set(FACTORY_GUI_THEME "disklordz" CACHE STRING "Theme id for gallery/tests (disklordz|_template|studio-light)")
 
-# Pin JUCE for standalone configures. Defaults to repo-root JUCE_VERSION (7.0.12).
-# Override: -DFACTORY_GUI_JUCE_TAG=8.0.15  (do NOT silently reuse build/_deps).
+# Pin JUCE for standalone configures. Defaults to repo-root /JUCE_VERSION.
+# Override: -DFACTORY_GUI_JUCE_TAG=<tag>  (do NOT silently reuse build/_deps).
 set(_juce_pin_file "${CMAKE_CURRENT_SOURCE_DIR}/../../JUCE_VERSION")
-if(EXISTS "${_juce_pin_file}")
-  file(READ "${_juce_pin_file}" _juce_pin_default)
-  string(STRIP "${_juce_pin_default}" _juce_pin_default)
-else()
-  set(_juce_pin_default "7.0.12")
+if(NOT EXISTS "${_juce_pin_file}")
+  message(FATAL_ERROR "Missing ${_juce_pin_file} — pin the monorepo JUCE tag there (single source of truth).")
 endif()
+file(READ "${_juce_pin_file}" _juce_pin_default)
+string(STRIP "${_juce_pin_default}" _juce_pin_default)
 set(FACTORY_GUI_JUCE_TAG "${_juce_pin_default}" CACHE STRING "JUCE git tag for FetchContent when not provided by parent")
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/FactoryGui.cmake")
 
 # ---------------------------------------------------------------------------
-# JUCE — reuse parent target, optional submodule, else FetchContent(FACTORY_GUI_JUCE_TAG)
-# Never auto-pick monorepo build/_deps (that tree may be a different major than JUCE_VERSION).
+# JUCE — reuse parent target, local vst/JUCE only if its tag matches the pin,
+# else FetchContent(FACTORY_GUI_JUCE_TAG). Never auto-pick monorepo build/_deps.
 # ---------------------------------------------------------------------------
 if(NOT TARGET juce::juce_gui_basics)
   set(_juce_submodule "${CMAKE_CURRENT_SOURCE_DIR}/../JUCE")
+  set(_juce_use_local FALSE)
   if(EXISTS "${_juce_submodule}/CMakeLists.txt")
-    message(STATUS "factory_gui: using vst/JUCE submodule")
+    execute_process(
+      COMMAND git -C "${_juce_submodule}" describe --tags --exact-match HEAD
+      OUTPUT_VARIABLE _juce_local_tag
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET
+      RESULT_VARIABLE _juce_local_tag_rc
+    )
+    if(_juce_local_tag_rc EQUAL 0 AND _juce_local_tag STREQUAL FACTORY_GUI_JUCE_TAG)
+      set(_juce_use_local TRUE)
+    else()
+      message(WARNING
+        "vst/JUCE tag '${_juce_local_tag}' != pin ${FACTORY_GUI_JUCE_TAG}; "
+        "using FetchContent for the pin.")
+    endif()
+  endif()
+  if(_juce_use_local)
+    message(STATUS "factory_gui: using vst/JUCE at pin ${FACTORY_GUI_JUCE_TAG}")
     add_subdirectory("${_juce_submodule}" "${CMAKE_BINARY_DIR}/juce_submodule")
   else()
     include(FetchContent)

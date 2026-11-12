@@ -60,8 +60,8 @@ bypass. Levels are analysed on the audio thread (factory-lib `PeakRms` +
 
 | Check | Result |
 |-------|--------|
-| JUCE pin | `vst/JUCE` = **7.0.12** (`project(JUCE VERSION 7.0.12)`) |
-| `tools/build-vst.sh MeterTap` | exit 0 — VST3 built against JUCE 7.0.12 |
+| JUCE pin | `vst/JUCE` matches the pinned version in `/JUCE_VERSION` |
+| `tools/build-vst.sh MeterTap` | exit 0 — VST3 built against `/JUCE_VERSION` |
 | `run_business.py --profile factory --plugin MeterTap` | `ok: true` (build + artefact + pluginval) |
 | `plugins/MeterTap/scripts/verify-phase4.sh` | exit 0 (analysis ctest, processor, editor renders both themes, factory profile) |
 | MeterTapEditorRenderTests `disklordz` | PASS @1.0x / @2.0x — single-IEND PNGs, normal≠over |

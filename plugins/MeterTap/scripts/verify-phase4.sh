@@ -19,10 +19,7 @@ cmake --build "$ANALYSIS_BUILD" -j"$(nproc 2>/dev/null || echo 4)"
 ctest --test-dir "$ANALYSIS_BUILD" --output-on-failure | tee "$LOG_DIR/analysis-ctest.log"
 
 echo "==> (c) tools/build-vst.sh MeterTap (also builds processor tests)"
-if [[ ! -f "$ROOT/vst/JUCE/CMakeLists.txt" ]]; then
-  echo "JUCE missing under vst/JUCE — cloning pinned 7.0.12" >&2
-  git clone --depth 1 --branch 7.0.12 https://github.com/juce-framework/JUCE.git "$ROOT/vst/JUCE"
-fi
+# tools/build-vst.sh clones/refreshes vst/JUCE to match /JUCE_VERSION.
 bash "$ROOT/tools/build-vst.sh" MeterTap | tee "$LOG_DIR/build-vst.log"
 
 echo "==> (b) processor contract tests (V3/V4/V5)"

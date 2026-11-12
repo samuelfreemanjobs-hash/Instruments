@@ -6,12 +6,13 @@
 #   ./tools/build-vst.sh --list
 #   ./tools/build-vst.sh --all
 #
-# Requires: git submodule update --init vst/JUCE
+# JUCE: clones the tag in /JUCE_VERSION into vst/JUCE when missing (not a git submodule).
 
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 JUCE_DIR="${ROOT}/vst/JUCE"
+JUCE_VERSION_FILE="${ROOT}/JUCE_VERSION"
 
 is_template_dir() {
   case "$(basename "$1")" in
@@ -29,11 +30,46 @@ list_plugins() {
   done
 }
 
-ensure_juce() {
-  if [[ ! -f "${JUCE_DIR}/CMakeLists.txt" ]]; then
-    echo "JUCE missing. Run from repo root:" >&2
-    echo "  git submodule update --init vst/JUCE" >&2
+read_juce_pin() {
+  if [[ ! -f "${JUCE_VERSION_FILE}" ]]; then
+    echo "Missing ${JUCE_VERSION_FILE} — cannot resolve JUCE pin." >&2
     exit 1
+  fi
+  tr -d '[:space:]' < "${JUCE_VERSION_FILE}"
+}
+
+local_juce_tag() {
+  # Exact tag at HEAD, else empty (detached/wrong/non-git trees).
+  git -C "${JUCE_DIR}" describe --tags --exact-match HEAD 2>/dev/null || true
+}
+
+ensure_juce() {
+  local tag have
+  tag="$(read_juce_pin)"
+  if [[ -z "${tag}" ]]; then
+    echo "JUCE_VERSION is empty." >&2
+    exit 1
+  fi
+  if [[ -f "${JUCE_DIR}/CMakeLists.txt" ]]; then
+    have="$(local_juce_tag)"
+    if [[ "${have}" == "${tag}" ]]; then
+      return 0
+    fi
+    echo "vst/JUCE is at '${have:-unknown}', want pin ${tag} — replacing checkout" >&2
+    rm -rf "${JUCE_DIR}"
+  fi
+  echo "Cloning JUCE pin ${tag} into vst/JUCE" >&2
+  git clone --depth 1 --branch "${tag}" \
+    https://github.com/juce-framework/JUCE.git "${JUCE_DIR}"
+}
+
+prefer_compilers() {
+  # Match AGENTS.md / CI: prefer g++-12 when present (default c++ may lack libstdc++).
+  if [[ -z "${CXX:-}" ]] && command -v g++-12 >/dev/null 2>&1; then
+    export CXX=g++-12
+  fi
+  if [[ -z "${CC:-}" ]] && command -v gcc-12 >/dev/null 2>&1; then
+    export CC=gcc-12
   fi
 }
 
@@ -48,18 +84,15 @@ build_one() {
     echo "Skip template: ${name}" >&2
     return 1
   fi
-  echo "==> Building vst/${name}"
+  prefer_compilers
+  echo "==> Building vst/${name} (CC=${CC:-cc} CXX=${CXX:-c++})"
   cd "${vst}"
   local cmake_args=(-B build -DCMAKE_BUILD_TYPE=Release)
-  if [[ -n "${CXX:-}" ]]; then
-    cmake_args+=(-DCMAKE_CXX_COMPILER="${CXX}")
-  elif command -v g++-12 >/dev/null 2>&1; then
-    cmake_args+=(-DCMAKE_CXX_COMPILER=g++-12)
-  fi
   if [[ -n "${CC:-}" ]]; then
     cmake_args+=(-DCMAKE_C_COMPILER="${CC}")
-  elif command -v gcc-12 >/dev/null 2>&1; then
-    cmake_args+=(-DCMAKE_C_COMPILER=gcc-12)
+  fi
+  if [[ -n "${CXX:-}" ]]; then
+    cmake_args+=(-DCMAKE_CXX_COMPILER="${CXX}")
   fi
   # Optional theme override for re-theme verify (e.g. METERTAP_THEME=studio-light)
   if [[ -n "${METERTAP_THEME:-}" && "${name}" == "MeterTap" ]]; then
@@ -93,6 +126,8 @@ case "${cmd}" in
   -h|--help|help|"")
     cat <<EOF
 Usage: $0 <PluginName> | --list | --all
+
+JUCE is resolved from /JUCE_VERSION (cloned into vst/JUCE when missing).
 EOF
     exit 0
     ;;
