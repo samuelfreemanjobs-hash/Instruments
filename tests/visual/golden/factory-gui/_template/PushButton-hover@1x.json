@@ -1,0 +1,11 @@
+{
+  "component": "PushButton",
+  "state": "hover",
+  "scale": 1.0,
+  "theme": "_template",
+  "width": 80,
+  "height": 28,
+  "texts": [
+    {"string": "GO", "bounds": {"x":4.000,"y":4.000,"w":72.000,"h":20.000}}
+  ]
+}

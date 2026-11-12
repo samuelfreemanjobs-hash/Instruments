@@ -1,0 +1,10 @@
+{
+  "component": "LevelMeter",
+  "state": "hot",
+  "scale": 2.0,
+  "theme": "studio-light",
+  "width": 48,
+  "height": 200,
+  "texts": [
+  ]
+}

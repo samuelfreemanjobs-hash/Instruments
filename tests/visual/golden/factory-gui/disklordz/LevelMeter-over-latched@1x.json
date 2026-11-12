@@ -1,0 +1,10 @@
+{
+  "component": "LevelMeter",
+  "state": "over-latched",
+  "scale": 1.0,
+  "theme": "disklordz",
+  "width": 48,
+  "height": 200,
+  "texts": [
+  ]
+}

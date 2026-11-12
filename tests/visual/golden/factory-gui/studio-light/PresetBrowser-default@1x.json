@@ -1,0 +1,10 @@
+{
+  "component": "PresetBrowser",
+  "state": "default",
+  "scale": 1.0,
+  "theme": "studio-light",
+  "width": 220,
+  "height": 24,
+  "texts": [
+  ]
+}

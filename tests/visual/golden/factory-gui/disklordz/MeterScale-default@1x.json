@@ -1,0 +1,10 @@
+{
+  "component": "MeterScale",
+  "state": "default",
+  "scale": 1.0,
+  "theme": "disklordz",
+  "width": 40,
+  "height": 160,
+  "texts": [
+  ]
+}

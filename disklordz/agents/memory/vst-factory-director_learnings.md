@@ -171,3 +171,23 @@ Factory, plugin (APC/DPCS), design-system and JUCE work. Format and rules: [MEMO
 - **evidence:** PR #130 repo_health.sh local run; git status clean only after checkout
 - **confidence:** executed
 - **status:** active
+
+### L-0018 · Goldens must be authored on the CI runner, never on a Cloud/dev VM
+- **date:** 2026-11-09
+- **area:** ci, visual-regression, goldens, tolerances
+- **when:** factory-gui visual goldens rendered on a Cloud VM fail strict compare on ubuntu-latest
+- **lesson:** Loosening channel-tol / max-diff-ratio to absorb FreeType host AA (e.g. 24 / 8–10%) lets small real regressions (LED-on colour, focus ring) pass. The mismatch is environment authorship, not tolerance.
+- **do:** Author and commit goldens only via design-system.yml workflow_dispatch rebaseline=true on ubuntu-latest JUCE 8.0.15; keep channel-tol 8 and max-diff-ratio 0.002; never push PNGs from a Cloud or laptop render.
+- **evidence:** PR #131: CI AA fail on Cloud-authored goldens; orchestrator rejected tol 24/0.08; LED-on recolour fails at 0.2% but would pass at 8%
+- **confidence:** executed
+- **status:** active
+
+### L-0019 · Cloud ghs_ cannot workflow_dispatch; use sentinel file for CI rebaseline
+- **date:** 2026-11-09
+- **area:** ci, github-actions, visual-regression, permissions
+- **when:** triggering design-system rebaseline from a Cloud agent
+- **lesson:** gh workflow run returns HTTP 403 Resource not accessible by integration for ghs_ tokens. Also GITHUB_TOKEN bot pushes do not re-trigger workflows (and may land as action_required).
+- **do:** Commit tests/visual/.rebaseline-on-ci to request CI --update; after bot golden commit, push an agent empty/follow-up commit to run the verifying strict compare.
+- **evidence:** PR #131: dispatch 403; sentinel run 42649831533 authored c459ade7; verifying empty commit run 42653393326 success
+- **confidence:** executed
+- **status:** active

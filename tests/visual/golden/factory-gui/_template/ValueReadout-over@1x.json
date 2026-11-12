@@ -1,0 +1,12 @@
+{
+  "component": "ValueReadout",
+  "state": "over",
+  "scale": 1.0,
+  "theme": "_template",
+  "width": 140,
+  "height": 32,
+  "texts": [
+    {"string": "+3.0 dB", "bounds": {"x":8.000,"y":8.000,"w":49.769,"h":16.000}},
+    {"string": "OVER", "bounds": {"x":92.000,"y":11.000,"w":27.767,"h":10.000}}
+  ]
+}

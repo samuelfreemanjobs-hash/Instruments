@@ -1,0 +1,11 @@
+{
+  "component": "Utf8Label",
+  "state": "default",
+  "scale": 2.0,
+  "theme": "_template",
+  "width": 320,
+  "height": 28,
+  "texts": [
+    {"string": "METERS · INPUT −12.0", "bounds": {"x":0.000,"y":8.000,"w":135.696,"h":12.000}}
+  ]
+}

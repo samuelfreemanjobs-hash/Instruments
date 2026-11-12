@@ -1,0 +1,12 @@
+{
+  "component": "ValueReadout",
+  "state": "neg96",
+  "scale": 1.0,
+  "theme": "disklordz",
+  "width": 140,
+  "height": 32,
+  "texts": [
+    {"string": "−96.0", "bounds": {"x":8.000,"y":8.000,"w":36.238,"h":16.000}},
+    {"string": "dB", "bounds": {"x":92.000,"y":11.000,"w":12.148,"h":10.000}}
+  ]
+}

@@ -6,13 +6,34 @@ on:
       - "vst/factory-lib/**"
       - ".github/workflows/design-system.yml"
       - "JUCE_VERSION"
+      - "tools/visual_diff.py"
+      - "tools/test_visual_diff.py"
+      - "tests/visual/**"
+      - "docs/disklordz/sops/SOP-VF-06-verify-test.md"
+      - "docs/disklordz/sops/SOP-VF-13-visual-baselines.md"
   push:
     branches: [main, cursor/design-system]
     paths:
       - "vst/factory-lib/**"
       - ".github/workflows/design-system.yml"
       - "JUCE_VERSION"
+      - "tools/visual_diff.py"
+      - "tools/test_visual_diff.py"
+      - "tests/visual/**"
   workflow_dispatch:
+    inputs:
+      rebaseline:
+        description: "Re-baseline factory-gui goldens on the JUCE 8.0.15 CI cell and commit to this branch"
+        type: boolean
+        default: false
+      only:
+        description: "Optional comma-separated --only globs (e.g. HeaderBar*,PresetBrowser*)"
+        type: string
+        default: ""
+
+# Bot re-baseline commits need contents:write. Read is enough for normal PR/push runs.
+permissions:
+  contents: write
 
 jobs:
   tokens-and-render:
@@ -20,10 +41,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Pinned repo default (JUCE_VERSION) + optional JUCE 8 compatibility entry
+        # Pinned repo default (JUCE_VERSION) + golden cell JUCE 8.0.15
         juce_tag: ["from-file", "8.0.15"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Always the branch tip (not the PR merge SHA) so bot golden commits push cleanly.
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Resolve JUCE tag
         id: juce
@@ -44,6 +70,12 @@ jobs:
           python3 "$DS/scripts/check_tokens.py" --check-preview --check-generated
           python3 "$DS/scripts/gen_juce_tokens.py" --all --check
           python3 -m unittest discover -s "$DS/scripts" -p "test_*.py" -v
+
+      - name: Visual diff unit tests
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user Pillow
+          python3 -m unittest discover -s tools -p "test_visual_diff.py" -v
 
       - name: Install build deps
         run: |
@@ -78,6 +110,118 @@ jobs:
         run: |
           cd "build-factory-gui-${{ steps.juce.outputs.tag }}"
           xvfb-run -a ctest --output-on-failure -R 'FactoryGuiRenderTests_'
+
+      - name: Detect rebaseline request
+        id: rb
+        if: steps.juce.outputs.tag == '8.0.15'
+        env:
+          DISPATCH_RB: ${{ github.event_name == 'workflow_dispatch' && inputs.rebaseline || false }}
+          DISPATCH_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.only || '' }}
+        run: |
+          set -euo pipefail
+          RB=false
+          ONLY=""
+          # Primary: workflow_dispatch -f rebaseline=true
+          if [ "${DISPATCH_RB}" = "true" ]; then
+            RB=true
+            ONLY="${DISPATCH_ONLY}"
+          fi
+          # Fallback for tokens that cannot create workflow_dispatch (e.g. ghs_):
+          # commit tests/visual/.rebaseline-on-ci (optional body = comma-separated --only globs).
+          SENTINEL="tests/visual/.rebaseline-on-ci"
+          if [ -f "${SENTINEL}" ]; then
+            RB=true
+            BODY="$(tr -d '\r' < "${SENTINEL}" | head -n 1 | xargs || true)"
+            if [ -n "${BODY}" ] && [ -z "${ONLY}" ]; then
+              ONLY="${BODY}"
+            fi
+          fi
+          echo "rebaseline=${RB}" >> "$GITHUB_OUTPUT"
+          echo "only=${ONLY}" >> "$GITHUB_OUTPUT"
+          echo "Detect rebaseline=${RB} only='${ONLY}'"
+
+      - name: Visual regression (golden cell JUCE 8.0.15)
+        id: visual
+        if: steps.juce.outputs.tag == '8.0.15'
+        env:
+          REBASELINE: ${{ steps.rb.outputs.rebaseline }}
+          ONLY: ${{ steps.rb.outputs.only }}
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user Pillow
+          # Goldens are authored ONLY on this ubuntu-latest runner (see SOP-VF-13).
+          # Strict channel-tol=8 / max-diff-ratio=0.2% — do not loosen for host AA.
+          ARGS=(
+            --actual "build-factory-gui-${{ steps.juce.outputs.tag }}/gui-renders"
+            --golden tests/visual/golden/factory-gui
+            --out build/visual-diff
+            --expected-juce 8.0.15
+            --channel-tol 8
+            --max-diff-ratio 0.002
+          )
+          if [ "${REBASELINE}" = "true" ]; then
+            ARGS+=(--update)
+            if [ -n "${ONLY}" ]; then
+              IFS=',' read -ra GLOBS <<< "${ONLY}"
+              for g in "${GLOBS[@]}"; do
+                g="$(echo "${g}" | xargs)"
+                [ -n "${g}" ] && ARGS+=(--only "${g}")
+              done
+            fi
+            echo "Re-baseline mode: ${ARGS[*]}"
+          fi
+          python3 tools/visual_diff.py "${ARGS[@]}"
+          # Same-job verify: after --update, CI renders must match CI-authored goldens strictly.
+          if [ "${REBASELINE}" = "true" ]; then
+            echo "Verifying CI-authored goldens (strict, no --update)…"
+            python3 tools/visual_diff.py \
+              --actual "build-factory-gui-${{ steps.juce.outputs.tag }}/gui-renders" \
+              --golden tests/visual/golden/factory-gui \
+              --out build/visual-diff-verify \
+              --expected-juce 8.0.15 \
+              --channel-tol 8 \
+              --max-diff-ratio 0.002
+          fi
+
+      - name: Commit CI-authored goldens
+        if: steps.juce.outputs.tag == '8.0.15' && steps.rb.outputs.rebaseline == 'true'
+        run: |
+          set -euo pipefail
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          BRANCH="${{ github.head_ref || github.ref_name }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Drop sentinel so the follow-up CI run is a normal strict compare.
+          if [ -f tests/visual/.rebaseline-on-ci ]; then
+            git rm -f tests/visual/.rebaseline-on-ci
+          fi
+          git add tests/visual/golden/
+          if git diff --cached --quiet; then
+            echo "No golden / sentinel changes to commit."
+            exit 0
+          fi
+          git commit -m "visual: re-baseline on CI runner (${RUN_URL})"
+          git pull --rebase origin "${BRANCH}"
+          git push origin "HEAD:${BRANCH}"
+
+      - name: Upload re-baselined goldens artifact
+        if: >-
+          always()
+          && steps.juce.outputs.tag == '8.0.15'
+          && steps.rb.outputs.rebaseline == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: factory-gui-goldens-rebaseline
+          path: tests/visual/golden/factory-gui/
+          if-no-files-found: warn
+
+      - name: Upload visual diff report (on failure)
+        if: failure() && steps.juce.outputs.tag == '8.0.15'
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diff-report-juce-${{ steps.juce.outputs.tag }}
+          path: build/visual-diff/
+          if-no-files-found: warn
 
       - name: Upload PNG renders
         if: always()
