@@ -160,11 +160,15 @@ SUB_STYLES: dict[str, list[StyleSpec]] = {
         {"label": "808", "engines": [4, 22, 4, 11], "filterType": 0, "cutoff": (120, 650), "attack": (0.002, 0.02), "decay": (0.35, 1.2), "sustain": (0.55, 0.92), "release": (0.4, 1.2), "drive": (1.2, 2.8), "detune": (0, 4), "macroDarkness": (0.35, 0.75)},
         {"label": "Sub", "engines": [4], "filterType": 0, "cutoff": (80, 320), "attack": (0.003, 0.025), "decay": (0.5, 1.4), "sustain": (0.7, 0.98), "release": (0.5, 1.4), "gain": (0.18, 0.38), "detune": (0, 2)},
         {"label": "Distort", "engines": [4, 6], "filterType": 1, "cutoff": (200, 900), "attack": (0.002, 0.015), "decay": (0.2, 0.65), "sustain": (0.45, 0.8), "release": (0.2, 0.6), "drive": (2.2, 4.5), "macroDirt": (0.55, 0.9)},
+        {"label": "Impact", "engines": [23, 22], "filterType": 0, "cutoff": (90, 480), "attack": (0.001, 0.012), "decay": (0.25, 0.85), "sustain": (0.35, 0.75), "drive": (1.6, 3.2), "macroDirt": (0.35, 0.65)},
+        {"label": "Ring", "engines": [11, 4], "filterType": 2, "cutoff": (140, 920), "attack": (0.003, 0.02), "decay": (0.3, 0.95), "sustain": (0.5, 0.88), "drive": (1.3, 2.6)},
     ],
     "Choir": [
         {"label": "Ooh", "engines": [5, 1], "filterType": 0, "cutoff": (500, 2200), "attack": (0.2, 0.9), "decay": (0.35, 0.95), "sustain": (0.75, 0.95), "release": (0.8, 2.0), "detune": (8, 18), "chord": [1], "macroSpace": (0.35, 0.65)},
         {"label": "Chant", "engines": [2, 5], "filterType": 0, "cutoff": (350, 1600), "attack": (0.15, 0.65), "decay": (0.4, 1.0), "sustain": (0.7, 0.92), "release": (0.6, 1.5), "detune": (12, 22), "macroDarkness": (0.35, 0.7)},
         {"label": "Air", "engines": [5], "filterType": 1, "cutoff": (600, 2800), "attack": (0.25, 1.0), "sustain": (0.8, 0.96), "release": (1.0, 2.4), "reverb": (0.4, 0.72), "macroSpace": (0.5, 0.85)},
+        {"label": "Pad Stack", "engines": [7, 15, 20], "filterType": 2, "cutoff": (280, 1400), "attack": (0.35, 1.2), "sustain": (0.82, 0.97), "release": (1.2, 2.8), "detune": (14, 24), "chord": [1, 2, 4], "macroSpace": (0.45, 0.8)},
+        {"label": "Bowed", "engines": [19, 14], "filterType": 0, "cutoff": (400, 1900), "attack": (0.18, 0.75), "vibratoDepth": (0.18, 0.42), "macroMovement": (0.35, 0.7)},
     ],
     "Hits/FX": [
         {"label": "Stab", "engines": [0, 6], "filterType": 0, "cutoff": (600, 3500), "attack": (0.001, 0.012), "decay": (0.08, 0.28), "sustain": (0.05, 0.35), "release": (0.08, 0.35), "drive": (2.0, 4.5), "pitchEnvSemi": (2, 12)},

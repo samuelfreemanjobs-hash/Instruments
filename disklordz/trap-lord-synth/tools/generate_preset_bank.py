@@ -115,6 +115,18 @@ CORR_MAX = 0.92
 CANDIDATE_OVERSHOOT = 4.0
 MAX_GATE_BATCHES = 80
 POOL_CAP = 320
+THIN_FACTORY_CATEGORIES = frozenset(
+    {
+        "Choir",
+        "Bass",
+        "Strings",
+        "Hits/FX",
+        "Bells",
+        "Church Keys/EP",
+        "Organ",
+        "Brass",
+    }
+)
 
 
 def clamp(v: float, lo: float, hi: float) -> float:
@@ -320,8 +332,13 @@ def generate_candidates(category: str, count: int, rng: random.Random) -> list[d
     seen: set[str] = set()
     variant = 0
     while len(out) < count and variant < count * 12:
-        style = styles[variant % len(styles)]
-        p = build_from_style(category, style, variant, rng)
+        if category in THIN_FACTORY_CATEGORIES and (variant % 4 == 0 or rng.random() < 0.28):
+            style = rng.choice(styles)
+            v_ix = variant * 5 + rng.randint(0, 31)
+        else:
+            style = styles[variant % len(styles)]
+            v_ix = variant
+        p = build_from_style(category, style, v_ix, rng)
         fp = param_fingerprint(p)
         if fp in seen:
             variant += 1
