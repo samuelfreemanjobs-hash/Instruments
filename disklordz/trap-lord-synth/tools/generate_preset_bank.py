@@ -112,8 +112,8 @@ SHORT_CATEGORY = {"Church Keys/EP": "Church Keys", "Hits/FX": "Hits"}
 
 CORR_MAX = 0.92
 CANDIDATE_OVERSHOOT = 4.0
-MAX_GATE_BATCHES = 50
-POOL_CAP = 280
+MAX_GATE_BATCHES = 80
+POOL_CAP = 320
 
 
 def clamp(v: float, lo: float, hi: float) -> float:
@@ -304,6 +304,30 @@ def phrase_variant(p: dict) -> int:
     return int((int(p.get("engine", 0)) * 2 + int(p.get("chord", 0)) + int(p.get("filterType", 0))) % 6)
 
 
+def probe_preset_vector(preset: dict, tag: str) -> np.ndarray | None:
+    """Render category phrase for one preset dict and return gate feature vector or None."""
+    sys.path.insert(0, str(ROOT / "tools"))
+    from trap_lord_audio_metrics import (  # noqa: E402
+        analyze_file,
+        category_spectral_passes,
+        gate_feature_vector,
+        peak_passes_audible_gate,
+    )
+
+    json_path = PROBE_DIR / f"{tag}.json"
+    wav = PROBE_DIR / f"{tag}.wav"
+    json_path.write_text(json.dumps(preset), encoding="utf-8")
+    subprocess.check_call(
+        [str(CLI), "category-probe-json", str(json_path), str(wav)], cwd=ROOT, timeout=180
+    )
+    cat = str(preset.get("category", ""))
+    metrics = analyze_file(wav, category=cat)
+    ok, _ = category_spectral_passes(metrics, cat)
+    if not ok or not peak_passes_audible_gate(metrics.peak):
+        return None
+    return gate_feature_vector(wav, preset)
+
+
 def _render_probe(local_i: int, preset: dict) -> tuple[int, np.ndarray | None]:
     sys.path.insert(0, str(ROOT / "tools"))
     from trap_lord_audio_metrics import analyze_file, category_spectral_passes, gate_feature_vector
@@ -311,10 +335,16 @@ def _render_probe(local_i: int, preset: dict) -> tuple[int, np.ndarray | None]:
     json_path = PROBE_DIR / f"candidate_{local_i:05d}.json"
     wav = PROBE_DIR / f"candidate_{local_i:05d}.wav"
     json_path.write_text(json.dumps(preset), encoding="utf-8")
-    subprocess.check_call([str(CLI), "category-probe-json", str(json_path), str(wav)], cwd=ROOT)
+    subprocess.check_call(
+        [str(CLI), "category-probe-json", str(json_path), str(wav)], cwd=ROOT, timeout=180
+    )
+    from trap_lord_audio_metrics import AUDITION_PEAK_MIN_LINEAR, peak_passes_audible_gate
+
     metrics = analyze_file(wav, category=str(preset.get("category", "")))
     ok, _ = category_spectral_passes(metrics, str(preset.get("category", "")))
     if not ok:
+        return local_i, None
+    if not peak_passes_audible_gate(metrics.peak):
         return local_i, None
     return local_i, gate_feature_vector(wav, preset)
 
@@ -384,10 +414,22 @@ def select_diverse_presets(
     return [candidates[i] for i in chosen], new_vecs
 
 
-def run_generation(seed: int, target: dict[str, int], audio_gate: bool) -> tuple[list[dict], dict]:
+def run_generation(
+    seed: int,
+    target: dict[str, int],
+    audio_gate: bool,
+    resume_presets: list[dict] | None = None,
+) -> tuple[list[dict], dict]:
     rng = random.Random(seed)
-    all_presets: list[dict] = []
+    resume_presets = list(resume_presets or [])
+    resume_by_cat: dict[str, list[dict]] = {}
+    for p in resume_presets:
+        resume_by_cat.setdefault(p["category"], []).append(p)
+
+    all_presets: list[dict] = list(resume_presets)
     achieved: dict[str, int] = {}
+    for p in resume_presets:
+        achieved[p["category"]] = achieved.get(p["category"], 0) + 1
     gate_meta: dict = {
         "corrMax": CORR_MAX,
         "crossCategoryCorrMax": 0.96,
@@ -395,22 +437,55 @@ def run_generation(seed: int, target: dict[str, int], audio_gate: bool) -> tuple
         "categories": {},
     }
     out_path = ROOT / "assets" / "factory" / "preset_bank.json"
-    cross_category_refs: list[np.ndarray] = []
 
     if audio_gate:
         build_cli()
 
+    cross_category_refs: list[np.ndarray] = []
+    if audio_gate and resume_presets:
+        print(f"Resume: seeding cross-category refs from {len(resume_presets)} presets…", flush=True)
+        for i, p in enumerate(resume_presets):
+            v = probe_preset_vector(p, f"resume_{i:05d}")
+            if v is not None:
+                cross_category_refs.append(v)
+
     for category, quota in target.items():
         want = max(1, int(quota))
-        accepted: list[dict] = []
+        accepted: list[dict] = list(resume_by_cat.get(category, []))[:want]
         accepted_vecs: list[np.ndarray] = []
+        if audio_gate and accepted:
+            for i, p in enumerate(accepted):
+                v = probe_preset_vector(p, f"resume_{category}_{i:04d}")
+                if v is not None:
+                    accepted_vecs.append(v)
         batch = 0
         pool_size = 0
+        if len(accepted) >= want:
+            achieved[category] = len(accepted[:want])
+            gate_meta["categories"][category] = {
+                "target": quota,
+                "achieved": achieved[category],
+                "batches": 0,
+                "poolSizeLastBatch": 0,
+                "resumed": len(accepted),
+            }
+            trimmed = [p for p in all_presets if p.get("category") != category]
+            trimmed.extend(accepted[:want])
+            all_presets = trimmed
+            if audio_gate and all_presets:
+                write_bank(out_path, all_presets, achieved, gate_meta)
+            print(f"{category}: {achieved[category]}/{quota} (resumed)", flush=True)
+            continue
         while len(accepted) < want and batch < MAX_GATE_BATCHES:
             batch += 1
             need = want - len(accepted)
             pool_size = min(POOL_CAP, max(need * 6, int(want * CANDIDATE_OVERSHOOT)))
-            cands = generate_candidates(category, pool_size, rng)
+            print(
+                f"{category}: batch {batch} need={need} pool={pool_size} accepted={len(accepted)}/{want}",
+                flush=True,
+            )
+            batch_rng = random.Random(rng.randint(0, 2**30) ^ (batch * 1009) ^ hash(category))
+            cands = generate_candidates(category, pool_size, batch_rng)
 
             if audio_gate:
                 filtered_cands, vectors = render_candidate_pool(cands)
@@ -439,7 +514,9 @@ def run_generation(seed: int, target: dict[str, int], audio_gate: bool) -> tuple
             "batches": batch,
             "poolSizeLastBatch": pool_size if batch else 0,
         }
-        all_presets.extend(accepted[:want])
+        trimmed = [p for p in all_presets if p.get("category") != category]
+        trimmed.extend(accepted[:want])
+        all_presets = trimmed
         if audio_gate and all_presets:
             write_bank(out_path, all_presets, achieved, gate_meta)
         print(f"{category}: {achieved[category]}/{quota} (batch {batch})", flush=True)

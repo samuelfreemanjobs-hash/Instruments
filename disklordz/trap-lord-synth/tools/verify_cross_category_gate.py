@@ -56,20 +56,23 @@ def main() -> int:
                     }
                 )
 
-    out = Path("/opt/cursor/artifacts/factory-cross-category-gate.json")
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(
-        json.dumps(
-            {
-                "threshold": CROSS_CATEGORY_CORR_MAX,
-                "failures": failures,
-                "worst_cross_corr": worst,
-                "worst_pair": worst_pair,
-            },
-            indent=2,
-        ),
-        encoding="utf-8",
+    payload = json.dumps(
+        {
+            "threshold": CROSS_CATEGORY_CORR_MAX,
+            "failures": failures,
+            "worst_cross_corr": worst,
+            "worst_pair": worst_pair,
+        },
+        indent=2,
     )
+    out = ROOT / "build" / "factory-cross-category-gate.json"
+    out.write_text(payload, encoding="utf-8")
+    try:
+        artifacts_out = Path("/opt/cursor/artifacts/factory-cross-category-gate.json")
+        artifacts_out.parent.mkdir(parents=True, exist_ok=True)
+        artifacts_out.write_text(payload, encoding="utf-8")
+    except OSError as err:
+        print(f"WARN: could not write artifacts gate json: {err}")
     print(f"cross-category failures: {len(failures)} worst={worst:.4f} pair={worst_pair}")
     return 1 if failures else 0
 

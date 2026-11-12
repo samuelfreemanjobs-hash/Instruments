@@ -16,6 +16,18 @@ SAMPLE_RATE_DEFAULT = 44100
 
 CROSS_CATEGORY_CORR_MAX = 0.96
 
+# Factory / audition audible gate: peak must exceed this linear level (~-30 dBFS).
+AUDITION_PEAK_MIN_DBFS = -30.0
+AUDITION_PEAK_MIN_LINEAR = 10.0 ** (AUDITION_PEAK_MIN_DBFS / 20.0)
+MIDI_C3 = 48
+MIDI_C4 = 60
+AUDIBLE_CHECK_NOTES_DEFAULT = (MIDI_C3, MIDI_C4)
+AUDIBLE_CHECK_NOTES_BY_CATEGORY: dict[str, tuple[int, ...]] = {
+    "Bass": (36, 48),
+    "Pads": (48, 60),
+    "Swells": (48, 60),
+}
+
 CATEGORY_SPECTRAL_RULES: dict[str, dict[str, float]] = {
     "Leads": {"sub30_max": 0.12, "fund_min": 120.0, "fund_max": 5200.0, "centroid_min": 220.0},
     "Church Keys/EP": {"sub30_max": 0.09, "bright5k_max": 0.38, "centroid_min": 180.0},
@@ -383,6 +395,43 @@ def log_band_energies(x: np.ndarray, sr: int, bands: int = 32) -> np.ndarray:
         out[i] = float(np.sum(spec[mask] ** 2))
     out = np.log1p(out)
     return out / (np.linalg.norm(out) + 1e-12)
+
+
+def peak_passes_audible_gate(peak: float, min_linear: float = AUDITION_PEAK_MIN_LINEAR) -> bool:
+    return peak >= min_linear
+
+
+def audible_notes_for_category(category: str) -> tuple[int, ...]:
+    return AUDIBLE_CHECK_NOTES_BY_CATEGORY.get(category, AUDIBLE_CHECK_NOTES_DEFAULT)
+
+
+def preset_audible_at_notes(
+    cli: Path,
+    root: Path,
+    preset_index: int,
+    scratch_dir: Path,
+    notes: tuple[int, ...] | None = None,
+    category: str = "",
+) -> tuple[bool, float, str]:
+    """Render held notes (default C3/C4) and require peak above AUDITION_PEAK_MIN_LINEAR."""
+    import subprocess
+    import tempfile
+
+    scratch_dir.mkdir(parents=True, exist_ok=True)
+    note_list = notes or audible_notes_for_category(category)
+    best = 0.0
+    for note in note_list:
+        wav = scratch_dir / f"aud_{preset_index:04d}_n{note}.wav"
+        subprocess.check_call(
+            [str(cli), "test-note", str(note), str(wav), str(preset_index)],
+            cwd=root,
+        )
+        pk = analyze_file(wav).peak
+        best = max(best, pk)
+    if not peak_passes_audible_gate(best):
+        db = 20.0 * math.log10(max(best, 1e-12))
+        return False, best, f"note peak {db:.1f} dBFS < {AUDITION_PEAK_MIN_DBFS:.0f} dBFS"
+    return True, best, "ok"
 
 
 def category_feature_vector(path: Path) -> np.ndarray:

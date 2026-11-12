@@ -17,7 +17,13 @@ CLI = BUILD / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLordSynthRen
 TOOLS = ROOT / "tools"
 sys.path.insert(0, str(TOOLS))
 
-from trap_lord_audio_metrics import analyze_file, assert_wav_format, write_metrics_csv  # noqa: E402
+from trap_lord_audio_metrics import (  # noqa: E402
+    AUDITION_PEAK_MIN_DBFS,
+    AUDITION_PEAK_MIN_LINEAR,
+    analyze_file,
+    assert_wav_format,
+    write_metrics_csv,
+)
 
 ARTIFACTS = Path("/opt/cursor/artifacts")
 AUDITION_ZIP = ARTIFACTS / "trap-lord-synth-auditions-24.zip"
@@ -143,7 +149,9 @@ def make_spectrogram(path: Path, out_png: Path) -> None:
 
 def qa_file(metrics, wav_path: Path) -> None:
     assert_wav_format(wav_path, sample_rate=44100, sample_width_bytes=3)
-    assert metrics.peak > 1e-4, f"{metrics.path}: silent render"
+    assert metrics.peak >= AUDITION_PEAK_MIN_LINEAR, (
+        f"{metrics.path}: peak below {AUDITION_PEAK_MIN_DBFS:.0f} dBFS ({metrics.peak})"
+    )
     assert metrics.peak <= PEAK_MAX, f"{metrics.path}: peak {metrics.peak}"
     assert abs(metrics.dc_offset) <= DC_MAX, f"{metrics.path}: dc {metrics.dc_offset}"
     # Full 8s phrase auditions intentionally retain short FX tail; strict tail gate lives in test_trap_lord_audio_qa (diagnose).
