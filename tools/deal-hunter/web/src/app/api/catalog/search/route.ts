@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { publicRuntimeConfig } from "@/lib/public-env";
 import { searchCatalogInSupabase } from "@/lib/supabase/catalog-search";
 
 export async function GET(req: Request) {
@@ -8,7 +9,7 @@ export async function GET(req: Request) {
   const retailer = url.searchParams.get("retailer") ?? undefined;
   const category = url.searchParams.get("category") ?? undefined;
   const maxPrice = url.searchParams.get("maxPrice");
-  const useSupabase = process.env.NEXT_PUBLIC_USE_SUPABASE_CATALOG === "1";
+  const useSupabase = publicRuntimeConfig().useSupabaseCatalog;
 
   if (!useSupabase) {
     return NextResponse.json({ error: "supabase_catalog_disabled" }, { status: 404 });
