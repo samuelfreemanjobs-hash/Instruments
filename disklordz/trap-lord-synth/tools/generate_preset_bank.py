@@ -419,6 +419,7 @@ def run_generation(
     target: dict[str, int],
     audio_gate: bool,
     resume_presets: list[dict] | None = None,
+    regen_only: set[str] | None = None,
 ) -> tuple[list[dict], dict]:
     rng = random.Random(seed)
     resume_presets = list(resume_presets or [])
@@ -451,9 +452,28 @@ def run_generation(
 
     for category, quota in target.items():
         want = max(1, int(quota))
-        accepted: list[dict] = list(resume_by_cat.get(category, []))[:want]
+        if regen_only is not None and category not in regen_only:
+            existing = list(resume_by_cat.get(category, []))[:want]
+            achieved[category] = len(existing)
+            gate_meta["categories"][category] = {
+                "target": quota,
+                "achieved": achieved[category],
+                "batches": 0,
+                "poolSizeLastBatch": 0,
+                "preserved": True,
+            }
+            trimmed = [p for p in all_presets if p.get("category") != category]
+            trimmed.extend(existing)
+            all_presets = trimmed
+            if audio_gate and all_presets:
+                write_bank(out_path, all_presets, achieved, gate_meta)
+            print(f"{category}: {achieved[category]}/{quota} (preserved)", flush=True)
+            continue
+
+        fresh = regen_only is not None and category in regen_only
+        accepted: list[dict] = [] if fresh else list(resume_by_cat.get(category, []))[:want]
         accepted_vecs: list[np.ndarray] = []
-        if audio_gate and accepted:
+        if audio_gate and accepted and not fresh:
             for i, p in enumerate(accepted):
                 v = probe_preset_vector(p, f"resume_{category}_{i:04d}")
                 if v is not None:
