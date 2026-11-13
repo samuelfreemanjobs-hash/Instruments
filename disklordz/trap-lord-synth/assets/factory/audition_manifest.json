@@ -3,29 +3,29 @@
     {
       "category": "Bass",
       "slot": 1,
-      "index": 169,
+      "index": 182,
       "name": "Bass Impact Southern Sub 17",
       "subStyle": "Impact"
     },
     {
       "category": "Bass",
       "slot": 2,
-      "index": 161,
+      "index": 174,
       "name": "Bass Impact Dark Punch 84",
       "subStyle": "Impact"
     },
     {
       "category": "Bells",
       "slot": 1,
-      "index": 153,
-      "name": "Bells Trap Bell Midnight Tine 43",
-      "subStyle": "Trap Bell"
+      "index": 162,
+      "name": "Bells FM Chime Cathedral Chime 92",
+      "subStyle": "FM Chime"
     },
     {
       "category": "Bells",
       "slot": 2,
-      "index": 154,
-      "name": "Bells Trap Bell Dark Tine 07",
+      "index": 163,
+      "name": "Bells Trap Bell Cathedral Bell 46",
       "subStyle": "Trap Bell"
     },
     {
@@ -45,14 +45,14 @@
     {
       "category": "Choir",
       "slot": 1,
-      "index": 182,
+      "index": 195,
       "name": "Choir Air Southern Chant 128",
       "subStyle": "Air"
     },
     {
       "category": "Choir",
       "slot": 2,
-      "index": 181,
+      "index": 194,
       "name": "Choir Pad Stack Southern Oohs 77",
       "subStyle": "Pad Stack"
     },
@@ -73,14 +73,14 @@
     {
       "category": "Hits/FX",
       "slot": 1,
-      "index": 220,
+      "index": 233,
       "name": "Hits Impact Reverse Stab 43",
       "subStyle": "Impact"
     },
     {
       "category": "Hits/FX",
       "slot": 2,
-      "index": 212,
+      "index": 225,
       "name": "Hits Stab Cinematic Stab 13",
       "subStyle": "Stab"
     },
