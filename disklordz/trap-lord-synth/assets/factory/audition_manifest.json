@@ -45,9 +45,16 @@
     {
       "category": "Choir",
       "slot": 1,
-      "index": 143,
-      "name": "Choir Chant Shadow Oohs 92",
-      "subStyle": "Chant"
+      "index": 154,
+      "name": "Choir Air Southern Chant 128",
+      "subStyle": "Air"
+    },
+    {
+      "category": "Choir",
+      "slot": 2,
+      "index": 153,
+      "name": "Choir Pad Stack Southern Oohs 77",
+      "subStyle": "Pad Stack"
     },
     {
       "category": "Church Keys/EP",
@@ -66,14 +73,14 @@
     {
       "category": "Hits/FX",
       "slot": 1,
-      "index": 145,
+      "index": 177,
       "name": "Hits Impact Ominous Stab 36",
       "subStyle": "Impact"
     },
     {
       "category": "Hits/FX",
       "slot": 2,
-      "index": 144,
+      "index": 176,
       "name": "Hits Rise Velvet Rise 47",
       "subStyle": "Rise"
     },
@@ -162,7 +169,7 @@
       "subStyle": "Digipluck"
     }
   ],
-  "wavCount": 23,
+  "wavCount": 24,
   "selection": "farthest_pair_audible_cross_checked",
   "audiblePeakMinLinear": 0.03162277660168379
 }
