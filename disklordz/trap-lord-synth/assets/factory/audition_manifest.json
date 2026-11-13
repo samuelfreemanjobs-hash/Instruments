@@ -3,28 +3,28 @@
     {
       "category": "Bass",
       "slot": 1,
-      "index": 182,
+      "index": 187,
       "name": "Bass Impact Southern Sub 17",
       "subStyle": "Impact"
     },
     {
       "category": "Bass",
       "slot": 2,
-      "index": 174,
+      "index": 179,
       "name": "Bass Impact Dark Punch 84",
       "subStyle": "Impact"
     },
     {
       "category": "Bells",
       "slot": 1,
-      "index": 162,
+      "index": 167,
       "name": "Bells FM Chime Cathedral Chime 92",
       "subStyle": "FM Chime"
     },
     {
       "category": "Bells",
       "slot": 2,
-      "index": 163,
+      "index": 168,
       "name": "Bells Trap Bell Cathedral Bell 46",
       "subStyle": "Trap Bell"
     },
@@ -45,42 +45,42 @@
     {
       "category": "Choir",
       "slot": 1,
-      "index": 195,
+      "index": 200,
       "name": "Choir Air Southern Chant 128",
       "subStyle": "Air"
     },
     {
       "category": "Choir",
       "slot": 2,
-      "index": 194,
+      "index": 199,
       "name": "Choir Pad Stack Southern Oohs 77",
       "subStyle": "Pad Stack"
     },
     {
       "category": "Church Keys/EP",
       "slot": 1,
-      "index": 145,
-      "name": "Church Keys Wurli Trap Gospel 14",
+      "index": 147,
+      "name": "Church Keys Wurli Ominous Wurli 05",
       "subStyle": "Wurli"
     },
     {
       "category": "Church Keys/EP",
       "slot": 2,
-      "index": 144,
-      "name": "Church Keys Gospel Dark Keys 54",
-      "subStyle": "Gospel"
+      "index": 148,
+      "name": "Church Keys Glass Digi Dusty Wurli 19",
+      "subStyle": "Glass Digi"
     },
     {
       "category": "Hits/FX",
       "slot": 1,
-      "index": 233,
+      "index": 238,
       "name": "Hits Impact Reverse Stab 43",
       "subStyle": "Impact"
     },
     {
       "category": "Hits/FX",
       "slot": 2,
-      "index": 225,
+      "index": 230,
       "name": "Hits Stab Cinematic Stab 13",
       "subStyle": "Stab"
     },
@@ -101,14 +101,14 @@
     {
       "category": "Organ",
       "slot": 1,
-      "index": 151,
+      "index": 156,
       "name": "Organ Rotary Cinematic Organ 32",
       "subStyle": "Rotary"
     },
     {
       "category": "Organ",
       "slot": 2,
-      "index": 148,
+      "index": 153,
       "name": "Organ Rotary Grim Rotary 56",
       "subStyle": "Rotary"
     },
