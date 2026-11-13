@@ -3,16 +3,16 @@
     {
       "category": "Bass",
       "slot": 1,
-      "index": 141,
-      "name": "Bass Distort Cathedral Punch 24",
-      "subStyle": "Distort"
+      "index": 155,
+      "name": "Bass Impact Southern Sub 17",
+      "subStyle": "Impact"
     },
     {
       "category": "Bass",
       "slot": 2,
-      "index": 142,
-      "name": "Bass 808 Reverse 808 49",
-      "subStyle": "808"
+      "index": 147,
+      "name": "Bass Impact Dark Punch 84",
+      "subStyle": "Impact"
     },
     {
       "category": "Bells",
@@ -45,14 +45,14 @@
     {
       "category": "Choir",
       "slot": 1,
-      "index": 154,
+      "index": 168,
       "name": "Choir Air Southern Chant 128",
       "subStyle": "Air"
     },
     {
       "category": "Choir",
       "slot": 2,
-      "index": 153,
+      "index": 167,
       "name": "Choir Pad Stack Southern Oohs 77",
       "subStyle": "Pad Stack"
     },
@@ -73,14 +73,14 @@
     {
       "category": "Hits/FX",
       "slot": 1,
-      "index": 177,
+      "index": 191,
       "name": "Hits Impact Ominous Stab 36",
       "subStyle": "Impact"
     },
     {
       "category": "Hits/FX",
       "slot": 2,
-      "index": 176,
+      "index": 190,
       "name": "Hits Rise Velvet Rise 47",
       "subStyle": "Rise"
     },
