@@ -3,28 +3,28 @@
     {
       "category": "Bass",
       "slot": 1,
-      "index": 155,
+      "index": 169,
       "name": "Bass Impact Southern Sub 17",
       "subStyle": "Impact"
     },
     {
       "category": "Bass",
       "slot": 2,
-      "index": 147,
+      "index": 161,
       "name": "Bass Impact Dark Punch 84",
       "subStyle": "Impact"
     },
     {
       "category": "Bells",
       "slot": 1,
-      "index": 139,
+      "index": 153,
       "name": "Bells Trap Bell Midnight Tine 43",
       "subStyle": "Trap Bell"
     },
     {
       "category": "Bells",
       "slot": 2,
-      "index": 140,
+      "index": 154,
       "name": "Bells Trap Bell Dark Tine 07",
       "subStyle": "Trap Bell"
     },
@@ -45,42 +45,42 @@
     {
       "category": "Choir",
       "slot": 1,
-      "index": 168,
+      "index": 182,
       "name": "Choir Air Southern Chant 128",
       "subStyle": "Air"
     },
     {
       "category": "Choir",
       "slot": 2,
-      "index": 167,
+      "index": 181,
       "name": "Choir Pad Stack Southern Oohs 77",
       "subStyle": "Pad Stack"
     },
     {
       "category": "Church Keys/EP",
       "slot": 1,
-      "index": 131,
+      "index": 145,
       "name": "Church Keys Wurli Trap Gospel 14",
       "subStyle": "Wurli"
     },
     {
       "category": "Church Keys/EP",
       "slot": 2,
-      "index": 130,
+      "index": 144,
       "name": "Church Keys Gospel Dark Keys 54",
       "subStyle": "Gospel"
     },
     {
       "category": "Hits/FX",
       "slot": 1,
-      "index": 191,
+      "index": 205,
       "name": "Hits Impact Ominous Stab 36",
       "subStyle": "Impact"
     },
     {
       "category": "Hits/FX",
       "slot": 2,
-      "index": 190,
+      "index": 204,
       "name": "Hits Rise Velvet Rise 47",
       "subStyle": "Rise"
     },
@@ -101,14 +101,14 @@
     {
       "category": "Organ",
       "slot": 1,
-      "index": 137,
+      "index": 151,
       "name": "Organ Rotary Cinematic Organ 32",
       "subStyle": "Rotary"
     },
     {
       "category": "Organ",
       "slot": 2,
-      "index": 134,
+      "index": 148,
       "name": "Organ Rotary Grim Rotary 56",
       "subStyle": "Rotary"
     },
@@ -129,16 +129,16 @@
     {
       "category": "Strings",
       "slot": 1,
-      "index": 128,
-      "name": "Strings Trem Reverse Line 104",
+      "index": 138,
+      "name": "Strings Trem Rising Arc 17",
       "subStyle": "Trem"
     },
     {
       "category": "Strings",
       "slot": 2,
-      "index": 129,
-      "name": "Strings Legato Frozen Strings 28",
-      "subStyle": "Legato"
+      "index": 131,
+      "name": "Strings Trem Evil Bows 38",
+      "subStyle": "Trem"
     },
     {
       "category": "Swells",
