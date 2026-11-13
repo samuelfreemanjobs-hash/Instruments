@@ -180,23 +180,44 @@ def apply_engine_texture(category: str, p: dict, engine: int, variant: int, rng:
             p["attack"] = clamp(p["attack"], 0.001, 0.015)
             p["drive"] = clamp(p["drive"] * 1.2, 1.8, 4.8)
     elif category == "Bells":
+        p["gain"] = clamp(p["gain"] + 0.05 + (variant % 4) * 0.025, 0.18, 0.42)
         if engine in (3, 10, 13):
             p["decay"] = clamp(p["decay"] * 0.85, 0.05, 0.45)
             p["reverb"] = clamp(p["reverb"] + 0.1, 0.1, 0.75)
         elif engine in (21, 17, 9):
             p["arp"] = variant % 2 == 0
+        elif engine in (18, 13):
+            p["macroSpace"] = clamp(p["macroSpace"] + 0.15, 0.2, 0.8)
+            p["detune"] = clamp(p["detune"] + 2.0, 2, 16)
+        elif engine in (23, 6):
+            p["attack"] = clamp(p["attack"], 0.001, 0.015)
+            p["sustain"] = clamp(p["sustain"], 0.02, 0.25)
     elif category == "Church Keys/EP":
+        p["gain"] = clamp(p["gain"] + 0.04 + (variant % 5) * 0.02, 0.16, 0.4)
         if engine in (9, 21, 18):
             p["macroDirt"] = clamp(p["macroDirt"] * 0.7, 0.0, 0.28)
+            if engine == 18:
+                p["arpRate"] = clamp(p["arpRate"] + 3, 3, 14)
         elif engine in (17, 8, 7):
             p["arp"] = variant % 3 != 1
             p["arpRate"] = clamp(p["arpRate"] + (variant % 5), 2, 14)
+        elif engine == 3:
+            p["decay"] = clamp(p["decay"] * 0.9, 0.08, 0.55)
+            p["cutoff"] = clamp(p["cutoff"] * 1.1, 400, 12000)
     elif category == "Organ":
+        p["gain"] = clamp(p["gain"] + 0.05 + (variant % 4) * 0.03, 0.14, 0.38)
         if engine in (1, 5):
             p["vibratoDepth"] = clamp(p["vibratoDepth"] + 0.18, 0.08, 0.5)
             p["macroMovement"] = clamp(p["macroMovement"] + 0.2, 0.2, 0.95)
         elif engine == 14:
             p["macroSpace"] = clamp(p["macroSpace"] + 0.15, 0.15, 0.75)
+            p["vibratoDepth"] = clamp(p["vibratoDepth"] + 0.12, 0.1, 0.45)
+        elif engine == 16:
+            p["attack"] = clamp(p["attack"], 0.01, 0.08)
+            p["drive"] = clamp(p["drive"] * 1.1, 1.2, 3.2)
+        elif engine == 2:
+            p["sustain"] = clamp(p["sustain"] + 0.05, 0.75, 0.98)
+            p["release"] = clamp(p["release"] + 0.1, 0.3, 1.4)
     elif category == "Brass":
         if engine == 16:
             p["attack"] = clamp(p["attack"], 0.002, 0.04)

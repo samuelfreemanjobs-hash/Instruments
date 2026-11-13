@@ -145,16 +145,22 @@ SUB_STYLES: dict[str, list[StyleSpec]] = {
         {"label": "Rhodes", "engines": [9], "filterType": 0, "cutoff": (2200, 9000), "attack": (0.004, 0.02), "decay": (0.25, 0.65), "sustain": (0.55, 0.82), "release": (0.35, 0.85), "chord": [2, 5], "arp": 0.45, "macroDirt": (0.1, 0.35)},
         {"label": "Wurli", "engines": [9, 3], "filterType": 2, "cutoff": (1800, 7000), "attack": (0.003, 0.018), "decay": (0.2, 0.55), "sustain": (0.5, 0.78), "release": (0.28, 0.65), "drive": (1.1, 2.0), "chord": [2]},
         {"label": "Gospel", "engines": [1, 9], "filterType": 0, "cutoff": (1500, 5500), "attack": (0.008, 0.04), "decay": (0.3, 0.75), "sustain": (0.65, 0.88), "release": (0.4, 0.95), "chord": [5], "vibratoDepth": (0.05, 0.18), "reverb": (0.25, 0.48)},
+        {"label": "Glass Digi", "engines": [18, 21], "filterType": 2, "cutoff": (1200, 5200), "attack": (0.003, 0.02), "decay": (0.18, 0.5), "sustain": (0.45, 0.75), "arp": 0.4, "chord": [2, 5], "macroSpace": (0.25, 0.55)},
+        {"label": "PWM Gospel", "engines": [17, 8], "filterType": 0, "cutoff": (900, 4200), "attack": (0.005, 0.03), "sustain": (0.6, 0.85), "vibratoDepth": (0.08, 0.22), "macroMovement": (0.3, 0.65)},
     ],
     "Organ": [
         {"label": "Drawbar", "engines": [1], "filterType": 0, "cutoff": (800, 3200), "attack": (0.04, 0.2), "decay": (0.2, 0.6), "sustain": (0.82, 0.98), "release": (0.5, 1.2), "vibratoDepth": (0.1, 0.35), "macroMovement": (0.55, 0.9)},
         {"label": "Rotary", "engines": [1], "filterType": 0, "cutoff": (600, 2600), "attack": (0.03, 0.15), "sustain": (0.85, 0.98), "release": (0.45, 1.0), "macroMovement": (0.65, 0.95), "macroSpace": (0.2, 0.45)},
         {"label": "Pipe", "engines": [1, 5], "filterType": 2, "cutoff": (500, 2200), "attack": (0.06, 0.25), "sustain": (0.88, 0.99), "release": (0.6, 1.4), "macroSpace": (0.35, 0.6), "reverb": (0.3, 0.55)},
+        {"label": "Brass Organ", "engines": [16, 1], "filterType": 0, "cutoff": (650, 2800), "attack": (0.02, 0.12), "drive": (1.4, 2.8), "macroDirt": (0.2, 0.5)},
+        {"label": "String Rotary", "engines": [2, 14], "filterType": 0, "cutoff": (450, 2100), "attack": (0.08, 0.35), "vibratoDepth": (0.15, 0.4), "macroMovement": (0.5, 0.85)},
     ],
     "Bells": [
         {"label": "Trap Bell", "engines": [10], "filterType": 2, "cutoff": (2000, 10000), "attack": (0.001, 0.008), "decay": (0.1, 0.35), "sustain": (0.1, 0.35), "release": (0.8, 2.2), "reverb": (0.35, 0.65), "macroSpace": (0.4, 0.75)},
         {"label": "FM Chime", "engines": [3, 10], "filterType": 0, "cutoff": (1200, 6500), "attack": (0.001, 0.006), "decay": (0.08, 0.28), "sustain": (0.08, 0.28), "release": (1.0, 2.5), "macroDarkness": (0.3, 0.65)},
         {"label": "Glock Stack", "engines": [9, 10], "filterType": 1, "cutoff": (2500, 14000), "attack": (0.001, 0.01), "decay": (0.12, 0.4), "sustain": (0.15, 0.4), "release": (0.6, 1.6), "detune": (3, 9), "arp": 0.35},
+        {"label": "Digi Spark", "engines": [13, 18], "filterType": 2, "cutoff": (1800, 8500), "attack": (0.001, 0.01), "decay": (0.06, 0.25), "gain": (0.2, 0.38), "macroSpace": (0.35, 0.7)},
+        {"label": "Strike FX", "engines": [23, 6], "filterType": 0, "cutoff": (800, 4800), "attack": (0.001, 0.012), "decay": (0.05, 0.22), "drive": (1.8, 3.5), "pitchEnvSemi": (2, 10)},
     ],
     "Bass": [
         {"label": "808", "engines": [4, 22, 4, 11], "filterType": 0, "cutoff": (120, 650), "attack": (0.002, 0.02), "decay": (0.35, 1.2), "sustain": (0.55, 0.92), "release": (0.4, 1.2), "drive": (1.2, 2.8), "detune": (0, 4), "macroDarkness": (0.35, 0.75)},
