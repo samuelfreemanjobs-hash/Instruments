@@ -14,7 +14,21 @@ BUILD = ROOT / "build"
 CLI = BUILD / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLordSynthRenderCLI"
 ARTIFACTS = Path("/opt/cursor/artifacts")
 BUILD_OUT = ROOT / "build" / "mpc-live-release"
-STAGING = ARTIFACTS / "mpc-live-staging"
+STAGING = BUILD_OUT / "mpc-live-staging"
+
+
+def ensure_staging_root() -> Path:
+    preferred = ARTIFACTS / "mpc-live-staging"
+    try:
+        preferred.mkdir(parents=True, exist_ok=True)
+        probe = preferred / ".write_probe"
+        probe.write_text("ok", encoding="utf-8")
+        probe.unlink()
+        return preferred
+    except OSError as err:
+        print(f"WARN: MPC staging in artifacts not writable ({err}); using build/")
+        STAGING.mkdir(parents=True, exist_ok=True)
+        return STAGING
 
 README = """# TRAP LORD SYNTH — MPC Live keygroup (DiskLordz)
 
@@ -67,9 +81,10 @@ def find_program_folder(parent: Path, prefix: str) -> Path:
 
 
 def export_preset(category: str, preset_index: int, zip_name: str) -> Path:
-    work = STAGING / zip_name.replace(".zip", "")
+    staging_root = ensure_staging_root()
+    work = staging_root / zip_name.replace(".zip", "")
     if work.exists():
-        shutil.rmtree(work)
+        shutil.rmtree(work, ignore_errors=True)
     work.mkdir(parents=True, exist_ok=True)
     run([str(CLI), "mpc", str(preset_index), str(work)])
     folder = find_program_folder(work, "DL_")

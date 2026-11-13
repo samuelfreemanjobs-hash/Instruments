@@ -73,16 +73,16 @@
     {
       "category": "Hits/FX",
       "slot": 1,
-      "index": 205,
-      "name": "Hits Impact Ominous Stab 36",
+      "index": 220,
+      "name": "Hits Impact Reverse Stab 43",
       "subStyle": "Impact"
     },
     {
       "category": "Hits/FX",
       "slot": 2,
-      "index": 204,
-      "name": "Hits Rise Velvet Rise 47",
-      "subStyle": "Rise"
+      "index": 212,
+      "name": "Hits Stab Cinematic Stab 13",
+      "subStyle": "Stab"
     },
     {
       "category": "Leads",

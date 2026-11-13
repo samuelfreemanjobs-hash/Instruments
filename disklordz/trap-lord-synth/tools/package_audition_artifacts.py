@@ -26,8 +26,10 @@ from trap_lord_audio_metrics import (  # noqa: E402
 )
 
 ARTIFACTS = Path("/opt/cursor/artifacts")
-AUDITION_ZIP = ARTIFACTS / "trap-lord-synth-auditions-24.zip"
-CSV_OUT = ARTIFACTS / "trap-lord-synth-auditions-metrics.csv"
+AUDITION_ZIP_ARTIFACTS = ARTIFACTS / "trap-lord-synth-auditions-24.zip"
+CSV_OUT_ARTIFACTS = ARTIFACTS / "trap-lord-synth-auditions-metrics.csv"
+AUDITION_ZIP_BUILD = BUILD / "trap-lord-synth-auditions-24.zip"
+CSV_OUT_BUILD = BUILD / "trap-lord-synth-auditions-metrics.csv"
 MANIFEST = ROOT / "assets/factory/audition_manifest.json"
 BANK = ROOT / "assets/factory/preset_bank.json"
 
@@ -42,6 +44,34 @@ DC_MAX = 0.01
 def run(cmd: list[str], **kwargs) -> None:
     print("+", " ".join(cmd))
     subprocess.check_call(cmd, **kwargs)
+
+
+def writable_path(preferred: Path, fallback: Path) -> Path:
+    """Return preferred when the store is writable, else fallback under build/."""
+    for path in (preferred, fallback):
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            probe = path.parent / f".write_probe_{path.name}"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink()
+            return path
+        except OSError as err:
+            print(f"WARN: cannot write {path}: {err}")
+    return fallback
+
+
+def writable_dir(preferred: Path, fallback: Path) -> Path:
+    for path in (preferred, fallback):
+        try:
+            path.mkdir(parents=True, exist_ok=True)
+            probe = path / ".write_probe"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink()
+            return path
+        except OSError as err:
+            print(f"WARN: cannot write dir {path}: {err}")
+    fallback.mkdir(parents=True, exist_ok=True)
+    return fallback
 
 
 def cmake_build_cli() -> None:
@@ -163,12 +193,13 @@ def qa_file(metrics, wav_path: Path) -> None:
 
 
 def main() -> int:
-    ARTIFACTS.mkdir(parents=True, exist_ok=True)
-    stage = ARTIFACTS / "trap-lord-auditions-staging"
+    stage = writable_dir(ARTIFACTS / "trap-lord-auditions-staging", BUILD / "auditions-staging")
     if stage.exists() and not stage.is_dir():
         stage.unlink()
     shutil.rmtree(stage, ignore_errors=True)
     stage.mkdir(parents=True, exist_ok=True)
+    aud_zip = writable_path(AUDITION_ZIP_ARTIFACTS, AUDITION_ZIP_BUILD)
+    csv_out = writable_path(CSV_OUT_ARTIFACTS, CSV_OUT_BUILD)
 
     cmake_build_cli()
     run([sys.executable, str(ROOT / "tests/test_trap_lord_audio_qa.py")], cwd=ROOT)
@@ -191,7 +222,7 @@ def main() -> int:
         qa_file(m, w)
         metrics_rows.append(m)
 
-    write_metrics_csv(metrics_rows, CSV_OUT)
+    write_metrics_csv(metrics_rows, csv_out)
 
     def pick_prefix(prefix: str) -> Path:
         return next(w for w in wavs if w.name.startswith(prefix))
@@ -202,22 +233,30 @@ def main() -> int:
         "keys": pick_prefix("Synth_Keys_") if any(w.name.startswith("Synth_Keys_") for w in wavs) else pick_prefix("Synth "),
         "swell": pick_prefix("Swells_"),
     }
-    spec_dir = ARTIFACTS / "trap-lord-spectrograms"
+    spec_dir = writable_dir(ARTIFACTS / "trap-lord-spectrograms", BUILD / "trap-lord-spectrograms")
     shutil.rmtree(spec_dir, ignore_errors=True)
-    spec_dir.mkdir(parents=True)
+    spec_dir.mkdir(parents=True, exist_ok=True)
     for label, wav in picks.items():
         make_spectrogram(wav, spec_dir / f"{label}.png")
 
-    with zipfile.ZipFile(AUDITION_ZIP, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+    with zipfile.ZipFile(aud_zip, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         for w in wavs:
             zf.write(w, w.name)
         zf.write(MANIFEST, "audition_manifest.json")
-        zf.write(CSV_OUT, CSV_OUT.name)
+        zf.write(csv_out, csv_out.name)
         for png in spec_dir.glob("*.png"):
             zf.write(png, f"spectrograms/{png.name}")
 
-    print(f"Wrote {AUDITION_ZIP}")
-    print(f"Metrics: {CSV_OUT}")
+    if aud_zip != AUDITION_ZIP_ARTIFACTS:
+        try:
+            shutil.copy2(aud_zip, AUDITION_ZIP_ARTIFACTS)
+            shutil.copy2(csv_out, CSV_OUT_ARTIFACTS)
+            print(f"Copied auditions zip to {AUDITION_ZIP_ARTIFACTS}")
+        except OSError as err:
+            print(f"WARN: could not copy auditions to artifacts ({err})")
+
+    print(f"Wrote {aud_zip}")
+    print(f"Metrics: {csv_out}")
     return 0
 
 
