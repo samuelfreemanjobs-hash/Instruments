@@ -12,4 +12,6 @@ python3 scripts/generate_stub_kits.py
 
 **WO-SAAS-004 (live):** Parametric generation runs in **`disklordz/website/src/lib/generation/`** (prompt + preset → unique WAV per kit). Python CLI `scripts/generate_kit.py` for offline/batch.
 
+**Phonk retail batch:** `./tools/build-phonk-kit-products.sh` (Lofi-12 factory + catalog → `release/phonk-kits/*.zip`).
+
 **Next:** Archive-driven samples + `sound-factory` batch jobs feeding the same manifest schema.
