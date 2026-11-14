@@ -9,3 +9,4 @@ synth_forge/previews/
 *.egg-info/
 build/
 dist/
+fixtures/

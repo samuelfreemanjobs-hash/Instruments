@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "container": "minilogue_xd_prog_bin",
+  "fields": [
+    {
+      "id": "params_block",
+      "offset": 64,
+      "scale": "params_block",
+      "length": 88,
+      "note": "SynthForge normalized float block; verify with librarian diff inspector"
+    },
+    {
+      "id": "patch_name",
+      "offset": 8,
+      "scale": "u8",
+      "note": "ASCII name char 0 (expand via diff on Korg export)"
+    }
+  ]
+}

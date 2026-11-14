@@ -33,6 +33,8 @@ def list_synths() -> list[dict[str, object]]:
             "id": a.synth_id,
             "name": a.display_name,
             "stub": a.stub,
+            "librarian_svz": getattr(a, "librarian_svz", False),
+            "librarian_mnlgxdprog": a.synth_id == "minilogue_xd",
         }
         for a in ADAPTERS.values()
     ]

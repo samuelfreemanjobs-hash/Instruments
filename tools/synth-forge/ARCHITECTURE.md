@@ -53,6 +53,16 @@ FastAPI serves HTTP; audio preview synthesis is offline NumPy (no realtime audio
 
 All generation and adapter pack paths call `clamp_for_hardware` (resonance ≤ 0.85, delay feedback ≤ 0.75, master ≤ 0.90). Preview peaks capped at −12 dBFS in `audio_engine`.
 
+## Patch librarian (Minilogue XD + ZENOLOGY)
+
+- `synth_forge/bin_diff.py` — byte diff + `offsets.json` schema for template mutation.
+- `synth_forge/synths/minilogue_xd_librarian.py` — `.mnlgxdprog` ZIP writer; seed at `fixtures/minilogue_xd/seed_init.mnlgxdprog`.
+- `synth_forge/synths/zenology_svz.py` — `.svz` tone-block mutation; seed at `fixtures/zenology/seed_init.svz`.
+- `synth_forge/xd_profiles.py` / `zen_forge_presets.py` — musical constraint profiles.
+- REST: `POST /api/bin-diff`, `POST /api/librarian/xd/batch`, `POST /api/librarian/zen/batch`, `GET /api/export/{id}/download?format=mnlgxdprog|svz`.
+
+Verify generated files in Korg Sound Librarian / ZENOLOGY Pro before relying on offsets in production.
+
 ## Extension points
 
 - Add a synth: implement `SynthAdapter` in `synth_forge/synths/`, register in `synths/__init__.py`, add round-trip test in `tests/test_adapters.py`.
