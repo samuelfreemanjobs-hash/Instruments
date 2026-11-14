@@ -1,0 +1,154 @@
+{
+  "product_id": "disklordz-custom-bass-oscillators",
+  "version": "1.0.0",
+  "oscillator_count": 14,
+  "bundle": {
+    "sku": "DLZ-CBOSC-BUNDLE",
+    "product_slug": "custom-bass-oscillators-14",
+    "store_name": "DiskLordz Bass Forge: 14 Custom Oscillators",
+    "suggested_price_usd": 34.0,
+    "store_subtitle": "Full catalog — all 14 bass oscillators, four hardware formats each."
+  },
+  "units": [
+    {
+      "sku": "DLZ-CBOSC-001",
+      "product_slug": "phonk-808-kick",
+      "v1_dir": "oscillators/tr808-kick",
+      "project": "nts1_tr808_kick",
+      "mkii_slug": "tr808_kick_phonk",
+      "store_name": "Phonk 808 Kick",
+      "store_blurb": "808-style kick and sub shots for phonk and trap.",
+      "suggested_price_usd": 4.99
+    },
+    {
+      "sku": "DLZ-CBOSC-002",
+      "product_slug": "west-coast-funk-stack",
+      "v1_dir": "oscillators/west-coast-moog",
+      "project": "nts1_west_coast_moog",
+      "mkii_slug": "west_coast_moog_funk",
+      "store_name": "West Coast Funk Stack",
+      "store_blurb": "P-funk and west-coast inspired dual-osc bass and lead.",
+      "suggested_price_usd": 5.99
+    },
+    {
+      "sku": "DLZ-CBOSC-003",
+      "product_slug": "80s-poly-chorus-bass",
+      "v1_dir": "oscillators/juno-rnb",
+      "project": "nts1_juno_rnb",
+      "mkii_slug": "juno_106_rnb_bass",
+      "store_name": "80s Poly Chorus Bass",
+      "store_blurb": "Chorus-rich poly bass inspired by classic 80s R&B polysynths.",
+      "suggested_price_usd": 5.99
+    },
+    {
+      "sku": "DLZ-CBOSC-004",
+      "product_slug": "loose-hip-hop-bass",
+      "v1_dir": "oscillators/dilla-bass",
+      "project": "nts1_dilla_bass",
+      "mkii_slug": "dilla_type_bass",
+      "store_name": "Loose Hip-Hop Bass",
+      "store_blurb": "Loose, behind-the-beat electric bass feel for hip-hop and neo-soul.",
+      "suggested_price_usd": 5.99
+    },
+    {
+      "sku": "DLZ-CBOSC-005",
+      "product_slug": "fat-analog-sub-bass",
+      "v1_dir": "oscillators/sub-phatty",
+      "project": "nts1_sub_phatty",
+      "mkii_slug": "moog_sub_phatty_bass",
+      "store_name": "Fat Analog Sub Bass",
+      "store_blurb": "Thick subtractive bass with multidrive-style saturation.",
+      "suggested_price_usd": 5.99
+    },
+    {
+      "sku": "DLZ-CBOSC-006",
+      "product_slug": "classic-poly-funk-bass",
+      "v1_dir": "oscillators/prophet-funk",
+      "project": "nts1_prophet_funk",
+      "mkii_slug": "prophet5_funk_rnb_bass",
+      "store_name": "Classic Poly Funk Bass",
+      "store_blurb": "Vintage poly synth funk and R&B bass character.",
+      "suggested_price_usd": 5.99
+    },
+    {
+      "sku": "DLZ-CBOSC-007",
+      "product_slug": "fm-electric-bass",
+      "v1_dir": "oscillators/dx7-lately",
+      "project": "nts1_dx7_lately",
+      "mkii_slug": "dx7_lately_bass",
+      "store_name": "FM Electric Bass",
+      "store_blurb": "FM electric bass texture inspired by late-80s digital bass patches.",
+      "suggested_price_usd": 5.99
+    },
+    {
+      "sku": "DLZ-CBOSC-008",
+      "product_slug": "mono-pulse-bass",
+      "v1_dir": "oscillators/sh101-babyface",
+      "project": "nts1_sh101_babyface",
+      "mkii_slug": "sh101_babyface_bass",
+      "store_name": "Mono Pulse Bass",
+      "store_blurb": "Warm pulse and hollow FM bass from a classic mono synth lineage.",
+      "suggested_price_usd": 5.99
+    },
+    {
+      "sku": "DLZ-CBOSC-009",
+      "product_slug": "analog-squelch-stack",
+      "v1_dir": "oscillators/moog-voyager-se",
+      "project": "nts1_voyager_se",
+      "mkii_slug": "moog_voyager_se1_squelch",
+      "store_name": "Analog Squelch Stack",
+      "store_blurb": "Three-oscillator analog-style stack with glide and resonant filter squelch.",
+      "suggested_price_usd": 7.99
+    },
+    {
+      "sku": "DLZ-CBOSC-010",
+      "product_slug": "g-funk-sub-stack",
+      "v1_dir": "oscillators/cardo-gfunk",
+      "project": "nts1_cardo_gfunk",
+      "mkii_slug": "cardo_got_wings_gfunk",
+      "store_name": "G-Funk Sub Stack",
+      "store_blurb": "West-coast G-funk sub with warm mid presence.",
+      "suggested_price_usd": 5.99
+    },
+    {
+      "sku": "DLZ-CBOSC-011",
+      "product_slug": "bay-cruise-bass",
+      "v1_dir": "oscillators/larry-june",
+      "project": "nts1_larry_june",
+      "mkii_slug": "larry_june_bay_cruise_bass",
+      "store_name": "Bay Cruise Bass",
+      "store_blurb": "Rubbery PWM cruise bass for laid-back hip-hop.",
+      "suggested_price_usd": 5.99
+    },
+    {
+      "sku": "DLZ-CBOSC-012",
+      "product_slug": "hazy-cloud-sub",
+      "v1_dir": "oscillators/khalifa-haze",
+      "project": "nts1_khalifa_haze",
+      "mkii_slug": "khalifa_haze_stoner_bass",
+      "store_name": "Hazy Cloud Sub",
+      "store_blurb": "Cloudy sub and low-end for slow, hazy beats.",
+      "suggested_price_usd": 5.99
+    },
+    {
+      "sku": "DLZ-CBOSC-013",
+      "product_slug": "memphis-trunk-sub",
+      "v1_dir": "oscillators/memphis-juicy",
+      "project": "nts1_memphis_juicy",
+      "mkii_slug": "juicy_j_three6_memphis_bass",
+      "store_name": "Memphis Trunk Sub",
+      "store_blurb": "Phase-locked trunk sub for southern hip-hop.",
+      "suggested_price_usd": 5.99
+    },
+    {
+      "sku": "DLZ-CBOSC-014",
+      "product_slug": "dark-wavetable-sub",
+      "v1_dir": "oscillators/ensoniq-eps1",
+      "project": "nts1_ensoniq_eps1",
+      "mkii_slug": "ensoniq_eps1_memphis_bass",
+      "store_name": "Dark Wavetable Sub",
+      "store_blurb": "Wavetable grit with dark filtered sub.",
+      "suggested_price_usd": 6.99
+    }
+  ]
+}

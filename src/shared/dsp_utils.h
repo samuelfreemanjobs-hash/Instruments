@@ -43,9 +43,26 @@ static inline int32_t dsp_lerp_q31(int32_t a, int32_t b, float t) {
   return (int32_t)(fa + (fb - fa) * t);
 }
 
+/** ~−0.5 dBFS peak ceiling for float osc output (use before DAC/q31 export). */
+static inline float dsp_soft_limit_neg_half_dbfs(float x) {
+  const float lim = 0.944060876f;
+  if (x > lim) {
+    return lim;
+  }
+  if (x < -lim) {
+    return -lim;
+  }
+  const float abs_x = x < 0.0f ? -x : x;
+  if (abs_x < 1.0e-20f) {
+    return 0.0f;
+  }
+  return x;
+}
+
+#if defined(__userosc_h)
 /**
  * Phase increment for v1.1.0-style oscillators (uint32 per sample).
- * Include userosc.h before this header so osc_w0f_for_note is visible.
+ * Include userosc.h before dsp_utils.h.
  */
 static inline uint32_t osc_w0(uint16_t pitch) {
   const float w0f =
@@ -56,6 +73,7 @@ static inline uint32_t osc_w0(uint16_t pitch) {
   }
   return (uint32_t)scaled;
 }
+#endif
 
 #ifdef __cplusplus
 }
