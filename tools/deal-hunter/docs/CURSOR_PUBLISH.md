@@ -12,9 +12,10 @@ With **no** `DEAL_API_ORIGIN`, the published build serves the **bundled demo cat
 2. In Supabase **Authentication → URL Configuration** set **Site URL** to the live app origin and add Redirect URL  
    `https://black-friday-madness.apps.grok.bot/auth/callback`. Sign-in is **email + password** (Confirm email OFF — no OTP mail).
 3. In Cursor app Secrets add: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, **`USE_SUPABASE_CATALOG=1`** (required for live catalog search and product pages; without it the bundled demo JSON is used).
-4. **Automated (no laptop):** add GitHub secrets in [docs/BFM_GO_LIVE_SECRETS.md](../../../docs/BFM_GO_LIVE_SECRETS.md), then **Actions → Black Friday Madness go-live → Run workflow**.
-5. **Or local:** `npm run go-live` (needs `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, `SUPABASE_SERVICE_ROLE_KEY` in env).
-6. Republish only if you changed Cursor secrets.
+4. **Bundled JSON:** before commit, run `npm run slim:hosted-catalog` (keeps publish review scannable).
+5. **Automated (no laptop):** add GitHub secrets in [docs/BFM_GO_LIVE_SECRETS.md](../../../docs/BFM_GO_LIVE_SECRETS.md), then **Actions → Black Friday Madness go-live → Run workflow**.
+6. **Or local:** `npm run go-live` (needs `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, `SUPABASE_SERVICE_ROLE_KEY` in env).
+7. Republish only if you changed Cursor secrets.
 
 Local: `npm run setup:env` then fill `tools/deal-hunter/.env` once; the script mirrors into `web/.env.local`.
 

@@ -13,6 +13,7 @@
     "build:server": "tsc --noEmit",
     "build:web": "npm run build --prefix web",
     "export:hosted-catalog": "tsx scripts/export-hosted-catalog.ts",
+    "slim:hosted-catalog": "tsx scripts/slim-hosted-catalog.ts",
     "build:legacy": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "start": "NODE_ENV=production tsx server/index.ts",

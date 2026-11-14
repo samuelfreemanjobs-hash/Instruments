@@ -2,12 +2,12 @@
 
 import { registerStealAlertBackend } from "@/lib/deal-api";
 
-function urlBase64ToUint8Array(base64: string) {
+function urlBase64ToUint8Array(base64: string): BufferSource {
   const padding = "=".repeat((4 - (base64.length % 4)) % 4);
   const b64 = (base64 + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const raw = atob(b64);
-  const out = new Uint8Array(raw.length);
-  for (let i = 0; i < raw.length; ++i) out[i] = raw.charCodeAt(i);
+  const binary = typeof atob !== "undefined" ? atob(b64) : "";
+  const out = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; ++i) out[i] = binary.charCodeAt(i);
   return out;
 }
 
