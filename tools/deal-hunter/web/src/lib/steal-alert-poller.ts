@@ -37,12 +37,6 @@ export async function enableStealAlerts(
           minStealScore,
         }).catch(() => undefined);
       }
-      await registerStealAlertBackend({
-        endpoint: real,
-        minStealScore,
-        email,
-        keys: json ?? { p256dh: "browser-local", auth: "browser-local" },
-      });
       return real;
     }
   }

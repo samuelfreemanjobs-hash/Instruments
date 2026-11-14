@@ -1,24 +1,21 @@
 /**
  * Paths proxied to DEAL_API_ORIGIN. Admin/cron routes are intentionally omitted.
  */
+/**
+ * Anonymous-safe read paths only. Chat, agents, subscribe, and autopilot stay on Next routes
+ * (bundled handlers or auth-gated) so a public app cannot burn an external DEAL_API_ORIGIN.
+ */
 export const DEAL_API_PROXY_SOURCES = [
   "/api/v1/:path*",
   "/api/search/:path*",
   "/api/catalog/source",
-  "/api/agents/:path*",
   "/api/categories",
-  "/api/orchestrator/chat",
-  "/api/assistant/chat",
   "/api/discover/:path*",
   "/api/recommendations",
-  "/api/intelligence/:path*",
-  "/api/autopilot/agents",
-  "/api/autopilot/digest",
   "/api/coupons",
   "/api/calendar",
   "/api/notifications/vapid-public-key",
   "/api/notifications/steal-hits",
-  "/api/notifications/subscribe",
 ] as const;
 
 /** Legacy export — prefer isBlockedPublicApiPath for middleware. */
