@@ -26,7 +26,11 @@ export function AdminDashboardClient() {
 
   if (loading) return <Skeleton className="h-40 w-full" />;
   if (!status?.ok) {
-    return <p className="text-sm text-bfm-danger">{status?.error ?? "Set BFM_ADMIN_SECRET + DEAL_API_ORIGIN on Vercel."}</p>;
+    return (
+      <p className="text-sm text-bfm-danger">
+        {status?.error ?? "Sign in with a BFM_ADMIN_EMAILS address and bind SUPABASE_SERVICE_ROLE_KEY in Publish Secrets."}
+      </p>
+    );
   }
 
   return (

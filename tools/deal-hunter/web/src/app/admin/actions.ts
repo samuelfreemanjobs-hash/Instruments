@@ -1,6 +1,9 @@
 "use server";
 
 import { requireAdminCaller } from "@/lib/require-admin";
+import { syncBundledCatalogToSupabase } from "@/lib/bundled-catalog-supabase-sync";
+import { shouldProxyToExternalDealApi } from "@/lib/deal-api-origin";
+import { publicRuntimeConfig } from "@/lib/public-env";
 
 const origin = () => process.env.DEAL_API_ORIGIN ?? "http://127.0.0.1:3847";
 
@@ -15,6 +18,19 @@ function adminHeaders() {
 export async function fetchAdminStatus() {
   const gate = await requireAdminCaller();
   if (!gate.ok) return { ok: false as const, error: gate.error };
+
+  if (!shouldProxyToExternalDealApi()) {
+    const cfg = publicRuntimeConfig();
+    return {
+      ok: true as const,
+      data: {
+        catalogSource: cfg.useSupabaseCatalog ? "supabase_or_hosted_sync" : "bundled_demo",
+        vapidConfigured: Boolean(cfg.vapidPublicKey),
+        inngestNote: "Hosted mode: use Sync catalog → Supabase (bind SUPABASE_SERVICE_ROLE_KEY).",
+        integrations: [],
+      },
+    };
+  }
 
   const res = await fetch(`${origin()}/api/admin/status`, {
     headers: adminHeaders(),
@@ -41,6 +57,12 @@ export async function fetchAdminStatus() {
 export async function triggerCatalogSync() {
   const gate = await requireAdminCaller();
   if (!gate.ok) return { ok: false as const, error: gate.error };
+
+  if (!shouldProxyToExternalDealApi()) {
+    const result = await syncBundledCatalogToSupabase();
+    if (!result.ok) return { ok: false as const, error: result.error ?? "sync_failed" };
+    return { ok: true as const, body: result };
+  }
 
   const res = await fetch(`${origin()}/api/admin/sync-catalog/cron`, {
     method: "POST",

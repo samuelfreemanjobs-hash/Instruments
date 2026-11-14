@@ -44,6 +44,10 @@ jobs:
           BFM_LIVE_URL: ${{ secrets.BFM_LIVE_URL }}
         run: |
           if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
+            if [ "${{ github.event_name }}" = "schedule" ]; then
+              echo "Skipping scheduled go-live: no GitHub secrets. Use Cursor /admin sync instead (docs/BFM_GO_LIVE_SECRETS.md)."
+              exit 0
+            fi
             echo "::error::Missing SUPABASE_ACCESS_TOKEN — see docs/BFM_GO_LIVE_SECRETS.md"
             exit 1
           fi
