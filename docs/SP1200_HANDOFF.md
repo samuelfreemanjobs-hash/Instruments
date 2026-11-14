@@ -33,6 +33,8 @@ Run standalone:
 ./build/SP1200/SP1200_artefacts/Release/Standalone/SP-1200\ Drumulator
 ```
 
+Optional smoke import (no file dialog): set `SP1200_AUTO_IMPORT=/path/to/sample.wav` before launch. Drag-and-drop WAV/AIFF/FLAC onto the editor also imports.
+
 ## Automated tests (CI)
 
 - `SP1200Memory` — 12-bit pack, pool cap, combine segments, bank quota  
@@ -55,7 +57,8 @@ Monorepo **Build / cmake** job builds all targets (including SP1200 VST3) and ru
 2. ~~Confirm **Build / cmake** green on `main`~~ **Done** — run [37502018473](https://github.com/samuelfreemanjobs-hash/Instruments/actions/runs/37502018473) (Build + **SP1200 unit tests** success)  
 3. Manual pass on [SP1200_QA_CHECKLIST.md](SP1200_QA_CHECKLIST.md) (1–2 h) — **partial smoke 2026-10-06** ([report](SP1200_SMOKE_TEST_2026-10-06.md)): standalone launch; tabs 10/11/12–14/20/24/15/SETUP; Space transport; keys 1–4 banks (no sample import / MIDI hardware in smoke pass)  
 4. Optional: tag release `sp1200-v0.1.0` (after full P4 checklist)  
-5. Close obsolete combine PR [#68](https://github.com/samuelfreemanjobs-hash/Instruments/pull/68) after doc PR [#89](https://github.com/samuelfreemanjobs-hash/Instruments/pull/89) merges  
+5. Close obsolete combine PR [#68](https://github.com/samuelfreemanjobs-hash/Instruments/pull/68) manually if still open  
+6. ~~Console GUI overlap (LCD vs faders)~~ **Fixed** on `main` via PR [#90](https://github.com/samuelfreemanjobs-hash/Instruments/pull/90)  
 
 ## Branch hygiene
 

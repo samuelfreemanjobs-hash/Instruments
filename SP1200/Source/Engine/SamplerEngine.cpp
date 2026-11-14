@@ -98,10 +98,17 @@ void SamplerEngine::emitMidiClock (juce::MidiBuffer& midi, int numSamples)
 
 std::optional<std::size_t> SamplerEngine::importFile (const juce::File& file, int bankIndex, juce::String name)
 {
+    lastImportError_.clear();
     auto result = importer_.importFromFile (file, bankIndex, std::move (name), vinylImportEnabled_);
     if (! result.ok)
+    {
+        lastImportError_ = result.error.empty() ? "Import failed" : result.error;
         return std::nullopt;
-    return pool_.appendSegment (std::move (result.segment));
+    }
+    const auto idx = pool_.appendSegment (std::move (result.segment));
+    if (! idx.has_value())
+        lastImportError_ = "Memory cap (7:00 total)";
+    return idx;
 }
 
 void SamplerEngine::assignSegmentToPad (int padIndex, int segmentIndex)

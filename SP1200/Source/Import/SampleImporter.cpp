@@ -65,9 +65,19 @@ ImportResult SampleImporter::importFromFile (const juce::File& file,
         return result;
     }
 
-    juce::AudioBuffer<float> buffer (static_cast<int> (reader->numChannels),
-                                     static_cast<int> (reader->lengthInSamples));
-    reader->read (&buffer, 0, static_cast<int> (reader->lengthInSamples), 0, true, true);
+    const int numSamples = static_cast<int> (reader->lengthInSamples);
+    if (numSamples <= 0)
+    {
+        result.error = "Empty audio file";
+        return result;
+    }
+
+    juce::AudioBuffer<float> buffer (static_cast<int> (reader->numChannels), numSamples);
+    if (! reader->read (&buffer, 0, numSamples, 0, true, true))
+    {
+        result.error = "Failed to decode audio";
+        return result;
+    }
 
     return importFromAudioBuffer (buffer, reader->sampleRate, bankIndex, std::move (segmentName), vinylRateTrick);
 }
