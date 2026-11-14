@@ -26,6 +26,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **WAVE-9090** (sampleless trap wavetable synth) | [Wave9090/ARCHITECTURE.md](Wave9090/ARCHITECTURE.md) | `Wave9090_VST3`, `Wave9090_Standalone`, `Wave9090Tests` |
 | **Prophet Rev2 Trap** (8-voice analog-style VST3) | [ProphetRev2Trap/ARCHITECTURE.md](ProphetRev2Trap/ARCHITECTURE.md) | `ProphetRev2Trap` |
 | **SP-1200 Drumulator** (standalone + VST3 sampler) | [SP1200/ARCHITECTURE.md](SP1200/ARCHITECTURE.md) · [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md) | `SP1200_Standalone`, `SP1200_VST3`, `ctest -R SP1200` |
+| **Huckaby Pattern Engine** (polyrhythmic step sequencer + banks) | [HuckabyPatternEngine/ARCHITECTURE.md](HuckabyPatternEngine/ARCHITECTURE.md) | `HuckabyPatternEngine_Standalone`, `HuckabyPatternEngine_VST3` |
 | **DiskLordz 808 Lab** (lanes, sprint kits, MPC500 workflow) | [docs/disklordz/808-LAB.md](docs/disklordz/808-LAB.md) · [disklordz/website/](disklordz/website/) | `npm run export:sprint-1-5` in `disklordz/website/` |
 | **DiskLordz Phonk Box** (PC phonk engine) | [disklordz/phonk-box/ARCHITECTURE.md](disklordz/phonk-box/ARCHITECTURE.md) | `python phonk_engine.py --self-test` in `disklordz/phonk-box/engine/` |
 | **MPC Renaissance dedicated box** (pseudo-standalone host) | [renaissance-box/ARCHITECTURE.md](renaissance-box/ARCHITECTURE.md) · [docs/MPC_RENAISSANCE_DEDICATED_BOX.md](docs/MPC_RENAISSANCE_DEDICATED_BOX.md) | `pip install -e renaissance-box/host` · `python sidecar.py` |
