@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "plugin": "DrumCrush",
+  "kind": "effect",
+  "parameters": [
+    {
+      "id": "punch",
+      "name": "Punch",
+      "type": "float",
+      "min": 0,
+      "max": 100,
+      "default": 52,
+      "smoothingMs": 10
+    },
+    {
+      "id": "crush",
+      "name": "Crush",
+      "type": "float",
+      "min": 0,
+      "max": 100,
+      "default": 48,
+      "smoothingMs": 12
+    },
+    {
+      "id": "clip",
+      "name": "Clip",
+      "type": "float",
+      "min": 0,
+      "max": 100,
+      "default": 58,
+      "smoothingMs": 10
+    },
+    {
+      "id": "mix",
+      "name": "Mix",
+      "type": "float",
+      "min": 0,
+      "max": 100,
+      "default": 100,
+      "smoothingMs": 15
+    },
+    {
+      "id": "output_gain",
+      "name": "Output",
+      "type": "float",
+      "min": -12,
+      "max": 12,
+      "default": 0,
+      "smoothingMs": 15
+    }
+  ],
+  "presets": [{ "name": "Atlanta Knock", "values": { "punch": 62, "crush": 55, "clip": 60, "mix": 100, "output_gain": 0 } }]
+}
