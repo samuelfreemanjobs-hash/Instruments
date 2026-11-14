@@ -1,0 +1,122 @@
+name: DiskLordz Phonk-Tape
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "vst/PhonkTape/**"
+      - "shared/dsp/**"
+      - ".github/workflows/phonktape.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "vst/PhonkTape/**"
+      - "shared/dsp/**"
+      - ".github/workflows/phonktape.yml"
+
+concurrency:
+  group: phonktape-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-build-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vst/PhonkTape
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libasound2-dev libfreetype6-dev libgl1-mesa-dev \
+            libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libgtk-3-dev unzip xvfb
+
+      - name: Fetch JUCE 8.0.6
+        working-directory: ${{ github.workspace }}
+        run: |
+          git clone --branch 8.0.6 --depth 1 https://github.com/juce-framework/JUCE.git vst/JUCE
+
+      - name: Configure and build
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++
+          cmake --build build -j$(nproc) --target PhonkTape_VST3 PhonkTape_Standalone PhonkTapeProcessorTests
+
+      - name: Processor contract tests
+        run: ctest --test-dir build -R PhonkTapeProcessorContracts --output-on-failure
+
+      - name: pluginval (Linux, strictness 5)
+        working-directory: ${{ github.workspace }}
+        env:
+          CI: true
+        run: |
+          python3 scripts/vst/run_pluginval.py --install-only
+          xvfb-run -a python3 scripts/vst/run_pluginval.py --strictness 5 --discover vst/PhonkTape/build
+
+  windows-build-pluginval:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: vst/PhonkTape
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch JUCE 8.0.6
+        working-directory: ${{ github.workspace }}
+        shell: pwsh
+        run: |
+          git clone --branch 8.0.6 --depth 1 https://github.com/juce-framework/JUCE.git vst/JUCE
+
+      - name: Configure (Visual Studio 2022 x64)
+        shell: pwsh
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" -A x64
+
+      - name: Build VST3 and processor tests (Release)
+        shell: pwsh
+        run: |
+          cmake --build build --config Release --target PhonkTape_VST3 PhonkTapeProcessorTests -- /m
+
+      - name: Processor contract tests
+        shell: pwsh
+        run: ctest --test-dir build -C Release -R PhonkTapeProcessorContracts --output-on-failure
+
+      - name: Install pluginval (Windows)
+        working-directory: ${{ github.workspace }}
+        shell: pwsh
+        run: |
+          $ver = "1.0.4"
+          $url = "https://github.com/Tracktion/pluginval/releases/download/v$ver/pluginval_Windows.zip"
+          $zip = "$env:RUNNER_TEMP\pluginval.zip"
+          Invoke-WebRequest -Uri $url -OutFile $zip
+          Expand-Archive -Path $zip -DestinationPath "$env:RUNNER_TEMP\pluginval" -Force
+          $bin = Get-ChildItem -Path "$env:RUNNER_TEMP\pluginval" -Recurse -Filter "pluginval.exe" | Select-Object -First 1
+          if (-not $bin) { throw "pluginval.exe not found in release zip" }
+          "PLUGINVAL_BIN=$($bin.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: pluginval (Windows, strictness 5)
+        working-directory: ${{ github.workspace }}
+        env:
+          CI: true
+        shell: pwsh
+        run: python scripts/vst/run_pluginval.py --strictness 5 --discover vst/PhonkTape/build
+
+      - name: Resolve VST3 bundle for artifact
+        id: vst3
+        shell: pwsh
+        run: |
+          $bundles = Get-ChildItem -Path build -Recurse -Filter "DiskLordz Phonk-Tape.vst3" -Directory -ErrorAction SilentlyContinue
+          if (-not $bundles) {
+            Get-ChildItem -Path build -Recurse -Filter "*.vst3" -Directory | ForEach-Object { $_.FullName }
+            throw "DiskLordz Phonk-Tape.vst3 bundle not found under build/"
+          }
+          "bundle_path=$($bundles[0].FullName)" >> $env:GITHUB_OUTPUT
+
+      - name: Upload VST3 artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DiskLordz-Phonk-Tape-vst3-windows
+          path: ${{ steps.vst3.outputs.bundle_path }}
+          if-no-files-found: error
