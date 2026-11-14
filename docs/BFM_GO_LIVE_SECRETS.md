@@ -1,4 +1,19 @@
-# Black Friday Madness — go-live secrets (GitHub Actions)
+# Black Friday Madness — go-live secrets
+
+## Preferred on phone: Cursor Publish (no GitHub)
+
+Cloud agents **cannot** add GitHub Actions secrets. Use this path instead:
+
+1. **Cursor → Publish → black-friday-madness → Secrets** — add:
+   - `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `USE_SUPABASE_CATALOG=1` (if not already)
+   - `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Settings → API → `service_role`)
+   - `BFM_ADMIN_EMAILS` — comma-separated emails allowed to open `/admin`
+2. **Republish** the app.
+3. Sign in on the live site → **/admin** → **Sync catalog → Supabase** (uploads bundled deals + runs migrations are still needed once in Supabase dashboard or Option B below).
+
+---
+
+## Option B — GitHub Actions
 
 One-time setup in **GitHub → Settings → Secrets and variables → Actions → Repository secrets**.
 
