@@ -3,28 +3,28 @@
     {
       "category": "Bass",
       "slot": 1,
-      "index": 187,
+      "index": 192,
       "name": "Bass Impact Southern Sub 17",
       "subStyle": "Impact"
     },
     {
       "category": "Bass",
       "slot": 2,
-      "index": 179,
+      "index": 184,
       "name": "Bass Impact Dark Punch 84",
       "subStyle": "Impact"
     },
     {
       "category": "Bells",
       "slot": 1,
-      "index": 167,
+      "index": 172,
       "name": "Bells FM Chime Cathedral Chime 92",
       "subStyle": "FM Chime"
     },
     {
       "category": "Bells",
       "slot": 2,
-      "index": 168,
+      "index": 173,
       "name": "Bells Trap Bell Cathedral Bell 46",
       "subStyle": "Trap Bell"
     },
@@ -45,14 +45,14 @@
     {
       "category": "Choir",
       "slot": 1,
-      "index": 200,
+      "index": 205,
       "name": "Choir Air Southern Chant 128",
       "subStyle": "Air"
     },
     {
       "category": "Choir",
       "slot": 2,
-      "index": 199,
+      "index": 204,
       "name": "Choir Pad Stack Southern Oohs 77",
       "subStyle": "Pad Stack"
     },
@@ -73,14 +73,14 @@
     {
       "category": "Hits/FX",
       "slot": 1,
-      "index": 238,
+      "index": 243,
       "name": "Hits Impact Reverse Stab 43",
       "subStyle": "Impact"
     },
     {
       "category": "Hits/FX",
       "slot": 2,
-      "index": 230,
+      "index": 235,
       "name": "Hits Stab Cinematic Stab 13",
       "subStyle": "Stab"
     },
@@ -101,16 +101,16 @@
     {
       "category": "Organ",
       "slot": 1,
-      "index": 156,
-      "name": "Organ Rotary Cinematic Organ 32",
-      "subStyle": "Rotary"
+      "index": 154,
+      "name": "Organ String Rotary Dusty Church 75",
+      "subStyle": "String Rotary"
     },
     {
       "category": "Organ",
       "slot": 2,
-      "index": 153,
-      "name": "Organ Rotary Grim Rotary 56",
-      "subStyle": "Rotary"
+      "index": 160,
+      "name": "Organ String Rotary Frozen Gospel 27",
+      "subStyle": "String Rotary"
     },
     {
       "category": "Pads",
