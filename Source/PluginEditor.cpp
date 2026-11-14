@@ -25,8 +25,39 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
 
     programPrev_.onClick = [this] { changeProgramByDelta (-1); };
     programNext_.onClick = [this] { changeProgramByDelta (1); };
-    addAndMakeVisible (programPrev_);
-    addAndMakeVisible (programNext_);
+
+    presetBrowser_ = std::make_unique<PresetBrowserComponent> (
+        [this] { return static_cast<int> (jdupgraded::assets::FactoryPatchLibrary::getPatchCount()); },
+        [this] (int index)
+        {
+            return juce::String (jdupgraded::assets::FactoryPatchLibrary::getPatch (static_cast<std::size_t> (index)).name);
+        },
+        [] (int index)
+        {
+            return juce::String (jdupgraded::assets::FactoryPatchLibrary::getCategoryName (static_cast<std::size_t> (index)));
+        },
+        [this] (int index)
+        {
+            processor_.setCurrentProgram (index);
+        });
+
+    presetBrowser_->setCategoryFilterOptions ({ "EP",
+                                                "Pad",
+                                                "Bass",
+                                                "Vaporwave",
+                                                "80s R&B",
+                                                "90s R&B",
+                                                "Elite",
+                                                "Trap",
+                                                "Phonk",
+                                                "Lo-Fi",
+                                                "Synthwave",
+                                                "House",
+                                                "Afro",
+                                                "Jersey",
+                                                "Ambient",
+                                                "MPC Pack" });
+    addAndMakeVisible (*presetBrowser_);
 
     styleRotary (masterGainSlider_, "Master");
     addAndMakeVisible (masterGainSlider_);
@@ -248,7 +279,9 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
     addAndMakeVisible (romWavePreview_);
 
     startTimerHz (4);
-    setSize (720, 700);
+    setSize (760, 920);
+    setResizeLimits (640, 760, 1200, 1100);
+    setResizable (true, true);
 }
 
 JDUpgradedAudioProcessorEditor::~JDUpgradedAudioProcessorEditor()
@@ -413,11 +446,11 @@ void JDUpgradedAudioProcessorEditor::changeProgramByDelta (int delta)
 void JDUpgradedAudioProcessorEditor::timerCallback()
 {
     const int program = processor_.getCurrentProgram();
+    if (presetBrowser_ != nullptr)
+        presetBrowser_->setCurrentProgram (program);
+
     const auto& patch = jdupgraded::assets::FactoryPatchLibrary::getPatch (static_cast<std::size_t> (program));
-    programLabel_.setText (juce::String (program + 1) + " / "
-                           + juce::String (jdupgraded::assets::FactoryPatchLibrary::getPatchCount())
-                           + "  " + patch.name,
-                           juce::dontSendNotification);
+    programLabel_.setText (patch.name, juce::dontSendNotification);
 
     for (int i = 0; i < 4; ++i)
         tonePaletteLabels_[static_cast<std::size_t> (i)].setText (describeWaveForTone (i),
@@ -510,12 +543,13 @@ void JDUpgradedAudioProcessorEditor::resized()
     titleLabel_.setBounds (area.removeFromTop (18));
     romSourceLabel_.setBounds (area.removeFromTop (14));
 
-    auto programRow = area.removeFromTop (26);
-    programPrev_.setBounds (programRow.removeFromLeft (32));
-    programNext_.setBounds (programRow.removeFromRight (32));
+    auto programRow = area.removeFromTop (24);
     exportPresetButton_.setBounds (programRow.removeFromRight (56));
     importPresetButton_.setBounds (programRow.removeFromRight (56));
     programLabel_.setBounds (programRow);
+
+    if (presetBrowser_ != nullptr)
+        presetBrowser_->setBounds (area.removeFromTop (juce::jmin (200, area.getHeight() / 3)));
 
     auto romRow = area.removeFromTop (72);
     romBrowseLabel_.setBounds (romRow.removeFromTop (16));

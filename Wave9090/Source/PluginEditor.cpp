@@ -2,8 +2,9 @@
 
 namespace
 {
-constexpr int kEditorW = 720;
+constexpr int kEditorW = 940;
 constexpr int kEditorH = 420;
+constexpr int kSidebarW = 300;
 } // namespace
 
 Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcessor& p)
@@ -11,22 +12,36 @@ Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcess
 {
     setLookAndFeel (&laf_);
     setSize (kEditorW, kEditorH);
+    setResizeLimits (820, 380, 1400, 720);
+    setResizable (true, true);
 
     titleLabel_.setFont (juce::Font (26.0f, juce::Font::bold));
     titleLabel_.setColour (juce::Label::textColourId, juce::Colour (0xfff2f2ff));
     addAndMakeVisible (titleLabel_);
+    subtitleLabel_.setText ("500 trap / phonk / MPC factory presets", juce::dontSendNotification);
     addAndMakeVisible (subtitleLabel_);
 
-    presetBox_.addItemList (juce::StringArray(), 1);
-    for (int i = 0; i < p.getNumPrograms(); ++i)
-        presetBox_.addItem (p.getProgramName (i), i + 1);
-    presetBox_.setSelectedId (p.getCurrentProgram() + 1, juce::dontSendNotification);
-    presetBox_.onChange = [this]
-    {
-        const int idx = presetBox_.getSelectedId() - 1;
-        processor_.applyFactoryPreset (idx);
-    };
-    addAndMakeVisible (presetBox_);
+    presetBrowser_ = std::make_unique<PresetBrowserComponent> (
+        [] { return static_cast<int> (wave9090::presets::getFactoryPresetCount()); },
+        [] (int index)
+        {
+            const auto& presets = wave9090::presets::getFactoryPresets();
+            if (index < 0 || index >= static_cast<int> (presets.size()))
+                return juce::String {};
+            return juce::String (presets[static_cast<std::size_t> (index)].name.data());
+        },
+        [] (int index)
+        {
+            return juce::String (wave9090::presets::getFactoryPresetCategory (static_cast<std::size_t> (index)));
+        },
+        [this] (int index)
+        {
+            processor_.setCurrentProgram (index);
+        });
+
+    presetBrowser_->setCategoryFilterOptions ({ "TRAP", "PHONK", "DRILL", "BELL", "PAD", "LEAD", "PLUCK", "KEYS", "SYNTH", "MPC" });
+    presetBrowser_->setCurrentProgram (p.getCurrentProgram());
+    addAndMakeVisible (*presetBrowser_);
 
     addKnob (wave9090::ParameterIDs::wtPosition, "Wavetable", 20, 90, 90, 90);
     addKnob (wave9090::ParameterIDs::wtScan, "Scan", 120, 90, 90, 90);
@@ -66,18 +81,26 @@ void Wave9090AudioProcessorEditor::addKnob (const char* paramId, juce::String la
 void Wave9090AudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colour (0xff0b0b10));
+    const auto main = getLocalBounds().withTrimmedRight (kSidebarW + 8);
     g.setColour (juce::Colour (0xff242430));
-    g.fillRoundedRectangle (8.0f, 8.0f, static_cast<float> (getWidth()) - 16.0f, 70.0f, 8.0f);
+    g.fillRoundedRectangle (main.toFloat().reduced (4.0f).withHeight (70.0f), 8.0f);
     g.setColour (juce::Colour (0xff303040));
-    g.drawRoundedRectangle (12.0f, 78.0f, static_cast<float> (getWidth()) - 24.0f, 310.0f, 10.0f, 1.0f);
+    g.drawRoundedRectangle (main.reduced (8).withTrimmedTop (70).toFloat(), 10.0f, 1.0f);
 }
 
 void Wave9090AudioProcessorEditor::resized()
 {
-    titleLabel_.setBounds (24, 16, 300, 32);
-    subtitleLabel_.setBounds (24, 44, 400, 20);
-    presetBox_.setBounds (getWidth() - 260, 20, 240, 28);
-    circuitButton_.setBounds (520, 330, 180, 28);
+    auto bounds = getLocalBounds();
+    auto sidebar = bounds.removeFromRight (kSidebarW).reduced (6, 8);
+    auto main = bounds.reduced (8, 8);
+
+    titleLabel_.setBounds (main.removeFromTop (32).removeFromLeft (360));
+    subtitleLabel_.setBounds (main.getX(), 44, main.getWidth(), 20);
+
+    circuitButton_.setBounds (main.getX() + 16, main.getBottom() - 36, 180, 28);
+
+    if (presetBrowser_ != nullptr)
+        presetBrowser_->setBounds (sidebar);
 }
 
 Wave9090AudioProcessorEditor::~Wave9090AudioProcessorEditor()
