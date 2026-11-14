@@ -6,6 +6,12 @@ permissionMode: acceptEdits
 maxTurns: 60
 skills:
   - disklordz-mpc-sample-coder
+  - mpc-sample-coder
+  - mpc-sample-xpj
+  - mpc-sample-xpm-keygroup
+  - mpc-sample-rust-mod
+  - mpc-sample-virtual-lab
+  - mpc-sample-sd-autorun
 mcpServers: ["github"]
 hooks:
   PreToolUse:

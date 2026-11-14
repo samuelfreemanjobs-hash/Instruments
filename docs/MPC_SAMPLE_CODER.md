@@ -2,7 +2,20 @@
 
 Fleet id: **`mpc-sample-coder`**  
 Entry: `disklordz/agents/profit/mpc-sample-coder/agent.md`  
-Skill: `.github/skills/disklordz-mpc-sample-coder/SKILL.md`
+Copilot skill: `.github/skills/disklordz-mpc-sample-coder/SKILL.md`
+
+## Cursor skills (lane SOPs)
+
+| Skill | File |
+|-------|------|
+| Orchestrator | `.cursor/skills/mpc-sample-coder/SKILL.md` |
+| `.xpj` / MPCTK | `.cursor/skills/mpc-sample-xpj/SKILL.md` |
+| `.xpm` keygroups | `.cursor/skills/mpc-sample-xpm-keygroup/SKILL.md` |
+| Rust mods | `.cursor/skills/mpc-sample-rust-mod/SKILL.md` |
+| Virtual lab | `.cursor/skills/mpc-sample-virtual-lab/SKILL.md` |
+| SD autorun | `.cursor/skills/mpc-sample-sd-autorun/SKILL.md` |
+
+APC mirror: `.agents/skills/mpc-sample-coder/SKILL.md`
 
 ## Session bootstrap (paste once)
 

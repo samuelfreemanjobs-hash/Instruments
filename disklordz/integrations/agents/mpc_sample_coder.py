@@ -23,26 +23,31 @@ ROUTES = {
         "tool": "MPCTK (tarikcampos/MPC-Sample-Toolkit)",
         "format": "gzip JSON .xpj + _[ProjectData]",
         "device": "MPC Sample stock / Melodee import",
+        "cursor_skill": "mpc-sample-xpj",
     },
     "xpm-keygroup": {
         "tool": "xpm.md + KeyGroupBuilder or MpcXpmWriter (migrate to MPCVObject)",
         "format": "MPCVObject XML + co-located .WAV",
         "device": "Live/Force/Melodee",
+        "cursor_skill": "mpc-sample-xpm-keygroup",
     },
     "rust-mod": {
         "tool": "ioma8/mpc-sample-sdk",
         "format": "cdylib + autorun zip",
         "device": "Stock app LD_PRELOAD",
+        "cursor_skill": "mpc-sample-rust-mod",
     },
     "virtual-lab": {
         "tool": "orrpunk-art/virtual-mpc-sample",
         "format": "QEMU + lab.py (BYO firmware)",
         "device": "Dev only",
+        "cursor_skill": "mpc-sample-virtual-lab",
     },
     "sd-groovebox": {
         "tool": "keremimo/melodee-sample",
         "format": "autorun/ Melodee (AGPL)",
         "device": "Replaces stock after boot handoff",
+        "cursor_skill": "mpc-sample-sd-autorun",
     },
 }
 

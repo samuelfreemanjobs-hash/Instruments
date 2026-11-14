@@ -29,6 +29,7 @@ Index for the **`mpc-sample-coder`** profit agent and operators. Covers **Akai M
 | `disklordz/trap-lord-synth/tests/test_mpc_xpm_export.py` | Validates export folder schema (not `MPCVObject`) |
 | `songwriting-engine/mpc.py` | MPC500 export (different hardware) |
 | `disklordz/integrations/agents/mpc_sample_coder.py` | Agent CLI self-test and routing |
+| `.cursor/skills/mpc-sample-*/SKILL.md` | Lane SOPs (xpj, xpm, rust-mod, virtual-lab, sd-autorun) |
 
 ## Autorun exclusivity
 

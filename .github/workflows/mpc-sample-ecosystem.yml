@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "docs/MPC_SAMPLE*.md"
+      - ".cursor/skills/mpc-sample-*/**"
+      - ".agents/skills/mpc-sample-coder/**"
       - "disklordz/agents/profit/mpc-sample-coder/**"
       - "disklordz/agents/profit/_specs.json"
       - "disklordz/integrations/agents/mpc_sample_coder.py"
