@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "agent_count": 36,
+  "agent_count": 37,
   "agents": [
     {
       "id": "workflow-automation",
@@ -325,6 +325,15 @@
       "entry": "disklordz/agents/profit/hardware-preset-designer/agent.md",
       "skill": "disklordz/agents/profit/hardware-preset-designer/skill.md",
       "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "mpc-sample-coder",
+      "title": "MPC Sample Coder",
+      "profit_lever": "Faster AC50 kits and mods \u2014 reuse Instruments renders on hardware without wrong-format exports",
+      "path": "disklordz/agents/profit/mpc-sample-coder",
+      "entry": "disklordz/agents/profit/mpc-sample-coder/agent.md",
+      "skill": "disklordz/agents/profit/mpc-sample-coder/skill.md",
+      "upstream_repo": "https://github.com/ioma8/mpc-sample-sdk"
     }
   ]
 }

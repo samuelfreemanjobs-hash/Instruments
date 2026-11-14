@@ -168,6 +168,8 @@ See [tools/synth-forge/ARCHITECTURE.md](tools/synth-forge/ARCHITECTURE.md).
 
 **Fleet agent:** `hardware-preset-designer` — read `disklordz/agents/profit/hardware-preset-designer/agent.md` or skill `disklordz-hardware-preset-designer`. CLI: `python3 disklordz/integrations/agents/hardware_preset_designer.py --help`.
 
+**Fleet agent:** `mpc-sample-coder` — Akai MPC Sample (AC50) `.xpj`/`.xpm`, MPCTK, mpc-sample-sdk, Melodee, virtual-lab. Start with `docs/MPC_SAMPLE_ECOSYSTEM.md` and skill `disklordz-mpc-sample-coder`. CLI: `python3 disklordz/integrations/agents/mpc_sample_coder.py --route "<task>"`.
+
 ## Git
 
 - Do not force-push or deploy production unless the user asks.  

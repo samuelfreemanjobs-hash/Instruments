@@ -17,7 +17,7 @@ Company-wide index for **Instruments / Disklordz**. Every Cursor Cloud Agent, Cl
 | **workflow-automation** | Scaffolds PM ADD + per-agent `automation.yaml` |
 | **pm-agent** | Repo-wide fleet governance + scheduled execution checks |
 
-**Fleet size:** 36 agents (includes orchestration).
+**Fleet size:** 37 agents (includes orchestration).
 
 ## Active CI (executing now)
 
@@ -38,6 +38,7 @@ Company-wide index for **Instruments / Disklordz**. Every Cursor Cloud Agent, Cl
 | `.github/workflows/audio-plugin-weekly.yml` | audio-business-copilot, plugin-factory-liaison |
 | `.github/workflows/autonomous-coding-agent.yml` | autonomous-coding-agent |
 | `.github/workflows/antigravity-product-prep-sync.yml` | audio-business-copilot |
+| `.github/workflows/mpc-sample-ecosystem.yml` | mpc-sample-coder |
 
 ## Regenerate (Workflow Automation + PM Agent)
 
@@ -85,5 +86,6 @@ Maintained by `scaffold_workflows.py` — do not hand-edit sections below the ma
 - `autonomous-coding-agent` — **Autonomous Coding Agent (24/7)** (`ci_scheduled`)
 - `vst-factory-director` — **VST Factory Director** (`manual`)
 - `hardware-preset-designer` — **Hardware Preset Designer** (`ci_on_pr`)
+- `mpc-sample-coder` — **MPC Sample Coder** (`ci_on_pr`)
 
 <!-- FLEET_ROSTER_END -->

@@ -1,0 +1,16 @@
+# Automation — MPC Sample Coder (`mpc-sample-coder`)
+
+platform: github
+trigger: pull_request paths docs/MPC_SAMPLE*, trap-lord xpm, mpc_sample_coder.py
+primary: .github/workflows/mpc-sample-ecosystem.yml
+
+## Steps
+1. mpc_sample_coder.py --self-test
+2. python3 disklordz/trap-lord-synth/tests/test_mpc_xpm_export.py
+3. scaffold_agents.py --check
+
+## Invoke agent
+Read: disklordz/agents/profit/mpc-sample-coder/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#mpc-sample-coder
