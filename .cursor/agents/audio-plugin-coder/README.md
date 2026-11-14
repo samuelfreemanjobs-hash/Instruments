@@ -24,6 +24,7 @@ See [SUBAGENTS.md](./SUBAGENTS.md) for delegation prompts and handoff contracts.
 | Skill | Directory |
 |-------|-----------|
 | Orchestrator | `.cursor/skills/audio-plugin-coder/` |
+| VST engineering handbook | `.cursor/skills/vst-engineering/` |
 | Program chain | `.cursor/skills/dsp-program-chain/` |
 | Surface chain | `.cursor/skills/dsp-surface-chain/` |
 | Global state | `.cursor/skills/dsp-global-state/` |
