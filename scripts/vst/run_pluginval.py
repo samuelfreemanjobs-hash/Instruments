@@ -248,7 +248,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--default-artefacts",
         action="store_true",
-        help="Validate JD Upgraded + Wave9090 VST3 under build/*_artefacts/Release/VST3/",
+        help="Validate JD Upgraded, WAVE-9090, and SP-1200 VST3 under build/*_artefacts/Release/VST3/",
     )
     parser.add_argument("--strictness-level", type=int, default=5)
     parser.add_argument("--timeout-ms", type=int, default=120_000)
@@ -292,6 +292,7 @@ def main(argv: list[str] | None = None) -> int:
             [
                 root / "build" / "JDUpgraded_artefacts" / "Release" / "VST3",
                 root / "build" / "Wave9090" / "Wave9090_artefacts" / "Release" / "VST3",
+                root / "build" / "SP1200" / "SP1200_artefacts" / "Release" / "VST3",
                 root / "MyFirstPlugin" / "build" / "MyFirstPlugin_artefacts" / "Release" / "VST3",
             ]
         )

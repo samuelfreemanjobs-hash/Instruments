@@ -1,0 +1,111 @@
+name: Instruments (Windows VST3 + pluginval)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Source/**"
+      - "Wave9090/**"
+      - "SP1200/**"
+      - "CMakeLists.txt"
+      - "tools/GenerateCleanroomRom.cpp"
+      - "JUCE_VERSION"
+      - ".github/workflows/instruments-windows.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "Source/**"
+      - "Wave9090/**"
+      - "SP1200/**"
+      - "CMakeLists.txt"
+      - "tools/GenerateCleanroomRom.cpp"
+      - "JUCE_VERSION"
+      - ".github/workflows/instruments-windows.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: instruments-windows-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-build-pluginval:
+    runs-on: windows-2022
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure (Visual Studio 2022 x64)
+        shell: pwsh
+        run: cmake -B build -G "Visual Studio 17 2022" -A x64
+
+      - name: Build VST3 targets and SP-1200 unit tests (Release)
+        shell: pwsh
+        run: |
+          cmake --build build --config Release --target `
+            JDUpgraded_VST3 Wave9090_VST3 SP1200_VST3 `
+            SP1200MemoryTests SP1200SequencerTests SP1200ProjectFileTests -- /m
+
+      - name: SP-1200 unit tests (ctest)
+        shell: pwsh
+        run: ctest --test-dir build -C Release -R SP1200 --output-on-failure
+
+      - name: Install pluginval (Windows)
+        shell: pwsh
+        run: |
+          $ver = "1.0.4"
+          $url = "https://github.com/Tracktion/pluginval/releases/download/v$ver/pluginval_Windows.zip"
+          $zip = "$env:RUNNER_TEMP\pluginval.zip"
+          Invoke-WebRequest -Uri $url -OutFile $zip
+          Expand-Archive -Path $zip -DestinationPath "$env:RUNNER_TEMP\pluginval" -Force
+          $bin = Get-ChildItem -Path "$env:RUNNER_TEMP\pluginval" -Recurse -Filter "pluginval.exe" | Select-Object -First 1
+          if (-not $bin) { throw "pluginval.exe not found in release zip" }
+          "PLUGINVAL_BIN=$($bin.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: pluginval strictness 5 (JD Upgraded)
+        env:
+          CI: true
+        shell: pwsh
+        run: |
+          python scripts/vst/run_pluginval.py --strictness-level 5 `
+            --plugin "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3"
+
+      - name: pluginval strictness 5 (WAVE-9090)
+        env:
+          CI: true
+        shell: pwsh
+        run: |
+          python scripts/vst/run_pluginval.py --strictness-level 5 `
+            --plugin "build/Wave9090/Wave9090_artefacts/Release/VST3/WAVE-9090.vst3"
+
+      - name: pluginval strictness 5 (SP-1200 Drumulator)
+        env:
+          CI: true
+        shell: pwsh
+        run: |
+          python scripts/vst/run_pluginval.py --strictness-level 5 `
+            --plugin "build/SP1200/SP1200_artefacts/Release/VST3/SP-1200 Drumulator.vst3"
+
+      - name: Upload JD Upgraded VST3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DiskLordz-JD-Upgraded-vst3-windows
+          path: build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload WAVE-9090 VST3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DiskLordz-WAVE-9090-vst3-windows
+          path: build/Wave9090/Wave9090_artefacts/Release/VST3/WAVE-9090.vst3
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload SP-1200 Drumulator VST3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DiskLordz-SP-1200-Drumulator-vst3-windows
+          path: build/SP1200/SP1200_artefacts/Release/VST3/SP-1200 Drumulator.vst3
+          if-no-files-found: error
+          retention-days: 14
