@@ -375,50 +375,57 @@ export function KitGenerator() {
       ? selectedPreset
       : null;
 
+  const visiblePresets = [
+    ...(selectedOffList ? [selectedOffList] : []),
+    ...(laneNeedle.length < 2 ? featuredPresets : laneMatches),
+  ];
+
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
       <header className="space-y-2">
-        <p className="text-sm font-medium uppercase tracking-widest text-emerald-400/90">
-          Disklordz Supply · v0
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-zinc-50 sm:text-4xl">
-          Drum kit from a vibe
-        </h1>
-        <p className="max-w-xl text-zinc-400">
-          Type a prompt, pick a lane preset, audition {variationCountHint} per engine, download the
-          kit you keep.{" "}
-          <a href="/daw-inbox" className="text-emerald-400 hover:underline">DAW inbox</a> for
-          folder export or a desktop watcher.
+        <p className="font-condensed text-sm tracking-[0.22em] text-gold uppercase">Drum Factory</p>
+        <h1 className="font-display text-4xl text-ivory sm:text-5xl">Original one-shots from a prompt</h1>
+        <p className="max-w-2xl text-ivory/75">
+          Pick a lane, audition {variationCountHint}, and download the WAV zip you keep.{" "}
+          <a href="/daw-inbox" className="text-gold underline">
+            DAW inbox
+          </a>{" "}
+          covers folder export.
         </p>
         {billing?.unlimited ? (
-          <p className="text-xs text-emerald-500/90">Pro — unlimited generations</p>
+          <p className="font-mono text-xs text-gold">Pro — unlimited generations</p>
         ) : billing ? (
-          <p className="text-xs text-zinc-500">
+          <p className="font-mono text-xs text-ivory/60">
             Signed in: {billing.creditsBalance} credits left (
             {creditCostForSpec(spec)} per kit batch, {PRODUCT_PACK_CREDIT_COST} for product pack).{" "}
-            <a href="/account" className="text-emerald-400 hover:underline">Upgrade</a>
+            <a href="/account" className="text-gold underline">
+              Account
+            </a>
           </p>
         ) : (
           remaining !== null && (
-            <p className="text-xs text-zinc-500">
-              Guest: {remaining} of {dailyLimit} batches left today (per IP).{" "}
-              <a href="/login" className="text-emerald-400 hover:underline">Sign in</a> for credits.
+            <p className="font-mono text-xs text-ivory/60">
+              Guest: {remaining} of {dailyLimit} batches left today.{" "}
+              <a href="/login" className="text-gold underline">
+                Sign in
+              </a>{" "}
+              for credits.
             </p>
           )
         )}
       </header>
 
-      <section className="space-y-3 rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5">
-        <label className="block text-sm font-medium text-zinc-300" htmlFor="prompt">
-          Your prompt
+      <section className="space-y-4 border border-gold/30 bg-charcoal p-5">
+        <label className="block font-condensed text-sm tracking-[0.14em] text-gold uppercase" htmlFor="prompt">
+          Prompt
         </label>
         <textarea
           id="prompt"
           rows={3}
-          className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          className="w-full border border-gold/30 bg-obsidian px-3 py-2 text-ivory placeholder:text-ivory/40"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="e.g. smoky Memphis rim with dusty 808"
+          placeholder="smoky Memphis rim with a long 808"
         />
 
         <div className="flex flex-wrap gap-2">
@@ -426,60 +433,68 @@ export function KitGenerator() {
             type="button"
             disabled={ideaLoading || loading}
             onClick={() => applyRagSuggestion("random")}
-            className="rounded-lg border border-zinc-600 px-3 py-2 text-sm text-zinc-200 hover:border-emerald-500 disabled:opacity-50"
-            title="Random lane-aligned prompt"
+            className="min-h-11 border border-gold/40 px-3 font-condensed text-sm font-semibold tracking-wide text-ivory uppercase disabled:opacity-50"
           >
-            {ideaLoading ? "…" : "🎲 Random idea"}
+            {ideaLoading ? "…" : "Random idea"}
           </button>
           <button
             type="button"
             disabled={ideaLoading || loading}
             onClick={() => applyRagSuggestion("suggest")}
-            className="rounded-lg border border-zinc-600 px-3 py-2 text-sm text-zinc-200 hover:border-emerald-500 disabled:opacity-50"
+            className="min-h-11 border border-gold/40 px-3 font-condensed text-sm font-semibold tracking-wide text-ivory uppercase disabled:opacity-50"
           >
             Enhance prompt
           </button>
         </div>
-        {ragNote && (
-          <p className="text-xs text-zinc-500">
-            Lane context: {ragNote}
-          </p>
-        )}
+        {ragNote && <p className="text-xs text-ivory/55">Lane context: {ragNote}</p>}
 
-        <p className="text-sm font-medium text-zinc-300">Style preset</p>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <p className="font-condensed text-sm tracking-[0.14em] text-gold uppercase">Lanes</p>
+          <label className="block text-sm text-ivory/70">
+            <span className="sr-only">Search lanes</span>
+            <input
+              type="search"
+              value={laneQuery}
+              onChange={(e) => setLaneQuery(e.target.value)}
+              placeholder="Search other lanes"
+              className="w-full border border-gold/30 bg-obsidian px-3 py-2 text-ivory placeholder:text-ivory/40 sm:w-64"
+            />
+          </label>
+        </div>
         <div className="grid gap-2 sm:grid-cols-2">
-          {STYLE_PRESETS.map((preset: StylePreset) => (
+          {visiblePresets.map((preset: StylePreset) => (
             <button
               key={preset.id}
               type="button"
               onClick={() => selectPreset(preset.id)}
-              className={`rounded-xl border px-3 py-3 text-left transition ${
+              className={`border px-3 py-3 text-left ${
                 presetId === preset.id
-                  ? "border-emerald-500/80 bg-emerald-500/10"
-                  : "border-zinc-800 bg-zinc-950 hover:border-zinc-600"
+                  ? "border-gold bg-burgundy/50"
+                  : "border-gold/25 bg-obsidian hover:border-gold/60"
               }`}
             >
-              <span className="block font-medium text-zinc-100">{preset.label}</span>
-              <span className="mt-1 block text-xs text-zinc-500">
-                {preset.artistLane} · {preset.bpmHint} BPM
+              <span className="block font-condensed text-sm font-semibold tracking-wide text-ivory uppercase">
+                {preset.label}
               </span>
-              <span className="mt-2 block text-xs text-zinc-400">{preset.description}</span>
+              <span className="mt-1 block font-mono text-xs text-gold">{preset.bpmHint} BPM</span>
+              <span className="mt-2 block text-xs text-ivory/70">{preset.description}</span>
             </button>
           ))}
         </div>
+        {laneNeedle.length >= 2 && laneMatches.length === 0 && (
+          <p className="text-sm text-ivory/60">No lane matches that search.</p>
+        )}
 
         {selectedPreset && (
-          <p className="text-xs text-zinc-500">
-            Tags: {selectedPreset.tags.join(" · ")}
-          </p>
+          <p className="text-xs text-ivory/55">Tags: {selectedPreset.tags.join(" · ")}</p>
         )}
 
         <button
           type="button"
-          className="text-sm font-medium text-emerald-400/90 hover:text-emerald-300"
+          className="min-h-11 text-left font-condensed text-sm font-semibold tracking-wide text-gold uppercase"
           onClick={() => setSpecOpen((o) => !o)}
         >
-          {specOpen ? "Hide generation spec" : "Generation spec (key, BPM, engine…)"}
+          {specOpen ? "Hide key, BPM, and engine" : "Key, BPM, and engine"}
         </button>
         {specOpen && (
           <GenerationSpecFields spec={spec} onChange={setSpec} disabled={loading} />
@@ -489,7 +504,7 @@ export function KitGenerator() {
           type="button"
           disabled={loading}
           onClick={generate}
-          className="mt-2 w-full rounded-xl bg-emerald-500 px-4 py-3 font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:opacity-50"
+          className="mt-2 min-h-11 w-full bg-gold px-4 font-condensed text-base font-semibold tracking-wide text-obsidian uppercase disabled:opacity-50"
         >
           {loading ? "Generating…" : `Generate ${variationCountHint}`}
         </button>
@@ -502,14 +517,12 @@ export function KitGenerator() {
       </section>
 
       {variations.length > 0 && (
-        <section className="space-y-4 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
+        <section className="space-y-4 border border-gold/30 bg-charcoal p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-lg font-semibold text-zinc-100">Candidates</h2>
-            <div className="flex flex-col items-end gap-1 text-xs text-zinc-500">
-              {batchId && <span className="font-mono">batch {batchId.slice(0, 8)}</span>}
-              {savedToAccount && (
-                <span className="text-emerald-400">Saved to your account</span>
-              )}
+            <h2 className="font-display text-2xl text-ivory">Candidates</h2>
+            <div className="flex flex-col items-end gap-1 font-mono text-xs text-ivory/55">
+              {batchId && <span>batch {batchId.slice(0, 8)}</span>}
+              {savedToAccount && <span className="text-gold">Saved to your account</span>}
             </div>
           </div>
 
@@ -522,7 +535,7 @@ export function KitGenerator() {
           />
 
           {activeManifest?.generationSpec && (
-            <p className="font-mono text-xs text-zinc-500">
+            <p className="font-mono text-xs text-ivory/55">
               Frozen spec: {activeManifest.generationSpec.engine} ·{" "}
               {activeManifest.generationSpec.key} · {activeManifest.generationSpec.bpm} BPM
             </p>
@@ -533,7 +546,7 @@ export function KitGenerator() {
               type="button"
               disabled={loading || !frozen}
               onClick={generateMore}
-              className="min-w-[10rem] flex-1 rounded-xl border border-zinc-600 px-4 py-3 font-semibold text-zinc-100 transition hover:border-emerald-500 hover:text-emerald-300 disabled:opacity-50"
+              className="min-h-11 min-w-[10rem] flex-1 border border-gold/40 px-4 font-condensed font-semibold tracking-wide text-ivory uppercase disabled:opacity-50"
             >
               Generate more (same spec)
             </button>
@@ -541,7 +554,7 @@ export function KitGenerator() {
               type="button"
               disabled={loading || !activeManifest}
               onClick={downloadZip}
-              className="min-w-[10rem] flex-1 rounded-xl border border-emerald-600/60 bg-emerald-500/10 px-4 py-3 font-semibold text-emerald-200 transition hover:bg-emerald-500/20 disabled:opacity-50"
+              className="min-h-11 min-w-[10rem] flex-1 bg-gold px-4 font-condensed font-semibold tracking-wide text-obsidian uppercase disabled:opacity-50"
             >
               Download ZIP (variation {activeManifest?.variationLabel ?? "A"})
             </button>
@@ -549,32 +562,32 @@ export function KitGenerator() {
               type="button"
               disabled={loading || !activeManifest}
               onClick={saveToFolder}
-              className="min-w-[10rem] flex-1 rounded-xl border border-zinc-600 px-4 py-3 font-semibold text-zinc-100 transition hover:border-emerald-500 disabled:opacity-50"
+              className="min-h-11 min-w-[10rem] flex-1 border border-gold/40 px-4 font-condensed font-semibold tracking-wide text-ivory uppercase disabled:opacity-50"
               title="Chrome / Edge — pick a DAW samples folder"
             >
               Save WAVs to folder
             </button>
           </div>
 
-          <p className="text-xs text-zinc-500">
-            Storage: {storageBackend ?? "local"} · studio/creative engines · SHA-256 in manifest.json
+          <p className="font-mono text-xs text-ivory/55">
+            Storage: {storageBackend ?? "local"} · SHA-256 in manifest.json
           </p>
         </section>
       )}
 
-      <section className="space-y-3 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
-        <h2 className="text-lg font-semibold text-zinc-100">Product factory</h2>
-        <p className="text-sm text-zinc-400">
-          Turn the same brief into a storefront SKU layout ({PRODUCT_PACK_CREDIT_COST} credits):{" "}
-          <span className="font-mono text-zinc-500">01_KICKS … 04_PERC</span> with{" "}
-          {productPack?.samples.length ?? 17} WAVs.
+      <section className="space-y-3 border border-gold/20 bg-charcoal p-5">
+        <h2 className="font-display text-2xl text-ivory">Product pack</h2>
+        <p className="text-sm text-ivory/75">
+          Same brief, folder layout ({PRODUCT_PACK_CREDIT_COST} credits):{" "}
+          <span className="font-mono text-gold">01_KICKS … 04_PERC</span> with{" "}
+          {productPack?.samples.length ?? 17} WAVs. This is a generated pack, not a catalog SKU.
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">
           <button
             type="button"
             disabled={packLoading || loading}
             onClick={runProductPack}
-            className="flex-1 rounded-xl border border-zinc-600 px-4 py-3 font-semibold text-zinc-100 transition hover:border-emerald-500 disabled:opacity-50"
+            className="min-h-11 flex-1 border border-gold/40 px-4 font-condensed font-semibold tracking-wide text-ivory uppercase disabled:opacity-50"
           >
             {packLoading ? "Building pack…" : `Build product pack (${PRODUCT_PACK_CREDIT_COST} cr)`}
           </button>
@@ -582,13 +595,13 @@ export function KitGenerator() {
             type="button"
             disabled={packLoading || !productPack}
             onClick={downloadProductPack}
-            className="flex-1 rounded-xl border border-emerald-600/60 bg-emerald-500/10 px-4 py-3 font-semibold text-emerald-200 transition hover:bg-emerald-500/20 disabled:opacity-50"
+            className="min-h-11 flex-1 bg-gold px-4 font-condensed font-semibold tracking-wide text-obsidian uppercase disabled:opacity-50"
           >
             Download pack ZIP
           </button>
         </div>
         {productPack && (
-          <p className="font-mono text-xs text-zinc-500">
+          <p className="font-mono text-xs text-ivory/55">
             pack {productPack.packId.slice(0, 8)} · {productPack.folders.map((f) => f.id).join(" · ")}
           </p>
         )}

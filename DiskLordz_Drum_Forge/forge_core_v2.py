@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""DiskLordz DRUM FORGE v2 — deterministic, synthesis-only trap/phonk drum kit factory.
+"""DiskLordz DRUM FORGE 4 synthesis core — deterministic, synthesis-only trap/phonk drums.
 
 Dependencies: numpy, scipy, soundfile
 Examples:
@@ -14,11 +14,28 @@ import soundfile as sf
 from scipy.signal import butter, sosfilt, resample_poly, lfilter
 
 NOTES = ('C','C#','D','D#','E','F','F#','G','G#','A','A#','B')
+
+def _voice(overrides):
+    voice = {
+        '808_decay': 1.0, '808_drive': 3.2, 'knock': 1.0,
+        'snare_air': 0.8, 'hat_bright': 0.85, 'lofi': 0.04, 'verb': 0.1,
+        '808_sag': 4.5, '808_translate': 0.28,
+        'snare_tune': 1.0, 'snare_snap': 1.0,
+        'hat_metal': 0.32, 'hat_decay': 1.0,
+        'clap_color': 1.0, 'clap_decay': 1.0,
+        'cowbell_tone': 1.0, 'perc_tone': 1.0,
+    }
+    voice.update(overrides)
+    return voice
+
 PRESETS = {
-    'atl_trap': {'808_decay':1.20, '808_drive':3.6, 'knock':0.85, 'snare_air':0.85, 'hat_bright':0.8, 'lofi':0.02, 'verb':0.11},
-    'memphis':  {'808_decay':0.82, '808_drive':5.3, 'knock':0.95, 'snare_air':0.64, 'hat_bright':0.5, 'lofi':0.18, 'verb':0.06},
-    'drift_phonk': {'808_decay':0.98, '808_drive':6.4, 'knock':1.15, 'snare_air':1.0, 'hat_bright':1.15, 'lofi':0.09, 'verb':0.10},
-    'space_trap': {'808_decay':1.8, '808_drive':2.7, 'knock':0.65, 'snare_air':0.73, 'hat_bright':0.72, 'lofi':0.0, 'verb':0.22},
+    'atl_trap': _voice({'808_decay': 1.18, '808_drive': 3.4, 'knock': 0.92, 'snare_air': 0.84, 'hat_bright': 0.9, 'lofi': 0.02, 'verb': 0.10, '808_sag': 4.2, '808_translate': 0.30, 'snare_tune': 1.0, 'snare_snap': 1.02, 'hat_metal': 0.34, 'clap_color': 1.05}),
+    'memphis': _voice({'808_decay': 0.8, '808_drive': 5.4, 'knock': 1.05, 'snare_air': 0.58, 'hat_bright': 0.5, 'lofi': 0.22, 'verb': 0.05, '808_sag': 6.5, '808_translate': 0.22, 'snare_tune': 0.94, 'snare_snap': 0.78, 'hat_metal': 0.16, 'hat_decay': 0.85, 'clap_color': 0.72, 'cowbell_tone': 0.97}),
+    'drift_phonk': _voice({'808_decay': 0.96, '808_drive': 6.2, 'knock': 1.22, 'snare_air': 1.12, 'hat_bright': 1.18, 'lofi': 0.08, 'verb': 0.09, '808_sag': 4.0, '808_translate': 0.36, 'snare_tune': 1.04, 'snare_snap': 1.22, 'hat_metal': 0.55, 'clap_color': 1.25}),
+    'space_trap': _voice({'808_decay': 1.75, '808_drive': 2.5, 'knock': 0.62, 'snare_air': 0.7, 'hat_bright': 0.7, 'lofi': 0.0, 'verb': 0.24, '808_sag': 3.2, '808_translate': 0.18, 'snare_tune': 0.98, 'snare_snap': 0.84, 'hat_metal': 0.4, 'hat_decay': 1.15, 'clap_color': 0.9}),
+    'southern_trap': _voice({'808_decay': 1.32, '808_drive': 4.4, 'knock': 1.16, 'snare_air': 0.8, 'hat_bright': 0.94, 'lofi': 0.05, 'verb': 0.11, '808_sag': 5.5, '808_translate': 0.32, 'snare_tune': 0.97, 'snare_snap': 1.05, 'hat_metal': 0.28, 'clap_color': 1.0}),
+    'cloud_trap': _voice({'808_decay': 1.62, '808_drive': 2.3, 'knock': 0.52, 'snare_air': 0.55, 'hat_bright': 0.64, 'lofi': 0.02, 'verb': 0.26, '808_sag': 2.8, '808_translate': 0.16, 'snare_tune': 1.06, 'snare_snap': 0.7, 'hat_metal': 0.42, 'hat_decay': 1.2, 'clap_color': 0.8}),
+    'raw_underground': _voice({'808_decay': 0.88, '808_drive': 5.8, 'knock': 1.08, 'snare_air': 0.68, 'hat_bright': 0.58, 'lofi': 0.28, 'verb': 0.04, '808_sag': 7.0, '808_translate': 0.24, 'snare_tune': 0.92, 'snare_snap': 1.12, 'hat_metal': 0.14, 'clap_color': 0.66, 'cowbell_tone': 0.95}),
 }
 FAMILIES = ('808','kick','snare','clap','closed_hat','open_hat','cowbell','perc')
 
@@ -34,7 +51,8 @@ def envelope(t, attack=0.001, decay=0.2, curve=1.0):
 def filter_signal(x, cutoff, kind, sr, order=2):
     nyq = sr/2
     cutoff = float(np.clip(cutoff, 20, nyq*0.92))
-    return sosfilt(butter(order, cutoff, btype=kind, fs=sr, output='sos'), x)
+    sos = butter(order, cutoff, btype=kind, fs=sr, output='sos')
+    return sosfilt(sos, x, axis=0)
 
 def osc(freq, sr, phase=0):
     """Frequency in Hz, scalar or vector. Integrated phase avoids glides that click."""
@@ -80,6 +98,29 @@ def allpass(x, delay, gain=0.55):
     a[0]=1; a[delay]=-gain
     return lfilter(b, a, x)
 
+def plate_reverb(x, sr, decay=0.2, wet=0.16):
+    """Short damped Schroeder plate. Stereo delays, no sampled impulse."""
+    mono = np.asarray(x, dtype=np.float64)
+    if mono.ndim == 2:
+        mono = mono.mean(axis=1)
+    tail = int(sr * min(max(decay, 0.05), 0.4))
+    padded = np.pad(mono, (0, tail))
+    wet_channels = []
+    delay_sets = ((11.7, 16.3, 22.1, 27.9), (12.4, 15.8, 21.4, 29.2))
+    for delays in delay_sets:
+        acc = np.zeros_like(padded)
+        for d_ms in delays:
+            delay = max(1, int(sr * d_ms / 1000))
+            feedback = min(0.72, 10 ** (-3 * delay / (sr * max(decay, 0.05))))
+            acc += comb(padded, delay, feedback, damping=0.55)
+        acc /= 4
+        for d_ms in (3.1, 1.3):
+            acc = allpass(acc, max(1, int(sr * d_ms / 1000)), 0.45)
+        wet_channels.append(acc)
+    dry = np.column_stack((padded, padded))
+    wet_mix = np.column_stack(wet_channels)
+    return (1 - wet) * dry + wet * wet_mix
+
 def room_reverb(x, sr, decay=0.36, wet=0.14):
     """Schroeder parallel comb + series allpass, stereo independent delay lines."""
     x=np.asarray(x)
@@ -101,77 +142,96 @@ def room_reverb(x, sr, decay=0.36, wet=0.14):
 
 def quantize_character(x, sr, rng, amount):
     if amount<=0: return x
-    # Blend slightly softened bandwidth and quiet, deterministic tape-like noise.
     dull = filter_signal(x, 12000 - 8500*amount, 'lowpass', sr, 2)
-    noise = filter_signal(rng.standard_normal(len(x)), 200, 'highpass', sr) * 0.0018*amount
+    noise = filter_signal(rng.standard_normal(np.shape(x)), 200, 'highpass', sr) * 0.0018*amount
     return (1-0.55*amount)*x + 0.55*amount*dull + noise
 
 def gen_808(sr,rng,p,midi):
     root=note_to_hz(midi)
-    length=max(1.0,p['808_decay']*3.2)
+    decay=p['808_decay']
+    length=max(1.15, min(decay*2.35, 4.0))
     t=np.arange(int(sr*length))/sr
-    pitch=root + rng.uniform(100,180)*np.exp(-t/rng.uniform(.009,.022)) + rng.uniform(2,7)*np.exp(-t/.14)
-    core=osc(pitch,sr)
-    amp=envelope(t,.0008,p['808_decay'],1.1)
-    body=core*amp
-    body += .075*np.sin(2*np.pi*np.cumsum(pitch*2)/sr)*amp
-    click=filter_signal(rng.standard_normal(len(t)),1100,'highpass',sr)*np.exp(-t/.003)*.035*p['knock']
-    x=body+click
-    x=sub_translation(x,sr,amount=.32)
-    x=saturate_oversampled(x,p['808_drive'],mix=.45)
+    knock=rng.uniform(125,170)*p['knock']*np.exp(-t/rng.uniform(.009,.015))
+    sag=p.get('808_sag', 4.5)*np.exp(-t/.08)
+    pitch=root + knock + sag
+    amp=envelope(t,.0005,decay,1.06)
+    fund=osc(pitch,sr)*amp
+    sub=filter_signal(fund,110,'lowpass',sr,4)
+    mid=filter_signal(fund,150,'highpass',sr,3)
+    octave=filter_signal(osc(pitch*2,sr)*amp,180,'highpass',sr,2)
+    mid=saturate_oversampled(mid + 0.16*octave, max(1.4, p['808_drive']), mix=.82)
+    click=filter_signal(rng.standard_normal(len(t)),1600,'highpass',sr,2)*np.exp(-t/.002)*0.05*p['knock']
+    x=sub + 0.7*mid + click
+    x=sub_translation(x,sr,amount=p.get('808_translate', 0.28), cutoff=95)
     return x,root
 
 def gen_kick(sr,rng,p):
-    t=np.arange(int(sr*.72))/sr
-    f=47+rng.uniform(95,155)*np.exp(-t/.017)
-    x=osc(f,sr)*envelope(t,.00035,.16,.83)
-    transient=filter_signal(rng.standard_normal(len(t)),1600,'highpass',sr)*np.exp(-t/.0025)*.09*p['knock']
-    return saturate_oversampled(x+transient,2.4,.28),None
+    t=np.arange(int(sr*.46))/sr
+    f=50+rng.uniform(115,175)*p['knock']*np.exp(-t/.012)
+    body=osc(f,sr)*envelope(t,.0003,.15,.85)
+    click=filter_signal(rng.standard_normal(len(t)),2000,'highpass',sr,2)*np.exp(-t/.0018)*.15*p['knock']
+    return saturate_oversampled(body+click, 1.7+0.35*p['knock'], .42), None
 
 def gen_snare(sr,rng,p):
-    t=np.arange(int(sr*.52))/sr
-    pitch=175+105*np.exp(-t/.012)
-    body=osc(pitch,sr)*np.exp(-t/.042)*.64
-    noise=filter_signal(rng.standard_normal(len(t)),950,'highpass',sr)
-    snap=filter_signal(noise,7000,'lowpass',sr)*np.exp(-t/.09)*p['snare_air']*.63
-    x=body+snap
-    return room_reverb(x,sr,decay=.25,wet=p['verb']),None
+    tune=p.get('snare_tune', 1.0)
+    snap=p.get('snare_snap', 1.0)
+    t=np.arange(int(sr*.4))/sr
+    pitch=(190*tune)+(130*tune)*np.exp(-t/.01)
+    body=osc(pitch,sr)*np.exp(-t/.04)*.7
+    noise=rng.standard_normal(len(t))
+    wires=filter_signal(noise,1700,'highpass',sr,3)
+    wires=filter_signal(wires,7200,'lowpass',sr,2)*np.exp(-t/.065)*0.5*snap*p['snare_air']
+    crack=filter_signal(noise,3000,'highpass',sr,2)*np.exp(-t/.011)*.32*p['knock']
+    wet=min(0.26, 0.06+p['verb'])
+    return plate_reverb(body+wires+crack, sr, decay=0.16+0.12*p['verb'], wet=wet), None
 
 def gen_clap(sr,rng,p):
-    t=np.arange(int(sr*.46))/sr
-    n=filter_signal(rng.standard_normal(len(t)),1100,'highpass',sr)
+    color=p.get('clap_color', 1.0)
+    tail=p.get('clap_decay', 1.0)
+    t=np.arange(int(sr*.4))/sr
+    n=filter_signal(rng.standard_normal(len(t)),1000,'highpass',sr,2)
+    n=filter_signal(n, min(sr*0.42, 2200+3800*color), 'lowpass', sr, 2)
     bursts=np.zeros_like(t)
-    for ms in (0,13,26,39):
-        start=ms/1000
-        bursts += np.exp(-np.maximum(t-start,0)/(.005 if ms<39 else .065))*(t>=start)
-    x=filter_signal(n,8500,'lowpass',sr)*bursts*.39
-    return room_reverb(x,sr,.28,p['verb']*.85),None
+    starts=(0.0, 0.011+float(rng.uniform(0,0.003)), 0.024+float(rng.uniform(0,0.004)), 0.039)
+    for i,start in enumerate(starts):
+        tau=0.016 if i<3 else 0.05*tail
+        bursts += np.exp(-np.maximum(t-start,0)/tau)*(t>=start)
+    wet=min(0.2, 0.04+p['verb']*0.45)
+    return plate_reverb(n*bursts*0.62, sr, decay=0.1+0.06*p['verb'], wet=wet), None
 
 def gen_hat(sr,rng,p,is_open=False):
-    duration=.82 if is_open else .18
+    decay_scale=p.get('hat_decay', 1.0)
+    duration=(0.7 if is_open else 0.15)*decay_scale
     t=np.arange(int(sr*duration))/sr
-    noise=filter_signal(rng.standard_normal(len(t)),rng.uniform(5800,8500)*p['hat_bright'],'highpass',sr)
-    metallic=(np.sign(np.sin(2*np.pi*4137*t))+np.sign(np.sin(2*np.pi*5579*t)))*.14
-    decay=.28 if is_open else .035
-    x=(noise*.58+metallic)*envelope(t,.0002,decay,1.07)
+    bright=p['hat_bright']
+    cutoff=float(np.clip(rng.uniform(5600,7800)*bright, 2500, min(12000, sr*0.33)))
+    noise=filter_signal(rng.standard_normal(len(t)), cutoff, 'highpass', sr, 3)
+    metal=np.zeros(len(t))
+    base=min(2800*bright, sr*0.22)
+    for i,ratio in enumerate((1.0, 1.63, 2.27, 3.11, 4.07)):
+        freq=min(base*ratio, sr*0.46)
+        metal += (0.52**i)*np.sin(2*np.pi*freq*t)
+    decay=(0.24 if is_open else 0.03)*decay_scale
+    x=(noise*0.62 + metal*p.get('hat_metal', 0.3))*envelope(t,.00015,decay,1.12)
     return x,None
 
 def gen_cowbell(sr,rng,p):
-    t=np.arange(int(sr*.56))/sr
-    # Inharmonic dual-pulse classic cowbell-inspired architecture, entirely synthesized.
-    osc1=np.sign(np.sin(2*np.pi*(537+rng.uniform(-8,8))*t))
-    osc2=np.sign(np.sin(2*np.pi*(803+rng.uniform(-9,9))*t))
-    raw=(osc1+osc2)*.4
-    x=filter_signal(filter_signal(raw,380,'highpass',sr),4800,'lowpass',sr)
-    x*=envelope(t,.0004,.12,.91)
-    return saturate_oversampled(x,2.0,.23),None
+    tone=p.get('cowbell_tone', 1.0)
+    t=np.arange(int(sr*.42))/sr
+    f1=(540+rng.uniform(-5,5))*tone
+    f2=(812+rng.uniform(-6,6))*tone
+    raw=np.sin(2*np.pi*f1*t)+0.62*np.sin(2*np.pi*f2*t)+0.18*np.sin(2*np.pi*f1*2*t)
+    x=filter_signal(filter_signal(raw,420,'highpass',sr),5000,'lowpass',sr)
+    x*=envelope(t,.0004,.11,.9)
+    return saturate_oversampled(x,1.7,.32),None
 
 def gen_perc(sr,rng,p):
-    t=np.arange(int(sr*.42))/sr
-    f=rng.uniform(260,560)*np.exp(-t/.045)+rng.uniform(135,240)
-    tone=osc(f,sr)*envelope(t,.0002,.065)
-    noise=filter_signal(rng.standard_normal(len(t)),2300,'highpass',sr)*np.exp(-t/.012)*.18
-    return tone*.75+noise,None
+    tone=p.get('perc_tone', 1.0)
+    t=np.arange(int(sr*.32))/sr
+    f=rng.uniform(280,520)*tone*np.exp(-t/.04)+rng.uniform(150,230)
+    body=osc(f,sr)*envelope(t,.0002,.06)
+    noise=filter_signal(rng.standard_normal(len(t)),2400,'highpass',sr)*np.exp(-t/.01)*.2*p.get('snare_snap', 1.0)
+    return body*.8+noise,None
 
 GENERATORS={'808':gen_808,'kick':gen_kick,'snare':gen_snare,'clap':gen_clap,
             'closed_hat':lambda sr,rng,p:gen_hat(sr,rng,p,False),
@@ -199,18 +259,20 @@ def true_peak_db(x, factor=4):
     return float(20*np.log10(max(np.max(np.abs(y)),1e-12)))
 
 def master(x,sr,ceiling_db=-1.0):
-    """Apply DC removal and fades BEFORE oversampled true-peak-constrained gain."""
+    """DC removal and fades, then static gain to the 4x true-peak estimate.
+
+    Gain can rise or fall. Makeup is capped at +24 dB. This is not a lookahead limiter.
+    """
     x=np.asarray(x,dtype=np.float64)
     x=x-np.mean(x,axis=0)
     x=fade(x,sr)
-    # Soft guard only for unexpected extreme spikes, keeping transient dynamics.
     peak=np.max(np.abs(x))
     if peak>8: x=x*(8/peak)
-    tp=true_peak_db(x)
+    measured=10**(true_peak_db(x)/20)
+    if measured<1e-8: return x
     ceiling=10**(ceiling_db/20)
-    scale=min(1.,ceiling/(10**(tp/20)))
-    x=x*scale
-    return x
+    scale=min(ceiling/measured, 10**(24/20))
+    return x*scale
 
 def main():
     ap=argparse.ArgumentParser(description='DiskLordz Drum Forge: original synthesis-only commercial-ready kit foundation')

@@ -37,11 +37,11 @@ export function GenerationSpecFields({ spec, onChange, disabled }: Props) {
   };
 
   return (
-    <div className="grid gap-3 border-t border-zinc-800 pt-4 sm:grid-cols-2">
+    <div className="grid gap-3 border-t border-gold/20 pt-4 sm:grid-cols-2">
       <label className="block text-sm">
-        <span className="text-zinc-400">Mode</span>
+        <span className="text-ivory/70">Mode</span>
         <select
-          className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-2 text-zinc-100"
+          className="mt-1 w-full rounded-lg border border-gold/30 bg-obsidian px-2 py-2 text-ivory"
           value={spec.mode}
           disabled={disabled}
           onChange={(e) => set("mode", e.target.value as GenerationMode)}
@@ -53,9 +53,9 @@ export function GenerationSpecFields({ spec, onChange, disabled }: Props) {
       </label>
 
       <label className="block text-sm">
-        <span className="text-zinc-400">Engine</span>
+        <span className="text-ivory/70">Engine</span>
         <select
-          className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-2 text-zinc-100"
+          className="mt-1 w-full rounded-lg border border-gold/30 bg-obsidian px-2 py-2 text-ivory"
           value={spec.engine}
           disabled={disabled}
           onChange={(e) => set("engine", e.target.value as GenerationEngine)}
@@ -67,10 +67,10 @@ export function GenerationSpecFields({ spec, onChange, disabled }: Props) {
       </label>
 
       <label className="block text-sm sm:col-span-2">
-        <span className="text-zinc-400">Key</span>
+        <span className="text-ivory/70">Key</span>
         <input
           type="text"
-          className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-2 text-zinc-100"
+          className="mt-1 w-full rounded-lg border border-gold/30 bg-obsidian px-2 py-2 text-ivory"
           value={spec.key}
           disabled={disabled}
           onChange={(e) => set("key", e.target.value)}
@@ -79,12 +79,12 @@ export function GenerationSpecFields({ spec, onChange, disabled }: Props) {
       </label>
 
       <label className="block text-sm">
-        <span className="text-zinc-400">BPM</span>
+        <span className="text-ivory/70">BPM</span>
         <input
           type="number"
           min={60}
           max={200}
-          className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-2 text-zinc-100"
+          className="mt-1 w-full rounded-lg border border-gold/30 bg-obsidian px-2 py-2 text-ivory"
           value={spec.bpm}
           disabled={disabled}
           onChange={(e) => set("bpm", Number(e.target.value))}
@@ -92,12 +92,12 @@ export function GenerationSpecFields({ spec, onChange, disabled }: Props) {
       </label>
 
       <label className="block text-sm">
-        <span className="text-zinc-400">Bars</span>
+        <span className="text-ivory/70">Bars</span>
         <input
           type="number"
           min={1}
           max={16}
-          className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-2 text-zinc-100"
+          className="mt-1 w-full rounded-lg border border-gold/30 bg-obsidian px-2 py-2 text-ivory"
           value={spec.bars}
           disabled={disabled}
           onChange={(e) => set("bars", Number(e.target.value))}
@@ -106,9 +106,9 @@ export function GenerationSpecFields({ spec, onChange, disabled }: Props) {
 
       {(spec.mode === "loop" || spec.mode === "sfx") && (
         <label className="block text-sm sm:col-span-2">
-          <span className="text-zinc-400">Length</span>
+          <span className="text-ivory/70">Length</span>
           <select
-            className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-2 text-zinc-100"
+            className="mt-1 w-full rounded-lg border border-gold/30 bg-obsidian px-2 py-2 text-ivory"
             value={spec.length}
             disabled={disabled}
             onChange={(e) => set("length", e.target.value as LoopLength)}
@@ -121,12 +121,12 @@ export function GenerationSpecFields({ spec, onChange, disabled }: Props) {
       )}
 
       <label className="block text-sm">
-        <span className="text-zinc-400">Stereo width ({Math.round(spec.stereo * 100)}%)</span>
+        <span className="text-ivory/70">Stereo width ({Math.round(spec.stereo * 100)}%)</span>
         <input
           type="range"
           min={0}
           max={100}
-          className="mt-2 w-full accent-emerald-500"
+          className="mt-2 w-full accent-gold"
           value={Math.round(spec.stereo * 100)}
           disabled={disabled}
           onChange={(e) => set("stereo", Number(e.target.value) / 100)}
@@ -134,20 +134,20 @@ export function GenerationSpecFields({ spec, onChange, disabled }: Props) {
       </label>
 
       <label className="block text-sm">
-        <span className="text-zinc-400">Wildness ({Math.round(spec.wildness * 100)}%)</span>
+        <span className="text-ivory/70">Wildness ({Math.round(spec.wildness * 100)}%)</span>
         <input
           type="range"
           min={0}
           max={100}
-          className="mt-2 w-full accent-emerald-500"
+          className="mt-2 w-full accent-gold"
           value={Math.round(spec.wildness * 100)}
           disabled={disabled}
           onChange={(e) => set("wildness", Number(e.target.value) / 100)}
         />
       </label>
 
-      <p className="text-xs text-zinc-500 sm:col-span-2">
-        Batch cost: <span className="text-emerald-400/90">{creditCostForSpec(spec)} credits</span>{" "}
+      <p className="text-xs text-ivory/55 sm:col-span-2">
+        Batch cost: <span className="text-gold">{creditCostForSpec(spec)} credits</span>{" "}
         (loop/SFX tiers + studio surcharge). Preset changes reset defaults from the lane BPM hint.
       </p>
     </div>

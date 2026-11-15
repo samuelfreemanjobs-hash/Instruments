@@ -28,22 +28,28 @@ class Quality:
     accepted: bool
     reason: str
 
-def mutate_preset(p: dict, rng, family: str, strength: float) -> tuple[dict, dict]:
-    """Musical variations: restrict the range of relevant parameters per instrument."""
+def mutate_preset(p: dict, rng, family: str, strength: float, spread: float = 0.5) -> tuple[dict, dict]:
+    """Walk a musical range. spread 0 and 1 are the two ends; strength 0 is the genre voice."""
     p=p.copy()
     adjustments={}
-    ranges={'808': {'808_decay':(.65,1.5),'808_drive':(.64,1.55),'knock':(.65,1.45)},
-            'kick': {'knock':(.60,1.65)},
-            'snare': {'snare_air':(.60,1.55),'verb':(.50,1.8)},
-            'clap': {'verb':(.35,2.0)},
-            'closed_hat': {'hat_bright':(.65,1.55)},
-            'open_hat': {'hat_bright':(.65,1.55)},
-            'cowbell': {'lofi':(.65,1.35)},
-            'perc': {'lofi':(.65,1.35)}}
-    for param,(lo,hi) in ranges[family].items():
-        # strength=0 gives the original genre voice; strength=1 full spread.
-        factor=1+strength*(float(rng.uniform(lo,hi))-1)
-        p[param]=max(0,p[param]*factor)
+    ranges={'808': {'808_decay':(.78,1.28),'808_drive':(.75,1.35),'knock':(.72,1.32),'808_sag':(.7,1.35),'808_translate':(.75,1.28)},
+            'kick': {'knock':(.7,1.45)},
+            'snare': {'snare_air':(.7,1.45),'snare_tune':(.94,1.08),'snare_snap':(.72,1.4),'verb':(.55,1.6)},
+            'clap': {'verb':(.5,1.7),'clap_color':(.62,1.55),'clap_decay':(.7,1.45)},
+            'closed_hat': {'hat_bright':(.72,1.4),'hat_metal':(.55,1.6),'hat_decay':(.65,1.5)},
+            'open_hat': {'hat_bright':(.72,1.4),'hat_metal':(.55,1.6),'hat_decay':(.7,1.45)},
+            'cowbell': {'cowbell_tone':(.96,1.05),'lofi':(.7,1.3)},
+            'perc': {'perc_tone':(.88,1.14),'snare_snap':(.75,1.35),'lofi':(.7,1.35)}}
+    position=float(np.clip(spread,0.0,1.0))
+    for index,(param,(lo,hi)) in enumerate(ranges[family].items()):
+        if param not in p:
+            continue
+        place=position if index%2==0 else 1.0-position
+        span=hi-lo
+        target=lo+span*place+float(rng.uniform(-0.05,0.05)*span)
+        target=float(np.clip(target,lo,hi))
+        factor=1+strength*(target-1)
+        p[param]=max(0.0,p[param]*factor)
         adjustments[param]=round(factor,4)
     return p,adjustments
 
@@ -96,7 +102,7 @@ def generate(sr,genre,family,seed,strength,ceiling):
     # A fixed target note family is deliberate, as random note mutation harms likeness comparisons.
     midi=int(rng.choice([24,26,28,29,31,33,35,36,38,40,41,43]))
     x,root=(core.gen_808(sr,rng,p,midi) if family=='808' else core.GENERATORS[family](sr,rng,p))
-    if x.ndim==1 and family not in ('808','kick'):
+    if family not in ('808','kick'):
         x=core.quantize_character(x,sr,rng,p['lofi'])
     x=core.master(x,sr,ceiling)
     vec,centroid,transient=descriptors(x,sr)

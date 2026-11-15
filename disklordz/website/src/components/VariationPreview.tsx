@@ -27,10 +27,10 @@ export function VariationPreview({
             key={v.kitId}
             type="button"
             onClick={() => onSelect(i)}
-            className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
+            className={`min-h-11 border px-4 font-condensed text-sm font-semibold tracking-wide uppercase ${
               selectedIndex === i
-                ? "border-emerald-500 bg-emerald-500/15 text-emerald-200"
-                : "border-zinc-700 bg-zinc-950 text-zinc-300 hover:border-zinc-500"
+                ? "border-gold bg-burgundy/50 text-ivory"
+                : "border-gold/30 bg-obsidian text-ivory/80"
             }`}
           >
             Variation {v.variationLabel ?? String.fromCharCode(65 + i)}
@@ -76,9 +76,9 @@ function VariationDetail({
         : "Quick audition (kick / snare / hat)";
 
   return (
-    <div className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-950/80 p-4">
-      <p className="font-mono text-xs text-zinc-500">{manifest.kitId}</p>
-      <p className="text-sm text-zinc-400">{auditionLabel}</p>
+    <div className="space-y-3 border border-gold/20 bg-obsidian p-4">
+      <p className="font-mono text-xs text-ivory/50">{manifest.kitId}</p>
+      <p className="text-sm text-ivory/70">{auditionLabel}</p>
       <ul className="flex flex-wrap gap-2">
         {audition.map((s) => {
           const key = `${manifest.kitId}-${s.name}`;
@@ -87,7 +87,7 @@ function VariationDetail({
               <button
                 type="button"
                 onClick={() => onPlay(s.url, key)}
-                className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-emerald-400 hover:border-emerald-600"
+                className="min-h-11 border border-gold/40 px-3 font-condensed text-sm font-semibold tracking-wide text-gold uppercase"
               >
                 {playingKey === key ? "Playing…" : `Play ${s.name}`}
               </button>
@@ -101,13 +101,13 @@ function VariationDetail({
           return (
             <li
               key={s.name}
-              className="flex items-center justify-between rounded-lg border border-zinc-800 px-3 py-2"
+              className="flex min-h-11 items-center justify-between border border-gold/20 px-3"
             >
-              <span className="font-mono text-sm text-zinc-200">{s.name}</span>
+              <span className="font-mono text-sm text-ivory">{s.name}</span>
               <button
                 type="button"
                 onClick={() => onPlay(s.url, key)}
-                className="text-xs font-medium text-zinc-400 hover:text-emerald-300"
+                className="font-condensed text-xs font-semibold tracking-wide text-gold uppercase"
               >
                 {playingKey === key ? "…" : "Play"}
               </button>

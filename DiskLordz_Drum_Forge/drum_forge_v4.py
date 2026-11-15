@@ -5,7 +5,7 @@ Run: python drum_forge_v4.py --genres memphis drift_phonk --variations 4 --notes
 Requires: numpy, scipy, soundfile, forge_core_v2.py, drum_forge_pro.py
 """
 from __future__ import annotations
-import argparse, csv, hashlib, html, json, math
+import argparse, csv, hashlib, html, json, math, re
 from dataclasses import asdict
 from pathlib import Path
 import numpy as np
@@ -13,18 +13,9 @@ import soundfile as sf
 import forge_core_v2 as core
 import drum_forge_pro as pro
 
-# Extended genre voices: inspired by production aesthetics, not recordings or third-party samples.
-EXTRA = {
-    'southern_trap': {'808_decay':1.35,'808_drive':4.3,'knock':1.17,'snare_air':.80,'hat_bright':.92,'lofi':.06,'verb':.12},
-    'cloud_trap': {'808_decay':1.67,'808_drive':2.35,'knock':.55,'snare_air':.58,'hat_bright':.66,'lofi':.025,'verb':.25},
-    'raw_underground': {'808_decay':.90,'808_drive':5.7,'knock':1.06,'snare_air':.70,'hat_bright':.61,'lofi':.25,'verb':.04},
-}
-core.PRESETS.update(EXTRA)
-
 NOTE_TO_PC={name:i for i,name in enumerate(core.NOTES)}
 def parse_midi(note: str) -> int:
     token=note.strip().upper().replace('♯','#').replace('♭','B')
-    import re
     m=re.fullmatch(r'([A-G])([#B]?)(-?\d+)',token)
     if not m: raise ValueError('expected notes like C1, F#1, Bb0')
     key,acc,octv=m.groups();pc=NOTE_TO_PC[key]
@@ -93,13 +84,15 @@ def main():
           seen=[]
           for vi in range(args.variations):
             selected=None
+            last_reason='no_attempt'
+            spread=0.5 if args.variations<=1 else vi/(args.variations-1)
             for attempt in range(args.max_retries):
               seed=args.seed+gi*100000000+fi*1000000+ni*10000+vi*100+attempt
               rng=np.random.default_rng(seed)
-              p,changes=pro.mutate_preset(core.PRESETS[genre],rng,family,args.strength)
+              p,changes=pro.mutate_preset(core.PRESETS[genre],rng,family,args.strength,spread)
               if family=='808':x,root_hz=core.gen_808(args.sr,rng,p,midi)
               else:x,root_hz=core.GENERATORS[family](args.sr,rng,p)
-              if x.ndim==1 and family not in ('808','kick'):
+              if family not in ('808','kick'):
                   x=core.quantize_character(x,args.sr,rng,p['lofi'])
               x=final_trim(x,args.sr)
               x=core.master(x,args.sr,args.ceiling-.12)  # .12 dB extra margin for PCM output
@@ -109,9 +102,10 @@ def main():
               if qc.accepted and sim<args.similarity:
                 selected=(x,root_hz,vec,qc,changes,seed,sim)
                 break
-              rejected.append({'genre':genre,'family':family,'root_note':core.hz_to_note(root_hz) if root_hz else '', 'variation':vi+1,'attempt':attempt+1,'seed':seed,'reason':qc.reason if not qc.accepted else 'near_duplicate','similarity':round(sim,6)})
+              last_reason=qc.reason if not qc.accepted else 'near_duplicate'
+              rejected.append({'genre':genre,'family':family,'root_note':core.hz_to_note(root_hz) if root_hz else '', 'variation':vi+1,'attempt':attempt+1,'seed':seed,'reason':last_reason,'similarity':round(sim,6)})
             if selected is None:
-                print(f'[SKIP] {genre}/{family}/{core.hz_to_note(core.note_to_hz(midi)) if midi else ""} V{vi+1:03d}')
+                print(f'[SKIP] {genre}/{family}/{core.hz_to_note(core.note_to_hz(midi)) if midi else ""} V{vi+1:03d} {last_reason}')
                 continue
             x,root_hz,vec,qc,changes,seed,sim=selected
             note=core.hz_to_note(root_hz).replace('#','s') if root_hz else None
