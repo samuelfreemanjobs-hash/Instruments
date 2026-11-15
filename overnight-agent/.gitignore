@@ -1,0 +1,6 @@
+output/
+plugin/build/
+__pycache__/
+*.pyc
+.env
+*.vst3
