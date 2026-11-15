@@ -17,9 +17,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(JUCE)
 
+option(INSTRUMENTS_ENABLE_CLAP "Fetch CLAP extensions and build JDUpgraded CLAP target" ON)
+
 # Track clap-juce-extensions main (pinned SHA); repin when CI fetch fails.
-option(JDUPGRADED_ENABLE_CLAP "Fetch clap-juce-extensions and build JD Upgraded CLAP" ON)
-if(JDUPGRADED_ENABLE_CLAP)
+if(INSTRUMENTS_ENABLE_CLAP)
     set(JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG 6bde108329ff9fc24404b79b8b397261a75cf6a8)
     FetchContent_Declare(
         clap_juce_extensions
@@ -124,7 +125,7 @@ target_include_directories(JDUpgraded
         "${CMAKE_BINARY_DIR}/juce_binarydata_JDUpgradedRomData/JuceLibraryCode"
 )
 
-if(JDUPGRADED_ENABLE_CLAP)
+if(INSTRUMENTS_ENABLE_CLAP)
     clap_juce_extensions_plugin(TARGET JDUpgraded
         CLAP_ID "com.instruments.jdupgraded"
         CLAP_FEATURES instrument synthesizer stereo
@@ -187,4 +188,5 @@ target_compile_definitions(SpectralDiff
 add_subdirectory(Wave9090)
 add_subdirectory(PluggVA)
 add_subdirectory(SP1200)
+add_subdirectory(AutoSampler)
 add_subdirectory(ProphetRev2Trap)

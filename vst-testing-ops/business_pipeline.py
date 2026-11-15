@@ -25,6 +25,9 @@ WAVE9090_VST3_BUNDLE = (
     REPO_ROOT / "build/Wave9090/Wave9090_artefacts/Release/VST3/WAVE-9090.vst3"
 )
 WAVE9090_VST3_DISCOVER = REPO_ROOT / "build/Wave9090/Wave9090_artefacts/Release/VST3"
+PLUGG_VA_VST3_BUNDLE = (
+    REPO_ROOT / "build/PluggVA/PluggVA_artefacts/Release/VST3/Plugg VA.vst3"
+)
 
 
 class StageId(str, Enum):
@@ -334,6 +337,7 @@ def stage_pluginval() -> StageResult:
     bundles = [
         REPO_ROOT / "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3",
         WAVE9090_VST3_BUNDLE,
+        PLUGG_VA_VST3_BUNDLE,
     ]
     chunks: list[str] = []
     for bundle in bundles:
