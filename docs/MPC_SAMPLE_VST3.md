@@ -56,6 +56,7 @@ Melodee is **headless**: it does not open a desktop plugin window. You ship **DS
 
 - Reference plugin: **`vst/MpcAnalogSynth/`** — headless 6-voice analog polysynth, factory programs, `MPC_VST3_HEADLESS=ON` by default.
 - Mono ladder line: **`vst/MpcVoyager/`**, **`vst/MpcSubPhatty/`**, **`vst/MpcMessenger/`** (wavefold + Res Bass toggle/compensation, Melodee **K1–K3** = cutoff / res / resBassToggle).
+- FM + expressive poly: **`vst/MpcDxFm/`** (4-op FM, 12 voices), **`vst/MpcCs80/`** (dual-layer brass/strings, 4 voices, poly AT).
 - Planned classic line (APC Plan): [plugins/MPC_CLASSIC_LINE.md](../plugins/MPC_CLASSIC_LINE.md) — VA, mono bass, FM, hybrid **MpcLaSynth**, drum synth **MpcTr808909**.
 - Full **VST3** bundle layout Melodee expects.
 - Use **program chain first** (DSP), keep editors minimal or headless—Melodee ignores most GUI anyway.
