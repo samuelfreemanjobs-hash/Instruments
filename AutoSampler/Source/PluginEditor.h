@@ -75,7 +75,6 @@ private:
     std::unique_ptr<SliderAttachment> velocity4Attachment_;
     std::unique_ptr<SliderAttachment> midiChannelAttachment_;
     std::unique_ptr<SliderAttachment> outputGainAttachment_;
-    std::unique_ptr<ButtonAttachment> startAttachment_;
     std::unique_ptr<ButtonAttachment> trimAttachment_;
     std::unique_ptr<ButtonAttachment> normalizeAttachment_;
     std::unique_ptr<ButtonAttachment> loopAttachment_;

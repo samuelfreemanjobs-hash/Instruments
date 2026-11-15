@@ -97,6 +97,7 @@ private:
     mutable juce::CriticalSection exportMessageLock_;
     juce::String exportMessage_ { "Ready" };
     juce::MidiKeyboardState keyboardState_;
+    juce::AudioBuffer<float> inputCaptureScratch_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AutoSamplerAudioProcessor)
 };

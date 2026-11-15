@@ -22,6 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential g++-12 gcc-12 libstdc++-12-dev cmake ninja-build pkg-config
+
       - name: Configure Release
         run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Release \

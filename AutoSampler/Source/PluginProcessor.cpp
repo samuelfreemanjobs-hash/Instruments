@@ -135,6 +135,9 @@ void AutoSamplerAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     sampler_.prepare (sampleRate, samplesPerBlock);
     sampler_.setProgram (&getProgram());
     refreshParametersFromApvts();
+
+    const int inCh = juce::jmax (1, getTotalNumInputChannels());
+    inputCaptureScratch_.setSize (inCh, samplesPerBlock, false, false, true);
 }
 
 void AutoSamplerAudioProcessor::releaseResources() {}
@@ -198,6 +201,7 @@ void AutoSamplerAudioProcessor::handleTriggers() noexcept
     const bool startTrig = *apvts_.getRawParameterValue (PID::startAutoSample) >= 0.5f;
     if (startTrig && ! lastStartTrigger_)
     {
+        sampler_.reset();
         getProgram().clear();
         autoRecord_.start (buildAutoConfig());
     }
@@ -230,12 +234,17 @@ void AutoSamplerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
     handleTriggers();
 
-    juce::AudioBuffer<float> input (getTotalNumInputChannels(), buffer.getNumSamples());
+    const int numSamples = buffer.getNumSamples();
+    const int inCh = juce::jmax (1, getTotalNumInputChannels());
+    if (inputCaptureScratch_.getNumChannels() != inCh || inputCaptureScratch_.getNumSamples() < numSamples)
+        inputCaptureScratch_.setSize (inCh, numSamples, false, false, true);
+
+    auto& input = inputCaptureScratch_;
     float peak = 0.0f;
     for (int ch = 0; ch < input.getNumChannels(); ++ch)
     {
-        input.copyFrom (ch, 0, buffer, ch, 0, buffer.getNumSamples());
-        peak = juce::jmax (peak, input.getMagnitude (ch, 0, buffer.getNumSamples()));
+        input.copyFrom (ch, 0, buffer, ch, 0, numSamples);
+        peak = juce::jmax (peak, input.getMagnitude (ch, 0, numSamples));
     }
     inputPeak_.store (peak);
 

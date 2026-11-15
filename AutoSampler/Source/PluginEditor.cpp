@@ -95,7 +95,6 @@ AutoSamplerAudioProcessorEditor::AutoSamplerAudioProcessorEditor (AutoSamplerAud
     velocity4Attachment_ = std::make_unique<SliderAttachment> (processor_.getApvts(), PID::velocity4, velocity4Slider_);
     midiChannelAttachment_ = std::make_unique<SliderAttachment> (processor_.getApvts(), PID::midiChannel, midiChannelSlider_);
     outputGainAttachment_ = std::make_unique<SliderAttachment> (processor_.getApvts(), PID::outputGain, outputGainSlider_);
-    startAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), PID::startAutoSample, startButton_);
     trimAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), PID::trimSilence, trimButton_);
     normalizeAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), PID::normalizeCapture, normalizeButton_);
     loopAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), PID::sustainLoop, loopButton_);
@@ -111,6 +110,17 @@ AutoSamplerAudioProcessorEditor::AutoSamplerAudioProcessorEditor (AutoSamplerAud
         addAndMakeVisible (*b);
     for (auto* b : { &trimButton_, &normalizeButton_, &loopButton_, &untilSilenceButton_ })
         addAndMakeVisible (*b);
+
+    startButton_.onClick = [this]
+    {
+        if (auto* param = processor_.getApvts().getParameter (PID::startAutoSample))
+        {
+            param->beginChangeGesture();
+            param->setValueNotifyingHost (1.0f);
+            param->setValueNotifyingHost (0.0f);
+            param->endChangeGesture();
+        }
+    };
 
     exportPresetButton_.onClick = [this]
     {
