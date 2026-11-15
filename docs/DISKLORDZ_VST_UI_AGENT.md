@@ -28,7 +28,20 @@ stitch login                          # API key / OAuth — per user, not in git
 stitch status --flow=loop --json
 ```
 
-Cloud snapshots also run `install-stitch-cli.sh` from `.cursor/environment.json`.
+Register Stitch MCP in each editor (writes user config, not the repo):
+
+```bash
+stitch mcp install --target cursor
+stitch mcp install --target claude-code
+stitch mcp install --target claude-desktop
+stitch mcp install --target vscode
+stitch mcp install --target gemini-cli
+stitch mcp install --target antigravity
+```
+
+Cloud snapshots also run `install-stitch-cli.sh` from `.cursor/environment.json`. In-repo MCP samples stay in `.cursor/mcp.json` (Supabase/Stripe); Stitch CLI merge lands in `~/.cursor/mcp.json` on your laptop.
+
+**Agent rule:** VST UI playbooks still use the **`stitch` CLI** for Loop/capture; MCP is optional for Canvas tools in the IDE.
 
 ## Lanes (do not mix)
 
