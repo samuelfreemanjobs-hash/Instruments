@@ -50,7 +50,6 @@ sudo apt-get install -y build-essential cmake git g++-13 gcc-13 \
 ```
 
 On hosts where `c++` is `clang++`, the build script forces **g++-13** for JUCE’s host-side `juceaide` tool (override with `HOST_CXX` / `HOST_CC`).
-```
 
 For plugins that use JUCE’s Linux GUI (X11/GTK), also install **arm64** development libraries on the cross sysroot (Debian multiarch):
 
@@ -73,9 +72,58 @@ This uses `cmake/toolchains/linux-aarch64-gnu.cmake` and writes artifacts under 
 
 `YourPlugin.vst3/Contents/aarch64-linux/YourPlugin.so`
 
-### Install on MPC Sample
+### Install on MPC Sample (Melodee)
 
-Melodee’s exact scan path can vary by firmware; typical Linux layouts include user-level `~/.vst3/` or a vendor-specific plugin folder exposed over USB/network. Copy the **entire** `.vst3` bundle (folder), not the `.so` alone, then rescan plugins in Melodee.
+Melodee scans **`Melodee/Plugins/`** on the **microSD card** you boot from (see [melodee-sample](https://github.com/keremimo/melodee-sample)). Copy each plugin as a **whole `.vst3` bundle directory** (the folder named `Something.vst3`), not a loose `.so`.
+
+**Step-by-step (card layout)**
+
+1. Use MPC Sample firmware **1.3.0.12** or newer and boot **Melodee** from the prepared SD image (vendor/Open MPC workflow in the Melodee repo).
+2. Power off, remove the microSD, and mount it on your computer (USB reader).
+3. On the card volume, open or create: `Melodee/Plugins/`
+4. Copy one folder per plugin, e.g. `MelodeeChip.vst3/` (must contain `Contents/aarch64-linux/*.so` for ARM64 VST3).
+5. Safely eject the card, reinsert, power on, open Melodee’s **plugin browser**.
+6. Compatible plugins appear normal; **wrong-architecture** bundles (Windows, macOS, or `x86_64-linux` only) show **dimmed** and cannot be loaded.
+7. Pick a plugin, choose a **preset** if available, then map **K1–K3** to parameters (Melodee does not show the plugin’s full desktop GUI).
+
+**Before you copy a build you made yourself**, verify on the PC:
+
+```bash
+./scripts/vst/verify-mpc-sample-vst3.sh path/to/YourPlugin.vst3
+```
+
+Melodee also accepts **aarch64 LV2/CLAP**, **Open MPC** plugin folders, and **VST2** `.so` (aarch64 or **armv7** via Melodee’s bridge). This repo’s JUCE lane targets **VST3** + `Contents/aarch64-linux/`.
+
+## Official Melodee synths (pre-built ARM64 Linux VST3)
+
+Keremimo ships three lightweight synths built for MPC Sample; release zips use the correct bundle layout (`*-mpc-sample.zip`):
+
+| Plugin | Role | Repo |
+|--------|------|------|
+| **Melodee Chip** | Chiptune / retro | [mpc-vst-melodee-chip](https://github.com/keremimo/mpc-vst-melodee-chip) |
+| **Melodee Poly** | Virtual-analog poly | [mpc-vst-melodee-poly](https://github.com/keremimo/mpc-vst-melodee-poly) |
+| **Melodee PD** | Phase distortion | [mpc-vst-melodee-pd](https://github.com/keremimo/mpc-vst-melodee-pd) |
+
+Download the **GitHub release** asset, unzip, and drop the `.vst3` folder into `Melodee/Plugins/`.
+
+## Third-party plugins (same architecture)
+
+Any synth or effect with a real **`Contents/aarch64-linux/`** VST3 (or **armhf** VST2/armv7 build for the bridge) can work if CPU/RAM allow. Examples often seen in the Linux **arm64** plugin ecosystem (always confirm `file` / folder layout before copying):
+
+- **Synths:** Surge XT, Dexed, Odin 2, Helm, ZynAddSubFX; some **u-he** Linux ARM builds (e.g. TyrellN6, Podolski) when published for arm64.
+- **Effects:** Dragonfly Reverb, Airwindows Consolidated, TAL-Reverb / TAL-Filter, **LSP** (Linux Studio Plugins).
+- **Open MPC / FM-1:** Community **arm64** ports (e.g. Open MPC release zips, The Firmware Hub) — same CPU class as Melodee; prefer ports documented for **MPC Sample**, not desktop x86_64-only drops.
+
+**You cannot** copy a standard **Windows or macOS** `.vst3` from your DAW folder; Melodee only loads **ARM Linux** binaries (64-bit primary, 32-bit via bridge where supported).
+
+## Hardware behavior (why “lightweight” matters)
+
+| Topic | What to expect |
+|-------|----------------|
+| **UI** | Melodee is **headless** for plugin GUIs: parameters map to **K1–K3** and preset stepping; huge parameter lists mean more scrolling. |
+| **CPU / RAM** | ~**2 GB RAM**, embedded **ARM** (see Open MPC `MPC_SAMPLE.md` for core class). Heavy unison or oversized editors can glitch or peg CPU. |
+| **Incompatible files** | Wrong OS/arch → **dimmed** in the browser (not a crash). |
+| **Audio** | Host uses embedded Linux audio (ALSA); reference stack in [sample-base](https://github.com/keremimo/sample-base) (~128-sample @ 44.1 kHz in community notes). |
 
 ## Design guidelines for embedded hosts
 

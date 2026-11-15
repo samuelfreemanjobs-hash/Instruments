@@ -20,6 +20,8 @@ From [melodee-sample README](https://github.com/keremimo/melodee-sample):
 
 Windows/macOS-only builds are shown dimmed in picker.
 
+User install steps, official Melodee synths, and third-party examples: [docs/MPC_SAMPLE_VST3.md](../../../../docs/MPC_SAMPLE_VST3.md) (“Install on MPC Sample” onward).
+
 ## CPU / UI budget [inspected]
 
 From Open MPC `docs/MPC_SAMPLE.md`:
