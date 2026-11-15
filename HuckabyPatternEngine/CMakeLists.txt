@@ -66,3 +66,23 @@ target_include_directories(HuckabyPatternEngine_Smoke
 add_dependencies(HuckabyPatternEngine_Smoke HuckabyPatternEngine)
 
 add_test(NAME HuckabyPatternEngine_Smoke COMMAND HuckabyPatternEngine_Smoke)
+
+add_executable(HuckabyPatternEngine_AudioQa
+    Tests/AudioQaProcessor.cpp
+)
+
+target_link_libraries(HuckabyPatternEngine_AudioQa
+    PRIVATE
+        HuckabyPatternEngine
+        juce::juce_gui_basics
+)
+
+target_include_directories(HuckabyPatternEngine_AudioQa
+    PRIVATE
+        Source
+        "${CMAKE_CURRENT_BINARY_DIR}/HuckabyPatternEngine_artefacts/JuceLibraryCode"
+)
+
+add_dependencies(HuckabyPatternEngine_AudioQa HuckabyPatternEngine)
+
+add_test(NAME HuckabyPatternEngine_AudioQa COMMAND HuckabyPatternEngine_AudioQa)

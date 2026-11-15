@@ -17,16 +17,20 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(JUCE)
 
+option(INSTRUMENTS_ENABLE_CLAP "Fetch CLAP extensions and build JDUpgraded CLAP target" ON)
+
 # Track clap-juce-extensions main (pinned SHA); repin when CI fetch fails.
-set(JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG 6bde108329ff9fc24404b79b8b397261a75cf6a8)
-FetchContent_Declare(
-    clap_juce_extensions
-    GIT_REPOSITORY https://github.com/free-audio/clap-juce-extensions.git
-    GIT_TAG ${JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG}
-    GIT_SHALLOW TRUE
-    GIT_SUBMODULES_RECURSE TRUE
-)
-FetchContent_MakeAvailable(clap_juce_extensions)
+if(INSTRUMENTS_ENABLE_CLAP)
+    set(JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG 6bde108329ff9fc24404b79b8b397261a75cf6a8)
+    FetchContent_Declare(
+        clap_juce_extensions
+        GIT_REPOSITORY https://github.com/free-audio/clap-juce-extensions.git
+        GIT_TAG ${JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG}
+        GIT_SHALLOW TRUE
+        GIT_SUBMODULES_RECURSE TRUE
+    )
+    FetchContent_MakeAvailable(clap_juce_extensions)
+endif()
 
 set(GENERATED_ROM_DIR "${CMAKE_BINARY_DIR}/generated")
 set(GENERATED_ROM_FILE "${GENERATED_ROM_DIR}/jdupg_cleanroom.rom")
@@ -121,10 +125,12 @@ target_include_directories(JDUpgraded
         "${CMAKE_BINARY_DIR}/juce_binarydata_JDUpgradedRomData/JuceLibraryCode"
 )
 
-clap_juce_extensions_plugin(TARGET JDUpgraded
-    CLAP_ID "com.instruments.jdupgraded"
-    CLAP_FEATURES instrument synthesizer stereo
-)
+if(INSTRUMENTS_ENABLE_CLAP)
+    clap_juce_extensions_plugin(TARGET JDUpgraded
+        CLAP_ID "com.instruments.jdupgraded"
+        CLAP_FEATURES instrument synthesizer stereo
+    )
+endif()
 
 add_executable(OfflineRender tools/OfflineRender.cpp)
 target_link_libraries(OfflineRender
@@ -182,4 +188,5 @@ target_compile_definitions(SpectralDiff
 add_subdirectory(Wave9090)
 add_subdirectory(SP1200)
 add_subdirectory(HuckabyPatternEngine)
+add_subdirectory(AutoSampler)
 add_subdirectory(ProphetRev2Trap)

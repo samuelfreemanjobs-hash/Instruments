@@ -56,6 +56,9 @@ public:
 
     void requestLoadSample(int trackIndex, int slotIndex, const juce::File& file);
 
+    /** Headless QA harness: place a decoded sample in a bank slot (caller thread). */
+    void assignSampleForTest(int trackIndex, int slotIndex, std::shared_ptr<SampleData> sample);
+
     void resetTransportCounters();
 
     /** User patterns root: application data / HuckabyPatternEngine / MidiPatterns / track_N / ( .mid files ) */

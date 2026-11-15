@@ -1,0 +1,16 @@
+{
+  "plugin": "DiskLordz Grim-MIDI",
+  "version": "1.0.0",
+  "parameters": [
+    { "id": "root_key", "name": "Key", "type": "int", "min": 0, "max": 11, "default": 8 },
+    { "id": "scale", "name": "Scale", "type": "choice", "choices": ["Natural Minor", "Harmonic Minor", "Phrygian", "Phrygian Dominant"], "default": 0 },
+    { "id": "chord_type", "name": "Chord", "type": "choice", "default": 1 },
+    { "id": "inversion", "name": "Inversion", "type": "int", "min": 0, "max": 3, "default": 0 },
+    { "id": "spread", "name": "Spread", "type": "float", "min": 0, "max": 100, "default": 45 },
+    { "id": "strum_ms", "name": "Strum", "type": "float", "min": 0, "max": 120, "default": 22 },
+    { "id": "velocity_humanize", "name": "Vel Humanize", "type": "int", "min": 0, "max": 40, "default": 12 },
+    { "id": "octave", "name": "Octave", "type": "int", "min": -2, "max": 2, "default": 0 },
+    { "id": "trigger_mode", "name": "Trigger Mode", "type": "choice", "choices": ["Nearest Degree", "Degree Pads", "Chromatic Root"], "default": 1 }
+  ],
+  "programs": 100
+}

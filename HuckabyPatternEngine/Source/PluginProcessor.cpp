@@ -870,6 +870,21 @@ void HuckabyAudioProcessor::exportCurrentPatternToMidi(int trackIndex, const juc
     exportPatternToMidiFile(file, bits, v, getTrackLengthSteps(trackIndex), err);
 }
 
+void HuckabyAudioProcessor::assignSampleForTest(int trackIndex,
+                                                int slotIndex,
+                                                std::shared_ptr<SampleData> sample)
+{
+    if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))
+        return;
+
+    if (!juce::isPositiveAndBelow(slotIndex, kMaxBankSize))
+        return;
+
+    tracks[static_cast<size_t>(trackIndex)].sampleBank[static_cast<size_t>(slotIndex)].store(std::move(sample));
+    tracks[static_cast<size_t>(trackIndex)].numSamplesLoaded =
+        countLoadedSamples(tracks[static_cast<size_t>(trackIndex)]);
+}
+
 void HuckabyAudioProcessor::requestLoadSample(int trackIndex, int slotIndex, const juce::File& file)
 {
     if (!juce::isPositiveAndBelow(trackIndex, kNumTracks))

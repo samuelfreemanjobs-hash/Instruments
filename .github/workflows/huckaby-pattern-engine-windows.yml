@@ -1,0 +1,78 @@
+name: Huckaby Pattern Engine (Windows)
+
+on:
+  push:
+    branches: [main, "cursor/**"]
+    paths:
+      - "HuckabyPatternEngine/**"
+      - "CMakeLists.txt"
+      - ".github/workflows/huckaby-pattern-engine-windows.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "HuckabyPatternEngine/**"
+      - "CMakeLists.txt"
+      - ".github/workflows/huckaby-pattern-engine-windows.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: huckaby-pattern-engine-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-vst3:
+    runs-on: windows-2022
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSVC (x64)
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure (Ninja Release)
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DINSTRUMENTS_ENABLE_CLAP=OFF
+
+      - name: Build Huckaby Pattern Engine
+        run: >
+          cmake --build build -j
+          --target HuckabyPatternEngine_VST3 HuckabyPatternEngine_Standalone HuckabyPatternEngine_Smoke HuckabyPatternEngine_AudioQa
+
+      - name: Unit tests
+        run: ctest --test-dir build -R HuckabyPatternEngine --output-on-failure
+
+      - name: Cache pluginval binary
+        run: python scripts/vst/run_pluginval.py --install-only
+
+      - name: Validate VST3 with pluginval (strictness 5)
+        env:
+          CI: "true"
+        run: >
+          python scripts/vst/run_pluginval.py
+          --discover "build/HuckabyPatternEngine/HuckabyPatternEngine_artefacts/Release/VST3"
+          --strictness-level 5
+          --timeout-ms 120000
+
+      - name: Stage prebuild package
+        shell: pwsh
+        run: |
+          $pkg = "dist/HuckabyPatternEngine-Windows-x64"
+          Remove-Item -Recurse -Force $pkg -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path "$pkg/VST3", "$pkg/Standalone" | Out-Null
+
+          $vst3 = "build/HuckabyPatternEngine/HuckabyPatternEngine_artefacts/Release/VST3/Huckaby Pattern Engine.vst3"
+          if (-not (Test-Path $vst3)) { throw "Missing VST3 bundle: $vst3" }
+          Copy-Item -Recurse $vst3 "$pkg/VST3/"
+
+          $standaloneDir = "build/HuckabyPatternEngine/HuckabyPatternEngine_artefacts/Release/Standalone"
+          if (-not (Test-Path $standaloneDir)) { throw "Missing Standalone dir: $standaloneDir" }
+          Copy-Item "$standaloneDir/*" "$pkg/Standalone/" -Recurse -Force
+
+      - name: Upload Windows x64 VST3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: HuckabyPatternEngine-VST3-Windows-x64
+          path: dist/HuckabyPatternEngine-Windows-x64
+          if-no-files-found: error
+          retention-days: 14

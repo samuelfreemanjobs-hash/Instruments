@@ -204,6 +204,16 @@
       "allowlist": ["disklordz/autonomous-coder/factory-escalation/"],
       "context_paths": ["disklordz/antigravity/inbox/"],
       "priority": 20
+    },
+    {
+      "id": "cloud-autonomous-reduce-churn",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Idle + human-windows: prefer no doc-only queue spam",
+      "acceptance": "AUTONOMOUS_CODING_AGENT.md states defer new cloud slices until plugin-skeleton done",
+      "allowlist": ["docs/", "disklordz/autonomous-coder/"],
+      "context_paths": ["disklordz/audio-command/data/progress.json"],
+      "priority": 21
     }
   ]
 }

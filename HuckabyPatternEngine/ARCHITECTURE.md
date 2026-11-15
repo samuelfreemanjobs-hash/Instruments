@@ -19,7 +19,7 @@ From the monorepo root:
 cmake -B build -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
 cmake --build build -j --target HuckabyPatternEngine_Standalone HuckabyPatternEngine_VST3
-ctest --test-dir build -R HuckabyPatternEngine_Smoke --output-on-failure
+ctest --test-dir build -R HuckabyPatternEngine --output-on-failure
 ```
 
 The standalone binary is produced next to other JUCE artifacts under the CMake build output tree (platform-dependent).

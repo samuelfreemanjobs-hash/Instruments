@@ -1,5 +1,5 @@
 {
-  "last_tick_at": "2026-11-11T04:00:30Z",
+  "last_tick_at": "2026-11-14T22:24:12Z",
   "completed_ids": [
     "cloud-coach-script-hygiene",
     "cloud-bridge-docs",
@@ -20,18 +20,19 @@
     "cloud-liaison-doc-human-windows",
     "cloud-agents-md-plugin-skeleton-ci",
     "cloud-paste-refresh-timestamp",
-    "cloud-next-factory-inbox-open"
+    "cloud-next-factory-inbox-open",
+    "cloud-autonomous-reduce-churn"
   ],
   "last_completed": {
     "cloud-coach-script-hygiene": "2026-11-08T08:00:42Z",
     "cloud-bridge-docs": "2026-11-08T10:46:09Z",
     "escalate-dpf-slice": "2026-11-08T12:00:33Z",
-    "tick-antigravity-sync": "2026-11-09T22:21:49Z",
+    "tick-antigravity-sync": "2026-11-14T18:01:45Z",
     "cloud-factory-paste-human-windows": "2026-11-08T16:00:43Z",
     "cloud-cursor-operator-20-pro-doc": "2026-11-08T20:00:31Z",
     "cloud-post-merge-112-main": "2026-11-09T00:00:24Z",
     "cloud-coach-playbook-github-ci": "2026-11-09T04:00:24Z",
-    "tick-progress-staleness": "2026-11-10T19:43:51Z",
+    "tick-progress-staleness": "2026-11-14T22:24:12Z",
     "cloud-handoff-bundle-ci": "2026-11-09T08:00:30Z",
     "cloud-next-factory-ci-line": "2026-11-09T16:00:31Z",
     "cloud-autonomous-doc-idle-gate": "2026-11-09T20:00:42Z",
@@ -42,6 +43,7 @@
     "cloud-liaison-doc-human-windows": "2026-11-10T16:00:35Z",
     "cloud-agents-md-plugin-skeleton-ci": "2026-11-10T20:00:29Z",
     "cloud-paste-refresh-timestamp": "2026-11-11T00:00:27Z",
-    "cloud-next-factory-inbox-open": "2026-11-11T04:00:30Z"
+    "cloud-next-factory-inbox-open": "2026-11-11T04:00:30Z",
+    "cloud-autonomous-reduce-churn": "2026-11-11T08:00:38Z"
   }
 }
