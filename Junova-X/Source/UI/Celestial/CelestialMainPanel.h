@@ -5,6 +5,7 @@
 #include "Parameters/ParameterIds.h"
 #include "PresetLcdStrip.h"
 #include "VoiceLedCluster.h"
+#include "PeakMeterComponent.h"
 #include "WheelV2Strip.h"
 #include "../JunovaLookAndFeel.h"
 #include "../UiLayout.h"
@@ -117,7 +118,7 @@ private:
     juce::ToggleButton arpOn_ { "ARP" };
     juce::ToggleButton arpLatch_ { "LATCH" };
 
-    juce::Component peakMeter_;
+    PeakMeterComponent peakMeter_;
     WheelV2Strip pitchWheel_ { WheelV2Strip::Kind::pitch };
     WheelV2Strip modWheel_ { WheelV2Strip::Kind::mod };
     juce::TextButton transposeDown_ { "-12" };

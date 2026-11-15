@@ -9,8 +9,30 @@
 
 #include <array>
 #include <cstdlib>
+#include <functional>
 #include <iostream>
 
+namespace
+{
+void auditHeroOverlap (const juce::Component& root)
+{
+    const juce::Rectangle<int> probe (80, 25, 30, 95);
+    std::function<void (const juce::Component&, juce::Point<int>)> walk;
+    walk = [&] (const juce::Component& c, juce::Point<int> origin)
+    {
+        auto bounds = c.getBounds().translated (origin.x, origin.y);
+        if (c.isVisible() && bounds.intersects (probe))
+        {
+            std::cerr << "hero-probe: '" << c.getName() << "' " << bounds.toString() << '\n';
+        }
+        const auto next = origin + c.getPosition();
+        for (int i = 0; i < c.getNumChildComponents(); ++i)
+            if (const auto* child = c.getChildComponent (i))
+                walk (*child, next);
+    };
+    walk (root, {});
+}
+} // namespace
 
 int main (int argc, char** argv)
 {
@@ -45,7 +67,11 @@ int main (int argc, char** argv)
     processor.copyScopeSamples (scopeScratch.data(), static_cast<int> (scopeScratch.size()));
 
     if (auto* junovaEditor = dynamic_cast<JunovaXAudioProcessorEditor*> (editor.get()))
+    {
         junovaEditor->syncForSnapshot();
+        if (editor->getNumChildComponents() > 0)
+            auditHeroOverlap (*editor->getChildComponent (0));
+    }
 
     editor->repaint();
     juce::Thread::sleep (80);

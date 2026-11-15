@@ -110,8 +110,8 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
 
     for (auto* b : { &hpfOff_, &hpf1_, &hpf2_, &hpf3_ })
         hpfModule_.addAndMakeVisible (*b);
-    hpfCaption_.setFont (Theme::labelFont());
-    hpfCaption_.setColour (juce::Label::textColourId, Theme::textMuted());
+    hpfCaption_.setFont (Theme::headerFont (9.0f));
+    hpfCaption_.setColour (juce::Label::textColourId, Theme::electricCyan());
     hpfCaption_.setJustificationType (juce::Justification::centred);
     hpfModule_.addAndMakeVisible (hpfCaption_);
     auto setHpf = [this] (float norm)
@@ -274,7 +274,7 @@ void CelestialMainPanel::syncPerformanceMeters()
 {
     peakLevel_ = processor_.getOutputPeak();
     voiceLeds_.setActiveMask (processor_.getActiveVoiceMask());
-    peakMeter_.repaint();
+    peakMeter_.setLevel (peakLevel_);
 }
 
 int CelestialMainPanel::countWhiteKeysInRange (int lowNote, int highNote) noexcept
@@ -350,16 +350,6 @@ void CelestialMainPanel::paint (juce::Graphics& g)
     g.fillRect (0, 0, getWidth(), L::topBarHeight);
     g.setColour (Theme::panelBlue().darker (0.35f));
     g.fillRect (0, L::topBarHeight, getWidth(), L::heroHeight);
-
-    if (! peakMeter_.getBounds().isEmpty())
-    {
-        auto meter = peakMeter_.getBounds().toFloat();
-        g.setColour (Theme::ledInactive());
-        g.fillRoundedRectangle (meter, 4.0f);
-        const float h = meter.getHeight() * juce::jlimit (0.0f, 1.0f, peakLevel_ * 4.0f);
-        g.setColour (Theme::electricCyan());
-        g.fillRoundedRectangle (meter.getX() + 4.0f, meter.getBottom() - h, meter.getWidth() - 8.0f, h, 3.0f);
-    }
 
     auto kb = keyboard_ != nullptr ? keyboard_->getBounds() : juce::Rectangle<int>{};
     if (! kb.isEmpty())
@@ -456,11 +446,11 @@ void CelestialMainPanel::resized()
     auto row2 = modules;
 
     const int innerW = w - 2 * m;
-    constexpr int kHpfW = 108;
+    constexpr int kHpfW = 136;
     const int flexW = innerW - kHpfW - gap * 4;
     const int colW = flexW / 4;
     int x1 = m;
-    lfoModule_.setBounds (x1, row1.getY(), colW + 16, row1.getHeight());
+    lfoModule_.setBounds (x1, row1.getY(), colW + 12, row1.getHeight());
     x1 += lfoModule_.getWidth() + gap;
     dcoModule_.setBounds (x1, row1.getY(), colW + 8, row1.getHeight());
     x1 += dcoModule_.getWidth() + gap;
@@ -470,10 +460,9 @@ void CelestialMainPanel::resized()
     x1 += vcfModule_.getWidth() + gap;
     envModule_.setBounds (x1, row1.getY(), w - m - x1, row1.getHeight());
 
-    const int extraCh = juce::jmax (0, colW - kHpfW);
     const int w4 = (innerW - gap * 3) / 4;
     int x2 = m;
-    chorusModule_.setBounds (x2, row2.getY(), w4 + extraCh, row2.getHeight());
+    chorusModule_.setBounds (x2, row2.getY(), w4, row2.getHeight());
     x2 += chorusModule_.getWidth() + gap;
     driftModule_.setBounds (x2, row2.getY(), w4, row2.getHeight());
     x2 += w4 + gap;
@@ -498,12 +487,16 @@ void CelestialMainPanel::resized()
     layoutFaderRow (dcoArea, dcoFaders_, chipH + 4);
 
     auto hpfArea = hpfModule_.getContentArea();
-    const int halfW = (hpfArea.getWidth() - 4) / 2;
-    hpfOff_.setBounds (hpfArea.getX(), hpfArea.getY(), halfW, chipH);
-    hpf1_.setBounds (hpfArea.getX() + halfW + 4, hpfArea.getY(), halfW, chipH);
-    hpf2_.setBounds (hpfArea.getX(), hpfArea.getY() + chipH + 4, halfW, chipH);
-    hpf3_.setBounds (hpfArea.getX() + halfW + 4, hpfArea.getY() + chipH + 4, halfW, chipH);
-    hpfCaption_.setBounds (hpfArea.getX(), hpfArea.getBottom() - 16, hpfArea.getWidth(), 14);
+    hpfCaption_.setText ("BASS CUT", juce::dontSendNotification);
+    hpfCaption_.setBounds (hpfArea.getX(), hpfArea.getY(), hpfArea.getWidth(), 14);
+    const int hpfBtnH = 28;
+    const int hpfBtnGap = 5;
+    int by = hpfArea.getY() + 18;
+    for (auto* b : { &hpfOff_, &hpf1_, &hpf2_, &hpf3_ })
+    {
+        b->setBounds (hpfArea.getX(), by, hpfArea.getWidth(), hpfBtnH);
+        by += hpfBtnH + hpfBtnGap;
+    }
 
     layoutFaderRow (vcfModule_.getContentArea(), vcfFaders_, 0);
 
