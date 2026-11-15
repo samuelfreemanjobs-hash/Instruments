@@ -25,5 +25,6 @@
     "tests_passed": false,
     "ship_ready": false
   },
-  "play_series_variants": ["PlaySynthAnalogDreams", "PlaySynthCloudSupply", "PlaySynthLoFiGlow"]
+  "play_series_variants": ["PlaySynthAnalogDreams", "PlaySynthCloudSupply", "PlaySynthLoFiGlow"],
+  "superseded_by": "plugins/PLAY_SYNTH_TRILOGY.md"
 }

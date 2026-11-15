@@ -20,42 +20,34 @@
     "prompt": "Build an 8-voice polyphonic hybrid digital-analog VST3 synthesizer called OxfordPeak8 inspired by the Novation Peak, using C++20, JUCE 8, and CMake. Follow AGENTS.md and docs/JUCE8_VST3_PROJECT_RULES.md strictly.\n\nREPO CONTEXT:\n- Read plugins/OxfordPeak8/.ideas/architecture.md and parameter-spec.md.\n- Root target OxfordPeak8/; PLUGIN_CODE Opk8; template templates/juce8-synth-base/CMakeLists.txt.\n- 16-slot dual-source matrix: APVTS modN_srcA, modN_srcB, modN_dest, modN_depth. SourceB Direct = 1.0f. evaluate: getSource(A)*getSource(B)*depth at control rate every 16 samples.\n- Reuse fastTanh overdrive from ProphetRev2Trap engine; no heap in renderNextBlock.\n\nAUDIO & DSP:\n1. Three New Oxford oscillators per voice: sine, tri, saw, pulse, 16-frame morphable wavetable + shape knob; octave, fine, level; white noise.\n2. Linear FM: osc1→2, osc2→3, osc3→1 front-panel amounts.\n3. Three tanh stages: pre-filter, post-filter, master.\n4. SVF LP/BP/HP 12dB/24dB, resonance, key track, filter divergence per voice.\n5. Amp ADSR + 2 mod ADSR (loop optional); 2 poly LFOs + 2 global LFOs with fade-in and sync.\n6. 16-slot dual-source mod matrix to osc pitch/shape, FM, filter, drives, LFO rates.\n7. Master FX: 3-mode chorus, tempo stereo delay with damped feedback, lush reverb.\n\nUI: WebView Peak-style charcoal/blue/amber; mod matrix tab.\nPRESETS (BinaryData ×10): Init Oxford Saw, Peak Lush Wavetable, 3-Op FM Glass Keys, Driven Analog Bass, Ambient Reverb Pad, Acid Overdrive Lead, Evolving Mod Choir, Brassy Unison Stab, Shimmering Bell Arp, Dark Hybrid Drone.\n\nBUILD (Windows): cmake --build build --config Release --target OxfordPeak8_VST3."
   },
   {
-    "name": "PlaySynthDreams",
+    "suite": "play_synth_trilogy",
+    "name": "AnalogDreams84",
     "type": "synth",
-    "code": "PsDr",
+    "code": "Ad84",
     "priority": 10,
-    "apc_path": "plugins/PlaySynthDreams",
+    "apc_path": "plugins/AnalogDreams84",
     "scaffold_template": "templates/juce8-synth-base",
-    "binarydata_snippet": "templates/juce8-synth-base/BinaryData.cmake.snippet",
-    "shared_engine": "PlaySeriesEngine/Source/PlaySeriesEngine.h",
-    "prompt": "Build a 12-voice polyphonic dual-layer pure-synth VST3 called PlaySynthDreams inspired by Native Instruments Kontakt PLAY SERIES (Analog Dreams, Cloud Supply, Lo-Fi Glow). C++20, JUCE 8, CMake. Follow AGENTS.md and docs/JUCE8_VST3_PROJECT_RULES.md. ZERO external samples.\n\nRead plugins/PlaySynthDreams/.ideas/architecture.md (8 macro multi-target table, equal-power A/B blend).\n\nDSP:\n- Layer A: 2 PolyBLEP osc + sub + FM tine bell.\n- Layer B: 16-frame wavetable (bell/choir/flute/pad/pluck) + filtered vinyl/breath noise.\n- Equal-power blend cos/sin; blend also widens Layer B stereo and nudges B filter.\n- 24dB ladder LPF; amp + filter ADSR.\n- 8 macros fan out to smoothed targets at 16-sample control rate (Tone, Drift, Lo-Fi decimate+12-bit+tape LPF, Dirt tanh+comp, Swell attacks+reverb send, Motion chorus+wt LFO, Space delay+shimmer reverb).\n\nUI: WebView obsidian/violet/cyan; large A/B blend; layer cards; 8 macro rotaries.\nPRESETS BinaryData ×12 listed in architecture.md.\nPLUGIN_CODE PsDr. CMAKE: templates/juce8-synth-base + BinaryData.cmake.snippet.\nBUILD: PlaySynthDreams_VST3 Release x64."
+    "prompt": "Build a 12-voice polyphonic dual-layer VST3 synthesizer called AnalogDreams84 inspired by Kontakt Play Series Analog Dreams, using C++20, JUCE 8, and CMake. Follow AGENTS.md and docs/JUCE8_VST3_PROJECT_RULES.md. Read plugins/PLAY_SYNTH_TRILOGY.md and plugins/PLAY_SYNTH_SHARED_UI.md. Scaffold from templates/juce8-synth-base/Source (rename PlaySeriesTemplate*).\n\nAUDIO & DSP ARCHITECTURE (ZERO EXTERNAL SAMPLES):\n1. Dual Synth Layers (Layer A + Layer B):\n   - Layer A: 2 alias-free analog oscillators (Saw, Triangle, Variable PWM) with Octave, Fine Detune, per-voice analog thermal pitch drift, and a -1 Octave Square Sub-Oscillator.\n   - Layer B: 12-frame 80s Digital Wavetable & FM Bell generator (DX E.Piano, Glass Bell, Synth Brass, Hollow Pad, Analog Choir) with Octave and Stereo Width.\n2. Central Equal-Power 'A/B Blend' Dial + Interactive 2D XY Morph Pad (X = A/B Blend, Y = Filter Cutoff & Space).\n3. 24dB Zero-Delay Feedback Ladder Low-Pass Filter + Dual ADSR Envelopes (Amp & Filter) + Smart 'Dice' Musical Patch Randomizer button.\n4. 8 Multi-Target Producer Macro Knobs:\n   - 'Cutoff' (24dB Ladder Cutoff + Filter Env depth)\n   - 'Drift' (Per-voice analog pitch slop + oscillator detune)\n   - 'PWM / Shape' (Modulates Layer A pulse width & Layer B wavetable frame)\n   - 'Warmth' (Pre-filter tanh tube saturation + low-end analog shelf)\n   - 'Swell' (Lengthens Amp & Filter Attack simultaneously)\n   - 'BBD Chorus' (Authentic dual-rate stereo Bucket-Brigade Chorus depth)\n   - 'Echo' (Tempo-synced stereo tape delay mix & feedback)\n   - '80s Plate' (Lush gated/plate stereo reverb mix)\n\nUI & PRESETS:\n- Sleek retro-futuristic Midnight-Blue, Neon-Magenta, and Cyan JUCE 8 WebView HTML/CSS/JS UI with central A/B dial, XY pad, Dice randomizer button, and 8 large bottom Macro knobs.\n- Full APVTS XML state saving and 12 factory presets compiled into BinaryData: 'Miami Sunset Brass', 'Blade Runner Strings', 'Neon Arp Pluck', '84 Tape Polysynth', 'Velvet Sub Pad', 'Crystal FM Keys', 'Midnight Drive Lead', 'Dreamy BBD Choir', 'Analog Bassline', 'VHS Nostalgia', 'Jupiter Swell', and 'Starlight Bells'."
   },
   {
-    "name": "PlaySynthAnalogDreams",
+    "suite": "play_synth_trilogy",
+    "name": "CloudSupplyTrap",
     "type": "synth",
-    "code": "PsAD",
-    "priority": 8,
-    "shared_engine": "PlaySynthDreams",
-    "note": "Fork after PlaySynthDreams engine works; amber UI; 4 analog-biased presets.",
-    "prompt": "Fork PlaySeriesEngine from PlaySynthDreams. PRODUCT PlaySynthAnalogDreams, CODE PsAD, warm amber WebView theme, presets: Analog Dreams Brass, 40s Midnight Keys, Dusty Cassette Rhodes, Neon Synthwave Lead."
+    "code": "CsTr",
+    "priority": 10,
+    "apc_path": "plugins/CloudSupplyTrap",
+    "scaffold_template": "templates/juce8-synth-base",
+    "prompt": "Build a 12-voice polyphonic dual-layer VST3 synthesizer called CloudSupplyTrap inspired by Kontakt Play Series Cloud Supply, using C++20, JUCE 8, and CMake. Follow AGENTS.md and docs/JUCE8_VST3_PROJECT_RULES.md. Read plugins/PLAY_SYNTH_TRILOGY.md and PLAY_SYNTH_SHARED_UI.md. Unique engine (not AnalogDreams84 reskin).\n\nAUDIO & DSP ARCHITECTURE (ZERO EXTERNAL SAMPLES):\n1. Dual Synth Layers (Layer A + Layer B):\n   - Layer A: Punchy 3-Operator FM Glass Bell / Mallet engine + phase-locked Sine/Triangle Sub-Bass oscillator with pitch-drop transient punch.\n   - Layer B: 5-Band Vocal Formant Choir generator (A-E-I-O-U morphing) + Breath Air Noise + ethereal 12-frame Crystal Wavetable.\n2. Central Equal-Power 'A/B Blend' Dial + Interactive 2D XY Morph Pad (X = A/B Blend, Y = Filter Cutoff & Shimmer).\n3. 24dB Zero-Delay Feedback Multi-Mode Filter (LP/BP/HP) + Dual ADSR Envelopes + Smart 'Dice' Musical Patch Randomizer button.\n4. 8 Multi-Target Producer Macro Knobs:\n   - 'Tone' (Filter Cutoff + high-frequency air shelf)\n   - 'Bell / FM' (Increases Layer A FM modulation index & harmonic brightness)\n   - 'Formant' (Morphs Layer B vocal choir vowel & stereo spread)\n   - 'Sub Punch' (Boosts Layer A sub-oscillator & soft-clip saturation)\n   - 'Dirt' (Aggressive asymmetric wavefold/tube distortion)\n   - 'Flutter' (Dark pitch vibrato & stereo chorus movement)\n   - 'Ping-Pong' (Tempo-synced stereo ping-pong delay)\n   - 'Shimmer' (Lush octave-up pitch-shifted hall reverb)\n\nUI & PRESETS:\n- Dark-Obsidian, Electric-Cyan, and Violet JUCE 8 WebView UI with central A/B dial, XY pad, Dice button, and 8 large bottom Macro knobs.\n- Full APVTS XML state saving and 12 trap/phonk/R&B factory presets compiled into BinaryData: 'Cloud Nine Bells', 'Dark Memphis Choir', 'Ethereal Trap Flute', 'Sub & Crystal Keys', 'Haunted Phonk Pluck', 'Midnight OVO Pad', 'Glass Mallet Drop', 'Distorted Bell Lead', 'Velvet Vocal Swell', '808 Sub Atmos', 'Frozen Harp', and 'Astral Drift'."
   },
   {
-    "name": "PlaySynthCloudSupply",
+    "suite": "play_synth_trilogy",
+    "name": "LoFiGlowTape",
     "type": "synth",
-    "code": "PsCS",
-    "priority": 8,
-    "shared_engine": "PlaySynthDreams",
-    "note": "Ice-blue UI; bell/choir/mallet presets.",
-    "prompt": "Fork PlaySeriesEngine. PRODUCT PlaySynthCloudSupply, CODE PsCS. Presets: Cloud Supply Bells, Ethereal Choir Swell, Crystal Mallet Arp, Velvet Sub & Air."
-  },
-  {
-    "name": "PlaySynthLoFiGlow",
-    "type": "synth",
-    "code": "PsLF",
-    "priority": 8,
-    "shared_engine": "PlaySynthDreams",
-    "note": "Tape-brown UI; lo-fi macro defaults higher.",
-    "prompt": "Fork PlaySeriesEngine. PRODUCT PlaySynthLoFiGlow, CODE PsLF. Default macro_lofi 0.35. Presets: Lo-Fi Glow Tape Pad, VHS Detuned Strings, Dark Trap Atmosphere, Memphis Phonk Pluck."
+    "code": "LgTp",
+    "priority": 10,
+    "apc_path": "plugins/LoFiGlowTape",
+    "scaffold_template": "templates/juce8-synth-base",
+    "prompt": "Build a 12-voice polyphonic dual-layer VST3 synthesizer called LoFiGlowTape inspired by Kontakt Play Series Lo-Fi Glow, using C++20, JUCE 8, and CMake. Follow AGENTS.md and docs/JUCE8_VST3_PROJECT_RULES.md. Read plugins/PLAY_SYNTH_TRILOGY.md and PLAY_SYNTH_SHARED_UI.md. Unique engine (not reskin).\n\nAUDIO & DSP ARCHITECTURE (ZERO EXTERNAL SAMPLES):\n1. Dual Synth Layers (Layer A + Layer B):\n   - Layer A: Physical/FM modeled Vintage Electric Piano (Rhodes/Wurlitzer tine + warm tonebar + mechanical key-off thump) & Felt Upright Piano model.\n   - Layer B: Warbly Mellotron-style Tape Flute/Strings + warm Analog Pad + toggleable Vinyl Crackle & Magnetic Tape Hiss generator.\n2. Central Equal-Power 'A/B Blend' Dial + Interactive 2D XY Morph Pad (X = A/B Blend, Y = Tape Cutoff & Space).\n3. Warm 12dB/24dB Analog Low-Pass Filter + Dual ADSR Envelopes + Smart 'Dice' Musical Patch Randomizer button.\n4. 8 Multi-Target Producer Macro Knobs:\n   - 'Warmth' (Analog low-pass filter cutoff + tape low-mid boost)\n   - 'Wow/Flutter' (Dual-rate cassette tape pitch warble & stereo drift)\n   - '12-Bit Crunch' (Variable sample-rate decimation 10kHz-32kHz + 12-bit mu-law quantization)\n   - 'Tape Sat' (Warm asymmetric cassette saturation + gentle compression)\n   - 'Vinyl/Hiss' (Blends nostalgic vinyl crackle & magnetic tape noise floor)\n   - 'Swell' (Softens note attack for dreamy lo-fi chords)\n   - 'Warble Chorus' (Lush detuned stereo vibrato/chorus)\n   - 'Space' (Warm vintage Spring & Hall reverb)\n\nUI & PRESETS:\n- Retro Warm-Charcoal, Amber-Gold, and Cream Cassette-inspired JUCE 8 WebView UI with central A/B dial, XY pad, Dice button, and 8 large bottom Macro knobs.\n- Full APVTS XML state saving and 12 lo-fi/neo-soul/boom-bap factory presets compiled into BinaryData: 'Dusty Rhodes 73', 'Cassette Felt Piano', 'Rainy Window Pad', '90s Boom-Bap Keys', 'Warbled Tape Flute', 'Neo-Soul Suitcase', '12-Bit Vinyl Bells', 'Midnight Study Chords', 'VHS Dream Organ', 'Mellow Sub & Keys', 'Analog Tape Choir', and 'Crushed Lo-Fi Pluck'."
   },
   {
     "name": "ObXaDesktop",

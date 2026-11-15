@@ -1,0 +1,49 @@
+# Rename to CMakeLists.txt and replace PlaySeriesTemplate / PLUGIN_CODE.
+cmake_minimum_required(VERSION 3.22)
+project(AnalogDreams84 VERSION 1.0.0 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+juce_add_plugin(AnalogDreams84
+    COMPANY_NAME "Instruments"
+    BUNDLE_ID com.instruments.analogdreams84
+    IS_SYNTH TRUE
+    NEEDS_MIDI_INPUT TRUE
+    COPY_PLUGIN_AFTER_BUILD FALSE
+    PLUGIN_MANUFACTURER_CODE Inst
+    PLUGIN_CODE Ad84
+    FORMATS VST3 Standalone
+    PRODUCT_NAME "AnalogDreams84")
+
+target_sources(AnalogDreams84
+    PRIVATE
+        Source/PluginProcessor.cpp
+        Source/PluginEditor.cpp
+        Source/PlaySeriesCommon.h
+        Source/FactoryPresets.h)
+# Future: Source/<Plugin>Engine.h
+
+juce_add_binary_data(AnalogDreams84Presets
+    SOURCES
+        Resources/presets/miami_sunset_brass.json)
+target_link_libraries(AnalogDreams84 PRIVATE AnalogDreams84Presets)
+
+target_compile_definitions(AnalogDreams84
+    PUBLIC
+        JUCE_WEB_BROWSER=1
+        JUCE_USE_CURL=0
+        JUCE_VST3_CAN_REPLACE_VST2=0)
+
+target_link_libraries(AnalogDreams84
+    PRIVATE
+        juce::juce_audio_utils
+        juce::juce_dsp
+        juce::juce_gui_extra
+    PUBLIC
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_warning_flags)
+
+target_include_directories(AnalogDreams84 PRIVATE Source)
+juce_generate_juce_header(AnalogDreams84)

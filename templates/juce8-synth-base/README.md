@@ -1,27 +1,41 @@
-# JUCE 8 poly-synth CMake base
+# JUCE 8 desktop synth factory template
 
-Starter `CMakeLists.txt` for **root-level** desktop synth targets (e.g. `ProphetMod16/`).
+First-pass **PlaySynth Trilogy** scaffold: dual-layer shell, XY + Dice, 8 macros, BinaryData-ready CMake.
 
-1. Ensure JUCE 8 submodule or `add_subdirectory` from your root `CMakeLists.txt`.
-2. Copy `CMakeLists.txt` into `ProphetMod16/` and wire `add_subdirectory(ProphetMod16)` at repo root (same as `ProphetRev2Trap`).
-3. Set `PLUGIN_CODE` uniquely (`Pm16` for ProphetMod16).
-4. Windows: `cmake -B build -G "Visual Studio 17 2022" -A x64` then `cmake --build build --config Release`.
+## Quick start (per plugin)
 
-**Factory overnight batch:** `disklordz/vst-factory/data/overnight-queue.json`
+1. Copy entire `templates/juce8-synth-base/` to repo root as `AnalogDreams84/` (or `CloudSupplyTrap` / `LoFiGlowTape`).
+2. Rename `CMakeLists.template.txt` → `CMakeLists.txt`; match `PLUGIN_CODE` (`Ad84`, `CsTr`, `LgTp`).
+3. Search-replace `PlaySeriesTemplate` → `AnalogDreams84` in `Source/*.h` / `*.cpp`.
+4. Add `add_subdirectory(AnalogDreams84)` to root `CMakeLists.txt` (see `ProphetRev2Trap`).
+5. Drop 12 preset JSON under `Resources/presets/`; extend `juce_add_binary_data` in CMake.
+6. Replace `processBlock` silence with `Source/AnalogDreams84Engine.h` (plugin-specific DSP).
 
-| Plugin | CODE | Voices | Notes |
-|--------|------|--------|--------|
-| ProphetMod16 | Pm16 | 16 | Rev2 mod matrix; fork `ProphetRev2Trap` engine |
-| OxfordPeak8 | Opk8 | 8 | 3 osc wavetable + dual-source 16-slot matrix |
-| PlaySynthDreams | PsDr | 12 | Dual-layer Play Series + 8 macros |
-| PlaySynthAnalogDreams | PsAD | 12 | Engine fork, amber UI |
-| PlaySynthCloudSupply | PsCS | 12 | Engine fork, ice UI |
-| PlaySynthLoFiGlow | PsLF | 12 | Engine fork, tape UI |
+```powershell
+cmake -B build -G "Visual Studio 17 2022" -A x64
+cmake --build build --config Release --target AnalogDreams84_VST3
+```
 
-Copy `CMakeLists.txt`, rename project/plugin symbols; see `CMakeLists.OxfordPeak8.example.txt` for renames.
+## Files
 
-Factory presets: wire `BinaryData.cmake.snippet` for `juce_add_binary_data` (no audio-thread file I/O).
+| Path | Purpose |
+|------|---------|
+| `Source/PlaySeriesCommon.h` | Equal-power blend, shared APVTS IDs |
+| `Source/PluginProcessor.*` | APVTS, presets, bounded Dice |
+| `Source/PluginEditor.*` | WebView host + Dice button |
+| `Source/FactoryPresets.h` | 12-slot placeholder table (replace) |
+| `CMakeLists.template.txt` | WebView + BinaryData example |
+| `BinaryData.cmake.snippet` | Minimal preset embedding |
 
-**Stubs in same JSON** (priority 4–5): ObXaDesktop, WavestateHybrid, VirusTiDesktop — plan-only until APC design exists. There is no `run-factory.ps1` in-repo; run prompts via Claude Code / Cursor on Windows with MSVC.
+## Overnight queue (trilogy)
 
-**DSP reference:** `ProphetRev2Trap/Source/ProphetRev2Engine.h`.
+See `plugins/PLAY_SYNTH_TRILOGY.md` and `disklordz/vst-factory/data/overnight-queue.json` (`suite: play_synth_trilogy`, priority 10).
+
+## Other factory SKUs
+
+| Plugin | CODE | Voices |
+|--------|------|--------|
+| ProphetMod16 | Pm16 | 16 |
+| OxfordPeak8 | Opk8 | 8 |
+
+There is no in-repo `run-factory.ps1`; point your runner at `overnight-queue.json` or paste prompts manually on Windows.
