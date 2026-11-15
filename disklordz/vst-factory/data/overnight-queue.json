@@ -20,6 +20,44 @@
     "prompt": "Build an 8-voice polyphonic hybrid digital-analog VST3 synthesizer called OxfordPeak8 inspired by the Novation Peak, using C++20, JUCE 8, and CMake. Follow AGENTS.md and docs/JUCE8_VST3_PROJECT_RULES.md strictly.\n\nREPO CONTEXT:\n- Read plugins/OxfordPeak8/.ideas/architecture.md and parameter-spec.md.\n- Root target OxfordPeak8/; PLUGIN_CODE Opk8; template templates/juce8-synth-base/CMakeLists.txt.\n- 16-slot dual-source matrix: APVTS modN_srcA, modN_srcB, modN_dest, modN_depth. SourceB Direct = 1.0f. evaluate: getSource(A)*getSource(B)*depth at control rate every 16 samples.\n- Reuse fastTanh overdrive from ProphetRev2Trap engine; no heap in renderNextBlock.\n\nAUDIO & DSP:\n1. Three New Oxford oscillators per voice: sine, tri, saw, pulse, 16-frame morphable wavetable + shape knob; octave, fine, level; white noise.\n2. Linear FM: osc1→2, osc2→3, osc3→1 front-panel amounts.\n3. Three tanh stages: pre-filter, post-filter, master.\n4. SVF LP/BP/HP 12dB/24dB, resonance, key track, filter divergence per voice.\n5. Amp ADSR + 2 mod ADSR (loop optional); 2 poly LFOs + 2 global LFOs with fade-in and sync.\n6. 16-slot dual-source mod matrix to osc pitch/shape, FM, filter, drives, LFO rates.\n7. Master FX: 3-mode chorus, tempo stereo delay with damped feedback, lush reverb.\n\nUI: WebView Peak-style charcoal/blue/amber; mod matrix tab.\nPRESETS (BinaryData ×10): Init Oxford Saw, Peak Lush Wavetable, 3-Op FM Glass Keys, Driven Analog Bass, Ambient Reverb Pad, Acid Overdrive Lead, Evolving Mod Choir, Brassy Unison Stab, Shimmering Bell Arp, Dark Hybrid Drone.\n\nBUILD (Windows): cmake --build build --config Release --target OxfordPeak8_VST3."
   },
   {
+    "name": "PlaySynthDreams",
+    "type": "synth",
+    "code": "PsDr",
+    "priority": 10,
+    "apc_path": "plugins/PlaySynthDreams",
+    "scaffold_template": "templates/juce8-synth-base",
+    "binarydata_snippet": "templates/juce8-synth-base/BinaryData.cmake.snippet",
+    "shared_engine": "PlaySeriesEngine/Source/PlaySeriesEngine.h",
+    "prompt": "Build a 12-voice polyphonic dual-layer pure-synth VST3 called PlaySynthDreams inspired by Native Instruments Kontakt PLAY SERIES (Analog Dreams, Cloud Supply, Lo-Fi Glow). C++20, JUCE 8, CMake. Follow AGENTS.md and docs/JUCE8_VST3_PROJECT_RULES.md. ZERO external samples.\n\nRead plugins/PlaySynthDreams/.ideas/architecture.md (8 macro multi-target table, equal-power A/B blend).\n\nDSP:\n- Layer A: 2 PolyBLEP osc + sub + FM tine bell.\n- Layer B: 16-frame wavetable (bell/choir/flute/pad/pluck) + filtered vinyl/breath noise.\n- Equal-power blend cos/sin; blend also widens Layer B stereo and nudges B filter.\n- 24dB ladder LPF; amp + filter ADSR.\n- 8 macros fan out to smoothed targets at 16-sample control rate (Tone, Drift, Lo-Fi decimate+12-bit+tape LPF, Dirt tanh+comp, Swell attacks+reverb send, Motion chorus+wt LFO, Space delay+shimmer reverb).\n\nUI: WebView obsidian/violet/cyan; large A/B blend; layer cards; 8 macro rotaries.\nPRESETS BinaryData ×12 listed in architecture.md.\nPLUGIN_CODE PsDr. CMAKE: templates/juce8-synth-base + BinaryData.cmake.snippet.\nBUILD: PlaySynthDreams_VST3 Release x64."
+  },
+  {
+    "name": "PlaySynthAnalogDreams",
+    "type": "synth",
+    "code": "PsAD",
+    "priority": 8,
+    "shared_engine": "PlaySynthDreams",
+    "note": "Fork after PlaySynthDreams engine works; amber UI; 4 analog-biased presets.",
+    "prompt": "Fork PlaySeriesEngine from PlaySynthDreams. PRODUCT PlaySynthAnalogDreams, CODE PsAD, warm amber WebView theme, presets: Analog Dreams Brass, 40s Midnight Keys, Dusty Cassette Rhodes, Neon Synthwave Lead."
+  },
+  {
+    "name": "PlaySynthCloudSupply",
+    "type": "synth",
+    "code": "PsCS",
+    "priority": 8,
+    "shared_engine": "PlaySynthDreams",
+    "note": "Ice-blue UI; bell/choir/mallet presets.",
+    "prompt": "Fork PlaySeriesEngine. PRODUCT PlaySynthCloudSupply, CODE PsCS. Presets: Cloud Supply Bells, Ethereal Choir Swell, Crystal Mallet Arp, Velvet Sub & Air."
+  },
+  {
+    "name": "PlaySynthLoFiGlow",
+    "type": "synth",
+    "code": "PsLF",
+    "priority": 8,
+    "shared_engine": "PlaySynthDreams",
+    "note": "Tape-brown UI; lo-fi macro defaults higher.",
+    "prompt": "Fork PlaySeriesEngine. PRODUCT PlaySynthLoFiGlow, CODE PsLF. Default macro_lofi 0.35. Presets: Lo-Fi Glow Tape Pad, VHS Detuned Strings, Dark Trap Atmosphere, Memphis Phonk Pluck."
+  },
+  {
     "name": "ObXaDesktop",
     "type": "synth",
     "code": "ObXd",
