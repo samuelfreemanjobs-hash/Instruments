@@ -1,3 +1,8 @@
+import {
+  resolveSparkPresetId,
+  SPARK_LANE_REGISTRY,
+} from "@/lib/spark-le/lane-registry";
+
 export type StylePreset = {
   id: string;
   label: string;
@@ -7,7 +12,7 @@ export type StylePreset = {
   tags: string[];
 };
 
-/** v0 presets aligned to four YouTube / factory artist lanes + neutral MPC pack. */
+/** Factory / phonk / supply presets + SparkLE elite lane registry. */
 export const STYLE_PRESETS: StylePreset[] = [
   {
     id: "boulevard-86",
@@ -49,8 +54,17 @@ export const STYLE_PRESETS: StylePreset[] = [
     description: "Neutral 44.1 kHz one-shots with consistent peaks for pad workflow.",
     tags: ["808-style", "one-shots", "44.1k"],
   },
+  ...SPARK_LANE_REGISTRY.map((lane) => ({
+    id: lane.presetId,
+    label: lane.label,
+    artistLane: lane.artistLane,
+    bpmHint: lane.bpmHint,
+    description: `Style archetype: ${lane.description}`,
+    tags: [...lane.tags, "spark-le", lane.family],
+  })),
 ];
 
 export function getPreset(id: string): StylePreset | undefined {
-  return STYLE_PRESETS.find((p) => p.id === id);
+  const resolved = resolveSparkPresetId(id);
+  return STYLE_PRESETS.find((p) => p.id === resolved);
 }

@@ -1,0 +1,149 @@
+{
+  "auditions": [
+    {
+      "category": "Bass",
+      "slot": 1,
+      "index": 76,
+      "name": "Bass Sub Cathedral Punch 02"
+    },
+    {
+      "category": "Bass",
+      "slot": 2,
+      "index": 77,
+      "name": "Bass Distort Reverse Punch 03"
+    },
+    {
+      "category": "Bells",
+      "slot": 1,
+      "index": 71,
+      "name": "Bells Trap Bell Shadow Spark 01"
+    },
+    {
+      "category": "Bells",
+      "slot": 2,
+      "index": 72,
+      "name": "Bells Glock Stack Grim Chime 03"
+    },
+    {
+      "category": "Brass",
+      "slot": 1,
+      "index": 43,
+      "name": "Brass Section Ominous Blast 02"
+    },
+    {
+      "category": "Brass",
+      "slot": 2,
+      "index": 44,
+      "name": "Brass Fanfare Midnight Fanfare 03"
+    },
+    {
+      "category": "Choir",
+      "slot": 1,
+      "index": 84,
+      "name": "Choir Air Velvet Aahs 03"
+    },
+    {
+      "category": "Choir",
+      "slot": 2,
+      "index": 85,
+      "name": "Choir Ooh Frozen Stack 04"
+    },
+    {
+      "category": "Church Keys/EP",
+      "slot": 1,
+      "index": 60,
+      "name": "Church Keys Wurli Shadow Rhodes 14"
+    },
+    {
+      "category": "Church Keys/EP",
+      "slot": 2,
+      "index": 61,
+      "name": "Church Keys Gospel Grim Keys 18"
+    },
+    {
+      "category": "Hits/FX",
+      "slot": 1,
+      "index": 97,
+      "name": "Hits Stab Frozen Crash 04"
+    },
+    {
+      "category": "Hits/FX",
+      "slot": 2,
+      "index": 98,
+      "name": "Hits Rise Shadow Impact 05"
+    },
+    {
+      "category": "Leads",
+      "slot": 1,
+      "index": 14,
+      "name": "Leads Glide Solo Ominous Lead 05"
+    },
+    {
+      "category": "Leads",
+      "slot": 2,
+      "index": 15,
+      "name": "Leads Pulse Cry Rising Saw 17"
+    },
+    {
+      "category": "Organ",
+      "slot": 1,
+      "index": 64,
+      "name": "Organ Rotary Dark Church 05"
+    },
+    {
+      "category": "Organ",
+      "slot": 2,
+      "index": 65,
+      "name": "Organ Drawbar Evil Church 07"
+    },
+    {
+      "category": "Pads",
+      "slot": 1,
+      "index": 0,
+      "name": "Pads Dark Evil Drift 02"
+    },
+    {
+      "category": "Pads",
+      "slot": 2,
+      "index": 1,
+      "name": "Pads Glassy Ominous Cloud 03"
+    },
+    {
+      "category": "Strings",
+      "slot": 1,
+      "index": 49,
+      "name": "Strings Trem Chrome Bows 02"
+    },
+    {
+      "category": "Strings",
+      "slot": 2,
+      "index": 50,
+      "name": "Strings Cinematic Evil Section 03"
+    },
+    {
+      "category": "Swells",
+      "slot": 1,
+      "index": 31,
+      "name": "Swells Filter Sweep Haunted Lift 03"
+    },
+    {
+      "category": "Swells",
+      "slot": 2,
+      "index": 32,
+      "name": "Swells EP Bloom Southern Tide 04"
+    },
+    {
+      "category": "Synth Keys",
+      "slot": 1,
+      "index": 23,
+      "name": "Synth Keys Glass Arp Reverse Tine 24"
+    },
+    {
+      "category": "Synth Keys",
+      "slot": 2,
+      "index": 24,
+      "name": "Synth Keys Digipluck Haunted Pluck 26"
+    }
+  ],
+  "wavCount": 24
+}

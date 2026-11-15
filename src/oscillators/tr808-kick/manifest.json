@@ -1,0 +1,52 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.1-0",
+    "name": "Phonk 808",
+    "num_param": 9,
+    "params": [
+      ["Wave", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"],
+      ["Filter", 0, 100, "%"],
+      ["LP Type", 0, 2, ""],
+      ["Pitch Swp", 0, 100, "%"],
+      ["Sub", 0, 100, "%"],
+      ["Drive", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "tr808_kick_phonk",
+    "type": "osc",
+    "collection": "nts1-multi-bass",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "808 kick/sub for phonk. Play C1-D#1. Not a sustained bass osc.",
+    "presets": [
+      {
+        "name": "Drift phonk (default)",
+        "midi_hint": "C1, short notes",
+        "values": [8, 2, 72, 38, 28, 1, 78, 62, 48]
+      },
+      {
+        "name": "Aggressive distorted",
+        "midi_hint": "C1-D1",
+        "values": [5, 0, 52, 30, 32, 1, 82, 55, 72]
+      },
+      {
+        "name": "Tight modern",
+        "midi_hint": "D1",
+        "values": [10, 3, 48, 25, 22, 1, 62, 45, 32]
+      },
+      {
+        "name": "Long rumble tail",
+        "midi_hint": "C1, let decay ring",
+        "values": [6, 0, 88, 42, 25, 0, 75, 70, 40]
+      }
+    ]
+  }
+}

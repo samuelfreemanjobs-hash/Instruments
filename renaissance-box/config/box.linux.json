@@ -1,0 +1,18 @@
+{
+  "mode": "sidecar",
+  "midi": {
+    "inputPortSubstring": "Renaissance",
+    "outputPortSubstring": "Renaissance",
+    "fallbackInputIndex": null,
+    "fallbackOutputIndex": null
+  },
+  "midiMapPath": "config/midi-map.template.json",
+  "extensions": {
+    "logPads": true,
+    "disklordzInbox": {
+      "enabled": false,
+      "inboxDir": "/home/studio/Music/Disklordz/Inbox",
+      "pollSeconds": 5
+    }
+  }
+}

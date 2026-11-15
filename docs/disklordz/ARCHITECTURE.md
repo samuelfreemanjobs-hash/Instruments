@@ -29,6 +29,7 @@ Airtable WO / user goal
 |------|------|
 | [README.md](README.md) | Index of SOPs and templates |
 | [sops/](sops/) | Step-by-step procedures |
+| [sops/SOP-012-spark-le-elite-system-charter.md](sops/SOP-012-spark-le-elite-system-charter.md) | SparkLE lanes: charter + links to phase 013–017 |
 | [templates/](templates/) | Copy-paste blocks for Cursor, GitHub, PM ADD |
 
 ## Extension points

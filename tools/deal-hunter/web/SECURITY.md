@@ -1,0 +1,7 @@
+# Shipped surface (Cursor Apps publish)
+
+- **Bundled catalog:** `src/data/hosted-catalog.json` — demo retailer URLs only; no user PII. Regenerate with `npm run export:hosted-catalog` then `npm run slim:hosted-catalog` before commit.
+- **Secrets:** Supabase/admin/VAPID/n8n keys are **environment only** (Cursor Publish Secrets), not in source. `SUPABASE_SERVICE_ROLE_KEY` is used only in server actions for admin catalog sync — never sent to the browser.
+- **Auth:** Email/password via Supabase; callbacks use `safeRedirectPath` (same-site paths only).
+- **Admin:** `/api/admin` and dispatch-steals blocked in middleware (all `/api/*` paths); admin UI gated by `BFM_ADMIN_EMAILS`.
+- **External API:** Only read-mostly routes proxy to `DEAL_API_ORIGIN`; chat/subscribe require Next routes + auth where applicable.

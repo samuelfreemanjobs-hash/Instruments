@@ -1,0 +1,43 @@
+# MVP motion — per-agent safe hooks + activity summary (weekdays)
+name: Agent fleet MVP motion
+
+on:
+  schedule:
+    - cron: "0 8,16 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  mvp-motion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Resolve production verify URL
+        env:
+          VERIFY_BASE: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL }}
+          GO_LIVE_URL: ${{ secrets.DISKORDZ_URL }}
+        run: |
+          url="${VERIFY_BASE:-$GO_LIVE_URL}"
+          url="${url%/}"
+          if [ -n "$url" ]; then
+            echo "DISKLORDZ_URL=$url" >> "$GITHUB_ENV"
+          fi
+
+      - name: MVP motion (no plugin rebuild)
+        run: python3 disklordz/agents/workflows/fleet_mvp_motion.py
+
+      - name: Upload activity summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: fleet-activity
+          path: |
+            docs/fleet-activity-latest.md
+            disklordz/agents/workflows/fleet-activity.jsonl

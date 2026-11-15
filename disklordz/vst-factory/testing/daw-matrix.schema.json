@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disklordz.local/schemas/daw-matrix.schema.json",
+  "title": "DiskLordz VST Factory DAW smoke matrix",
+  "type": "object",
+  "required": ["schema_version", "plugin_name", "hosts"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "daw-matrix/v1"
+    },
+    "plugin_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "format": {
+      "type": "string",
+      "enum": ["vst3", "standalone"],
+      "default": "vst3"
+    },
+    "hosts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "os", "status"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Host id e.g. reaper, ableton-live, fl-studio"
+          },
+          "os": {
+            "type": "string",
+            "enum": ["windows", "macos", "linux"]
+          },
+          "version": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "pass", "fail", "skip"]
+          },
+          "notes": {
+            "type": "string"
+          },
+          "evidence_path": {
+            "type": "string",
+            "description": "Optional relative path to screenshot or log"
+          }
+        }
+      }
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

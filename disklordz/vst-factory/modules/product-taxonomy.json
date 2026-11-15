@@ -1,0 +1,42 @@
+{
+  "schema_version": "product-taxonomy/v1",
+  "categories": [
+    {
+      "id": "fx.metering",
+      "label": "Metering / analysis FX",
+      "plugin_class": "effect",
+      "suggested_dsp_modules": ["analysis.peak_rms"],
+      "suggested_gui_modules": ["gui.meter"],
+      "dogfood": true,
+      "example_sku": "MeterTap"
+    },
+    {
+      "id": "fx.dynamics",
+      "label": "Dynamics",
+      "plugin_class": "effect",
+      "suggested_dsp_modules": ["dyn.compressor"],
+      "suggested_gui_modules": ["gui.meter", "gui.rotary-knob"]
+    },
+    {
+      "id": "synth.subtractive",
+      "label": "Subtractive synth",
+      "plugin_class": "synth",
+      "suggested_dsp_modules": [],
+      "suggested_gui_modules": ["gui.keyboard", "gui.adsr-panel"]
+    },
+    {
+      "id": "midi.chord",
+      "label": "Chord / MIDI tools",
+      "plugin_class": "midi",
+      "suggested_dsp_modules": ["midi.chord-pads"],
+      "suggested_gui_modules": ["gui.pad-grid"]
+    },
+    {
+      "id": "sampler.rompler",
+      "label": "Rompler / sampler",
+      "plugin_class": "sampler",
+      "suggested_dsp_modules": [],
+      "suggested_gui_modules": ["gui.waveform", "gui.keyboard"]
+    }
+  ]
+}

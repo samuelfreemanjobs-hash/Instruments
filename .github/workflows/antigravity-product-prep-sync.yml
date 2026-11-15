@@ -1,0 +1,39 @@
+# Daily: merge product prep catalog → active queue → dispatch (business runs without manual handoffs).
+name: Antigravity product prep sync
+
+on:
+  schedule:
+    - cron: "30 14 * * *"
+  workflow_dispatch:
+    inputs:
+      push:
+        description: Push handoffs to branch
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Merge catalog and dispatch prep work
+        run: |
+          chmod +x scripts/antigravity-bridge/dispatch-active.sh
+          args=(--merge-only --dispatch)
+          if [[ "${{ github.event_name }}" == "schedule" ]] || [[ "${{ github.event.inputs.push }}" == "true" ]]; then
+            args+=(--push)
+          else
+            args+=(--dry-run)
+          fi
+          python3 scripts/antigravity-bridge/sync-product-prep.py "${args[@]}" || true
+          python3 scripts/antigravity-bridge/sync-claude-code-support.py "${args[@]}" || true
+      - name: Commit queue merge if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add disklordz/antigravity/active-queue.json || true
+          git diff --cached --quiet || git commit -m "chore(antigravity): product prep queue sync"
+          git push origin HEAD:"${{ github.ref_name }}" || true

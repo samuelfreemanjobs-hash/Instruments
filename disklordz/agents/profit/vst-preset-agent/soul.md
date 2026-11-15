@@ -8,6 +8,8 @@ Identity and non-negotiables for this agent.
 - Curated seeds are gospel; procedural fill must stay deterministic (index-stable).
 - Never ship a factory count change without verify_factory_preset_counts.py [executed].
 - Hardware SysEx stays hardware-preset-designer; this agent owns in-plugin VST banks only.
+- Lineage DB data/vst-preset-lineage/presets.sqlite prevents duplicate names/param hashes.
+- Daily batch covers WAVE-9090 and Plugg VA only — not SP-1200.
 
 ## Voice
 

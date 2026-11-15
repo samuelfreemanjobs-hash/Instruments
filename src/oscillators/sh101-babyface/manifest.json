@@ -1,0 +1,52 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "SH-101 BF",
+    "num_param": 9,
+    "params": [
+      ["Vibe", 0, 100, "%"],
+      ["PWM", 0, 100, "%"],
+      ["Sub", 0, 100, "%"],
+      ["Hollow", 0, 100, "%"],
+      ["Saw", 0, 100, "%"],
+      ["Glide", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "sh101_babyface_bass",
+    "type": "osc",
+    "collection": "nts1-multi-bass",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "SH-101 Babyface: warm rounded PWM pulse + sub, Roland resonant LP. Vibe morphs to hollow 2-op FM bass. Panel cutoff/res.",
+    "presets": [
+      {
+        "name": "Babyface warm pulse",
+        "midi_hint": "E2-G2, res 35-50%",
+        "values": [22, 48, 55, 18, 12, 22, 10, 40, 36]
+      },
+      {
+        "name": "Rounded resonance",
+        "midi_hint": "F2-A2, open filter sweep",
+        "values": [35, 52, 48, 25, 20, 28, 8, 38, 34]
+      },
+      {
+        "name": "Hollow FM bass",
+        "midi_hint": "D2-F2, legato",
+        "values": [72, 38, 42, 68, 8, 32, 14, 45, 48]
+      },
+      {
+        "name": "Pulse + sub stack",
+        "midi_hint": "C2-E2, low cutoff",
+        "values": [18, 42, 72, 12, 15, 18, 12, 44, 40]
+      }
+    ]
+  }
+}

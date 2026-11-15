@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0",
+  "generator_version": "export-spark-sprint-kit-v1",
+  "project_title": "Trunk Sermon",
+  "lane": "FAT-PAT",
+  "family": "houston",
+  "preset_id": "lane-fat-pat",
+  "bpm": 84,
+  "swing_note": "Syrupy trunk @ 84; lazy hat 8ths; rim ride forward — Houston pocket, not club trap",
+  "dna_template_id": "southern-trunk-lazy",
+  "spark_le": {
+    "pad_map_version": "1.0",
+    "pads": {
+      "1": {
+        "role": "808_sub",
+        "file": "OneShots/01_Sub_Syrupy.wav",
+        "target_lufs": -17
+      },
+      "2": {
+        "role": "808_knock",
+        "file": "OneShots/02_Knock_Trunk.wav",
+        "target_lufs": -16
+      },
+      "3": {
+        "role": "snare_body",
+        "file": "OneShots/03_Snare_Fat.wav",
+        "target_lufs": -14
+      },
+      "4": {
+        "role": "snare_snap_clap",
+        "file": "OneShots/04_Clap_Wide.wav",
+        "target_lufs": -15
+      },
+      "5": {
+        "role": "hat_closed",
+        "file": "OneShots/05_Hat_Lazy.wav",
+        "target_lufs": -18
+      },
+      "6": {
+        "role": "hat_open",
+        "file": "OneShots/06_Hat_Open_Ride.wav",
+        "target_lufs": -18
+      },
+      "7": {
+        "role": "rim_perc",
+        "file": "OneShots/07_Rim_Ride.wav",
+        "target_lufs": -15
+      },
+      "8": {
+        "role": "cowbell_fx",
+        "file": "OneShots/08_Perc_Trunk.wav",
+        "target_lufs": -16
+      }
+    }
+  },
+  "loops": [
+    {
+      "id": "trunk_full",
+      "file": "Loops/Trunk_Full_2bar.wav",
+      "bars": 2,
+      "note": "Trunk Sermon reference grid"
+    },
+    {
+      "id": "tops_kickless",
+      "file": "Loops/Tops_Kickless_2bar.wav",
+      "bars": 2
+    },
+    {
+      "id": "rim_ride",
+      "file": "Loops/Rim_Ride_2bar.wav",
+      "bars": 2,
+      "note": "Pad 7 ride pattern reference"
+    }
+  ],
+  "overflow": [],
+  "lineage": {
+    "parent_keeper_id": null,
+    "parent_seed": null,
+    "dna_template_id": "southern-trunk-lazy",
+    "note": "Optional parent: session-2 screw keeper"
+  },
+  "review": {
+    "batch_id": "",
+    "keeper": false,
+    "scores": {
+      "sonic": 0,
+      "groove": 0,
+      "workflow": 0,
+      "vibe": 0
+    }
+  },
+  "batch_id": "sprint-export-84031103",
+  "factory": {
+    "seed": 84031103,
+    "prompt": "fat pat syrupy trunk houston",
+    "preset_id": "lane-fat-pat",
+    "engine": "studio"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "category": "dsp/envelopes",
+  "blocks": [
+    {
+      "id": "env.adsr",
+      "name": "ADSR envelope",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/envelopes/ADSR.h"
+    },
+    {
+      "id": "lfo.sine",
+      "name": "Sine LFO",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/lfo/SineLFO.h"
+    }
+  ]
+}

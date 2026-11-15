@@ -19,7 +19,7 @@ Monorepo JUCE instruments: wavetable design, virtual-analog voice programming, f
 ## Prerequisites
 
 - Read `AGENTS.md`, `disklordz/website/ARCHITECTURE.md`, and `disklordz/agents/profit/vst-preset-agent/agent.md`.
-- Run automation: python3 disklordz/integrations/agents/vst_preset_agent.py, scripts/vst/verify_factory_preset_counts.py, .github/workflows/vst-preset-factory.yml
+- Run automation: python3 disklordz/integrations/agents/vst_preset_agent.py, scripts/vst/daily_preset_batch.py, scripts/vst/verify_factory_preset_counts.py, .github/workflows/vst-preset-factory.yml, .github/workflows/vst-preset-daily-batch.yml
 
 ## Success criteria
 

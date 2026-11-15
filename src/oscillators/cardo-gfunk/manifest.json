@@ -1,0 +1,52 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "Cardo GF",
+    "num_param": 9,
+    "params": [
+      ["Vibe", 0, 100, "%"],
+      ["Sub", 0, 100, "%"],
+      ["Mid", 0, 100, "%"],
+      ["Velvet", 0, 100, "%"],
+      ["Glide", 0, 100, "%"],
+      ["Glow", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "cardo_got_wings_gfunk",
+    "type": "osc",
+    "collection": "nts1-multi-bass",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "Cardo Got Wings late-night G-funk: dual layer sub + warm mid synth, velvet filter, glide. Vibe balances room sub vs melodic mid.",
+    "presets": [
+      {
+        "name": "Got Wings cruiser",
+        "midi_hint": "E1-G2, legato, low cutoff",
+        "values": [48, 68, 38, 62, 42, 32, 22, 48, 52]
+      },
+      {
+        "name": "Room shaker sub",
+        "midi_hint": "C1-E2, Sub forward",
+        "values": [35, 82, 22, 55, 38, 28, 18, 52, 58]
+      },
+      {
+        "name": "Velvet mid night",
+        "midi_hint": "F2-A2, Mid up",
+        "values": [62, 52, 58, 72, 48, 36, 26, 45, 55]
+      },
+      {
+        "name": "Late highway glide",
+        "midi_hint": "slow slides D1-F2",
+        "values": [55, 75, 42, 68, 68, 30, 28, 55, 62]
+      }
+    ]
+  }
+}

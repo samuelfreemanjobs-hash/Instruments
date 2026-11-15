@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { inngest, inngestConfigured } from "@/inngest/client";
 import { parseGenerationSpec } from "@/lib/generation/generation-spec";
 import { newBatchId } from "@/lib/credits";
+import { coalesceSparkPreset } from "@/lib/spark-le/lane-resolve";
 import { getPreset, STYLE_PRESETS } from "@/lib/presets";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
@@ -26,13 +27,15 @@ export async function POST(req: NextRequest) {
   }
 
   const prompt = (body.prompt ?? "").trim();
-  const presetId = body.presetId ?? STYLE_PRESETS[0].id;
+  const requestedPresetId = body.presetId ?? STYLE_PRESETS[0].id;
   if (!prompt || prompt.length < 3) {
     return NextResponse.json({ error: "prompt_required" }, { status: 400 });
   }
-  if (!getPreset(presetId)) {
+  if (!getPreset(requestedPresetId)) {
     return NextResponse.json({ error: "invalid_preset" }, { status: 400 });
   }
+
+  const presetId = coalesceSparkPreset(prompt, requestedPresetId);
 
   const parsed = parseGenerationSpec(body.spec, presetId);
   if (!parsed.ok) {

@@ -1,0 +1,80 @@
+{
+  "format": "DISKLORDZ_MPC500_KIT",
+  "version": 1,
+  "lane": "TRAP-OR-DIE",
+  "bpm": 140,
+  "code": "TOD140",
+  "pads": [
+    {
+      "pad": "A01",
+      "role": "808_sub",
+      "sampleName": "TOD140_01SUB",
+      "source": "OneShots/01_808_Sub.wav",
+      "targetLufs": -17
+    },
+    {
+      "pad": "A02",
+      "role": "808_knock",
+      "sampleName": "TOD140_02KNK",
+      "source": "OneShots/02_Knock_Hard.wav",
+      "targetLufs": -15
+    },
+    {
+      "pad": "A03",
+      "role": "snare_body",
+      "sampleName": "TOD140_03SNR",
+      "source": "OneShots/03_Snare_Body.wav",
+      "targetLufs": -14
+    },
+    {
+      "pad": "A04",
+      "role": "snare_snap_clap",
+      "sampleName": "TOD140_04CLP",
+      "source": "OneShots/04_Clap_Stack.wav",
+      "targetLufs": -13
+    },
+    {
+      "pad": "A05",
+      "role": "hat_closed",
+      "sampleName": "TOD140_05CHH",
+      "source": "OneShots/05_Hat_Closed.wav",
+      "targetLufs": -16
+    },
+    {
+      "pad": "A06",
+      "role": "hat_open",
+      "sampleName": "TOD140_06OHH",
+      "source": "OneShots/06_Hat_Open.wav",
+      "targetLufs": -16
+    },
+    {
+      "pad": "A07",
+      "role": "rim_perc",
+      "sampleName": "TOD140_07RIM",
+      "source": "OneShots/07_Rim.wav",
+      "targetLufs": -15
+    },
+    {
+      "pad": "A08",
+      "role": "cowbell_fx",
+      "sampleName": "TOD140_08FX",
+      "source": "OneShots/08_FX.wav",
+      "targetLufs": -14
+    }
+  ],
+  "loops": [
+    {
+      "sampleName": "TOD140_L1TOPS",
+      "source": "Loops/Tops_Kickless_2bar.wav",
+      "bars": 2
+    },
+    {
+      "sampleName": "TOD140_L2FULL",
+      "source": "Loops/Full_2bar.wav",
+      "bars": 2
+    }
+  ],
+  "totalBytes": 746802,
+  "ramBudgetBytes": 16777216,
+  "warnings": []
+}

@@ -49,6 +49,10 @@ def main() -> int:
     else:
         print("SKIP site verify (set DISKLORDZ_URL or DISKLORDZ_VERIFY_BASE_URL in CI)")
 
+    motion = REPO / "disklordz/agents/workflows/fleet_mvp_motion.py"
+    if motion.is_file():
+        run(["python3", str(motion)], env={"FLEET_MOTION_LITE": "1"})
+
     print(f"OK: fleet_execute completed for {count} agents")
     return 0
 

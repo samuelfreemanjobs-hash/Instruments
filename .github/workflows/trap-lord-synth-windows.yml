@@ -1,0 +1,66 @@
+name: Trap Lord Synth (Windows)
+
+on:
+  push:
+    branches: [main, "cursor/**"]
+    paths:
+      - "disklordz/trap-lord-synth/**"
+      - "JUCE_VERSION"
+      - ".github/workflows/trap-lord-synth-windows.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "disklordz/trap-lord-synth/**"
+      - "JUCE_VERSION"
+      - ".github/workflows/trap-lord-synth-windows.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: trap-lord-synth-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-vst3-standalone:
+    runs-on: windows-2022
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure (VS 2022 x64)
+        shell: pwsh
+        run: |
+          cmake -S disklordz/trap-lord-synth -B disklordz/trap-lord-synth/build `
+            -G "Visual Studio 17 2022" -A x64
+
+      - name: Build VST3 and Standalone (Release)
+        shell: pwsh
+        run: |
+          cmake --build disklordz/trap-lord-synth/build --config Release `
+            --target TrapLordSynth_VST3 TrapLordSynth_Standalone -- /m
+
+      - name: Resolve VST3 bundle path
+        id: vst3
+        shell: pwsh
+        run: |
+          $root = "disklordz/trap-lord-synth/build"
+          $bundles = Get-ChildItem -Path $root -Recurse -Filter "TRAP LORD SYNTH.vst3" -Directory -ErrorAction SilentlyContinue
+          if (-not $bundles) { throw "TRAP LORD SYNTH.vst3 bundle not found under $root" }
+          $path = $bundles[0].FullName
+          echo "path=$path" >> $env:GITHUB_OUTPUT
+
+      - name: Upload TRAP LORD SYNTH.vst3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trap-lord-synth-vst3-windows-${{ github.run_number }}
+          path: ${{ steps.vst3.outputs.path }}
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Standalone artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trap-lord-synth-standalone-windows-${{ github.run_number }}
+          path: disklordz/trap-lord-synth/build/TrapLordSynth_artefacts/Release/Standalone
+          if-no-files-found: error
+          retention-days: 14

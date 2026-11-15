@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generator_version": "0.0.0",
+  "lane": "DJ-SCREW",
+  "family": "houston",
+  "preset_id": "lane-dj-screw",
+  "bpm": 72,
+  "swing_note": "Slow trunk; long decay; pair with factory disklordz-screw one-shots",
+  "dna_template_id": null,
+  "spark_le": {
+    "pad_map_version": "1.0",
+    "pads": {
+      "1": { "role": "808_sub", "file": "OneShots/01_Sub_Thick.wav", "target_lufs": -16 },
+      "2": { "role": "808_knock", "file": "OneShots/02_Knock_Soft.wav", "target_lufs": -17 },
+      "3": { "role": "snare_body", "file": "OneShots/03_Snare_Body.wav", "target_lufs": -15 },
+      "4": { "role": "snare_snap_clap", "file": "OneShots/04_Clap_Dusty.wav", "target_lufs": -16 },
+      "5": { "role": "hat_closed", "file": "OneShots/05_Hat_Dull.wav", "target_lufs": -18 },
+      "6": { "role": "hat_open", "file": "OneShots/06_Hat_Air.wav", "target_lufs": -18 },
+      "7": { "role": "rim_perc", "file": "OneShots/07_Rim.wav", "target_lufs": -17 },
+      "8": { "role": "cowbell_fx", "file": "OneShots/08_FX.wav", "target_lufs": -17 }
+    }
+  },
+  "loops": [
+    { "id": "tops_kickless", "file": "Loops/Tops_Kickless_2bar.wav", "bars": 2 },
+    { "id": "slowed_rnb_blend", "file": "Loops/Slowed_RNB_2bar.wav", "bars": 2, "note": "Optional blend with lane-slowed-rnb" }
+  ],
+  "overflow": [],
+  "lineage": { "parent_keeper_id": null, "parent_seed": null, "dna_template_id": null },
+  "review": { "batch_id": "", "keeper": false, "scores": { "sonic": 0, "groove": 0, "workflow": 0, "vibe": 0 } }
+}

@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bfm-bg: #080a0f;
+  --color-bfm-bg-2: #11151e;
+  --color-bfm-card: #171d29;
+  --color-bfm-border: #283244;
+  --color-bfm-text: #ffffff;
+  --color-bfm-muted: #cbd3df;
+  --color-bfm-accent: #2878ff;
+  --color-bfm-accent-2: #00b8d9;
+  --color-bfm-success: #16a36a;
+  --color-bfm-danger: #e34d59;
+
+  /* Readability floor: the app's "small" text never drops below ~16px. */
+  --text-xs: 0.9375rem;
+  --text-xs--line-height: 1.45;
+  --text-sm: 1rem;
+  --text-sm--line-height: 1.5;
+}
+
+html {
+  /* 18px base; every rem-based size, spacing, and tap target scales with it. */
+  font-size: 112.5%;
+}
+
+html,
+body {
+  background: var(--color-bfm-bg);
+  color: var(--color-bfm-text);
+  min-height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.55;
+}
