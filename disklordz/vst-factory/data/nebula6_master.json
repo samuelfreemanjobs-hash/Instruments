@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Nebula6",
+    "code": "Nb6s",
+    "build_root": "Nebula6",
+    "apc_path": "plugins/Nebula6",
+    "theme": "Obsidian void, cyan nebula mist, violet edge",
+    "hero_motion": "Frozen Drift chorus bloom on minor hold",
+    "layerA": "Juno 106 core: saw/pulse/sub, 24dB LP, ADSR (shared/dsp/juno)",
+    "layerB": "Nebula haze bus: formant cloud + crystal air + optional ghost 808",
+    "macros": "1 Sky, 2 Drift, 3 Hollow, 4 Nebula, 5 Tone, 6 Body, 7 Space, 8 Weight",
+    "presets": "Init Nebula, Cloud Nine Juno, Phonkwave Highway, Crypt Choir Pad, Astral Minor Hold, Tokyo Fog",
+    "desktop_runner": "disklordz/vst-factory/scripts/run-factory-play6.sh --only Nebula6",
+    "mpc_twin_future": "MpcNebula6"
+  }
+]

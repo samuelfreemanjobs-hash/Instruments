@@ -1,0 +1,13 @@
+# Append to your plugin CMakeLists.txt after juce_add_plugin(...)
+
+# juce_add_binary_data(PlaySynthDreamsPresets
+#     SOURCES
+#         Resources/presets/cloud_supply_bells.json
+#         Resources/presets/analog_dreams_brass.json
+#         # ... all 12
+#     HEADER_NAME PlaySynthPresetsBinaryData.h
+#     NAMESPACE play_presets)
+#
+# target_link_libraries(PlaySynthDreams PRIVATE PlaySynthDreamsPresets)
+#
+# At runtime, parse JSON into APVTS or use compiled FactoryPresets.h constants only (no disk read in audio thread).

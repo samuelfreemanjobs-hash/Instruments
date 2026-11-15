@@ -1,0 +1,14 @@
+{
+  "plugin": "Nebula6",
+  "version": "0.1.0",
+  "parameters": [
+    { "id": "master_level", "name": "Master", "min": 0, "max": 1, "default": 0.78 },
+    { "id": "chorus_mode", "name": "Chorus Mode", "type": "choice", "choices": ["I", "II", "Drift", "Frozen"] },
+    { "id": "frozen_latch", "name": "Frozen", "type": "bool" },
+    { "id": "nebula_level", "name": "Nebula", "min": 0, "max": 1 },
+    { "id": "macro1", "name": "Sky", "min": 0, "max": 1 },
+    { "id": "macro2", "name": "Drift", "min": 0, "max": 1 },
+    { "id": "macro3", "name": "Hollow", "min": 0, "max": 1 },
+    { "id": "macro4", "name": "Nebula", "min": 0, "max": 1 }
+  ]
+}

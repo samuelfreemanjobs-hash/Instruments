@@ -23,7 +23,7 @@ BUILD_DIR_NAME="${MPC_VST_BUILD_DIR:-build-aarch64}"
 
 is_template_dir() {
   case "$(basename "$1")" in
-    template|template-effect) return 0 ;;
+    template|template-effect|JUCE|factory-lib) return 0 ;;
     *) return 1 ;;
   esac
 }

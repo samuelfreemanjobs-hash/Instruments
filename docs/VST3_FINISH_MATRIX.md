@@ -19,4 +19,6 @@
 
 **APC only (not VST3 yet):** Nebula6, Play 6-pack (`PhonkCowbell94` …), MpcProphet5, MpcObXa, MpcPolysix, MpcLaSynth, SemV.
 
-**Next for “all” desktop phonk:** `/apc-design Nebula6` → impl; `run-factory-play6.sh --skip-claude` for Play 6-pack.
+**aarch64 (Melodee):** `./tools/finish-all-vst3.sh` with `SKIP_AARCH64=0` — requires `libasound2-dev:arm64` + `libfreetype6-dev:arm64` (multiarch; cloud image may lack arm64 apt indexes).
+
+**Next desktop phonk:** `/apc-impl Nebula6` (design complete); `run-factory-play6.sh --skip-claude` for Play 6-pack.
