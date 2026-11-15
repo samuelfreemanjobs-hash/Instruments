@@ -118,6 +118,16 @@ Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcess
     addAndMakeVisible (circuitButton_);
     circuitAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), PID::filterCircuit, circuitButton_);
 
+    filterTypeBox_.addItem ("LP 12", 1);
+    filterTypeBox_.addItem ("LP 24", 2);
+    filterTypeBox_.addItem ("BP 12", 3);
+    filterTypeBox_.addItem ("BP 24", 4);
+    filterTypeBox_.addItem ("HP 12", 5);
+    filterTypeBox_.addItem ("HP 24", 6);
+    filterTypeBox_.setTooltip (tooltip ("Filter type", "Zero-delay-feedback multimode ladder."));
+    addAndMakeVisible (filterTypeBox_);
+    filterTypeAttachment_ = std::make_unique<ComboBoxAttachment> (processor_.getApvts(), PID::filterType, filterTypeBox_);
+
     keyboard_.setColour (juce::MidiKeyboardComponent::whiteNoteColourId, juce::Colour (0xfff1efe7));
     keyboard_.setColour (juce::MidiKeyboardComponent::blackNoteColourId, juce::Colour (0xff1a1e26));
     keyboard_.setColour (juce::MidiKeyboardComponent::keySeparatorLineColourId, juce::Colours::transparentBlack);
@@ -144,6 +154,12 @@ void Wave9090AudioProcessorEditor::syncFactoryProgramUi()
 {
     refreshPresetCombo();
     updatePresetLcd();
+}
+
+void Wave9090AudioProcessorEditor::resetOutputMeterForIdleShot()
+{
+    processor_.resetOutputPeak();
+    ledMeter_.setLevelDb (-100.0f);
 }
 
 void Wave9090AudioProcessorEditor::refreshPresetCombo()
@@ -359,7 +375,9 @@ void Wave9090AudioProcessorEditor::layoutControls()
     auto vcf = bayVcf1_.reduced (10, 28);
     vcf.removeFromTop (bayVcf1_.getHeight() / 4);
     placeGrid (vcf, { PID::filterCutoff, PID::filterRes, PID::drive, PID::crush }, 2);
-    circuitButton_.setBounds (vcf.removeFromBottom (30).withSizeKeepingCentre (vcf.getWidth() - 8, 26));
+    auto filterFooter = vcf.removeFromBottom (56);
+    filterTypeBox_.setBounds (filterFooter.removeFromTop (26).reduced (4, 2));
+    circuitButton_.setBounds (filterFooter.withSizeKeepingCentre (filterFooter.getWidth() - 8, 26));
 
     auto envAmp = bayEnvAmp_.reduced (8, 28);
     envAmp.removeFromTop (bayEnvAmp_.getHeight() / 3 + 6);

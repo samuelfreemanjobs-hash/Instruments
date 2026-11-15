@@ -10,6 +10,7 @@ struct ParameterIDs
     static constexpr const char* wtScan = "wtScan";
     static constexpr const char* filterCutoff = "filterCutoff";
     static constexpr const char* filterRes = "filterRes";
+    static constexpr const char* filterType = "filterType";
     static constexpr const char* filterCircuit = "filterCircuit";
     static constexpr const char* drive = "drive";
     static constexpr const char* crush = "crush";

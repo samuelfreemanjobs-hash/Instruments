@@ -24,10 +24,12 @@ public:
 
     void renderEditorPng (const juce::File& outFile) const;
     void syncFactoryProgramUi();
+    void resetOutputMeterForIdleShot();
 
 private:
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
     using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
+    using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
 
     struct ParamUiSpec
     {
@@ -70,6 +72,8 @@ private:
     wave9090::ui::LedOutputMeter ledMeter_;
 
     juce::ToggleButton circuitButton_ { "DESTRUCT" };
+    juce::ComboBox filterTypeBox_;
+    std::unique_ptr<ComboBoxAttachment> filterTypeAttachment_;
     juce::MidiKeyboardComponent keyboard_ { processor_.getKeyboardState(), juce::MidiKeyboardComponent::horizontalKeyboard };
     std::array<juce::TextButton, 5> octaveButtons_;
 

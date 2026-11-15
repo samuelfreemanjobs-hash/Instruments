@@ -29,6 +29,7 @@ target_sources (Wave9090
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
         Source/Presets/FactoryPresets.cpp
+        Source/DSP/WavetableBank.cpp
         Source/UI/Wave9090LookAndFeel.cpp
         Source/UI/SkinAssets.cpp
         Source/UI/LabeledControl.cpp
@@ -42,6 +43,8 @@ target_compile_definitions (Wave9090
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
         JUCE_DISPLAY_SPLASH_SCREEN=0
+    PRIVATE
+        WAVE9090_USE_SIMD=1
 )
 
 target_link_libraries (Wave9090
@@ -62,6 +65,7 @@ add_executable (Wave9090Tests
     Tests/DSP/WavetableBankTests.cpp
     Tests/SoundRenderTests.cpp
     Source/Presets/FactoryPresets.cpp
+    Source/DSP/WavetableBank.cpp
 )
 
 target_include_directories (Wave9090Tests PRIVATE Source)
@@ -72,6 +76,7 @@ add_test (NAME Wave9090Wavetable COMMAND Wave9090Tests)
 add_executable (Wave9090RenderAudit
     Tests/RenderAudit.cpp
     Source/Presets/FactoryPresets.cpp
+    Source/DSP/WavetableBank.cpp
 )
 target_include_directories (Wave9090RenderAudit PRIVATE Source)
 target_compile_features (Wave9090RenderAudit PRIVATE cxx_std_20)
@@ -79,9 +84,18 @@ target_compile_features (Wave9090RenderAudit PRIVATE cxx_std_20)
 add_executable (Wave9090PresetDemos
     Tests/PresetDemos.cpp
     Source/Presets/FactoryPresets.cpp
+    Source/DSP/WavetableBank.cpp
 )
 target_include_directories (Wave9090PresetDemos PRIVATE Source)
 target_compile_features (Wave9090PresetDemos PRIVATE cxx_std_20)
+
+add_executable (Wave9090EliteMeasurements
+    Tests/EliteMeasurements.cpp
+    Source/Presets/FactoryPresets.cpp
+    Source/DSP/WavetableBank.cpp
+)
+target_include_directories (Wave9090EliteMeasurements PRIVATE Source)
+target_compile_features (Wave9090EliteMeasurements PRIVATE cxx_std_20)
 
 juce_add_console_app (Wave9090EditorScreenshot PRODUCT_NAME "Wave9090EditorScreenshot")
 target_sources (Wave9090EditorScreenshot PRIVATE Tests/EditorScreenshot.cpp)

@@ -3,6 +3,7 @@
 #include "Engine/Voice.h"
 #include "DSP/WavetableBank.h"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <memory>
@@ -58,15 +59,12 @@ public:
 
     void render (float* outL, float* outR, int numSamples) noexcept
     {
-        for (int i = 0; i < numSamples; ++i)
+        std::fill (outL, outL + numSamples, 0.0f);
+        std::fill (outR, outR + numSamples, 0.0f);
+        for (auto& v : voices_)
         {
-            float l = 0.0f;
-            float r = 0.0f;
-            for (auto& v : voices_)
-                v.render (l, r);
-
-            outL[i] = l;
-            outR[i] = r;
+            if (v.isRendering())
+                v.renderBlock (outL, outR, numSamples);
         }
     }
 
@@ -81,6 +79,24 @@ private:
 
     Voice* stealVoice() noexcept
     {
+        Voice* candidate = nullptr;
+        float quietest = 1.0e9f;
+        for (auto& v : voices_)
+        {
+            if (! v.isActive())
+                return &v;
+            const float level = v.ampLevel();
+            if (level < quietest)
+            {
+                quietest = level;
+                candidate = &v;
+            }
+        }
+        if (candidate != nullptr)
+        {
+            candidate->stop (false);
+            return candidate;
+        }
         return &voices_[0];
     }
 

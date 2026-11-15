@@ -10,6 +10,7 @@ struct SynthParams
     float wtScan = 0.0f;
     float filterCutoff = 0.72f;
     float filterRes = 0.25f;
+    int filterMode = 1;
     bool filterDestructive = false;
     float drive = 0.2f;
     float crush = 0.0f;

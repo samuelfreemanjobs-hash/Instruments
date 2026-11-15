@@ -20,6 +20,7 @@ public:
     {
         wowPhase_ = 0.0;
         flutterPhase_ = 0.0;
+        hfState_ = 0.0f;
     }
 
     void setMacro (float macro01) noexcept
@@ -43,6 +44,16 @@ public:
     float noiseGain (float velocity) const noexcept
     {
         return macro_ * macro_ * 0.018f * velocity;
+    }
+
+    float processTape (float input) noexcept
+    {
+        advancePhases();
+        const float sat = std::tanh (input * (1.0f + macro_ * 1.5f));
+        const float hfLoss = 4000.0f + (1.0f - macro_) * 14000.0f;
+        const float a = std::exp (-2.0f * 3.14159265f * hfLoss / static_cast<float> (sampleRate_));
+        hfState_ = a * hfState_ + (1.0f - a) * sat;
+        return hfState_;
     }
 
     float nextNoiseSample (std::uint32_t& rng) noexcept
@@ -71,6 +82,7 @@ private:
     double wowPhase_ = 0.0;
     double flutterPhase_ = 0.0;
     float macro_ = 0.0f;
+    float hfState_ = 0.0f;
 };
 
 } // namespace wave9090::dsp
