@@ -1,0 +1,20 @@
+{
+  "format": "instruments-autosampler-bank-v1",
+  "name": "DemoBank",
+  "presets": [
+    {
+      "name": "Synth Bass C1-B2",
+      "synthetic": true,
+      "lowNote": 36,
+      "highNote": 47,
+      "noteStep": 1
+    },
+    {
+      "name": "Synth Keys C3-C4",
+      "synthetic": true,
+      "lowNote": 48,
+      "highNote": 60,
+      "noteStep": 3
+    }
+  ]
+}
