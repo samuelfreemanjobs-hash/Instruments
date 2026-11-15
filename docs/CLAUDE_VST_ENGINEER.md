@@ -3,6 +3,8 @@
 **Mirror of Cursor's `.cursor/rules/` for Claude Code sessions.**  
 Keep this file in sync when you update `vst-engineer.mdc` or `02-dsp-patterns.mdc`.
 
+**JUCE 8 / C++20 / Windows MSVC:** see [`JUCE8_VST3_PROJECT_RULES.md`](JUCE8_VST3_PROJECT_RULES.md) (build loop, `SmoothedValue`, `Synthesiser`, multi-agent split).
+
 ---
 
 ## Session bootstrap

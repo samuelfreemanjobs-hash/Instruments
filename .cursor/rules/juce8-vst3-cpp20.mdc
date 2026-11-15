@@ -1,0 +1,31 @@
+---
+description: JUCE 8 + C++20 VST3 instruments — Windows build, RT safety, voice architecture
+globs: vst/**/*
+alwaysApply: false
+---
+
+# JUCE 8 & C++20 VST3 instrument rules
+
+Full text: **`docs/JUCE8_VST3_PROJECT_RULES.md`**.
+
+## Windows build (when OS is Windows)
+
+- C++20, JUCE 8+, CMake 3.22+
+- `cmake -B build -G "Visual Studio 17 2022" -A x64`
+- `cmake --build build --config Release`
+- Rebuild after every DSP/CMake change; fix all MSVC issues before done
+- Do not copy to `C:\Program Files\Common Files\VST3\` unless user asks
+
+## Audio thread (all platforms)
+
+- No alloc, locks, or logging in `processBlock`
+- `ScopedNoDenormals` first line
+- Smooth continuous params with `SmoothedValue` (10–20 ms)
+- Prefer `Synthesiser` / `SynthesiserVoice`; `prepare()` all `juce::dsp` in `prepareToPlay`
+
+## Agents
+
+- Terminal / pluginval: Claude Code  
+- Inline DSP + Melodee aarch64: Cursor (`linux-vst3-dsp-engineer` lane)
+
+On **Linux cloud**, use `./tools/build-vst.sh` / `build-vst-aarch64-linux.sh` — not MSVC.

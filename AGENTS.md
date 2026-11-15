@@ -113,6 +113,10 @@ For any VST/VSTi session, read **[docs/CLAUDE_VST_ENGINEER.md](docs/CLAUDE_VST_E
 Read AGENTS.md and docs/CLAUDE_VST_ENGINEER.md. Active product: <ProphetRev2Trap | SP1200 | …>
 ```
 
+## JUCE 8 / C++20 (VST3 instruments)
+
+Normative rules: [docs/JUCE8_VST3_PROJECT_RULES.md](docs/JUCE8_VST3_PROJECT_RULES.md) (Windows MSVC build loop, RT safety, `Synthesiser`, agent split). Cursor rule: `.cursor/rules/juce8-vst3-cpp20.mdc` for `vst/**`.
+
 ## JUCE plugin (default Cloud install)
 
 ```bash
