@@ -14,6 +14,12 @@
 | [MpcMinimoog](MpcMinimoog/status.json) | Minimoog Model D | Plan complete | `/apc-design MpcMinimoog` |
 | [MpcSh101](MpcSh101/status.json) | Roland SH-101 | Plan complete | `/apc-design MpcSh101` |
 
+### Early digital & hybrid (FM)
+
+| Plugin | Vintage target | Phase | Next |
+|--------|----------------|-------|------|
+| [MpcDxFm](MpcDxFm/status.json) | Yamaha DX7 / TX81Z | Plan complete | `/apc-design MpcDxFm` |
+
 **Platform:** Linux **x86_64** (DAW + pluginval) and **aarch64** VST3 for **Melodee** (`docs/MPC_SAMPLE_VST3.md`). Default **headless** (`hasEditor() == false`). Reference precursor: `vst/MpcAnalogSynth` (Prophet-lite sketch).
 
 **Stop after Plan** — run Design per SKU, do not impl all four in one turn.
