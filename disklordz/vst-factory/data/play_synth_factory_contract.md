@@ -12,6 +12,18 @@
 
 Core already includes: `PlaySynthVoice`, `PerformanceEngine`, WebView shell, scope FIFO, 2× master OS dirt, `--render-test` standalone, APVTS, Dice, macro lock.
 
+## Akai MPC Sample (second deliverable)
+
+Each SKU also ships as a **headless** Melodee plugin under `vst/MpcPlay*` (Linux aarch64). Same Layer A/B + macro routing; no WebView; **K1–K2–K3** are the first APVTS parameters.
+
+| Desktop | MPC Sample |
+|---------|------------|
+| `templates/juce8-synth-base` → repo root folder | `templates/mpc-play-synth-base` → `vst/MpcPlay*` |
+| `run-factory-play6.ps1` | `tools/run-factory-mpc-play6.sh` |
+| `play_synth_6pack_master.json` | `mpc_play_synth_6pack_master.json` |
+
+See `mpc_play_factory_contract.md` and `plugins/MPC_PLAY_SYNTH_6PACK.md`.
+
 # PlaySynth 6-pack — factory build contract (v2)
 
 Inject this block into every Claude Code / Cursor overnight prompt for the six SKUs.

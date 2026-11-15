@@ -1,0 +1,74 @@
+[
+  {
+    "name": "MpcPlayAnalog84",
+    "desktop_twin": "AnalogDreams84",
+    "code": "Ma84",
+    "voices": 8,
+    "apc_path": "plugins/MpcPlayAnalog84",
+    "build_root": "vst/MpcPlayAnalog84",
+    "k1_k2_k3": "layer_blend, macro1 (cutoff), macro6 (BBD chorus)",
+    "layerA": "Dual PolyBLEP VCOs + sub (same as desktop AnalogDreams84 Layer A)",
+    "layerB": "80s wavetable + FM bell frames (desktop Layer B)",
+    "presets": "Miami Sunset Brass, Neon Arp Pluck, Analog Bassline, Velvet Sub Pad"
+  },
+  {
+    "name": "MpcPlayCloud",
+    "desktop_twin": "CloudSupplyTrap",
+    "code": "MpCl",
+    "voices": 8,
+    "apc_path": "plugins/MpcPlayCloud",
+    "build_root": "vst/MpcPlayCloud",
+    "k1_k2_k3": "macro1 tone/cutoff, macro2 bell FM, macro4 sub punch",
+    "layerA": "3-op FM bell + sine sub",
+    "layerB": "Formant choir + crystal wavetable air",
+    "presets": "Cloud Nine Bells, Dark Memphis Choir, Glass Mallet Drop"
+  },
+  {
+    "name": "MpcPlayLoFi",
+    "desktop_twin": "LoFiGlowTape",
+    "code": "MpLf",
+    "voices": 8,
+    "apc_path": "plugins/MpcPlayLoFi",
+    "build_root": "vst/MpcPlayLoFi",
+    "k1_k2_k3": "macro1 warmth, macro2 wow, macro3 crunch",
+    "layerA": "Rhodes tine + felt piano model",
+    "layerB": "Tape flute/strings + vinyl hiss",
+    "presets": "Dusty Rhodes 73, Cassette Felt Piano, Crushed Lo-Fi Pluck"
+  },
+  {
+    "name": "MpcPlayPhonk",
+    "desktop_twin": "PhonkCowbell94",
+    "code": "Mp94",
+    "voices": 6,
+    "apc_path": "plugins/MpcPlayPhonk",
+    "build_root": "vst/MpcPlayPhonk",
+    "k1_k2_k3": "macro1 cowbell bite, macro2 808 sub, macro3 Memphis tape",
+    "layerA": "808 cowbell 1:1.48 + pitch-drop 808 sub",
+    "layerB": "Dark formant choir + horror bell + hiss",
+    "presets": "Memphis 94 Cowbell, Sub & Cowbell Stack, 4-Track Cassette Bell"
+  },
+  {
+    "name": "MpcPlayForty",
+    "desktop_twin": "FortyKeysSoul",
+    "code": "Mp40",
+    "voices": 8,
+    "apc_path": "plugins/MpcPlayForty",
+    "build_root": "vst/MpcPlayForty",
+    "k1_k2_k3": "macro1 underwater LPF, macro2 sub weight, macro6 chorus",
+    "layerA": "Dark EP + warm sub",
+    "layerB": "Underwater choir + swell bell",
+    "presets": "Toronto Midnight Keys, Underwater Rhodes, 40s Sub & Choir"
+  },
+  {
+    "name": "MpcPlaySoul70",
+    "desktop_twin": "SoulSessions70",
+    "code": "Ms70",
+    "voices": 8,
+    "apc_path": "plugins/MpcPlaySoul70",
+    "build_root": "vst/MpcPlaySoul70",
+    "k1_k2_k3": "macro1 tone, macro2 auto-wah, macro3 rotary/chorus",
+    "layerA": "B3 tonewheel + clavinet",
+    "layerB": "Solina strings + soul brass",
+    "presets": "70s Gospel B3, Superstition Auto-Wah, Motown Strings & Keys"
+  }
+]

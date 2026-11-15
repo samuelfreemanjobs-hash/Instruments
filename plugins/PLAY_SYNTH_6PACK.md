@@ -21,4 +21,16 @@ Same **Play shell** on every instrument: equal-power **A/B blend**, **XY pad**, 
 
 **Future slot (not queued):** Nacht / dark techno — APC stub TBD.
 
+## Akai MPC Sample (Melodee) — same 6 engines, headless
+
+Desktop targets live at **repo root** with WebView. **MPC Sample** ports use `vst/MpcPlay*` (aarch64 VST3, no editor, K1–K3 macro order).
+
+| Doc / queue | Path |
+|-------------|------|
+| MPC 6-pack map + K1–K3 | `plugins/MPC_PLAY_SYNTH_6PACK.md` |
+| Factory manifest | `disklordz/vst-factory/data/mpc_play_synth_6pack_master.json` |
+| Headless contract | `disklordz/vst-factory/data/mpc_play_factory_contract.md` |
+| Template | `templates/mpc-play-synth-base/` |
+| Linux batch | `tools/run-factory-mpc-play6.sh` |
+
 Legacy index: `PLAY_SYNTH_TRILOGY.md` → first three only.

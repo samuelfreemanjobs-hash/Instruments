@@ -44,10 +44,19 @@ cd disklordz/vst-factory && pip install -e ".[dev]" && uvicorn vst_factory.main:
 
 **Phonk:** `PhonkCowbell94` (`Pc94`) — 808 cowbell ratio synth, cassette macros, 12 phonk presets (APC + queue).
 
-## Melodee / MPC lane (separate from desktop factory)
+## Melodee / MPC lane (Play 6-pack + classic line)
 
-- Headless `vst/Mpc*` plugins, `./tools/build-vst.sh`, `docs/MPC_SAMPLE_VST3.md`
-- Not the same CMake tree as JUCE 8 WebView desktop targets at repo root
+| Asset | Path |
+|-------|------|
+| Play **MPC** 6-pack index | `plugins/MPC_PLAY_SYNTH_6PACK.md` |
+| MPC Play manifest | `disklordz/vst-factory/data/mpc_play_synth_6pack_master.json` |
+| Headless contract | `disklordz/vst-factory/data/mpc_play_factory_contract.md` |
+| Template (reuses `juce8-synth-base` DSP) | `templates/mpc-play-synth-base/` |
+| Linux batch build | `tools/run-factory-mpc-play6.sh` |
+| Verify bundle | `scripts/vst/verify-mpc-sample-vst3.sh` |
+| General MPC rules | `docs/MPC_SAMPLE_VST3.md` |
+
+Same Layer A/B specs as `play_synth_6pack_master.json`, but output is **headless** `vst/MpcPlay*` (not WebView folders at repo root).
 
 ## What is NOT in this repo (bring your own)
 
