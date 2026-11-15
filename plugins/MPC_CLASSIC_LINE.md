@@ -6,6 +6,7 @@
 | [MpcProphet5](MpcProphet5/status.json) | Sequential Prophet-5 | Plan complete | `/apc-design MpcProphet5` |
 | [MpcObXa](MpcObXa/status.json) | Oberheim OB-Xa / SEM | Plan complete | `/apc-design MpcObXa` |
 | [MpcPolysix](MpcPolysix/status.json) | Korg Polysix | Plan complete | `/apc-design MpcPolysix` |
+| [MpcCs80](MpcCs80/status.json) | Yamaha CS-80 (dual-layer, poly AT) | Plan complete | `/apc-design MpcCs80` |
 
 ### Monophonic (ultra-low CPU)
 
