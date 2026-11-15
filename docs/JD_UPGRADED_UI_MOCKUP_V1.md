@@ -12,6 +12,8 @@ Target **shipping layout** for the native `dl_ui` skin (Canva/Stitch export). DS
 | Reference image size | **1024×819** px (`jd-upgraded-workstation-mockup-v1.jpg`) |
 | `layout.json` target | Set `window` to **1024×819** when Sam’s `background.png` is committed (scaffold today: 1020×780) |
 
+**Stitch Canvas:** [Project 4458054159206462354](https://stitch.google.com/projects/4458054159206462354) (pinned in `.stitch.json` + `.stitch/manifest.json`).
+
 Stitch: `deviceType: DESKTOP`, prompt cites `.stitch/DESIGN.md` + this file.
 
 ## Header

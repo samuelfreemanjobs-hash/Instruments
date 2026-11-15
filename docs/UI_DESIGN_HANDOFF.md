@@ -16,6 +16,8 @@ For multi-screen DESKTOP mockups and codebase-aware prototyping (not committed s
 4. Sign in and run onboarding: `stitch status --flow=loop --json` → follow `.agents/skills/stitch/stitch/flows/prototype.md`.
 5. Native JUCE skin path here remains **`shared/disklordz_ui`** + Canva/Stitch **exported PNGs** per sections below; Loop is for canvas iteration before export.
 
+**JD Upgraded Stitch project:** [Canvas 4458054159206462354](https://stitch.google.com/projects/4458054159206462354) · `.stitch/manifest.json`
+
 MCP (Cursor): add `stitch` server in `.cursor/mcp.json` with `X-Goog-Api-Key` from [Stitch settings](https://stitch.withgoogle.com) (no keys in git).
 
 ## Canvas / frame
