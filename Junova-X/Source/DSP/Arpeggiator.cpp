@@ -75,7 +75,20 @@ void Arpeggiator::emitStep (juce::MidiBuffer& output, int samplePos, int rangeOc
         output.addEvent (juce::MidiMessage::noteOff (1, playingNote_), samplePos);
 
     const int notesPerCycle = juce::jmax (1, heldCount_ * rangeOct);
-    const int idx = stepIndex_ % notesPerCycle;
+    int idx = stepIndex_ % notesPerCycle;
+    if (direction_ == 1)
+        idx = (notesPerCycle - 1) - idx;
+    else if (direction_ == 2)
+    {
+        const int half = notesPerCycle * 2 - 2;
+        const int p = stepIndex_ % juce::jmax (1, half);
+        idx = (p <= notesPerCycle - 1) ? p : (half - p);
+    }
+    else if (direction_ == 3)
+    {
+        idx = juce::Random::getSystemRandom().nextInt (notesPerCycle);
+    }
+
     const int noteIdx = idx % heldCount_;
     const int octave = idx / heldCount_;
     const int n = juce::jlimit (0, 127, held_[static_cast<std::size_t> (noteIdx)] + octave * 12);
@@ -123,12 +136,15 @@ void Arpeggiator::process (const juce::MidiBuffer& input,
                            float arpRate,
                            float arpRange,
                            bool latch,
+                           bool enabled,
+                           int direction,
                            const ArpHostContext& host,
                            int numSamples) noexcept
 {
     ingestMidi (input, latch);
+    direction_ = juce::jlimit (0, 3, direction);
 
-    if (arpRate <= 0.01f)
+    if (! enabled || arpRate <= 0.01f)
     {
         output = input;
         return;

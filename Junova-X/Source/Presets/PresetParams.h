@@ -23,27 +23,44 @@ struct PresetParams
     float filterRes = 0.15f;
     bool hpfEnabled = false;
     float hpfCutoff = 0.2f;
+    int hpfMode = 0;
 
     int chorusMode = 0;
+    bool chorusHiss = true;
     int voiceMode = 0;
 
+    int lfoWaveform = 0;
     float lfoRate = 4.2f;
     float lfoDelay = 0.15f;
+    bool lfoBpmSync = false;
     float glide = 12.0f;
 
+    int dcoOctave = 1;
+    bool dcoPulseOn = true;
+    bool dcoSawOn = true;
+    bool dcoSubOn = true;
     float dcoLfoMod = 30.0f;
     float dcoPwm = 65.0f;
+    bool pwmSourceLfo = true;
     float dcoSubLvl = 80.0f;
+    int dcoSubOct = 0;
     float dcoNoise = 10.0f;
 
     float vcfEnv = 55.0f;
     float vcfLfo = 33.0f;
     float vcfKey = 85.0f;
+    bool vcfEnvInv = false;
+    float vcfDrive = 35.0f;
+
+    bool vcaGateMode = false;
+    bool envVintageCurve = true;
 
     float drift = 14.0f;
     float detune = 6.0f;
     float width = 100.0f;
 
+    bool arpEnabled = false;
+    int arpDirection = 0;
     float arpRange = 2.0f;
     float arpRate = 0.25f;
     bool arpLatch = false;

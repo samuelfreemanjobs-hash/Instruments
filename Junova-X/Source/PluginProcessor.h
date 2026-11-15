@@ -53,6 +53,14 @@ public:
 
     float getDisplayBpm() const noexcept { return displayBpm_.load (std::memory_order_relaxed); }
     double getEffectiveSampleRate() const noexcept { return lastSampleRate_; }
+    float getOutputPeak() const noexcept { return outputPeak_.load (std::memory_order_relaxed); }
+    juce::MidiKeyboardState& getKeyboardState() noexcept { return keyboardState_; }
+
+    void initToDefaultPatch();
+    void saveUserPresetToFile();
+    void copyPatchA();
+    void pastePatchA();
+    void toggleAbSlot();
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
@@ -65,7 +73,10 @@ private:
     junovax::dsp::ScopeFifo scopeFifo_;
     int currentProgram_ = 0;
     std::atomic<float> displayBpm_ { 120.0f };
+    std::atomic<float> outputPeak_ { 0.0f };
     double lastSampleRate_ = 48000.0;
+    juce::MidiKeyboardState keyboardState_;
+    juce::ValueTree patchA_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JunovaXAudioProcessor)
 };

@@ -1,0 +1,38 @@
+name: Junova-X Windows VST3
+
+on:
+  push:
+    branches: [main, "cursor/**"]
+    paths:
+      - "Junova-X/**"
+      - ".github/workflows/junova-x-windows.yml"
+      - "CMakeLists.txt"
+  pull_request:
+    branches: [main]
+    paths:
+      - "Junova-X/**"
+      - ".github/workflows/junova-x-windows.yml"
+      - "CMakeLists.txt"
+
+jobs:
+  windows-vst3:
+    runs-on: windows-latest
+    timeout-minutes: 90
+  # Uses root CMake monorepo build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure CMake (Visual Studio 2022 x64)
+        run: >
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          -G "Visual Studio 17 2022" -A x64
+
+      - name: Build Junova-X VST3
+        run: cmake --build build --config Release --target JunovaX_VST3 -j
+
+      - name: Upload VST3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: junova-x-vst3-windows-x64
+          path: build/Junova-X/JunovaX_artefacts/Release/VST3/Junova-X.vst3/**/*
+          if-no-files-found: error

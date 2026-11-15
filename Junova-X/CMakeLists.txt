@@ -20,8 +20,10 @@ target_sources (JunovaX
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
         Source/UI/DiagPanel.cpp
+        Source/UI/JunovaLookAndFeel.cpp
         Source/UI/Celestial/CelestialMainPanel.cpp
         Source/UI/Celestial/OscMonitorComponent.cpp
+        Source/UI/Celestial/PresetVaultBrowser.cpp
         Source/DSP/SynthEngine.cpp
         Source/DSP/DiagTone.cpp
         Source/DSP/Arpeggiator.cpp
@@ -47,6 +49,33 @@ target_link_libraries (JunovaXTests
 )
 
 add_test (NAME JunovaXArpeggiator COMMAND JunovaXTests)
+
+add_executable (JunovaXSynthEngineTests
+    Tests/DSP/SynthEngineTests.cpp
+    Source/DSP/SynthEngine.cpp
+    Source/DSP/BbdChorus.cpp
+    Source/DSP/DiagTone.cpp
+)
+
+target_include_directories (JunovaXSynthEngineTests PRIVATE Source
+    "${CMAKE_BINARY_DIR}/Junova-X/JunovaX_artefacts/JuceLibraryCode"
+)
+add_dependencies (JunovaXSynthEngineTests JunovaX)
+target_compile_features (JunovaXSynthEngineTests PRIVATE cxx_std_20)
+target_compile_definitions (JunovaXSynthEngineTests PRIVATE JUCE_USE_CURL=0 JUCE_WEB_BROWSER=0)
+target_link_libraries (JunovaXSynthEngineTests
+    PRIVATE
+        juce::juce_core
+        juce::juce_audio_basics
+        juce::juce_audio_formats
+        juce::juce_audio_utils
+        juce::juce_dsp
+        juce::juce_gui_basics
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_warning_flags
+)
+
+add_test (NAME JunovaXSynthEngine COMMAND JunovaXSynthEngineTests)
 
 add_executable (JunovaOfflineRender tools/OfflineRender.cpp)
 target_include_directories (JunovaOfflineRender PRIVATE Source)

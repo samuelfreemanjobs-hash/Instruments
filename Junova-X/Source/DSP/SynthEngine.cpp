@@ -16,11 +16,21 @@ float normToCutoffHz (float norm, double sampleRate) noexcept
     return minHz * std::pow (maxHz / minHz, juce::jlimit (0.0f, 1.0f, norm));
 }
 
-float normToHpfHz (float norm, double sampleRate) noexcept
+float hpfHzForMode (int mode, double sampleRate) noexcept
 {
-    const float minHz = 20.0f;
-    const float maxHz = static_cast<float> (sampleRate * 0.2);
-    return minHz * std::pow (maxHz / minHz, juce::jlimit (0.0f, 1.0f, norm));
+    juce::ignoreUnused (sampleRate);
+    switch (juce::jlimit (0, 3, mode))
+    {
+        case 1:
+            return 80.0f;
+        case 2:
+            return 120.0f;
+        case 3:
+            return 220.0f;
+        case 0:
+        default:
+            return 20.0f;
+    }
 }
 } // namespace
 
@@ -78,10 +88,13 @@ void SynthEngine::setParams (const RuntimeParams& p) noexcept
 {
     params_ = p;
     updateEnvelopes();
-    const auto hpfHz = normToHpfHz (p.hpfCutoff, sampleRate_);
-    auto hpfCoefs = juce::dsp::IIR::Coefficients<float>::makeHighPass (sampleRate_, hpfHz);
-    *hpfL_.coefficients = *hpfCoefs;
-    *hpfR_.coefficients = *hpfCoefs;
+    if (p.hpfMode > 0)
+    {
+        const auto hpfHz = hpfHzForMode (p.hpfMode, sampleRate_);
+        auto hpfCoefs = juce::dsp::IIR::Coefficients<float>::makeHighPass (sampleRate_, hpfHz);
+        *hpfL_.coefficients = *hpfCoefs;
+        *hpfR_.coefficients = *hpfCoefs;
+    }
 }
 
 void SynthEngine::updateEnvelopes() noexcept
@@ -110,6 +123,44 @@ int SynthEngine::maxPolyVoices() const noexcept
     if (params_.voiceMode == 4)
         return 6;
     return kMaxVoices;
+}
+
+float SynthEngine::readAndResetPeak() noexcept
+{
+    const float p = peakHold_;
+    peakHold_ = 0.0f;
+    return p;
+}
+
+float SynthEngine::polyBlep (float phase, float inc) const noexcept
+{
+    if (inc <= 0.0f)
+        return 0.0f;
+    if (phase < inc)
+    {
+        const float t = phase / inc;
+        return t + t - t * t - 1.0f;
+    }
+    if (phase + inc > 1.0f)
+    {
+        const float t = (phase - 1.0f) / inc;
+        return t * t + t + t + 1.0f;
+    }
+    return 0.0f;
+}
+
+float SynthEngine::lfoValueAtPhase (float phase) const noexcept
+{
+    switch (params_.lfoWaveform)
+    {
+        case 1:
+            return phase < 0.5f ? 1.0f : -1.0f;
+        case 2:
+            return lfoRandHold_;
+        case 0:
+        default:
+            return std::sin (phase * juce::MathConstants<float>::twoPi);
+    }
 }
 
 int SynthEngine::findFreeVoice() noexcept
@@ -237,9 +288,14 @@ float SynthEngine::cutoffHzForVoice (const Voice& v, float filtEnvLevel, float l
     const float lfoAmt = params_.vcfLfo * 0.01f;
     const float keyTrack = params_.vcfKey * 0.01f;
     const float noteOffset = static_cast<float> (v.note - 60) / 12.0f;
+  #if ! JUCE_MINGW
+    const float env = params_.vcfEnvInv ? (1.0f - filtEnvLevel) : filtEnvLevel;
+  #else
     const float env = filtEnvLevel;
+  #endif
     float hz = base;
-    hz *= std::pow (2.0f, envAmt * (env - 0.35f) * 4.0f);
+    const float envScale = params_.envVintageCurve ? 3.2f : 4.0f;
+    hz *= std::pow (2.0f, envAmt * (env - 0.35f) * envScale);
     hz *= std::pow (2.0f, lfoAmt * lfo * 0.5f);
     hz *= std::pow (2.0f, keyTrack * noteOffset * 0.25f);
     return juce::jlimit (40.0f, static_cast<float> (sampleRate_ * 0.45), hz);
@@ -252,11 +308,20 @@ float SynthEngine::advanceLfo() noexcept
         lfoDelaySamples_ -= 1.0f;
         return 0.0f;
     }
-    const float inc = params_.lfoRate / static_cast<float> (sampleRate_);
+    float hz = params_.lfoRate;
+    if (params_.lfoBpmSync)
+        hz = params_.hostBpm / 60.0f * (params_.lfoRate / 8.0f);
+    const float inc = hz / static_cast<float> (sampleRate_);
+    const float prev = lfoPhase_;
     lfoPhase_ += inc;
     if (lfoPhase_ > 1.0f)
+    {
         lfoPhase_ -= 1.0f;
-    return std::sin (lfoPhase_ * juce::MathConstants<float>::twoPi);
+        if (params_.lfoWaveform == 2)
+            lfoRandHold_ = rng_.nextFloat() * 2.0f - 1.0f;
+    }
+    juce::ignoreUnused (prev);
+    return lfoValueAtPhase (lfoPhase_);
 }
 
 float SynthEngine::renderVoiceSample (Voice& v, float lfo) noexcept
@@ -275,25 +340,43 @@ float SynthEngine::renderVoiceSample (Voice& v, float lfo) noexcept
         v.frequency += (target - v.frequency) * coeff;
     }
 
+    static constexpr float kOctaveMul[] = { 0.25f, 0.5f, 1.0f, 2.0f };
+    const int octIdx = juce::jlimit (0, 3, params_.dcoOctave);
+    const float octaveMul = kOctaveMul[static_cast<std::size_t> (octIdx)];
     const float pitchMod = 1.0f + (params_.dcoLfoMod * 0.01f) * lfo * 0.02f;
     const float detuneRatio = std::pow (2.0f, v.detuneCents / 1200.0f);
     const float drift = 1.0f + (params_.drift * 0.0001f) * (rng_.nextFloat() - 0.5f);
-    const float freq = v.frequency * pitchMod * detuneRatio * drift;
+    const float freq = v.frequency * pitchMod * detuneRatio * drift * octaveMul;
     const float inc = freq / static_cast<float> (sampleRate_);
 
     v.phase += inc;
     if (v.phase >= 1.0f)
         v.phase -= 1.0f;
-    v.subPhase += inc * 0.5f;
+    const float subDiv = params_.dcoSubOct == 1 ? 0.25f : 0.5f;
+    v.subPhase += inc * subDiv;
     if (v.subPhase >= 1.0f)
         v.subPhase -= 1.0f;
 
-    const float pwm = juce::jlimit (0.05f, 0.95f, params_.dcoPwm * 0.01f);
-    const float saw = 2.0f * v.phase - 1.0f;
-    const float pulse = v.phase < pwm ? 1.0f : -1.0f;
+    const float pwmManual = juce::jlimit (0.05f, 0.95f, params_.dcoPwm * 0.01f);
+    const float pwm = params_.pwmSourceLfo
+                          ? juce::jlimit (0.05f, 0.95f, 0.5f + lfo * params_.dcoPwm * 0.004f)
+                          : pwmManual;
+    float saw = 0.0f;
+    if (params_.dcoSawOn)
+    {
+        saw = (2.0f * v.phase - 1.0f) - polyBlep (v.phase, inc);
+    }
+    float pulse = 0.0f;
+    if (params_.dcoPulseOn)
+    {
+        pulse = v.phase < pwm ? 1.0f : -1.0f;
+        pulse -= polyBlep (v.phase, inc);
+    }
     const float osc = 0.65f * saw + 0.35f * pulse;
 
-    const float sub = std::sin (v.subPhase * juce::MathConstants<float>::twoPi);
+    float sub = 0.0f;
+    if (params_.dcoSubOn)
+        sub = std::sin (v.subPhase * juce::MathConstants<float>::twoPi);
     const float noise = (rng_.nextFloat() * 2.0f - 1.0f) * (params_.dcoNoise * 0.01f);
     const float subMix = params_.dcoSubLvl * 0.01f;
 
@@ -305,10 +388,14 @@ float SynthEngine::renderVoiceSample (Voice& v, float lfo) noexcept
     v.filter.setResonance (0.707f + params_.filterRes * 3.5f);
     raw = v.filter.processSample (0, raw);
 
-    const float otaDrive = 1.0f + params_.filterRes * 2.2f;
+    const float driveAmt = params_.vcfDrive * 0.04f + params_.filterRes * 1.6f;
+    const float otaDrive = 1.0f + driveAmt;
     raw = std::tanh (raw * otaDrive) / std::tanh (otaDrive);
 
-    return raw * v.ampEnv.getNextSample() * 0.12f;
+    const float gateOrEnv = params_.vcaGateMode
+                                ? (v.keyDown ? 1.0f : 0.0f)
+                                : v.ampEnv.getNextSample();
+    return raw * gateOrEnv * 0.11f;
 }
 
 void SynthEngine::render (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi) noexcept
@@ -339,6 +426,13 @@ void SynthEngine::render (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& mi
     auto* left = buffer.getWritePointer (0);
     float* right = numCh > 1 ? buffer.getWritePointer (1) : left;
 
+    float blockPeak = 0.0f;
+  #if ! JUCE_MINGW
+    const float ceiling = juce::Decibels::decibelsToGain (-0.5f);
+  #else
+    const float ceiling = 0.9441f;
+  #endif
+
     for (int i = 0; i < numSamples; ++i)
     {
         const float lfo = advanceLfo();
@@ -350,8 +444,14 @@ void SynthEngine::render (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& mi
         float l = mix * (1.0f - 0.15f * width);
         float r = mix * (1.0f + 0.15f * width);
         chorus_.process (l, r, params_.chorusMode);
+        if (params_.chorusHiss)
+        {
+            const float hiss = (rng_.nextFloat() * 2.0f - 1.0f) * 0.00015f;
+            l += hiss;
+            r += hiss;
+        }
 
-        if (params_.hpfEnabled)
+        if (params_.hpfMode > 0)
         {
             l = hpfL_.processSample (l);
             r = hpfR_.processSample (r);
@@ -361,6 +461,23 @@ void SynthEngine::render (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& mi
         left[i] = l * g;
         if (numCh > 1)
             right[i] = r * g;
+
+        blockPeak = juce::jmax (blockPeak, std::abs (left[i]));
+        if (numCh > 1)
+            blockPeak = juce::jmax (blockPeak, std::abs (right[i]));
+    }
+
+    peakHold_ = blockPeak;
+    if (blockPeak > ceiling)
+    {
+        const float trim = ceiling / (blockPeak + 1.0e-12f);
+        for (int i = 0; i < numSamples; ++i)
+        {
+            left[i] *= trim;
+            if (numCh > 1)
+                right[i] *= trim;
+        }
+        peakHold_ = blockPeak * trim;
     }
 }
 } // namespace junovax::dsp

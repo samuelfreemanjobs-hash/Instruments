@@ -18,7 +18,7 @@ int main()
     host.ppqPosition = 0.0;
     host.ppqValid = true;
 
-    arp.process (in, out, 0.0f, 2.0f, false, host, 512);
+    arp.process (in, out, 0.0f, 2.0f, false, false, 0, host, 512);
     if (out.getNumEvents() < 2)
     {
         std::cerr << "bypass expected 2 note on events, got " << out.getNumEvents() << '\n';
@@ -35,7 +35,7 @@ int main()
     {
         juce::MidiBuffer block;
         host.ppqPosition = static_cast<double> (b) * 512.0 / 48000.0 * (120.0 / 60.0);
-        arp.process (in, block, 0.85f, 2.0f, false, host, 512);
+        arp.process (in, block, 0.85f, 2.0f, false, true, 0, host, 512);
         for (const auto metadata : block)
             if (metadata.getMessage().isNoteOn())
                 ++noteOns;

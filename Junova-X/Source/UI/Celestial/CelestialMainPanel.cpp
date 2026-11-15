@@ -1,6 +1,7 @@
 #include "CelestialMainPanel.h"
 
 #include "PluginProcessor.h"
+#include "UI/JunovaLookAndFeel.h"
 
 namespace junovax::ui::celestial
 {
@@ -67,6 +68,12 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
     addAndMakeVisible (presetLabel_);
     addAndMakeVisible (presetPrev_);
     addAndMakeVisible (presetNext_);
+    for (auto* b : { &saveBtn_, &initBtn_, &vaultBtn_, &abBtn_ })
+        addAndMakeVisible (*b);
+    saveBtn_.onClick = [this] { processor_.saveUserPresetToFile(); };
+    initBtn_.onClick = [this] { processor_.initToDefaultPatch(); refreshPresetLabel(); };
+    vaultBtn_.onClick = [this] { if (onOpenVault_) onOpenVault_(); };
+    abBtn_.onClick = [this] { processor_.toggleAbSlot(); };
     presetPrev_.onClick = [this]
     {
         const int n = processor_.getNumPrograms();
@@ -108,9 +115,17 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
     addVerticalFader (dco, junovax::ParameterIDs::dcoSubLvl, "SUB");
     addVerticalFader (dco, junovax::ParameterIDs::dcoNoise, "NOISE");
 
-    addVerticalFader (hpfModule_, junovax::ParameterIDs::hpfCutoff, "HPF");
-    hpfModule_.addAndMakeVisible (hpfEnable_);
-    hpfAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), junovax::ParameterIDs::hpfEnabled, hpfEnable_);
+    for (auto* b : { &hpfOff_, &hpf1_, &hpf2_, &hpf3_ })
+        hpfModule_.addAndMakeVisible (*b);
+    auto setHpf = [this] (float norm)
+    {
+        if (auto* p = processor_.getApvts().getParameter (junovax::ParameterIDs::hpfMode))
+            p->setValueNotifyingHost (norm);
+    };
+    hpfOff_.onClick = [setHpf] { setHpf (0.0f); };
+    hpf1_.onClick = [setHpf] { setHpf (0.33f); };
+    hpf2_.onClick = [setHpf] { setHpf (0.66f); };
+    hpf3_.onClick = [setHpf] { setHpf (1.0f); };
 
     auto& vcf = vcfModule_;
     addVerticalFader (vcf, junovax::ParameterIDs::filterCutoff, "FREQ");
@@ -137,10 +152,7 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
     arpLatchAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), junovax::ParameterIDs::arpLatch, arpLatch_);
 
     addVerticalFader (masterModule_, junovax::ParameterIDs::masterGain, "MASTER");
-
-    keyboardStrip_.setInterceptsMouseClicks (false, false);
-    keyboardStrip_.setOpaque (false);
-    addAndMakeVisible (keyboardStrip_);
+    masterModule_.addAndMakeVisible (peakMeter_);
 }
 
 CelestialMainPanel::~CelestialMainPanel()
@@ -153,13 +165,15 @@ void CelestialMainPanel::timerCallback()
 {
     refreshPresetLabel();
     refreshHostBar();
+    peakLevel_ = processor_.getOutputPeak();
+    peakMeter_.repaint();
 }
 
 void CelestialMainPanel::refreshHostBar()
 {
     const float bpm = processor_.getDisplayBpm();
     const int sr = static_cast<int> (processor_.getEffectiveSampleRate() + 0.5);
-    hostBar_.setText ("HOST | BPM: " + juce::String (bpm, 2) + " | 4/4 | SR: " + juce::String (sr) + " Hz",
+    hostBar_.setText ("BPM: " + juce::String (bpm, 2) + "  |  4/4  |  SR: " + juce::String (sr) + " Hz",
                       juce::dontSendNotification);
 }
 
@@ -176,6 +190,11 @@ juce::Slider& CelestialMainPanel::addVerticalFader (juce::Component& parent, con
     auto slider = std::make_unique<juce::Slider> (juce::Slider::LinearVertical, juce::Slider::TextBoxBelow);
     slider->setName (name);
     slider->setTextBoxStyle (juce::Slider::TextBoxBelow, false, 52, 14);
+    const bool vcf = juce::String (paramId).containsIgnoreCase ("filter")
+                     || juce::String (paramId).containsIgnoreCase ("vcf")
+                     || juce::String (paramId).containsIgnoreCase ("amp");
+    junovax::ui::JunovaLookAndFeel::tagSlider (*slider, vcf ? junovax::ui::JunovaLookAndFeel::Accent::crimson
+                                                             : junovax::ui::JunovaLookAndFeel::Accent::cyan);
     parent.addAndMakeVisible (*slider);
     sliderAttachments_.push_back (std::make_unique<SliderAttachment> (processor_.getApvts(), paramId, *slider));
     auto& ref = *slider;
@@ -209,19 +228,18 @@ void CelestialMainPanel::paint (juce::Graphics& g)
     g.setColour (Theme::panelBlue().darker (0.4f));
     g.fillRect (0, 28, getWidth(), 36);
 
-    auto keyArea = keyboardStrip_.getBounds();
-    if (! keyArea.isEmpty())
+    auto meter = peakMeter_.getBounds();
+    if (! meter.isEmpty())
     {
-        g.setColour (juce::Colour (0xff101018));
-        g.fillRoundedRectangle (keyArea.toFloat(), 6.0f);
-        const int keys = 24;
-        const int kw = juce::jmax (8, keyArea.getWidth() / keys);
-        for (int i = 0; i < keys; ++i)
-        {
-            const bool black = (i % 12 == 1 || i % 12 == 3 || i % 12 == 6 || i % 12 == 8 || i % 12 == 10);
-            g.setColour (black ? juce::Colour (0xff050508) : juce::Colour (0xffececf4));
-            g.fillRect (keyArea.getX() + i * kw, keyArea.getY(), kw - 1, keyArea.getHeight());
-        }
+        g.setColour (Theme::ledInactive());
+        g.fillRoundedRectangle (meter.toFloat(), 4.0f);
+        const float h = meter.getHeight() * juce::jlimit (0.0f, 1.0f, peakLevel_ * 4.0f);
+        g.setColour (Theme::electricCyan());
+        g.fillRoundedRectangle (meter.getX() + 6.0f,
+                                meter.getBottom() - h,
+                                static_cast<float> (meter.getWidth()) - 12.0f,
+                                h,
+                                3.0f);
     }
 }
 
@@ -237,6 +255,10 @@ void CelestialMainPanel::resized()
     presetPrev_.setBounds (w / 2 - 168, 34, 28, 24);
     presetLabel_.setBounds (w / 2 - 136, 36, 272, 22);
     presetNext_.setBounds (w / 2 + 140, 34, 28, 24);
+    saveBtn_.setBounds (w / 2 + 176, 34, 48, 24);
+    initBtn_.setBounds (w / 2 + 228, 34, 44, 24);
+    vaultBtn_.setBounds (w / 2 + 276, 34, 54, 24);
+    abBtn_.setBounds (w / 2 + 334, 34, 40, 24);
 
     oscMonitor_.setBounds (w / 2 - 180, 64, 360, 88);
 
@@ -274,16 +296,14 @@ void CelestialMainPanel::resized()
     idx = 0;
     placeRow (lfoModule_, 3);
     placeRow (dcoModule_, 4);
-    const int hpfSliderIdx = idx;
-    placeRow (hpfModule_, 1);
+    placeRow (hpfModule_, 0);
     {
         auto area = hpfModule_.getContentArea();
-        hpfEnable_.setBounds (area.getX() + 2, area.getY(), area.getWidth() - 4, 22);
-        if (hpfSliderIdx < static_cast<int> (sliders_.size()))
-        {
-            auto slot = area.withTrimmedTop (26);
-            sliders_[static_cast<std::size_t> (hpfSliderIdx)]->setBounds (slot.getX() + 4, slot.getY(), slot.getWidth() - 8, slot.getHeight());
-        }
+        const int bw = (area.getWidth() - 8) / 4;
+        hpfOff_.setBounds (area.getX(), area.getY(), bw, 22);
+        hpf1_.setBounds (area.getX() + bw + 2, area.getY(), bw, 22);
+        hpf2_.setBounds (area.getX() + (bw + 2) * 2, area.getY(), bw, 22);
+        hpf3_.setBounds (area.getX() + (bw + 2) * 3, area.getY(), bw, 22);
     }
     placeRow (vcfModule_, 5);
     placeRow (envModule_, 4);
@@ -311,6 +331,10 @@ void CelestialMainPanel::resized()
         }
     }
     placeRow (masterModule_, 1);
+    {
+        auto area = masterModule_.getContentArea();
+        peakMeter_.setBounds (area.getRight() - 22, area.getY() + 8, 12, area.getHeight() - 16);
+    }
 
     auto chArea = chorusModule_.getContentArea();
     const int bw = (chArea.getWidth() - 12) / 4;
@@ -319,7 +343,6 @@ void CelestialMainPanel::resized()
     chorusII_.setBounds (chArea.getX() + (bw + 4) * 2, chArea.getY(), bw, 24);
     chorusBoth_.setBounds (chArea.getX() + (bw + 4) * 3, chArea.getY(), bw, 24);
 
-    keyboardStrip_.setBounds (16, h - 72, w - 32, 56);
 }
 
 } // namespace junovax::ui::celestial

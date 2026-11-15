@@ -2,6 +2,7 @@
 
 #include "OscMonitorComponent.h"
 #include "Parameters/ParameterIds.h"
+#include "../JunovaLookAndFeel.h"
 #include "../UiLayout.h"
 
 #include <JuceHeader.h>
@@ -48,7 +49,7 @@ private:
     void addChorusModeButtons (juce::Component& parent);
 
     JunovaXAudioProcessor& processor_;
-    juce::LookAndFeel_V4 laf_;
+    junovax::ui::JunovaLookAndFeel laf_;
 
     juce::Label brand_ { {}, "JUNOVA-X" };
     juce::Label tagline_ { {}, "Celestial Polyphonic Synthesizer" };
@@ -56,6 +57,12 @@ private:
     juce::Label presetLabel_ { {}, "J-106 CELESTIAL PAD" };
     juce::TextButton presetPrev_ { "<" };
     juce::TextButton presetNext_ { ">" };
+    juce::TextButton saveBtn_ { "SAVE" };
+    juce::TextButton initBtn_ { "INIT" };
+    juce::TextButton vaultBtn_ { "VAULT" };
+    juce::TextButton abBtn_ { "A/B" };
+
+    std::function<void()> onOpenVault_;
 
     OscMonitorComponent oscMonitor_;
 
@@ -66,7 +73,7 @@ private:
     ModuleShell hpfModule_ { "HPF", Theme::textMuted(), Theme::panelGrey() };
     ModuleShell vcfModule_ { "STELLAR VCF", Theme::glowRed(), Theme::panelRed() };
     ModuleShell envModule_ { "ENVELOPE // VCA", Theme::glowRed(), Theme::panelRed() };
-    ModuleShell chorusModule_ { "MODERN BBD CHORUS", Theme::glowCyan(), Theme::panelGrey() };
+    ModuleShell chorusModule_ { "MN3009 BBD CHORUS", Theme::glowCyan(), Theme::panelGrey() };
     ModuleShell driftModule_ { "DRIFT & AGE", Theme::glowBlue(), Theme::panelBlue() };
     ModuleShell arpModule_ { "ARPEGGIATOR", Theme::glowCyan(), Theme::panelGrey() };
     ModuleShell masterModule_ { "MASTER", Theme::glowRed(), Theme::panelRed() };
@@ -82,11 +89,16 @@ private:
     juce::TextButton chorusII_ { "CHORUS II" };
     juce::TextButton chorusBoth_ { "I + II" };
 
-    juce::Component keyboardStrip_;
-
-    juce::ToggleButton hpfEnable_ { "HPF ON" };
+    juce::TextButton hpfOff_ { "OFF" };
+    juce::TextButton hpf1_ { "1" };
+    juce::TextButton hpf2_ { "2" };
+    juce::TextButton hpf3_ { "3" };
+    juce::Component peakMeter_;
     juce::ToggleButton arpLatch_ { "LATCH" };
-    std::unique_ptr<ButtonAttachment> hpfAttachment_;
+    float peakLevel_ = 0.0f;
+
+public:
+    void setVaultOpener (std::function<void()> fn) { onOpenVault_ = std::move (fn); }
     std::unique_ptr<ButtonAttachment> arpLatchAttachment_;
 
     std::vector<std::unique_ptr<juce::Slider>> sliders_;

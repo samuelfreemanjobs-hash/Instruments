@@ -23,6 +23,8 @@ public:
                   float arpRate,
                   float arpRange,
                   bool latch,
+                  bool enabled,
+                  int direction,
                   const ArpHostContext& host,
                   int numSamples) noexcept;
 
@@ -43,5 +45,7 @@ private:
     double nextStepPpq_ = 0.0;
     double samplesUntilStep_ = 0.0;
     double freeRunPpq_ = 0.0;
+    int direction_ = 0;
+    int pingDir_ = 1;
 };
 } // namespace junovax::dsp

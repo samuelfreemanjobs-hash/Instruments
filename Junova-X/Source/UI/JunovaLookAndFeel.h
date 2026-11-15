@@ -4,18 +4,56 @@
 
 namespace junovax::ui
 {
+/** Swappable Sam / obsidian skin for Junova-X — attach via setLookAndFeel. */
 class JunovaLookAndFeel final : public juce::LookAndFeel_V4
 {
 public:
-    JunovaLookAndFeel()
+    enum class Accent
     {
-        setColour (juce::ResizableWindow::backgroundColourId, juce::Colour (0xff12121a));
-        setColour (juce::Slider::rotarySliderFillColourId, juce::Colour (0xff6c5ce7));
-        setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colour (0xff2d2d3a));
-        setColour (juce::Slider::thumbColourId, juce::Colour (0xfff0f0ff));
-        setColour (juce::Label::textColourId, juce::Colour (0xffd8d8e8));
-        setColour (juce::ComboBox::backgroundColourId, juce::Colour (0xff1e1e28));
-        setColour (juce::TextButton::buttonColourId, juce::Colour (0xff3d3d52));
-    }
+        cyan,
+        crimson,
+        chrome
+    };
+
+    static constexpr const char* kAccentProperty = "junovaAccent";
+
+    JunovaLookAndFeel();
+
+    static void tagSlider (juce::Slider& slider, Accent accent) noexcept;
+    static Accent accentFor (const juce::Slider& slider) noexcept;
+
+    void drawLinearSlider (juce::Graphics&,
+                           int x,
+                           int y,
+                           int width,
+                           int height,
+                           float sliderPos,
+                           float minSliderPos,
+                           float maxSliderPos,
+                           juce::Slider::SliderStyle,
+                           juce::Slider&) override;
+
+    void drawRotarySlider (juce::Graphics&,
+                           int x,
+                           int y,
+                           int width,
+                           int height,
+                           float sliderPosProportional,
+                           float rotaryStartAngle,
+                           float rotaryEndAngle,
+                           juce::Slider&) override;
+
+    void drawToggleButton (juce::Graphics&, juce::ToggleButton&, bool isMouseOverButton, bool isButtonDown) override;
+
+    void drawButtonBackground (juce::Graphics&,
+                               juce::Button&,
+                               const juce::Colour& backgroundColour,
+                               bool shouldDrawButtonAsHighlighted,
+                               bool shouldDrawButtonAsDown) override;
+
+    juce::Font getLabelFont (juce::Label&) override;
+
+private:
+    static juce::Colour colourForAccent (Accent accent) noexcept;
 };
 } // namespace junovax::ui
