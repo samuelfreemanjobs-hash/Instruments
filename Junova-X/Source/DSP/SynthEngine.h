@@ -2,6 +2,9 @@
 
 #include "BbdChorus.h"
 #include "DiagTone.h"
+#include "ExpAdsr.h"
+#include "OtaLadderFilter.h"
+#include "VoiceAnalogDrift.h"
 
 #include <JuceHeader.h>
 #include <array>
@@ -60,6 +63,8 @@ struct RuntimeParams
     float detune = 6.0f;
     float width = 100.0f;
 
+    int oversampleMode = 1;
+
     bool arpEnabled = false;
     int arpDirection = 0;
     float arpRange = 2.0f;
@@ -70,6 +75,8 @@ struct RuntimeParams
 
     bool diagTestTone = false;
     float diagToneFreqHz = 440.0f;
+
+    bool measurementLegacyOsc = false;
 };
 
 class SynthEngine
@@ -96,27 +103,40 @@ private:
         float phase = 0.0f;
         float subPhase = 0.0f;
         float detuneCents = 0.0f;
-        juce::ADSR ampEnv;
-        juce::ADSR filtEnv;
-        juce::dsp::StateVariableTPTFilter<float> filter;
+        float lastOscSample = 0.0f;
+        float noiseLp = 0.0f;
+        ExpAdsr ampEnv;
+        ExpAdsr filtEnv;
+        OtaLadderFilter filter;
+        VoiceAnalogDrift analogDrift;
     };
 
     void updateEnvelopes() noexcept;
+    void initParamSmoothers() noexcept;
     void handleMidi (const juce::MidiBuffer& midi) noexcept;
     int findFreeVoice() noexcept;
     int findVoiceForNote (int note) noexcept;
     void startVoice (Voice& v, int note, float velocity, bool retrigger) noexcept;
     void releaseVoice (Voice& v) noexcept;
-    float cutoffHzForVoice (const Voice& v, float filtEnvLevel, float lfo) const noexcept;
-    float renderVoiceSample (Voice& v, float lfo) noexcept;
+    float cutoffHzForVoice (const Voice& v, float filtEnvLevel, float lfo, float smCutoff) const noexcept;
+    float renderVoiceSample (Voice& v, float lfo, float smCutoff, float smRes, float smPwm) noexcept;
+    float filterVoiceSample (Voice& v, float raw, float cutoffHz, float smRes) noexcept;
     float advanceLfo() noexcept;
     float polyBlep (float phase, float inc) const noexcept;
+    float blepPulse (float phase, float inc, float pw) const noexcept;
     float lfoValueAtPhase (float phase) const noexcept;
     int maxPolyVoices() const noexcept;
+    int filterOversampleFactor() const noexcept;
 
     RuntimeParams params_{};
     DiagTone diagTone_;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> masterGain_;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> smFilterCutoff_;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> smFilterRes_;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> smPwm_;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> smSubLvl_;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> smNoise_;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> smVcfDrive_;
     std::array<Voice, kMaxVoices> voices_{};
     juce::Random rng_;
     float lfoRandHold_ = 0.0f;
