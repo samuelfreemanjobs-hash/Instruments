@@ -16,7 +16,18 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Resolve production verify URL
+        env:
+          VERIFY_BASE: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL }}
+          GO_LIVE_URL: ${{ secrets.DISKORDZ_URL }}
+        run: |
+          url="${VERIFY_BASE:-$GO_LIVE_URL}"
+          url="${url%/}"
+          if [ -n "$url" ]; then
+            echo "DISKLORDZ_URL=$url" >> "$GITHUB_ENV"
+          else
+            echo "SKIP site verify (set DISKLORDZ_VERIFY_BASE_URL or DISKLORDZ_URL)"
+          fi
+
       - name: Fleet execute (prompt-coach chunk, profit check, optional verify)
         run: python3 disklordz/agents/workflows/fleet_execute.py
-        env:
-          DISKLORDZ_URL: ${{ secrets.DISKLORDZ_VERIFY_BASE_URL }}

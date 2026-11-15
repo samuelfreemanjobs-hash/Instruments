@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "generator_version": "export-spark-sprint-kit-v1",
+  "lane": "TRAP-OR-DIE",
+  "family": "atlanta",
+  "preset_id": "lane-trap-or-die",
+  "bpm": 140,
+  "swing_note": "Tight 16ths; hat rolls bar 2 optional",
+  "dna_template_id": "metro-roll-bar4",
+  "spark_le": {
+    "pad_map_version": "1.0",
+    "pads": {
+      "1": {
+        "role": "808_sub",
+        "file": "OneShots/01_808_Sub.wav",
+        "target_lufs": -17
+      },
+      "2": {
+        "role": "808_knock",
+        "file": "OneShots/02_Knock_Hard.wav",
+        "target_lufs": -15
+      },
+      "3": {
+        "role": "snare_body",
+        "file": "OneShots/03_Snare_Body.wav",
+        "target_lufs": -14
+      },
+      "4": {
+        "role": "snare_snap_clap",
+        "file": "OneShots/04_Clap_Stack.wav",
+        "target_lufs": -13
+      },
+      "5": {
+        "role": "hat_closed",
+        "file": "OneShots/05_Hat_Closed.wav",
+        "target_lufs": -16
+      },
+      "6": {
+        "role": "hat_open",
+        "file": "OneShots/06_Hat_Open.wav",
+        "target_lufs": -16
+      },
+      "7": {
+        "role": "rim_perc",
+        "file": "OneShots/07_Rim.wav",
+        "target_lufs": -15
+      },
+      "8": {
+        "role": "cowbell_fx",
+        "file": "OneShots/08_FX.wav",
+        "target_lufs": -14
+      }
+    }
+  },
+  "loops": [
+    {
+      "id": "tops_kickless",
+      "file": "Loops/Tops_Kickless_2bar.wav",
+      "bars": 2
+    },
+    {
+      "id": "full_reference",
+      "file": "Loops/Full_2bar.wav",
+      "bars": 2
+    }
+  ],
+  "overflow": [],
+  "lineage": {
+    "parent_keeper_id": null,
+    "parent_seed": null,
+    "dna_template_id": "metro-roll-bar4"
+  },
+  "review": {
+    "batch_id": "",
+    "keeper": false,
+    "scores": {
+      "sonic": 0,
+      "groove": 0,
+      "workflow": 0,
+      "vibe": 0
+    }
+  },
+  "batch_id": "sprint-export-14031103",
+  "factory": {
+    "seed": 14031103,
+    "prompt": "trap or die street hard knock",
+    "preset_id": "lane-trap-or-die",
+    "engine": "studio"
+  }
+}

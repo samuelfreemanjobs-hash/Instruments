@@ -1,0 +1,11 @@
+{
+  "$comment": "Add this object to the 'blocks' array of disklordz/vst-factory/modules/dsp/<category>.json (SOP-VF-10). Remove this $comment.",
+  "id": "{{CATEGORY}}.{{BLOCK_ID}}",
+  "name": "{{BLOCK_NAME}}",
+  "realtime_safe": true,
+  "cpp_stub": "vst/factory-lib/{{AREA}}/{{BLOCK_CLASS}}.h",
+  "juce_free": true,
+  "tests": "vst/factory-lib/{{AREA}}/tests/test_{{BLOCK_CLASS}}.cpp",
+  "dogfood_sku": "{{PLUGIN_NAME}}",
+  "since": "{{DATE}}"
+}

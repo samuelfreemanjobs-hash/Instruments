@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.0",
+  "generator_version": "export-spark-sprint-kit-v1",
+  "project_title": "Stretch Grid",
+  "lane": "UK-DRILL",
+  "family": "uk-drill",
+  "preset_id": "lane-uk-drill",
+  "bpm": 144,
+  "swing_note": "Session 5 stretch — tight hats, dark snap, slide-808 discipline @ 144",
+  "dna_template_id": "uk-drill-slide-808",
+  "spark_le": {
+    "pad_map_version": "1.0",
+    "pads": {
+      "1": {
+        "role": "808_sub",
+        "file": "OneShots/01_Sub_Slide.wav",
+        "target_lufs": -17
+      },
+      "2": {
+        "role": "808_knock",
+        "file": "OneShots/02_Knock_Tight.wav",
+        "target_lufs": -16
+      },
+      "3": {
+        "role": "snare_body",
+        "file": "OneShots/03_Snare_Dark.wav",
+        "target_lufs": -14
+      },
+      "4": {
+        "role": "snare_snap_clap",
+        "file": "OneShots/04_Snap_Clap.wav",
+        "target_lufs": -14
+      },
+      "5": {
+        "role": "hat_closed",
+        "file": "OneShots/05_Hat_Tight.wav",
+        "target_lufs": -17
+      },
+      "6": {
+        "role": "hat_open",
+        "file": "OneShots/06_Hat_Open_Dark.wav",
+        "target_lufs": -18
+      },
+      "7": {
+        "role": "rim_perc",
+        "file": "OneShots/07_Rim_Click.wav",
+        "target_lufs": -16
+      },
+      "8": {
+        "role": "cowbell_fx",
+        "file": "OneShots/08_FX_Stab.wav",
+        "target_lufs": -15
+      }
+    }
+  },
+  "loops": [
+    {
+      "id": "drill_full",
+      "file": "Loops/Drill_Full_2bar.wav",
+      "bars": 2
+    },
+    {
+      "id": "tops_kickless",
+      "file": "Loops/Tops_Kickless_2bar.wav",
+      "bars": 2
+    }
+  ],
+  "overflow": [],
+  "lineage": {
+    "parent_keeper_id": null,
+    "parent_seed": null,
+    "dna_template_id": "uk-drill-slide-808"
+  },
+  "review": {
+    "batch_id": "",
+    "keeper": false,
+    "catalog_decision": "",
+    "scores": {
+      "sonic": 0,
+      "groove": 0,
+      "workflow": 0,
+      "vibe": 0
+    }
+  },
+  "batch_id": "sprint-export-14431103",
+  "factory": {
+    "seed": 14431103,
+    "prompt": "uk drill british sliding 808",
+    "preset_id": "lane-uk-drill",
+    "engine": "studio"
+  }
+}

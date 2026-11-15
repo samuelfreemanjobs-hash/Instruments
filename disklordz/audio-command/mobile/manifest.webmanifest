@@ -1,0 +1,17 @@
+{
+  "name": "DiskLordz Coach",
+  "short_name": "DL Coach",
+  "description": "One task at a time — DiskLordz Audio execution coach",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0c",
+  "theme_color": "#7b2cbf",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

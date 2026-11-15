@@ -1,0 +1,13 @@
+---
+description: Repo-wide agent memory — recall lessons at task start, record verified lessons before reporting done.
+alwaysApply: true
+---
+
+# Agent memory (continuous improvement)
+
+Memory lives in `disklordz/agents/memory/` ([MEMORY.md](../../disklordz/agents/memory/MEMORY.md)); procedure in [SOP-019](../../docs/disklordz/sops/SOP-019-agent-memory.md).
+
+1. **Before planning a non-trivial task:** read the "Always load" list in `disklordz/agents/memory/MEMORY.md`, then run `python3 scripts/agent_memory.py recall --agent <id> <task keywords>` (`vst-factory-director` for factory/plugin/JUCE/design-system work, `shared` otherwise).
+2. **Before reporting done:** for each new, verified lesson (non-obvious failure, environment quirk, review finding tests missed) run `scripts/agent_memory.py add …`, then `scripts/agent_memory.py check` must pass. Skip if nothing new was learned; never add opinions without evidence.
+3. **When a lesson repeats:** promote it into an SOP, rule, test or script in the same change and run `scripts/agent_memory.py promote`.
+4. **Never** store secrets, tokens, webhook URLs or personal data in memory.

@@ -1,0 +1,33 @@
+---
+description: Noizefield-style APC slash commands — /apc-setup through /apc-ship
+alwaysApply: true
+---
+
+# APC slash commands
+
+When the user message contains **`/apc-`** or deprecated **`/dream`**, **`/plan`**, **`/design`**, **`/impl`**, **`/ship`**, **`/status`**, **`/resume`** (plugin context):
+
+1. Load **`.agents/skills/audio-plugin-coder/SKILL.md`** (command router).
+2. Load the matching **`.agents/workflows/apc-<phase>.md`** file.
+3. Execute the matching **`.agents/skills/<phase>/SKILL.md`** (or `dream`, `plan`, `impl`, …).
+4. Read/update **`plugins/<PluginName>/status.json`** using `scripts/lib/apc-state.sh` patterns.
+5. **Stop after one phase** unless user said `/apc-new` or asked to continue.
+6. **Never skip lifecycle** — see rule `10-vst-lifecycle-mandatory.mdc`. Implement only after Dream+Plan+Design files exist.
+7. **Ship** must run `tools/package-vst.sh` — not “build succeeded” alone.
+
+| Command | Phase skill |
+|---------|-------------|
+| `/apc-setup` | `apc-setup` |
+| `/apc-dream` | `dream` |
+| `/apc-plan` | `plan` |
+| `/apc-design` | `design` |
+| `/apc-impl` | `impl` |
+| `/apc-test` | `test` |
+| `/apc-debug` | `debug` |
+| `/apc-ship` | `ship` |
+| `/apc-status` | workflows only |
+| `/apc-resume` | workflows only |
+
+**Part 2 walkthrough:** dream phase uses `plugins/<Name>/references/` + `.ideas/creative-brief.md` + `parameter-spec.md`.
+
+**Build:** `bash bin/apc build <Name>` — not raw cmake unless debugging.

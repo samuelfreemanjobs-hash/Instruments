@@ -71,7 +71,23 @@ def ensure_pluginval(force_download: bool = False) -> Path:
     zip_path = cache / "pluginval.zip"
 
     print(f"Downloading pluginval from {url}", file=sys.stderr)
-    urllib.request.urlretrieve(url, zip_path)
+    # GitHub release CDN occasionally returns 504 — retry with backoff.
+    last_err: Exception | None = None
+    for attempt in range(1, 6):
+        try:
+            urllib.request.urlretrieve(url, zip_path)
+            last_err = None
+            break
+        except Exception as exc:  # noqa: BLE001 — network/CDN flake
+            last_err = exc
+            wait = min(32, 2**attempt)
+            print(
+                f"pluginval download attempt {attempt}/5 failed: {exc}; retry in {wait}s",
+                file=sys.stderr,
+            )
+            time.sleep(wait)
+    if last_err is not None:
+        raise SystemExit(f"Failed to download pluginval after 5 attempts: {last_err}") from last_err
 
     with zipfile.ZipFile(zip_path) as zf:
         members = [m for m in zf.namelist() if Path(m).name == "pluginval"]

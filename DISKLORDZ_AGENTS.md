@@ -17,7 +17,7 @@ Company-wide index for **Instruments / Disklordz**. Every Cursor Cloud Agent, Cl
 | **workflow-automation** | Scaffolds PM ADD + per-agent `automation.yaml` |
 | **pm-agent** | Repo-wide fleet governance + scheduled execution checks |
 
-**Fleet size:** 33 agents (includes orchestration).
+**Fleet size:** 37 agents (includes orchestration).
 
 ## Active CI (executing now)
 
@@ -33,6 +33,13 @@ Company-wide index for **Instruments / Disklordz**. Every Cursor Cloud Agent, Cl
 | `.github/workflows/airtable-antigravity-handoff.yml` | ship-velocity, airtable-wo-triage |
 | `.github/workflows/build.yml` | golden-wav-qa |
 | `.github/workflows/synth-forge.yml` | hardware-preset-designer |
+| `.github/workflows/audio-plugin-fleet.yml` | audio-business-copilot, plugin-factory-liaison, golden-wav-qa |
+| `.github/workflows/audio-coach-daily-nudge.yml` | audio-business-copilot |
+| `.github/workflows/audio-plugin-weekly.yml` | audio-business-copilot, plugin-factory-liaison |
+| `.github/workflows/autonomous-coding-agent.yml` | autonomous-coding-agent |
+| `.github/workflows/antigravity-product-prep-sync.yml` | audio-business-copilot |
+| `.github/workflows/vst-preset-daily-batch.yml` | vst-preset-agent |
+| `.github/workflows/vst-preset-factory.yml` | vst-preset-agent |
 
 ## Regenerate (Workflow Automation + PM Agent)
 
@@ -75,7 +82,11 @@ Maintained by `scaffold_workflows.py` — do not hand-edit sections below the ma
 - `social-clip-factory` — **Social Clip Factory** (`cli_script`)
 - `analytics-interpreter` — **Analytics Interpreter** (`manual_stub`)
 - `release-notes` — **Release Notes** (`ci_script`)
+- `audio-business-copilot` — **Audio Business Copilot** (`ci_scheduled`)
+- `plugin-factory-liaison` — **Plugin Factory Liaison** (`ci_scheduled`)
+- `autonomous-coding-agent` — **Autonomous Coding Agent (24/7)** (`ci_scheduled`)
+- `vst-factory-director` — **VST Factory Director** (`manual`)
 - `hardware-preset-designer` — **Hardware Preset Designer** (`ci_on_pr`)
-- `vst-preset-agent` — **VST Preset Agent** (`manual`)
+- `vst-preset-agent` — **VST Preset Agent** (`ci_scheduled`)
 
 <!-- FLEET_ROSTER_END -->

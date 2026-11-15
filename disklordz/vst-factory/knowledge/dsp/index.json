@@ -1,0 +1,58 @@
+{
+  "schema_version": "dsp-knowledge/v1",
+  "shared_dsp": {
+    "root": "shared/dsp",
+    "headers": [
+      {"id": "shared.biquad", "path": "shared/dsp/biquad.h", "tags": ["filter"]},
+      {"id": "shared.envelope_adsr", "path": "shared/dsp/envelope_adsr.h", "tags": ["envelope"]},
+      {"id": "shared.parameter_smoothing", "path": "shared/dsp/parameter_smoothing.h", "tags": ["parameter"]},
+      {"id": "shared.phasor", "path": "shared/dsp/phasor.h", "tags": ["oscillator"]}
+    ]
+  },
+  "factory_lib": {
+    "root": "vst/factory-lib",
+    "readme": "vst/factory-lib/README.md",
+    "blocks": [
+      {
+        "id": "analysis.peak_rms",
+        "catalog": "modules/dsp/analysis.json",
+        "cpp_stub": "vst/factory-lib/analysis/PeakRms.h",
+        "dogfood_sku": "MeterTap"
+      },
+      {
+        "id": "fx.saturation",
+        "catalog": "modules/dsp/effects.json",
+        "cpp_stub": "vst/factory-lib/effects/Saturation.h"
+      },
+      {
+        "id": "fx.delay",
+        "catalog": "modules/dsp/effects.json",
+        "cpp_stub": "vst/factory-lib/effects/DelayLine.h"
+      },
+      {
+        "id": "dyn.compressor",
+        "catalog": "modules/dsp/effects.json",
+        "cpp_stub": "vst/factory-lib/dynamics/Compressor.h"
+      },
+      {
+        "id": "osc.saw",
+        "catalog": "modules/dsp/oscillators.json",
+        "related_shared": ["shared.phasor"]
+      },
+      {
+        "id": "filter.ladder",
+        "catalog": "modules/dsp/filters.json",
+        "related_shared": ["shared.biquad"]
+      },
+      {
+        "id": "midi.chord-pads",
+        "catalog": "modules/dsp/midi.json"
+      }
+    ]
+  },
+  "docs": [
+    "docs/dsp-architecture-specification.md",
+    "disklordz/vst-factory/standards/MEMORY.md",
+    "disklordz/vst-factory/standards/ENGINEERING.md"
+  ]
+}

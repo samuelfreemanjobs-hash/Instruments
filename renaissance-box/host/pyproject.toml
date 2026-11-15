@@ -1,0 +1,17 @@
+[project]
+name = "renaissance-host"
+version = "0.1.0"
+description = "MPC Renaissance dedicated-box MIDI sidecar"
+requires-python = ">=3.10"
+dependencies = [
+  "mido>=1.3.2",
+  "python-rtmidi>=1.5.8",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["renaissance_host*"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"

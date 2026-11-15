@@ -12,6 +12,7 @@ import { encodeWav } from "@/lib/generation/wav";
 import { activeKitStorageBackend, writeKitFile } from "@/lib/kit-storage";
 import { sha256Buffer } from "@/lib/kit-store";
 import type { KitManifest, SampleAsset } from "@/lib/manifest";
+import { coalesceSparkPreset } from "@/lib/spark-le/lane-resolve";
 import { getPreset } from "@/lib/presets";
 
 async function writeSampleAsset(
@@ -40,12 +41,13 @@ export async function buildFactoryKit(
   generationSpec: GenerationSpec,
   variation?: VariationContext,
 ): Promise<KitManifest> {
-  const preset = getPreset(presetId);
+  const effectivePresetId = coalesceSparkPreset(prompt, presetId);
+  const preset = getPreset(effectivePresetId);
   if (!preset) {
-    throw new Error(`Unknown preset: ${presetId}`);
+    throw new Error(`Unknown preset: ${effectivePresetId}`);
   }
 
-  const params = resolveDrumParams(prompt, presetId, generationSpec, variation);
+  const params = resolveDrumParams(prompt, effectivePresetId, generationSpec, variation);
   const kitId = randomUUID();
   const provenance = provenanceForEngine(generationSpec.engine);
   const samples: SampleAsset[] = [];
@@ -57,7 +59,7 @@ export async function buildFactoryKit(
         name: "loop_main",
         filename: "loop_main.wav",
         provenance,
-        sourceId: `factory://${presetId}/loop?seed=${params.seed}&bpm=${generationSpec.bpm}`,
+        sourceId: `factory://${effectivePresetId}/loop?seed=${params.seed}&bpm=${generationSpec.bpm}`,
         pcm,
       }),
     );
@@ -86,7 +88,7 @@ export async function buildFactoryKit(
           name,
           filename,
           provenance,
-          sourceId: `factory://${presetId}/${name}?seed=${params.seed}&engine=${generationSpec.engine}`,
+          sourceId: `factory://${effectivePresetId}/${name}?seed=${params.seed}&engine=${generationSpec.engine}`,
           pcm,
         }),
       );
@@ -99,7 +101,7 @@ export async function buildFactoryKit(
     kitId,
     createdAt: new Date().toISOString(),
     prompt: prompt.trim(),
-    presetId,
+    presetId: effectivePresetId,
     artistLane: preset.artistLane,
     sampleRate: 44100,
     samples,

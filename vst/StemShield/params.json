@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "plugin": "StemShield",
+  "kind": "effect",
+  "parameters": [
+    {
+      "id": "ceiling",
+      "name": "Ceiling",
+      "type": "float",
+      "min": -6,
+      "max": 0,
+      "default": -0.5,
+      "unit": "dBTP",
+      "smoothingMs": 20
+    },
+    {
+      "id": "sub_balance",
+      "name": "Sub Balance",
+      "type": "float",
+      "min": 0,
+      "max": 100,
+      "default": 65,
+      "smoothingMs": 25
+    },
+    {
+      "id": "sub_crossover",
+      "name": "Sub Crossover",
+      "type": "float",
+      "min": 40,
+      "max": 160,
+      "default": 80,
+      "unit": "Hz",
+      "smoothingMs": 35
+    },
+    {
+      "id": "release",
+      "name": "Release",
+      "type": "float",
+      "min": 30,
+      "max": 400,
+      "default": 120,
+      "unit": "ms",
+      "smoothingMs": 30
+    },
+    {
+      "id": "lookahead",
+      "name": "Lookahead",
+      "type": "float",
+      "min": 0.5,
+      "max": 8,
+      "default": 2.5,
+      "unit": "ms",
+      "smoothingMs": 40
+    },
+    {
+      "id": "gain",
+      "name": "Gain",
+      "type": "float",
+      "min": -12,
+      "max": 12,
+      "default": 0,
+      "unit": "dB",
+      "smoothingMs": 15
+    }
+  ]
+}

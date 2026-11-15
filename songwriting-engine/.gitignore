@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+node_modules/
+.tmp/
+artifacts/
+*.egg-info/
+apps/desktop/dist/
+apps/desktop/tsconfig.tsbuildinfo
+apps/desktop/src-tauri/target/
+apps/desktop/src-tauri/gen/
+apps/desktop/src-tauri/resources/songwriting-engine.exe

@@ -1,0 +1,52 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "Khalifa Haze",
+    "num_param": 9,
+    "params": [
+      ["Vibe", 0, 100, "%"],
+      ["Sub", 0, 100, "%"],
+      ["Haze", 0, 100, "%"],
+      ["Float", 0, 100, "%"],
+      ["Warmth", 0, 100, "%"],
+      ["Glide", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "khalifa_haze_stoner_bass",
+    "type": "osc",
+    "collection": "nts1-multi-bass",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "Khalifa hazy stoner-rap cloud sub: sine stack, heavy LP, detune haze. Stays under bells/hats/pads. Float = slow envelope glide.",
+    "presets": [
+      {
+        "name": "Cloud blanket",
+        "midi_hint": "C1-F2, legato, cutoff low",
+        "values": [50, 72, 55, 58, 48, 55, 32, 52, 62]
+      },
+      {
+        "name": "Floating low smoke",
+        "midi_hint": "D1-E2, long release",
+        "values": [42, 68, 62, 72, 52, 62, 38, 58, 75]
+      },
+      {
+        "name": "Room for bells",
+        "midi_hint": "sparse roots, Haze 45%",
+        "values": [35, 65, 45, 50, 40, 48, 28, 55, 58]
+      },
+      {
+        "name": "Warm night cruise",
+        "midi_hint": "E2-G2 glide",
+        "values": [58, 75, 58, 55, 55, 58, 26, 48, 65]
+      }
+    ]
+  }
+}

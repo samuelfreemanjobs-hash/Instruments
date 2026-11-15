@@ -11,3 +11,4 @@ bash scripts/sync-disklordz-agent-fleet.sh
 python3 disklordz/agents/workflows/fleet_execute.py
 
 echo "Fleet run complete. Roster: DISKLORDZ_AGENTS.md"
+echo "MVP motion detail: docs/fleet-activity-latest.md (or ./scripts/run-agent-fleet-mvp.sh)"

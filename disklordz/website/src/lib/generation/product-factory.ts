@@ -8,6 +8,7 @@ import { resolveDrumParams } from "@/lib/generation/prompt-params";
 import type { SampleName } from "@/lib/generation/synth";
 import { activeKitStorageBackend } from "@/lib/kit-storage";
 import type { ProductPackManifest, ProductPackFolder } from "@/lib/manifest";
+import { coalesceSparkPreset } from "@/lib/spark-le/lane-resolve";
 import { getPreset } from "@/lib/presets";
 
 type FolderDef = {
@@ -53,9 +54,10 @@ export async function buildProductPack(
   generationSpec: GenerationSpec,
   batchId?: string,
 ): Promise<ProductPackManifest> {
-  const preset = getPreset(presetId);
+  const effectivePresetId = coalesceSparkPreset(prompt, presetId);
+  const preset = getPreset(effectivePresetId);
   if (!preset) {
-    throw new Error(`Unknown preset: ${presetId}`);
+    throw new Error(`Unknown preset: ${effectivePresetId}`);
   }
 
   const packId = randomUUID();
@@ -71,7 +73,7 @@ export async function buildProductPack(
           variationIndex: fileIndex,
           batchId: batchId ?? packId,
         };
-        const params = resolveDrumParams(prompt, presetId, generationSpec, variation);
+        const params = resolveDrumParams(prompt, effectivePresetId, generationSpec, variation);
         const filename = `${folder.id}/${slot.name}_${String(i + 1).padStart(2, "0")}.wav`;
         const asset = await writeNamedSample(
           packId,
@@ -81,7 +83,7 @@ export async function buildProductPack(
           folder.id,
           params,
           generationSpec.engine,
-          presetId,
+          effectivePresetId,
           i + 1,
         );
         samples.push(asset);
@@ -98,7 +100,7 @@ export async function buildProductPack(
     packId,
     createdAt: new Date().toISOString(),
     prompt: prompt.trim(),
-    presetId,
+    presetId: effectivePresetId,
     artistLane: preset.artistLane,
     sampleRate: 44100,
     folders,

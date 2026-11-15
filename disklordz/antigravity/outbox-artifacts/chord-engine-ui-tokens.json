@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "product": "CHORD ENGINE",
+  "source": "docs/DISKLORDZ_BRAND_IDENTITY.md",
+  "colors": {
+    "background": { "hex": "#0A0A0C", "role": "plugin chrome / app bg" },
+    "primary": { "hex": "#7B2CBF", "role": "brand purple — highlights, headers" },
+    "accent": { "hex": "#CDFF00", "role": "CTA, active control, go/play" },
+    "premium": { "hex": "#C5A059", "role": "badges, crown motif sparingly" },
+    "burgundy": { "hex": "#631C1E", "role": "marketing / disk body optional" }
+  },
+  "typography": {
+    "display": { "family": "blackletter", "usage": "DiskLordz wordmark only — not body UI" },
+    "ui_body": { "family": "system-ui", "usage": "labels, tooltips, menus" },
+    "ui_mono": { "family": "ui-monospace", "usage": "MIDI note names, chord symbols" }
+  },
+  "controls": {
+    "key_selector": { "bg": "background", "border": "primary", "active_fill": "accent" },
+    "chord_grid": { "cell_idle": "background", "cell_hover": "primary", "cell_active": "accent" },
+    "progression_strip": { "slot_border": "primary", "playhead": "accent" }
+  },
+  "icon": {
+    "motif": "simplified_floppy_crown_glyph",
+    "avoid_in_plugin": "full_circular_crest"
+  }
+}

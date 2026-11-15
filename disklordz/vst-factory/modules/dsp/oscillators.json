@@ -1,0 +1,29 @@
+{
+  "category": "dsp/oscillators",
+  "blocks": [
+    {
+      "id": "osc.sine",
+      "name": "Sine oscillator",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/oscillators/SineOsc.h"
+    },
+    {
+      "id": "osc.saw",
+      "name": "Saw oscillator",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/oscillators/SawOsc.h"
+    },
+    {
+      "id": "osc.square",
+      "name": "Square oscillator",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/oscillators/SquareOsc.h"
+    },
+    {
+      "id": "osc.wavetable",
+      "name": "Wavetable oscillator",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/oscillators/WavetableOsc.h"
+    }
+  ]
+}

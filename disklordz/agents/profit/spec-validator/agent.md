@@ -42,7 +42,7 @@ See `subagents.md`. Delegate exploration and verification; you synthesize.
 
 ## Memory & soul
 
-Load `memory.md` layout at session start. Obey `soul.md` non-negotiables.
+At session start run `python3 scripts/agent_memory.py recall --agent spec-validator <task keywords>` (see `memory.md`); before finishing, record new verified lessons with `scripts/agent_memory.py add` and pass `check`. Obey `soul.md` non-negotiables.
 
 ## Output format
 

@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "description": "Product creation prep — Antigravity executes; you approve artifacts; Cursor merges C++",
+  "items": [
+    {
+      "wo_id": "WO-PREP-001",
+      "lane": "prep",
+      "sprint_task": "github-repo",
+      "title": "[Product][Prep] DPF + CHORD ENGINE repo folder scaffold (no C++)",
+      "criteria": "Under docs/drafts/product-tree/ create README stubs matching docs/DPF_TECHNICAL_ARCHITECTURE.md (DPF-Core, DPF-MIDI, Products/ChordEngine, LICENSES); plus PRODUCTS.md index listing DiskLordz MIDI/FX/SOUND lines from DISKLORDZ_MASTER_PLAN.md",
+      "context_paths": [
+        "docs/DPF_TECHNICAL_ARCHITECTURE.md",
+        "docs/DISKLORDZ_MASTER_PLAN.md",
+        "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md"
+      ],
+      "priority": 10
+    },
+    {
+      "wo_id": "WO-PREP-002",
+      "lane": "assets",
+      "sprint_task": "first-interface",
+      "title": "[Product][Assets] CHORD ENGINE UI skin token pack v1",
+      "criteria": "disklordz/antigravity/outbox-artifacts/chord-engine-ui-tokens.json — map brand colors + typography roles; reference docs/DISKLORDZ_BRAND_IDENTITY.md",
+      "context_paths": [
+        "docs/DISKLORDZ_BRAND_IDENTITY.md",
+        "docs/CHORD_ENGINE_PRD.md"
+      ],
+      "priority": 11
+    },
+    {
+      "wo_id": "WO-PREP-003",
+      "lane": "docs",
+      "sprint_task": "plugin-skeleton",
+      "title": "[Product][Docs] Milestone 001 factory README + build log template",
+      "criteria": "docs/drafts/milestone-001/README.md + BUILD_LOG.template.md for Cursor to fill; acceptance checklist from DISKLORDZ_MASTER_PLAN Milestone 001",
+      "context_paths": [
+        "docs/DISKLORDZ_MASTER_PLAN.md",
+        "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md"
+      ],
+      "priority": 12
+    },
+    {
+      "wo_id": "WO-PREP-004",
+      "lane": "batch",
+      "sprint_task": "plugin-skeleton",
+      "title": "[Product][Batch] REAPER smoke test project template (MIDI)",
+      "criteria": "docs/drafts/milestone-001/reaper-smoke/ — README + empty RPP starter instructions + test MIDI .mid fixture naming scheme",
+      "context_paths": [
+        "docs/CHORD_ENGINE_PRD.md",
+        "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md"
+      ],
+      "priority": 13
+    },
+    {
+      "wo_id": "WO-PREP-005",
+      "lane": "batch",
+      "sprint_task": "midi-output",
+      "title": "[Product][Batch] MIDI verification fixture set (theory)",
+      "criteria": "docs/drafts/test-fixtures/midi/ — 12 .mid files (major/minor triads, one inversion each) + manifest.json describing expected note sets",
+      "context_paths": [
+        "docs/CHORD_ENGINE_PRD.md"
+      ],
+      "priority": 14
+    },
+    {
+      "wo_id": "WO-PREP-006",
+      "lane": "batch",
+      "sprint_task": "theory-engine",
+      "title": "[Product][Batch] Chord spelling reference JSON (data-only)",
+      "criteria": "docs/drafts/chord-engine/data/chord-spelling-v0.json — scales + triads + maj7/min7; original data; pytest-ready manifest paths listed in README",
+      "context_paths": [
+        "docs/CHORD_ENGINE_PRD.md",
+        "docs/CHORD_ENGINE_PRD.md"
+      ],
+      "priority": 15
+    },
+    {
+      "wo_id": "WO-PREP-007",
+      "lane": "batch",
+      "sprint_task": "progression-generator",
+      "title": "[Product][Batch] Genre progression seeds (F minor / Dark Trap)",
+      "criteria": "docs/drafts/chord-engine/data/progression-seeds-v0.json — 20 progressions with genre tags; include PRD examples",
+      "context_paths": [
+        "docs/CHORD_ENGINE_PRD.md"
+      ],
+      "priority": 16
+    },
+    {
+      "wo_id": "WO-PREP-008",
+      "lane": "docs",
+      "sprint_task": "first-interface",
+      "title": "[Product][Docs] CHORD ENGINE in-app microcopy + tooltips",
+      "criteria": "docs/drafts/chord-engine/copy/ui-strings-v0.md — all main controls from PRD; underground tone; no lorem",
+      "context_paths": [
+        "docs/CHORD_ENGINE_PRD.md",
+        "docs/DISKLORDZ_BRAND_IDENTITY.md"
+      ],
+      "priority": 17
+    },
+    {
+      "wo_id": "WO-PREP-009",
+      "lane": "prep",
+      "sprint_task": "first-alpha",
+      "title": "[Product][Prep] Alpha packaging script + README 0.1.0-alpha",
+      "criteria": "scripts/product-prep/package-alpha.ps1 + docs/drafts/releases/CHORD_ENGINE_0.1.0-alpha_README.md — documents zip layout; does not require compiled VST (placeholder paths OK)",
+      "context_paths": [
+        "docs/DISKLORDZ_MASTER_PLAN.md",
+        "docs/CHORD_ENGINE_PRD.md"
+      ],
+      "priority": 18
+    },
+    {
+      "wo_id": "WO-PREP-010",
+      "lane": "assets",
+      "sprint_task": "company-identity",
+      "title": "[Product][Assets] Store listing draft (Gumroad-style)",
+      "criteria": "docs/drafts/store/chord-engine-listing-v0.md — headline, bullets, FAQ, system requirements; brand voice",
+      "context_paths": [
+        "docs/DISKLORDZ_BRAND_IDENTITY.md",
+        "docs/DISKLORDZ_MASTER_PLAN.md"
+      ],
+      "priority": 19,
+      "requires_completed_task": "company-identity"
+    },
+    {
+      "wo_id": "WO-PREP-011",
+      "lane": "prep",
+      "sprint_task": "dev-environment",
+      "title": "[Product][Prep] Windows dev-env verification checklist script",
+      "criteria": "scripts/product-prep/verify-windows-dev.ps1 — checks cmake, cl, git, python; writes report JSON to outbox-artifacts/",
+      "context_paths": [
+        "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md",
+        "AGENTS.md"
+      ],
+      "priority": 20,
+      "requires_completed_task": "dev-environment"
+    }
+  ]
+}

@@ -50,6 +50,10 @@ ACTIVATION: dict[str, str] = {
     "analytics-interpreter": "manual_stub",
     "release-notes": "ci_script",
     "hardware-preset-designer": "ci_on_pr",
+    "audio-business-copilot": "ci_scheduled",
+    "plugin-factory-liaison": "ci_scheduled",
+    "autonomous-coding-agent": "ci_scheduled",
+    "vst-preset-agent": "ci_scheduled",
 }
 
 CI_WORKFLOWS = [
@@ -63,6 +67,13 @@ CI_WORKFLOWS = [
     (".github/workflows/airtable-antigravity-handoff.yml", "ship-velocity, airtable-wo-triage"),
     (".github/workflows/build.yml", "golden-wav-qa"),
     (".github/workflows/synth-forge.yml", "hardware-preset-designer"),
+    (".github/workflows/audio-plugin-fleet.yml", "audio-business-copilot, plugin-factory-liaison, golden-wav-qa"),
+    (".github/workflows/audio-coach-daily-nudge.yml", "audio-business-copilot"),
+    (".github/workflows/audio-plugin-weekly.yml", "audio-business-copilot, plugin-factory-liaison"),
+    (".github/workflows/autonomous-coding-agent.yml", "autonomous-coding-agent"),
+    (".github/workflows/antigravity-product-prep-sync.yml", "audio-business-copilot"),
+    (".github/workflows/vst-preset-daily-batch.yml", "vst-preset-agent"),
+    (".github/workflows/vst-preset-factory.yml", "vst-preset-agent"),
 ]
 
 # First-person announcements + one-line help for Disklordz
@@ -194,6 +205,22 @@ ANNOUNCE: dict[str, str] = {
     "hardware-preset-designer": (
         "I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches from "
         "prompts and samples, with safety clamps and librarian-ready export staging."
+    ),
+    "audio-business-copilot": (
+        "I'm **Audio Business Copilot** — I own the DiskLordz Audio roadmap and Coach sprint; "
+        "I delegate VST C++ to the factory and prep to Antigravity."
+    ),
+    "plugin-factory-liaison": (
+        "I'm **Plugin Factory Liaison** — I refresh PASTE_TO_FACTORY and slice Milestone 001 "
+        "for Cursor Factory without writing JUCE myself."
+    ),
+    "autonomous-coding-agent": (
+        "I'm **Autonomous Coding Agent** — I drain the 24/7 coding queue on allowlisted paths "
+        "and escalate plugin C++ to the factory."
+    ),
+    "vst-preset-agent": (
+        "I'm **VST Preset Agent** — I curate factory banks and daily batches for WAVE-9090 "
+        "and Plugg VA without crossing into hardware SysEx."
     ),
 }
 
@@ -396,6 +423,42 @@ WORKFLOWS: dict[str, dict] = {
             "pytest tools/synth-forge/tests",
             "hardware_preset_designer.py --self-test",
             "Optional uvicorn studio smoke",
+        ],
+    },
+    "audio-business-copilot": {
+        "platform": "github",
+        "trigger": "daily schedule",
+        "workflow_file": ".github/workflows/audio-plugin-fleet.yml",
+        "steps": [
+            "factory-queue.py",
+            "coach_outreach.py",
+            "audio-coach-daily-nudge.yml",
+            "weekly_review (audio-plugin-weekly.yml)",
+        ],
+    },
+    "plugin-factory-liaison": {
+        "platform": "github",
+        "trigger": "daily schedule",
+        "workflow_file": ".github/workflows/audio-plugin-fleet.yml",
+        "steps": [
+            "Refresh PASTE_TO_FACTORY.md",
+            "Cursor timer: paste to Factory chat",
+        ],
+    },
+    "autonomous-coding-agent": {
+        "platform": "github",
+        "trigger": "every 6h",
+        "workflow_file": ".github/workflows/autonomous-coding-agent.yml",
+        "steps": ["tick.py", "Cursor timer 4h cloud slices"],
+    },
+    "vst-preset-agent": {
+        "platform": "github",
+        "trigger": "schedule cron 0 14 * * * + pull_request preset paths",
+        "workflow_file": ".github/workflows/vst-preset-daily-batch.yml",
+        "steps": [
+            "python3 scripts/vst/ingest_vst_lineage.py",
+            "python3 scripts/vst/daily_preset_batch.py --batch-size 8",
+            "python3 scripts/vst/verify_factory_preset_counts.py",
         ],
     },
 }

@@ -1,27 +1,20 @@
 # Memory — Pricing Experiment
 
-File-tier persistence (no DB). Layout under repo or `~/.claude/projects/disklordz/memory/`.
+Repo-wide, git-tracked memory in [`disklordz/agents/memory/`](../../memory/MEMORY.md) (procedure: [SOP-019](../../../../docs/disklordz/sops/SOP-019-agent-memory.md)). Agent id: `pricing-experiment`.
 
 | File | Type | Purpose |
 |------|------|---------|
-| `MEMORY.md` | index | ≤200 lines; pointers only |
-| `pricing-experiment_learnings.md` | feedback | Validated runbooks |
-| `pricing-experiment_incidents.md` | project | Dated outages / misconfigs |
+| `disklordz/agents/memory/MEMORY.md` | index | ≤200 lines: session protocol, "Always load" hot list, manifest |
+| `disklordz/agents/memory/pricing-experiment_learnings.md` | learning (`L-0001`…) | Validated, reusable lessons for this agent |
+| `disklordz/agents/memory/pricing-experiment_incidents.md` | incident (`I-0001`…) | Dated problems and their fixes |
+| `disklordz/agents/memory/shared_*.md` | shared | Lessons for every agent |
 
-## Frontmatter template
+## Session protocol
 
-```yaml
----
-name: Pricing Experiment incident 2026-03-28
-description: One-line for LLM recall
-type: feedback
----
-```
-
-## Recall
-
-Tier 1: always load MEMORY.md index. Tier 2: LLM picks ≤5 files from manifest using current query + recent tool history.
+1. **Start:** `python3 scripts/agent_memory.py recall --agent pricing-experiment <task keywords>` and apply the "Always load" list.
+2. **End:** for each new verified lesson `python3 scripts/agent_memory.py add --agent pricing-experiment --kind learning|incident --title ... --area ... --when ... --lesson ... --do ... --evidence ... --confidence executed|inspected|assumed`, then `python3 scripts/agent_memory.py check`.
+3. **Repeat hit:** promote the lesson into an SOP, rule, test or script; `python3 scripts/agent_memory.py promote <ID> --agent pricing-experiment --to <path>`.
 
 ## Do not memorize
 
-Anything derivable from git log, `ARCHITECTURE.md`, or Stripe dashboard — retrieve instead.
+Secrets, tokens, personal data, or anything derivable from git log, `ARCHITECTURE.md`, SOPs or dashboards: link instead.

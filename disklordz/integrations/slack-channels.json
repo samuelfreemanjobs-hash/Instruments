@@ -1,0 +1,23 @@
+{
+  "workspace_note": "IDs verified via Slack MCP search 2026-11-08",
+  "channels": {
+    "disklordz": {
+      "id": "C0C2AK80XCN",
+      "name": "disklordz",
+      "github_secret": "DISKLORDZ_COACH_WEBHOOK_URL",
+      "workflows": ["audio-coach-daily-nudge.yml"]
+    },
+    "disklordz-ci": {
+      "id": "C0C1X6RMGTZ",
+      "name": "disklordz-ci",
+      "github_secret": "SLACK_WEBHOOK_URL",
+      "workflows": ["ci-slack-notify.yml"]
+    },
+    "disklordz-dev": {
+      "id": "C0C1X6S61B9",
+      "name": "disklordz-dev",
+      "github_secret": "SLACK_WEBHOOK_ANTIGRAVITY_URL",
+      "workflows": ["antigravity-inbox-slack.yml"]
+    }
+  }
+}

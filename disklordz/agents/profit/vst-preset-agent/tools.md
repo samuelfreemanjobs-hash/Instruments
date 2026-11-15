@@ -20,7 +20,7 @@ https://github.com/samuelfreemanjobs-hash/Instruments
 
 ## Automation entrypoints
 
-python3 disklordz/integrations/agents/vst_preset_agent.py, scripts/vst/verify_factory_preset_counts.py, .github/workflows/vst-preset-factory.yml
+python3 disklordz/integrations/agents/vst_preset_agent.py, scripts/vst/daily_preset_batch.py, scripts/vst/verify_factory_preset_counts.py, .github/workflows/vst-preset-factory.yml, .github/workflows/vst-preset-daily-batch.yml
 
 ## Fail-closed factory defaults
 

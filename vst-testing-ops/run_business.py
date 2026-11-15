@@ -21,7 +21,12 @@ def main(argv: list[str] | None = None) -> int:
         "--profile",
         choices=list(PROFILES.keys()),
         default="ci",
-        help="ci=local full; ci-verify=tests only (GitHub Build job); full=+ SaaS",
+        help="ci=local full; ci-verify=tests only (GitHub Build job); full=+ SaaS; factory=single APC vst",
+    )
+    parser.add_argument(
+        "--plugin",
+        metavar="NAME",
+        help="PascalCase plugin under vst/ (required for --profile factory)",
     )
     parser.add_argument("--no-stop-on-fail", action="store_true")
     parser.add_argument("--with-saas", action="store_true", help="Include Disklordz npm build (full profile)")
@@ -30,6 +35,11 @@ def main(argv: list[str] | None = None) -> int:
     cfg = replace(PROFILES[args.profile])
     if args.with_saas:
         cfg = replace(cfg, disklordz_web=True)
+    if args.profile in ("factory", "factory-audio"):
+        if not args.plugin:
+            print(f"{args.profile} profile requires --plugin <PascalCaseName>", file=sys.stderr)
+            return 2
+        cfg = replace(cfg, factory_plugin=args.plugin)
 
     run = run_pipeline(args.profile, cfg, stop_on_fail=not args.no_stop_on_fail)
     print(json.dumps(run.to_dict(), indent=2))

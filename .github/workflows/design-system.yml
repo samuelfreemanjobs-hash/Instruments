@@ -1,0 +1,88 @@
+name: design-system
+
+on:
+  pull_request:
+    paths:
+      - "vst/factory-lib/**"
+      - ".github/workflows/design-system.yml"
+      - "JUCE_VERSION"
+  push:
+    branches: [main, cursor/design-system]
+    paths:
+      - "vst/factory-lib/**"
+      - ".github/workflows/design-system.yml"
+      - "JUCE_VERSION"
+  workflow_dispatch:
+
+jobs:
+  tokens-and-render:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Pinned repo default (JUCE_VERSION) + optional JUCE 8 compatibility entry
+        juce_tag: ["from-file", "8.0.15"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve JUCE tag
+        id: juce
+        run: |
+          set -euo pipefail
+          if [ "${{ matrix.juce_tag }}" = "from-file" ]; then
+            TAG="$(tr -d '[:space:]' < JUCE_VERSION)"
+          else
+            TAG="${{ matrix.juce_tag }}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Resolved FACTORY_GUI_JUCE_TAG=$TAG"
+
+      - name: Python token contract + generator freshness
+        run: |
+          set -euo pipefail
+          DS=vst/factory-lib/design-system
+          python3 "$DS/scripts/check_tokens.py" --check-preview --check-generated
+          python3 "$DS/scripts/gen_juce_tokens.py" --all --check
+          python3 -m unittest discover -s "$DS/scripts" -p "test_*.py" -v
+
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            g++-12 cmake ninja-build pkg-config \
+            libasound2-dev libfreetype6-dev libfontconfig1-dev \
+            libx11-dev libxinerama-dev libxrandr-dev libxcursor-dev \
+            libgl1-mesa-dev xvfb
+          # JUCE 8 juceaide needs ft2build.h + fontconfig at configure time
+          pkg-config --exists freetype2
+          pkg-config --exists fontconfig
+          pkg-config --cflags freetype2 fontconfig
+
+      - name: Configure factory GUI (Release, pinned JUCE, no LTO)
+        run: |
+          cmake -B "build-factory-gui-${{ steps.juce.outputs.tag }}" -S vst/factory-lib -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++-12 \
+            -DCMAKE_C_COMPILER=gcc-12 \
+            -DFACTORY_GUI_THEME=disklordz \
+            -DFACTORY_GUI_BUILD_GALLERY=ON \
+            -DFACTORY_GUI_BUILD_TESTS=ON \
+            -DFACTORY_GUI_JUCE_TAG=${{ steps.juce.outputs.tag }}
+
+      - name: Build gallery + render tests
+        run: |
+          cmake --build "build-factory-gui-${{ steps.juce.outputs.tag }}" -j "$(nproc)" \
+            --target FactoryGuiGallery FactoryGuiRenderTests
+
+      - name: Run render tests (all themes)
+        run: |
+          cd "build-factory-gui-${{ steps.juce.outputs.tag }}"
+          xvfb-run -a ctest --output-on-failure -R 'FactoryGuiRenderTests_'
+
+      - name: Upload PNG renders
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: factory-gui-renders-juce-${{ steps.juce.outputs.tag }}
+          path: build-factory-gui-${{ steps.juce.outputs.tag }}/gui-renders/
+          if-no-files-found: warn

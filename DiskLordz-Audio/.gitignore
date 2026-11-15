@@ -1,0 +1,12 @@
+Build/
+**/Build/
+*.user
+*.suo
+.vs/
+xcuserdata/
+CMakeCache.txt
+CMakeFiles/
+*.vst3
+*.lib
+*.exp
+*.pdb

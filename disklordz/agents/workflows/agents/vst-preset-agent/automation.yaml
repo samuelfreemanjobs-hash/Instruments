@@ -9,9 +9,6 @@ primary: .github/workflows/vst-preset-daily-batch.yml
 2. python3 scripts/vst/daily_preset_batch.py --batch-size 8
 3. python3 scripts/vst/verify_factory_preset_counts.py
 
-## Partner
-workflow-automation — see collab-workflow-automation.md
-
 ## Invoke agent
 Read: disklordz/agents/profit/vst-preset-agent/agent.md
 

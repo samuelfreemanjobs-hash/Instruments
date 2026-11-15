@@ -1,0 +1,52 @@
+{
+  "header": {
+    "platform": "nutekt-digital",
+    "module": "osc",
+    "api": "1.1-0",
+    "dev_id": 0,
+    "prg_id": 0,
+    "version": "1.0-0",
+    "name": "P5 Funk RB",
+    "num_param": 9,
+    "params": [
+      ["Vibe", 0, 100, "%"],
+      ["Osc Mix", 0, 100, "%"],
+      ["Detune", 0, 100, "%"],
+      ["Sync", 0, 100, "%"],
+      ["PWM", 0, 100, "%"],
+      ["Glide", 0, 100, "%"],
+      ["Attack", 0, 100, "%"],
+      ["Decay", 0, 100, "%"],
+      ["Release", 0, 100, "%"]
+    ]
+  },
+  "_agent": {
+    "id": "prophet5_funk_rnb_bass",
+    "type": "osc",
+    "collection": "nts1-multi-bass",
+    "targets": ["nts-1", "minilogue-xd", "prologue"],
+    "description": "Prophet-5 style multifunction bass: Vibe morphs 70s funk (sync, bite) to 80s R&B (smooth, poly-mod filter). Dual osc, PWM, CEM-style LP. Panel cutoff/res.",
+    "presets": [
+      {
+        "name": "70s funk punch",
+        "midi_hint": "E2-A2, cutoff open, res 50%",
+        "values": [22, 62, 35, 42, 28, 18, 8, 32, 30]
+      },
+      {
+        "name": "80s R&B smooth",
+        "midi_hint": "D2-G2, medium cutoff",
+        "values": [68, 48, 22, 8, 40, 32, 14, 48, 52]
+      },
+      {
+        "name": "Sync brass bass",
+        "midi_hint": "F2-C3, higher cutoff",
+        "values": [35, 70, 28, 65, 22, 14, 6, 28, 26]
+      },
+      {
+        "name": "Chocolate City low",
+        "midi_hint": "C2-F2, warm res",
+        "values": [40, 55, 38, 25, 45, 28, 12, 42, 40]
+      }
+    ]
+  }
+}

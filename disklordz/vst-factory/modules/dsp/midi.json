@@ -1,0 +1,23 @@
+{
+  "category": "dsp/midi",
+  "blocks": [
+    {
+      "id": "midi.chord-pads",
+      "name": "Chord pad generator",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/midi/ChordPads.h"
+    },
+    {
+      "id": "midi.voicing",
+      "name": "Voicing spread",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/midi/Voicing.h"
+    },
+    {
+      "id": "theory.scale",
+      "name": "Scale / key context",
+      "realtime_safe": true,
+      "cpp_stub": "vst/factory-lib/theory/Scale.h"
+    }
+  ]
+}
