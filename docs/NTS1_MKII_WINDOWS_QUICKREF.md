@@ -41,4 +41,18 @@ cd C:\dev\Instruments
 
 Firmware **≥ 1.0.0** required.
 
+## No WSL — build on GitHub Actions
+
+1. GitHub → **Actions** → **NTS-1 mkII oscillators** → **Run workflow** (or wait for green run on `main`).
+2. Download artifact **`nts1-mkii-units`**, unzip into `release\nts1-custom-oscillators\`.
+
+**PowerShell (GitHub CLI):**
+
+```powershell
+cd C:\dev\Instruments
+gh auth login
+.\scripts\windows\download-mkii-ci-artifact.ps1
+.\scripts\windows\prepare-mkii-test.ps1
+```
+
 More detail: [NTS1_MKII_WINDOWS_TEST.md](NTS1_MKII_WINDOWS_TEST.md)

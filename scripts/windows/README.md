@@ -49,4 +49,13 @@ Full guide: [docs/NTS1_MKII_WINDOWS_TEST.md](../../docs/NTS1_MKII_WINDOWS_TEST.m
 
 ## Cloud / CI (no local compile)
 
-GitHub Actions workflow `nts1-mkii-build.yml` uploads artifact **`nts1-mkii-units`**. Unzip into `release\nts1-custom-oscillators\`, then run `prepare-mkii-test.ps1`.
+Workflow **NTS-1 mkII oscillators** (`nts1-mkii-build.yml`) runs on **Ubuntu** and uploads **`nts1-mkii-units`** — the same `.nts1mkiiunit` files you load on Windows; no `windows-latest` runner needed.
+
+```powershell
+cd C:\dev\Instruments
+gh auth login
+.\scripts\windows\download-mkii-ci-artifact.ps1
+.\scripts\windows\prepare-mkii-test.ps1
+```
+
+Or download the zip manually from Actions and unzip to `release\nts1-custom-oscillators\`.
