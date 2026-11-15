@@ -13,13 +13,21 @@ On Windows you **flash and audition** units with **KORG KONTROL Editor** (or `lo
 
 Use **WSL2 Ubuntu** in the same repo clone (e.g. `C:\dev\Instruments` → `/mnt/c/dev/Instruments`).
 
+**One command** (from WSL, repo root):
+
+```bash
+cd /mnt/c/dev/Instruments
+bash ./scripts/windows/build-mkii-wsl.sh
+```
+
+Equivalent manual steps:
+
 ```bash
 cd /mnt/c/dev/Instruments
 sudo apt-get update
 sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi make python3 git
 ./tools/mkii-automate.sh bootstrap
 export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
-export GCC_BIN_PATH="$(dirname "$(command -v arm-none-eabi-gcc)")"
 ./tools/build-all-bass-mkii.sh
 ./tools/package-nts1.sh
 ```
