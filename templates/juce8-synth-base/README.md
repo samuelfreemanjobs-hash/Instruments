@@ -1,6 +1,6 @@
 # JUCE 8 desktop synth factory template
 
-First-pass **PlaySynth Trilogy** scaffold: dual-layer shell, XY + Dice, 8 macros, BinaryData-ready CMake.
+First-pass **PlaySynth 6-Pack** scaffold: dual-layer shell, XY + Dice, 8 macros, BinaryData-ready CMake.
 
 ## Quick start (per plugin)
 
@@ -27,9 +27,11 @@ cmake --build build --config Release --target AnalogDreams84_VST3
 | `CMakeLists.template.txt` | WebView + BinaryData example |
 | `BinaryData.cmake.snippet` | Minimal preset embedding |
 
-## Overnight queue (trilogy)
+## Overnight queue (6-pack)
 
-See `plugins/PLAY_SYNTH_TRILOGY.md` and `disklordz/vst-factory/data/overnight-queue.json` (`suite: play_synth_trilogy`, priority 10).
+See `plugins/PLAY_SYNTH_6PACK.md` and `disklordz/vst-factory/data/overnight-queue.json` (`suite: play_synth_6pack`, priority 10):
+
+`Ad84`, `CsTr`, `LgTp`, `Pc94`, `Fk40`, `Ss70` — each clones this template with unique `*Engine.h`.
 
 ## Other factory SKUs
 

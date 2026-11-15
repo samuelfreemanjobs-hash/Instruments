@@ -1,4 +1,8 @@
-# PlaySynth Trilogy (3-pack suite)
+# PlaySynth Trilogy (legacy index)
+
+**Superseded by:** [PLAY_SYNTH_6PACK.md](PLAY_SYNTH_6PACK.md) — full producer suite (6 instruments).
+
+# PlaySynth Trilogy (first 3 of 6)
 
 Upgraded PLAY Series line — **three distinct engines** (not reskins). Shared UX shell:
 

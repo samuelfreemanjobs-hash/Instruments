@@ -1,0 +1,18 @@
+{
+  "plugin_name": "FortyKeysSoul",
+  "version": "0.1.0",
+  "track": "juce8_desktop",
+  "apc_phase": "plan",
+  "current_phase": "plan",
+  "vst_path": "FortyKeysSoul",
+  "product_category": "synth.poly.play_6pack.rnb_keys",
+  "ui_framework": "webview",
+  "plugin_code": "Fk40",
+  "suite": "play_synth_6pack",
+  "validation": {
+    "architecture_defined": true,
+    "creative_brief_exists": true,
+    "design_complete": false,
+    "code_complete": false
+  }
+}
