@@ -129,6 +129,17 @@ export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
 
 Install today: [docs/NTS1_INSTALL_TODAY.md](docs/NTS1_INSTALL_TODAY.md). Catalog: [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md). mkII porting: [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
 
+## Disklordz VST UI agent (Google Stitch)
+
+Bootstrap on every new machine or Cloud Agent (also baked into `.cursor/environment.json` `install`):
+
+```bash
+npm install -g @google/stitch   # or: bash scripts/install-stitch-cli.sh
+stitch --version
+```
+
+Repo playbooks: `.agents/skills/stitch/` · native JUCE skins: [shared/disklordz_ui/ARCHITECTURE.md](shared/disklordz_ui/ARCHITECTURE.md) · Canva/Stitch → PNG handoff: [docs/UI_DESIGN_HANDOFF.md](docs/UI_DESIGN_HANDOFF.md). Loop onboarding: `stitch enable loop` then `stitch login` (credentials are per-user, not in git).
+
 ## Audio Plugin Coder (optional VST scaffold)
 
 New plugins under `vst/`: [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-setup` … `/apc-ship` · [docs/vst-lifecycle.md](docs/vst-lifecycle.md).
