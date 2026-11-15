@@ -37,7 +37,14 @@ jobs:
         shell: pwsh
         run: |
           cmake --build DiskLordz-Audio/Build/Windows --config Release `
-            --target ChordEngine_VST3 -- /m
+            --target ChordEngine_VST3 ChordEngine_MusicTheoryTests -- /m
+
+      - name: Music theory unit tests
+        shell: pwsh
+        run: |
+          $testExe = Get-ChildItem -Path DiskLordz-Audio/Build/Windows -Recurse -Filter ChordEngine_MusicTheoryTests.exe | Select-Object -First 1
+          if (-not $testExe) { throw "ChordEngine_MusicTheoryTests.exe not found" }
+          & $testExe.FullName
 
       - name: Resolve VST3 bundle path
         id: vst3
@@ -50,6 +57,25 @@ jobs:
           echo "path=$path" >> $env:GITHUB_OUTPUT
           Get-ChildItem -Recurse $path | Select-Object -First 20 FullName
 
+      - name: Install pluginval (Windows)
+        shell: pwsh
+        run: |
+          $ver = "1.0.4"
+          $zip = "$env:RUNNER_TEMP/pluginval.zip"
+          Invoke-WebRequest -Uri "https://github.com/Tracktion/pluginval/releases/download/v$ver/pluginval_Windows.zip" -OutFile $zip
+          Expand-Archive -Path $zip -DestinationPath "$env:RUNNER_TEMP/pluginval" -Force
+          $bin = Get-ChildItem -Path "$env:RUNNER_TEMP/pluginval" -Recurse -Filter "pluginval.exe" | Select-Object -First 1
+          if (-not $bin) { throw "pluginval.exe not found in archive" }
+          echo "PLUGINVAL_BIN=$($bin.FullName)" >> $env:GITHUB_ENV
+
+      - name: pluginval strictness 5
+        shell: pwsh
+        run: |
+          & $env:PLUGINVAL_BIN --strictness-level 5 --timeout-ms 180000 `
+            --validate-in-process --skip-gui-tests `
+            --file "${{ steps.vst3.outputs.path }}"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Upload CHORD ENGINE.vst3 artifact
         uses: actions/upload-artifact@v4
         with:
@@ -57,3 +83,34 @@ jobs:
           path: ${{ steps.vst3.outputs.path }}
           if-no-files-found: error
           retention-days: 14
+
+  chord-engine-linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libasound2-dev libfreetype-dev libgl1-mesa-dev \
+            libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libgtk-3-dev unzip curl xvfb
+
+      - name: Configure and build
+        run: |
+          cmake -B DiskLordz-Audio/Build/Linux -S DiskLordz-Audio -DCMAKE_BUILD_TYPE=Release
+          cmake --build DiskLordz-Audio/Build/Linux -j"$(nproc)" \
+            --target ChordEngine_VST3 ChordEngine_MusicTheoryTests
+
+      - name: Unit tests
+        run: |
+          ctest --test-dir DiskLordz-Audio/Build/Linux -R ChordEngine_MusicTheoryTests --output-on-failure
+
+      - name: pluginval strictness 5
+        env:
+          CI: true
+        run: |
+          python3 scripts/vst/run_pluginval.py --install-only
+          VST=$(find DiskLordz-Audio/Build/Linux -name "CHORD ENGINE.vst3" -type d | head -1)
+          xvfb-run -a python3 scripts/vst/run_pluginval.py --plugin "$VST" --strictness-level 5 --timeout-ms 180000

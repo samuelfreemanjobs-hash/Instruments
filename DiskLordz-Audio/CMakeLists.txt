@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 
 project(DiskLordzAudio VERSION 0.1.0 LANGUAGES CXX)
 
+include(CTest)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -23,3 +25,16 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(JUCE)
 
 add_subdirectory(Products/ChordEngine)
+
+option(DISKLOORDZ_AUDIO_BUILD_TESTS "Build CHORD ENGINE unit tests" ON)
+if(DISKLOORDZ_AUDIO_BUILD_TESTS)
+    add_executable(ChordEngine_MusicTheoryTests
+        Tests/MusicTheoryTests/ChordEngineTheoryTests.cpp
+        DPF-MIDI/MusicTheory/MusicTheory.cpp
+    )
+    target_include_directories(ChordEngine_MusicTheoryTests PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/DPF-MIDI/MusicTheory
+    )
+    add_test(NAME ChordEngine_MusicTheoryTests COMMAND ChordEngine_MusicTheoryTests)
+endif()

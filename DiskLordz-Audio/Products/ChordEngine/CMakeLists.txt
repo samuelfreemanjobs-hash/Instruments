@@ -1,7 +1,7 @@
 juce_add_plugin(ChordEngine
     COMPANY_NAME "DiskLordz Audio"
     BUNDLE_ID com.disklordz.audio.chordengine
-    IS_SYNTH FALSE
+    IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT TRUE
     IS_MIDI_EFFECT FALSE
@@ -18,6 +18,12 @@ target_sources(ChordEngine PRIVATE
     Source/PluginProcessor.h
     Source/PluginEditor.cpp
     Source/PluginEditor.h
+    Source/ProgressionLibrary.cpp
+    Source/ProgressionLibrary.h
+    Source/PreviewSynth.cpp
+    Source/PreviewSynth.h
+    ../../DPF-MIDI/MusicTheory/MusicTheory.cpp
+    ../../DPF-MIDI/MusicTheory/MusicTheory.h
 )
 
 target_link_libraries(ChordEngine PRIVATE
