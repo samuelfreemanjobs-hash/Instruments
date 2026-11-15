@@ -59,7 +59,12 @@ public:
     bool exportApvtsPresetToFile (const juce::File& file);
     bool importApvtsPresetFromFile (const juce::File& file);
 
+    juce::MidiKeyboardState& getKeyboardState() noexcept { return keyboardState_; }
+    void getOutputMeterDb (float& peakDb, float& rmsDb) const noexcept;
+
 private:
+    void ensureDspReady (int numSamples) noexcept;
+    void initDsp (double sampleRate, int samplesPerBlock) noexcept;
     void refreshCachedParameters() noexcept;
     void applyPatchesFromParameters() noexcept;
     void applyFactoryPatch (int index);
@@ -78,7 +83,12 @@ private:
     jdupgraded::dsp::GroupADistortion groupA_;
     jdupgraded::dsp::GroupBSpatial groupB_;
 
-    std::array<float, 8192> outputScratch_{};
+    juce::MidiKeyboardState keyboardState_;
+    std::vector<float> outputScratch_{};
+    bool dspInitialised_ = false;
+    double dspSampleRate_ = 0.0;
+    std::atomic<float> outputPeakLinear_{ 0.0f };
+    std::atomic<float> outputRmsLinear_{ 0.0f };
     std::array<float, 4> toneCoarseSemis_{};
     std::array<float, 4> toneFineCents_{};
     std::array<jdupgraded::preset::JdTonePitchMod, 4> tonePitchMod_{};

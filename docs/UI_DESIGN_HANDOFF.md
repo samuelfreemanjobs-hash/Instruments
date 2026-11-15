@@ -1,0 +1,127 @@
+# UI design handoff (Canva / Google Stitch → JUCE)
+
+Sam designs the **visual** UI in Canva or Google Stitch. Engineering drops assets into `shared/disklordz_ui/skins/<plugin>/` and updates `layout.json`. **No DSP or APVTS ID changes** are required for a skin refresh.
+
+## Canvas / frame
+
+| Export | JUCE mapping |
+|--------|----------------|
+| **Frame size** (`width` × `height`, px) | `layout.json` → `window.width` / `window.height` |
+| **Background** (full panel, no controls) | `window.background` asset name + PNG in `skins/.../assets/` |
+| **Safe margin** | Leave ~8–12 px from frame edges (layout can inset controls) |
+
+Default JD Upgraded scaffold: **1020 × 780** (`skins/jdupgraded_default/layout.json`).
+
+## Layer exports (PNG)
+
+Export **one PNG per static layer** (no embedded text that JUCE will draw live):
+
+1. `background.png` — full panel art (optional until first skin pass).
+2. Section chrome (optional): `section_osc.png`, `section_filter.png`, etc.
+3. **Meter graphics** (optional): scale background; live value still computed in code.
+4. **Keyboard well** (optional): area under keys; keys remain `MidiKeyboardComponent`.
+
+Use **sRGB**, 1× resolution (or provide `@2x` siblings and set scale in a future layout field).
+
+SVG: supported when added to BinaryData; prefer PNG filmstrips for knobs until SVG path is enabled in `SkinAssetCache`.
+
+## Knobs (rotary)
+
+Choose one pattern per control family:
+
+| Pattern | Export | `layout.json` |
+|---------|--------|----------------|
+| **Filmstrip** (recommended) | Single vertical PNG, N frames stacked | `"filmstrip": "knob_master_strip.png"`, `"filmstripFrames": 64` |
+| **Single image + code** | One knob cap PNG | `"filmstrip": "knob_cap.png"`, `"filmstripFrames": 1` |
+
+Filmstrip height = `frameHeight × filmstripFrames`. Value 0 = bottom/off, max = top/full.
+
+## Fonts
+
+- List families in handoff (e.g. Inter, JetBrains Mono).
+- If Sam’s design uses a custom font, ship **OFL/TTF** under `shared/disklordz_ui/skins/<skin>/assets/fonts/` (mirror `vst/factory-lib/gui/fonts`).
+- Body copy **≥ 12 px**; knob legends **≥ 11 px**.
+
+## `layout.json` control entries
+
+Each control needs:
+
+- **Key** = JUCE `componentID` (must match APVTS / widget binding).
+- `type`: `knob` | `slider` | `button` | `combo` | `label` | `meter` | `keyboard` | `presetBar`
+- `x`, `y`, `w`, `h` (px, origin top-left)
+- `legend` (optional on-canvas hint; live value text stays in JUCE for now)
+- `tooltip` (required for user-facing parameters)
+- `filmstrip` / `filmstripFrames` for `knob` types
+
+CMake embeds skin files via `dl_ui_attach_skin(...)` → `JDUpgradedSkinBinaryData` (see `shared/disklordz_ui/CMakeLists.txt`).
+
+## JD Upgraded — parameter / control IDs
+
+Use these IDs in Canva overlays and in `layout.json`. APVTS strings must stay **unchanged** for saved projects.
+
+### Master / preset / FX
+
+| ID | UI label (suggested) | Notes |
+|----|----------------------|-------|
+| `masterGain` | Master | Output level |
+| `presetPrev` / `presetNext` / `presetName` | Program | Factory program browser (not APVTS) |
+| `filterResonance` | Filter Res | Global resonance |
+| `filterLink` | F-Link | `filterLink` APVTS |
+| `couplingMode` | Coupling | Choice parameter |
+| `groupADrive` | Grp A Drive | |
+| `groupBMix` | Grp B Space | |
+| `groupBChorus` | Chorus | `groupBChorus` |
+| `groupAEnable` | Group A On | |
+| `groupBEnable` | Group B On | |
+| `groupAPhaser` | Phaser | |
+| `groupBDelay` | Delay | |
+| `expressionDepth` | Expression | CC1 → filter |
+| `pitchBendRange` | Bend Range | Semitones |
+| `onScreenKeyboard` | Keyboard | Click-to-play, octave ± |
+
+### OSC (tones 1–4)
+
+| ID | Tone |
+|----|------|
+| `tone{N}Level` | Level |
+| `tone{N}Wave` | Wave index |
+| `tone{N}Multisample` | Multisample set |
+| `tone{N}Mute` | Mute |
+| `tone{N}Cutoff` | TVF cutoff |
+| `tone{N}Resonance` | TVF resonance |
+
+`N` = 1…4.
+
+### AMP ENV (global + per-tone when unlinked)
+
+| Global ID | Per-tone ID pattern |
+|-----------|---------------------|
+| `ampAttack`, `ampDecay`, `ampSustain`, `ampRelease` | `tone{N}AmpAttack`, … (via `toneEnvelopeParamId`) |
+
+### FILTER ENV
+
+| Global ID | Per-tone pattern |
+|-----------|------------------|
+| `filterAttack`, `filterDecay`, `filterSustain`, `filterRelease` | `tone{N}FilterAttack`, … |
+
+### Links
+
+| ID | Meaning |
+|----|---------|
+| `envelopeLink` | Single envelope set for all tones |
+| `filterLink` | Global filter resonance to all TVFs |
+
+### ROM / preset I/O (editor only, optional on skin)
+
+`exportPreset`, `importPreset`, ROM browser widgets — label in mockups only unless given IDs in a future layout revision.
+
+## After export
+
+1. Drop PNGs in `shared/disklordz_ui/skins/jdupgraded_default/assets/`.
+2. Register filenames in `layout.json` (`background`, `filmstrip` fields).
+3. Linux: `./build/RenderJdEditor /opt/cursor/artifacts/jd-upgraded-editor.png`
+4. CI: `ctest -R JDUpgradedMidi` + pluginval strictness 5 (Windows job uploads VST3).
+
+## Reuse (SP-1200, etc.)
+
+Add `skins/sp1200_default/layout.json`, call `dl_ui_attach_skin(SP1200 ...)` from that product’s CMake, and link `dl_ui`. Same handoff rules apply.

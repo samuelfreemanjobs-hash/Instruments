@@ -1,5 +1,7 @@
 #include "PluginEditor.h"
 
+#include "JDUpgradedSkinBinaryData.h"
+
 #include "Assets/FactoryPatchLibrary.h"
 #include "Assets/RomFormat.h"
 #include "Parameters/EnvelopeParameters.h"
@@ -10,8 +12,15 @@
 #include <memory>
 
 JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor_ (p)
+    : AudioProcessorEditor (&p),
+      processor_ (p),
+      skinLnf_ (skinAssets_),
+      keyboardStrip_ (processor_.getKeyboardState(), 1)
 {
+    uiLayout_ = dl_ui::UiLayout::loadFromBinary (JDUpgradedSkin::layout_json,
+                                                JDUpgradedSkin::layout_jsonSize);
+    setLookAndFeel (&skinLnf_);
+    addAndMakeVisible (keyboardStrip_);
     titleLabel_.setText ("JD Upgraded", juce::dontSendNotification);
     titleLabel_.setJustificationType (juce::Justification::centred);
     addAndMakeVisible (titleLabel_);
@@ -247,13 +256,74 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
     addAndMakeVisible (romWaveNext_);
     addAndMakeVisible (romWavePreview_);
 
-    startTimerHz (4);
-    setSize (720, 700);
+    outputMeterLabel_.setJustificationType (juce::Justification::centred);
+    addAndMakeVisible (outputMeterLabel_);
+
+    bindSkinComponentIds();
+    applyTooltipsFromLayout();
+
+    startTimerHz (12);
+    const int w = uiLayout_.windowWidth > 0 ? uiLayout_.windowWidth : 1020;
+    const int h = uiLayout_.windowHeight > 0 ? uiLayout_.windowHeight : 780;
+    setResizable (uiLayout_.resizable, uiLayout_.resizable);
+    setSize (w, h);
+    setWantsKeyboardFocus (true);
 }
 
 JDUpgradedAudioProcessorEditor::~JDUpgradedAudioProcessorEditor()
 {
     stopTimer();
+    setLookAndFeel (nullptr);
+}
+
+void JDUpgradedAudioProcessorEditor::bindSkinComponentIds()
+{
+    titleLabel_.setComponentID ("titleLabel");
+    romSourceLabel_.setComponentID ("romSourceLabel");
+    programPrev_.setComponentID ("presetPrev");
+    programNext_.setComponentID ("presetNext");
+    programLabel_.setComponentID ("presetName");
+    masterGainSlider_.setComponentID ("masterGain");
+    filterResonanceSlider_.setComponentID ("filterResonance");
+    filterLinkButton_.setComponentID ("filterLink");
+    outputMeterLabel_.setComponentID ("outputMeter");
+
+    for (int i = 0; i < 4; ++i)
+    {
+        const juce::String n = juce::String (i + 1);
+        toneLevelSliders_[static_cast<std::size_t> (i)].setComponentID ("tone" + n + "Level");
+        toneWaveSliders_[static_cast<std::size_t> (i)].setComponentID ("tone" + n + "Wave");
+        toneCutoffSliders_[static_cast<std::size_t> (i)].setComponentID ("tone" + n + "Cutoff");
+        toneResonanceSliders_[static_cast<std::size_t> (i)].setComponentID ("tone" + n + "Resonance");
+    }
+
+    groupADriveSlider_.setComponentID ("groupADrive");
+    groupBMixSlider_.setComponentID ("groupBMix");
+    groupBChorusSlider_.setComponentID ("groupBChorus");
+    couplingCombo_.setComponentID ("couplingMode");
+
+    ampAttackSlider_.setComponentID ("ampAttack");
+    ampDecaySlider_.setComponentID ("ampDecay");
+    ampSustainSlider_.setComponentID ("ampSustain");
+    ampReleaseSlider_.setComponentID ("ampRelease");
+    filterAttackSlider_.setComponentID ("filterAttack");
+    filterDecaySlider_.setComponentID ("filterDecay");
+    filterSustainSlider_.setComponentID ("filterSustain");
+    filterReleaseSlider_.setComponentID ("filterRelease");
+
+    keyboardStrip_.setComponentID ("onScreenKeyboard");
+}
+
+void JDUpgradedAudioProcessorEditor::applyTooltipsFromLayout()
+{
+    for (const auto& [id, spec] : uiLayout_.controls)
+    {
+        if (spec.tooltip.isEmpty())
+            continue;
+        if (auto* c = findChildWithID (id))
+            if (auto* tip = dynamic_cast<juce::SettableTooltipClient*> (c))
+                tip->setTooltip (spec.tooltip);
+    }
 }
 
 void JDUpgradedAudioProcessorEditor::styleRotary (juce::Slider& slider, const juce::String& name)
@@ -412,6 +482,9 @@ void JDUpgradedAudioProcessorEditor::changeProgramByDelta (int delta)
 
 void JDUpgradedAudioProcessorEditor::timerCallback()
 {
+    float peakDb = -100.0f, rmsDb = -100.0f;
+    processor_.getOutputMeterDb (peakDb, rmsDb);
+    outputMeterLabel_.setText (juce::String (peakDb, 1) + " dB", juce::dontSendNotification);
     const int program = processor_.getCurrentProgram();
     const auto& patch = jdupgraded::assets::FactoryPatchLibrary::getPatch (static_cast<std::size_t> (program));
     programLabel_.setText (juce::String (program + 1) + " / "
@@ -479,7 +552,7 @@ void JDUpgradedAudioProcessorEditor::importPreset()
 
 void JDUpgradedAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colour (0xff1a1a22));
+    dl_ui::LayoutEditorShell::paintBackground (g, *this, uiLayout_, skinAssets_);
     g.setColour (juce::Colours::white.withAlpha (0.85f));
     g.drawFittedText ("Palette snap (P-Link = all tones)  |  Envelopes: Link or pick tone 1–4",
                       getLocalBounds().removeFromBottom (24),
@@ -507,6 +580,7 @@ void JDUpgradedAudioProcessorEditor::paint (juce::Graphics& g)
 void JDUpgradedAudioProcessorEditor::resized()
 {
     auto area = getLocalBounds().reduced (8);
+    area.removeFromBottom (keyboardStrip_.getHeight() + 8);
     titleLabel_.setBounds (area.removeFromTop (18));
     romSourceLabel_.setBounds (area.removeFromTop (14));
 
@@ -582,4 +656,10 @@ void JDUpgradedAudioProcessorEditor::resized()
     filterDecaySlider_.setBounds (fltRow.removeFromLeft (fltSlot).reduced (2));
     filterSustainSlider_.setBounds (fltRow.removeFromLeft (fltSlot).reduced (2));
     filterReleaseSlider_.setBounds (fltRow.reduced (2));
+
+    dl_ui::LayoutEditorShell::applyLayout (*this, uiLayout_);
+    if (auto* spec = uiLayout_.find ("onScreenKeyboard"))
+        keyboardStrip_.setBounds (spec->bounds);
+    else
+        keyboardStrip_.setBounds (getLocalBounds().removeFromBottom (112));
 }

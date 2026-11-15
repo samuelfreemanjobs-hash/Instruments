@@ -81,6 +81,9 @@ JDUpgradedAudioProcessor::JDUpgradedAudioProcessor()
 
     refreshCachedParameters();
     applyFactoryPatch (0);
+
+    // FL Studio and some hosts may process MIDI before the first prepareToPlay.
+    initDsp (44100.0, 512);
 }
 
 JDUpgradedAudioProcessor::~JDUpgradedAudioProcessor() = default;
@@ -602,8 +605,17 @@ void JDUpgradedAudioProcessor::applyPatchesFromParameters() noexcept
     voicePool_.setDefaultPatches (patches);
 }
 
-void JDUpgradedAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void JDUpgradedAudioProcessor::initDsp (double sampleRate, int samplesPerBlock) noexcept
 {
+    if (dspInitialised_ && std::abs (dspSampleRate_ - sampleRate) < 0.5
+        && static_cast<int> (outputScratch_.size()) >= samplesPerBlock)
+        return;
+
+    dspSampleRate_ = sampleRate;
+    dspInitialised_ = true;
+    const auto scratchSize = static_cast<std::size_t> (juce::jmax (samplesPerBlock, 8192));
+    outputScratch_.assign (scratchSize, 0.0f);
+
     voicePool_.prepare (sampleRate, static_cast<std::size_t> (samplesPerBlock));
     groupB_.prepare (sampleRate);
     applyPatchesFromParameters();
@@ -611,6 +623,22 @@ void JDUpgradedAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     const float bendRange = pitchBendRangePtr_ != nullptr ? pitchBendRangePtr_->load() : 2.0f;
     voicePool_.setExpressionDepth (exprDepth);
     voicePool_.setPitchBendRangeSemis (bendRange);
+}
+
+void JDUpgradedAudioProcessor::ensureDspReady (int numSamples) noexcept
+{
+    if (dspInitialised_)
+        return;
+
+    const double sr = getSampleRate() > 0.0 ? getSampleRate() : 44100.0;
+    const int block = juce::jmax (numSamples, juce::jmax (getBlockSize(), 512));
+    setRateAndBufferSizeDetails (sr, block);
+    initDsp (sr, block);
+}
+
+void JDUpgradedAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+{
+    initDsp (sampleRate, samplesPerBlock);
 }
 
 void JDUpgradedAudioProcessor::releaseResources() {}
@@ -741,9 +769,21 @@ bool JDUpgradedAudioProcessor::importApvtsPresetFromFile (const juce::File& file
     return false;
 }
 
+void JDUpgradedAudioProcessor::getOutputMeterDb (float& peakDb, float& rmsDb) const noexcept
+{
+    const float peak = outputPeakLinear_.load();
+    const float rms = outputRmsLinear_.load();
+    peakDb = peak > 0.0f ? juce::Decibels::gainToDecibels (peak) : -100.0f;
+    rmsDb = rms > 0.0f ? juce::Decibels::gainToDecibels (rms) : -100.0f;
+}
+
 void JDUpgradedAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
+
+    ensureDspReady (buffer.getNumSamples());
+
+    keyboardState_.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
 
     applyPatchesFromParameters();
 
@@ -759,6 +799,9 @@ void JDUpgradedAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     handleMidi (midiMessages);
 
     const auto numSamples = static_cast<std::size_t> (buffer.getNumSamples());
+    if (numSamples > outputScratch_.size())
+        outputScratch_.resize (numSamples, 0.0f);
+
     auto* left = buffer.getWritePointer (0);
     float* right = buffer.getNumChannels() > 1 ? buffer.getWritePointer (1) : nullptr;
 
@@ -795,6 +838,20 @@ void JDUpgradedAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         if (right != nullptr)
             right[i] = r;
     }
+
+    float blockPeak = 0.0f;
+    float sumSq = 0.0f;
+    const int n = buffer.getNumSamples();
+    const auto* readL = buffer.getReadPointer (0);
+    for (int i = 0; i < n; ++i)
+    {
+        const float s = readL[i];
+        blockPeak = std::max (blockPeak, std::abs (s));
+        sumSq += s * s;
+    }
+    outputPeakLinear_.store (blockPeak);
+  if (n > 0)
+        outputRmsLinear_.store (std::sqrt (sumSq / static_cast<float> (n)));
 }
 
 void JDUpgradedAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
