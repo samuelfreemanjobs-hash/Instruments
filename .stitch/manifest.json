@@ -1,0 +1,17 @@
+{
+  "stitch": {
+    "projectId": "4458054159206462354",
+    "deviceType": "DESKTOP",
+    "canvasUrl": "https://stitch.google.com/projects/4458054159206462354",
+    "product": "JD Upgraded",
+    "referenceScreen": {
+      "id": "0cd8c1ef7e7d45289902c2bdf827b923",
+      "url": "https://stitch.google.com/projects/4458054159206462354/screens/0cd8c1ef7e7d45289902c2bdf827b923",
+      "styleGuide": "docs/JD_UPGRADED_V_COLLECTION_STYLE_GUIDE.md"
+    },
+    "referenceMockups": [
+      "shared/disklordz_ui/skins/jdupgraded_default/assets/reference/jd-upgraded-workstation-mockup-v1.jpg",
+      "shared/disklordz_ui/skins/jdupgraded_default/assets/reference/jd-upgraded-component-library-v1.jpg"
+    ]
+  }
+}

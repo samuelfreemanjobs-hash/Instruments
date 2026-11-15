@@ -6,6 +6,12 @@
 #include "PluginProcessor.h"
 #include "UI/WavePreviewComponent.h"
 
+#include <dl_ui/LayoutEditorShell.h>
+#include <dl_ui/OnScreenKeyboardStrip.h>
+#include <dl_ui/SkinnableLookAndFeel.h>
+#include <dl_ui/SkinAssetCache.h>
+#include <dl_ui/UiLayout.h>
+
 #include <array>
 #include <memory>
 
@@ -33,8 +39,14 @@ private:
     void exportPreset();
     void importPreset();
     void applyPaletteCategoryToTone (int toneIndex0Based, int comboItemId);
+    void bindSkinComponentIds();
+    void applyTooltipsFromLayout();
 
     JDUpgradedAudioProcessor& processor_;
+    dl_ui::SkinAssetCache skinAssets_;
+    dl_ui::SkinnableLookAndFeel skinLnf_;
+    dl_ui::UiLayout uiLayout_;
+    dl_ui::OnScreenKeyboardStrip keyboardStrip_;
     bool multiPaletteLink_ = false;
     juce::Slider masterGainSlider_;
     juce::Slider filterResonanceSlider_;
@@ -103,6 +115,8 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterSustainAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filterReleaseAttachment_;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> envelopeLinkAttachment_;
+
+    juce::Label outputMeterLabel_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JDUpgradedAudioProcessorEditor)
 };

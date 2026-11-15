@@ -1,0 +1,41 @@
+{
+  "window": {
+    "width": 1000,
+    "height": 760,
+    "resizable": true,
+    "background": ""
+  },
+  "controls": {
+    "titleLabel": { "type": "label", "x": 20, "y": 4, "w": 960, "h": 20, "legend": "JD Upgraded" },
+    "romSourceLabel": { "type": "label", "x": 20, "y": 24, "w": 960, "h": 16 },
+    "presetPrev": { "type": "button", "id": "programPrev", "x": 8, "y": 44, "w": 40, "h": 24, "tooltip": "Previous factory program" },
+    "presetNext": { "type": "button", "id": "programNext", "x": 52, "y": 44, "w": 40, "h": 24, "tooltip": "Next factory program" },
+    "presetName": { "type": "label", "x": 96, "y": 44, "w": 600, "h": 24, "legend": "Program" },
+    "masterGain": { "type": "knob", "x": 860, "y": 44, "w": 72, "h": 72, "legend": "Master", "tooltip": "Master output level", "filmstrip": "", "filmstripFrames": 0 },
+    "outputMeter": { "type": "meter", "x": 940, "y": 44, "w": 24, "h": 120, "tooltip": "Output level (approximate)" },
+    "oscSection": { "type": "label", "x": 8, "y": 130, "w": 500, "h": 18, "legend": "OSC" },
+    "tone1Level": { "type": "slider", "x": 24, "y": 160, "w": 56, "h": 120, "tooltip": "Tone 1 level" },
+    "tone2Level": { "type": "slider", "x": 140, "y": 160, "w": 56, "h": 120, "tooltip": "Tone 2 level" },
+    "tone3Level": { "type": "slider", "x": 256, "y": 160, "w": 56, "h": 120, "tooltip": "Tone 3 level" },
+    "tone4Level": { "type": "slider", "x": 372, "y": 160, "w": 56, "h": 120, "tooltip": "Tone 4 level" },
+    "filterSection": { "type": "label", "x": 520, "y": 130, "w": 220, "h": 18, "legend": "FILTER" },
+    "filterResonance": { "type": "knob", "x": 540, "y": 160, "w": 64, "h": 64, "tooltip": "Global filter resonance" },
+    "filterLink": { "type": "button", "x": 540, "y": 228, "w": 64, "h": 22, "tooltip": "Link filter resonance" },
+    "ampEnvSection": { "type": "label", "x": 8, "y": 320, "w": 400, "h": 18, "legend": "AMP ENV" },
+    "ampAttack": { "type": "slider", "x": 24, "y": 348, "w": 120, "h": 28, "tooltip": "Amp attack time" },
+    "ampDecay": { "type": "slider", "x": 160, "y": 348, "w": 120, "h": 28, "tooltip": "Amp decay time" },
+    "ampSustain": { "type": "slider", "x": 296, "y": 348, "w": 120, "h": 28, "tooltip": "Amp sustain level" },
+    "ampRelease": { "type": "slider", "x": 432, "y": 348, "w": 120, "h": 28, "tooltip": "Amp release time" },
+    "filterEnvSection": { "type": "label", "x": 8, "y": 392, "w": 400, "h": 18, "legend": "FILTER ENV" },
+    "filterAttack": { "type": "slider", "x": 24, "y": 420, "w": 120, "h": 28, "tooltip": "Filter attack time" },
+    "filterDecay": { "type": "slider", "x": 160, "y": 420, "w": 120, "h": 28, "tooltip": "Filter decay time" },
+    "filterSustain": { "type": "slider", "x": 296, "y": 420, "w": 120, "h": 28, "tooltip": "Filter sustain level" },
+    "filterRelease": { "type": "slider", "x": 432, "y": 420, "w": 120, "h": 28, "tooltip": "Filter release time" },
+    "lfoSection": { "type": "label", "x": 560, "y": 320, "w": 200, "h": 18, "legend": "LFO / FX" },
+    "groupADrive": { "type": "knob", "x": 560, "y": 348, "w": 64, "h": 64, "tooltip": "Group A drive" },
+    "groupBMix": { "type": "knob", "x": 640, "y": 348, "w": 64, "h": 64, "tooltip": "Group B space mix" },
+    "groupBChorus": { "type": "knob", "x": 720, "y": 348, "w": 64, "h": 64, "tooltip": "Group B chorus depth" },
+    "couplingMode": { "type": "combo", "x": 800, "y": 348, "w": 180, "h": 24, "tooltip": "Tone coupling mode" },
+    "onScreenKeyboard": { "type": "keyboard", "x": 8, "y": 660, "w": 1004, "h": 110, "tooltip": "Click to play (velocity ~100)" }
+  }
+}

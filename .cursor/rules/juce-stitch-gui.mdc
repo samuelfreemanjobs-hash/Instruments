@@ -1,0 +1,19 @@
+---
+description: JUCE/VST3 Stitch design system — read DESIGN.md before plugin UI edits
+globs:
+  - DESIGN.md
+  - .stitch/**
+  - "**/PluginEditor.*"
+  - "**/skins/**"
+  - shared/disklordz_ui/**
+---
+
+# JUCE/VST3 Stitch design system
+
+1. Read **`.stitch/DESIGN.md`** before UI, WebView, CSS, React, or skin assets change.
+2. Keep single accent **#D98838**; ban **#000000** and outer neon glows; tabular monospace for live numeric readouts.
+3. Delegate Stitch generation loops to **juce-stitch-gui** subagent or `@skill juce-stitch-gui`.
+4. WebView products: `WebSliderRelay` / `WebToggleButtonRelay` / `WebComboBoxRelay`; `withNativeIntegrationEnabled` for `juce://`.
+5. Native products (e.g. JD Upgraded): Stitch → PNG + `layout.json` per `docs/UI_DESIGN_HANDOFF.md`.
+
+Reference: `docs/JUCE_STITCH_GUI_REFERENCE.md`.

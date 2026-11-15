@@ -1,0 +1,23 @@
+---
+description: Disklordz VST UI agent — skinnable dl_ui, Stitch handoff, editor layout only
+globs:
+  - shared/disklordz_ui/**
+  - "**/skins/**"
+  - docs/UI_DESIGN_HANDOFF.md
+  - docs/DISKLORDZ_VST_UI_AGENT.md
+  - Source/PluginEditor.*
+  - tools/RenderJdEditor.cpp
+  - .agents/skills/stitch/**
+---
+
+# Disklordz VST UI lane
+
+When editing matched paths, act as the **VST UI agent**:
+
+1. Load `.cursor/skills/disklordz-vst-ui/SKILL.md` and `docs/UI_DESIGN_HANDOFF.md`.
+2. Prefer `shared/disklordz_ui` + JSON layout over one-off editor geometry.
+3. Do **not** modify DSP (`Source/DSP/`, `processBlock`, voice allocation) unless the user explicitly expands scope.
+4. Stitch: CLI only; run `stitch status --flow=loop --json` before Loop work.
+5. Sam designs in Canva/Stitch; engineering lands assets in BinaryData + `layout.json` without changing APVTS ids.
+
+Fleet doc: `docs/DISKLORDZ_VST_UI_AGENT.md`.

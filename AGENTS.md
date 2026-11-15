@@ -129,6 +129,34 @@ export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
 
 Install today: [docs/NTS1_INSTALL_TODAY.md](docs/NTS1_INSTALL_TODAY.md). Catalog: [docs/nts1-multi-bass-oscillators.md](docs/nts1-multi-bass-oscillators.md). mkII porting: [docs/nts1-mkii-porting.md](docs/nts1-mkii-porting.md).
 
+## UI / Stitch (JUCE plugins)
+
+Read **[`.stitch/DESIGN.md`](.stitch/DESIGN.md)** before UI, WebView, CSS, React, or skin work; lint with `npx -p @google/design.md designmd lint .stitch/DESIGN.md`.
+
+- **Reference map:** [docs/JUCE_STITCH_GUI_REFERENCE.md](docs/JUCE_STITCH_GUI_REFERENCE.md)
+- **Stitch ↔ JUCE skill:** `.cursor/skills/juce-stitch-gui/` (Claude: `.claude/skills/juce-stitch-gui/`)
+
+## Disklordz VST UI agent (Google Stitch)
+
+**Lane doc:** [docs/DISKLORDZ_VST_UI_AGENT.md](docs/DISKLORDZ_VST_UI_AGENT.md) · skill `.cursor/skills/disklordz-vst-ui/` · Stitch `.agents/skills/stitch/`.
+
+Bootstrap on every new machine or Cloud Agent (also baked into `.cursor/environment.json` `install`):
+
+```bash
+npm install -g @google/stitch   # or: bash scripts/install-stitch-cli.sh
+stitch --version
+```
+
+Install playbooks once per machine or repo:
+
+```bash
+stitch agent-skills add              # .agents/skills/stitch/ (this project)
+stitch agent-skills add --user       # ~/.agents/skills/ (all repos)
+stitch agent-skills add --dir .claude/skills/stitch   # Claude Code
+```
+
+Repo copy: `.agents/skills/stitch/` · native JUCE skins: [shared/disklordz_ui/ARCHITECTURE.md](shared/disklordz_ui/ARCHITECTURE.md) · Canva/Stitch → PNG handoff: [docs/UI_DESIGN_HANDOFF.md](docs/UI_DESIGN_HANDOFF.md). Loop onboarding: `stitch enable loop` then `stitch login` (credentials are per-user, not in git).
+
 ## Audio Plugin Coder (optional VST scaffold)
 
 New plugins under `vst/`: [docs/apc-workflow.md](docs/apc-workflow.md) · `/apc-setup` … `/apc-ship` · [docs/vst-lifecycle.md](docs/vst-lifecycle.md).

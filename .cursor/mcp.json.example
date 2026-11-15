@@ -28,6 +28,12 @@
     "disklordz": {
       "command": "node",
       "args": ["disklordz/integrations/mcp/disklordz-mcp-server/dist/index.js"]
+    },
+    "stitch": {
+      "url": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "YOUR_STITCH_API_KEY"
+      }
     }
   }
 }

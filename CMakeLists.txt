@@ -28,6 +28,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(clap_juce_extensions)
 
+add_subdirectory(shared/disklordz_ui)
+
 set(GENERATED_ROM_DIR "${CMAKE_BINARY_DIR}/generated")
 set(GENERATED_ROM_FILE "${GENERATED_ROM_DIR}/jdupg_cleanroom.rom")
 
@@ -54,7 +56,7 @@ juce_add_plugin(JDUpgraded
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
-    EDITOR_WANTS_KEYBOARD_FOCUS FALSE
+    EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     COPY_PLUGIN_AFTER_BUILD FALSE
     PLUGIN_MANUFACTURER_CODE Inst
     PLUGIN_CODE JdUp
@@ -104,10 +106,13 @@ if(JDUPGRADED_HAS_NEON AND NOT JDUPGRADED_HAS_AVX2_FLAG)
     target_compile_definitions(JDUpgraded PRIVATE JDUPGRADED_USE_NEON=1)
 endif()
 
+dl_ui_attach_skin(JDUpgraded TARGET JDUpgradedSkinData SKIN jdupgraded_default)
+
 target_link_libraries(JDUpgraded
     PRIVATE
         juce::juce_audio_utils
         juce::juce_dsp
+        dl_ui
         JDUpgradedRomData
     PUBLIC
         juce::juce_recommended_config_flags
@@ -119,6 +124,7 @@ target_include_directories(JDUpgraded
     PRIVATE
         Source
         "${CMAKE_BINARY_DIR}/juce_binarydata_JDUpgradedRomData/JuceLibraryCode"
+        "${CMAKE_BINARY_DIR}/juce_binarydata_JDUpgradedSkinData/JuceLibraryCode"
 )
 
 clap_juce_extensions_plugin(TARGET JDUpgraded
@@ -164,6 +170,20 @@ target_compile_definitions(ExportPreset
         JUCE_USE_CURL=0
 )
 add_dependencies(ExportPreset JDUpgradedRomData)
+
+add_executable(JDUpgradedMidiSmoke tools/JDUpgradedMidiSmoke.cpp)
+add_dependencies(JDUpgradedMidiSmoke OfflineRender)
+add_test(NAME JDUpgradedMidiSmoke COMMAND JDUpgradedMidiSmoke $<TARGET_FILE:OfflineRender>)
+add_test(NAME JDUpgradedMidiSmokeScript COMMAND ${CMAKE_SOURCE_DIR}/tools/jdupgraded_smoke.sh
+    $<TARGET_FILE:OfflineRender>)
+
+add_executable(RenderJdEditor tools/RenderJdEditor.cpp)
+target_link_libraries(RenderJdEditor PRIVATE JDUpgraded dl_ui juce::juce_gui_basics juce::juce_graphics)
+target_include_directories(RenderJdEditor PRIVATE Source
+        shared/disklordz_ui/include
+    "${CMAKE_BINARY_DIR}/juce_binarydata_JDUpgradedRomData/JuceLibraryCode"
+    "${CMAKE_BINARY_DIR}/juce_binarydata_JDUpgradedSkinData/JuceLibraryCode")
+add_dependencies(RenderJdEditor JDUpgradedSkinData)
 
 add_executable(SpectralDiff tools/SpectralDiff.cpp)
 target_link_libraries(SpectralDiff
