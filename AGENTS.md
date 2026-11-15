@@ -131,6 +131,8 @@ Install today: [docs/NTS1_INSTALL_TODAY.md](docs/NTS1_INSTALL_TODAY.md). Catalog
 
 ## Disklordz VST UI agent (Google Stitch)
 
+**Lane doc:** [docs/DISKLORDZ_VST_UI_AGENT.md](docs/DISKLORDZ_VST_UI_AGENT.md) · skill `.cursor/skills/disklordz-vst-ui/` · Stitch `.agents/skills/stitch/`.
+
 Bootstrap on every new machine or Cloud Agent (also baked into `.cursor/environment.json` `install`):
 
 ```bash
