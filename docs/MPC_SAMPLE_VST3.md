@@ -27,6 +27,41 @@ Or use the repo helper:
 ./scripts/vst/verify-mpc-sample-vst3.sh path/to/YourPlugin.vst3
 ```
 
+## Three ways to build your own plugin
+
+Melodee is **headless**: it does not open a desktop plugin window. You ship **DSP + parameters** (and optional presets). Melodee maps parameters to **K1–K3** and preset stepping; put musically important controls **early** in the parameter list (cutoff, resonance, attack, release) so you are not menu-diving on the 2.4″ screen.
+
+| Path | Best for | Output on card | Where to work |
+|------|----------|----------------|---------------|
+| **[Akai MPC Plugin SDK](https://github.com/inmusic-software/mpc-plugin-builder-sdk)** (MIT) | First custom plugin with **AI-assisted** C++, MPC touchscreen **JSON UI**, fastest path to hardware knobs | Folder with `plugin.json` + **arm64/arm32 `.so`** (VST2 ABI). On **MPC OS 3.10.1+** drop under `VST2 Plugins/` on USB/SD; **Melodee** can also load the same **ARM Linux** libraries (and supports VST3/LV2/CLAP in its own browser). | Clone SDK repo; `python tools/build.py plugins/YourName`; `tools/host-sim/` before hardware |
+| **JUCE (or DPF) + cross-compile** | **Standard `.vst3`**, same project targets **DAW (x86_64)** + **MPC Sample (aarch64)** | `YourSynth.vst3/Contents/aarch64-linux/YourSynth.so` → `Melodee/Plugins/` | **This monorepo:** APC lifecycle + `./tools/build-vst-aarch64-linux.sh <Name>`; optional **Podman/Docker** `dockcross/linux-arm64` if you prefer containerized aarch64 builds |
+| **FAUST / Heavy (Pd)** | Rapid **algorithm** experiments without hand-writing every filter coefficient | Export **C++** or VST3 sources → feed **JUCE** or SDK project → cross-compile to aarch64 | Faust IDE → C++; or Pd → [hvcc](https://github.com/Wasted-Audio/hvcc) → integrate into your chosen wrapper |
+
+### Official MPC Plugin SDK (summary)
+
+- **Python 3.9+**; `build.py` fetches **Zig/GCC/Docker** cross toolchains on first run.
+- You maintain **`plugin.json`** (metadata, parameters) and optional **`ui.json`** (MPC pages / Q-Links). DSP is one or more **`src/*.cpp`** files implementing the SDK’s small `process()` contract.
+- **No Steinberg SDK** in-tree (clean-room VST2 ABI). Includes agent skills under `.agents/skills/` for Cursor / Claude Code.
+- **Safety:** plugins run **in-process** on the device—no sandbox. Test with **host-sim** first; a crash can reboot the unit (same class of risk on Melodee).
+
+### JUCE in this repo (summary)
+
+- Full **VST3** bundle layout Melodee expects.
+- Use **program chain first** (DSP), keep editors minimal or headless—Melodee ignores most GUI anyway.
+- Cross-build docs in the sections below; verify every release with `verify-mpc-sample-vst3.sh`.
+
+### DSP codegen (FAUST / Heavy)
+
+- Treat exported code as a **module**: wire into JUCE `processBlock` or SDK `process()`, then apply the same RT rules (no alloc in the callback).
+- Good first targets: **mono bass** (1 voice), **simple poly** (4–8 voices), **single drum voice**—not 16-voice unison.
+
+## Embedded coding rules (all paths)
+
+- **CPU budget:** aim for **~15–20% per instance** on MPC Sample-class silicon; avoid heavy oversampling and huge unison counts if you want multiple tracks.
+- **Parameter order:** expose **filter cutoff, resonance, amp/filter envelopes** as the first parameters when Melodee maps K1–K3 in order.
+- **Memory:** allocate in **prepare** / constructor; **never** `malloc`/`new` in the audio callback (hosts are not crash-isolated).
+- **Melodee test:** [melodee-sample](https://github.com/keremimo/melodee-sample) emulator / screen mirror where available; otherwise x86_64 pluginval in this repo, then aarch64 verify before SD copy.
+
 ## Creating a new plugin (APC lifecycle)
 
 Follow the normal factory path so DSP stays maintainable:
@@ -148,7 +183,8 @@ Any synth or effect with a real **`Contents/aarch64-linux/`** VST3 (or **armhf**
 | [keremimo/melodee-sample](https://github.com/keremimo/melodee-sample) | Melodee host, plugin folder rules, Docker arm64 build |
 | [keremimo/sample-base](https://github.com/keremimo/sample-base) | AC50 hardware runtime (ALSA, MIDI, display) |
 | [keremimo/mpc-vst-melodee-*](https://github.com/keremimo/mpc-vst-melodee-chip) | Example lightweight synths + `*-mpc-sample.zip` |
-| [open-mpc/mpc-vst-plugins](https://github.com/open-mpc/mpc-vst-plugins) | MPC OS ports; [`docs/MPC_SAMPLE.md`](https://github.com/open-mpc/mpc-vst-plugins/blob/main/docs/MPC_SAMPLE.md) hardware brief |
+| [inmusic-software/mpc-plugin-builder-sdk](https://github.com/inmusic-software/mpc-plugin-builder-sdk) | Official **MIT** MPC plugin SDK (VST2 ABI, JSON UI, AI skills, cross-build) |
+| [open-mpc/mpc-vst-plugins](https://github.com/open-mpc/mpc-vst-plugins) | Community MPC OS ports; uses SDK as submodule; [`docs/MPC_SAMPLE.md`](https://github.com/open-mpc/mpc-vst-plugins/blob/main/docs/MPC_SAMPLE.md) |
 | [inmusic-software/az0x-open-source](https://github.com/inmusic-software/az0x-open-source/tree/mpc-sample/1.3.0) | Published kernel/device-tree reference |
 
 Fleet implementer: [docs/agents/LINUX_VST3_DSP_ENGINEER.md](agents/LINUX_VST3_DSP_ENGINEER.md).
