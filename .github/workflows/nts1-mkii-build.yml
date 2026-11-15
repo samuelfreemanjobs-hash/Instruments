@@ -1,0 +1,68 @@
+name: NTS-1 mkII oscillators
+
+# Builds on Linux; artifact nts1-mkii-units is for Windows (KORG KONTROL Editor) — not a windows-latest compile.
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly refresh so Windows users can download without WSL
+    - cron: "0 12 * * 0"
+  push:
+    branches: [main, "cursor/**"]
+    paths:
+      - "src/mkii/**"
+      - "tools/mkii/**"
+      - "tools/build-mkii.sh"
+      - "tools/build-all-bass-mkii.sh"
+      - "tools/mkii-automate.sh"
+      - "tools/package-nts1.sh"
+      - ".github/workflows/nts1-mkii-build.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/mkii/**"
+      - "tools/mkii/**"
+      - "tools/build-mkii.sh"
+      - "tools/build-all-bass-mkii.sh"
+      - "tools/mkii-automate.sh"
+      - "tools/package-nts1.sh"
+
+concurrency:
+  group: nts1-mkii-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-mkii-units:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ARM toolchain and Make
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi make python3 git
+
+      - name: Bootstrap logue-sdk
+        run: |
+          chmod +x tools/mkii-automate.sh
+          ./tools/mkii-automate.sh bootstrap
+
+      - name: Build all mkII oscillators
+        env:
+          LOGUE_SDK: ${{ github.workspace }}/.deps/logue-sdk
+          GCC_BIN_PATH: /usr/bin
+        run: |
+          ./tools/build-all-bass-mkii.sh
+          ./tools/package-nts1.sh
+
+      - name: Verify packaged units
+        run: |
+          count="$(find release/nts1-custom-oscillators/mkII-nts1mkiiunit -name '*.nts1mkiiunit' | wc -l)"
+          echo "Packaged mkII units: ${count}"
+          test "${count}" -ge 14
+
+      - name: Upload Windows test package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nts1-mkii-units
+          path: release/nts1-custom-oscillators/
+          retention-days: 30
