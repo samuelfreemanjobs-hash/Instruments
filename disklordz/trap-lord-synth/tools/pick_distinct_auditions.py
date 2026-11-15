@@ -19,6 +19,8 @@ PROBE_DIR = ROOT / "build" / "category-probes"
 MANIFEST = ROOT / "assets" / "factory" / "audition_manifest.json"
 
 _AUDITION_PEAK_CACHE: dict[int, float] = {}
+# Enough distinct pairs for cross-category checks without scanning every preset.
+_MAX_AUDIBLE_CANDIDATES_PER_CATEGORY = 16
 
 sys.path.insert(0, str(ROOT / "tools"))
 from preset_probe import probe_wav_path, render_category_probe  # noqa: E402
@@ -97,6 +99,8 @@ def ranked_audible_candidates(
 ) -> list[tuple[float, int, np.ndarray]]:
     scored: list[tuple[float, int, np.ndarray]] = []
     for idx in idxs:
+        if len(scored) >= _MAX_AUDIBLE_CANDIDATES_PER_CATEGORY:
+            break
         if not is_audible_preset(idx, presets):
             continue
         wav = probe_wav_path(PROBE_DIR, idx)
