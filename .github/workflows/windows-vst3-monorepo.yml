@@ -51,12 +51,12 @@ jobs:
       - name: Validate monorepo VST3 bundles (pluginval)
         env:
           CI: true
-        run: |
-          python scripts/vst/run_pluginval.py \
-            --discover build/PluggVA/PluggVA_artefacts/Release/VST3 \
-            --discover build/Wave9090/Wave9090_artefacts/Release/VST3 \
-            --discover build/SP1200/SP1200_artefacts/Release/VST3 \
-            --discover build/JDUpgraded_artefacts/Release/VST3
+        run: >
+          python scripts/vst/run_pluginval.py
+          --discover build/PluggVA/PluggVA_artefacts/Release/VST3
+          --discover build/Wave9090/Wave9090_artefacts/Release/VST3
+          --discover build/SP1200/SP1200_artefacts/Release/VST3
+          --discover build/JDUpgraded_artefacts/Release/VST3
 
       - name: Stage Plugg VA VST3 for download
         shell: pwsh
@@ -81,8 +81,14 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path artifact/vst3 | Out-Null
+          $builtNames = @(
+            'Plugg VA.vst3',
+            'WAVE-9090.vst3',
+            'SP-1200 Drumulator.vst3',
+            'JD Upgraded.vst3'
+          )
           $bundles = Get-ChildItem -Path build -Recurse -Directory |
-            Where-Object { $_.Name -like '*.vst3' }
+            Where-Object { $builtNames -contains $_.Name }
           if (-not $bundles) {
             Write-Error "No .vst3 bundles found under build/"
           }
