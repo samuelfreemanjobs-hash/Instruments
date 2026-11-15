@@ -46,6 +46,12 @@ npx.cmd next start -p 3100       # avoid 3000; other agents use it
 
 Smoke: `POST /api/factory/batch` with `{"prompt":"go-live pack","presetId":"boulevard-86","spec":{"engine":"studio"}}`.
 
+## NTS-1 mkII custom oscillators (test on hardware)
+
+- **Do not** expect native PowerShell builds for `.nts1mkiiunit` — use **WSL2** (`bash ./tools/build-all-bass-mkii.sh`) or download the **`nts1-mkii-units`** artifact from GitHub Actions.
+- After packaging: `.\scripts\windows\prepare-mkii-test.ps1` opens `release\nts1-custom-oscillators\mkII-nts1mkiiunit\` for **KORG KONTROL Editor**.
+- Full steps: `docs/NTS1_MKII_WINDOWS_TEST.md`.
+
 ## Never on this machine
 
 - Global installs, registry or system setting changes, writes outside `C:\dev`.
