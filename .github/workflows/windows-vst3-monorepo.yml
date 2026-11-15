@@ -51,7 +51,12 @@ jobs:
       - name: Validate monorepo VST3 bundles (pluginval)
         env:
           CI: true
-        run: python scripts/vst/run_pluginval.py --discover build
+        run: |
+          python scripts/vst/run_pluginval.py \
+            --discover build/PluggVA/PluggVA_artefacts/Release/VST3 \
+            --discover build/Wave9090/Wave9090_artefacts/Release/VST3 \
+            --discover build/SP1200/SP1200_artefacts/Release/VST3 \
+            --discover build/JDUpgraded_artefacts/Release/VST3
 
       - name: Stage Plugg VA VST3 for download
         shell: pwsh
