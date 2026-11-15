@@ -18,8 +18,10 @@ struct Layout
     static constexpr int feltStripHeight = 6;
     static constexpr int octaveColumnWidth = 198;
     static constexpr int glideSlotWidth = 118;
-    /** White keys shown (~3 octaves); use octave shift for C range. */
-    static constexpr int visibleWhiteKeys = 37;
+    /** White keys shown (~2.5 octaves); use octave shift for C range. */
+    static constexpr int visibleWhiteKeys = 25;
+    /** Octave button `0` → lowest visible MIDI note (36 = C2, FL / 808 bass range). */
+    static constexpr int octaveZeroLowestMidi = 36;
     static constexpr int margin = 10;
     static constexpr int bayGap = 8;
 };

@@ -133,8 +133,7 @@ void Wave9090AudioProcessorEditor::refreshPresetCombo()
 void Wave9090AudioProcessorEditor::applyOctaveShift (int shift)
 {
     octaveShift_ = juce::jlimit (-2, 2, shift);
-    constexpr int baseMidi = 36; // C2
-    keyboard_.setLowestVisibleKey (baseMidi + octaveShift_ * 12);
+    keyboard_.setLowestVisibleKey (wave9090::ui::Layout::octaveZeroLowestMidi + octaveShift_ * 12);
     layoutKeyboardKeyWidth();
     for (std::size_t i = 0; i < octaveButtons_.size(); ++i)
     {
@@ -227,7 +226,7 @@ void Wave9090AudioProcessorEditor::paint (juce::Graphics& g)
     wave9090::ui::paintModuleBay (g, bayVcf1_, "VCF 1: LADDER", wave9090::ui::tokens::amberGlow());
     wave9090::ui::paintModuleBay (g, bayEnvAmp_, "ENV 1: AMP (VCA)", wave9090::ui::tokens::cyanGlow());
     wave9090::ui::paintModuleBay (g, bayEnvFilt_, "ENV 2: FILTER", wave9090::ui::tokens::amberGlow());
-    wave9090::ui::paintModuleBay (g, bayMacro_, "MACRO / OUTPUT", wave9090::ui::tokens::amberGlow());
+    wave9090::ui::paintModuleBay (g, bayMacro_, "TAPE / OUT", wave9090::ui::tokens::amberGlow());
 
     auto ampCurve = bayEnvAmp_.reduced (8, 30).removeFromTop (bayEnvAmp_.getHeight() / 3);
     paintEnvCurve (g, ampCurve, wave9090::ui::tokens::cyanGlow(),
@@ -264,17 +263,18 @@ void Wave9090AudioProcessorEditor::layoutControls()
 
     const auto body = wave9090::ui::Regions::body (getLocalBounds());
     const int gap = wave9090::ui::Layout::bayGap;
-    const int w5 = (body.getWidth() - 4 * gap) / 5;
+    // 2:1:1:1:1 split → six units across the body width (OSC spans two).
+    const int unitW = (body.getWidth() - 4 * gap) / 6;
     int x = body.getX();
-    bayOsc1_ = { x, body.getY(), w5 * 2 + gap, body.getHeight() };
-    x += w5 * 2 + gap + gap;
-    bayVcf1_ = { x, body.getY(), w5, body.getHeight() };
-    x += w5 + gap;
-    bayEnvAmp_ = { x, body.getY(), w5, body.getHeight() };
-    x += w5 + gap;
-    bayEnvFilt_ = { x, body.getY(), w5, body.getHeight() };
-    x += w5 + gap;
-    bayMacro_ = { x, body.getY(), body.getRight() - x, body.getHeight() };
+    bayOsc1_ = { x, body.getY(), unitW * 2, body.getHeight() };
+    x += unitW * 2 + gap;
+    bayVcf1_ = { x, body.getY(), unitW, body.getHeight() };
+    x += unitW + gap;
+    bayEnvAmp_ = { x, body.getY(), unitW, body.getHeight() };
+    x += unitW + gap;
+    bayEnvFilt_ = { x, body.getY(), unitW, body.getHeight() };
+    x += unitW + gap;
+    bayMacro_ = { x, body.getY(), unitW, body.getHeight() };
 
     auto osc = bayOsc1_.reduced (10, 26);
     wtScope_.setBounds (osc.removeFromTop (juce::jmax (90, osc.getHeight() / 2)));
@@ -282,7 +282,8 @@ void Wave9090AudioProcessorEditor::layoutControls()
 
     auto placeGrid = [&] (juce::Rectangle<int> area, std::initializer_list<const char*> ids, int cols)
     {
-        const int rows = (static_cast<int> (ids.size()) + cols - 1) / cols;
+        const int count = static_cast<int> (ids.size());
+        const int rows = (count + cols - 1) / cols;
         const int cw = area.getWidth() / cols;
         const int ch = area.getHeight() / juce::jmax (1, rows);
         int idx = 0;
@@ -292,7 +293,9 @@ void Wave9090AudioProcessorEditor::layoutControls()
             {
                 const int col = idx % cols;
                 const int row = idx / cols;
-                k->setBounds (area.getX() + col * cw, area.getY() + row * ch, cw, ch);
+                auto cell = juce::Rectangle<int> (area.getX() + col * cw, area.getY() + row * ch, cw, ch);
+                const int side = juce::jmin (cell.getWidth(), cell.getHeight());
+                k->setBounds (cell.withSizeKeepingCentre (side, side));
             }
             ++idx;
         }

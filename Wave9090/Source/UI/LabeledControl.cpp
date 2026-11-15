@@ -35,7 +35,8 @@ void LabeledKnob::resized()
     auto area = getLocalBounds();
     legend_.setBounds (area.removeFromTop (16));
     value_.setBounds (area.removeFromBottom (16));
-    slider_.setBounds (area);
+    const int side = juce::jmin (area.getWidth(), area.getHeight());
+    slider_.setBounds (area.withSizeKeepingCentre (side, side));
 }
 
 void LabeledKnob::setValueText (const juce::String& text)

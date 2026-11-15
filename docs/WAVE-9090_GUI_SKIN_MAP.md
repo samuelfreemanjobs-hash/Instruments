@@ -42,7 +42,10 @@ Assets: `Wave9090/Assets/skin/*.png` (BinaryData via `SkinAssets`)
 | **Output / width** | knobs | `stereoWidth`, `outputGain` | 0…1, −24…+12 dB |
 | **Performance** glide | knob | `glide` | 0…500 ms |
 | **Performance** octave | `octaveButtons_` | — (keyboard range UI) |
+| **TAPE / OUT** bay | Tape / Width / Output knobs | `tapeWobble`, `stereoWidth`, `outputGain` | 0…1, dB |
 | **Keybed** | `keyboard_` | `MidiKeyboardState` | MIDI |
+
+**Octave shift:** button `0` sets lowest visible key to **MIDI 36 (C2)** — `Layout::octaveZeroLowestMidi`. Each ±1 button shifts by one octave (±12 semitones). Matches FL Studio / 808 bass playing starting around C2–C3.
 
 \*Preset index stored in plugin state XML; UI calls `applyFactoryPreset(index)`.
 
