@@ -25,6 +25,7 @@ from trap_lord_audio_metrics import (  # noqa: E402
     CROSS_CATEGORY_CORR_MAX,
     analyze_file,
     category_feature_vector,
+    category_spectral_passes_audition,
     peak_passes_audible_gate,
 )
 
@@ -50,8 +51,14 @@ def audition_peak(idx: int) -> float:
 
 
 def is_audible_preset(idx: int, presets: list[dict]) -> bool:
+    cat = presets[idx]["category"]
     pk = audition_peak(idx)
     if not peak_passes_audible_gate(pk):
+        return False
+    audition_wav = PROBE_DIR / f"aud_check_{idx:04d}.wav"
+    audition_metrics = analyze_file(audition_wav, category=cat)
+    ok, _ = category_spectral_passes_audition(audition_metrics, cat)
+    if not ok:
         return False
     wav = probe_wav_path(PROBE_DIR, idx)
     if not wav.exists():

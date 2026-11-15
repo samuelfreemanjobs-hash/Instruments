@@ -19,6 +19,7 @@ CLI = ROOT / "build" / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLor
 BANK = ROOT / "assets/factory/preset_bank.json"
 PROBE_DIR = ROOT / "build" / "audio-cull-probes"
 CORR_MAX = 0.92
+CROSS_CATEGORY_EXEMPT = frozenset({"Pads", "Synth Keys", "Leads", "Swells"})
 sys.path.insert(0, str(ROOT / "tools"))
 from generate_preset_bank import select_diverse_presets  # noqa: E402
 from trap_lord_audio_metrics import (  # noqa: E402
@@ -107,7 +108,13 @@ def main() -> int:
             for other_cat, ov in global_kept:
                 if other_cat == cat:
                     continue
-                if float(np.dot(v, ov)) > CROSS_CATEGORY_CORR_MAX:
+                corr = float(np.dot(v, ov))
+                if cat in CROSS_CATEGORY_EXEMPT and other_cat not in CROSS_CATEGORY_EXEMPT:
+                    continue
+                limit = CROSS_CATEGORY_CORR_MAX
+                if cat in CROSS_CATEGORY_EXEMPT and other_cat in CROSS_CATEGORY_EXEMPT:
+                    limit = 0.98
+                if corr > limit:
                     too_close = True
                     break
             if too_close:

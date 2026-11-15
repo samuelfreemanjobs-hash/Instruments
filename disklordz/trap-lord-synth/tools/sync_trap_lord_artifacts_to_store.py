@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "build"
+ARTIFACTS = Path("/opt/cursor/artifacts")
 AGENT_STORE = Path("/cursor/stores/self/trap-lord-artifacts")
 
 NAMES = (
@@ -23,20 +24,33 @@ NAMES = (
 )
 
 
+def _newest(paths: list[Path]) -> Path | None:
+    existing = [p for p in paths if p.exists()]
+    if not existing:
+        return None
+    return max(existing, key=lambda p: p.stat().st_mtime)
+
+
+def resolve_source(name: str) -> Path | None:
+    candidates = [
+        BUILD / name,
+        BUILD / "mpc-live-release" / name,
+        ARTIFACTS / name,
+    ]
+    return _newest(candidates)
+
+
 def main() -> int:
     AGENT_STORE.mkdir(parents=True, exist_ok=True)
     copied = 0
     for name in NAMES:
-        src = BUILD / name
-        if not src.exists():
-            alt = BUILD / "mpc-live-release" / name
-            src = alt if alt.exists() else src
-        if not src.exists():
+        src = resolve_source(name)
+        if src is None:
             print(f"SKIP missing {name}")
             continue
         dest = AGENT_STORE / name
         shutil.copy2(src, dest)
-        print(f"STORE {dest} ({dest.stat().st_size} bytes)")
+        print(f"STORE {dest} ({dest.stat().st_size} bytes) <- {src}")
         copied += 1
     if copied == 0:
         raise SystemExit("No artifacts copied to Agent Store")
