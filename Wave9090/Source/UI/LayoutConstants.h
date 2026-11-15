@@ -13,8 +13,13 @@ struct Layout
     static constexpr int woodCheekW = 14;
     static constexpr int headerHeight = 86;
     static constexpr int tabHeight = 26;
-    static constexpr int keyboardHeight = 124;
-    static constexpr int perfRowHeight = 36;
+    /** Footer: octave column + on-screen keyboard (mockup proportions). */
+    static constexpr int footerHeight = 122;
+    static constexpr int feltStripHeight = 6;
+    static constexpr int octaveColumnWidth = 198;
+    static constexpr int glideSlotWidth = 118;
+    /** White keys shown (~3 octaves); use octave shift for C range. */
+    static constexpr int visibleWhiteKeys = 37;
     static constexpr int margin = 10;
     static constexpr int bayGap = 8;
 };
@@ -37,26 +42,34 @@ struct Regions
         return header.removeFromBottom (Layout::tabHeight);
     }
 
+    static juce::Rectangle<int> footer (juce::Rectangle<int> full)
+    {
+        auto f = faceplate (full);
+        return f.removeFromBottom (Layout::footerHeight);
+    }
+
     static juce::Rectangle<int> body (juce::Rectangle<int> full)
     {
         auto f = faceplate (full);
         f.removeFromTop (Layout::headerHeight);
-        f.removeFromBottom (Layout::keyboardHeight + Layout::perfRowHeight);
+        f.removeFromBottom (Layout::footerHeight);
         return f.reduced (Layout::margin, Layout::bayGap);
     }
 
-    static juce::Rectangle<int> keyboard (juce::Rectangle<int> full)
+    /** Octave shift buttons (left column of footer). */
+    static juce::Rectangle<int> octaveColumn (juce::Rectangle<int> full)
     {
-        auto f = faceplate (full);
-        f.removeFromBottom (Layout::keyboardHeight);
-        return f;
+        auto foot = footer (full);
+        return foot.removeFromLeft (Layout::octaveColumnWidth).reduced (4, 6);
     }
 
-    static juce::Rectangle<int> perfRow (juce::Rectangle<int> full)
+    /** Keyboard keybed inside footer (after octave column + glide slot). */
+    static juce::Rectangle<int> keyboardKeybed (juce::Rectangle<int> full)
     {
-        auto f = faceplate (full);
-        f.removeFromBottom (Layout::perfRowHeight);
-        return f.reduced (Layout::margin, 4);
+        auto foot = footer (full);
+        foot.removeFromLeft (Layout::octaveColumnWidth);
+        foot.removeFromLeft (Layout::glideSlotWidth);
+        return foot.reduced (6, 6);
     }
 };
 

@@ -60,7 +60,6 @@ Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcess
     tooltipWindow_ = std::make_unique<juce::TooltipWindow> (this, 450);
     setResizable (true, true);
     setResizeLimits (1040, 580, 1600, 920);
-    setSize (wave9090::ui::Layout::editorWidth, wave9090::ui::Layout::editorHeight);
 
     brandTitle_.setText ("WAVE-9090", juce::dontSendNotification);
     brandTitle_.setFont (juce::Font (juce::FontOptions (20.0f, juce::Font::bold)));
@@ -101,13 +100,14 @@ Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcess
     addAndMakeVisible (circuitButton_);
     circuitAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), PID::filterCircuit, circuitButton_);
 
-    keyboard_.setKeyWidth (17.0);
     keyboard_.setColour (juce::MidiKeyboardComponent::whiteNoteColourId, juce::Colour (0xfff1efe7));
     keyboard_.setColour (juce::MidiKeyboardComponent::blackNoteColourId, juce::Colour (0xff1a1e26));
     keyboard_.setColour (juce::MidiKeyboardComponent::keySeparatorLineColourId, juce::Colours::transparentBlack);
+    keyboard_.setScrollButtonsVisible (false);
     addAndMakeVisible (keyboard_);
+    keyboard_.toBack();
 
-    const std::array<const char*, 5> octLbl { { "−2", "−1", "0", "+1", "+2" } };
+    const std::array<const char*, 5> octLbl { { "-2", "-1", "0", "+1", "+2" } };
     for (std::size_t i = 0; i < octaveButtons_.size(); ++i)
     {
         octaveButtons_[i].setButtonText (octLbl[i]);
@@ -115,6 +115,9 @@ Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcess
         addAndMakeVisible (octaveButtons_[i]);
     }
     applyOctaveShift (0);
+
+    setSize (wave9090::ui::Layout::editorWidth, wave9090::ui::Layout::editorHeight);
+    resized();
 
     startTimerHz (30);
 }
@@ -130,7 +133,9 @@ void Wave9090AudioProcessorEditor::refreshPresetCombo()
 void Wave9090AudioProcessorEditor::applyOctaveShift (int shift)
 {
     octaveShift_ = juce::jlimit (-2, 2, shift);
-    keyboard_.setLowestVisibleKey (36 + octaveShift_ * 12);
+    constexpr int baseMidi = 36; // C2
+    keyboard_.setLowestVisibleKey (baseMidi + octaveShift_ * 12);
+    layoutKeyboardKeyWidth();
     for (std::size_t i = 0; i < octaveButtons_.size(); ++i)
     {
         const bool active = static_cast<int> (i) - 2 == octaveShift_;
@@ -233,9 +238,9 @@ void Wave9090AudioProcessorEditor::paint (juce::Graphics& g)
                    readNorm (processor_, PID::filtAttack), readNorm (processor_, PID::filtDecay),
                    readNorm (processor_, PID::filtSustain), readNorm (processor_, PID::filtRelease));
 
-    auto kb = wave9090::ui::Regions::keyboard (getLocalBounds());
+    auto keybed = wave9090::ui::Regions::keyboardKeybed (getLocalBounds());
     g.setColour (wave9090::ui::tokens::feltCrimson());
-    g.fillRect (kb.removeFromTop (6));
+    g.fillRect (keybed.removeFromTop (wave9090::ui::Layout::feltStripHeight));
 }
 
 void Wave9090AudioProcessorEditor::layoutControls()
@@ -311,14 +316,34 @@ void Wave9090AudioProcessorEditor::layoutControls()
     auto macro = bayMacro_.reduced (10, 28);
     placeGrid (macro, { PID::tapeWobble, PID::stereoWidth, PID::outputGain }, 1);
 
-    auto perf = wave9090::ui::Regions::perfRow (getLocalBounds());
-    const int obw = 34;
+    const auto octCol = wave9090::ui::Regions::octaveColumn (getLocalBounds());
+    const int obw = juce::jmax (28, octCol.getWidth() / static_cast<int> (octaveButtons_.size()) - 3);
     for (std::size_t i = 0; i < octaveButtons_.size(); ++i)
-        octaveButtons_[i].setBounds (perf.getX() + static_cast<int> (i) * (obw + 4), perf.getY(), obw, perf.getHeight());
-    if (auto* glide = knobForId (PID::glide))
-        glide->setBounds (perf.getX() + 190, perf.getY() - 4, 120, perf.getHeight() + 8);
+        octaveButtons_[i].setBounds (octCol.getX() + static_cast<int> (i) * (obw + 3),
+                                     octCol.getY(),
+                                     obw,
+                                     octCol.getHeight());
 
-    keyboard_.setBounds (wave9090::ui::Regions::keyboard (getLocalBounds()).withTrimmedTop (6));
+    auto foot = wave9090::ui::Regions::footer (getLocalBounds());
+    auto glideSlot = foot;
+    glideSlot.removeFromLeft (wave9090::ui::Layout::octaveColumnWidth);
+    glideSlot = glideSlot.removeFromLeft (wave9090::ui::Layout::glideSlotWidth).reduced (4, 8);
+    if (auto* glide = knobForId (PID::glide))
+        glide->setBounds (glideSlot);
+
+    auto keybed = wave9090::ui::Regions::keyboardKeybed (getLocalBounds());
+    keyboard_.setBounds (keybed.withTrimmedTop (wave9090::ui::Layout::feltStripHeight));
+    layoutKeyboardKeyWidth();
+}
+
+void Wave9090AudioProcessorEditor::layoutKeyboardKeyWidth()
+{
+    auto keyArea = keyboard_.getBounds();
+    if (keyArea.getWidth() < 40)
+        return;
+
+    const float whiteKeys = static_cast<float> (wave9090::ui::Layout::visibleWhiteKeys);
+    keyboard_.setKeyWidth (static_cast<float> (keyArea.getWidth()) / whiteKeys);
 }
 
 void Wave9090AudioProcessorEditor::resized()
@@ -335,9 +360,10 @@ void Wave9090AudioProcessorEditor::timerCallback()
 
 void Wave9090AudioProcessorEditor::renderEditorPng (const juce::File& outFile) const
 {
+    auto* self = const_cast<Wave9090AudioProcessorEditor*> (this);
+    self->resized();
     const auto scale = 1.0f;
-    auto img = const_cast<Wave9090AudioProcessorEditor*> (this)->createComponentSnapshot (
-        getLocalBounds(), true, scale);
+    auto img = self->createComponentSnapshot (getLocalBounds(), true, scale);
     outFile.getParentDirectory().createDirectory();
     outFile.deleteFile();
     juce::FileOutputStream stream (outFile);

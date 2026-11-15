@@ -41,6 +41,7 @@ private:
     void timerCallback() override;
     void buildControls();
     void layoutControls();
+    void layoutKeyboardKeyWidth();
     void refreshPresetCombo();
     void applyOctaveShift (int delta);
     wave9090::ui::LabeledKnob* knobForId (const char* id) noexcept;
