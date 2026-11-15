@@ -1,0 +1,55 @@
+{
+  "plugin_name": "Nebula6",
+  "version": "0.1.0",
+  "track": "apc_greenfield",
+  "apc_phase": "dream",
+  "current_phase": "ideation",
+  "dpcs_phase": 0,
+  "vst_path": "Nebula6",
+  "build_root": "Nebula6",
+  "product_category": "synth.poly.juno.phonkwave_cloud",
+  "plugin_class": "synth",
+  "plugin_code": "Nb6s",
+  "reference_product": "Inspired by Jun-6/Juno-106 — not a clone",
+  "suite": "disklordz_phonk_atmosphere",
+  "ui_framework": "pending",
+  "design_system": {
+    "theme": "nebula_obsidian_cyan_violet",
+    "theme_version": "v1",
+    "contract": "plugins/PLAY_SYNTH_SHARED_UI.md"
+  },
+  "complexity_score": 0,
+  "complexity_tier": "pending",
+  "framework_selection": {
+    "decision": "pending",
+    "rationale": "WebView Play shell vs native chorus strip — resolved in Plan",
+    "implementation_strategy": "pending"
+  },
+  "targets": ["vst3_desktop", "vst3_standalone", "future_mpc_aarch64"],
+  "related_products": ["MpcJuno106", "PhonkCowbell94", "CloudSupplyTrap", "AnalogDreams84"],
+  "hero_motion": "Frozen Drift chorus bloom on minor hold",
+  "validation": {
+    "dpcs_phase0_constitution_exists": true,
+    "creative_brief_exists": true,
+    "parameter_spec_exists": true,
+    "reference_audio_analyzed": false,
+    "architecture_defined": false,
+    "ui_framework_selected": false,
+    "design_complete": false,
+    "code_complete": false,
+    "tests_passed": false,
+    "ship_ready": false
+  },
+  "open_issues": [
+    "Drop reference WAVs in references/ for reference-analysis.md",
+    "Park SemV APC unless analog SEM needed separately"
+  ],
+  "next_command": "/apc-plan Nebula6",
+  "phase_history": [
+    {
+      "phase": "dream",
+      "completed_at": "2026-11-15",
+      "notes": "Remarkable hooks: Frozen/Drift chorus, Nebula bus, Hollow notch, genre-tagged presets"
+    }
+  ]
+}
