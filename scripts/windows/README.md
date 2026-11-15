@@ -13,7 +13,9 @@ WSL builds all `.nts1mkiiunit` files, then lists them and opens:
 
 `release\nts1-custom-oscillators\mkII-nts1mkiiunit`
 
-## Step by step
+## Step by step (two lines after WSL build)
+
+Operator copy: [docs/NTS1_MKII_WINDOWS_QUICKREF.md](../../docs/NTS1_MKII_WINDOWS_QUICKREF.md)
 
 **After WSL has built** (or after unzipping a CI artifact into `release\`):
 
@@ -21,6 +23,8 @@ WSL builds all `.nts1mkiiunit` files, then lists them and opens:
 cd C:\dev\Instruments
 .\scripts\windows\prepare-mkii-test.ps1
 ```
+
+Success → green list of ~16 units + Explorer at `release\nts1-custom-oscillators\mkII-nts1mkiiunit`. Yellow “No packaged mkII units” → run WSL `build-mkii-wsl.sh` first.
 
 **WSL only:**
 

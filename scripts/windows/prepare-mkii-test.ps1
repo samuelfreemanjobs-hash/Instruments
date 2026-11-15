@@ -1,5 +1,6 @@
 # Open the packaged mkII oscillator folder and list .nts1mkiiunit files for Kontrol Editor.
-# Run from repo root: .\scripts\windows\prepare-mkii-test.ps1
+# Run from repo root (after WSL build): .\scripts\windows\prepare-mkii-test.ps1
+# Quick ref: docs/NTS1_MKII_WINDOWS_QUICKREF.md
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path

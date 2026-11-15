@@ -33,7 +33,14 @@ Files: **`release/nts1-custom-oscillators/mkII-nts1mkiiunit/*.nts1mkiiunit`**
 
 Firmware **≥ 1.0.0** required for mkII SDK units.
 
-**Windows (Kontrol Editor only):** cross-compile in **WSL2** or download CI artifacts — see [NTS1_MKII_WINDOWS_TEST.md](NTS1_MKII_WINDOWS_TEST.md) and `scripts/windows/prepare-mkii-test.ps1`.
+**Windows (Kontrol Editor):** after WSL build or CI zip — [quick ref](NTS1_MKII_WINDOWS_QUICKREF.md):
+
+```powershell
+cd C:\dev\Instruments
+.\scripts\windows\prepare-mkii-test.ps1
+```
+
+WSL build if needed: `bash ./scripts/windows/build-mkii-wsl.sh` · full guide: [NTS1_MKII_WINDOWS_TEST.md](NTS1_MKII_WINDOWS_TEST.md).
 
 ## On the hardware
 
