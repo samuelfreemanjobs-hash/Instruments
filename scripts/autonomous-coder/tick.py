@@ -5,13 +5,22 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
+from cursor_cloud import launch_slice_agent
+from github_pr import fetch_pr, github_token, pr_is_open, search_open_pr_by_title
+
+REPO = _SCRIPT_DIR.parents[1]
 QUEUE = REPO / "disklordz/autonomous-coder/coding-queue.json"
+PLUGIN_QUEUE = REPO / "disklordz/autonomous-coder/plugin-pr-queue.json"
 STATE = REPO / "disklordz/autonomous-coder/state.json"
 PROGRESS = REPO / "disklordz/audio-command/data/progress.json"
 SLICE_OUT = REPO / ".cursor/autonomous-coder/NEXT_SLICE.md"
@@ -51,6 +60,43 @@ def due_recurring(item: dict, state: dict) -> bool:
     return delta_h >= float(hours)
 
 
+def github_repo_parts() -> tuple[str, str, str]:
+    """Return (owner, repo, full_name_url)."""
+    env_repo = (os.environ.get("GITHUB_REPOSITORY") or "").strip()
+    if env_repo and "/" in env_repo:
+        owner, name = env_repo.split("/", 1)
+    else:
+        owner, name = "samuelfreemanjobs-hash", "Instruments"
+    plugin_q = load(PLUGIN_QUEUE) if PLUGIN_QUEUE.is_file() else {}
+    url = (plugin_q.get("repo_url") or f"https://github.com/{owner}/{name}").rstrip("/")
+    return owner, name, url
+
+
+def resolve_plugin_pr(item: dict, owner: str, repo: str, token: str | None) -> dict | None:
+    number = item.get("pr")
+    if number is not None:
+        pr = fetch_pr(owner, repo, int(number), token)
+        return pr if pr_is_open(pr) else None
+    keywords = item.get("title_match") or [item.get("title") or ""]
+    return search_open_pr_by_title(owner, repo, keywords, token)
+
+
+def pick_next_plugin_pr(state: dict) -> tuple[dict, dict | None] | None:
+    if not PLUGIN_QUEUE.is_file():
+        return None
+    plugin_q = load(PLUGIN_QUEUE)
+    owner, repo, _ = github_repo_parts()
+    token = github_token()
+    items = sorted(plugin_q.get("items") or [], key=lambda x: x.get("priority", 99))
+
+    for it in items:
+        pr = resolve_plugin_pr(it, owner, repo, token)
+        if not pr:
+            continue
+        return it, pr
+    return None
+
+
 def pick_next(queue: dict, state: dict, *, owner: str | None = None) -> dict | None:
     completed = set(state.get("completed_ids") or [])
     items = sorted(queue.get("items") or [], key=lambda x: x.get("priority", 99))
@@ -64,7 +110,6 @@ def pick_next(queue: dict, state: dict, *, owner: str | None = None) -> dict | N
         if not due_recurring(it, state):
             continue
         return it
-    # recurring: allow re-run
     for it in items:
         if it.get("recurrence_hours") and gate_open(it) and due_recurring(it, state):
             return it
@@ -118,7 +163,8 @@ def emit_waiting(queue: dict, state: dict) -> None:
     else:
         gate = (blocked or {}).get("gate_completed_task", "dev-environment")
         lines += [
-            f"**Blocked by:** Coach gate `{gate}`" + (" (not in completed_ids)" if gate not in coach_done else ""),
+            f"**Blocked by:** Coach gate `{gate}`"
+            + (" (not in completed_ids)" if gate not in coach_done else ""),
             f"**Completed sprint ids:** `{done}`",
             "",
             "## Your move (human)",
@@ -144,7 +190,7 @@ def emit_waiting(queue: dict, state: dict) -> None:
     print(f"Wrote {SLICE_OUT} (waiting)")
 
 
-def emit_slice(item: dict) -> None:
+def emit_slice(item: dict, *, pr: dict | None = None) -> None:
     SLICE_OUT.parent.mkdir(parents=True, exist_ok=True)
     lines = [
         "# Autonomous Coding Agent — NEXT SLICE",
@@ -152,16 +198,34 @@ def emit_slice(item: dict) -> None:
         f"**Queue id:** `{item['id']}`",
         f"**Title:** {item.get('title', '')}",
         "",
-        "## Acceptance",
-        item.get("acceptance", "See title."),
-        "",
-        "## Allowlist (only these paths)",
-        "```json",
-        json.dumps(item.get("allowlist") or [], indent=2),
-        "```",
-        "",
-        "## Read first",
     ]
+    if pr:
+        lines += [
+            f"**GitHub PR:** #{pr.get('number')}",
+            f"**Branch:** `{pr.get('head', {}).get('ref') or pr.get('headRefName', '')}`",
+            "",
+        ]
+    lines += [
+        "## Acceptance",
+        item.get("acceptance", "See title — plugin MVP + green CI + Windows VST3 artifact."),
+        "",
+    ]
+    allowlist = item.get("allowlist")
+    if allowlist:
+        lines += [
+            "## Allowlist (only these paths)",
+            "```json",
+            json.dumps(allowlist, indent=2),
+            "```",
+            "",
+        ]
+    else:
+        lines += [
+            "## Scope",
+            "Plugin / VST engineering slice — edit only paths required for this PR (prefer PR branch).",
+            "",
+        ]
+    lines.append("## Read first")
     for p in item.get("context_paths") or []:
         lines.append(f"- `{p}`")
     lines += [
@@ -170,8 +234,15 @@ def emit_slice(item: dict) -> None:
         "- Skill: `disklordz-autonomous-coding-agent`",
         "- Soul: `disklordz/agents/profit/autonomous-coding-agent/soul.md`",
         "",
-        "When done: `python3 scripts/autonomous-coder/tick.py --complete " + item["id"] + "`",
     ]
+    if item["id"].startswith("plugin-"):
+        lines += [
+            "When done: push branch; ensure PR checks pass; do **not** merge.",
+        ]
+    else:
+        lines += [
+            "When done: `python3 scripts/autonomous-coder/tick.py --complete " + item["id"] + "`",
+        ]
     SLICE_OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Wrote {SLICE_OUT}")
 
@@ -197,9 +268,72 @@ def check_progress() -> int:
     return 0
 
 
+def pick_emit_item(state: dict) -> tuple[dict, dict | None] | tuple[dict, None]:
+    plugin = pick_next_plugin_pr(state)
+    if plugin:
+        return plugin
+    queue = load(QUEUE)
+    item = pick_next(queue, state, owner="cloud")
+    if item:
+        return item, None
+    return {"id": "waiting", "title": "waiting"}, None
+
+
+def launch_agent_from_slice(state: dict) -> int:
+    if not SLICE_OUT.is_file():
+        print("SKIP launch: NEXT_SLICE.md missing — run --emit-slice first")
+        return 0
+    slice_md = SLICE_OUT.read_text(encoding="utf-8")
+    if "**Status:** `waiting`" in slice_md:
+        print("SKIP launch: queue waiting — no runnable slice")
+        return 0
+
+    pending = state.get("pending_launch") or {}
+    item_id = pending.get("slice_id")
+    if not item_id:
+        print("SKIP launch: no pending_launch in state (re-run --emit-slice)")
+        return 0
+
+    plugin_q = load(PLUGIN_QUEUE) if PLUGIN_QUEUE.is_file() else {"items": []}
+    item = next((i for i in plugin_q.get("items") or [] if i["id"] == item_id), None)
+    if not item:
+        queue = load(QUEUE)
+        item = next((i for i in queue.get("items") or [] if i["id"] == item_id), None)
+    if not item:
+        print(f"SKIP launch: unknown slice id {item_id}")
+        return 1
+
+    owner, repo, repo_url = github_repo_parts()
+    token = github_token()
+    pr_number = pending.get("pr")
+    pr = fetch_pr(owner, repo, int(pr_number), token) if pr_number else None
+    plugin_q_data = load(PLUGIN_QUEUE) if PLUGIN_QUEUE.is_file() else {}
+    default_ref = plugin_q_data.get("default_ref") or "main"
+    ref = default_ref
+    if pr:
+        ref = (pr.get("head") or {}).get("ref") or pr.get("headRefName") or default_ref
+
+    ok = launch_slice_agent(
+        item,
+        slice_md,
+        repo_url=repo_url,
+        ref=ref,
+        pr=pr,
+        state=state,
+    )
+    if ok:
+        state.setdefault("active_plugin_slices", {})[item_id] = datetime.now(
+            timezone.utc
+        ).strftime("%Y-%m-%dT%H:%M:%SZ")
+        state["last_tick_at"] = state["active_plugin_slices"][item_id]
+        save_state(state)
+    return 0 if ok else 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--emit-slice", action="store_true", help="Write NEXT_SLICE.md for Cursor Cloud")
+    parser.add_argument("--launch-agent", action="store_true", help="Launch Cursor Cloud agent for current slice")
     parser.add_argument("--complete", metavar="ID", help="Mark queue item complete")
     parser.add_argument("--check-progress", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
@@ -211,19 +345,33 @@ def main() -> int:
         mark_complete(args.complete)
         return 0
 
+    state = load(STATE) if STATE.is_file() else {"completed_ids": [], "last_completed": {}}
+
+    if args.launch_agent:
+        return launch_agent_from_slice(state)
+
     if not QUEUE.is_file():
         print(f"missing {QUEUE}", file=sys.stderr)
         return 1
 
     queue = load(QUEUE)
-    state = load(STATE) if STATE.is_file() else {"completed_ids": [], "last_completed": {}}
 
     if args.emit_slice:
-        item = pick_next(queue, state, owner="cloud")
-        if not item:
+        item, pr = pick_emit_item(state)
+        if item.get("id") == "waiting":
             emit_waiting(queue, state)
+            state.pop("pending_launch", None)
+            save_state(state)
             return 0
-        emit_slice(item)
+        emit_slice(item, pr=pr)
+        pr_num = (pr or {}).get("number")
+        state["pending_launch"] = {"slice_id": item["id"], "pr": pr_num}
+        state["last_tick_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        save_state(state)
+        if item["id"].startswith("plugin-"):
+            print("Plugin slice ready — run tick.py --launch-agent (or CI step)")
+        else:
+            print("Cloud slice ready — run tick.py --launch-agent")
         return 0
 
     item = pick_next(queue, state)
@@ -253,7 +401,7 @@ def main() -> int:
         if rc == 0 and not args.dry_run and not item.get("recurrence_hours"):
             mark_complete(item["id"])
         elif rc == 0 and not args.dry_run and item.get("recurrence_hours"):
-            mark_complete(item["id"])  # updates last_completed via mark_complete
+            mark_complete(item["id"])
         return rc
 
     return 0

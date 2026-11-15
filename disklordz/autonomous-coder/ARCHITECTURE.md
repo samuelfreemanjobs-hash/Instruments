@@ -22,7 +22,7 @@ coding-queue.json
        ▼
 tick.py ──► antigravity sync (shell)
        │
-       ├──► NEXT_SLICE.md ──► Cursor Cloud (autonomous-coding-agent skill)
+       ├──► NEXT_SLICE.md ──► Cursor Cloud API (`tick.py --launch-agent`, secret `CURSOR_API_KEY`)
        │
        └──► factory-escalation/*.md ──► plugin-factory-liaison / issue
 ```

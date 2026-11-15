@@ -1,4 +1,4 @@
-# Nightly full monorepo QA (plugins + Disklordz web smoke).
+# Nightly monorepo QA (VST CI parity — same profile as PR Build gate).
 name: Nightly QA
 
 on:
@@ -9,7 +9,7 @@ on:
 jobs:
   full-business:
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
 
@@ -32,4 +32,4 @@ jobs:
       - name: Full business pipeline
         env:
           PYTHONUNBUFFERED: "1"
-        run: python3 -u vst-testing-ops/run_business.py --profile full
+        run: python3 -u vst-testing-ops/run_business.py --profile ci
