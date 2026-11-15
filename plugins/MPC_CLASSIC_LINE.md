@@ -12,11 +12,11 @@
 
 | Plugin | Vintage target | Phase | Next |
 |--------|----------------|-------|------|
-| [MpcMinimoog](MpcMinimoog/status.json) | Minimoog Model D | Plan complete | `/apc-design MpcMinimoog` |
+| [MpcMinimoog](MpcMinimoog/status.json) | Minimoog Model D | **Impl** (vst/) | `/apc-test MpcMinimoog` |
 | [MpcVoyager](MpcVoyager/status.json) | Voyager-style mono ladder | **Impl** (vst/) | `/apc-test MpcVoyager` |
 | [MpcSubPhatty](MpcSubPhatty/status.json) | Sub Phatty multidrive bass | **Impl** (vst/) | `/apc-test MpcSubPhatty` |
 | [MpcMessenger](MpcMessenger/status.json) | Messenger wavefold + Res Bass | **Impl** (vst/) | `/apc-test MpcMessenger` |
-| [MpcSh101](MpcSh101/status.json) | Roland SH-101 | Plan complete | `/apc-design MpcSh101` |
+| [MpcSh101](MpcSh101/status.json) | Roland SH-101 | **Impl** (vst/) | `/apc-test MpcSh101` |
 
 ### Early digital & hybrid (FM)
 
@@ -34,7 +34,7 @@
 
 | Plugin | Vintage target | Phase | Next |
 |--------|----------------|-------|------|
-| [MpcTr808909](MpcTr808909/status.json) | Roland TR-808 / TR-909 | Plan complete | `/apc-design MpcTr808909` |
+| [MpcTr808909](MpcTr808909/status.json) | Roland TR-808 / TR-909 | **Impl** (vst/) | `/apc-test MpcTr808909` |
 
 **Platform:** Linux **x86_64** (DAW + pluginval) and **aarch64** VST3 for **Melodee** (`docs/MPC_SAMPLE_VST3.md`). Default **headless** (`hasEditor() == false`). Reference precursor: `vst/MpcAnalogSynth` (Prophet-lite sketch).
 
