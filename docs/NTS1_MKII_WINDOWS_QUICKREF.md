@@ -50,9 +50,15 @@ Firmware **≥ 1.0.0** required.
 
 ```powershell
 cd C:\dev\Instruments
+git pull origin main
 gh auth login
+.\scripts\windows\diagnose-mkii-download.ps1   # optional debug
 .\scripts\windows\download-mkii-ci-artifact.ps1
 .\scripts\windows\prepare-mkii-test.ps1
 ```
+
+**“No successful run”:** run `git pull`, `gh auth login`, then `gh workflow run nts1-mkii-build.yml -R samuelfreemanjobs-hash/Instruments --ref main` and retry after green.
+
+**Download EOF / fails:** download the zip in the browser from that Actions run, or WSL: `bash ./scripts/windows/download-mkii-ci-artifact.sh` or `bash ./scripts/windows/build-mkii-wsl.sh`.
 
 More detail: [NTS1_MKII_WINDOWS_TEST.md](NTS1_MKII_WINDOWS_TEST.md)

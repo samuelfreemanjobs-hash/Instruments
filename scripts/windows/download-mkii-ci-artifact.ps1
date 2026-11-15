@@ -1,13 +1,13 @@
-# Download the latest successful nts1-mkii-units artifact from GitHub Actions (no WSL compile).
-# Requires: gh auth login (GitHub CLI)
+# Download nts1-mkii-units from GitHub Actions (no WSL compile).
+# Requires: gh auth login — same GitHub user that can read this repo.
 #
-#   cd C:\dev\Instruments
 #   .\scripts\windows\download-mkii-ci-artifact.ps1
-#   .\scripts\windows\prepare-mkii-test.ps1
+#   .\scripts\windows\diagnose-mkii-download.ps1   # if this script fails
 
 param(
-    [string]$Repo = "samuelfreemanjobs-hash/Instruments",
-    [string]$Branch = "main"
+    [string]$Repo = "",
+    [string]$Branch = "main",
+    [long]$RunId = 0
 )
 
 $ErrorActionPreference = "Stop"
@@ -15,71 +15,105 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $ReleaseRoot = Join-Path $RepoRoot "release\nts1-custom-oscillators"
 $ArtifactName = "nts1-mkii-units"
-$WorkflowFile = "nts1-mkii-build.yml"
 
-$gh = Get-Command gh -ErrorAction SilentlyContinue
-if (-not $gh) {
-    Write-Host "Install GitHub CLI and run: gh auth login" -ForegroundColor Yellow
-    Write-Host "https://cli.github.com/"
+function Get-GhRepoFromGit {
+    param([string]$Root)
+    try {
+        $url = git -C $Root remote get-url origin 2>$null
+        if ($url -match 'github\.com[:/](.+)/(.+?)(\.git)?$') {
+            return "$($Matches[1])/$($Matches[2])"
+        }
+    } catch {}
+    return "samuelfreemanjobs-hash/Instruments"
+}
+
+function Invoke-GhExit {
+    param([string[]]$GhArgs)
+    & gh @GhArgs
+    if ($LASTEXITCODE -ne 0) {
+        throw "gh failed ($LASTEXITCODE): gh $($GhArgs -join ' ')"
+    }
+}
+
+if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+    Write-Host "Install GitHub CLI: https://cli.github.com/ then gh auth login" -ForegroundColor Yellow
     exit 1
 }
 
-gh auth status 2>&1 | Out-Null
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "GitHub CLI not authenticated. Run: gh auth login" -ForegroundColor Yellow
+& gh auth status *> $null
+if (-not $?) {
+    Write-Host "Run: gh auth login" -ForegroundColor Yellow
     exit 1
+}
+
+if ([string]::IsNullOrWhiteSpace($Repo)) {
+    $Repo = Get-GhRepoFromGit -Root $RepoRoot
 }
 
 Push-Location $RepoRoot
 try {
-    $raw = gh run list -R $Repo --workflow $WorkflowFile --limit 30 --json databaseId,conclusion,status,headBranch,url
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "gh run list failed for $Repo" -ForegroundColor Red
-        exit $LASTEXITCODE
-    }
-    if ([string]::IsNullOrWhiteSpace($raw) -or $raw.Trim() -eq "[]") {
-        Write-Host "No workflow runs returned for $Repo / $WorkflowFile." -ForegroundColor Yellow
-        Write-Host "Trigger: gh workflow run $WorkflowFile -R $Repo --ref main"
-        exit 1
+    $success = $null
+    if ($RunId -gt 0) {
+        $success = [PSCustomObject]@{ databaseId = $RunId; headBranch = $Branch; url = "" }
+    } else {
+        $raw = $null
+        foreach ($wf in @("nts1-mkii-build.yml", "NTS-1 mkII oscillators")) {
+            try {
+                $raw = gh run list -R $Repo --workflow $wf --limit 30 --json databaseId,conclusion,status,headBranch,url 2>$null
+                if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($raw) -and $raw.Trim() -ne "[]") {
+                    break
+                }
+            } catch {}
+        }
+        if ([string]::IsNullOrWhiteSpace($raw) -or $raw.Trim() -eq "[]") {
+            Write-Host "No workflow runs listed for $Repo (need git pull + merged workflow?)." -ForegroundColor Yellow
+            Write-Host "Fix: gh workflow run nts1-mkii-build.yml -R $Repo --ref main"
+            Write-Host "Or WSL: bash ./scripts/windows/build-mkii-wsl.sh"
+            exit 1
+        }
+        $runJson = $raw | ConvertFrom-Json
+        if ($runJson -isnot [array]) { $runJson = @($runJson) }
+        $success = $runJson | Where-Object { $_.conclusion -eq "success" -and $_.headBranch -eq $Branch } | Select-Object -First 1
+        if (-not $success) {
+            $success = $runJson | Where-Object { $_.conclusion -eq "success" } | Select-Object -First 1
+        }
     }
 
-    $runJson = $raw | ConvertFrom-Json
-    if ($runJson -isnot [array]) {
-        $runJson = @($runJson)
-    }
-
-    $success = $runJson | Where-Object { $_.conclusion -eq "success" -and $_.headBranch -eq $Branch } | Select-Object -First 1
     if (-not $success) {
-        $success = $runJson | Where-Object { $_.conclusion -eq "success" } | Select-Object -First 1
-    }
-    if (-not $success) {
-        Write-Host "No successful run for workflow $WorkflowFile on $Repo yet." -ForegroundColor Yellow
-        Write-Host "Trigger: gh workflow run $WorkflowFile -R $Repo --ref main"
-        Write-Host "Or: GitHub -> Actions -> NTS-1 mkII oscillators -> Run workflow"
+        Write-Host "No successful run yet. Start one:" -ForegroundColor Yellow
+        Write-Host "  gh workflow run nts1-mkii-build.yml -R $Repo --ref main"
         exit 1
     }
 
     $runId = $success.databaseId
-    Write-Host "Downloading artifact from run $runId (branch: $($success.headBranch)) ..." -ForegroundColor Cyan
-    if ($success.url) {
-        Write-Host "Run: $($success.url)"
-    }
+    Write-Host "Using run $runId (branch: $($success.headBranch))" -ForegroundColor Cyan
+    if ($success.url) { Write-Host $success.url }
 
     $staging = Join-Path $env:TEMP "nts1-mkii-download-$runId"
-    if (Test-Path $staging) {
-        Remove-Item -Recurse -Force $staging
-    }
+    if (Test-Path $staging) { Remove-Item -Recurse -Force $staging }
     New-Item -ItemType Directory -Path $staging | Out-Null
 
-    gh run download $runId -R $Repo --name $ArtifactName --dir $staging
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "gh run download failed." -ForegroundColor Red
-        exit $LASTEXITCODE
+    $downloaded = $false
+    foreach ($attempt in 1..4) {
+        try {
+            Invoke-GhExit @("run", "download", "$runId", "-R", $Repo, "--name", $ArtifactName, "--dir", $staging)
+            $downloaded = $true
+            break
+        } catch {
+            Write-Host "Download attempt $attempt failed: $($_.Exception.Message)" -ForegroundColor Yellow
+            Start-Sleep -Seconds ([int][Math]::Pow(2, $attempt))
+        }
+    }
+    if (-not $downloaded) {
+        Write-Host "gh download failed (GitHub/Azure glitch). Use the browser:" -ForegroundColor Yellow
+        Write-Host "  Actions -> NTS-1 mkII oscillators -> run $runId -> Artifacts -> $ArtifactName"
+        Write-Host "Unzip to: $ReleaseRoot"
+        Write-Host "Or WSL: bash ./scripts/windows/build-mkii-wsl.sh"
+        exit 1
     }
 
     New-Item -ItemType Directory -Force -Path $ReleaseRoot | Out-Null
     Copy-Item -Path (Join-Path $staging "*") -Destination $ReleaseRoot -Recurse -Force
-
     Write-Host "Installed under $ReleaseRoot" -ForegroundColor Green
     Write-Host "Next: .\scripts\windows\prepare-mkii-test.ps1"
 } finally {
