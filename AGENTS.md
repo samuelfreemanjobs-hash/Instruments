@@ -60,6 +60,8 @@ Root **`.cursorrules`** — delegation to Antigravity, Factory liaison, business
 
 Do not mix lanes: **audio-business-copilot** = sprint; **plugin-factory-liaison** = Factory prompts/CI triage; **Cursor Factory** = JUCE/C++.
 
+**Milestone 001 (now):** Stage B on `DiskLordz-Audio/` · Windows VST3 CI [`.github/workflows/disklordz-audio-windows.yml`](.github/workflows/disklordz-audio-windows.yml) · build [`DiskLordz-Audio/BUILD.md`](DiskLordz-Audio/BUILD.md) · Coach gate **`plugin-skeleton`** (DAW proof).
+
 ## Disklordz SaaS (web)
 
 ```bash
@@ -101,6 +103,15 @@ ctest --test-dir build -R SP1200 --output-on-failure
 ```
 
 Handoff: [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md). Spec: [docs/SP1200_STANDALONE_SPEC.md](docs/SP1200_STANDALONE_SPEC.md).
+
+## JUCE VST engineer rules (Claude Code)
+
+For any VST/VSTi session, read **[docs/CLAUDE_VST_ENGINEER.md](docs/CLAUDE_VST_ENGINEER.md)** — RT constraints, file ownership, build commands, pluginval, APC lifecycle, and SmoothParam pattern. This is the plain-markdown mirror of `.cursor/rules/` for Claude Code sessions.
+
+**Session bootstrap (paste once):**
+```
+Read AGENTS.md and docs/CLAUDE_VST_ENGINEER.md. Active product: <ProphetRev2Trap | SP1200 | …>
+```
 
 ## JUCE plugin (default Cloud install)
 

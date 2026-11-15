@@ -134,6 +134,86 @@
       "allowlist": ["disklordz/autonomous-coder/"],
       "context_paths": ["DiskLordz-Audio/BUILD.md"],
       "priority": 13
+    },
+    {
+      "id": "cloud-progress-notes-ci-main",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "progress.json notes: main + Windows CI landed",
+      "acceptance": "weekly note cites PR #112 and GH VST3 workflow; plugin-skeleton still open",
+      "allowlist": ["disklordz/audio-command/data/"],
+      "context_paths": ["docs/AUDIO_PREP_HANDOFF_BUNDLE.md"],
+      "priority": 14
+    },
+    {
+      "id": "cloud-slack-doc-factory-liaison",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "SLACK_DISKLOORDZ: factory liaison human-windows → #disklordz",
+      "acceptance": "Row for plugin-factory-liaison timer vs #disklordz-dev",
+      "allowlist": ["docs/"],
+      "context_paths": ["docs/AUDIO_PLUGIN_AGENT_LANE.md"],
+      "priority": 15
+    },
+    {
+      "id": "cloud-audio-lane-ci-accuracy",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "AUDIO_PLUGIN_AGENT_LANE: Windows CI + plugin-skeleton gate",
+      "acceptance": "Lane doc cites disklordz-audio-windows.yml; blocker text human-windows",
+      "allowlist": ["docs/"],
+      "context_paths": ["DiskLordz-Audio/BUILD.md"],
+      "priority": 16
+    },
+    {
+      "id": "cloud-liaison-doc-human-windows",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "CURSOR_FACTORY_LIAISON: human-windows = Samuel not Factory",
+      "acceptance": "Section cites PASTE_TO_FACTORY, Windows CI, operator doc",
+      "allowlist": ["docs/"],
+      "context_paths": ["disklordz/audio-command/data/PASTE_TO_FACTORY.md"],
+      "priority": 17
+    },
+    {
+      "id": "cloud-agents-md-plugin-skeleton-ci",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "AGENTS.md: CHORD ENGINE Windows CI + plugin-skeleton gate",
+      "acceptance": "DiskLordz Audio section cites BUILD.md and Windows workflow",
+      "allowlist": ["AGENTS.md"],
+      "context_paths": ["docs/AUDIO_PLUGIN_AGENT_LANE.md"],
+      "priority": 18
+    },
+    {
+      "id": "cloud-paste-refresh-timestamp",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Refresh PASTE_TO_FACTORY timestamp + ROADMAP Stage B note",
+      "acceptance": "factory-queue.py run; ROADMAP mentions main Stage B / plugin-skeleton",
+      "allowlist": ["docs/", "disklordz/audio-command/data/", "scripts/audio-plugin/"],
+      "context_paths": ["docs/DISKLORDZ_MASTER_PLAN.md"],
+      "priority": 19
+    },
+    {
+      "id": "cloud-next-factory-inbox-open",
+      "owner": "cloud",
+      "kind": "factory_escalation",
+      "title": "next-factory: list open Antigravity handoffs (parallel)",
+      "acceptance": "Parallel section names open HO + WO ids; does not block plugin-skeleton",
+      "allowlist": ["disklordz/autonomous-coder/factory-escalation/"],
+      "context_paths": ["disklordz/antigravity/inbox/"],
+      "priority": 20
+    },
+    {
+      "id": "cloud-autonomous-reduce-churn",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Idle + human-windows: prefer no doc-only queue spam",
+      "acceptance": "AUTONOMOUS_CODING_AGENT.md states defer new cloud slices until plugin-skeleton done",
+      "allowlist": ["docs/", "disklordz/autonomous-coder/"],
+      "context_paths": ["disklordz/audio-command/data/progress.json"],
+      "priority": 21
     }
   ]
 }

@@ -1,3 +1,5 @@
+/test-evidence-*.webp
+
 node_modules/
 
 .deps/

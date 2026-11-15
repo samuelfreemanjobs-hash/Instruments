@@ -10,6 +10,7 @@ Operator map for **CHORD ENGINE / Milestone 001** — agents already in this rep
 | **plugin-factory-liaison** | Next Factory slice, no C++ | Reads `PASTE_TO_FACTORY.md` |
 | **autonomous-coding-agent** | 24/7 allowlisted repo work | `autonomous-coding-agent.yml` |
 | **golden-wav-qa** | Plugin DSP regression | `build.yml` + optional `audio-plugin-fleet.yml` |
+| **Windows VST3 CI** | CHORD ENGINE artifact on `main` | `.github/workflows/disklordz-audio-windows.yml` |
 | **license-compliance** | JUCE / commercial gate | Manual before launch |
 | **airtable-wo-triage** | WO → Antigravity / issues | `airtable-antigravity-handoff.yml` |
 
@@ -29,7 +30,7 @@ cat disklordz/audio-command/data/PASTE_TO_FACTORY.md
 # Paste into Cursor Factory OR invoke skill disklordz-plugin-factory-liaison
 ```
 
-Blocked until **`dev-environment`** is done in Coach — file will say `human-windows`.
+Current blocker: **`human-windows`** — `plugin-skeleton` (VST3 build or Actions artifact + DAW). See `PASTE_TO_FACTORY.md`.
 
 ## Local one-shot
 

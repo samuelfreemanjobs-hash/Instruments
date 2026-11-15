@@ -1,0 +1,5 @@
+# Minimal Supabase CLI config for deal-hunter migrations (link via scripts/provision-supabase.sh)
+project_id = ""
+
+[db]
+major_version = 15
