@@ -75,6 +75,12 @@ python3 disklordz/lofi12-phonk-factory/scripts/phonk_vocal_factory.py \
 
 [sequencer/ARCHITECTURE.md](sequencer/ARCHITECTURE.md) — Web UI + `pattern_from_groove.py` + optional `midi_play.py`.
 
+## Licensing & QA
+
+- Resale terms: `products/LICENSE.txt`
+- Procedural-only source log: `products/SOURCE_LICENSE_LOG.md`
+- CI/local kit scan: `scripts/kit_output_qa.py` (peaks ≤ -0.3 dBFS, non-zero WAVs)
+
 ## Extension points
 
 - WAV → Lofi-12 `.syx` encoder + USB-MIDI send (see repo `docs/SYSEX.md` patterns)
