@@ -263,8 +263,8 @@ JDUpgradedAudioProcessorEditor::JDUpgradedAudioProcessorEditor (JDUpgradedAudioP
     applyTooltipsFromLayout();
 
     startTimerHz (12);
-    const int w = uiLayout_.windowWidth > 0 ? uiLayout_.windowWidth : 1020;
-    const int h = uiLayout_.windowHeight > 0 ? uiLayout_.windowHeight : 780;
+    const int w = uiLayout_.windowWidth > 0 ? uiLayout_.windowWidth : 1000;
+    const int h = uiLayout_.windowHeight > 0 ? uiLayout_.windowHeight : 760;
     setResizable (uiLayout_.resizable, uiLayout_.resizable);
     setSize (w, h);
     setWantsKeyboardFocus (true);

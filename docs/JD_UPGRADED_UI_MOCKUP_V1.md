@@ -9,8 +9,9 @@ Target **shipping layout** for the native `dl_ui` skin (Canva/Stitch export). DS
 | Property | Value |
 |----------|--------|
 | Art direction | Dark rack + wood end cheeks, orange active (`~#FF5500`) |
-| Reference image size | **1024×819** px (`jd-upgraded-workstation-mockup-v1.jpg`) |
-| `layout.json` target | Set `window` to **1024×819** when Sam’s `background.png` is committed (scaffold today: 1020×780) |
+| Reference image size | **1024×819** px mockup v1 JPG; **authoritative canvas 1000×760** per V-Collection style guide |
+| `layout.json` | **1000×760** (Stitch screen `0cd8c1ef7e7d45289902c2bdf827b923`) |
+| Style guide | [`JD_UPGRADED_V_COLLECTION_STYLE_GUIDE.md`](JD_UPGRADED_V_COLLECTION_STYLE_GUIDE.md) |
 
 **Stitch Canvas:** [Project 4458054159206462354](https://stitch.google.com/projects/4458054159206462354) (pinned in `.stitch.json` + `.stitch/manifest.json`).
 

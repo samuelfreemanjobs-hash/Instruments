@@ -28,7 +28,7 @@ MCP (Cursor): add `stitch` server in `.cursor/mcp.json` with `X-Goog-Api-Key` fr
 | **Background** (full panel, no controls) | `window.background` asset name + PNG in `skins/.../assets/` |
 | **Safe margin** | Leave ~8–12 px from frame edges (layout can inset controls) |
 
-Default JD Upgraded scaffold: **1020 × 780** (`skins/jdupgraded_default/layout.json`).
+Default JD Upgraded scaffold: **1000 × 760** (`skins/jdupgraded_default/layout.json`), per `docs/JD_UPGRADED_V_COLLECTION_STYLE_GUIDE.md` and Stitch screen `0cd8c1ef7e7d45289902c2bdf827b923`.
 
 ## JD Upgraded — Hardware Component Library v1.0 (Sam)
 

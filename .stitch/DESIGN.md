@@ -1,22 +1,29 @@
 ---
-name: Anodized Studio Rack VST3
-version: 1.0.0
+name: JD Upgraded V-Collection Rack
+version: 1.1.0
 platform: juce-vst3-desktop
+stitch_project: "4458054159206462354"
+stitch_screen: "0cd8c1ef7e7d45289902c2bdf827b923"
+canvas_px: "1000x760"
 colors:
-  background: "#141619"
-  surface: "#1E2228"
-  surface_recessed: "#101215"
-  border_subtle: "#2E343D"
-  text_primary: "#F0F2F5"
-  text_secondary: "#9BA3B0"
-  accent_primary: "#D98838"
-  primary: "#D98838"
-  semantic_signal: "#4CA67A"
-  semantic_clip: "#F06A6A"
+  background: "#0b0e15"
+  surface: "#10131a"
+  surface_recessed: "#191c22"
+  surface_elevated: "#22262f"
+  border_subtle: "rgba(255,255,255,0.07)"
+  text_primary: "#eceff1"
+  text_secondary: "#90a4ae"
+  text_muted: "#546e7a"
+  text_lcd: "#ffab91"
+  accent_primary: "#ff7043"
+  primary: "#ff7043"
+  semantic_signal: "#00e676"
+  semantic_clip: "#ff3d00"
+  meter_amber: "#ffca28"
 typography:
-  font_ui: "Inter, system-ui, sans-serif"
-  font_telemetry: "JetBrains Mono, monospace"
-  base_size: "12px"
+  font_ui: "Inter, Space Grotesk, system-ui, sans-serif"
+  font_telemetry: "JetBrains Mono, Space Grotesk, monospace"
+  base_size: "10px"
 spacing:
   unit: "4px"
   module_gap: "8px"
@@ -33,7 +40,9 @@ rounded:
 
 A restrained, hardware-inspired **Cockpit Dense** (density 8/10) desktop audio plugin interface modeled on precision studio rack gear. The interface favors crisp modular boundaries, instant scannability, **zero viewport scrolling**, and tactile controls bound to JUCE parameters.
 
-**Disklordz products:** default DESKTOP frame **960×600** for new WebView UIs; **JD Upgraded** native skin scaffold uses **1020×780** until Sam’s Stitch export lands (see `shared/disklordz_ui/skins/jdupgraded_default/layout.json`).
+**JD Upgraded (canonical):** Stitch screen [`0cd8c1ef7e7d45289902c2bdf827b923`](https://stitch.google.com/projects/4458054159206462354/screens/0cd8c1ef7e7d45289902c2bdf827b923) — **1000×760** px, Arturia-orange accent `#ff7043`. Full prose: `docs/JD_UPGRADED_V_COLLECTION_STYLE_GUIDE.md`.
+
+**Other Disklordz plugins:** generic **Anodized Studio Rack** tokens may use `#D98838` / 960×600; do not apply JD walnut keybed spec to unrelated products.
 
 **JD Upgraded Hardware v1.0 (Sam):** component library reference at `shared/disklordz_ui/skins/jdupgraded_default/assets/reference/jd-upgraded-component-library-v1.jpg`. Active hardware glow may read **~#FF8C00** on the mockup; token `primary` / `accent_primary` stays **#D98838** until Sam picks one accent for lint + Stitch upload.
 

@@ -1,13 +1,13 @@
 {
   "window": {
-    "width": 1020,
-    "height": 780,
+    "width": 1000,
+    "height": 760,
     "resizable": true,
     "background": ""
   },
   "controls": {
-    "titleLabel": { "type": "label", "x": 8, "y": 4, "w": 1004, "h": 20, "legend": "JD Upgraded" },
-    "romSourceLabel": { "type": "label", "x": 8, "y": 24, "w": 1004, "h": 16 },
+    "titleLabel": { "type": "label", "x": 20, "y": 4, "w": 960, "h": 20, "legend": "JD Upgraded" },
+    "romSourceLabel": { "type": "label", "x": 20, "y": 24, "w": 960, "h": 16 },
     "presetPrev": { "type": "button", "id": "programPrev", "x": 8, "y": 44, "w": 40, "h": 24, "tooltip": "Previous factory program" },
     "presetNext": { "type": "button", "id": "programNext", "x": 52, "y": 44, "w": 40, "h": 24, "tooltip": "Next factory program" },
     "presetName": { "type": "label", "x": 96, "y": 44, "w": 600, "h": 24, "legend": "Program" },
