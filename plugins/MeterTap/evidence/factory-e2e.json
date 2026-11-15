@@ -1,0 +1,1052 @@
+{
+  "ok": true,
+  "plugin_name": "MeterTap",
+  "project_id": 1,
+  "stages_done": [
+    "intake",
+    "dream",
+    "plan",
+    "design",
+    "scaffold",
+    "impl",
+    "build",
+    "test",
+    "certify",
+    "ship"
+  ],
+  "failures": [],
+  "transcript": [
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "status": 200,
+      "dt_s": 0.017037503000210563,
+      "body": {
+        "status": "ok",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects",
+      "status": 200,
+      "dt_s": 0.006761104000361229,
+      "request": {
+        "prompt": "DiskLordz factory e2e: MeterTap \u2014 full lifecycle through ship.",
+        "plugin_class": "effect",
+        "plugin_name": "MeterTap",
+        "product_category": "fx.metering"
+      },
+      "body": {
+        "id": 1,
+        "plugin_name": "MeterTap",
+        "plugin_class": "effect",
+        "state": "dream",
+        "spec": {
+          "schema_version": "factory-spec/v2",
+          "plugin_name": "MeterTap",
+          "plugin_class": "effect",
+          "product_category": "fx.metering",
+          "target_format": "vst3",
+          "target_os": "windows_x64",
+          "prompt": "DiskLordz factory e2e: MeterTap \u2014 full lifecycle through ship.",
+          "track": "apc_greenfield",
+          "buses": {
+            "midi_in": false,
+            "midi_out": false,
+            "audio_in": true,
+            "audio_out": true
+          },
+          "dsp_modules": [
+            "analysis.peak_rms"
+          ],
+          "gui_modules": [
+            "gui.meter"
+          ],
+          "parameters": [],
+          "acceptance_tests": [
+            "tools/build-vst.sh MeterTap succeeds",
+            "run_business.py --profile factory --plugin MeterTap"
+          ],
+          "module_refs": {
+            "plugin_class_id": "plugin-class/effect",
+            "workflow_id": "workflow/full-lifecycle",
+            "product_category": "fx.metering"
+          },
+          "autonomy_mode": "collaborative"
+        },
+        "apc_path": null,
+        "vst_path": null,
+        "phase": "dream",
+        "validation": {
+          "dpcs_phase0_constitution_exists": true,
+          "creative_brief_exists": true,
+          "parameter_spec_exists": true,
+          "architecture_defined": true,
+          "ui_framework_selected": true,
+          "design_complete": true,
+          "code_complete": true,
+          "tests_passed": true,
+          "ship_ready": true
+        },
+        "apc_phase": "ship"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/projects/1/approvals",
+      "status": 200,
+      "dt_s": 0.001221175000864605,
+      "body": [
+        {
+          "id": 1,
+          "project_id": 1,
+          "gate": "approve_architecture",
+          "status": "pending",
+          "detail": null,
+          "created_at": "2026-11-09T07:31:56Z",
+          "resolved_at": null
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/1/approvals/1/resolve",
+      "status": 200,
+      "dt_s": 0.0026762190000226838,
+      "request": {
+        "status": "approved"
+      },
+      "body": {
+        "id": 1,
+        "project_id": 1,
+        "gate": "approve_architecture",
+        "status": "pending",
+        "detail": null,
+        "created_at": "2026-11-09T07:31:56Z",
+        "resolved_at": null
+      },
+      "gate": "approve_architecture"
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/1/sync",
+      "status": 200,
+      "dt_s": 1.5700753930004794,
+      "body": {
+        "id": 1,
+        "plugin_name": "MeterTap",
+        "plugin_class": "effect",
+        "state": "design",
+        "spec": {
+          "schema_version": "factory-spec/v2",
+          "plugin_name": "MeterTap",
+          "plugin_class": "effect",
+          "product_category": "fx.metering",
+          "target_format": "vst3",
+          "target_os": "windows_x64",
+          "prompt": "DiskLordz factory e2e: MeterTap \u2014 full lifecycle through ship.",
+          "track": "apc_greenfield",
+          "buses": {
+            "midi_in": false,
+            "midi_out": false,
+            "audio_in": true,
+            "audio_out": true
+          },
+          "dsp_modules": [
+            "analysis.peak_rms"
+          ],
+          "gui_modules": [
+            "gui.meter"
+          ],
+          "parameters": [],
+          "acceptance_tests": [
+            "tools/build-vst.sh MeterTap succeeds",
+            "run_business.py --profile factory --plugin MeterTap"
+          ],
+          "module_refs": {
+            "plugin_class_id": "plugin-class/effect",
+            "workflow_id": "workflow/full-lifecycle",
+            "product_category": "fx.metering"
+          },
+          "autonomy_mode": "collaborative",
+          "apc_sync": {
+            "apc_phase": "impl",
+            "validation": {
+              "dpcs_phase0_constitution_exists": true,
+              "creative_brief_exists": true,
+              "parameter_spec_exists": true,
+              "architecture_defined": true,
+              "ui_framework_selected": true,
+              "design_complete": true,
+              "code_complete": true,
+              "tests_passed": true,
+              "ship_ready": true
+            },
+            "furthest_verified": "design"
+          }
+        },
+        "apc_path": null,
+        "vst_path": null,
+        "phase": "design",
+        "validation": {
+          "dpcs_phase0_constitution_exists": true,
+          "creative_brief_exists": true,
+          "parameter_spec_exists": true,
+          "architecture_defined": true,
+          "ui_framework_selected": true,
+          "design_complete": true,
+          "code_complete": true,
+          "tests_passed": true,
+          "ship_ready": true
+        },
+        "apc_phase": "impl"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/1/scaffold",
+      "status": 200,
+      "dt_s": 0.006813275000240537,
+      "body": {
+        "id": 1,
+        "plugin_name": "MeterTap",
+        "plugin_class": "effect",
+        "state": "scaffold",
+        "spec": {
+          "schema_version": "factory-spec/v2",
+          "plugin_name": "MeterTap",
+          "plugin_class": "effect",
+          "product_category": "fx.metering",
+          "target_format": "vst3",
+          "target_os": "windows_x64",
+          "prompt": "DiskLordz factory e2e: MeterTap \u2014 full lifecycle through ship.",
+          "track": "apc_greenfield",
+          "buses": {
+            "midi_in": false,
+            "midi_out": false,
+            "audio_in": true,
+            "audio_out": true
+          },
+          "dsp_modules": [
+            "analysis.peak_rms"
+          ],
+          "gui_modules": [
+            "gui.meter"
+          ],
+          "parameters": [],
+          "acceptance_tests": [
+            "tools/build-vst.sh MeterTap succeeds",
+            "run_business.py --profile factory --plugin MeterTap"
+          ],
+          "module_refs": {
+            "plugin_class_id": "plugin-class/effect",
+            "workflow_id": "workflow/full-lifecycle",
+            "product_category": "fx.metering"
+          },
+          "autonomy_mode": "collaborative",
+          "apc_sync": {
+            "apc_phase": "impl",
+            "validation": {
+              "dpcs_phase0_constitution_exists": true,
+              "creative_brief_exists": true,
+              "parameter_spec_exists": true,
+              "architecture_defined": true,
+              "ui_framework_selected": true,
+              "design_complete": true,
+              "code_complete": true,
+              "tests_passed": true,
+              "ship_ready": true
+            },
+            "furthest_verified": "design"
+          },
+          "vst_rel": "vst/MeterTap",
+          "plugins_rel": "plugins/MeterTap",
+          "scaffold_reused": true
+        },
+        "apc_path": "plugins/MeterTap",
+        "vst_path": "vst/MeterTap",
+        "phase": "scaffold",
+        "validation": {
+          "dpcs_phase0_constitution_exists": true,
+          "creative_brief_exists": true,
+          "parameter_spec_exists": true,
+          "architecture_defined": true,
+          "ui_framework_selected": true,
+          "design_complete": true,
+          "code_complete": true,
+          "tests_passed": true,
+          "ship_ready": true
+        },
+        "apc_phase": "impl"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/1/sync",
+      "status": 200,
+      "dt_s": 1.5657804040001793,
+      "body": {
+        "id": 1,
+        "plugin_name": "MeterTap",
+        "plugin_class": "effect",
+        "state": "scaffold",
+        "spec": {
+          "schema_version": "factory-spec/v2",
+          "plugin_name": "MeterTap",
+          "plugin_class": "effect",
+          "product_category": "fx.metering",
+          "target_format": "vst3",
+          "target_os": "windows_x64",
+          "prompt": "DiskLordz factory e2e: MeterTap \u2014 full lifecycle through ship.",
+          "track": "apc_greenfield",
+          "buses": {
+            "midi_in": false,
+            "midi_out": false,
+            "audio_in": true,
+            "audio_out": true
+          },
+          "dsp_modules": [
+            "analysis.peak_rms"
+          ],
+          "gui_modules": [
+            "gui.meter"
+          ],
+          "parameters": [],
+          "acceptance_tests": [
+            "tools/build-vst.sh MeterTap succeeds",
+            "run_business.py --profile factory --plugin MeterTap"
+          ],
+          "module_refs": {
+            "plugin_class_id": "plugin-class/effect",
+            "workflow_id": "workflow/full-lifecycle",
+            "product_category": "fx.metering"
+          },
+          "autonomy_mode": "collaborative",
+          "apc_sync": {
+            "apc_phase": "impl",
+            "validation": {
+              "dpcs_phase0_constitution_exists": true,
+              "creative_brief_exists": true,
+              "parameter_spec_exists": true,
+              "architecture_defined": true,
+              "ui_framework_selected": true,
+              "design_complete": true,
+              "code_complete": true,
+              "tests_passed": true,
+              "ship_ready": true
+            },
+            "furthest_verified": "scaffold"
+          },
+          "vst_rel": "vst/MeterTap",
+          "plugins_rel": "plugins/MeterTap",
+          "scaffold_reused": true
+        },
+        "apc_path": "plugins/MeterTap",
+        "vst_path": "vst/MeterTap",
+        "phase": "scaffold",
+        "validation": {
+          "dpcs_phase0_constitution_exists": true,
+          "creative_brief_exists": true,
+          "parameter_spec_exists": true,
+          "architecture_defined": true,
+          "ui_framework_selected": true,
+          "design_complete": true,
+          "code_complete": true,
+          "tests_passed": true,
+          "ship_ready": true
+        },
+        "apc_phase": "impl"
+      },
+      "note": "open approve_gui"
+    },
+    {
+      "method": "GET",
+      "path": "/api/projects/1/approvals",
+      "status": 200,
+      "dt_s": 0.0012500550001277588,
+      "body": [
+        {
+          "id": 1,
+          "project_id": 1,
+          "gate": "approve_architecture",
+          "status": "approved",
+          "detail": null,
+          "created_at": "2026-11-09T07:31:56Z",
+          "resolved_at": "2026-11-09T07:31:56Z"
+        },
+        {
+          "id": 2,
+          "project_id": 1,
+          "gate": "approve_gui",
+          "status": "pending",
+          "detail": null,
+          "created_at": "2026-11-09T07:31:57Z",
+          "resolved_at": null
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/1/approvals/2/resolve",
+      "status": 200,
+      "dt_s": 0.001590767999914533,
+      "request": {
+        "status": "approved"
+      },
+      "body": {
+        "id": 2,
+        "project_id": 1,
+        "gate": "approve_gui",
+        "status": "pending",
+        "detail": null,
+        "created_at": "2026-11-09T07:31:57Z",
+        "resolved_at": null
+      },
+      "gate": "approve_gui"
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/1/sync",
+      "status": 200,
+      "dt_s": 1.5737226979999832,
+      "body": {
+        "id": 1,
+        "plugin_name": "MeterTap",
+        "plugin_class": "effect",
+        "state": "impl",
+        "spec": {
+          "schema_version": "factory-spec/v2",
+          "plugin_name": "MeterTap",
+          "plugin_class": "effect",
+          "product_category": "fx.metering",
+          "target_format": "vst3",
+          "target_os": "windows_x64",
+          "prompt": "DiskLordz factory e2e: MeterTap \u2014 full lifecycle through ship.",
+          "track": "apc_greenfield",
+          "buses": {
+            "midi_in": false,
+            "midi_out": false,
+            "audio_in": true,
+            "audio_out": true
+          },
+          "dsp_modules": [
+            "analysis.peak_rms"
+          ],
+          "gui_modules": [
+            "gui.meter"
+          ],
+          "parameters": [],
+          "acceptance_tests": [
+            "tools/build-vst.sh MeterTap succeeds",
+            "run_business.py --profile factory --plugin MeterTap"
+          ],
+          "module_refs": {
+            "plugin_class_id": "plugin-class/effect",
+            "workflow_id": "workflow/full-lifecycle",
+            "product_category": "fx.metering"
+          },
+          "autonomy_mode": "collaborative",
+          "apc_sync": {
+            "apc_phase": "impl",
+            "validation": {
+              "dpcs_phase0_constitution_exists": true,
+              "creative_brief_exists": true,
+              "parameter_spec_exists": true,
+              "architecture_defined": true,
+              "ui_framework_selected": true,
+              "design_complete": true,
+              "code_complete": true,
+              "tests_passed": true,
+              "ship_ready": true
+            },
+            "furthest_verified": "impl"
+          },
+          "vst_rel": "vst/MeterTap",
+          "plugins_rel": "plugins/MeterTap",
+          "scaffold_reused": true
+        },
+        "apc_path": "plugins/MeterTap",
+        "vst_path": "vst/MeterTap",
+        "phase": "impl",
+        "validation": {
+          "dpcs_phase0_constitution_exists": true,
+          "creative_brief_exists": true,
+          "parameter_spec_exists": true,
+          "architecture_defined": true,
+          "ui_framework_selected": true,
+          "design_complete": true,
+          "code_complete": true,
+          "tests_passed": true,
+          "ship_ready": true
+        },
+        "apc_phase": "impl"
+      },
+      "note": "accept impl"
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/1/build",
+      "status": 200,
+      "dt_s": 1.1123124719997577,
+      "body": {
+        "id": 1,
+        "plugin_name": "MeterTap",
+        "plugin_class": "effect",
+        "state": "build",
+        "spec": {
+          "schema_version": "factory-spec/v2",
+          "plugin_name": "MeterTap",
+          "plugin_class": "effect",
+          "product_category": "fx.metering",
+          "target_format": "vst3",
+          "target_os": "windows_x64",
+          "prompt": "DiskLordz factory e2e: MeterTap \u2014 full lifecycle through ship.",
+          "track": "apc_greenfield",
+          "buses": {
+            "midi_in": false,
+            "midi_out": false,
+            "audio_in": true,
+            "audio_out": true
+          },
+          "dsp_modules": [
+            "analysis.peak_rms"
+          ],
+          "gui_modules": [
+            "gui.meter"
+          ],
+          "parameters": [],
+          "acceptance_tests": [
+            "tools/build-vst.sh MeterTap succeeds",
+            "run_business.py --profile factory --plugin MeterTap"
+          ],
+          "module_refs": {
+            "plugin_class_id": "plugin-class/effect",
+            "workflow_id": "workflow/full-lifecycle",
+            "product_category": "fx.metering"
+          },
+          "autonomy_mode": "collaborative",
+          "apc_sync": {
+            "apc_phase": "impl",
+            "validation": {
+              "dpcs_phase0_constitution_exists": true,
+              "creative_brief_exists": true,
+              "parameter_spec_exists": true,
+              "architecture_defined": true,
+              "ui_framework_selected": true,
+              "design_complete": true,
+              "code_complete": true,
+              "tests_passed": true,
+              "ship_ready": true
+            },
+            "furthest_verified": "impl"
+          },
+          "vst_rel": "vst/MeterTap",
+          "plugins_rel": "plugins/MeterTap",
+          "scaffold_reused": true,
+          "artefact": "/agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3"
+        },
+        "apc_path": "plugins/MeterTap",
+        "vst_path": "vst/MeterTap",
+        "repair_attempts": 0,
+        "created_at": "2026-11-09T07:31:56Z",
+        "updated_at": "2026-11-09T07:32:02Z",
+        "phase": "build",
+        "validation": {
+          "dpcs_phase0_constitution_exists": true,
+          "creative_brief_exists": true,
+          "parameter_spec_exists": true,
+          "architecture_defined": true,
+          "ui_framework_selected": true,
+          "design_complete": true,
+          "code_complete": true,
+          "tests_passed": true,
+          "ship_ready": true
+        },
+        "apc_phase": "impl",
+        "last_ok": true,
+        "last_output_tail": "==> Building vst/MeterTap\n-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'\n--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found\n--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found\n-- Configuring juceaide\n-- Building juceaide\n-- Exporting juceaide\n-- Configuring done (0.5s)\n-- Generating done (0.0s)\n-- Build files have been written to: /agent/repos/Instruments/vst/MeterTap/build\n[  1%] Generating juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData1.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData2.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData3.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData4.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData5.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData6.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData7.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData8.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/FactoryGuiFonts.h\n[  3%] Built target juce_vst3_helper\n[  3%] Generating juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData1.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData2.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData3.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData4.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData5.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData6.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData7.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData8.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/FactoryGuiFonts.h\n[ 12%] Built target factory_gui_fonts_disklordz\n[ 39%] Built target MeterTap\n[ 48%] Built target MeterTap_Standalone\n[ 58%] Built target MeterTap_VST3\n[ 74%] Built target MeterTapProcessorTests\n[100%] Built target MeterTapEditorRenderTests\nVST3: /agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3\n"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/1/test",
+      "status": 200,
+      "dt_s": 2.821302317000118,
+      "body": {
+        "id": 1,
+        "plugin_name": "MeterTap",
+        "plugin_class": "effect",
+        "state": "test",
+        "spec": {
+          "schema_version": "factory-spec/v2",
+          "plugin_name": "MeterTap",
+          "plugin_class": "effect",
+          "product_category": "fx.metering",
+          "target_format": "vst3",
+          "target_os": "windows_x64",
+          "prompt": "DiskLordz factory e2e: MeterTap \u2014 full lifecycle through ship.",
+          "track": "apc_greenfield",
+          "buses": {
+            "midi_in": false,
+            "midi_out": false,
+            "audio_in": true,
+            "audio_out": true
+          },
+          "dsp_modules": [
+            "analysis.peak_rms"
+          ],
+          "gui_modules": [
+            "gui.meter"
+          ],
+          "parameters": [],
+          "acceptance_tests": [
+            "tools/build-vst.sh MeterTap succeeds",
+            "run_business.py --profile factory --plugin MeterTap"
+          ],
+          "module_refs": {
+            "plugin_class_id": "plugin-class/effect",
+            "workflow_id": "workflow/full-lifecycle",
+            "product_category": "fx.metering"
+          },
+          "autonomy_mode": "collaborative",
+          "apc_sync": {
+            "apc_phase": "impl",
+            "validation": {
+              "dpcs_phase0_constitution_exists": true,
+              "creative_brief_exists": true,
+              "parameter_spec_exists": true,
+              "architecture_defined": true,
+              "ui_framework_selected": true,
+              "design_complete": true,
+              "code_complete": true,
+              "tests_passed": true,
+              "ship_ready": true
+            },
+            "furthest_verified": "impl"
+          },
+          "vst_rel": "vst/MeterTap",
+          "plugins_rel": "plugins/MeterTap",
+          "scaffold_reused": true,
+          "artefact": "/agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3"
+        },
+        "apc_path": "plugins/MeterTap",
+        "vst_path": "vst/MeterTap",
+        "repair_attempts": 0,
+        "created_at": "2026-11-09T07:31:56Z",
+        "updated_at": "2026-11-09T07:32:05Z",
+        "phase": "test",
+        "validation": {
+          "dpcs_phase0_constitution_exists": true,
+          "creative_brief_exists": true,
+          "parameter_spec_exists": true,
+          "architecture_defined": true,
+          "ui_framework_selected": true,
+          "design_complete": true,
+          "code_complete": true,
+          "tests_passed": true,
+          "ship_ready": true
+        },
+        "apc_phase": "impl",
+        "last_ok": true,
+        "last_output_tail": "64]\\nTesting with sample rate [96000] and block size [128]\\nTesting with sample rate [96000] and block size [256]\\nTesting with sample rate [96000] and block size [512]\\nTesting with sample rate [96000] and block size [1024]\\nCompleted tests in pluginval / Audio processing\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Plugin state...\\nCompleted tests in pluginval / Plugin state\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Automation...\\nTesting with sample rate [44100] and block size [64] and sub-block size [32]\\nTesting with sample rate [44100] and block size [128] and sub-block size [32]\\nTesting with sample rate [44100] and block size [256] and sub-block size [32]\\nTesting with sample rate [44100] and block size [512] and sub-block size [32]\\nTesting with sample rate [44100] and block size [1024] and sub-block size [32]\\nTesting with sample rate [48000] and block size [64] and sub-block size [32]\\nTesting with sample rate [48000] and block size [128] and sub-block size [32]\\nTesting with sample rate [48000] and block size [256] and sub-block size [32]\\nTesting with sample rate [48000] and block size [512] and sub-block size [32]\\nTesting with sample rate [48000] and block size [1024] and sub-block size [32]\\nTesting with sample rate [96000] and block size [64] and sub-block size [32]\\nTesting with sample rate [96000] and block size [128] and sub-block size [32]\\nTesting with sample rate [96000] and block size [256] and sub-block size [32]\\nTesting with sample rate [96000] and block size [512] and sub-block size [32]\\nTesting with sample rate [96000] and block size [1024] and sub-block size [32]\\nCompleted tests in pluginval / Automation\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Editor Automation...\\nCompleted tests in pluginval / Editor Automation\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Automatable Parameters...\\nCompleted tests in pluginval / Automatable Parameters\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / auval...\\nCompleted tests in pluginval / auval\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / vst3 validator...\\nINFO: Skipping vst3 validator as validator path hasn't been set\\nCompleted tests in pluginval / vst3 validator\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Basic bus...\\nCompleted tests in pluginval / Basic bus\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Listing available buses...\\nInputs:\\n\\tNamed layouts: Stereo\\n\\tDiscrete layouts: None\\nOutputs:\\n\\tNamed layouts: Stereo\\n\\tDiscrete layouts: None\\nMain bus num input channels: 2\\nMain bus num output channels: 2\\nCompleted tests in pluginval / Listing available buses\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Enabling all buses...\\nCompleted tests in pluginval / Enabling all buses\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Disabling non-main busses...\\nCompleted tests in pluginval / Disabling non-main busses\\n-----------------------------------------------------------------\\nStarting tests in: pluginval / Restoring default layout...\\nMain bus num input channels: 2\\nMain bus num output channels: 2\\nCompleted tests in pluginval / Restoring default layout\\nSUCCESS\\npluginval: all plugins passed.\\n  OK  /agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3\\nRunning pluginval on /agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3 \\u2026\\n\"\n    }\n  ]\n}\n[PASS] factory_vst_build (0.9s)\n[PASS] factory_vst_artefact (0.0s)\n[PASS] factory_pluginval (1.7s)\n"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/1/certify",
+      "status": 200,
+      "dt_s": 0.00732679900011135,
+      "body": {
+        "schema_version": "certification/v1",
+        "passed": true,
+        "gates": [
+          {
+            "id": "build_ok",
+            "field": "build_ok",
+            "required": true,
+            "ok": true,
+            "description": "Latest build run succeeded"
+          },
+          {
+            "id": "artefact_ok",
+            "field": "artefact_ok",
+            "required": true,
+            "ok": true,
+            "description": "VST3 bundle present under vst/<Name>/build"
+          },
+          {
+            "id": "pluginval_ok",
+            "field": "pluginval_ok",
+            "required": true,
+            "ok": true,
+            "description": "Latest factory QA / pluginval-style test run succeeded"
+          },
+          {
+            "id": "audio_ok",
+            "field": "audio_ok",
+            "required": true,
+            "ok": true,
+            "description": "Latest factory-audio check succeeded (skip without fixture still counts as ok)"
+          }
+        ],
+        "inputs": {
+          "build_ok": true,
+          "artefact_ok": true,
+          "pluginval_ok": true,
+          "audio_ok": true
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/projects/1/approvals",
+      "status": 200,
+      "dt_s": 0.0009851539998635417,
+      "body": [
+        {
+          "id": 1,
+          "project_id": 1,
+          "gate": "approve_architecture",
+          "status": "approved",
+          "detail": null,
+          "created_at": "2026-11-09T07:31:56Z",
+          "resolved_at": "2026-11-09T07:31:56Z"
+        },
+        {
+          "id": 2,
+          "project_id": 1,
+          "gate": "approve_gui",
+          "status": "approved",
+          "detail": null,
+          "created_at": "2026-11-09T07:31:57Z",
+          "resolved_at": "2026-11-09T07:31:59Z"
+        },
+        {
+          "id": 3,
+          "project_id": 1,
+          "gate": "approve_release",
+          "status": "pending",
+          "detail": "{\"schema_version\": \"certification/v1\", \"passed\": true, \"gates\": [{\"id\": \"build_ok\", \"field\": \"build_ok\", \"required\": true, \"ok\": true, \"description\": \"Latest build run succeeded\"}, {\"id\": \"artefact_ok\", \"field\": \"artefact_ok\", \"required\": true, \"ok\": true, \"description\": \"VST3 bundle present under vst/<Name>/build\"}, {\"id\": \"pluginval_ok\", \"field\": \"pluginval_ok\", \"required\": true, \"ok\": true, \"description\": \"Latest factory QA / pluginval-style test run succeeded\"}, {\"id\": \"audio_ok\", \"field\": \"audio_ok\", \"required\": true, \"ok\": true, \"description\": \"Latest factory-audio check succeeded (skip without fixture still counts as ok)\"}], \"inputs\": {\"build_ok\": true, \"artefact_ok\": true, \"pluginval_ok\": true, \"audio_ok\": true}}",
+          "created_at": "2026-11-09T07:32:05Z",
+          "resolved_at": null
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/1/approvals/3/resolve",
+      "status": 200,
+      "dt_s": 0.002379509000093094,
+      "request": {
+        "status": "approved"
+      },
+      "body": {
+        "id": 3,
+        "project_id": 1,
+        "gate": "approve_release",
+        "status": "pending",
+        "detail": "{\"schema_version\": \"certification/v1\", \"passed\": true, \"gates\": [{\"id\": \"build_ok\", \"field\": \"build_ok\", \"required\": true, \"ok\": true, \"description\": \"Latest build run succeeded\"}, {\"id\": \"artefact_ok\", \"field\": \"artefact_ok\", \"required\": true, \"ok\": true, \"description\": \"VST3 bundle present under vst/<Name>/build\"}, {\"id\": \"pluginval_ok\", \"field\": \"pluginval_ok\", \"required\": true, \"ok\": true, \"description\": \"Latest factory QA / pluginval-style test run succeeded\"}, {\"id\": \"audio_ok\", \"field\": \"audio_ok\", \"required\": true, \"ok\": true, \"description\": \"Latest factory-audio check succeeded (skip without fixture still counts as ok)\"}], \"inputs\": {\"build_ok\": true, \"artefact_ok\": true, \"pluginval_ok\": true, \"audio_ok\": true}}",
+        "created_at": "2026-11-09T07:32:05Z",
+        "resolved_at": null
+      },
+      "gate": "approve_release"
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/1/ship",
+      "status": 200,
+      "dt_s": 1.4468614309998884,
+      "body": {
+        "id": 1,
+        "plugin_name": "MeterTap",
+        "plugin_class": "effect",
+        "state": "ship",
+        "spec": {
+          "schema_version": "factory-spec/v2",
+          "plugin_name": "MeterTap",
+          "plugin_class": "effect",
+          "product_category": "fx.metering",
+          "target_format": "vst3",
+          "target_os": "windows_x64",
+          "prompt": "DiskLordz factory e2e: MeterTap \u2014 full lifecycle through ship.",
+          "track": "apc_greenfield",
+          "buses": {
+            "midi_in": false,
+            "midi_out": false,
+            "audio_in": true,
+            "audio_out": true
+          },
+          "dsp_modules": [
+            "analysis.peak_rms"
+          ],
+          "gui_modules": [
+            "gui.meter"
+          ],
+          "parameters": [],
+          "acceptance_tests": [
+            "tools/build-vst.sh MeterTap succeeds",
+            "run_business.py --profile factory --plugin MeterTap"
+          ],
+          "module_refs": {
+            "plugin_class_id": "plugin-class/effect",
+            "workflow_id": "workflow/full-lifecycle",
+            "product_category": "fx.metering"
+          },
+          "autonomy_mode": "collaborative",
+          "apc_sync": {
+            "apc_phase": "impl",
+            "validation": {
+              "dpcs_phase0_constitution_exists": true,
+              "creative_brief_exists": true,
+              "parameter_spec_exists": true,
+              "architecture_defined": true,
+              "ui_framework_selected": true,
+              "design_complete": true,
+              "code_complete": true,
+              "tests_passed": true,
+              "ship_ready": true
+            },
+            "furthest_verified": "impl"
+          },
+          "vst_rel": "vst/MeterTap",
+          "plugins_rel": "plugins/MeterTap",
+          "scaffold_reused": true,
+          "artefact": "/agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3",
+          "commercial": {
+            "release_ready": true
+          },
+          "release_artifact": "/agent/repos/Instruments/release/MeterTap/MeterTap-1.0.0-vst3.zip"
+        },
+        "apc_path": "plugins/MeterTap",
+        "vst_path": "vst/MeterTap",
+        "repair_attempts": 0,
+        "created_at": "2026-11-09T07:31:56Z",
+        "updated_at": "2026-11-09T07:32:06Z",
+        "phase": "ship",
+        "validation": {
+          "dpcs_phase0_constitution_exists": true,
+          "creative_brief_exists": true,
+          "parameter_spec_exists": true,
+          "architecture_defined": true,
+          "ui_framework_selected": true,
+          "design_complete": true,
+          "code_complete": true,
+          "tests_passed": true,
+          "ship_ready": true
+        },
+        "apc_phase": "impl",
+        "ship_status": "ok",
+        "last_ok": true,
+        "last_output_tail": "APC gate OK (plan) for MeterTap\nAPC gate OK (design) for MeterTap\nAPC gate OK (impl) for MeterTap\nAPC gate OK (ship) for MeterTap\n  adding: manifest.json (deflated 26%)\n  adding: MeterTap.vst3/ (stored 0%)\n  adding: MeterTap.vst3/Contents/ (stored 0%)\n  adding: MeterTap.vst3/Contents/x86_64-linux/ (stored 0%)\n  adding: MeterTap.vst3/Contents/x86_64-linux/MeterTap.so (deflated 60%)\n  adding: MeterTap.vst3/Contents/Resources/ (stored 0%)\n  adding: MeterTap.vst3/Contents/Resources/moduleinfo.json (deflated 73%)\n  adding: licenses/ (stored 0%)\n  adding: licenses/fonts/ (stored 0%)\n  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)\n  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)\n  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)\n  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)\n  adding: INSTALL.txt (deflated 41%)\nPackage: /agent/repos/Instruments/release/MeterTap/MeterTap-1.0.0-vst3.zip\nContents: /agent/repos/Instruments/release/MeterTap/staging\n",
+        "artifact": "/agent/repos/Instruments/release/MeterTap/MeterTap-1.0.0-vst3.zip"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/projects/1/pipeline",
+      "status": 200,
+      "dt_s": 0.9067340060000788,
+      "body": {
+        "project_id": 1,
+        "plugin_name": "MeterTap",
+        "workflow_id": "workflow/full-lifecycle",
+        "phases": [
+          {
+            "id": "intake",
+            "label": "Intake",
+            "status": "done",
+            "gate": null,
+            "sop": "SOP-VF-07",
+            "command": "POST /api/projects",
+            "verify": "GET /api/projects/{id}"
+          },
+          {
+            "id": "dream",
+            "label": "Dream",
+            "status": "done",
+            "gate": "approve_architecture",
+            "sop": "SOP-VF-01",
+            "command": "POST /api/projects/1/sync",
+            "verify": "apc_bridge.read_status \u2192 validation.creative_brief_exists"
+          },
+          {
+            "id": "plan",
+            "label": "Plan",
+            "status": "done",
+            "gate": null,
+            "sop": "SOP-VF-04",
+            "command": "POST /api/projects/1/sync",
+            "verify": "tools/apc-gate.sh <Name> plan"
+          },
+          {
+            "id": "design",
+            "label": "Design",
+            "status": "done",
+            "gate": null,
+            "sop": "SOP-VF-02",
+            "command": "POST /api/projects/1/sync",
+            "verify": "tools/apc-gate.sh <Name> design"
+          },
+          {
+            "id": "scaffold",
+            "label": "Scaffold",
+            "status": "done",
+            "gate": "approve_architecture",
+            "sop": "SOP-VF-05",
+            "command": "POST /api/projects/1/scaffold",
+            "verify": "test -d vst/<Name>"
+          },
+          {
+            "id": "impl",
+            "label": "Implement",
+            "status": "done",
+            "gate": "approve_gui",
+            "sop": "SOP-VF-05",
+            "command": "POST /api/projects/1/sync",
+            "verify": "tools/apc-gate.sh <Name> impl"
+          },
+          {
+            "id": "build",
+            "label": "Build",
+            "status": "done",
+            "gate": null,
+            "sop": "SOP-VF-06",
+            "command": "POST /api/projects/1/build",
+            "verify": "tools/build-vst.sh <Name>"
+          },
+          {
+            "id": "test",
+            "label": "Test",
+            "status": "done",
+            "gate": null,
+            "sop": "SOP-VF-06",
+            "command": "POST /api/projects/1/test",
+            "verify": "run_business.py --profile factory --plugin <Name>"
+          },
+          {
+            "id": "certify",
+            "label": "Certify",
+            "status": "done",
+            "gate": "approve_release",
+            "sop": "SOP-VF-06",
+            "command": "POST /api/projects/1/certify",
+            "verify": "POST /api/projects/{id}/certify \u2192 passed"
+          },
+          {
+            "id": "ship",
+            "label": "Ship",
+            "status": "done",
+            "gate": "approve_release",
+            "sop": "SOP-VF-08",
+            "command": "POST /api/projects/1/ship",
+            "verify": "tools/package-vst.sh <Name>"
+          }
+        ],
+        "blocking_gate": null,
+        "next_command": null,
+        "next_sop": null
+      }
+    }
+  ],
+  "pipeline": {
+    "project_id": 1,
+    "plugin_name": "MeterTap",
+    "workflow_id": "workflow/full-lifecycle",
+    "phases": [
+      {
+        "id": "intake",
+        "label": "Intake",
+        "status": "done",
+        "gate": null,
+        "sop": "SOP-VF-07",
+        "command": "POST /api/projects",
+        "verify": "GET /api/projects/{id}"
+      },
+      {
+        "id": "dream",
+        "label": "Dream",
+        "status": "done",
+        "gate": "approve_architecture",
+        "sop": "SOP-VF-01",
+        "command": "POST /api/projects/1/sync",
+        "verify": "apc_bridge.read_status \u2192 validation.creative_brief_exists"
+      },
+      {
+        "id": "plan",
+        "label": "Plan",
+        "status": "done",
+        "gate": null,
+        "sop": "SOP-VF-04",
+        "command": "POST /api/projects/1/sync",
+        "verify": "tools/apc-gate.sh <Name> plan"
+      },
+      {
+        "id": "design",
+        "label": "Design",
+        "status": "done",
+        "gate": null,
+        "sop": "SOP-VF-02",
+        "command": "POST /api/projects/1/sync",
+        "verify": "tools/apc-gate.sh <Name> design"
+      },
+      {
+        "id": "scaffold",
+        "label": "Scaffold",
+        "status": "done",
+        "gate": "approve_architecture",
+        "sop": "SOP-VF-05",
+        "command": "POST /api/projects/1/scaffold",
+        "verify": "test -d vst/<Name>"
+      },
+      {
+        "id": "impl",
+        "label": "Implement",
+        "status": "done",
+        "gate": "approve_gui",
+        "sop": "SOP-VF-05",
+        "command": "POST /api/projects/1/sync",
+        "verify": "tools/apc-gate.sh <Name> impl"
+      },
+      {
+        "id": "build",
+        "label": "Build",
+        "status": "done",
+        "gate": null,
+        "sop": "SOP-VF-06",
+        "command": "POST /api/projects/1/build",
+        "verify": "tools/build-vst.sh <Name>"
+      },
+      {
+        "id": "test",
+        "label": "Test",
+        "status": "done",
+        "gate": null,
+        "sop": "SOP-VF-06",
+        "command": "POST /api/projects/1/test",
+        "verify": "run_business.py --profile factory --plugin <Name>"
+      },
+      {
+        "id": "certify",
+        "label": "Certify",
+        "status": "done",
+        "gate": "approve_release",
+        "sop": "SOP-VF-06",
+        "command": "POST /api/projects/1/certify",
+        "verify": "POST /api/projects/{id}/certify \u2192 passed"
+      },
+      {
+        "id": "ship",
+        "label": "Ship",
+        "status": "done",
+        "gate": "approve_release",
+        "sop": "SOP-VF-08",
+        "command": "POST /api/projects/1/ship",
+        "verify": "tools/package-vst.sh <Name>"
+      }
+    ],
+    "blocking_gate": null,
+    "next_command": null,
+    "next_sop": null
+  }
+}

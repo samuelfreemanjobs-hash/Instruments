@@ -15,6 +15,8 @@ Usage: bin/apc <command> [args]
 Commands:
   setup              First-run wizard (writes apc.config.json)
   init <Name>        Create plugins/<Name>/ + status.json (dream prep)
+  template <Name> <phase> [--class effect] [--category fx.x] [--theme disklordz]
+                     Fill phase docs from templates/apc (dream|plan|design|verify|release|all)
   status <Name>      Print status.json
   paths              Show resolved APC paths
   build <Name>       Build vst/<Name> (cmake)
@@ -91,12 +93,19 @@ cmd_check() {
   bash "$ROOT/scripts/system-check.sh" --human
 }
 
+cmd_template() {
+  local py
+  py="$(command -v python3 || command -v python)"
+  "$py" "$ROOT/tools/apc_templates.py" "$@"
+}
+
 main() {
   local cmd="${1:-}"
   shift || true
   case "$cmd" in
     setup) cmd_setup ;;
     init) cmd_init "${1:?Name}" ;;
+    template) cmd_template "$@" ;;
     status) cmd_status "${1:?Name}" ;;
     paths) cmd_paths ;;
     build) cmd_build "${1:?Name}" ;;

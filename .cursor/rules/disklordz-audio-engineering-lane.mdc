@@ -1,0 +1,23 @@
+---
+description: Cursor lane for DiskLordz Audio VST/CHORD ENGINE — not business PM
+globs:
+  - "Products/**"
+  - "DPF-*/**"
+  - "Source/**"
+  - "docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md"
+  - "docs/DPF_TECHNICAL_ARCHITECTURE.md"
+  - "docs/CHORD_ENGINE_PRD.md"
+alwaysApply: false
+---
+
+# DiskLordz Audio — Cursor engineering lane
+
+Before changing JUCE/C++ for **CHORD ENGINE** or DPF:
+
+1. Read [docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md](../../docs/DiskLordz_Audio_Master_Roadmap_for_Cursor.md) §18–20 (implementation sequence, definition of done).
+2. Read [docs/DPF_TECHNICAL_ARCHITECTURE.md](../../docs/DPF_TECHNICAL_ARCHITECTURE.md) and [docs/CHORD_ENGINE_PRD.md](../../docs/CHORD_ENGINE_PRD.md).
+3. Do **not** expand scope into business/store/marketing — use agent **`audio-business-copilot`** and [disklordz/audio-command/](../../disklordz/audio-command/).
+
+After C++ edits: `python3 vst-testing-ops/run_business.py --profile ci`.
+
+Report format: §18.3 of the Cursor roadmap (completed, files, build, tests, limitations, next task).

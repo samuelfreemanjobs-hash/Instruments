@@ -1,0 +1,28 @@
+name: Audio Coach daily nudge
+
+on:
+  schedule:
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+
+jobs:
+  nudge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send coach message to #disklordz
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_COACH_CHANNEL_ID: C0C2AK80XCN
+          DISKLORDZ_COACH_WEBHOOK_URL: ${{ secrets.DISKLORDZ_COACH_WEBHOOK_URL }}
+        run: |
+          if [ -n "$SLACK_BOT_TOKEN" ]; then
+            python3 disklordz/audio-command/scripts/slack_bot_post_coach.py --send
+            exit 0
+          fi
+          if [ -n "$DISKLORDZ_COACH_WEBHOOK_URL" ]; then
+            python3 disklordz/audio-command/scripts/coach_outreach.py --send
+            exit 0
+          fi
+          echo "No Slack credentials — dry-run only (Cursor timer + Slack MCP still active):"
+          python3 disklordz/audio-command/scripts/coach_outreach.py

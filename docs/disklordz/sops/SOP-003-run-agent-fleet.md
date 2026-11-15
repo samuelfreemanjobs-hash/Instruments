@@ -32,7 +32,11 @@ DISKLORDZ_URL=https://your-production-url ./scripts/run-agent-fleet-now.sh
 | `agent-fleet-execute.yml` | Weekdays |
 | `agent-fleet-health.yml` | Daily |
 
-Set GitHub secret **`DISKLORDZ_VERIFY_BASE_URL`** for remote verify in CI.
+Set GitHub secret **`DISKLORDZ_VERIFY_BASE_URL`** (or existing **`DISKLORDZ_URL`** from go-live) for remote verify in CI:
+
+```bash
+./scripts/unlock-agent-fleet-prod.sh https://your-production-url
+```
 
 ## Manual / stub agents
 

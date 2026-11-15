@@ -1,0 +1,24 @@
+{
+  "handoff_id": "HO-20261108-UI02",
+  "direction": "antigravity_to_cursor",
+  "from_agent": "antigravity-assets",
+  "to_agent": "cursor-cloud",
+  "created_at": "2026-11-08T11:39:47Z",
+  "work_order": {
+    "id": "WO-PREP-002",
+    "title": "[Product][Assets] CHORD ENGINE UI skin token pack v1"
+  },
+  "context_paths": [
+    "docs/DISKLORDZ_BRAND_IDENTITY.md",
+    "docs/CHORD_ENGINE_PRD.md"
+  ],
+  "artifacts": [
+    {
+      "kind": "json",
+      "path": "disklordz/antigravity/outbox-artifacts/chord-engine-ui-tokens.json",
+      "notes": "UI token pack v1 from brand doc"
+    }
+  ],
+  "status": "done",
+  "notes": "UI token pack v1 from brand doc"
+}

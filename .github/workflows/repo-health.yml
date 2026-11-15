@@ -1,0 +1,125 @@
+# Fast Python/docs contract checks — no JUCE build.
+# Mirrors scripts/repo_health.sh (run locally with: bash scripts/repo_health.sh).
+name: repo-health
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: repo-health-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contracts:
+    name: contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            disklordz/vst-factory/pyproject.toml
+
+      - name: "1. design-system tokens (--check-preview)"
+        id: tokens
+        continue-on-error: true
+        run: bash scripts/repo_health.sh --only tokens
+
+      - name: "2. gen_juce_tokens --all --check"
+        id: gen_tokens
+        continue-on-error: true
+        run: bash scripts/repo_health.sh --only gen-tokens
+
+      - name: "3. design-system unittest"
+        id: ds_unit
+        continue-on-error: true
+        run: bash scripts/repo_health.sh --only ds-unit
+
+      - name: "4. APC templates unittest"
+        id: apc_templates
+        continue-on-error: true
+        run: bash scripts/repo_health.sh --only apc-templates
+
+      - name: "5. doc links (default + SOPs)"
+        id: doc_links
+        continue-on-error: true
+        run: bash scripts/repo_health.sh --only doc-links
+
+      - name: "6. vst-factory import + pytest"
+        id: factory
+        continue-on-error: true
+        run: bash scripts/repo_health.sh --only factory
+
+      - name: "7. agent memory (optional)"
+        id: memory
+        continue-on-error: true
+        run: bash scripts/repo_health.sh --only memory
+
+      - name: "8. agent fleet scaffold --check"
+        id: fleet
+        continue-on-error: true
+        run: bash scripts/repo_health.sh --only fleet
+
+      - name: "9. APC gates (derived phase)"
+        id: apc_gates
+        continue-on-error: true
+        run: bash scripts/repo_health.sh --only apc-gates
+
+      - name: Summary
+        if: always()
+        env:
+          O_TOKENS: ${{ steps.tokens.outcome }}
+          O_GEN_TOKENS: ${{ steps.gen_tokens.outcome }}
+          O_DS_UNIT: ${{ steps.ds_unit.outcome }}
+          O_APC_TEMPLATES: ${{ steps.apc_templates.outcome }}
+          O_DOC_LINKS: ${{ steps.doc_links.outcome }}
+          O_FACTORY: ${{ steps.factory.outcome }}
+          O_MEMORY: ${{ steps.memory.outcome }}
+          O_FLEET: ${{ steps.fleet.outcome }}
+          O_APC_GATES: ${{ steps.apc_gates.outcome }}
+        run: |
+          set -uo pipefail
+          {
+            echo "## Repo health"
+            echo ""
+            echo "| # | Check | Result |"
+            echo "|---|-------|--------|"
+            echo "| 1 | design-system tokens (--check-preview) | ${O_TOKENS} |"
+            echo "| 2 | gen_juce_tokens --all --check | ${O_GEN_TOKENS} |"
+            echo "| 3 | design-system unittest | ${O_DS_UNIT} |"
+            echo "| 4 | APC templates unittest | ${O_APC_TEMPLATES} |"
+            echo "| 5 | doc links (default + SOPs) | ${O_DOC_LINKS} |"
+            echo "| 6 | vst-factory import + pytest | ${O_FACTORY} |"
+            echo "| 7 | agent memory (optional) | ${O_MEMORY} |"
+            echo "| 8 | agent fleet scaffold --check | ${O_FLEET} |"
+            echo "| 9 | APC gates (derived phase) | ${O_APC_GATES} |"
+            echo ""
+            echo "Local equivalent: \`bash scripts/repo_health.sh\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          failed=0
+          for o in "$O_TOKENS" "$O_GEN_TOKENS" "$O_DS_UNIT" "$O_APC_TEMPLATES" \
+                   "$O_DOC_LINKS" "$O_FACTORY" "$O_MEMORY" "$O_FLEET" "$O_APC_GATES"; do
+            # success and skipped are ok; failure / cancelled fail the job
+            case "$o" in
+              success|skipped) ;;
+              *)
+                echo "Check outcome not ok: $o"
+                failed=1
+                ;;
+            esac
+          done
+          if [[ "$failed" -ne 0 ]]; then
+            echo "One or more repo-health checks failed (fail-fast was off; see table above)."
+            exit 1
+          fi
+          echo "All repo-health checks passed."

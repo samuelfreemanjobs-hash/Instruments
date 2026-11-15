@@ -3,6 +3,8 @@ param(
   [Parameter(Mandatory)][string]$WorkOrderId,
   [Parameter(Mandatory)][ValidateSet("open","in_progress","done","blocked")][string]$Status,
   [string]$Direction = "antigravity_to_cursor",
+  [string]$FromAgent = "antigravity-hise",
+  [string]$ToAgent = "cursor-cloud",
   [string]$Notes = "",
   [string]$ArtifactPath = "",
   [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
@@ -25,8 +27,8 @@ if ($ArtifactPath) {
 $doc = @{
   handoff_id = $id
   direction = $Direction
-  from_agent = "antigravity-hise"
-  to_agent = "cursor-cloud"
+  from_agent = $FromAgent
+  to_agent = $ToAgent
   created_at = $created
   work_order = @{
     id = $WorkOrderId

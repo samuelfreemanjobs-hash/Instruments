@@ -1,0 +1,24 @@
+{
+  "handoff_id": "HO-20261108-A1NT",
+  "direction": "antigravity_to_cursor",
+  "from_agent": "antigravity-prep",
+  "to_agent": "cursor-cloud",
+  "created_at": "2026-11-08T11:37:47Z",
+  "work_order": {
+    "id": "WO-PREP-001",
+    "title": "[Product][Prep] DPF + CHORD ENGINE repo folder scaffold (no C++)"
+  },
+  "context_paths": [
+    "docs/drafts/product-tree/README.md",
+    "DiskLordz-Audio/README.md"
+  ],
+  "artifacts": [
+    {
+      "kind": "docs",
+      "path": "docs/drafts/product-tree/",
+      "notes": "Draft mirror; live tree DiskLordz-Audio/"
+    }
+  ],
+  "status": "done",
+  "notes": "WO-PREP-001: docs/drafts/product-tree + PRODUCTS.md; monorepo DiskLordz-Audio/ already on branch."
+}

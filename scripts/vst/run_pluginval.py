@@ -20,6 +20,10 @@ DEFAULT_LINUX_URL = (
     f"https://github.com/Tracktion/pluginval/releases/download/v{DEFAULT_VERSION}/"
     "pluginval_Linux.zip"
 )
+DEFAULT_WINDOWS_URL = (
+    f"https://github.com/Tracktion/pluginval/releases/download/v{DEFAULT_VERSION}/"
+    "pluginval_Windows.zip"
+)
 FAIL_MARKERS = re.compile(
     r"\b(FAILED|FAILURE|ERROR|CRASH|Segmentation fault|assertion failed)\b",
     re.IGNORECASE,
@@ -46,6 +50,16 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+def default_download_url() -> str:
+    if sys.platform == "win32":
+        return DEFAULT_WINDOWS_URL
+    return DEFAULT_LINUX_URL
+
+
+def pluginval_binary_name() -> str:
+    return "pluginval.exe" if sys.platform == "win32" else "pluginval"
+
+
 def cache_dir() -> Path:
     env = os.environ.get("PLUGINVAL_CACHE_DIR")
     if env:
@@ -62,24 +76,43 @@ def ensure_pluginval(force_download: bool = False) -> Path:
         return path
 
     cache = cache_dir()
-    binary = cache / "pluginval"
-    if binary.is_file() and os.access(binary, os.X_OK) and not force_download:
-        return binary
+    binary = cache / pluginval_binary_name()
+    if binary.is_file() and not force_download:
+        if sys.platform == "win32" or os.access(binary, os.X_OK):
+            return binary
 
-    url = os.environ.get("PLUGINVAL_DOWNLOAD_URL", DEFAULT_LINUX_URL)
+    url = os.environ.get("PLUGINVAL_DOWNLOAD_URL", default_download_url())
     cache.mkdir(parents=True, exist_ok=True)
     zip_path = cache / "pluginval.zip"
 
     print(f"Downloading pluginval from {url}", file=sys.stderr)
-    urllib.request.urlretrieve(url, zip_path)
+    # GitHub release CDN occasionally returns 504 — retry with backoff.
+    last_err: Exception | None = None
+    for attempt in range(1, 6):
+        try:
+            urllib.request.urlretrieve(url, zip_path)
+            last_err = None
+            break
+        except Exception as exc:  # noqa: BLE001 — network/CDN flake
+            last_err = exc
+            wait = min(32, 2**attempt)
+            print(
+                f"pluginval download attempt {attempt}/5 failed: {exc}; retry in {wait}s",
+                file=sys.stderr,
+            )
+            time.sleep(wait)
+    if last_err is not None:
+        raise SystemExit(f"Failed to download pluginval after 5 attempts: {last_err}") from last_err
 
+    expected_name = pluginval_binary_name()
     with zipfile.ZipFile(zip_path) as zf:
-        members = [m for m in zf.namelist() if Path(m).name == "pluginval"]
+        members = [m for m in zf.namelist() if Path(m).name == expected_name]
         if not members:
-            raise SystemExit(f"No pluginval binary inside {zip_path}")
+            raise SystemExit(f"No {expected_name} binary inside {zip_path}")
         with zf.open(members[0]) as src, open(binary, "wb") as dst:
             shutil.copyfileobj(src, dst)
-    binary.chmod(0o755)
+    if sys.platform != "win32":
+        binary.chmod(0o755)
     zip_path.unlink(missing_ok=True)
     return binary
 

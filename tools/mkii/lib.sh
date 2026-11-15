@@ -57,6 +57,10 @@ mkii_ensure_arm_gcc() {
     echo "ARM gcc OK: ${gcc_bin}"
     return 0
   fi
+  if command -v arm-none-eabi-gcc >/dev/null 2>&1; then
+    echo "ARM gcc OK (system): $(command -v arm-none-eabi-gcc)"
+    return 0
+  fi
   if [[ "${MKII_SKIP_GCC:-0}" == "1" ]]; then
     echo "MKII_SKIP_GCC=1 — skipping toolchain install (use Docker: ./tools/mkii-automate.sh docker <slug>)" >&2
     return 0

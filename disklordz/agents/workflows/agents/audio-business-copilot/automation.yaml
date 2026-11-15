@@ -1,0 +1,17 @@
+# Automation — Audio Business Copilot (`audio-business-copilot`)
+
+platform: github
+trigger: daily schedule
+primary: .github/workflows/audio-plugin-fleet.yml
+
+## Steps
+1. factory-queue.py
+2. coach_outreach.py
+3. audio-coach-daily-nudge.yml
+4. weekly_review (audio-plugin-weekly.yml)
+
+## Invoke agent
+Read: disklordz/agents/profit/audio-business-copilot/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#audio-business-copilot

@@ -1,0 +1,16 @@
+---
+description: AI team roles — when to delegate to Antigravity vs Cursor Factory vs business agents
+alwaysApply: true
+---
+
+# AI team workflow (summary)
+
+Full text: repository root **`.cursorrules`**.
+
+- **Antigravity:** product prep factory, **Claude Code DPF copilot** (Windows build/pytest/fixtures), batch audio, presets, HISE via `inbox/`; `request-claude-support.sh` + `docs/ANTIGRAVITY_CLAUDE_CODE_COPILOT.md`.
+- **Claude Code:** terminal C++/DPF implementation; request Antigravity for Windows/batch legs.
+- **Cursor (you):** in-IDE engineering, small diffs, CHORD ENGINE when user wants VST lane here.
+- **plugin-factory-liaison:** factory PM, `PASTE_TO_FACTORY`, no C++.
+- **audio-business-copilot:** sprint, brand, Slack coach — no JUCE.
+
+Use the **🚀 Antigravity Delegation Packet** block format from `.cursorrules` when copy/pasting to Antigravity.

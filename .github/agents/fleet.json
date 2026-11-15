@@ -10,7 +10,7 @@
     "workflow-automation",
     "pm-agent"
   ],
-  "agent_count": 32,
+  "agent_count": 36,
   "agents": [
     {
       "id": "workflow-automation",
@@ -570,6 +570,72 @@
       "automation_path": "disklordz/agents/workflows/agents/release-notes/automation.yaml"
     },
     {
+      "id": "audio-business-copilot",
+      "title": "Audio Business Copilot",
+      "activation": "ci_scheduled",
+      "announcement": "I'm **Audio Business Copilot** \u2014 I own the DiskLordz Audio roadmap and Coach sprint; I delegate VST C++ to the factory and prep to Antigravity.",
+      "automation": {
+        "platform": "github",
+        "trigger": "daily schedule",
+        "workflow_file": ".github/workflows/audio-plugin-fleet.yml",
+        "steps": [
+          "factory-queue.py",
+          "coach_outreach.py",
+          "audio-coach-daily-nudge.yml",
+          "weekly_review (audio-plugin-weekly.yml)"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/audio-business-copilot/agent.md",
+      "copilot_skill": ".github/skills/disklordz-audio-business-copilot/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/audio-business-copilot/automation.yaml"
+    },
+    {
+      "id": "plugin-factory-liaison",
+      "title": "Plugin Factory Liaison",
+      "activation": "ci_scheduled",
+      "announcement": "I'm **Plugin Factory Liaison** \u2014 I refresh PASTE_TO_FACTORY and slice Milestone 001 for Cursor Factory without writing JUCE myself.",
+      "automation": {
+        "platform": "github",
+        "trigger": "daily schedule",
+        "workflow_file": ".github/workflows/audio-plugin-fleet.yml",
+        "steps": [
+          "Refresh PASTE_TO_FACTORY.md",
+          "Cursor timer: paste to Factory chat"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/plugin-factory-liaison/agent.md",
+      "copilot_skill": ".github/skills/disklordz-plugin-factory-liaison/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/plugin-factory-liaison/automation.yaml"
+    },
+    {
+      "id": "autonomous-coding-agent",
+      "title": "Autonomous Coding Agent (24/7)",
+      "activation": "ci_scheduled",
+      "announcement": "I'm **Autonomous Coding Agent** \u2014 I drain the 24/7 coding queue on allowlisted paths and escalate plugin C++ to the factory.",
+      "automation": {
+        "platform": "github",
+        "trigger": "every 6h",
+        "workflow_file": ".github/workflows/autonomous-coding-agent.yml",
+        "steps": [
+          "tick.py",
+          "Cursor timer 4h cloud slices"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/autonomous-coding-agent/agent.md",
+      "copilot_skill": ".github/skills/disklordz-autonomous-coding-agent/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/autonomous-coding-agent/automation.yaml"
+    },
+    {
+      "id": "vst-factory-director",
+      "title": "VST Factory Director",
+      "activation": "manual",
+      "announcement": "",
+      "automation": {},
+      "profit_entry": "disklordz/agents/profit/vst-factory-director/agent.md",
+      "copilot_skill": ".github/skills/disklordz-vst-factory-director/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/vst-factory-director/automation.yaml"
+    },
+    {
       "id": "hardware-preset-designer",
       "title": "Hardware Preset Designer",
       "activation": "ci_on_pr",
@@ -629,6 +695,26 @@
     {
       "path": ".github/workflows/synth-forge.yml",
       "serves": "hardware-preset-designer"
+    },
+    {
+      "path": ".github/workflows/audio-plugin-fleet.yml",
+      "serves": "audio-business-copilot, plugin-factory-liaison, golden-wav-qa"
+    },
+    {
+      "path": ".github/workflows/audio-coach-daily-nudge.yml",
+      "serves": "audio-business-copilot"
+    },
+    {
+      "path": ".github/workflows/audio-plugin-weekly.yml",
+      "serves": "audio-business-copilot, plugin-factory-liaison"
+    },
+    {
+      "path": ".github/workflows/autonomous-coding-agent.yml",
+      "serves": "autonomous-coding-agent"
+    },
+    {
+      "path": ".github/workflows/antigravity-product-prep-sync.yml",
+      "serves": "audio-business-copilot"
     }
   ]
 }

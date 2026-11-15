@@ -31,8 +31,13 @@ If audio present, write `.ideas/reference-analysis.md` (spectral character, nois
 
 ## Step 3 — Files
 
-From `templates/apc/`:
+From `templates/apc/` ([SOP-VF-01](../../../docs/disklordz/sops/SOP-VF-01-intake-dream.md)):
 
+```bash
+bin/apc template <Name> dream --class <effect|synth|midi|sampler> --category <taxonomy id>
+```
+
+- `DPCS_PHASE0_CONSTITUTION.md`
 - `.ideas/creative-brief.md`
 - `.ideas/parameter-spec.md` (table of all controls)
 

@@ -47,6 +47,7 @@ new_handoff_id() {
 
 cmd_send() {
   local wo="" title="" criteria="" branch="main" issue="" notes="" push=0
+  local to_agent="antigravity-hise"
   local -a paths=("docs/HISE_ANTIGRAVITY_LANE.md" "disklordz/antigravity/AGENT_INSTRUCTIONS.md")
 
   while [[ $# -gt 0 ]]; do
@@ -58,6 +59,7 @@ cmd_send() {
       --issue) issue="$2"; shift 2 ;;
       --path) paths+=("$2"); shift 2 ;;
       --notes) notes="$2"; shift 2 ;;
+      --to-agent) to_agent="$2"; shift 2 ;;
       --push) push=1; shift ;;
       *) die "unknown send option: $1" ;;
     esac
@@ -70,16 +72,16 @@ cmd_send() {
   id="$(new_handoff_id | tr -d '\n')"
   local file="${INBOX}/${id}.json"
 
-  python3 - "$file" "$id" "$wo" "$title" "$criteria" "$branch" "$notes" "${paths[@]}" <<'PY'
+  python3 - "$file" "$id" "$wo" "$title" "$criteria" "$branch" "$notes" "$to_agent" "${paths[@]}" <<'PY'
 import json, sys
 from datetime import datetime, timezone
-file, hid, wo, title, criteria, branch, notes = sys.argv[1:8]
-paths = sys.argv[8:]
+file, hid, wo, title, criteria, branch, notes, to_agent = sys.argv[1:9]
+paths = sys.argv[9:]
 doc = {
   "handoff_id": hid,
   "direction": "cursor_to_antigravity",
   "from_agent": "cursor-cloud",
-  "to_agent": "antigravity-hise",
+  "to_agent": to_agent,
   "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
   "work_order": {
     "id": wo,

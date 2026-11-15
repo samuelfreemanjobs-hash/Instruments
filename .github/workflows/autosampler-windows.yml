@@ -38,6 +38,18 @@ jobs:
       - name: Unit tests
         run: ctest --test-dir build -R AutoSampler --output-on-failure
 
+      - name: Cache pluginval binary
+        run: python scripts/vst/run_pluginval.py --install-only
+
+      - name: Validate VST3 with pluginval
+        env:
+          CI: "true"
+        run: |
+          python scripts/vst/run_pluginval.py ^
+            --discover "build/AutoSampler/AutoSampler_artefacts/Release/VST3" ^
+            --strictness-level 5 ^
+            --timeout-ms 120000
+
       - name: Stage prebuild package
         shell: pwsh
         run: |

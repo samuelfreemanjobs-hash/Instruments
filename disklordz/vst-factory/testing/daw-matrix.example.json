@@ -1,0 +1,29 @@
+{
+  "schema_version": "daw-matrix/v1",
+  "plugin_name": "MeterTap",
+  "format": "vst3",
+  "updated_at": "2026-11-09T05:00:00Z",
+  "hosts": [
+    {
+      "id": "reaper",
+      "os": "windows",
+      "version": "7.x",
+      "status": "pending",
+      "notes": "Operator DAW smoke after factory certify; not a Linux CI blocker."
+    },
+    {
+      "id": "ableton-live",
+      "os": "windows",
+      "version": "12.x",
+      "status": "skip",
+      "notes": "Optional second host for commercial release."
+    },
+    {
+      "id": "carla",
+      "os": "linux",
+      "version": "any",
+      "status": "skip",
+      "notes": "Optional local Linux host check."
+    }
+  ]
+}

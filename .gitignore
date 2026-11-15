@@ -1,8 +1,12 @@
+/test-evidence-*.webp
+
 node_modules/
 
 .deps/
 _deps/
 build/
+build-factory-gui/
+build-factory-gui-*/
 cmake-build-*/
 
 **/*.ntkdigunit
@@ -18,3 +22,7 @@ MyFirstPlugin/build-ninja/
 *.user
 .vs/
 .idea/
+
+disklordz/agents/workflows/fleet-activity.jsonl
+__pycache__/
+vst/JUCE

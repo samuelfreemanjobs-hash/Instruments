@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0c" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="description" content="DiskLordz Audio Coach — one task at a time" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>DiskLordz Coach</title>
+  </head>
+  <body>
+    <header class="top">
+      <span class="logo" aria-hidden="true">🎛️</span>
+      <div>
+        <h1>Your task right now</h1>
+        <p class="tagline" id="sprint-line">Sprint 0 / 10</p>
+      </div>
+    </header>
+
+    <main class="coach-card" id="coach-card" aria-live="polite">
+      <p class="loading">Loading your assignment…</p>
+    </main>
+
+    <section class="panel steps-panel hidden" id="steps-panel">
+      <h2>Steps</h2>
+      <ol id="step-list"></ol>
+    </section>
+
+    <section class="panel done-panel hidden" id="done-panel">
+      <h2>Done when</h2>
+      <p id="done-when"></p>
+    </section>
+
+    <footer class="dock">
+      <button type="button" id="btn-done" class="primary" disabled>I did this — next task</button>
+      <button type="button" id="btn-delegate" class="ghost hidden">Copy Cursor prompt</button>
+    </footer>
+
+    <details class="settings">
+      <summary>Reminders &amp; nudges</summary>
+      <label class="row">
+        <span>Daily browser nudge</span>
+        <input type="time" id="reminder-time" value="09:00" />
+      </label>
+      <button type="button" id="btn-notify" class="small">Enable notifications</button>
+      <p class="hint">Phone: run <code>coach_calendar.py --write</code> and subscribe to the .ics file. Slack: set <code>DISKLORDZ_COACH_WEBHOOK_URL</code> for daily messages.</p>
+      <button type="button" id="sync-progress" class="small">Save progress for agent</button>
+      <a href="#checklist" id="toggle-checklist" class="small-link">Show full checklist</a>
+    </details>
+
+    <section class="panel hidden" id="checklist-section">
+      <h2>Full sprint</h2>
+      <ul id="checklist" class="checklist"></ul>
+    </section>
+
+    <script src="coach.js" type="module"></script>
+  </body>
+</html>

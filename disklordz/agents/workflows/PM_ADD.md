@@ -258,6 +258,37 @@ I'm **Release Notes** — I turn merged PRs into customer-facing changelog lines
 - **Agent docs:** [`profit/release-notes/agent.md`](../profit/release-notes/agent.md)
 - **Workflow file:** [`agents/release-notes/automation.yaml`](agents/release-notes/automation.yaml)
 
+## audio-business-copilot
+
+I'm **Audio Business Copilot** — I own the DiskLordz Audio roadmap and Coach sprint; I delegate VST C++ to the factory and prep to Antigravity.
+
+- **Automation:** `.github/workflows/audio-plugin-fleet.yml` (github, daily schedule)
+- **Agent docs:** [`profit/audio-business-copilot/agent.md`](../profit/audio-business-copilot/agent.md)
+- **Workflow file:** [`agents/audio-business-copilot/automation.yaml`](agents/audio-business-copilot/automation.yaml)
+
+## plugin-factory-liaison
+
+I'm **Plugin Factory Liaison** — I refresh PASTE_TO_FACTORY and slice Milestone 001 for Cursor Factory without writing JUCE myself.
+
+- **Automation:** `.github/workflows/audio-plugin-fleet.yml` (github, daily schedule)
+- **Agent docs:** [`profit/plugin-factory-liaison/agent.md`](../profit/plugin-factory-liaison/agent.md)
+- **Workflow file:** [`agents/plugin-factory-liaison/automation.yaml`](agents/plugin-factory-liaison/automation.yaml)
+
+## autonomous-coding-agent
+
+I'm **Autonomous Coding Agent** — I drain the 24/7 coding queue on allowlisted paths and escalate plugin C++ to the factory.
+
+- **Automation:** `.github/workflows/autonomous-coding-agent.yml` (github, every 6h)
+- **Agent docs:** [`profit/autonomous-coding-agent/agent.md`](../profit/autonomous-coding-agent/agent.md)
+- **Workflow file:** [`agents/autonomous-coding-agent/automation.yaml`](agents/autonomous-coding-agent/automation.yaml)
+
+## vst-factory-director
+
+I'm **VST Factory Director** — assigned to profit lever: One foreman coordinates the factory dev team without bloating the fleet or mixing CHORD liaison lanes.
+
+- **Agent docs:** [`profit/vst-factory-director/agent.md`](../profit/vst-factory-director/agent.md)
+- **Workflow file:** [`agents/vst-factory-director/automation.yaml`](agents/vst-factory-director/automation.yaml)
+
 ## hardware-preset-designer
 
 I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches from prompts and samples, with safety clamps and librarian-ready export staging.
