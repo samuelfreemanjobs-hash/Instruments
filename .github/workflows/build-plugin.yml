@@ -35,14 +35,20 @@ jobs:
             --discover build/MyFirstPlugin_artefacts/Release/VST3
 
   windows-vst3:
-    runs-on: windows-latest
+    runs-on: windows-2022
     defaults:
       run:
         working-directory: MyFirstPlugin
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure and build (CMake preset)
+      - name: Activate MSVC x64
+        uses: ilammy/msvc-dev-cmd@v1.13.0
+        with:
+          arch: x64
+
+      - name: Configure and build (Ninja Release)
+        shell: cmd
         run: |
-          cmake --preset windows-vs-release
-          cmake --build --preset windows-vs-release
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
+          cmake --build build --target MyFirstPlugin_VST3 MyFirstSynth_VST3 -j
