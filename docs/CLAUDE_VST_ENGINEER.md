@@ -166,3 +166,18 @@ Without these, DAWs (Reaper, FL Studio) reject the VST3 on scan.
 | `@Docs juce.com` | Link https://docs.juce.com or reference `build/_deps/juce-src` |
 | `.cursorignore` | No effect on Claude; `build/` is excluded by standard `.gitignore` |
 | Cursor Agent Mode | Claude Code agentic session with file tools |
+
+---
+
+## 10. Overnight Play 6-pack (bash + `claude -p`)
+
+Non-interactive SKU pass (Linux or WSL) — same contract as Windows `run-factory-play6.ps1`:
+
+```bash
+# From repo root — needs `claude` on PATH and JUCE at vst/JUCE
+./tools/run-factory-play6.sh --only PhonkCowbell94        # compile + Claude customize + rebuild
+./tools/run-factory-play6.sh --skip-claude                  # template smoke only
+./tools/run-factory-mpc-play6.sh --only MpcPlayPhonk       # Melodee headless lane
+```
+
+Claude is invoked with `--dangerously-skip-permissions` and may edit only Layer A/B, macros, Assets, and presets. Logs: `disklordz/vst-factory/logs/play6/` and `mpc-play6/`. If `claude` is missing, the full prompt is written to `*.customize.prompt.txt` for a manual `claude` session.

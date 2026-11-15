@@ -30,6 +30,7 @@ cd disklordz/vst-factory && pip install -e ".[dev]" && uvicorn vst_factory.main:
 | **Play 6-pack compact contract** | `disklordz/vst-factory/data/play_synth_6pack_master.json` |
 | Build contract (arp, macro lock, 2x OS, FIFO viz) | `disklordz/vst-factory/data/play_synth_factory_contract.md` |
 | Windows runner | `disklordz/vst-factory/scripts/run-factory-play6.ps1` (template build → pluginval → `--render-test` → optional Claude SKU pass) |
+| **Linux / bash + Claude Code** | `disklordz/vst-factory/scripts/run-factory-play6.sh` (`--skip-claude`, `--only PhonkCowbell94`, `--with-webview` for GTK) |
 | Windows one-time setup | `disklordz/vst-factory/scripts/setup-play-factory-windows.ps1` |
 | Linux CI template smoke | `tools/build-play-template-smoke.sh` |
 | Pre-wired core | `templates/juce8-synth-base/` (`LayerAEngine`, `LayerBEngine`, `MacroRouter`, `Assets/`, render smoke) |
@@ -52,7 +53,7 @@ cd disklordz/vst-factory && pip install -e ".[dev]" && uvicorn vst_factory.main:
 | MPC Play manifest | `disklordz/vst-factory/data/mpc_play_synth_6pack_master.json` |
 | Headless contract | `disklordz/vst-factory/data/mpc_play_factory_contract.md` |
 | Template (reuses `juce8-synth-base` DSP) | `templates/mpc-play-synth-base/` |
-| Linux batch build | `tools/run-factory-mpc-play6.sh` |
+| Linux batch + Claude | `disklordz/vst-factory/scripts/run-factory-mpc-play6.sh` (alias: `tools/run-factory-mpc-play6.sh`) |
 | Verify bundle | `scripts/vst/verify-mpc-sample-vst3.sh` |
 | General MPC rules | `docs/MPC_SAMPLE_VST3.md` |
 
