@@ -5,6 +5,11 @@
 #   .\scripts\windows\download-mkii-ci-artifact.ps1
 #   .\scripts\windows\prepare-mkii-test.ps1
 
+param(
+    [string]$Repo = "samuelfreemanjobs-hash/Instruments",
+    [string]$Branch = "main"
+)
+
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
@@ -19,19 +24,46 @@ if (-not $gh) {
     exit 1
 }
 
+gh auth status 2>&1 | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "GitHub CLI not authenticated. Run: gh auth login" -ForegroundColor Yellow
+    exit 1
+}
+
 Push-Location $RepoRoot
 try {
-    $runJson = gh run list --workflow $WorkflowFile --limit 20 --json databaseId,conclusion,status,headBranch `
-        | ConvertFrom-Json
-    $success = $runJson | Where-Object { $_.conclusion -eq "success" } | Select-Object -First 1
+    $raw = gh run list -R $Repo --workflow $WorkflowFile --limit 30 --json databaseId,conclusion,status,headBranch,url
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "gh run list failed for $Repo" -ForegroundColor Red
+        exit $LASTEXITCODE
+    }
+    if ([string]::IsNullOrWhiteSpace($raw) -or $raw.Trim() -eq "[]") {
+        Write-Host "No workflow runs returned for $Repo / $WorkflowFile." -ForegroundColor Yellow
+        Write-Host "Trigger: gh workflow run $WorkflowFile -R $Repo --ref main"
+        exit 1
+    }
+
+    $runJson = $raw | ConvertFrom-Json
+    if ($runJson -isnot [array]) {
+        $runJson = @($runJson)
+    }
+
+    $success = $runJson | Where-Object { $_.conclusion -eq "success" -and $_.headBranch -eq $Branch } | Select-Object -First 1
     if (-not $success) {
-        Write-Host "No successful run for workflow $WorkflowFile yet." -ForegroundColor Yellow
-        Write-Host "Open Actions on GitHub and run workflow 'NTS-1 mkII oscillators' (workflow_dispatch)."
+        $success = $runJson | Where-Object { $_.conclusion -eq "success" } | Select-Object -First 1
+    }
+    if (-not $success) {
+        Write-Host "No successful run for workflow $WorkflowFile on $Repo yet." -ForegroundColor Yellow
+        Write-Host "Trigger: gh workflow run $WorkflowFile -R $Repo --ref main"
+        Write-Host "Or: GitHub -> Actions -> NTS-1 mkII oscillators -> Run workflow"
         exit 1
     }
 
     $runId = $success.databaseId
-    Write-Host "Downloading artifact from run $runId (branch hint: $($success.headBranch)) ..." -ForegroundColor Cyan
+    Write-Host "Downloading artifact from run $runId (branch: $($success.headBranch)) ..." -ForegroundColor Cyan
+    if ($success.url) {
+        Write-Host "Run: $($success.url)"
+    }
 
     $staging = Join-Path $env:TEMP "nts1-mkii-download-$runId"
     if (Test-Path $staging) {
@@ -39,7 +71,7 @@ try {
     }
     New-Item -ItemType Directory -Path $staging | Out-Null
 
-    gh run download $runId --name $ArtifactName --dir $staging
+    gh run download $runId -R $Repo --name $ArtifactName --dir $staging
     if ($LASTEXITCODE -ne 0) {
         Write-Host "gh run download failed." -ForegroundColor Red
         exit $LASTEXITCODE
