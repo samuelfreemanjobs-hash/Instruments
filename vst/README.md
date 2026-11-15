@@ -34,6 +34,17 @@ git submodule add https://github.com/juce-framework/JUCE.git vst/JUCE
 ./tools/build-vst.sh --all
 ```
 
+### 4. Akai MPC Sample (aarch64 Linux)
+
+Melodee on **MPC Sample** needs **`Contents/aarch64-linux/`**, not desktop x86_64.
+
+```bash
+./tools/build-vst-aarch64-linux.sh MySynth
+./scripts/vst/verify-mpc-sample-vst3.sh vst/MySynth/build-aarch64/.../MySynth.vst3
+```
+
+Full requirements: [docs/MPC_SAMPLE_VST3.md](../docs/MPC_SAMPLE_VST3.md).
+
 Shared DSP: `shared/dsp/` (biquad, ADSR, smoothing, phasor).
 
 Artifacts (paths vary by OS): `build/MySynth_artefacts/Release/VST3/`
