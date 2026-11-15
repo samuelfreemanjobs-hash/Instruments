@@ -3,84 +3,84 @@
     {
       "category": "Bass",
       "slot": 1,
-      "index": 211,
+      "index": 218,
       "name": "Bass Impact Southern Sub 17",
       "subStyle": "Impact"
     },
     {
       "category": "Bass",
       "slot": 2,
-      "index": 203,
+      "index": 210,
       "name": "Bass Impact Dark Punch 84",
       "subStyle": "Impact"
     },
     {
       "category": "Bells",
       "slot": 1,
-      "index": 195,
+      "index": 202,
       "name": "Bells Glock Stack Velvet Bell 48",
       "subStyle": "Glock Stack"
     },
     {
       "category": "Bells",
       "slot": 2,
-      "index": 192,
+      "index": 199,
       "name": "Bells Trap Bell Cathedral Bell 46",
       "subStyle": "Trap Bell"
     },
     {
       "category": "Brass",
       "slot": 1,
-      "index": 145,
-      "name": "Brass Stab Dark Blast 64",
-      "subStyle": "Stab"
+      "index": 136,
+      "name": "Brass Fanfare Ominous Horns 02",
+      "subStyle": "Fanfare"
     },
     {
       "category": "Brass",
       "slot": 2,
-      "index": 135,
-      "name": "Brass Fanfare Cathedral Brass 41",
-      "subStyle": "Fanfare"
+      "index": 148,
+      "name": "Brass Stab Shadow Brass 28",
+      "subStyle": "Stab"
     },
     {
       "category": "Choir",
       "slot": 1,
-      "index": 223,
+      "index": 230,
       "name": "Choir Air Southern Chant 128",
       "subStyle": "Air"
     },
     {
       "category": "Choir",
       "slot": 2,
-      "index": 222,
+      "index": 229,
       "name": "Choir Pad Stack Southern Oohs 77",
       "subStyle": "Pad Stack"
     },
     {
       "category": "Church Keys/EP",
       "slot": 1,
-      "index": 166,
+      "index": 173,
       "name": "Church Keys Wurli Ominous Wurli 05",
       "subStyle": "Wurli"
     },
     {
       "category": "Church Keys/EP",
       "slot": 2,
-      "index": 167,
+      "index": 174,
       "name": "Church Keys Glass Digi Dusty Wurli 19",
       "subStyle": "Glass Digi"
     },
     {
       "category": "Hits/FX",
       "slot": 1,
-      "index": 259,
-      "name": "Hits Impact Reverse Stab 43",
+      "index": 260,
+      "name": "Hits Impact Frozen Stab 81",
       "subStyle": "Impact"
     },
     {
       "category": "Hits/FX",
       "slot": 2,
-      "index": 251,
+      "index": 258,
       "name": "Hits Stab Cinematic Stab 13",
       "subStyle": "Stab"
     },
@@ -94,21 +94,21 @@
     {
       "category": "Leads",
       "slot": 2,
-      "index": 82,
-      "name": "Leads Glide Solo Shadow Hook 60",
+      "index": 64,
+      "name": "Leads Glide Solo Ominous Blade 280",
       "subStyle": "Glide Solo"
     },
     {
       "category": "Organ",
       "slot": 1,
-      "index": 173,
+      "index": 180,
       "name": "Organ String Rotary Dusty Church 75",
       "subStyle": "String Rotary"
     },
     {
       "category": "Organ",
       "slot": 2,
-      "index": 179,
+      "index": 186,
       "name": "Organ String Rotary Frozen Gospel 27",
       "subStyle": "String Rotary"
     },
@@ -129,14 +129,14 @@
     {
       "category": "Strings",
       "slot": 1,
-      "index": 158,
+      "index": 165,
       "name": "Strings Trem Rising Arc 17",
       "subStyle": "Trem"
     },
     {
       "category": "Strings",
       "slot": 2,
-      "index": 151,
+      "index": 158,
       "name": "Strings Trem Evil Bows 38",
       "subStyle": "Trem"
     },
