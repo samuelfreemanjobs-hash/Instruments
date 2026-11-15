@@ -11,8 +11,9 @@ on:
       - "tools/GenerateCleanroomRom.cpp"
       - "JUCE_VERSION"
       - ".github/workflows/instruments-windows.yml"
+  # Stack PRs (e.g. WAVE-9090) target the Windows pluginval lane before main.
   pull_request:
-    branches: [main]
+    branches: [main, cursor/instruments-windows-pluginval-e82f]
     paths:
       - "Source/**"
       - "Wave9090/**"

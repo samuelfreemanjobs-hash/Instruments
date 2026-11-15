@@ -6,6 +6,7 @@
 #include "Presets/FactoryPresets.h"
 
 #include <JuceHeader.h>
+#include <atomic>
 
 class Wave9090AudioProcessor final : public juce::AudioProcessor
 {
@@ -40,6 +41,8 @@ public:
     const wave9090::SynthParams& getLiveParams() const noexcept { return liveParams_; }
 
     void applyFactoryPreset (int index);
+    float getOutputPeakDb() const noexcept { return outputPeakDb_.load(); }
+    juce::MidiKeyboardState& getKeyboardState() noexcept { return keyboardState_; }
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
@@ -52,6 +55,8 @@ private:
     wave9090::engine::SynthEngine engine_;
     wave9090::SynthParams liveParams_{};
     int currentProgram_ = 0;
+    std::atomic<float> outputPeakDb_ { -60.0f };
+    juce::MidiKeyboardState keyboardState_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Wave9090AudioProcessor)
 };

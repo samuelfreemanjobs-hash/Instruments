@@ -42,7 +42,7 @@ public:
 
     float noiseGain (float velocity) const noexcept
     {
-        return macro_ * macro_ * 0.08f * velocity;
+        return macro_ * macro_ * 0.018f * velocity;
     }
 
     float nextNoiseSample (std::uint32_t& rng) noexcept

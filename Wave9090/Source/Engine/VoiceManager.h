@@ -5,6 +5,7 @@
 
 #include <array>
 #include <cmath>
+#include <memory>
 
 namespace wave9090::engine
 {
@@ -17,9 +18,11 @@ public:
     void prepare (double sampleRate) noexcept
     {
         sampleRate_ = sampleRate;
-        bank_.rebuild();
+        if (bank_ == nullptr)
+            bank_ = std::make_unique<dsp::WavetableBank>();
+        bank_->rebuild();
         for (auto& v : voices_)
-            v.prepare (sampleRate, bank_);
+            v.prepare (sampleRate, *bank_);
     }
 
     void reset() noexcept
@@ -62,8 +65,8 @@ public:
             for (auto& v : voices_)
                 v.render (l, r);
 
-            outL[i] += l;
-            outR[i] += r;
+            outL[i] = l;
+            outR[i] = r;
         }
     }
 
@@ -82,7 +85,7 @@ private:
     }
 
     double sampleRate_ = 44100.0;
-    dsp::WavetableBank bank_{};
+    std::unique_ptr<dsp::WavetableBank> bank_;
     SynthParams params_{};
     std::array<Voice, kMaxVoices> voices_{};
 };

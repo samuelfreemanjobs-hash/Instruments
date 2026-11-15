@@ -10,21 +10,30 @@ namespace wave9090::dsp
 
 constexpr std::size_t kWavetableCount = 64;
 constexpr std::size_t kWavetableSize = 2048;
+constexpr std::size_t kMipLevels = 8;
 
-/** Procedural 64-wave bank for trap/phonk morphs (sampleless). */
+/** Procedural 64-wave bank with mipmaps for pitch-aware anti-aliasing. */
 class WavetableBank
 {
 public:
     void rebuild() noexcept
     {
         for (std::size_t w = 0; w < kWavetableCount; ++w)
-            buildWave (w, tables_[w]);
+        {
+            const int fullHarm = harmonicsForWave (w);
+            for (std::size_t mip = 0; mip < kMipLevels; ++ mip)
+            {
+                const int maxHarm = std::max (1, fullHarm >> static_cast<int> (mip));
+                buildWave (w, maxHarm, mipTables_[mip][w]);
+            }
+        }
     }
 
-    const std::array<float, kWavetableSize>& getTable (std::size_t index) const noexcept
+    const std::array<float, kWavetableSize>& getTable (std::size_t index, std::size_t mip = 0) const noexcept
     {
         const auto idx = std::min (index, kWavetableCount - 1);
-        return tables_[idx];
+        const auto lvl = std::min (mip, kMipLevels - 1);
+        return mipTables_[lvl][idx];
     }
 
     static float sampleAt (const std::array<float, kWavetableSize>& table, double phase01) noexcept
@@ -47,7 +56,17 @@ public:
         return ((c3 * frac + c2) * frac + c1) * frac + c0;
     }
 
-    float sampleMorph (double phase01, float positionNorm) const noexcept
+    std::size_t selectMip (double phaseInc) const noexcept
+    {
+        // phaseInc = cycles per sample; folding harmonics above ~0.45 Nyquist
+        const double cycles = phaseInc * static_cast<double> (kWavetableSize);
+        if (cycles < 2.0)
+            return 0;
+        const int mip = static_cast<int> (std::floor (std::log2 (cycles)));
+        return static_cast<std::size_t> (std::clamp (mip, 0, static_cast<int> (kMipLevels) - 1));
+    }
+
+    float sampleMorph (double phase01, float positionNorm, double phaseInc) const noexcept
     {
         positionNorm = std::clamp (positionNorm, 0.0f, 1.0f);
         const float scaled = positionNorm * static_cast<float> (kWavetableCount - 1);
@@ -55,16 +74,27 @@ public:
         const auto i1 = std::min (i0 + 1, kWavetableCount - 1);
         const float frac = scaled - static_cast<float> (i0);
 
-        const float a = sampleAt (tables_[i0], phase01);
-        const float b = sampleAt (tables_[i1], phase01);
+        const auto mip = selectMip (phaseInc);
+        const float a = sampleAt (mipTables_[mip][i0], phase01);
+        const float b = sampleAt (mipTables_[mip][i1], phase01);
         return a + (b - a) * frac;
     }
 
+    float sampleSine (double phase01) const noexcept
+    {
+        return sampleAt (mipTables_[kMipLevels - 1][0], phase01);
+    }
+
 private:
-    static void buildWave (std::size_t waveIndex, std::array<float, kWavetableSize>& out) noexcept
+    static int harmonicsForWave (std::size_t waveIndex) noexcept
     {
         const float t = static_cast<float> (waveIndex) / static_cast<float> (kWavetableCount - 1);
-        const int maxHarm = static_cast<int> (2.0f + t * 46.0f);
+        return static_cast<int> (2.0f + t * 46.0f);
+    }
+
+    static void buildWave (std::size_t waveIndex, int maxHarm, std::array<float, kWavetableSize>& out) noexcept
+    {
+        const float t = static_cast<float> (waveIndex) / static_cast<float> (kWavetableCount - 1);
 
         for (std::size_t i = 0; i < kWavetableSize; ++i)
         {
@@ -82,7 +112,18 @@ private:
             out[i] = static_cast<float> (sum * (0.35 + t * 0.15) + fm + grit);
         }
 
+        removeDc (out);
         normalize (out);
+    }
+
+    static void removeDc (std::array<float, kWavetableSize>& table) noexcept
+    {
+        double mean = 0.0;
+        for (float s : table)
+            mean += static_cast<double> (s);
+        mean /= static_cast<double> (kWavetableSize);
+        for (float& s : table)
+            s -= static_cast<float> (mean);
     }
 
     static void normalize (std::array<float, kWavetableSize>& table) noexcept
@@ -101,7 +142,7 @@ private:
 
     static constexpr double juceTwoPi = 6.283185307179586;
 
-    std::array<std::array<float, kWavetableSize>, kWavetableCount> tables_{};
+    std::array<std::array<std::array<float, kWavetableSize>, kWavetableCount>, kMipLevels> mipTables_{};
 };
 
 } // namespace wave9090::dsp

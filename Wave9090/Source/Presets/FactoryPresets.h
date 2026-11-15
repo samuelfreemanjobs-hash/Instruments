@@ -17,4 +17,7 @@ struct FactoryPreset
 
 const std::vector<FactoryPreset>& getFactoryPresets() noexcept;
 
+/** UI section title for preset browser grouping. */
+std::string_view categoryUiHeading (std::string_view category) noexcept;
+
 } // namespace wave9090::presets
