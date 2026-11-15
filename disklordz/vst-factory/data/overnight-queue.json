@@ -8,5 +8,38 @@
     "scaffold_template": "templates/juce8-synth-base",
     "engine_fork": "ProphetRev2Trap/Source/ProphetRev2Engine.h",
     "prompt": "Build a 16-voice deep-modulation polyphonic analog VST3 synthesizer called ProphetMod16 inspired by the Sequential Prophet '08 and Rev2, using C++20, JUCE 8, and CMake. Follow AGENTS.md and docs/JUCE8_VST3_PROJECT_RULES.md strictly.\n\nREPO CONTEXT:\n- Fork and extend patterns from ProphetRev2Trap/Source/ProphetRev2Engine.h (slop, 2/4-pole filter, ADSR).\n- New root target ProphetMod16/ (not vst/Mpc*). PLUGIN_CODE Pm16.\n- Mod matrix: 8 slots as APVTS params modN_src/modN_dst/modN_amt (enum indices); no std::vector on audio thread.\n- Update mod sources at control rate every 16 samples; SmoothedValue on cutoff/pitch with 10–20 ms ramps.\n\nAUDIO & DSP ARCHITECTURE:\n1. Oscillators (per voice): 2 alias-free PolyBLEP oscillators (Saw, Triangle, Saw+Tri, Variable Pulse) with Octave, Fine Detune, Pulse Width, and Osc Mix, plus a -1 Octave Square Sub-Oscillator and White Noise level.\n2. Analog Slop: Voice Slop (0-100%) independent pitch and filter cutoff drift per voice.\n3. Filter: Switchable 12dB and 24dB resonant LP with pre-filter drive and key tracking.\n4. Envelopes & LFOs: 3 ADSR (Amp, Bipolar Filter, Aux) and 4 LFOs (Triangle, Saw, Square, Random S&H).\n5. 8-Slot Modulation Matrix: lock-free enum routing (LFO1-4, Filter Env, Aux Env, Velocity, Mod Wheel, Aftertouch, KeyTrack) → (Osc pitch/PW, mix, filter, LFO rate, amp, pan).\n6. Voice modes: Poly, Mono Legato, 4-voice Unison; chorus, tempo-sync stereo delay, soft-clip limiter.\n\nUI & PRESETS:\n- JUCE 8 WebView HTML/CSS/JS: Oscillators, Filter, Envelopes, LFOs, 8-row Mod Matrix, Master FX.\n- APVTS XML state; 10 BinaryData factory presets: Init Saw Poly, Rev2 Warm Brass, Evolving Glass Pad, Analog PWM Strings, Deep Sub Bass, Sync Lead, Modulated Bell Keys, Unison Reese, Cosmic Arp Pluck, Dark Cinematic Drone.\n\nBUILD (Windows): cmake -B build -G \"Visual Studio 17 2022\" -A x64; cmake --build build --config Release --target ProphetMod16_VST3.\n\nOPTIONAL v1.1 (do not implement unless asked): bi-timbral Layer A/B split-stack."
+  },
+  {
+    "name": "OxfordPeak8",
+    "type": "synth",
+    "code": "Opk8",
+    "priority": 10,
+    "apc_path": "plugins/OxfordPeak8",
+    "scaffold_template": "templates/juce8-synth-base",
+    "engine_reuse": "ProphetRev2Trap/Source/ProphetRev2Engine.h",
+    "prompt": "Build an 8-voice polyphonic hybrid digital-analog VST3 synthesizer called OxfordPeak8 inspired by the Novation Peak, using C++20, JUCE 8, and CMake. Follow AGENTS.md and docs/JUCE8_VST3_PROJECT_RULES.md strictly.\n\nREPO CONTEXT:\n- Read plugins/OxfordPeak8/.ideas/architecture.md and parameter-spec.md.\n- Root target OxfordPeak8/; PLUGIN_CODE Opk8; template templates/juce8-synth-base/CMakeLists.txt.\n- 16-slot dual-source matrix: APVTS modN_srcA, modN_srcB, modN_dest, modN_depth. SourceB Direct = 1.0f. evaluate: getSource(A)*getSource(B)*depth at control rate every 16 samples.\n- Reuse fastTanh overdrive from ProphetRev2Trap engine; no heap in renderNextBlock.\n\nAUDIO & DSP:\n1. Three New Oxford oscillators per voice: sine, tri, saw, pulse, 16-frame morphable wavetable + shape knob; octave, fine, level; white noise.\n2. Linear FM: osc1→2, osc2→3, osc3→1 front-panel amounts.\n3. Three tanh stages: pre-filter, post-filter, master.\n4. SVF LP/BP/HP 12dB/24dB, resonance, key track, filter divergence per voice.\n5. Amp ADSR + 2 mod ADSR (loop optional); 2 poly LFOs + 2 global LFOs with fade-in and sync.\n6. 16-slot dual-source mod matrix to osc pitch/shape, FM, filter, drives, LFO rates.\n7. Master FX: 3-mode chorus, tempo stereo delay with damped feedback, lush reverb.\n\nUI: WebView Peak-style charcoal/blue/amber; mod matrix tab.\nPRESETS (BinaryData ×10): Init Oxford Saw, Peak Lush Wavetable, 3-Op FM Glass Keys, Driven Analog Bass, Ambient Reverb Pad, Acid Overdrive Lead, Evolving Mod Choir, Brassy Unison Stab, Shimmering Bell Arp, Dark Hybrid Drone.\n\nBUILD (Windows): cmake --build build --config Release --target OxfordPeak8_VST3."
+  },
+  {
+    "name": "ObXaDesktop",
+    "type": "synth",
+    "code": "ObXd",
+    "priority": 5,
+    "apc_path": "plugins/MpcObXa",
+    "note": "Desktop JUCE8 sibling of Melodee MpcObXa plan; run APC design first if missing.",
+    "prompt": "Plan-only stub: 8-voice Oberheim OB-Xa inspired polysynth (dual SEM, cross-mod). Use juce8-synth-base template. See plugins/MpcObXa for creative brief. Defer impl until APC design_complete."
+  },
+  {
+    "name": "WavestateHybrid",
+    "type": "synth",
+    "code": "WvSt",
+    "priority": 4,
+    "prompt": "Plan-only stub: Korg Wavestate-inspired vector/wavesequencer layer synth. APC dream+plan required before factory impl. Not in queue for overnight compile."
+  },
+  {
+    "name": "VirusTiDesktop",
+    "type": "synth",
+    "code": "ViTd",
+    "priority": 4,
+    "prompt": "Plan-only stub: Access Virus TI inspired multimode VA+Wavetable with 3 LFOs and extensive matrix. APC dream+plan required before factory impl."
   }
 ]

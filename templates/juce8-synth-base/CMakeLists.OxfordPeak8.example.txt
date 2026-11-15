@@ -1,0 +1,6 @@
+# Diff from default ProphetMod16 example in CMakeLists.txt:
+#   project(OxfordPeak8 ...)
+#   juce_add_plugin(OxfordPeak8 ... PLUGIN_CODE Opk8 PRODUCT_NAME "OxfordPeak8")
+#   BUNDLE_ID com.instruments.oxfordpeak8
+# Same link lines: juce_audio_utils, juce_dsp, juce_gui_extra
+# Copy full file from CMakeLists.txt in this folder and rename symbols.

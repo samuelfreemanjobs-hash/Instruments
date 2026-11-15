@@ -7,6 +7,15 @@ Starter `CMakeLists.txt` for **root-level** desktop synth targets (e.g. `Prophet
 3. Set `PLUGIN_CODE` uniquely (`Pm16` for ProphetMod16).
 4. Windows: `cmake -B build -G "Visual Studio 17 2022" -A x64` then `cmake --build build --config Release`.
 
-**Factory overnight job:** `disklordz/vst-factory/data/overnight-queue.json` (entry `ProphetMod16`).
+**Factory overnight batch:** `disklordz/vst-factory/data/overnight-queue.json`
+
+| Plugin | CODE | Voices | Notes |
+|--------|------|--------|--------|
+| ProphetMod16 | Pm16 | 16 | Rev2 mod matrix; fork `ProphetRev2Trap` engine |
+| OxfordPeak8 | Opk8 | 8 | 3 osc wavetable + dual-source 16-slot matrix |
+
+Copy `CMakeLists.txt`, rename project/plugin symbols; see `CMakeLists.OxfordPeak8.example.txt` for renames.
+
+**Stubs in same JSON** (priority 4–5): ObXaDesktop, WavestateHybrid, VirusTiDesktop — plan-only until APC design exists. There is no `run-factory.ps1` in-repo; run prompts via Claude Code / Cursor on Windows with MSVC.
 
 **DSP reference:** `ProphetRev2Trap/Source/ProphetRev2Engine.h`.
