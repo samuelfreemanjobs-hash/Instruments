@@ -2,6 +2,33 @@
 
 On Windows you **flash and audition** units with **KORG KONTROL Editor** (or `loguecli`). Cross-compiling `.nts1mkiiunit` files needs **GNU Make + arm-none-eabi-gcc**, which this repo runs on **Linux / WSL2** or **GitHub Actions** — not natively in PowerShell.
 
+## One command from PowerShell (WSL build + open folder)
+
+```powershell
+cd C:\dev\Instruments
+.\scripts\windows\build-and-prepare-mkii.ps1
+```
+
+Success: green list of ~16 `.nts1mkiiunit` files and Explorer opens `release\nts1-custom-oscillators\mkII-nts1mkiiunit`.
+
+If execution policy blocks the script:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\windows\build-and-prepare-mkii.ps1
+```
+
+Prepare only (units already built or unzipped from CI):
+
+```powershell
+.\scripts\windows\build-and-prepare-mkii.ps1 -PrepareOnly
+```
+
+Or after a WSL build, only open the folder:
+
+```powershell
+.\scripts\windows\prepare-mkii-test.ps1
+```
+
 ## Fastest path (download CI build)
 
 1. Open the latest successful **NTS-1 mkII build** workflow on GitHub (workflow `nts1-mkii-build.yml`).

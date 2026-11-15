@@ -48,9 +48,10 @@ Smoke: `POST /api/factory/batch` with `{"prompt":"go-live pack","presetId":"boul
 
 ## NTS-1 mkII custom oscillators (test on hardware)
 
-- **Do not** expect native PowerShell builds for `.nts1mkiiunit` — use **WSL2** (`bash ./scripts/windows/build-mkii-wsl.sh`) or download the **`nts1-mkii-units`** artifact from GitHub Actions.
-- After packaging: `.\scripts\windows\prepare-mkii-test.ps1` opens `release\nts1-custom-oscillators\mkII-nts1mkiiunit\` for **KORG KONTROL Editor**.
-- Full steps: `docs/NTS1_MKII_WINDOWS_TEST.md`.
+- **One command:** `.\scripts\windows\build-and-prepare-mkii.ps1` (WSL compile + Explorer). Prepare-only: `-PrepareOnly`.
+- **Do not** native-compile in PowerShell — WSL or CI artifact **`nts1-mkii-units`**.
+- **KORG KONTROL Editor** → NTS-1 mkII → Oscillator → Load → Write.
+- `scripts/windows/README.md` · `docs/NTS1_MKII_WINDOWS_TEST.md`.
 
 ## Never on this machine
 
