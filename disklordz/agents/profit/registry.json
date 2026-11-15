@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "agent_count": 36,
+  "agent_count": 37,
   "agents": [
     {
       "id": "workflow-automation",
@@ -315,6 +315,15 @@
       "path": "disklordz/agents/profit/vst-factory-director",
       "entry": "disklordz/agents/profit/vst-factory-director/agent.md",
       "skill": "disklordz/agents/profit/vst-factory-director/skill.md",
+      "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "linux-vst3-dsp-engineer",
+      "title": "Linux VST3 DSP Engineer",
+      "profit_lever": "Shippable arm64 and x86_64 VST3 binaries without mixing PM/foreman lanes \u2014 embedded and DAW targets from one repo discipline",
+      "path": "disklordz/agents/profit/linux-vst3-dsp-engineer",
+      "entry": "disklordz/agents/profit/linux-vst3-dsp-engineer/agent.md",
+      "skill": "disklordz/agents/profit/linux-vst3-dsp-engineer/skill.md",
       "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
     },
     {

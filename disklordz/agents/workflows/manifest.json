@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "agent_count": 36,
+  "agent_count": 37,
   "agents": [
     {
       "id": "workflow-automation",
@@ -519,6 +519,13 @@
       "announcement": "",
       "automation": {},
       "automation_path": "disklordz/agents/workflows/agents/vst-factory-director/automation.yaml"
+    },
+    {
+      "id": "linux-vst3-dsp-engineer",
+      "title": "Linux VST3 DSP Engineer",
+      "announcement": "",
+      "automation": {},
+      "automation_path": "disklordz/agents/workflows/agents/linux-vst3-dsp-engineer/automation.yaml"
     },
     {
       "id": "hardware-preset-designer",

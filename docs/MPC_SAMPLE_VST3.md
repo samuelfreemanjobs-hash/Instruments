@@ -93,6 +93,18 @@ Melodee’s exact scan path can vary by firmware; typical Linux layouts include 
 | Linux x86_64 (`Contents/x86_64-linux`) | Will not load |
 | Heavy unoptimized synths | May load but glitch or exhaust RAM/CPU |
 
+## Upstream GitHub (research)
+
+| Repo | Purpose |
+|------|---------|
+| [keremimo/melodee-sample](https://github.com/keremimo/melodee-sample) | Melodee host, plugin folder rules, Docker arm64 build |
+| [keremimo/sample-base](https://github.com/keremimo/sample-base) | AC50 hardware runtime (ALSA, MIDI, display) |
+| [keremimo/mpc-vst-melodee-*](https://github.com/keremimo/mpc-vst-melodee-chip) | Example lightweight synths + `*-mpc-sample.zip` |
+| [open-mpc/mpc-vst-plugins](https://github.com/open-mpc/mpc-vst-plugins) | MPC OS ports; [`docs/MPC_SAMPLE.md`](https://github.com/open-mpc/mpc-vst-plugins/blob/main/docs/MPC_SAMPLE.md) hardware brief |
+| [inmusic-software/az0x-open-source](https://github.com/inmusic-software/az0x-open-source/tree/mpc-sample/1.3.0) | Published kernel/device-tree reference |
+
+Fleet implementer: [docs/agents/LINUX_VST3_DSP_ENGINEER.md](agents/LINUX_VST3_DSP_ENGINEER.md).
+
 ## Related repo docs
 
 - [vst/README.md](../vst/README.md) — JUCE boilerplate and desktop Linux builds

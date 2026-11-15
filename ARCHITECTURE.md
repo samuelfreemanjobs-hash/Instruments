@@ -30,7 +30,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **DiskLordz Phonk Box** (PC phonk engine) | [disklordz/phonk-box/ARCHITECTURE.md](disklordz/phonk-box/ARCHITECTURE.md) | `python phonk_engine.py --self-test` in `disklordz/phonk-box/engine/` |
 | **MPC Renaissance dedicated box** (pseudo-standalone host) | [renaissance-box/ARCHITECTURE.md](renaissance-box/ARCHITECTURE.md) · [docs/MPC_RENAISSANCE_DEDICATED_BOX.md](docs/MPC_RENAISSANCE_DEDICATED_BOX.md) | `pip install -e renaissance-box/host` · `python sidecar.py` |
 | **Songwriting engine** (MIDI composition + MPC500 export) | [songwriting-engine/README.md](songwriting-engine/README.md) | `python -m songwriting.cli check` in `songwriting-engine/` |
-| **APC / JUCE VST factory** (desktop + MPC Sample aarch64) | [vst/README.md](vst/README.md) · [docs/MPC_SAMPLE_VST3.md](docs/MPC_SAMPLE_VST3.md) | `./tools/build-vst.sh <Name>` · `./tools/build-vst-aarch64-linux.sh <Name>` |
+| **APC / JUCE VST factory** (desktop + MPC Sample aarch64) | [vst/README.md](vst/README.md) · [docs/MPC_SAMPLE_VST3.md](docs/MPC_SAMPLE_VST3.md) · [docs/agents/LINUX_VST3_DSP_ENGINEER.md](docs/agents/LINUX_VST3_DSP_ENGINEER.md) | `./tools/build-vst.sh <Name>` · `./tools/build-vst-aarch64-linux.sh <Name>` · agent `linux-vst3-dsp-engineer` |
 
 ## Repository layout
 

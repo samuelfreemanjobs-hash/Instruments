@@ -289,6 +289,13 @@ I'm **VST Factory Director** — assigned to profit lever: One foreman coordinat
 - **Agent docs:** [`profit/vst-factory-director/agent.md`](../profit/vst-factory-director/agent.md)
 - **Workflow file:** [`agents/vst-factory-director/automation.yaml`](agents/vst-factory-director/automation.yaml)
 
+## linux-vst3-dsp-engineer
+
+I'm **Linux VST3 DSP Engineer** — assigned to profit lever: Shippable arm64 and x86_64 VST3 binaries without mixing PM/foreman lanes — embedded and DAW targets from one repo discipline.
+
+- **Agent docs:** [`profit/linux-vst3-dsp-engineer/agent.md`](../profit/linux-vst3-dsp-engineer/agent.md)
+- **Workflow file:** [`agents/linux-vst3-dsp-engineer/automation.yaml`](agents/linux-vst3-dsp-engineer/automation.yaml)
+
 ## hardware-preset-designer
 
 I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches from prompts and samples, with safety clamps and librarian-ready export staging.
