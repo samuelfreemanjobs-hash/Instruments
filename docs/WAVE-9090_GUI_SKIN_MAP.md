@@ -45,7 +45,7 @@ Assets: `Wave9090/Assets/skin/*.png` (BinaryData via `SkinAssets`)
 | **TAPE / OUT** bay | Tape / Width / Output knobs | `tapeWobble`, `stereoWidth`, `outputGain` | 0…1, dB |
 | **Keybed** | `keyboard_` | `MidiKeyboardState` | MIDI |
 
-**Octave shift:** button `0` sets lowest visible key to **MIDI 36 (C2)** — `Layout::octaveZeroLowestMidi`. Each ±1 button shifts by one octave (±12 semitones). Matches FL Studio / 808 bass playing starting around C2–C3.
+**Keyboard labels (FL / Image-Line):** `keyboard_.setOctaveForMiddleC(5)` so **MIDI 60 displays as C5** (FL piano roll). With octave `0`, lowest key **MIDI 36** labels as **C3** (808-friendly bass start). Each ±1 octave button shifts ±12 semitones. `Layout::octaveZeroLowestMidi` + `midiKeyboardMiddleCOctave`.
 
 \*Preset index stored in plugin state XML; UI calls `applyFactoryPreset(index)`.
 

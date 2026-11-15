@@ -20,8 +20,10 @@ struct Layout
     static constexpr int glideSlotWidth = 118;
     /** White keys shown (~2.5 octaves); use octave shift for C range. */
     static constexpr int visibleWhiteKeys = 25;
-    /** Octave button `0` → lowest visible MIDI note (36 = C2, FL / 808 bass range). */
+    /** Octave button `0` → lowest visible MIDI note (36 ≈ bass C in FL). */
     static constexpr int octaveZeroLowestMidi = 36;
+    /** JUCE key labels: MIDI 60 → C5 (Image-Line / FL piano-roll convention). */
+    static constexpr int midiKeyboardMiddleCOctave = 5;
     static constexpr int margin = 10;
     static constexpr int bayGap = 8;
 };

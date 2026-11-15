@@ -104,6 +104,8 @@ Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcess
     keyboard_.setColour (juce::MidiKeyboardComponent::blackNoteColourId, juce::Colour (0xff1a1e26));
     keyboard_.setColour (juce::MidiKeyboardComponent::keySeparatorLineColourId, juce::Colours::transparentBlack);
     keyboard_.setScrollButtonsVisible (false);
+    // FL Studio: MIDI note 60 = C5 → JUCE octaveForMiddleC 5 (see skin map).
+    keyboard_.setOctaveForMiddleC (wave9090::ui::Layout::midiKeyboardMiddleCOctave);
     addAndMakeVisible (keyboard_);
     keyboard_.toBack();
 
@@ -114,8 +116,6 @@ Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcess
         octaveButtons_[i].onClick = [this, shift = static_cast<int> (i) - 2] { applyOctaveShift (shift); };
         addAndMakeVisible (octaveButtons_[i]);
     }
-    applyOctaveShift (0);
-
     setSize (wave9090::ui::Layout::editorWidth, wave9090::ui::Layout::editorHeight);
     resized();
 
@@ -133,14 +133,7 @@ void Wave9090AudioProcessorEditor::refreshPresetCombo()
 void Wave9090AudioProcessorEditor::applyOctaveShift (int shift)
 {
     octaveShift_ = juce::jlimit (-2, 2, shift);
-    keyboard_.setLowestVisibleKey (wave9090::ui::Layout::octaveZeroLowestMidi + octaveShift_ * 12);
-    layoutKeyboardKeyWidth();
-    for (std::size_t i = 0; i < octaveButtons_.size(); ++i)
-    {
-        const bool active = static_cast<int> (i) - 2 == octaveShift_;
-        octaveButtons_[i].setColour (juce::TextButton::textColourOffId,
-                                     active ? wave9090::ui::tokens::cyanGlow() : wave9090::ui::tokens::textSecondary());
-    }
+    layoutControls();
 }
 
 void Wave9090AudioProcessorEditor::buildControls()
@@ -164,25 +157,36 @@ void Wave9090AudioProcessorEditor::buildControls()
         };
         addAndMakeVisible (*knob);
         sliderAttachments_.push_back (std::make_unique<SliderAttachment> (processor_.getApvts(), spec.paramId, knob->getSlider()));
+        if (knob->formatValue)
+        {
+            const float v = processor_.getApvts().getRawParameterValue (spec.paramId) != nullptr
+                                ? processor_.getApvts().getRawParameterValue (spec.paramId)->load()
+                                : static_cast<float> (knob->getSlider().getValue());
+            knob->setValueText (knob->formatValue (v));
+        }
         knobs_.push_back (std::move (knob));
     }
 }
 
-juce::String Wave9090AudioProcessorEditor::formatParamValue (const char* id, float norm)
+juce::String Wave9090AudioProcessorEditor::formatParamValue (const char* id, float value)
 {
-    if (juce::String (id) == PID::outputGain)
-        return juce::String (mapDb (norm, -24.0f, 12.0f), 1) + " dB";
-    if (juce::String (id) == PID::detune)
-        return juce::String (mapDb (norm, -50.0f, 50.0f), 1) + " ct";
-    if (juce::String (id) == PID::glide)
-        return juce::String (norm * 500.0f, 0) + " ms";
+    const juce::String sid (id);
 
-    const bool isTime = juce::String (id).contains ("Attack") || juce::String (id).contains ("Decay")
-                     || juce::String (id).contains ("Release");
-    if (isTime)
-        return juce::String (norm * 2.0f, 2) + " s";
+    // APVTS sliders use real parameter units (not 0…1 normalised).
+    if (sid == PID::outputGain)
+        return juce::String (value, 1) + " dB";
+    if (sid == PID::detune)
+        return juce::String (value, 1) + " ct";
+    if (sid == PID::glide)
+        return juce::String (value, 0) + " ms";
 
-    return juce::String (juce::roundToInt (norm * 100.0f)) + "%";
+    if (sid == PID::ampSustain || sid == PID::filtSustain)
+        return juce::String (juce::roundToInt (value * 100.0f)) + "%";
+
+    if (sid.contains ("Attack") || sid.contains ("Decay") || sid.contains ("Release"))
+        return juce::String (value, 2) + " s";
+
+    return juce::String (juce::roundToInt (value * 100.0f)) + "%";
 }
 
 wave9090::ui::LabeledKnob* Wave9090AudioProcessorEditor::knobForId (const char* id) noexcept
@@ -322,10 +326,16 @@ void Wave9090AudioProcessorEditor::layoutControls()
     const auto octCol = wave9090::ui::Regions::octaveColumn (getLocalBounds());
     const int obw = juce::jmax (28, octCol.getWidth() / static_cast<int> (octaveButtons_.size()) - 3);
     for (std::size_t i = 0; i < octaveButtons_.size(); ++i)
+    {
         octaveButtons_[i].setBounds (octCol.getX() + static_cast<int> (i) * (obw + 3),
-                                     octCol.getY(),
-                                     obw,
-                                     octCol.getHeight());
+                                      octCol.getY(),
+                                      obw,
+                                      octCol.getHeight());
+        const bool active = static_cast<int> (i) - 2 == octaveShift_;
+        octaveButtons_[i].setColour (juce::TextButton::textColourOffId,
+                                     active ? wave9090::ui::tokens::cyanGlow()
+                                            : wave9090::ui::tokens::textSecondary());
+    }
 
     auto foot = wave9090::ui::Regions::footer (getLocalBounds());
     auto glideSlot = foot;
@@ -336,6 +346,11 @@ void Wave9090AudioProcessorEditor::layoutControls()
 
     auto keybed = wave9090::ui::Regions::keyboardKeybed (getLocalBounds());
     keyboard_.setBounds (keybed.withTrimmedTop (wave9090::ui::Layout::feltStripHeight));
+    const int kbLow = wave9090::ui::Layout::octaveZeroLowestMidi + octaveShift_ * 12;
+    const int kbHigh = kbLow + (wave9090::ui::Layout::visibleWhiteKeys * 12) / 7 + 12;
+    keyboard_.setOctaveForMiddleC (wave9090::ui::Layout::midiKeyboardMiddleCOctave);
+    keyboard_.setAvailableRange (kbLow, juce::jmin (127, kbHigh));
+    keyboard_.setLowestVisibleKey (kbLow);
     layoutKeyboardKeyWidth();
 }
 

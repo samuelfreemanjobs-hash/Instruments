@@ -19,7 +19,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Wave9090AudioProcessor::crea
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    addFloatParam (layout, PID::outputGain, "Output", { -24.0f, 12.0f, 0.01f }, -4.5f);
+    addFloatParam (layout, PID::outputGain, "Output", { -24.0f, 12.0f, 0.01f }, -3.0f);
     addFloatParam (layout, PID::wtPosition, "Wavetable", { 0.0f, 1.0f, 0.0001f }, 0.35f);
     addFloatParam (layout, PID::wtScan, "WT Scan", { 0.0f, 1.0f, 0.0001f }, 0.0f);
     addFloatParam (layout, PID::filterCutoff, "Cutoff", { 0.0f, 1.0f, 0.0001f }, 0.72f);

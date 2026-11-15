@@ -45,7 +45,7 @@ private:
     void refreshPresetCombo();
     void applyOctaveShift (int delta);
     wave9090::ui::LabeledKnob* knobForId (const char* id) noexcept;
-    static juce::String formatParamValue (const char* id, float norm);
+    static juce::String formatParamValue (const char* id, float valueInParamUnits);
     static const std::vector<ParamUiSpec>& allUiSpecs();
     void paintEnvCurve (juce::Graphics& g, juce::Rectangle<int> area, juce::Colour c,
                         float a, float d, float s, float r) const;
