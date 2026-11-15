@@ -15,10 +15,22 @@ namespace
 struct Metrics
 {
     float peak = 0.0f;
+    float rms = 0.0f;
     float dc = 0.0f;
     float maxClickDelta = 0.0f;
     float hfRatio = 0.0f;
 };
+
+void applyMasterChain (std::vector<float>& mono, float outputGainDb)
+{
+    const float gain = std::pow (10.0f, outputGainDb / 20.0f);
+    constexpr float kCeil = 0.9441f;
+    for (float& s : mono)
+    {
+        s *= gain;
+        s = kCeil * std::tanh (s / kCeil);
+    }
+}
 
 Metrics analyse (const std::vector<float>& mono, int clickWindow = 256)
 {
@@ -29,13 +41,17 @@ Metrics analyse (const std::vector<float>& mono, int clickWindow = 256)
     const std::size_t i0 = mono.size() / 4;
     const std::size_t i1 = mono.size() * 3 / 4;
     double sum = 0.0;
+    double sumSq = 0.0;
     double diffEnergy = 0.0;
     double totalEnergy = 0.0;
     for (std::size_t i = 0; i < mono.size(); ++i)
     {
         m.peak = std::max (m.peak, std::abs (mono[i]));
         if (i >= i0 && i < i1)
+        {
             sum += static_cast<double> (mono[i]);
+            sumSq += static_cast<double> (mono[i]) * static_cast<double> (mono[i]);
+        }
         if (i > 0)
         {
             const double d = static_cast<double> (mono[i] - mono[i - 1]);
@@ -43,6 +59,8 @@ Metrics analyse (const std::vector<float>& mono, int clickWindow = 256)
         }
         totalEnergy += static_cast<double> (mono[i]) * static_cast<double> (mono[i]);
     }
+    const std::size_t rmsN = std::max (std::size_t { 1 }, i1 - i0);
+    m.rms = static_cast<float> (std::sqrt (sumSq / static_cast<double> (rmsN)));
     const std::size_t dcN = std::max (std::size_t { 1 }, i1 - i0);
     m.dc = static_cast<float> (sum / static_cast<double> (dcN));
     if (totalEnergy > 1.0e-12)
@@ -94,9 +112,10 @@ int runSoundRenderTests()
     {
         for (int note : { 36, 48, 60, 72 })
         {
-            const auto mono = renderPreset (presets[i].params, note, sr, numSamples);
+            auto mono = renderPreset (presets[i].params, note, sr, numSamples);
+            applyMasterChain (mono, presets[i].params.outputGainDb);
             const auto m = analyse (mono);
-            if (m.peak < 1.0e-4f)
+            if (m.peak < 1.0e-4f || m.rms < 1.0e-5f)
                 return fail ("silent render");
             if (m.peak > kPeakMax)
                 return fail ("peak above -0.5 dBFS");

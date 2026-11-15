@@ -23,6 +23,7 @@ public:
     void resized() override;
 
     void renderEditorPng (const juce::File& outFile) const;
+    void syncFactoryProgramUi();
 
 private:
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
@@ -43,6 +44,7 @@ private:
     void layoutControls();
     void layoutKeyboardKeyWidth();
     void refreshPresetCombo();
+    void updatePresetLcd();
     void applyOctaveShift (int delta);
     wave9090::ui::LabeledKnob* knobForId (const char* id) noexcept;
     static juce::String formatParamValue (const char* id, float valueInParamUnits);
@@ -59,6 +61,7 @@ private:
     juce::TextButton presetPrev_ { "<" };
     juce::TextButton presetNext_ { ">" };
     juce::ComboBox presetBox_;
+    juce::Label presetLcd_;
     juce::Label tabSynthMain_;
     juce::Label tabFuture1_;
     juce::Label tabFuture2_;

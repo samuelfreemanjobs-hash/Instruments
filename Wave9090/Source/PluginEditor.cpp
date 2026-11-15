@@ -1,5 +1,6 @@
 #include "PluginEditor.h"
 #include "Parameters/ParameterIds.h"
+#include "Presets/FactoryPresets.h"
 #include "UI/DesignTokens.h"
 #include "UI/UiChrome.h"
 
@@ -71,13 +72,30 @@ Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcess
     brandSub_.setColour (juce::Label::textColourId, wave9090::ui::tokens::textDim());
     addAndMakeVisible (brandSub_);
 
+    presetLcd_.setFont (juce::Font (juce::FontOptions (11.0f, juce::Font::bold)));
+    presetLcd_.setColour (juce::Label::textColourId, wave9090::ui::tokens::cyanGlow());
+    presetLcd_.setJustificationType (juce::Justification::centredRight);
+    addAndMakeVisible (presetLcd_);
+
     refreshPresetCombo();
-    presetBox_.onChange = [this] { processor_.applyFactoryPreset (presetBox_.getSelectedId() - 1); };
+    presetBox_.onChange = [this] {
+        processor_.applyFactoryPreset (presetBox_.getSelectedId() - 1);
+        updatePresetLcd();
+    };
     addAndMakeVisible (presetBox_);
     addAndMakeVisible (presetPrev_);
     addAndMakeVisible (presetNext_);
-    presetPrev_.onClick = [this] { processor_.applyFactoryPreset (juce::jmax (0, processor_.getCurrentProgram() - 1)); refreshPresetCombo(); };
-    presetNext_.onClick = [this] { processor_.applyFactoryPreset ((processor_.getCurrentProgram() + 1) % processor_.getNumPrograms()); refreshPresetCombo(); };
+    presetPrev_.onClick = [this] {
+        processor_.applyFactoryPreset (juce::jmax (0, processor_.getCurrentProgram() - 1));
+        refreshPresetCombo();
+        updatePresetLcd();
+    };
+    presetNext_.onClick = [this] {
+        processor_.applyFactoryPreset ((processor_.getCurrentProgram() + 1) % processor_.getNumPrograms());
+        refreshPresetCombo();
+        updatePresetLcd();
+    };
+    updatePresetLcd();
 
     tabSynthMain_.setText ("SYNTH MAIN", juce::dontSendNotification);
     tabSynthMain_.setColour (juce::Label::textColourId, wave9090::ui::tokens::cyanGlow());
@@ -122,12 +140,42 @@ Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcess
     startTimerHz (30);
 }
 
+void Wave9090AudioProcessorEditor::syncFactoryProgramUi()
+{
+    refreshPresetCombo();
+    updatePresetLcd();
+}
+
 void Wave9090AudioProcessorEditor::refreshPresetCombo()
 {
     presetBox_.clear();
-    for (int i = 0; i < processor_.getNumPrograms(); ++i)
-        presetBox_.addItem (processor_.getProgramName (i), i + 1);
+    const auto& presets = wave9090::presets::getFactoryPresets();
+    juce::String lastCategory;
+    for (std::size_t i = 0; i < presets.size(); ++i)
+    {
+        const auto& preset = presets[i];
+        const juce::String category = juce::String::fromUTF8 (wave9090::presets::categoryUiHeading (preset.category).data());
+        if (category != lastCategory)
+        {
+            presetBox_.addSectionHeading (category);
+            lastCategory = category;
+        }
+        presetBox_.addItem (juce::String::fromUTF8 (preset.name.data()), static_cast<int> (i) + 1);
+    }
     presetBox_.setSelectedId (processor_.getCurrentProgram() + 1, juce::dontSendNotification);
+}
+
+void Wave9090AudioProcessorEditor::updatePresetLcd()
+{
+    const auto& presets = wave9090::presets::getFactoryPresets();
+    const int index = processor_.getCurrentProgram();
+    if (index >= 0 && index < static_cast<int> (presets.size()))
+    {
+        const auto& preset = presets[static_cast<std::size_t> (index)];
+        const juce::String line = juce::String::fromUTF8 (wave9090::presets::categoryUiHeading (preset.category).data()) + "  ·  "
+                                  + juce::String::fromUTF8 (preset.name.data());
+        presetLcd_.setText (line, juce::dontSendNotification);
+    }
 }
 
 void Wave9090AudioProcessorEditor::applyOctaveShift (int shift)
@@ -252,12 +300,13 @@ void Wave9090AudioProcessorEditor::layoutControls()
     brandTitle_.setBounds (header.getX() + 12, header.getY() + 8, 260, 26);
     brandSub_.setBounds (header.getX() + 14, header.getY() + 32, 340, 14);
 
-    const int presetW = 220;
+    const int presetW = 200;
     presetNext_.setBounds (header.getRight() - 26, header.getY() + 10, 22, 22);
     presetBox_.setBounds (header.getRight() - 26 - presetW, header.getY() + 8, presetW, 26);
     presetPrev_.setBounds (presetBox_.getX() - 24, header.getY() + 10, 22, 22);
+    presetLcd_.setBounds (presetPrev_.getX() - 280, header.getY() + 6, 270, 28);
 
-    ledMeter_.setBounds (presetPrev_.getX() - 170, header.getY() + 12, 150, 22);
+    ledMeter_.setBounds (presetLcd_.getX() - 158, header.getY() + 12, 150, 22);
 
     auto tabs = wave9090::ui::Regions::tabs (header);
     const int tabW = tabs.getWidth() / 3;

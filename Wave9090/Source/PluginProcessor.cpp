@@ -127,6 +127,7 @@ void Wave9090AudioProcessor::applyFactoryPreset (int index)
     set (PID::filtRelease, p.filtRelease);
     set (PID::filtEnvAmt, p.filtEnvAmt);
     set (PID::stereoWidth, p.stereoWidth);
+    set (PID::outputGain, p.outputGainDb);
 
     refreshParameters();
     pushParamsToEngine();

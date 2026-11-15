@@ -76,6 +76,13 @@ add_executable (Wave9090RenderAudit
 target_include_directories (Wave9090RenderAudit PRIVATE Source)
 target_compile_features (Wave9090RenderAudit PRIVATE cxx_std_20)
 
+add_executable (Wave9090PresetDemos
+    Tests/PresetDemos.cpp
+    Source/Presets/FactoryPresets.cpp
+)
+target_include_directories (Wave9090PresetDemos PRIVATE Source)
+target_compile_features (Wave9090PresetDemos PRIVATE cxx_std_20)
+
 juce_add_console_app (Wave9090EditorScreenshot PRODUCT_NAME "Wave9090EditorScreenshot")
 target_sources (Wave9090EditorScreenshot PRIVATE Tests/EditorScreenshot.cpp)
 target_link_libraries (Wave9090EditorScreenshot
