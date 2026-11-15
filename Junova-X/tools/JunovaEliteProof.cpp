@@ -1,5 +1,5 @@
 #include "DSP/SynthEngine.h"
-#include "DSP/VoiceLadderFilter.h"
+#include "DSP/ZdfMoogLadder.h"
 #include "Presets/PresetParams.h"
 
 #include <juce_audio_formats/juce_audio_formats.h>
@@ -28,6 +28,18 @@ bool writeWav (const juce::File& file, const juce::AudioBuffer<float>& buffer, d
     return writer->writeFromAudioSampleBuffer (buffer, 0, buffer.getNumSamples());
 }
 
+float midiNoteToHz (int note) noexcept
+{
+    return 440.0f * std::pow (2.0f, (static_cast<float> (note) - 69.0f) / 12.0f);
+}
+
+int samplesForIntegerCycles (double sampleRate, float hz, int minCycles = 96) noexcept
+{
+    const double period = static_cast<double> (sampleRate) / static_cast<double> (hz);
+    const int cycles = juce::jmax (minCycles, static_cast<int> (std::ceil (2.0 * sampleRate / period)));
+    return static_cast<int> (std::round (static_cast<double> (cycles) * period));
+}
+
 void renderEngine (junovax::dsp::SynthEngine& engine,
                    junovax::dsp::RuntimeParams params,
                    int midiNote,
@@ -39,7 +51,11 @@ void renderEngine (junovax::dsp::SynthEngine& engine,
     engine.setParams (params);
     engine.reset();
 
-    const int totalSamples = static_cast<int> (seconds * sampleRate);
+    const float hz = midiNoteToHz (midiNote);
+    int totalSamples = static_cast<int> (seconds * sampleRate);
+    if (params.dcoSawOn && ! params.dcoPulseOn && ! params.dcoSubOn)
+        totalSamples = samplesForIntegerCycles (sampleRate, hz, 128);
+
     out.setSize (2, totalSamples, false, true, true);
     out.clear();
     juce::MidiBuffer midi;
@@ -117,6 +133,13 @@ float estimatePitchHz (const juce::AudioBuffer<float>& buf, double sampleRate) n
     return bestLag > 0 ? static_cast<float> (sampleRate) / static_cast<float> (bestLag) : 0.0f;
 }
 
+float normToCutoffHz (float norm, double sampleRate) noexcept
+{
+    const float minHz = 40.0f;
+    const float maxHz = static_cast<float> (sampleRate * 0.45);
+    return minHz * std::pow (maxHz / minHz, juce::jlimit (0.0f, 1.0f, norm));
+}
+
 int runPlotScript (const juce::File& outDir, float expectedHz)
 {
     const auto script = juce::File::getCurrentWorkingDirectory().getChildFile ("Junova-X/tools/plot_elite_spectrum.py");
@@ -136,23 +159,25 @@ int main (int argc, char** argv)
     outDir.createDirectory();
 
     {
-        junovax::dsp::VoiceLadderFilter bench;
-        bench.prepareFilter (44100.0);
-        bench.setTargets (620.0f, 1.0f, 1.05f);
-        bench.injectImpulse (0.8f);
+        junovax::dsp::ZdfMoogLadder bench;
+        bench.prepare (44100.0);
+        const float fc = normToCutoffHz (0.62f, 44100.0);
+        bench.setTargets (fc, 1.0f, 1.05f);
         float p = 0.0f;
+        juce::Random rnd (0xA11CEu);
         for (int i = 0; i < 44100 * 3; ++i)
         {
-            const float y = bench.tick (0.0f);
+            const float exc = 3.0e-7f * (rnd.nextFloat() * 2.0f - 1.0f);
+            const float y = bench.process (0.0f, exc);
             if (i > 44100)
                 p = juce::jmax (p, std::abs (y));
         }
-        std::cout << "ladder_isolated_peak=" << p << " (~" << (20.0f * std::log10 (p + 1e-9f)) << " dBFS)\n";
+        std::cout << "zdf_ladder_isolated_peak=" << p << " (~" << (20.0f * std::log10 (p + 1e-9f)) << " dBFS) fc~" << fc << "\n";
     }
 
     constexpr double sr = 44100.0;
     constexpr int c7 = 96;
-    const float fundHz = 440.0f * std::pow (2.0f, (static_cast<float> (c7) - 69.0f) / 12.0f);
+    const float fundHz = midiNoteToHz (c7);
 
     junovax::dsp::SynthEngine engine;
 
@@ -161,12 +186,10 @@ int main (int argc, char** argv)
     naive.measurementBypassFilter = true;
     naive.oversampleMode = 0;
 
-
     auto eliteOsc = dryC7SawBase();
     eliteOsc.measurementLegacyOsc = false;
     eliteOsc.measurementBypassFilter = true;
-    eliteOsc.oversampleMode = 2;
-    eliteOsc.measurementOsFactor = 1;
+    eliteOsc.oversampleMode = 0;
 
     juce::AudioBuffer<float> bufNaive;
     juce::AudioBuffer<float> bufElite;
@@ -206,6 +229,37 @@ int main (int argc, char** argv)
 
     const float selfPeakDb = peakDbfs (bufSelf);
     const float selfPitch = estimatePitchHz (bufSelf, sr);
+    const float selfPitchFft = [&bufSelf, sr]() -> float
+    {
+        const int n = juce::jmin (bufSelf.getNumSamples(), static_cast<int> (sr));
+        const int offset = bufSelf.getNumSamples() - n;
+        float maxMag = 0.0f;
+        int maxBin = 0;
+        std::vector<float> window (static_cast<std::size_t> (n), 0.0f);
+        for (int i = 0; i < n; ++i)
+            window[static_cast<std::size_t> (i)] = 0.5f - 0.5f * std::cos (juce::MathConstants<float>::twoPi * static_cast<float> (i)
+                                                                               / static_cast<float> (n - 1));
+        for (int k = 20; k < n / 4; ++k)
+        {
+            float re = 0.0f;
+            float im = 0.0f;
+            const float omega = juce::MathConstants<float>::twoPi * static_cast<float> (k) / static_cast<float> (n);
+            for (int i = 0; i < n; ++i)
+            {
+                const float s = bufSelf.getSample (0, offset + i) * window[static_cast<std::size_t> (i)];
+                re += s * std::cos (omega * static_cast<float> (i));
+                im -= s * std::sin (omega * static_cast<float> (i));
+            }
+            const float mag = re * re + im * im;
+            if (mag > maxMag)
+            {
+                maxMag = mag;
+                maxBin = k;
+            }
+        }
+        return static_cast<float> (maxBin) * static_cast<float> (sr) / static_cast<float> (n);
+    }();
+    const float selfCutoffHz = normToCutoffHz (selfOsc.filterCutoff, sr);
 
     for (int mode = 1; mode <= 3; ++mode)
     {
@@ -270,6 +324,8 @@ int main (int argc, char** argv)
     bench << "c7_expected_hz=" << fundHz << "\n";
     bench << "self_osc_peak_dbfs=" << selfPeakDb << "\n";
     bench << "self_osc_pitch_hz=" << selfPitch << "\n";
+    bench << "self_osc_fft_peak_hz=" << selfPitchFft << "\n";
+    bench << "self_osc_cutoff_hz=" << selfCutoffHz << "\n";
     bench << "iterations=" << iterations << "\nblock=512 @ " << sr << " Hz\n";
     bench << "total_ms=" << ms << "\nper_block_ms=" << (ms / static_cast<double> (iterations)) << "\n";
     bench << "cpu_percent_one_core=" << cpuPct << "\n";
@@ -277,6 +333,7 @@ int main (int argc, char** argv)
     runPlotScript (outDir, fundHz);
 
     std::cout << "JunovaEliteProof wrote " << outDir.getFullPathName() << "\n";
-    std::cout << "self_osc_peak_dbfs=" << selfPeakDb << " pitch_hz=" << selfPitch << '\n';
+    std::cout << "self_osc_peak_dbfs=" << selfPeakDb << " pitch_hz=" << selfPitch << " fft_peak_hz=" << selfPitchFft
+              << " cutoff_hz=" << selfCutoffHz << '\n';
     return EXIT_SUCCESS;
 }

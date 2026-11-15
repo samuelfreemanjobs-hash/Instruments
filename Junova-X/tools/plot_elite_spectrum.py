@@ -20,6 +20,17 @@ except ImportError:
     import matplotlib.pyplot as plt
 
 
+def blackman_harris(n: int) -> np.ndarray:
+    a0, a1, a2, a3 = 0.35875, 0.48829, 0.14128, 0.01168
+    i = np.arange(n, dtype=np.float64)
+    return (
+        a0
+        - a1 * np.cos(2.0 * math.pi * i / (n - 1))
+        + a2 * np.cos(4.0 * math.pi * i / (n - 1))
+        - a3 * np.cos(6.0 * math.pi * i / (n - 1))
+    )
+
+
 def load_mono(path: Path) -> tuple[np.ndarray, int]:
     with wave.open(str(path), "rb") as wf:
         sr = wf.getframerate()
@@ -35,68 +46,96 @@ def load_mono(path: Path) -> tuple[np.ndarray, int]:
     return data, sr
 
 
+def trim_integer_cycles(x: np.ndarray, sr: int, expected_hz: float) -> np.ndarray:
+    if expected_hz <= 0:
+        return x
+    period = sr / expected_hz
+    n_periods = int(len(x) / period)
+    if n_periods < 8:
+        return x
+    n = int(round(n_periods * period))
+    n = min(n, len(x))
+    return x[-n:]
+
+
 def analyse_saw(path: Path, expected_hz: float) -> dict:
     x, sr = load_mono(path)
-    n = 1 << int(math.floor(math.log2(min(len(x), int(sr * 2)))))
-    seg = x[-n:]
-    win = np.hanning(n)
+    x = trim_integer_cycles(x, sr, expected_hz)
+    n_trim = len(x)
+    start = int(n_trim * 0.12)
+    end = int(n_trim * 0.98)
+    x = x[start:end]
+    n_fft = 1 << int(math.floor(math.log2(min(len(x), int(sr * 4)))))
+    seg = x[-n_fft:]
+    win = blackman_harris(n_fft)
     spec = np.fft.rfft(seg * win)
-    mag = np.abs(spec) / n
-    freqs = np.fft.rfftfreq(n, 1.0 / sr)
+    mag = np.abs(spec) / (np.sum(win) * 0.5)
+    freqs = np.fft.rfftfreq(n_fft, 1.0 / sr)
     mag_db = 20.0 * np.log10(np.maximum(mag, 1e-12))
 
-    bin_hz = sr / n
-    center = int(expected_hz / bin_hz)
-    lo = max(1, center - 8)
-    hi = min(len(mag_db) - 1, center + 8)
-    fund_bin = lo + int(np.argmax(mag_db[lo : hi + 1]))
+    bin_hz = sr / n_fft
+
+    def nearest_bin(hz: float) -> int:
+        return int(round(hz / bin_hz))
+
+    fund_bin = nearest_bin(expected_hz)
+    fund_bin = max(2, min(len(mag_db) - 2, fund_bin))
     fund_hz = float(freqs[fund_bin])
     fund_db = float(mag_db[fund_bin])
 
+    max_harm = int((sr * 0.48) / fund_hz)
+    harmonic_bins: set[int] = set()
+    for h in range(1, max_harm + 1):
+        hb = nearest_bin(fund_hz * h)
+        for w in range(-4, 5):
+            if 0 <= hb + w < len(mag_db):
+                harmonic_bins.add(hb + w)
+
     worst_db = -200.0
     worst_hz = 0.0
+    min_spur_hz = fund_hz * 0.85
+    max_spur_hz = sr * 0.46
     for k, f in enumerate(freqs):
-        if k <= 1:
+        if k in harmonic_bins or f < min_spur_hz or f > max_spur_hz:
             continue
-        is_harm = False
-        for h in range(1, 16):
-            if abs(f - h * fund_hz) < sr / n * 2.5:
-                is_harm = True
-                break
-        if not is_harm and mag_db[k] > worst_db:
+        if mag_db[k] > worst_db:
             worst_db = float(mag_db[k])
             worst_hz = float(f)
 
+    rel_margin = fund_db - worst_db
     peak = float(np.max(np.abs(x)))
     peak_db = 20.0 * math.log10(peak + 1e-12)
     return {
         "path": str(path),
         "sample_rate": sr,
+        "fft_size": n_fft,
         "fund_hz": fund_hz,
         "fund_db": fund_db,
         "worst_inharmonic_hz": worst_hz,
         "worst_inharmonic_db": worst_db,
-        "worst_below_fund_db": fund_db - worst_db,
+        "worst_below_fund_db": rel_margin,
         "peak_dbfs": peak_db,
         "expected_hz": expected_hz,
         "freqs": freqs,
-        "mag_db": mag_db,
+        "mag_db": mag_db - fund_db,
     }
 
 
 def plot_overlay(before: dict, after: dict, out_png: Path) -> None:
     fig, ax = plt.subplots(figsize=(12, 5), dpi=120)
     ax.plot(before["freqs"], before["mag_db"], color="#ff6b6b", alpha=0.75, label="before (naive saw)")
-    ax.plot(after["freqs"], after["mag_db"], color="#4ecdc4", alpha=0.9, label="after (polyBLEP + FIR OS)")
+    ax.plot(after["freqs"], after["mag_db"], color="#4ecdc4", alpha=0.9, label="after (polyBLEP saw + mip PWM/sub)")
     fund = after["fund_hz"]
     for h in range(1, 13):
         ax.axvline(fund * h, color="#888888", linestyle=":", linewidth=0.6, alpha=0.35)
     ax.set_xlim(0, min(12000, after["sample_rate"] / 2))
-    ax.set_ylim(-100, max(before["mag_db"].max(), after["mag_db"].max()) + 6)
+    ax.set_ylim(-120, 6)
     ax.set_xlabel("Frequency (Hz)")
-    ax.set_ylabel("Magnitude (dB)")
+    ax.set_ylabel("Level vs fundamental (dB)")
     worst = after["worst_below_fund_db"]
-    ax.set_title(f"C7 saw @ 44.1 kHz — worst inharmonic {worst:.1f} dB below fundamental ({fund:.1f} Hz)")
+    ax.set_title(
+        f"C7 dry saw @ {after['sample_rate']} Hz — inharmonic margin {worst:.1f} dB (fund {fund:.1f} Hz, FFT {after['fft_size']})"
+    )
     ax.grid(True, which="both", alpha=0.25)
     ax.legend(loc="upper right")
     fig.tight_layout()
@@ -107,7 +146,6 @@ def plot_overlay(before: dict, after: dict, out_png: Path) -> None:
 def main() -> int:
     out_dir = Path(sys.argv[1] if len(sys.argv) > 1 else "/opt/cursor/artifacts/junova-elite-audio")
     expected = float(sys.argv[2]) if len(sys.argv) > 2 else 2093.0
-    # Proof renders at 88.2 kHz; analysis uses file-native sample rate.
 
     before_wav = out_dir / "c7-saw-before.wav"
     after_wav = out_dir / "c7-saw-elite.wav"

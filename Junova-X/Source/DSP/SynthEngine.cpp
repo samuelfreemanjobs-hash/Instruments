@@ -47,18 +47,13 @@ void SynthEngine::prepare (double sampleRate, int maxBlockSize) noexcept
     masterGain_.setCurrentAndTargetValue (1.0f);
     initParamSmoothers();
 
+    mipOsc_.prepare (sampleRate);
+
     for (auto& v : voices_)
     {
-        v.ladder1x.prepareFilter (sampleRate, maxBlockSize);
-        v.ladder2x.prepareFilter (sampleRate * 2.0, maxBlockSize);
-        v.ladder4x.prepareFilter (sampleRate * 4.0, maxBlockSize);
-        v.ladder8x.prepareFilter (sampleRate * 8.0, maxBlockSize);
-        v.bandlimitedSaw.prepare ({ sampleRate, static_cast<juce::uint32> (maxBlockSize), 1 });
-        v.bandlimitedSaw.initialise ([] (float x)
-        {
-            return x / juce::MathConstants<float>::pi - 1.0f;
-        },
-                                     128);
+        v.ladder1x.prepare (sampleRate);
+        v.ladder2x.prepare (sampleRate * 2.0);
+        v.ladder4x.prepare (sampleRate * 4.0);
         v.ampEnv.setSampleRate (sampleRate);
         v.filtEnv.setSampleRate (sampleRate);
         v.analogDrift.seed (rng_);
@@ -100,11 +95,9 @@ void SynthEngine::reset() noexcept
         v.phase = 0.0f;
         v.subPhase = 0.0f;
         v.lastOscSample = 0.0f;
-        v.selfOscPhase = 0.0f;
         v.ladder1x.reset();
         v.ladder2x.reset();
         v.ladder4x.reset();
-        v.ladder8x.reset();
         v.analogDrift.seed (rng_);
     }
     lfoPhase_ = 0.0f;
@@ -156,7 +149,7 @@ int SynthEngine::maxPolyVoices() const noexcept
 int SynthEngine::filterOversampleFactor() const noexcept
 {
     if (params_.measurementOsFactor > 0)
-        return juce::jlimit (1, 8, params_.measurementOsFactor);
+        return juce::jlimit (1, 4, params_.measurementOsFactor);
     if (params_.oversampleMode >= 2)
         return 4;
     if (params_.oversampleMode >= 1)
@@ -269,11 +262,9 @@ void SynthEngine::startVoice (Voice& v, int note, float velocity, bool retrigger
     v.note = note;
     v.keyDown = true;
     v.analogDrift.seed (rng_);
-    v.ladder1x.injectImpulse (0.2f);
-    v.ladder2x.injectImpulse (0.2f);
-    v.ladder4x.injectImpulse (0.2f);
-    v.ladder8x.injectImpulse (0.2f);
-    v.selfOscPhase = 0.0f;
+    v.ladder1x.reset();
+    v.ladder2x.reset();
+    v.ladder4x.reset();
     const bool sameNoteRetrig = retrigger && note == prevNote;
     if (! sameNoteRetrig)
     {
@@ -376,19 +367,19 @@ float SynthEngine::cutoffHzForVoice (const Voice& v, float filtEnvLevel, float l
     return juce::jlimit (40.0f, static_cast<float> (sampleRate_ * 0.45), hz);
 }
 
-float SynthEngine::synthesizeOsc (Voice& v, float phase, float subPhase, float blepInc, float subBlepInc, float pwm) const noexcept
+float SynthEngine::synthesizeOsc (const Voice& v, float phase, float subPhase, float blepInc, float subBlepInc, float pwm, float hz) const noexcept
 {
     float saw = 0.0f;
     if (params_.dcoSawOn)
     {
-        saw = 2.0f * phase - 1.0f;
-        if (! params_.measurementLegacyOsc)
-            saw -= polyBlep (phase, blepInc);
+        saw = params_.measurementLegacyOsc ? mipOsc_.naiveSaw (phase)
+                                           : mipOsc_.saw (phase, hz);
     }
     float pulse = 0.0f;
     if (params_.dcoPulseOn)
     {
-        pulse = params_.measurementLegacyOsc ? (phase < pwm ? 1.0f : -1.0f) : blepPulse (phase, blepInc, pwm);
+        pulse = params_.measurementLegacyOsc ? (phase < pwm ? 1.0f : -1.0f)
+                                             : mipOsc_.pulsePwm (phase, pwm, hz);
     }
     float osc = 0.0f;
     if (params_.dcoSawOn && params_.dcoPulseOn)
@@ -401,9 +392,12 @@ float SynthEngine::synthesizeOsc (Voice& v, float phase, float subPhase, float b
     float sub = 0.0f;
     if (params_.dcoSubOn)
     {
-        sub = subPhase < 0.5f ? 1.0f : -1.0f;
-        sub -= polyBlep (subPhase, subBlepInc);
+        const float subDiv = params_.dcoSubOct == 1 ? 4.0f : 2.0f;
+        sub = params_.measurementLegacyOsc
+                  ? (subPhase < 0.5f ? 1.0f : -1.0f) - polyBlep (subPhase, subBlepInc)
+                  : mipOsc_.subSquare (subPhase, hz, subDiv);
     }
+    juce::ignoreUnused (blepInc);
     const float noiseAmt = smNoise_.getCurrentValue() * 0.0075f;
     const float subMix = smSubLvl_.getCurrentValue() * 0.0038f;
     return osc + sub * subMix + v.noiseLp * noiseAmt;
@@ -454,7 +448,6 @@ float SynthEngine::renderVoiceSample (Voice& v, float lfo, float smCutoff, float
     const float pitchMod = 1.0f + (params_.dcoLfoMod * 0.01f) * lfo * 0.02f;
     const float detuneRatio = std::pow (2.0f, v.detuneCents / 1200.0f);
     const float freq = v.frequency * pitchMod * detuneRatio * v.analogDrift.pitchRatio (params_.drift) * octaveMul;
-    v.bandlimitedSaw.setFrequency (freq);
     const float inc = freq / static_cast<float> (sampleRate_);
     const float subDiv = params_.dcoSubOct == 1 ? 0.25f : 0.5f;
 
@@ -471,89 +464,52 @@ float SynthEngine::renderVoiceSample (Voice& v, float lfo, float smCutoff, float
 
     const float res = juce::jlimit (0.0f, 1.0f, smRes);
 
-    const bool filterOnlySelfOsc = ! params_.dcoSawOn && ! params_.dcoPulseOn && ! params_.dcoSubOn && res > 0.96f;
-    if (filterOnlySelfOsc)
-    {
-        const float oscHz = juce::jlimit (30.0f, static_cast<float> (sampleRate_ * 0.45f), cutoff);
-        v.selfOscPhase += juce::MathConstants<float>::twoPi * oscHz / static_cast<float> (sampleRate_);
-        const float sine = std::sin (v.selfOscPhase);
-        const float amp = juce::jlimit (0.05f, 0.42f, 0.08f + res * 0.34f);
-        const float gateOrEnv = params_.vcaGateMode
-                                    ? (v.keyDown ? 1.0f : 0.0f)
-                                    : v.ampEnv.getNextSample();
-        return sine * amp * gateOrEnv;
-    }
-
     if (params_.measurementBypassFilter)
     {
         const float gateOrEnv = params_.vcaGateMode
                                     ? (v.keyDown ? 1.0f : 0.0f)
                                     : v.ampEnv.getNextSample();
-        if (! params_.measurementLegacyOsc && params_.dcoSawOn && ! params_.dcoPulseOn)
-            return v.bandlimitedSaw.processSample (0.0f) * gateOrEnv * 0.105f;
-
-        float oscOnly = 0.0f;
-        const int os = filterOversampleFactor();
-        const float phaseStep = inc / static_cast<float> (os);
-        const float subStep = inc * subDiv / static_cast<float> (os);
-        for (int sub = 0; sub < os; ++sub)
-        {
-            v.phase += phaseStep;
-            if (v.phase >= 1.0f)
-                v.phase -= 1.0f;
-            v.subPhase += subStep;
-            if (v.subPhase >= 1.0f)
-                v.subPhase -= 1.0f;
-            oscOnly = synthesizeOsc (v, v.phase, v.subPhase, phaseStep, subStep, pwm);
-        }
+        v.phase += inc;
+        if (v.phase >= 1.0f)
+            v.phase -= 1.0f;
+        v.subPhase += inc * subDiv;
+        if (v.subPhase >= 1.0f)
+            v.subPhase -= 1.0f;
+        const float oscOnly = synthesizeOsc (v, v.phase, v.subPhase, inc, inc * subDiv, pwm, freq);
         return oscOnly * gateOrEnv * 0.105f;
     }
     float drive = 1.0f + smVcfDrive_.getCurrentValue() * 0.04f + res * 0.85f;
     if (res > 0.92f)
         drive = 1.05f;
     const int os = filterOversampleFactor();
-    auto& ladder = os >= 8 ? v.ladder8x : (os >= 4 ? v.ladder4x : (os >= 2 ? v.ladder2x : v.ladder1x));
+    auto& ladder = os >= 4 ? v.ladder4x : (os >= 2 ? v.ladder2x : v.ladder1x);
     ladder.setTargets (cutoff, res, drive);
 
     const float subStep = inc * subDiv / static_cast<float> (os);
     const float phaseStep = inc / static_cast<float> (os);
     float raw = 0.0f;
     float filtered = 0.0f;
-  #if ! JUCE_MINGW
-    const bool sawOnly = params_.dcoSawOn && ! params_.dcoPulseOn && ! params_.dcoSubOn && ! params_.measurementLegacyOsc;
-    if (sawOnly)
+    const float blepInc = phaseStep;
+    const float subBlepInc = subStep;
+    const float excitation = 1.0e-6f * (rng_.nextFloat() * 2.0f - 1.0f);
+    for (int sub = 0; sub < os; ++sub)
     {
-        raw = v.bandlimitedSaw.processSample (0.0f);
-        for (int sub = 0; sub < os; ++sub)
-            filtered = ladder.tick (raw);
-    }
-    else
-  #endif
-    {
-        const float blepInc = phaseStep;
-        const float subBlepInc = subStep;
-        for (int sub = 0; sub < os; ++sub)
-        {
-            v.phase += phaseStep;
-            if (v.phase >= 1.0f)
-                v.phase -= 1.0f;
-            v.subPhase += subStep;
-            if (v.subPhase >= 1.0f)
-                v.subPhase -= 1.0f;
-            raw = synthesizeOsc (v, v.phase, v.subPhase, blepInc, subBlepInc, pwm);
-            if (! params_.dcoSawOn && ! params_.dcoPulseOn && ! params_.dcoSubOn && smRes > 0.9f)
-                raw += 2.0e-4f * (rng_.nextFloat() * 2.0f - 1.0f);
-            filtered = ladder.tick (raw);
-        }
+        v.phase += phaseStep;
+        if (v.phase >= 1.0f)
+            v.phase -= 1.0f;
+        v.subPhase += subStep;
+        if (v.subPhase >= 1.0f)
+            v.subPhase -= 1.0f;
+        raw = synthesizeOsc (v, v.phase, v.subPhase, blepInc, subBlepInc, pwm, freq);
+        filtered = ladder.process (raw, excitation);
     }
     v.lastOscSample = raw;
 
     const float gateOrEnv = params_.vcaGateMode
                                 ? (v.keyDown ? 1.0f : 0.0f)
                                 : v.ampEnv.getNextSample();
-    const float voiceTrim = smRes > 0.92f && ! params_.dcoSawOn && ! params_.dcoPulseOn && ! params_.dcoSubOn
-                                ? 0.28f
-                                : 0.105f;
+    const bool filterOnly = ! params_.dcoSawOn && ! params_.dcoPulseOn && ! params_.dcoSubOn;
+    const float voiceTrim = filterOnly ? (0.22f + res * 0.18f) : 0.105f;
     return filtered * gateOrEnv * voiceTrim;
 }
 

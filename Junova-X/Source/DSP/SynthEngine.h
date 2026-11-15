@@ -3,8 +3,9 @@
 #include "BbdChorus.h"
 #include "DiagTone.h"
 #include "ExpAdsr.h"
-#include "VoiceLadderFilter.h"
+#include "MipBlepOscillators.h"
 #include "VoiceAnalogDrift.h"
+#include "ZdfMoogLadder.h"
 
 #include <JuceHeader.h>
 #include <array>
@@ -109,13 +110,10 @@ private:
         float noiseLp = 0.0f;
         ExpAdsr ampEnv;
         ExpAdsr filtEnv;
-        VoiceLadderFilter ladder1x;
-        VoiceLadderFilter ladder2x;
-        VoiceLadderFilter ladder4x;
-        VoiceLadderFilter ladder8x;
+        ZdfMoogLadder ladder1x;
+        ZdfMoogLadder ladder2x;
+        ZdfMoogLadder ladder4x;
         VoiceAnalogDrift analogDrift;
-        float selfOscPhase = 0.0f;
-        juce::dsp::Oscillator<float> bandlimitedSaw;
     };
 
     void updateEnvelopes() noexcept;
@@ -126,7 +124,7 @@ private:
     void startVoice (Voice& v, int note, float velocity, bool retrigger) noexcept;
     void releaseVoice (Voice& v) noexcept;
     float cutoffHzForVoice (const Voice& v, float filtEnvLevel, float lfo, float smCutoff) const noexcept;
-    float synthesizeOsc (Voice& v, float phase, float subPhase, float blepInc, float subBlepInc, float pwm) const noexcept;
+    float synthesizeOsc (const Voice& v, float phase, float subPhase, float blepInc, float subBlepInc, float pwm, float hz) const noexcept;
     float renderVoiceSample (Voice& v, float lfo, float smCutoff, float smRes, float smPwm) noexcept;
     float advanceLfo() noexcept;
     float polyBlep (float phase, float inc) const noexcept;
@@ -136,6 +134,7 @@ private:
     int filterOversampleFactor() const noexcept;
 
     RuntimeParams params_{};
+    MipBlepOscillators mipOsc_;
     DiagTone diagTone_;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> masterGain_;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> smFilterCutoff_;
