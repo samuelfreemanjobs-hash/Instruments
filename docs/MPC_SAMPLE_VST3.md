@@ -11,21 +11,28 @@ The **MPC Sample** hosts **VST3** inside **Melodee** on an embedded **ARM64 Linu
 | Framework | **JUCE** (this repo’s `vst/` lane) or **headless** / DPF-style parameter-only UI |
 | Footprint | Prefer light DSP: few voices, no huge buffers, avoid heavy analog modeling without voice limits |
 
-### Quick verification
+### Quick tip — pre-built ARM64 VST3s from GitHub
 
-On any Linux machine with the `file` utility:
+Before you copy any downloaded **Linux `.vst3`** onto the MPC Sample microSD:
+
+1. Confirm the bundle has **`Contents/aarch64-linux/`** (not only `x86_64-linux` — desktop CI artifacts often ship both or x86 only).
+2. On a Linux or macOS machine, run:
 
 ```bash
-file path/to/YourPlugin.vst3/Contents/aarch64-linux/*
+file YourPlugin.vst3/Contents/aarch64-linux/*.so
 ```
 
-Each binary should report something like: **ELF 64-bit LSB shared object, ARM aarch64**.
+You want **ARM aarch64** (or “ARM64”). If you see **x86-64** or **Intel 80386**, that build will **not** load in Melodee (wrong-arch bundles may appear **dimmed** in the plugin browser).
 
-Or use the repo helper:
+### Quick verification (repo helper)
+
+Same check, scripted:
 
 ```bash
 ./scripts/vst/verify-mpc-sample-vst3.sh path/to/YourPlugin.vst3
 ```
+
+Exit **0** means every `.so` under `Contents/aarch64-linux/` is **ELF 64-bit LSB, ARM aarch64**.
 
 ## Three ways to build your own plugin
 
