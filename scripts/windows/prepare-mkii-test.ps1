@@ -9,7 +9,7 @@ if (-not (Test-Path $MkiiDir)) {
     Write-Host "No packaged mkII units at:" -ForegroundColor Yellow
     Write-Host "  $MkiiDir"
     Write-Host ""
-    Write-Host "Build in WSL2, then run ./tools/package-nts1.sh"
+    Write-Host "Build in WSL2: bash ./scripts/windows/build-mkii-wsl.sh"
     Write-Host "Or download the nts1-mkii-units artifact from GitHub Actions."
     Write-Host "See docs/NTS1_MKII_WINDOWS_TEST.md"
     exit 1
