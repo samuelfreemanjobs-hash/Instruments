@@ -110,6 +110,10 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
 
     for (auto* b : { &hpfOff_, &hpf1_, &hpf2_, &hpf3_ })
         hpfModule_.addAndMakeVisible (*b);
+    hpfCaption_.setFont (Theme::labelFont());
+    hpfCaption_.setColour (juce::Label::textColourId, Theme::textMuted());
+    hpfCaption_.setJustificationType (juce::Justification::centred);
+    hpfModule_.addAndMakeVisible (hpfCaption_);
     auto setHpf = [this] (float norm)
     {
         if (auto* p = processor_.getApvts().getParameter (junovax::ParameterIDs::hpfMode))
@@ -419,16 +423,27 @@ void CelestialMainPanel::resized()
     if (keyboard_ != nullptr)
     {
         constexpr int low = 36;
-        constexpr int high = 96;
-        const float kw = static_cast<float> (kbArea.getWidth()) / static_cast<float> (countWhiteKeysInRange (low, high));
-        keyboard_->setAvailableRange (low, high);
-        keyboard_->setKeyWidth (juce::jmax (10.0f, kw * 1.02f));
-        keyboard_->setBounds (kbArea);
-        keyboard_->resized();
-        const int keyStripW = keyboard_->getWidth();
-        if (keyStripW > 0 && keyStripW < kbArea.getWidth())
-            keyboard_->setKeyWidth (keyboard_->getKeyWidth() * static_cast<float> (kbArea.getWidth()) / static_cast<float> (keyStripW));
-        keyboard_->setBounds (kbArea);
+        int high = 96;
+        const int targetW = kbArea.getWidth();
+
+        auto layoutKeys = [&]()
+        {
+            const int whites = countWhiteKeysInRange (low, high);
+            const float kw = static_cast<float> (targetW) / static_cast<float> (whites);
+            keyboard_->setAvailableRange (low, high);
+            keyboard_->setKeyWidth (juce::jmax (10.0f, kw));
+            keyboard_->resized();
+            return static_cast<int> (std::ceil (static_cast<double> (whites) * static_cast<double> (keyboard_->getKeyWidth())));
+        };
+
+        int stripW = layoutKeys();
+        while (stripW + 4 < targetW && high < 119)
+        {
+            ++high;
+            stripW = layoutKeys();
+        }
+
+        keyboard_->setBounds (kbArea.withWidth (juce::jmin (targetW, stripW)));
     }
 
     auto modules = getLocalBounds().withTrimmedTop (heroY + L::heroHeight).withTrimmedBottom (kbH + m);
@@ -483,11 +498,12 @@ void CelestialMainPanel::resized()
     layoutFaderRow (dcoArea, dcoFaders_, chipH + 4);
 
     auto hpfArea = hpfModule_.getContentArea();
-    const int bw = (hpfArea.getWidth() - 6) / 4;
-    hpfOff_.setBounds (hpfArea.getX(), hpfArea.getY(), bw, chipH);
-    hpf1_.setBounds (hpfArea.getX() + bw + 2, hpfArea.getY(), bw, chipH);
-    hpf2_.setBounds (hpfArea.getX() + (bw + 2) * 2, hpfArea.getY(), bw, chipH);
-    hpf3_.setBounds (hpfArea.getX() + (bw + 2) * 3, hpfArea.getY(), bw, chipH);
+    const int halfW = (hpfArea.getWidth() - 4) / 2;
+    hpfOff_.setBounds (hpfArea.getX(), hpfArea.getY(), halfW, chipH);
+    hpf1_.setBounds (hpfArea.getX() + halfW + 4, hpfArea.getY(), halfW, chipH);
+    hpf2_.setBounds (hpfArea.getX(), hpfArea.getY() + chipH + 4, halfW, chipH);
+    hpf3_.setBounds (hpfArea.getX() + halfW + 4, hpfArea.getY() + chipH + 4, halfW, chipH);
+    hpfCaption_.setBounds (hpfArea.getX(), hpfArea.getBottom() - 16, hpfArea.getWidth(), 14);
 
     layoutFaderRow (vcfModule_.getContentArea(), vcfFaders_, 0);
 

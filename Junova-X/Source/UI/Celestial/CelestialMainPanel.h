@@ -91,6 +91,7 @@ private:
     ModuleShell lfoModule_ { "LFO / PORTA", Theme::electricCyan(), Theme::panelBlue() };
     ModuleShell dcoModule_ { "ORBIT DCO MODULE", Theme::electricCyan(), Theme::panelBlue() };
     ModuleShell hpfModule_ { "HPF", Theme::textMuted(), Theme::panelGrey() };
+    juce::Label hpfCaption_ { {}, "BASS CUT" };
     ModuleShell vcfModule_ { "STELLAR VCF", Theme::stellarCrimson(), Theme::panelRed() };
     ModuleShell envModule_ { "ENVELOPE // VCA", Theme::stellarCrimson(), Theme::panelRed() };
     ModuleShell chorusModule_ { "MN3009 BBD CHORUS", Theme::electricCyan(), Theme::panelGrey() };

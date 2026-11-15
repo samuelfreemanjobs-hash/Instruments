@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <iostream>
 
+
 int main (int argc, char** argv)
 {
     const juce::String outPath = argc > 1 ? juce::String (argv[1])
@@ -36,7 +37,8 @@ int main (int argc, char** argv)
     }
 
     auto editor = std::unique_ptr<juce::AudioProcessorEditor> (processor.createEditor());
-    editor->setSize (junovax::ui::Layout::editorWidth, junovax::ui::Layout::editorHeight);
+    editor->setBounds (0, 0, junovax::ui::Layout::editorWidth, junovax::ui::Layout::editorHeight);
+    editor->resized();
     editor->toFront (true);
 
     std::array<float, 256> scopeScratch{};

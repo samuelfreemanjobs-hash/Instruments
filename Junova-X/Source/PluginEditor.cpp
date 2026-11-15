@@ -18,6 +18,7 @@ JunovaXAudioProcessorEditor::JunovaXAudioProcessorEditor (JunovaXAudioProcessor&
     addAndMakeVisible (celestialPanel_);
     addChildComponent (vault_);
     addChildComponent (diagPanel_);
+    diagPanel_.setVisible (false);
 }
 
 JunovaXAudioProcessorEditor::~JunovaXAudioProcessorEditor()
