@@ -16,10 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install toolchain
+      - name: Install toolchain and JUCE deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++-12 gcc-12 python3-pip
+          sudo apt-get install -y g++-12 gcc-12 python3-pip cmake ninja-build pkg-config \
+            libasound2-dev libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev \
+            libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev \
+            libcurl4-openssl-dev
 
       - name: Install audio QA Python deps
         run: pip install --break-system-packages numpy
