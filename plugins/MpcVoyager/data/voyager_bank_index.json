@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "plugin": "MpcVoyager",
+  "shipped_in_binary": 16,
+  "expansion_target": 200,
+  "categories": [
+    "west_coast_gfunk_bass",
+    "dj_battlecat_bass",
+    "warren_g_moog",
+    "roger_talkbox_lead",
+    "p_funk",
+    "g_funk_lead",
+    "1980s_moog_bass"
+  ],
+  "note": "Load additional snapshots from JSON in a future PR; FactoryPrograms.h holds v1 factory set."
+}

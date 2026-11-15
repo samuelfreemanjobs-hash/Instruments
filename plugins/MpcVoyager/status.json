@@ -1,0 +1,21 @@
+{
+  "plugin_name": "MpcVoyager",
+  "version": "1.0.0",
+  "track": "apc_greenfield",
+  "apc_phase": "impl",
+  "current_phase": "impl",
+  "vst_path": "vst/MpcVoyager",
+  "product_category": "synth.mono.voyager",
+  "ui_framework": "headless",
+  "complexity_tier": "L2",
+  "validation": {
+    "creative_brief_exists": true,
+    "parameter_spec_exists": true,
+    "architecture_defined": true,
+    "ui_framework_selected": true,
+    "design_complete": true,
+    "code_complete": true,
+    "tests_passed": true,
+    "ship_ready": false
+  }
+}
