@@ -8,7 +8,11 @@ For multi-screen DESKTOP mockups and codebase-aware prototyping (not committed s
 
 1. Install CLI (Node 20+): `npm install -g @google/stitch` (or user prefix `~/.npm-global` on Cloud Agents).
 2. Enable Loop experiment: `stitch enable loop` (sets `yolo.loop: true` in `~/.stitch.json`; adds `flows/prototype.md` to the bundled `/stitch` skill).
-3. Project playbooks: `stitch agent-skills add --dir .agents/skills/stitch` (already vendored in this repo).
+3. Project playbooks (pick one):
+   - `stitch agent-skills add` → `.agents/skills/stitch/` (Cursor / Agent Skills)
+   - `stitch agent-skills add --user` → `~/.agents/skills/` (every repo on this machine)
+   - `stitch agent-skills add --dir .claude/skills/stitch` → Claude Code in this repo
+   This repo already vendors `.agents/skills/stitch/`.
 4. Sign in and run onboarding: `stitch status --flow=loop --json` → follow `.agents/skills/stitch/stitch/flows/prototype.md`.
 5. Native JUCE skin path here remains **`shared/disklordz_ui`** + Canva/Stitch **exported PNGs** per sections below; Loop is for canvas iteration before export.
 

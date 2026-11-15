@@ -138,7 +138,15 @@ npm install -g @google/stitch   # or: bash scripts/install-stitch-cli.sh
 stitch --version
 ```
 
-Repo playbooks: `.agents/skills/stitch/` · native JUCE skins: [shared/disklordz_ui/ARCHITECTURE.md](shared/disklordz_ui/ARCHITECTURE.md) · Canva/Stitch → PNG handoff: [docs/UI_DESIGN_HANDOFF.md](docs/UI_DESIGN_HANDOFF.md). Loop onboarding: `stitch enable loop` then `stitch login` (credentials are per-user, not in git).
+Install playbooks once per machine or repo:
+
+```bash
+stitch agent-skills add              # .agents/skills/stitch/ (this project)
+stitch agent-skills add --user       # ~/.agents/skills/ (all repos)
+stitch agent-skills add --dir .claude/skills/stitch   # Claude Code
+```
+
+Repo copy: `.agents/skills/stitch/` · native JUCE skins: [shared/disklordz_ui/ARCHITECTURE.md](shared/disklordz_ui/ARCHITECTURE.md) · Canva/Stitch → PNG handoff: [docs/UI_DESIGN_HANDOFF.md](docs/UI_DESIGN_HANDOFF.md). Loop onboarding: `stitch enable loop` then `stitch login` (credentials are per-user, not in git).
 
 ## Audio Plugin Coder (optional VST scaffold)
 
