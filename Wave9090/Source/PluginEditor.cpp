@@ -9,7 +9,7 @@ using PID = wave9090::ParameterIDs;
 
 juce::String tooltip (const juce::String& title, const juce::String& body)
 {
-    return title + juce::String (juce::NewLine()) + body;
+    return title + "\n" + body;
 }
 
 float mapDb (float norm, float lo, float hi)
