@@ -12,6 +12,7 @@
 | Plugin | Vintage target | Phase | Next |
 |--------|----------------|-------|------|
 | [MpcMinimoog](MpcMinimoog/status.json) | Minimoog Model D | Plan complete | `/apc-design MpcMinimoog` |
+| [MpcSh101](MpcSh101/status.json) | Roland SH-101 | Plan complete | `/apc-design MpcSh101` |
 
 **Platform:** Linux **x86_64** (DAW + pluginval) and **aarch64** VST3 for **Melodee** (`docs/MPC_SAMPLE_VST3.md`). Default **headless** (`hasEditor() == false`). Reference precursor: `vst/MpcAnalogSynth` (Prophet-lite sketch).
 
