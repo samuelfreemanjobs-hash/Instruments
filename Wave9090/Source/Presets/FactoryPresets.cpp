@@ -10,6 +10,8 @@ namespace
 SynthParams baseParams()
 {
     SynthParams p;
+    p.voiceGain = 0.58f;
+    p.ampAttack = 0.004f;
     return p;
 }
 } // namespace
@@ -17,89 +19,108 @@ SynthParams baseParams()
 const std::vector<FactoryPreset>& getFactoryPresets() noexcept
 {
     static const std::vector<FactoryPreset> kPresets = {
-        { "Sub-Zero 808", "BASS", [] {
+        { "Trap 808", "BASS", [] {
               auto p = baseParams();
-              p.wtPosition = 0.08f;
-              p.filterCutoff = 0.35f;
-              p.filterRes = 0.15f;
-              p.subLevel = 0.95f;
-              p.drive = 0.45f;
-              p.crush = 0.25f;
+              p.wtPosition = 0.05f;
+              p.filterCutoff = 0.28f;
+              p.filterRes = 0.12f;
+              p.subLevel = 1.0f;
+              p.drive = 0.55f;
+              p.crush = 0.18f;
               p.filterDestructive = true;
               p.ampAttack = 0.001f;
-              p.ampDecay = 0.35f;
-              p.ampSustain = 0.95f;
-              p.ampRelease = 0.25f;
-              return p;
-          }() },
-        { "Drift Lead", "LEAD", [] {
-              auto p = baseParams();
-              p.wtPosition = 0.62f;
-              p.wtScan = 0.35f;
-              p.filterCutoff = 0.58f;
-              p.tapeWobble = 0.4f;
-              p.detuneCents = 8.0f;
-              return p;
-          }() },
-        { "Sinister Pluck", "PLUCK", [] {
-              auto p = baseParams();
-              p.wtPosition = 0.48f;
-              p.filterCutoff = 0.66f;
-              p.filterRes = 0.45f;
-              p.ampAttack = 0.001f;
-              p.ampDecay = 0.12f;
+              p.ampDecay = 0.42f;
               p.ampSustain = 0.0f;
-              p.ampRelease = 0.22f;
-              p.filtEnvAmt = 0.75f;
+              p.ampRelease = 0.28f;
+              p.pitchEnvDepthCents = -360.0f;
+              p.pitchEnvDecay = 0.35f;
+              p.voiceGain = 0.78f;
+              return p;
+          }() },
+        { "Phonk Lead", "LEAD", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.58f;
+              p.wtScan = 0.22f;
+              p.filterCutoff = 0.52f;
+              p.filterRes = 0.38f;
+              p.tapeWobble = 0.35f;
+              p.detuneCents = 11.0f;
+              p.drive = 0.35f;
+              p.ampDecay = 0.22f;
+              p.voiceGain = 0.48f;
+              return p;
+          }() },
+        { "Crisp Pluck", "PLUCK", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.46f;
+              p.filterCutoff = 0.62f;
+              p.filterRes = 0.4f;
+              p.ampAttack = 0.001f;
+              p.ampDecay = 0.09f;
+              p.ampSustain = 0.0f;
+              p.ampRelease = 0.18f;
+              p.filtEnvAmt = 0.82f;
+              p.filtAttack = 0.001f;
+              p.filtDecay = 0.14f;
+              p.voiceGain = 0.55f;
               return p;
           }() },
         { "Dark Bell", "BELL", [] {
               auto p = baseParams();
               p.wtPosition = 0.78f;
-              p.filterCutoff = 0.82f;
-              p.filterRes = 0.35f;
-              p.ampDecay = 0.55f;
-              p.ampRelease = 0.8f;
+              p.filterCutoff = 0.76f;
+              p.filterRes = 0.32f;
+              p.ampDecay = 0.48f;
+              p.ampRelease = 0.75f;
+              p.voiceGain = 0.46f;
               return p;
           }() },
         { "Phonk Cowbell", "BELL", [] {
               auto p = baseParams();
-              p.wtPosition = 0.55f;
-              p.filterCutoff = 0.71f;
-              p.drive = 0.65f;
-              p.crush = 0.4f;
+              p.wtPosition = 0.62f;
+              p.filterCutoff = 0.68f;
+              p.drive = 0.58f;
+              p.crush = 0.32f;
               p.filterDestructive = true;
-              p.detuneCents = -14.0f;
+              p.detuneCents = -11.0f;
+              p.ampAttack = 0.002f;
+              p.ampDecay = 0.16f;
+              p.ampSustain = 0.05f;
+              p.voiceGain = 0.5f;
               return p;
           }() },
-        { "Haunted Keys", "KEYS", [] {
+        { "Memphis Keys", "KEYS", [] {
               auto p = baseParams();
-              p.wtPosition = 0.42f;
-              p.tapeWobble = 0.55f;
-              p.stereoWidth = 0.35f;
-              p.wtScan = 0.15f;
+              p.wtPosition = 0.4f;
+              p.tapeWobble = 0.38f;
+              p.stereoWidth = 0.42f;
+              p.wtScan = 0.12f;
+              p.filterCutoff = 0.55f;
+              p.voiceGain = 0.44f;
               return p;
           }() },
-        { "Metallic Stab", "LEAD", [] {
+        { "Underground Stab", "LEAD", [] {
               auto p = baseParams();
-              p.wtPosition = 0.88f;
-              p.filterCutoff = 0.52f;
-              p.filterRes = 0.55f;
-              p.drive = 0.5f;
+              p.wtPosition = 0.85f;
+              p.filterCutoff = 0.48f;
+              p.filterRes = 0.5f;
+              p.drive = 0.42f;
               p.filterDestructive = true;
               p.ampAttack = 0.002f;
-              p.ampDecay = 0.18f;
-              p.ampSustain = 0.1f;
+              p.ampDecay = 0.14f;
+              p.ampSustain = 0.08f;
+              p.voiceGain = 0.52f;
               return p;
           }() },
         { "Tape Pad", "PAD", [] {
               auto p = baseParams();
               p.wtPosition = 0.3f;
-              p.wtScan = 0.22f;
-              p.tapeWobble = 0.65f;
-              p.ampAttack = 0.35f;
-              p.ampRelease = 1.2f;
-              p.filterCutoff = 0.48f;
+              p.wtScan = 0.18f;
+              p.tapeWobble = 0.48f;
+              p.ampAttack = 0.28f;
+              p.ampRelease = 1.1f;
+              p.filterCutoff = 0.44f;
+              p.voiceGain = 0.4f;
               return p;
           }() },
     };

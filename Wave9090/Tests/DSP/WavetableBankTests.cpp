@@ -6,15 +6,18 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <vector>
+
+int runSoundRenderTests();
 
 int main()
 {
-    wave9090::dsp::WavetableBank bank;
-    bank.rebuild();
+    auto bank = std::make_unique<wave9090::dsp::WavetableBank>();
+    bank->rebuild();
 
-    const auto& t0 = bank.getTable (0);
-    const auto& t63 = bank.getTable (63);
+    const auto& t0 = bank->getTable (0);
+    const auto& t63 = bank->getTable (63);
 
     float peak0 = 0.0f;
     float peak63 = 0.0f;
@@ -35,7 +38,7 @@ int main()
         return EXIT_FAILURE;
     }
 
-    const float morph = bank.sampleMorph (0.25, 0.5f);
+    const float morph = bank->sampleMorph (0.25, 0.5f, 220.0 / 48000.0);
     if (! std::isfinite (morph))
     {
         std::cerr << "non-finite morph sample\n";
@@ -66,5 +69,7 @@ int main()
 
     std::cout << "Wave9090Tests OK peak0=" << peak0 << " peak63=" << peak63
               << " renderPeak=" << renderPeak << '\n';
+    if (runSoundRenderTests() != EXIT_SUCCESS)
+        return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Engine/SynthParams.h"
-
 namespace wave9090
 {
 
@@ -29,6 +27,11 @@ struct SynthParams
     float filtRelease = 0.5f;
     float filtEnvAmt = 0.55f;
     float stereoWidth = 0.15f;
+    float pitchEnvAttack = 0.001f;
+    float pitchEnvDecay = 0.25f;
+    float pitchEnvRelease = 0.05f;
+    float pitchEnvDepthCents = 0.0f;
+    float voiceGain = 0.58f;
 };
 
 } // namespace wave9090

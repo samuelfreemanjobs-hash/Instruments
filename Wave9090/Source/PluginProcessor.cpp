@@ -19,7 +19,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Wave9090AudioProcessor::crea
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    addFloatParam (layout, PID::outputGain, "Output", { -24.0f, 12.0f, 0.01f }, -3.0f);
+    addFloatParam (layout, PID::outputGain, "Output", { -24.0f, 12.0f, 0.01f }, -4.5f);
     addFloatParam (layout, PID::wtPosition, "Wavetable", { 0.0f, 1.0f, 0.0001f }, 0.35f);
     addFloatParam (layout, PID::wtScan, "WT Scan", { 0.0f, 1.0f, 0.0001f }, 0.0f);
     addFloatParam (layout, PID::filterCutoff, "Cutoff", { 0.0f, 1.0f, 0.0001f }, 0.72f);
@@ -207,6 +207,8 @@ void Wave9090AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
 
     buffer.clear();
 
+    keyboardState_.processNextMidiBuffer (midi, 0, numSamples, true);
+
     for (const auto metadata : midi)
     {
         const auto msg = metadata.getMessage();
@@ -221,12 +223,19 @@ void Wave9090AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     const float gain = juce::Decibels::decibelsToGain (liveParams_.outputGainDb, -100.0f);
     buffer.applyGain (gain);
 
-    for (int i = 0; i < numSamples; ++i)
+    constexpr float kCeil = 0.9441f; // -0.5 dBFS
+    for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
     {
-        left[i] = std::tanh (left[i]);
-        if (buffer.getNumChannels() > 1)
-            right[i] = std::tanh (right[i]);
+        auto* data = buffer.getWritePointer (ch);
+        for (int i = 0; i < numSamples; ++i)
+        {
+            const float x = data[i];
+            data[i] = kCeil * std::tanh (x / kCeil);
+        }
     }
+
+    const float peak = buffer.getMagnitude (0, numSamples);
+    outputPeakDb_.store (juce::Decibels::gainToDecibels (peak, -100.0f));
 }
 
 juce::AudioProcessorEditor* Wave9090AudioProcessor::createEditor()
