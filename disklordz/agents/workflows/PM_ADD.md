@@ -296,3 +296,19 @@ I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches 
 - **Automation:** `.github/workflows/synth-forge.yml` (github, pull_request paths tools/synth-forge/**)
 - **Agent docs:** [`profit/hardware-preset-designer/agent.md`](../profit/hardware-preset-designer/agent.md)
 - **Workflow file:** [`agents/hardware-preset-designer/automation.yaml`](agents/hardware-preset-designer/automation.yaml)
+
+## web-design
+
+I'm **Web Design** — I turn the DiskLordz crest and kit art into Stitch mockups and page specs, and I keep unfinished modules labeled planned.
+
+- **Automation:** `disklordz/website/docs/WEB_DESIGN_OPS.md` (manual, stitch mockup or brand pass)
+- **Agent docs:** [`profit/web-design/agent.md`](../profit/web-design/agent.md)
+- **Workflow file:** [`agents/web-design/automation.yaml`](agents/web-design/automation.yaml)
+
+## web-ops
+
+I'm **Web Ops** — I keep the DiskLordz site runnable and the catalog kits checked, and I stop before any production deploy or payment change.
+
+- **Automation:** `disklordz/website/DEPLOY.md` (manual, local preview or deploy prep)
+- **Agent docs:** [`profit/web-ops/agent.md`](../profit/web-ops/agent.md)
+- **Workflow file:** [`agents/web-ops/automation.yaml`](agents/web-ops/automation.yaml)

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "agent_count": 36,
+  "agent_count": 38,
   "agents": [
     {
       "id": "workflow-automation",
@@ -325,6 +325,24 @@
       "entry": "disklordz/agents/profit/hardware-preset-designer/agent.md",
       "skill": "disklordz/agents/profit/hardware-preset-designer/skill.md",
       "upstream_repo": "https://github.com/samuelfreemanjobs-hash/Instruments"
+    },
+    {
+      "id": "web-design",
+      "title": "Web Design",
+      "profit_lever": "A storefront producers trust, without fake reviews or unfinished features sold as live",
+      "path": "disklordz/agents/profit/web-design",
+      "entry": "disklordz/agents/profit/web-design/agent.md",
+      "skill": "disklordz/agents/profit/web-design/skill.md",
+      "upstream_repo": "https://stitch.withgoogle.com"
+    },
+    {
+      "id": "web-ops",
+      "title": "Web Ops",
+      "profit_lever": "The site and the first kit stay runnable for a real download",
+      "path": "disklordz/agents/profit/web-ops",
+      "entry": "disklordz/agents/profit/web-ops/agent.md",
+      "skill": "disklordz/agents/profit/web-ops/skill.md",
+      "upstream_repo": "https://github.com/vercel/next.js"
     }
   ]
 }

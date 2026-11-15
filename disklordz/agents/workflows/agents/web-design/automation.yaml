@@ -1,0 +1,15 @@
+# Automation — Web Design (`web-design`)
+
+platform: manual
+trigger: stitch mockup or brand pass
+primary: disklordz/website/docs/WEB_DESIGN_OPS.md
+
+## Steps
+1. Read brand marks and Memphis Vault cover
+2. Write a Stitch prompt; label planned modules planned
+
+## Invoke agent
+Read: disklordz/agents/profit/web-design/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#web-design

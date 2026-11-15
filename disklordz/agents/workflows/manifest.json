@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "agent_count": 36,
+  "agent_count": 38,
   "agents": [
     {
       "id": "workflow-automation",
@@ -535,6 +535,36 @@
         ]
       },
       "automation_path": "disklordz/agents/workflows/agents/hardware-preset-designer/automation.yaml"
+    },
+    {
+      "id": "web-design",
+      "title": "Web Design",
+      "announcement": "I'm **Web Design** \u2014 I turn the DiskLordz crest and kit art into Stitch mockups and page specs, and I keep unfinished modules labeled planned.",
+      "automation": {
+        "platform": "manual",
+        "trigger": "stitch mockup or brand pass",
+        "workflow_file": "disklordz/website/docs/WEB_DESIGN_OPS.md",
+        "steps": [
+          "Read brand marks and Memphis Vault cover",
+          "Write a Stitch prompt; label planned modules planned"
+        ]
+      },
+      "automation_path": "disklordz/agents/workflows/agents/web-design/automation.yaml"
+    },
+    {
+      "id": "web-ops",
+      "title": "Web Ops",
+      "announcement": "I'm **Web Ops** \u2014 I keep the DiskLordz site runnable and the catalog kits checked, and I stop before any production deploy or payment change.",
+      "automation": {
+        "platform": "manual",
+        "trigger": "local preview or deploy prep",
+        "workflow_file": "disklordz/website/DEPLOY.md",
+        "steps": [
+          "Read website ARCHITECTURE and DEPLOY.md",
+          "Check catalog ZIP and manifest; no production deploy without confirmation"
+        ]
+      },
+      "automation_path": "disklordz/agents/workflows/agents/web-ops/automation.yaml"
     }
   ]
 }

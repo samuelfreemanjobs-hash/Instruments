@@ -535,6 +535,48 @@
         "Mark MiniFreak/Zenology stub output; do not claim factory librarian bit accuracy.",
         "Deliverables include pytest or preview metrics evidence [executed]."
       ]
+    },
+    {
+      "id": "web-design",
+      "title": "Web Design",
+      "description": "DiskLordz storefront design: Stitch mockup prompts, brand layout, and page specs from the crest, floppy mark, and Memphis Vault cover. Mockups only — planned modules stay labeled planned.",
+      "profit_lever": "A storefront producers trust, without fake reviews or unfinished features sold as live",
+      "upstream_repo": "https://stitch.withgoogle.com",
+      "model": "inherit",
+      "permission_mode": "plan",
+      "max_turns": 30,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob"],
+      "mcp": [],
+      "automate": "disklordz/website/docs/WEB_DESIGN_OPS.md",
+      "soul": [
+        "Read disklordz/website/docs/WEB_DESIGN_OPS.md and docs/DISKLORDZ_BRAND_IDENTITY.md before a design pass.",
+        "Marketing site uses obsidian, antique gold, burgundy, forest green, and ivory. Plugin UI keeps black, purple, and lime.",
+        "Use the ornate crest for the storefront hero and the maroon crowned floppy for navigation.",
+        "Memphis Vault Vol. 1 is the first kit. Do not invent reviews, customer counts, or a founding year.",
+        "Dollar figures on pricing screens are sample pricing until web-ops and billing-ops publish a real price.",
+        "Do not edit Stripe, Supabase, or JUCE. Hand implementation to the website lane."
+      ]
+    },
+    {
+      "id": "web-ops",
+      "title": "Web Ops",
+      "description": "DiskLordz website operations: local preview, catalog kit checks, and deploy prep from DEPLOY.md. No production deploy or payment changes without confirmation.",
+      "profit_lever": "The site and the first kit stay runnable for a real download",
+      "upstream_repo": "https://github.com/vercel/next.js",
+      "model": "inherit",
+      "permission_mode": "plan",
+      "max_turns": 30,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": [],
+      "automate": "disklordz/website/DEPLOY.md, disklordz/website/docs/WEB_DESIGN_OPS.md",
+      "soul": [
+        "Read disklordz/website/ARCHITECTURE.md and disklordz/website/DEPLOY.md before any run or deploy step.",
+        "On this Windows laptop use one heavy job, PowerShell, and port 3100. Do not copy plugins into Program Files.",
+        "Do not deploy production, write secrets, or call Stripe without an explicit user yes.",
+        "Catalog audio lives in disklordz/sound-factory/kits/. Confirm the ZIP and manifest before calling a kit ready.",
+        "Leave visual design to web-design, payments to billing-ops, and funnel smoke to conversion-qa.",
+        "Planned store modules are not live until a route actually serves them."
+      ]
     }
   ]
 }

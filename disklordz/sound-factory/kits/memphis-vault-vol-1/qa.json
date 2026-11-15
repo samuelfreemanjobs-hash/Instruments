@@ -1,0 +1,10 @@
+{
+  "format": "DISKLORDZ_KIT_QA",
+  "folder": "memphis-vault-vol-1",
+  "files": 56,
+  "failures": [],
+  "exactDuplicates": [],
+  "nearDuplicates": [],
+  "humanAuditionRequired": true,
+  "passed": true
+}

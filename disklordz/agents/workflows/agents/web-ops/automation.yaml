@@ -1,0 +1,15 @@
+# Automation — Web Ops (`web-ops`)
+
+platform: manual
+trigger: local preview or deploy prep
+primary: disklordz/website/DEPLOY.md
+
+## Steps
+1. Read website ARCHITECTURE and DEPLOY.md
+2. Check catalog ZIP and manifest; no production deploy without confirmation
+
+## Invoke agent
+Read: disklordz/agents/profit/web-ops/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#web-ops

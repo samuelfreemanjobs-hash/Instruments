@@ -53,6 +53,8 @@ ACTIVATION: dict[str, str] = {
     "audio-business-copilot": "ci_scheduled",
     "plugin-factory-liaison": "ci_scheduled",
     "autonomous-coding-agent": "ci_scheduled",
+    "web-design": "manual_doc",
+    "web-ops": "manual",
 }
 
 CI_WORKFLOWS = [
@@ -214,6 +216,14 @@ ANNOUNCE: dict[str, str] = {
     "autonomous-coding-agent": (
         "I'm **Autonomous Coding Agent** — I drain the 24/7 coding queue on allowlisted paths "
         "and escalate plugin C++ to the factory."
+    ),
+    "web-design": (
+        "I'm **Web Design** — I turn the DiskLordz crest and kit art into Stitch mockups "
+        "and page specs, and I keep unfinished modules labeled planned."
+    ),
+    "web-ops": (
+        "I'm **Web Ops** — I keep the DiskLordz site runnable and the catalog kits checked, "
+        "and I stop before any production deploy or payment change."
     ),
 }
 
@@ -443,6 +453,24 @@ WORKFLOWS: dict[str, dict] = {
         "trigger": "every 6h",
         "workflow_file": ".github/workflows/autonomous-coding-agent.yml",
         "steps": ["tick.py", "Cursor timer 4h cloud slices"],
+    },
+    "web-design": {
+        "platform": "manual",
+        "trigger": "stitch mockup or brand pass",
+        "workflow_file": "disklordz/website/docs/WEB_DESIGN_OPS.md",
+        "steps": [
+            "Read brand marks and Memphis Vault cover",
+            "Write a Stitch prompt; label planned modules planned",
+        ],
+    },
+    "web-ops": {
+        "platform": "manual",
+        "trigger": "local preview or deploy prep",
+        "workflow_file": "disklordz/website/DEPLOY.md",
+        "steps": [
+            "Read website ARCHITECTURE and DEPLOY.md",
+            "Check catalog ZIP and manifest; no production deploy without confirmation",
+        ],
     },
 }
 
