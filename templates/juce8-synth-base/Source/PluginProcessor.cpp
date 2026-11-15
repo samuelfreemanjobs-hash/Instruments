@@ -29,6 +29,22 @@ PlaySeriesTemplateAudioProcessor::createParameterLayout() {
       play_series::kDiceTrigger, "Dice", false));
   layout.add(std::make_unique<juce::AudioParameterFloat>(
       play_series::kMasterLevel, "Master", 0.0f, 1.0f, 0.75f));
+  layout.add(std::make_unique<juce::AudioParameterBool>(
+      play_series::kMacroLock, "Lock Macros", false));
+  layout.add(std::make_unique<juce::AudioParameterBool>(
+      play_series::kArpEnable, "Arp", false));
+  layout.add(
+      std::make_unique<juce::AudioParameterChoice>(play_series::kArpMode, "Arp Mode",
+                                                   juce::StringArray{"Up", "Down", "UpDown", "Random"},
+                                                   0));
+  layout.add(
+      std::make_unique<juce::AudioParameterChoice>(play_series::kArpRate, "Arp Rate",
+                                                   juce::StringArray{"1/8", "1/16"}, 0));
+  layout.add(std::make_unique<juce::AudioParameterChoice>(
+      play_series::kChordMode, "Chord",
+      juce::StringArray{"Off", "Octave", "Minor7", "Minor9", "DarkTriad"}, 0));
+  layout.add(std::make_unique<juce::AudioParameterFloat>(
+      play_series::kGlideMs, "Glide", 0.0f, 500.0f, 80.0f));
   for (int i = 0; i < play_series::kMacroCount; ++i) {
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::String("macro") + juce::String(i + 1),
@@ -42,7 +58,9 @@ bool PlaySeriesTemplateAudioProcessor::isBusesLayoutSupported(
   return layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo();
 }
 
-void PlaySeriesTemplateAudioProcessor::prepareToPlay(double, int) {}
+void PlaySeriesTemplateAudioProcessor::prepareToPlay(double, int) {
+  scope_.reset();
+}
 
 float PlaySeriesTemplateAudioProcessor::effectiveBlend() const noexcept {
   const float xy =
@@ -60,6 +78,15 @@ void PlaySeriesTemplateAudioProcessor::processBlock(juce::AudioBuffer<float> &bu
       apvts_.getRawParameterValue(play_series::kMasterLevel)->load(std::memory_order_relaxed);
   juce::ignoreUnused(gain); // scaffold: engine replaces clear()+voice mix
   juce::ignoreUnused(effectiveBlend());
+  float peak = 0.0f;
+  for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+    peak = std::max(peak, buffer.getMagnitude(ch, 0, buffer.getNumSamples()));
+  scope_.pushPeak(peak);
+}
+
+int PlaySeriesTemplateAudioProcessor::readScopePeaks(float *dest,
+                                                     int maxItems) const noexcept {
+  return scope_.readRecentPeaks(dest, maxItems);
 }
 
 void PlaySeriesTemplateAudioProcessor::setCurrentProgram(int index) {
@@ -76,10 +103,21 @@ const juce::String PlaySeriesTemplateAudioProcessor::getProgramName(int index) {
 
 void PlaySeriesTemplateAudioProcessor::applyFactoryPreset(int index) {
   const auto &p = play_series::kFactoryPresets[static_cast<size_t>(index)];
+  const bool lockMacros =
+      apvts_.getRawParameterValue(play_series::kMacroLock)->load(std::memory_order_relaxed) >=
+      0.5f;
+  float savedMacros[play_series::kMacroCount]{};
+  if (lockMacros) {
+    for (int i = 0; i < play_series::kMacroCount; ++i) {
+      const auto id = (juce::String("macro") + juce::String(i + 1)).toRawUTF8();
+      savedMacros[i] = apvts_.getRawParameterValue(id)->load(std::memory_order_relaxed);
+    }
+  }
   setP(apvts_, play_series::kLayerBlend, p.blend);
-  for (int i = 0; i < play_series::kMacroCount; ++i)
-    setP(apvts_, (juce::String("macro") + juce::String(i + 1)).toRawUTF8(),
-         p.macros[i]);
+  for (int i = 0; i < play_series::kMacroCount; ++i) {
+    const float v = lockMacros ? savedMacros[i] : p.macros[i];
+    setP(apvts_, (juce::String("macro") + juce::String(i + 1)).toRawUTF8(), v);
+  }
 }
 
 void PlaySeriesTemplateAudioProcessor::randomizePatchBounded() {

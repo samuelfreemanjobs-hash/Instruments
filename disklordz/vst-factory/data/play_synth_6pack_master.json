@@ -1,0 +1,74 @@
+[
+  {
+    "name": "PhonkCowbell94",
+    "type": "synth",
+    "code": "Pc94",
+    "apc_path": "plugins/PhonkCowbell94",
+    "build_root": "PhonkCowbell94",
+    "theme": "Matte-Black, Blood-Red, and 90s Chrome Cassette aesthetic",
+    "layerA": "Pitch-tracked TR-808 metallic cowbell (dual detuned squares ~1:1.48 ratio through resonant bandpass + snappy VCA decay) + phase-locked 808 sine/tri sub with exponential pitch-drop transient",
+    "layerB": "5-band dark Memphis vocal formant choir (vowel morph), eerie lo-fi horror bell, magnetic cassette hiss",
+    "macros": "1 Cowbell Bite, 2 808 Sub, 3 Memphis Tape, 4 SP-1200 Crunch, 5 Tube Dirt (2x OS), 6 Choir Morph, 7 Slap Echo, 8 Crypt Reverb",
+    "presets": "Memphis 94 Cowbell, Drift King Lead, Sub & Cowbell Stack, Haunted Crypt Choir, 4-Track Cassette Bell, SP-1200 Bassline, Midnight Phonk Pad, Distorted 808 Cowbell, Triple Six Organ, Eerie Horror Pluck, Lo-Fi Memphis Flute, Tokyo Drift Lead"
+  },
+  {
+    "name": "CloudSupplyTrap",
+    "type": "synth",
+    "code": "CsTr",
+    "apc_path": "plugins/CloudSupplyTrap",
+    "build_root": "CloudSupplyTrap",
+    "theme": "Obsidian-Black, Electric-Cyan, Deep-Violet trap aesthetic",
+    "layerA": "3-op FM glass bell/mallet + phase-locked sine/tri sub with soft-clip punch",
+    "layerB": "5-band ethereal vocal formant choir + breath air + 12-frame crystal wavetable",
+    "macros": "1 Tone, 2 Bell/FM, 3 Formant, 4 Sub Punch, 5 Dirt (2x OS), 6 Flutter, 7 Ping-Pong, 8 Shimmer",
+    "presets": "Cloud Nine Bells, Dark Memphis Choir, Ethereal Trap Flute, Sub & Crystal Keys, Haunted Phonk Pluck, Midnight OVO Pad, Glass Mallet Drop, Distorted Bell Lead, Velvet Vocal Swell, 808 Sub Atmos, Frozen Harp, Astral Drift"
+  },
+  {
+    "name": "AnalogDreams84",
+    "type": "synth",
+    "code": "Ad84",
+    "apc_path": "plugins/AnalogDreams84",
+    "build_root": "AnalogDreams84",
+    "theme": "Midnight-Blue, Neon-Magenta, Retro-Cyan synthwave aesthetic",
+    "layerA": "Dual PolyBLEP VCOs (saw/tri/PWM) + thermal drift + -1 oct square sub",
+    "layerB": "12-frame 80s digital wavetable + FM bell (DX EP, glass, brass, strings, pad)",
+    "macros": "1 Cutoff, 2 Drift, 3 PWM/Shape, 4 Warmth (2x OS), 5 Swell, 6 BBD Chorus, 7 Echo, 8 80s Plate",
+    "presets": "Miami Sunset Brass, Blade Runner Strings, Neon Arp Pluck, 84 Tape Polysynth, Velvet Sub Pad, Crystal FM Keys, Midnight Drive Lead, Dreamy BBD Choir, Analog Bassline, VHS Nostalgia, Jupiter Swell, Starlight Bells"
+  },
+  {
+    "name": "LoFiGlowTape",
+    "type": "synth",
+    "code": "LgTp",
+    "apc_path": "plugins/LoFiGlowTape",
+    "build_root": "LoFiGlowTape",
+    "theme": "Warm-Charcoal, Amber-Gold, Cream cassette aesthetic",
+    "layerA": "Rhodes/Wurli tine + tonebar + key-off thump; felt upright variant",
+    "layerB": "Mellotron tape flute/strings + warm pad + vinyl crackle & tape hiss",
+    "macros": "1 Warmth, 2 Wow/Flutter, 3 12-Bit Crunch, 4 Tape Sat (2x OS), 5 Vinyl/Hiss, 6 Swell, 7 Warble Chorus, 8 Space",
+    "presets": "Dusty Rhodes 73, Cassette Felt Piano, Rainy Window Pad, 90s Boom-Bap Keys, Warbled Tape Flute, Neo-Soul Suitcase, 12-Bit Vinyl Bells, Midnight Study Chords, VHS Dream Organ, Mellow Sub & Keys, Analog Tape Choir, Crushed Lo-Fi Pluck"
+  },
+  {
+    "name": "FortyKeysSoul",
+    "type": "synth",
+    "code": "Fk40",
+    "apc_path": "plugins/FortyKeysSoul",
+    "build_root": "FortyKeysSoul",
+    "theme": "Matte-Black, Brushed-Gold, Warm-Bronze late-night R&B aesthetic",
+    "layerA": "Dark filtered Rhodes/Wurli + deep sine/tri sub",
+    "layerB": "Underwater formant pad + analog strings + glassy bell partials",
+    "macros": "1 Underwater, 2 Sub Weight, 3 Tape Drift, 4 Dust/Crunch, 5 Swell, 6 Chorus, 7 Ping-Pong, 8 Late Night Space",
+    "presets": "Toronto Midnight Keys, Underwater Rhodes, 40s Sub & Choir, Velvet R&B Pad, Muffled Suitcase EP, After Hours Bell, Warm Analog Bass, Drake-Style Pluck, Slowed & Reverbed Keys, Golden Hour Strings, Late Night Organ, Cloudy Piano"
+  },
+  {
+    "name": "SoulSessions70",
+    "type": "synth",
+    "code": "Ss70",
+    "apc_path": "plugins/SoulSessions70",
+    "build_root": "SoulSessions70",
+    "theme": "Walnut-Wood, Cream, Burnt-Orange 1970s soul aesthetic",
+    "layerA": "Hammond B-3 drawbar tonewheel + key click; Hohner Clavinet D6",
+    "layerB": "Solina divide-down strings + warm soul brass",
+    "macros": "1 Tone, 2 Auto-Wah, 3 Rotary/Chorus, 4 Tube Grit (2x OS), 5 Phaser, 6 Swell, 7 Tape Echo, 8 Spring Reverb",
+    "presets": "70s Gospel B3, Superstition Auto-Wah, Motown Strings & Keys, Warm Soul Brass, Boom-Bap Chop Organ, Phased Clavinet, Velvet Rhodes & Strings, Funky Rotary Lead, Vintage Vinyl Ensemble, Sunday Morning Pad, Crispy Tape Horn, Soulful Sub Keys"
+  }
+]

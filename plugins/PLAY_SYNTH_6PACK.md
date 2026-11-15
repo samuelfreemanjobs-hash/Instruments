@@ -11,9 +11,13 @@ Same **Play shell** on every instrument: equal-power **A/B blend**, **XY pad**, 
 | 5 | **FortyKeysSoul** | Fk40 | 40s / OVO R&B keys | Dark EP + warm sub | Underwater choir + swell bell | Half-speed shimmer + underwater LPF | Gold / bronze |
 | 6 | **SoulSessions70** | Ss70 | 70s soul / Motown | B3 + clavinet | Solina strings + soul brass | Leslie + auto-wah + spring | Walnut / cream |
 
-**Shared UI contract:** `plugins/PLAY_SYNTH_SHARED_UI.md`
+**Shared UI contract:** `plugins/PLAY_SYNTH_SHARED_UI.md` (v2: arp/chord, macro lock, scope FIFO, 2× OS dirt).
 
-**Factory queue:** `disklordz/vst-factory/data/overnight-queue.json` — `suite: play_synth_6pack`, priority **10** for all six.
+**Factory queues:**
+
+- Long prompts: `disklordz/vst-factory/data/overnight-queue.json` — `suite: play_synth_6pack`, priority **10**
+- Compact 6-pack JSON: `disklordz/vst-factory/data/play_synth_6pack_master.json`
+- Repo map (Cursor vs blog advice): `docs/VST_AI_FACTORY_INDEX.md`
 
 **Future slot (not queued):** Nacht / dark techno — APC stub TBD.
 

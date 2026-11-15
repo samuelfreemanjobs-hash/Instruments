@@ -18,6 +18,12 @@ inline constexpr const char *kXyX = "xy_x";
 inline constexpr const char *kXyY = "xy_y";
 inline constexpr const char *kDiceTrigger = "dice_trigger";
 inline constexpr const char *kMasterLevel = "master_level";
+inline constexpr const char *kMacroLock = "macro_lock";
+inline constexpr const char *kArpEnable = "arp_enable";
+inline constexpr const char *kArpMode = "arp_mode";
+inline constexpr const char *kArpRate = "arp_rate";
+inline constexpr const char *kChordMode = "chord_mode";
+inline constexpr const char *kGlideMs = "glide_ms";
 
 inline constexpr int kVoiceCount = 12;
 inline constexpr int kMacroCount = 8;

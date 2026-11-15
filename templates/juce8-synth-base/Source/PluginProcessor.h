@@ -4,6 +4,7 @@
 #include <juce_dsp/juce_dsp.h>
 
 #include "PlaySeriesCommon.h"
+#include "ScopeRingBuffer.h"
 
 // Rename class + file when cloning for AnalogDreams84 / CloudSupplyTrap / LoFiGlowTape.
 class PlaySeriesTemplateAudioProcessor : public juce::AudioProcessor {
@@ -37,10 +38,12 @@ public:
 private:
   void applyFactoryPreset(int index);
   float effectiveBlend() const noexcept;
+  int readScopePeaks(float *dest, int maxItems) const noexcept;
 
   juce::AudioProcessorValueTreeState apvts_;
   juce::Random rng_;
   int currentProgram_ = 0;
+  mutable ScopeRingBuffer scope_;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlaySeriesTemplateAudioProcessor)
 };
