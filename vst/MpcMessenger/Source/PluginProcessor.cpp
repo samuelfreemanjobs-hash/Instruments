@@ -26,7 +26,8 @@ MpcMessengerAudioProcessor::createParameterLayout() {
   layout.add(std::make_unique<juce::AudioParameterFloat>(
       juce::ParameterID{"res", 1}, "Resonance", 0.0f, 0.96f, 0.38f));
   layout.add(std::make_unique<juce::AudioParameterFloat>(
-      juce::ParameterID{"resBass", 1}, "Res Bass", 0.0f, 1.0f, 0.55f));
+      juce::ParameterID{"resBassToggle", 1}, "Res Bass",
+      0.0f, 1.0f, 0.55f));
   layout.add(std::make_unique<juce::AudioParameterFloat>(
       juce::ParameterID{"fold", 1}, "Wavefold", 0.0f, 1.0f, 0.2f));
   layout.add(std::make_unique<juce::AudioParameterFloat>(
@@ -78,7 +79,6 @@ void MpcMessengerAudioProcessor::prepareToPlay(double sampleRate,
   ladder_.reset();
   ampEnv_.setSampleRate(sampleRate);
   filterEnv_.setSampleRate(sampleRate);
-  bassLpState_ = 0.0f;
 }
 
 float MpcMessengerAudioProcessor::processLadder(float in) {
@@ -111,7 +111,7 @@ void MpcMessengerAudioProcessor::applyFactoryProgram(int index) {
   const auto &p = messenger::kFactoryPrograms[static_cast<size_t>(index)];
   setParam(apvts_, "cutoff", p.cutoff);
   setParam(apvts_, "res", p.res);
-  setParam(apvts_, "resBass", p.resBass);
+  setParam(apvts_, "resBassToggle", p.resBass);
   setParam(apvts_, "fold", p.fold);
   setParam(apvts_, "fmAmt", p.fmAmt);
   setParam(apvts_, "envAmt", p.envAmt);
@@ -158,7 +158,8 @@ void MpcMessengerAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
   const float baseCutoff = apvts_.getRawParameterValue("cutoff")->load();
   const float res = apvts_.getRawParameterValue("res")->load();
-  const float resBass = apvts_.getRawParameterValue("resBass")->load();
+  const float resBassToggle = apvts_.getRawParameterValue("resBassToggle")->load();
+  const bool resBassOn = resBassToggle > 0.5f;
   const float fold = apvts_.getRawParameterValue("fold")->load();
   const float fmAmt = apvts_.getRawParameterValue("fmAmt")->load();
   const float envAmt = apvts_.getRawParameterValue("envAmt")->load();
@@ -224,9 +225,15 @@ void MpcMessengerAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     ladder_.setCutoffFrequencyHz(modCutoff);
 
     const float filtered = processLadder(dryMix);
-    const float out = messenger::resBassBlend(filtered, dryMix, res, resBass,
-                                              bassLpState_);
-    const float finalOut = out * ampEnv_.getNextSample() * 0.62f;
+
+    // Res Bass: additive dry path restores sub when resonance eats low end
+    const float lowEndBoost =
+        resBassOn
+            ? (res * 0.35f *
+               std::max(0.0f, 1.0f - (modCutoff / 1000.0f)))
+            : 0.0f;
+    const float compOut = filtered + dryMix * lowEndBoost;
+    const float finalOut = compOut * ampEnv_.getNextSample() * 0.62f;
 
     for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
       buffer.setSample(ch, i, finalOut);

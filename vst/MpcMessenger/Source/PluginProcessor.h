@@ -46,7 +46,6 @@ private:
   float phase1_ = 0.0f, phase2_ = 0.0f, subPhase_ = 0.0f;
   float currentFreq_ = 110.0f, targetFreq_ = 110.0f;
   float noteVelocity_ = 0.0f;
-  float bassLpState_ = 0.0f;
   int heldNote_ = -1;
   int currentProgram_ = 0;
 

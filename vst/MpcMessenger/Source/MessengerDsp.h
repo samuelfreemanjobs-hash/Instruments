@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <cmath>
 
 namespace messenger {
@@ -29,21 +28,6 @@ inline float wavefold(float x, float foldAmount) {
   while (x < -limit)
     x = -2.0f * limit - x;
   return x / (1.0f + foldAmount * 0.5f);
-}
-
-// One-pole lowpass for res-bass dry path (compensation shelf proxy)
-inline float lowpassOnePole(float in, float &state, float coeff) {
-  state += coeff * (in - state);
-  return state;
-}
-
-inline float resBassBlend(float filtered, float preFilterDry, float resonance,
-                           float resBassKnob, float &bassLpState) {
-  const float compAmt =
-      std::clamp(resBassKnob * resonance, 0.0f, 1.0f);
-  const float bassOnly =
-      lowpassOnePole(preFilterDry, bassLpState, 0.08f); // ~low shelf proxy
-  return filtered * (1.0f - compAmt * 0.35f) + bassOnly * compAmt;
 }
 
 } // namespace messenger
