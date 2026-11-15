@@ -6,6 +6,8 @@ Orchestrate **skinnable JUCE editor** work and **Google Stitch** design loops. D
 
 | Doc | When |
 |-----|------|
+| `.stitch/DESIGN.md` | Colors, typography, density (lint before upload) |
+| `docs/JUCE_STITCH_GUI_REFERENCE.md` | Stitch toolchain + native vs WebView |
 | `docs/DISKLORDZ_VST_UI_AGENT.md` | Session bootstrap |
 | `docs/UI_DESIGN_HANDOFF.md` | Canva/Stitch → PNG + control IDs |
 | `shared/disklordz_ui/ARCHITECTURE.md` | `dl_ui`, CMake `dl_ui_attach_skin` |

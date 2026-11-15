@@ -14,6 +14,8 @@ shared/disklordz_ui/ARCHITECTURE.md. Active product: JD Upgraded.
 
 Or: **@skill disklordz-vst-ui** (`.cursor/skills/disklordz-vst-ui/SKILL.md`).
 
+Stitch ↔ JUCE (DESKTOP, relays or native): **@skill juce-stitch-gui** — see [JUCE_STITCH_GUI_REFERENCE.md](JUCE_STITCH_GUI_REFERENCE.md).
+
 Stitch Canvas / Loop playbooks: **@skill stitch** (`.agents/skills/stitch/stitch/SKILL.md`).
 
 ## Bootstrap (once per machine)
