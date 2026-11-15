@@ -1,0 +1,841 @@
+=== finish-all-vst3 2026-11-15T04:25:46+00:00 ===
+--- MemphisPhonkFactory ---
+==> Building vst/MemphisPhonkFactory
+-- The C compiler identification is GNU 12.4.0
+-- The CXX compiler identification is GNU 12.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/gcc-12 - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/g++-12 - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1") 
+-- Checking for module 'alsa'
+--   Found alsa, version 1.2.11
+-- Checking for module 'freetype2'
+--   Found freetype2, version 26.1.20
+-- Checking for module 'gl'
+--   Found gl, version 1.2
+-- Checking for module 'libcurl'
+--   Found libcurl, version 8.5.0
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Configuring done (58.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /agent/repos/Instruments/vst/MemphisPhonkFactory/build
+[  1%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/Source/PluginProcessor.cpp.o
+[  3%] Building CXX object CMakeFiles/juce_vst3_helper.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/VST3/juce_VST3ManifestHelper.cpp.o
+[  5%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/Source/Dsp/MemphisPhonkEngine.cpp.o
+[  7%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/tests/EngineTests.cpp.o
+[  9%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_formats/juce_audio_formats.cpp.o
+In file included from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/VST3/juce_VST3ManifestHelper.cpp:62:
+/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/pluginterfaces/base/funknown.cpp: In member function ‘void Steinberg::FUID::print(Steinberg::char8*, Steinberg::int32) const’:
+/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/pluginterfaces/base/funknown.cpp:459:84: warning: ‘%08X’ directive output truncated writing 8 bytes into a region of size 6 [-Wformat-truncation=]
+  459 |                                   "DECLARE_CLASS_IID (Interface, 0x%08X, 0x%08X, 0x%08X, 0x%08X)", l1, l2, l3,
+      |                                                                                    ^~~~
+In file included from /usr/include/stdio.h:980,
+                 from /usr/include/c++/12/cstdio:42,
+                 from /usr/include/c++/12/ext/string_conversions.h:43,
+                 from /usr/include/c++/12/bits/basic_string.h:3972,
+                 from /usr/include/c++/12/string:53,
+                 from /usr/include/c++/12/bits/locale_classes.h:40,
+                 from /usr/include/c++/12/bits/ios_base.h:41,
+                 from /usr/include/c++/12/ios:42,
+                 from /usr/include/c++/12/ostream:38,
+                 from /usr/include/c++/12/bits/unique_ptr.h:41,
+                 from /usr/include/c++/12/memory:75,
+                 from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/public.sdk/source/vst/hosting/../utility/optional.h:40,
+                 from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/public.sdk/source/vst/hosting/../utility/uid.h:39,
+                 from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/public.sdk/source/vst/hosting/module.h:39,
+                 from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/public.sdk/source/vst/hosting/module_linux.cpp:37,
+                 from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/VST3/juce_VST3ManifestHelper.cpp:58:
+In function ‘int snprintf(char*, size_t, const char*, ...)’,
+    inlined from ‘void Steinberg::FUID::print(Steinberg::int32, Steinberg::char8*, size_t) const’ at /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/pluginterfaces/base/funknown.cpp:458:13,
+    inlined from ‘void Steinberg::FUID::print(Steinberg::int32, Steinberg::char8*, size_t) const’ at /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/pluginterfaces/base/funknown.cpp:420:6,
+    inlined from ‘void Steinberg::FUID::print(Steinberg::char8*, Steinberg::int32) const’ at /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/pluginterfaces/base/funknown.cpp:416:8:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:54:35: note: ‘__builtin___snprintf_chk’ output 78 bytes into a destination of size 62
+   54 |   return __builtin___snprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
+      |          ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   55 |                                    __glibc_objsize (__s), __fmt,
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   56 |                                    __va_arg_pack ());
+      |                                    ~~~~~~~~~~~~~~~~~
+[ 10%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_basics/juce_audio_basics.cpp.o
+In file included from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors.h:144,
+                 from /agent/repos/Instruments/vst/MemphisPhonkFactory/Source/PluginProcessor.h:7,
+                 from /agent/repos/Instruments/vst/MemphisPhonkFactory/Source/PluginProcessor.cpp:1:
+/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/processors/juce_AudioProcessor.h:280:18: warning: ‘virtual void juce::AudioProcessor::processBlock(juce::AudioBuffer<double>&, juce::MidiBuffer&)’ was hidden [-Woverloaded-virtual]
+  280 |     virtual void processBlock (AudioBuffer<double>& buffer,
+      |                  ^~~~~~~~~~~~
+/agent/repos/Instruments/vst/MemphisPhonkFactory/Source/PluginProcessor.h:22:8: note:   by ‘virtual void MemphisPhonkFactoryAudioProcessor::processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&)’
+   22 |   void processBlock(juce::AudioBuffer<float> &, juce::MidiBuffer &) override;
+      |        ^~~~~~~~~~~~
+[ 12%] Linking CXX executable juce_vst3_helper
+[ 14%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/Source/PluginEditor.cpp.o
+[ 14%] Built target juce_vst3_helper
+[ 16%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_core/juce_core.cpp.o
+In file included from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors.h:144,
+                 from /agent/repos/Instruments/vst/MemphisPhonkFactory/Source/PluginEditor.h:4,
+                 from /agent/repos/Instruments/vst/MemphisPhonkFactory/Source/PluginEditor.cpp:1:
+/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/processors/juce_AudioProcessor.h:280:18: warning: ‘virtual void juce::AudioProcessor::processBlock(juce::AudioBuffer<double>&, juce::MidiBuffer&)’ was hidden [-Woverloaded-virtual]
+  280 |     virtual void processBlock (AudioBuffer<double>& buffer,
+      |                  ^~~~~~~~~~~~
+In file included from /agent/repos/Instruments/vst/MemphisPhonkFactory/Source/PluginEditor.h:5:
+/agent/repos/Instruments/vst/MemphisPhonkFactory/Source/PluginProcessor.h:22:8: note:   by ‘virtual void MemphisPhonkFactoryAudioProcessor::processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&)’
+   22 |   void processBlock(juce::AudioBuffer<float> &, juce::MidiBuffer &) override;
+      |        ^~~~~~~~~~~~
+[ 18%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/Source/Dsp/MemphisPhonkEngine.cpp.o
+[ 20%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/Source/Ui/PatternGridComponent.cpp.o
+[ 21%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/Source/Export/ExportWorker.cpp.o
+[ 23%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_utils/juce_audio_utils.cpp.o
+[ 25%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors.cpp.o
+[ 27%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors.cpp.o
+[ 29%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors_ara.cpp.o
+[ 30%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors_lv2_libs.cpp.o
+[ 32%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_gui_extra/juce_gui_extra.cpp.o
+[ 34%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors_ara.cpp.o
+[ 36%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_gui_basics/juce_gui_basics.cpp.o
+[ 38%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_graphics/juce_graphics.cpp.o
+[ 40%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors_lv2_libs.cpp.o
+[ 41%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_gui_extra/juce_gui_extra.cpp.o
+[ 43%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_gui_basics/juce_gui_basics.cpp.o
+[ 45%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_events/juce_events.cpp.o
+[ 47%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_graphics/juce_graphics.cpp.o
+[ 49%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_core/juce_core.cpp.o
+[ 50%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_events/juce_events.cpp.o
+[ 52%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_data_structures/juce_data_structures.cpp.o
+[ 54%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_data_structures/juce_data_structures.cpp.o
+[ 56%] Building CXX object CMakeFiles/MemphisPhonkEngineTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_devices/juce_audio_devices.cpp.o
+[ 58%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_basics/juce_audio_basics.cpp.o
+[ 60%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_utils/juce_audio_utils.cpp.o
+[ 61%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_formats/juce_audio_formats.cpp.o
+[ 63%] Linking CXX executable MemphisPhonkEngineTests_artefacts/Release/MemphisPhonkEngineTests
+[ 63%] Built target MemphisPhonkEngineTests
+[ 65%] Building CXX object CMakeFiles/MemphisPhonkFactory.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_devices/juce_audio_devices.cpp.o
+[ 67%] Linking CXX static library MemphisPhonkFactory_artefacts/Release/libMemphisPhonkFactory_SharedCode.a
+[ 67%] Built target MemphisPhonkFactory
+[ 69%] Building CXX object CMakeFiles/MemphisPhonkFactory_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.cpp.o
+[ 70%] Building CXX object CMakeFiles/MemphisPhonkFactory_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.cpp.o
+[ 72%] Building CXX object CMakeFiles/MemphisPhonkFactory_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+[ 74%] Building CXX object CMakeFiles/MemphisPhonkFactory_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+[ 76%] Building CXX object CMakeFiles/MemphisPhonkFactory_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.cpp.o
+[ 78%] Building CXX object CMakeFiles/MemphisPhonkFactory_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+[ 80%] Building CXX object CMakeFiles/MemphisPhonkFactory_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+[ 81%] Building CXX object CMakeFiles/MemphisPhonkFactory_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+[ 83%] Building CXX object CMakeFiles/MemphisPhonkFactory_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.cpp.o
+[ 85%] Building CXX object CMakeFiles/MemphisPhonkFactory_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+[ 87%] Building CXX object CMakeFiles/MemphisPhonkFactory_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.cpp.o
+[ 89%] Building CXX object CMakeFiles/MemphisPhonkFactory_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp.o
+[ 90%] Building CXX object CMakeFiles/MemphisPhonkFactory_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+[ 92%] Building CXX object CMakeFiles/MemphisPhonkFactory_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.cpp.o
+[ 94%] Building CXX object CMakeFiles/MemphisPhonkFactory_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+[ 96%] Building CXX object CMakeFiles/MemphisPhonkFactory_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp.o
+[ 98%] Linking CXX executable MemphisPhonkFactory_artefacts/Release/Standalone/MemphisPhonkFactory
+[ 98%] Built target MemphisPhonkFactory_Standalone
+[100%] Linking CXX shared module MemphisPhonkFactory_artefacts/Release/VST3/MemphisPhonkFactory.vst3/Contents/x86_64-linux/MemphisPhonkFactory.so
+removing moduleinfo.json
+-- Installing: /home/ubuntu/.vst3/MemphisPhonkFactory.vst3
+-- Installing: /home/ubuntu/.vst3/MemphisPhonkFactory.vst3/Contents
+-- Installing: /home/ubuntu/.vst3/MemphisPhonkFactory.vst3/Contents/x86_64-linux
+-- Installing: /home/ubuntu/.vst3/MemphisPhonkFactory.vst3/Contents/x86_64-linux/MemphisPhonkFactory.so
+-- Installing: /home/ubuntu/.vst3/MemphisPhonkFactory.vst3/Contents/Resources
+-- Installing: /home/ubuntu/.vst3/MemphisPhonkFactory.vst3/Contents/Resources/moduleinfo.json
+[100%] Built target MemphisPhonkFactory_VST3
+VST3: /agent/repos/Instruments/vst/MemphisPhonkFactory/build/MemphisPhonkFactory_artefacts/Release/VST3/MemphisPhonkFactory.vst3
+APC gate OK (plan) for MemphisPhonkFactory
+APC gate OK (design) for MemphisPhonkFactory
+APC gate OK (impl) for MemphisPhonkFactory
+APC gate OK (ship) for MemphisPhonkFactory
+  adding: manifest.json (deflated 29%)
+  adding: licenses/ (stored 0%)
+  adding: licenses/fonts/ (stored 0%)
+  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)
+  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)
+  adding: MemphisPhonkFactory.vst3/ (stored 0%)
+  adding: MemphisPhonkFactory.vst3/Contents/ (stored 0%)
+  adding: MemphisPhonkFactory.vst3/Contents/x86_64-linux/ (stored 0%)
+  adding: MemphisPhonkFactory.vst3/Contents/x86_64-linux/MemphisPhonkFactory.so (deflated 63%)
+  adding: MemphisPhonkFactory.vst3/Contents/Resources/ (stored 0%)
+  adding: MemphisPhonkFactory.vst3/Contents/Resources/moduleinfo.json (deflated 74%)
+  adding: INSTALL.txt (deflated 46%)
+Package: /agent/repos/Instruments/release/MemphisPhonkFactory/MemphisPhonkFactory-1.0.0-vst3.zip
+Contents: /agent/repos/Instruments/release/MemphisPhonkFactory/staging
+[OK] MemphisPhonkFactory
+--- MeterTap ---
+==> Building vst/MeterTap
+-- The C compiler identification is GNU 12.4.0
+-- The CXX compiler identification is GNU 12.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/gcc-12 - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/g++-12 - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1") 
+-- Checking for module 'alsa'
+--   Found alsa, version 1.2.11
+-- Checking for module 'freetype2'
+--   Found freetype2, version 26.1.20
+-- Checking for module 'gl'
+--   Found gl, version 1.2
+-- Checking for module 'libcurl'
+--   Found libcurl, version 8.5.0
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Configuring done (62.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /agent/repos/Instruments/vst/MeterTap/build
+[  1%] Generating juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData1.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData2.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData3.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData4.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData5.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData6.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData7.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData8.cpp, juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/FactoryGuiFonts.h
+[  2%] Building CXX object CMakeFiles/juce_vst3_helper.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/VST3/juce_VST3ManifestHelper.cpp.o
+[  3%] Building CXX object CMakeFiles/factory_gui_fonts_disklordz.dir/juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData1.cpp.o
+[  4%] Building CXX object CMakeFiles/factory_gui_fonts_disklordz.dir/juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData2.cpp.o
+[  5%] Building CXX object CMakeFiles/factory_gui_fonts_disklordz.dir/juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData3.cpp.o
+[  7%] Building CXX object CMakeFiles/factory_gui_fonts_disklordz.dir/juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData5.cpp.o
+[  7%] Building CXX object CMakeFiles/factory_gui_fonts_disklordz.dir/juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData4.cpp.o
+[  8%] Building CXX object CMakeFiles/factory_gui_fonts_disklordz.dir/juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData6.cpp.o
+[  9%] Building CXX object CMakeFiles/factory_gui_fonts_disklordz.dir/juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData7.cpp.o
+[ 10%] Building CXX object CMakeFiles/factory_gui_fonts_disklordz.dir/juce_binarydata_factory_gui_fonts_disklordz/JuceLibraryCode/BinaryData8.cpp.o
+[ 11%] Linking CXX static library libfactory_gui_fonts_disklordz.a
+[ 11%] Built target factory_gui_fonts_disklordz
+[ 12%] Building CXX object CMakeFiles/MeterTap.dir/Source/PluginProcessor.cpp.o
+[ 13%] Building CXX object CMakeFiles/MeterTap.dir/Source/PluginEditor.cpp.o
+[ 14%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors.cpp.o
+In file included from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/VST3/juce_VST3ManifestHelper.cpp:62:
+/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/pluginterfaces/base/funknown.cpp: In member function ‘void Steinberg::FUID::print(Steinberg::char8*, Steinberg::int32) const’:
+/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/pluginterfaces/base/funknown.cpp:459:84: warning: ‘%08X’ directive output truncated writing 8 bytes into a region of size 6 [-Wformat-truncation=]
+  459 |                                   "DECLARE_CLASS_IID (Interface, 0x%08X, 0x%08X, 0x%08X, 0x%08X)", l1, l2, l3,
+      |                                                                                    ^~~~
+In file included from /usr/include/stdio.h:980,
+                 from /usr/include/c++/12/cstdio:42,
+                 from /usr/include/c++/12/ext/string_conversions.h:43,
+                 from /usr/include/c++/12/bits/basic_string.h:3972,
+                 from /usr/include/c++/12/string:53,
+                 from /usr/include/c++/12/bits/locale_classes.h:40,
+                 from /usr/include/c++/12/bits/ios_base.h:41,
+                 from /usr/include/c++/12/ios:42,
+                 from /usr/include/c++/12/ostream:38,
+                 from /usr/include/c++/12/bits/unique_ptr.h:41,
+                 from /usr/include/c++/12/memory:75,
+                 from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/public.sdk/source/vst/hosting/../utility/optional.h:40,
+                 from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/public.sdk/source/vst/hosting/../utility/uid.h:39,
+                 from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/public.sdk/source/vst/hosting/module.h:39,
+                 from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/public.sdk/source/vst/hosting/module_linux.cpp:37,
+                 from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/VST3/juce_VST3ManifestHelper.cpp:58:
+In function ‘int snprintf(char*, size_t, const char*, ...)’,
+    inlined from ‘void Steinberg::FUID::print(Steinberg::int32, Steinberg::char8*, size_t) const’ at /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/pluginterfaces/base/funknown.cpp:458:13,
+    inlined from ‘void Steinberg::FUID::print(Steinberg::int32, Steinberg::char8*, size_t) const’ at /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/pluginterfaces/base/funknown.cpp:420:6,
+    inlined from ‘void Steinberg::FUID::print(Steinberg::char8*, Steinberg::int32) const’ at /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/format_types/VST3_SDK/pluginterfaces/base/funknown.cpp:416:8:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:54:35: note: ‘__builtin___snprintf_chk’ output 78 bytes into a destination of size 62
+   54 |   return __builtin___snprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
+      |          ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   55 |                                    __glibc_objsize (__s), __fmt,
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   56 |                                    __va_arg_pack ());
+      |                                    ~~~~~~~~~~~~~~~~~
+In file included from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors.h:144,
+                 from /agent/repos/Instruments/vst/MeterTap/Source/PluginProcessor.h:11,
+                 from /agent/repos/Instruments/vst/MeterTap/Source/PluginEditor.h:6,
+                 from /agent/repos/Instruments/vst/MeterTap/Source/PluginEditor.cpp:1:
+/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/processors/juce_AudioProcessor.h:280:18: warning: ‘virtual void juce::AudioProcessor::processBlock(juce::AudioBuffer<double>&, juce::MidiBuffer&)’ was hidden [-Woverloaded-virtual]
+  280 |     virtual void processBlock (AudioBuffer<double>& buffer,
+      |                  ^~~~~~~~~~~~
+/agent/repos/Instruments/vst/MeterTap/Source/PluginProcessor.h:25:8: note:   by ‘virtual void MeterTapAudioProcessor::processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&)’
+   25 |   void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+      |        ^~~~~~~~~~~~
+In file included from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors.h:144,
+                 from /agent/repos/Instruments/vst/MeterTap/Source/PluginProcessor.h:11,
+                 from /agent/repos/Instruments/vst/MeterTap/Source/PluginProcessor.cpp:1:
+/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/processors/juce_AudioProcessor.h:280:18: warning: ‘virtual void juce::AudioProcessor::processBlock(juce::AudioBuffer<double>&, juce::MidiBuffer&)’ was hidden [-Woverloaded-virtual]
+  280 |     virtual void processBlock (AudioBuffer<double>& buffer,
+      |                  ^~~~~~~~~~~~
+/agent/repos/Instruments/vst/MeterTap/Source/PluginProcessor.h:25:8: note:   by ‘virtual void MeterTapAudioProcessor::processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&)’
+   25 |   void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+      |        ^~~~~~~~~~~~
+[ 15%] Linking CXX executable juce_vst3_helper
+[ 15%] Built target juce_vst3_helper
+[ 17%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors_ara.cpp.o
+[ 18%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors_lv2_libs.cpp.o
+[ 19%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_gui_extra/juce_gui_extra.cpp.o
+[ 20%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_gui_basics/juce_gui_basics.cpp.o
+[ 21%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_graphics/juce_graphics.cpp.o
+[ 22%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_events/juce_events.cpp.o
+[ 23%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_core/juce_core.cpp.o
+[ 24%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_data_structures/juce_data_structures.cpp.o
+[ 25%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_basics/juce_audio_basics.cpp.o
+[ 26%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/factory-lib/gui/FactoryLookAndFeel.cpp.o
+[ 27%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/factory-lib/gui/components/RotaryKnob.cpp.o
+[ 28%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/factory-lib/gui/components/LedToggle.cpp.o
+[ 29%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/factory-lib/gui/components/ValueReadout.cpp.o
+[ 30%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/factory-lib/gui/components/LevelMeter.cpp.o
+[ 31%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/factory-lib/gui/components/MeterScale.cpp.o
+[ 32%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/factory-lib/gui/components/SectionPanel.cpp.o
+[ 34%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/factory-lib/gui/components/HeaderBar.cpp.o
+[ 35%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/factory-lib/gui/components/PresetBrowser.cpp.o
+[ 36%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_utils/juce_audio_utils.cpp.o
+[ 37%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_formats/juce_audio_formats.cpp.o
+[ 38%] Building CXX object CMakeFiles/MeterTap.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_devices/juce_audio_devices.cpp.o
+[ 39%] Linking CXX static library MeterTap_artefacts/Release/libMeterTap_SharedCode.a
+[ 39%] Built target MeterTap
+[ 40%] Building CXX object CMakeFiles/MeterTap_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.cpp.o
+[ 41%] Building CXX object CMakeFiles/MeterTap_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.cpp.o
+[ 42%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/tests/ProcessorTests.cpp.o
+[ 43%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/tests/EditorRenderTests.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 44%] Building CXX object CMakeFiles/MeterTap_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+[ 45%] Building CXX object CMakeFiles/MeterTap_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+[ 46%] Building CXX object CMakeFiles/MeterTap_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+[ 47%] Building CXX object CMakeFiles/MeterTap_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+[ 48%] Building CXX object CMakeFiles/MeterTap_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.cpp.o
+[ 50%] Building CXX object CMakeFiles/MeterTap_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.cpp.o
+[ 51%] Building CXX object CMakeFiles/MeterTap_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+[ 52%] Building CXX object CMakeFiles/MeterTap_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+[ 53%] Building CXX object CMakeFiles/MeterTap_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+[ 54%] Building CXX object CMakeFiles/MeterTap_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.cpp.o
+[ 55%] Building CXX object CMakeFiles/MeterTap_VST3.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp.o
+In file included from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors.h:144,
+                 from /agent/repos/Instruments/vst/MeterTap/tests/../Source/PluginProcessor.h:11,
+                 from /agent/repos/Instruments/vst/MeterTap/tests/../Source/PluginEditor.h:6,
+                 from /agent/repos/Instruments/vst/MeterTap/tests/EditorRenderTests.cpp:9:
+/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/processors/juce_AudioProcessor.h:280:18: warning: ‘virtual void juce::AudioProcessor::processBlock(juce::AudioBuffer<double>&, juce::MidiBuffer&)’ was hidden [-Woverloaded-virtual]
+  280 |     virtual void processBlock (AudioBuffer<double>& buffer,
+      |                  ^~~~~~~~~~~~
+/agent/repos/Instruments/vst/MeterTap/tests/../Source/PluginProcessor.h:25:8: note:   by ‘virtual void MeterTapAudioProcessor::processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&)’
+   25 |   void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+      |        ^~~~~~~~~~~~
+In file included from /agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors.h:144,
+                 from /agent/repos/Instruments/vst/MeterTap/tests/../Source/PluginProcessor.h:11,
+                 from /agent/repos/Instruments/vst/MeterTap/tests/ProcessorTests.cpp:7:
+/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/processors/juce_AudioProcessor.h:280:18: warning: ‘virtual void juce::AudioProcessor::processBlock(juce::AudioBuffer<double>&, juce::MidiBuffer&)’ was hidden [-Woverloaded-virtual]
+  280 |     virtual void processBlock (AudioBuffer<double>& buffer,
+      |                  ^~~~~~~~~~~~
+/agent/repos/Instruments/vst/MeterTap/tests/../Source/PluginProcessor.h:25:8: note:   by ‘virtual void MeterTapAudioProcessor::processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&)’
+   25 |   void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+      |        ^~~~~~~~~~~~
+/agent/repos/Instruments/vst/MeterTap/tests/ProcessorTests.cpp: In function ‘int main()’:
+/agent/repos/Instruments/vst/MeterTap/tests/ProcessorTests.cpp:138:33: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  138 |     expect(buf.getSample(0, 10) == 0.0f && buf.getSample(1, 20) == 0.0f,
+      |            ~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+/agent/repos/Instruments/vst/MeterTap/tests/ProcessorTests.cpp:138:65: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  138 |     expect(buf.getSample(0, 10) == 0.0f && buf.getSample(1, 20) == 0.0f,
+      |                                            ~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+[ 56%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_utils/juce_audio_utils.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 57%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/factory-lib/gui/FactoryLookAndFeel.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 58%] Building CXX object CMakeFiles/MeterTap_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+[ 59%] Building CXX object CMakeFiles/MeterTap_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.cpp.o
+[ 60%] Building CXX object CMakeFiles/MeterTap_Standalone.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp.o
+[ 61%] Linking CXX executable MeterTap_artefacts/Release/Standalone/MeterTap
+[ 61%] Built target MeterTap_Standalone
+[ 62%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 63%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/factory-lib/gui/components/RotaryKnob.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 64%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/factory-lib/gui/components/LedToggle.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 65%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/factory-lib/gui/components/ValueReadout.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 67%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors_ara.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 68%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/factory-lib/gui/components/LevelMeter.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 69%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors_lv2_libs.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 70%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/factory-lib/gui/components/MeterScale.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 71%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/factory-lib/gui/components/SectionPanel.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 72%] Linking CXX shared module MeterTap_artefacts/Release/VST3/MeterTap.vst3/Contents/x86_64-linux/MeterTap.so
+removing moduleinfo.json
+[ 72%] Built target MeterTap_VST3
+[ 73%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_gui_extra/juce_gui_extra.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 74%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_gui_basics/juce_gui_basics.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 75%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/factory-lib/gui/components/HeaderBar.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 76%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/factory-lib/gui/components/PresetBrowser.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 77%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_graphics/juce_graphics.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 78%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_gui_basics/juce_gui_basics.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 79%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_graphics/juce_graphics.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 80%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_events/juce_events.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 81%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_events/juce_events.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 82%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_core/juce_core.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 84%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_core/juce_core.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 85%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_data_structures/juce_data_structures.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 86%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_data_structures/juce_data_structures.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 87%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_basics/juce_audio_basics.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 88%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_utils/juce_audio_utils.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 89%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 90%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_formats/juce_audio_formats.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 91%] Building CXX object CMakeFiles/MeterTapProcessorTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_devices/juce_audio_devices.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 92%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors_ara.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 93%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_processors/juce_audio_processors_lv2_libs.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 94%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_gui_extra/juce_gui_extra.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 95%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_basics/juce_audio_basics.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 96%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_formats/juce_audio_formats.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 97%] Building CXX object CMakeFiles/MeterTapEditorRenderTests.dir/agent/repos/Instruments/vst/JUCE/modules/juce_audio_devices/juce_audio_devices.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[ 98%] Linking CXX executable MeterTapProcessorTests_artefacts/Release/MeterTapProcessorTests
+[ 98%] Built target MeterTapProcessorTests
+[100%] Linking CXX executable MeterTapEditorRenderTests_artefacts/Release/MeterTapEditorRenderTests
+[100%] Built target MeterTapEditorRenderTests
+VST3: /agent/repos/Instruments/vst/MeterTap/build/MeterTap_artefacts/Release/VST3/MeterTap.vst3
+APC gate OK (plan) for MeterTap
+APC gate OK (design) for MeterTap
+APC gate OK (impl) for MeterTap
+APC gate OK (ship) for MeterTap
+  adding: manifest.json (deflated 26%)
+  adding: MeterTap.vst3/ (stored 0%)
+  adding: MeterTap.vst3/Contents/ (stored 0%)
+  adding: MeterTap.vst3/Contents/x86_64-linux/ (stored 0%)
+  adding: MeterTap.vst3/Contents/x86_64-linux/MeterTap.so (deflated 60%)
+  adding: MeterTap.vst3/Contents/Resources/ (stored 0%)
+  adding: MeterTap.vst3/Contents/Resources/moduleinfo.json (deflated 73%)
+  adding: licenses/ (stored 0%)
+  adding: licenses/fonts/ (stored 0%)
+  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)
+  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)
+  adding: INSTALL.txt (deflated 41%)
+Package: /agent/repos/Instruments/release/MeterTap/MeterTap-1.0.0-vst3.zip
+Contents: /agent/repos/Instruments/release/MeterTap/staging
+[OK] MeterTap
+--- MpcAnalogSynth ---
+==> Building vst/MpcAnalogSynth
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /agent/repos/Instruments/vst/MpcAnalogSynth/build
+[  5%] Built target juce_vst3_helper
+[ 50%] Built target MpcAnalogSynth
+[ 75%] Built target MpcAnalogSynth_Standalone
+[100%] Built target MpcAnalogSynth_VST3
+VST3: /agent/repos/Instruments/vst/MpcAnalogSynth/build/MpcAnalogSynth_artefacts/Release/VST3/MpcAnalogSynth.vst3
+Warning: APC gate not fully satisfied; packaging anyway.
+  adding: manifest.json (deflated 28%)
+  adding: MpcAnalogSynth.vst3/ (stored 0%)
+  adding: MpcAnalogSynth.vst3/Contents/ (stored 0%)
+  adding: MpcAnalogSynth.vst3/Contents/x86_64-linux/ (stored 0%)
+  adding: MpcAnalogSynth.vst3/Contents/x86_64-linux/MpcAnalogSynth.so (deflated 60%)
+  adding: MpcAnalogSynth.vst3/Contents/Resources/ (stored 0%)
+  adding: MpcAnalogSynth.vst3/Contents/Resources/moduleinfo.json (deflated 74%)
+  adding: licenses/ (stored 0%)
+  adding: licenses/fonts/ (stored 0%)
+  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)
+  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)
+  adding: INSTALL.txt (deflated 43%)
+Package: /agent/repos/Instruments/release/MpcAnalogSynth/MpcAnalogSynth-1.0.0-vst3.zip
+Contents: /agent/repos/Instruments/release/MpcAnalogSynth/staging
+[OK] MpcAnalogSynth
+--- MpcCs80 ---
+==> Building vst/MpcCs80
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Configuring done (0.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /agent/repos/Instruments/vst/MpcCs80/build
+[  5%] Built target juce_vst3_helper
+[ 50%] Built target MpcCs80
+[ 88%] Built target MpcCs80_Standalone
+[100%] Built target MpcCs80_VST3
+VST3: /agent/repos/Instruments/vst/MpcCs80/build/MpcCs80_artefacts/Release/VST3/MpcCs80.vst3
+APC gate OK (plan) for MpcCs80
+APC gate OK (design) for MpcCs80
+APC gate OK (impl) for MpcCs80
+APC gate OK (ship) for MpcCs80
+  adding: manifest.json (deflated 27%)
+  adding: licenses/ (stored 0%)
+  adding: licenses/fonts/ (stored 0%)
+  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)
+  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)
+  adding: MpcCs80.vst3/ (stored 0%)
+  adding: MpcCs80.vst3/Contents/ (stored 0%)
+  adding: MpcCs80.vst3/Contents/x86_64-linux/ (stored 0%)
+  adding: MpcCs80.vst3/Contents/x86_64-linux/MpcCs80.so (deflated 60%)
+  adding: MpcCs80.vst3/Contents/Resources/ (stored 0%)
+  adding: MpcCs80.vst3/Contents/Resources/moduleinfo.json (deflated 73%)
+  adding: INSTALL.txt (deflated 39%)
+Package: /agent/repos/Instruments/release/MpcCs80/MpcCs80-1.0.0-vst3.zip
+Contents: /agent/repos/Instruments/release/MpcCs80/staging
+[OK] MpcCs80
+--- MpcDxFm ---
+==> Building vst/MpcDxFm
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /agent/repos/Instruments/vst/MpcDxFm/build
+[  5%] Built target juce_vst3_helper
+[ 48%] Built target MpcDxFm
+[ 74%] Built target MpcDxFm_Standalone
+[100%] Built target MpcDxFm_VST3
+VST3: /agent/repos/Instruments/vst/MpcDxFm/build/MpcDxFm_artefacts/Release/VST3/MpcDxFm.vst3
+APC gate OK (plan) for MpcDxFm
+APC gate OK (design) for MpcDxFm
+APC gate OK (impl) for MpcDxFm
+APC gate OK (ship) for MpcDxFm
+  adding: manifest.json (deflated 26%)
+  adding: MpcDxFm.vst3/ (stored 0%)
+  adding: MpcDxFm.vst3/Contents/ (stored 0%)
+  adding: MpcDxFm.vst3/Contents/x86_64-linux/ (stored 0%)
+  adding: MpcDxFm.vst3/Contents/x86_64-linux/MpcDxFm.so (deflated 60%)
+  adding: MpcDxFm.vst3/Contents/Resources/ (stored 0%)
+  adding: MpcDxFm.vst3/Contents/Resources/moduleinfo.json (deflated 73%)
+  adding: licenses/ (stored 0%)
+  adding: licenses/fonts/ (stored 0%)
+  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)
+  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)
+  adding: INSTALL.txt (deflated 39%)
+Package: /agent/repos/Instruments/release/MpcDxFm/MpcDxFm-1.0.0-vst3.zip
+Contents: /agent/repos/Instruments/release/MpcDxFm/staging
+[OK] MpcDxFm
+--- MpcJuno106 ---
+==> Building vst/MpcJuno106
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /agent/repos/Instruments/vst/MpcJuno106/build
+[ 47%] Built target MpcJuno106
+[ 73%] Built target MpcJuno106_Standalone
+[100%] Built target MpcJuno106_VST3
+VST3: /agent/repos/Instruments/vst/MpcJuno106/build/MpcJuno106_artefacts/Release/VST3/MpcJuno106.vst3
+APC gate OK (plan) for MpcJuno106
+APC gate OK (design) for MpcJuno106
+Warning: APC gate not fully satisfied; packaging anyway.
+  adding: manifest.json (deflated 27%)
+  adding: licenses/ (stored 0%)
+  adding: licenses/fonts/ (stored 0%)
+  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)
+  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)
+  adding: MpcJuno106.vst3/ (stored 0%)
+  adding: MpcJuno106.vst3/Contents/ (stored 0%)
+  adding: MpcJuno106.vst3/Contents/x86_64-linux/ (stored 0%)
+  adding: MpcJuno106.vst3/Contents/x86_64-linux/MpcJuno106.so (deflated 63%)
+  adding: INSTALL.txt (deflated 41%)
+Package: /agent/repos/Instruments/release/MpcJuno106/MpcJuno106-1.0.0-vst3.zip
+Contents: /agent/repos/Instruments/release/MpcJuno106/staging
+[OK] MpcJuno106
+--- MpcMessenger ---
+==> Building vst/MpcMessenger
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Configuring done (0.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /agent/repos/Instruments/vst/MpcMessenger/build
+[  5%] Built target juce_vst3_helper
+[ 50%] Built target MpcMessenger
+[ 75%] Built target MpcMessenger_Standalone
+[100%] Built target MpcMessenger_VST3
+VST3: /agent/repos/Instruments/vst/MpcMessenger/build/MpcMessenger_artefacts/Release/VST3/MpcMessenger.vst3
+Warning: APC gate not fully satisfied; packaging anyway.
+  adding: manifest.json (deflated 27%)
+  adding: licenses/ (stored 0%)
+  adding: licenses/fonts/ (stored 0%)
+  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)
+  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)
+  adding: MpcMessenger.vst3/ (stored 0%)
+  adding: MpcMessenger.vst3/Contents/ (stored 0%)
+  adding: MpcMessenger.vst3/Contents/x86_64-linux/ (stored 0%)
+  adding: MpcMessenger.vst3/Contents/x86_64-linux/MpcMessenger.so (deflated 60%)
+  adding: MpcMessenger.vst3/Contents/Resources/ (stored 0%)
+  adding: MpcMessenger.vst3/Contents/Resources/moduleinfo.json (deflated 74%)
+  adding: INSTALL.txt (deflated 43%)
+Package: /agent/repos/Instruments/release/MpcMessenger/MpcMessenger-1.0.0-vst3.zip
+Contents: /agent/repos/Instruments/release/MpcMessenger/staging
+[OK] MpcMessenger
+--- MpcMinimoog ---
+==> Building vst/MpcMinimoog
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Configuring done (0.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /agent/repos/Instruments/vst/MpcMinimoog/build
+[  5%] Built target juce_vst3_helper
+[ 50%] Built target MpcMinimoog
+[ 75%] Built target MpcMinimoog_Standalone
+[100%] Built target MpcMinimoog_VST3
+VST3: /agent/repos/Instruments/vst/MpcMinimoog/build/MpcMinimoog_artefacts/Release/VST3/MpcMinimoog.vst3
+APC gate OK (plan) for MpcMinimoog
+APC gate OK (design) for MpcMinimoog
+APC gate OK (impl) for MpcMinimoog
+APC gate OK (ship) for MpcMinimoog
+  adding: manifest.json (deflated 27%)
+  adding: licenses/ (stored 0%)
+  adding: licenses/fonts/ (stored 0%)
+  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)
+  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)
+  adding: MpcMinimoog.vst3/ (stored 0%)
+  adding: MpcMinimoog.vst3/Contents/ (stored 0%)
+  adding: MpcMinimoog.vst3/Contents/x86_64-linux/ (stored 0%)
+  adding: MpcMinimoog.vst3/Contents/x86_64-linux/MpcMinimoog.so (deflated 60%)
+  adding: MpcMinimoog.vst3/Contents/Resources/ (stored 0%)
+  adding: MpcMinimoog.vst3/Contents/Resources/moduleinfo.json (deflated 74%)
+  adding: INSTALL.txt (deflated 42%)
+Package: /agent/repos/Instruments/release/MpcMinimoog/MpcMinimoog-1.0.0-vst3.zip
+Contents: /agent/repos/Instruments/release/MpcMinimoog/staging
+[OK] MpcMinimoog
+--- MpcSh101 ---
+==> Building vst/MpcSh101
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /agent/repos/Instruments/vst/MpcSh101/build
+[  5%] Built target juce_vst3_helper
+[ 50%] Built target MpcSh101
+[ 75%] Built target MpcSh101_Standalone
+[100%] Built target MpcSh101_VST3
+VST3: /agent/repos/Instruments/vst/MpcSh101/build/MpcSh101_artefacts/Release/VST3/MpcSh101.vst3
+APC gate OK (plan) for MpcSh101
+APC gate OK (design) for MpcSh101
+APC gate OK (impl) for MpcSh101
+APC gate OK (ship) for MpcSh101
+  adding: manifest.json (deflated 26%)
+  adding: licenses/ (stored 0%)
+  adding: licenses/fonts/ (stored 0%)
+  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)
+  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)
+  adding: MpcSh101.vst3/ (stored 0%)
+  adding: MpcSh101.vst3/Contents/ (stored 0%)
+  adding: MpcSh101.vst3/Contents/x86_64-linux/ (stored 0%)
+  adding: MpcSh101.vst3/Contents/x86_64-linux/MpcSh101.so (deflated 60%)
+  adding: MpcSh101.vst3/Contents/Resources/ (stored 0%)
+  adding: MpcSh101.vst3/Contents/Resources/moduleinfo.json (deflated 73%)
+  adding: INSTALL.txt (deflated 40%)
+Package: /agent/repos/Instruments/release/MpcSh101/MpcSh101-1.0.0-vst3.zip
+Contents: /agent/repos/Instruments/release/MpcSh101/staging
+[OK] MpcSh101
+--- MpcSubPhatty ---
+==> Building vst/MpcSubPhatty
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /agent/repos/Instruments/vst/MpcSubPhatty/build
+[  5%] Built target juce_vst3_helper
+[ 50%] Built target MpcSubPhatty
+[ 75%] Built target MpcSubPhatty_Standalone
+[100%] Built target MpcSubPhatty_VST3
+VST3: /agent/repos/Instruments/vst/MpcSubPhatty/build/MpcSubPhatty_artefacts/Release/VST3/MpcSubPhatty.vst3
+Warning: APC gate not fully satisfied; packaging anyway.
+  adding: manifest.json (deflated 27%)
+  adding: MpcSubPhatty.vst3/ (stored 0%)
+  adding: MpcSubPhatty.vst3/Contents/ (stored 0%)
+  adding: MpcSubPhatty.vst3/Contents/x86_64-linux/ (stored 0%)
+  adding: MpcSubPhatty.vst3/Contents/x86_64-linux/MpcSubPhatty.so (deflated 60%)
+  adding: MpcSubPhatty.vst3/Contents/Resources/ (stored 0%)
+  adding: MpcSubPhatty.vst3/Contents/Resources/moduleinfo.json (deflated 73%)
+  adding: licenses/ (stored 0%)
+  adding: licenses/fonts/ (stored 0%)
+  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)
+  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)
+  adding: INSTALL.txt (deflated 42%)
+Package: /agent/repos/Instruments/release/MpcSubPhatty/MpcSubPhatty-1.0.0-vst3.zip
+Contents: /agent/repos/Instruments/release/MpcSubPhatty/staging
+[OK] MpcSubPhatty
+--- MpcTr808909 ---
+==> Building vst/MpcTr808909
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /agent/repos/Instruments/vst/MpcTr808909/build
+[  5%] Built target juce_vst3_helper
+[ 48%] Built target MpcTr808909
+[100%] Built target MpcTr808909_VST3
+[100%] Built target MpcTr808909_Standalone
+VST3: /agent/repos/Instruments/vst/MpcTr808909/build/MpcTr808909_artefacts/Release/VST3/MpcTr808909.vst3
+APC gate OK (plan) for MpcTr808909
+APC gate OK (design) for MpcTr808909
+APC gate OK (impl) for MpcTr808909
+APC gate OK (ship) for MpcTr808909
+  adding: manifest.json (deflated 27%)
+  adding: licenses/ (stored 0%)
+  adding: licenses/fonts/ (stored 0%)
+  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)
+  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)
+  adding: MpcTr808909.vst3/ (stored 0%)
+  adding: MpcTr808909.vst3/Contents/ (stored 0%)
+  adding: MpcTr808909.vst3/Contents/x86_64-linux/ (stored 0%)
+  adding: MpcTr808909.vst3/Contents/x86_64-linux/MpcTr808909.so (deflated 60%)
+  adding: MpcTr808909.vst3/Contents/Resources/ (stored 0%)
+  adding: MpcTr808909.vst3/Contents/Resources/moduleinfo.json (deflated 73%)
+  adding: INSTALL.txt (deflated 41%)
+Package: /agent/repos/Instruments/release/MpcTr808909/MpcTr808909-1.0.0-vst3.zip
+Contents: /agent/repos/Instruments/release/MpcTr808909/staging
+[OK] MpcTr808909
+--- MpcVoyager ---
+==> Building vst/MpcVoyager
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /agent/repos/Instruments/vst/MpcVoyager/build
+[  5%] Built target juce_vst3_helper
+[ 50%] Built target MpcVoyager
+[ 75%] Built target MpcVoyager_Standalone
+[100%] Built target MpcVoyager_VST3
+VST3: /agent/repos/Instruments/vst/MpcVoyager/build/MpcVoyager_artefacts/Release/VST3/MpcVoyager.vst3
+APC gate OK (plan) for MpcVoyager
+Warning: APC gate not fully satisfied; packaging anyway.
+  adding: manifest.json (deflated 27%)
+  adding: licenses/ (stored 0%)
+  adding: licenses/fonts/ (stored 0%)
+  adding: licenses/fonts/JetBrainsMono-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexSans-OFL.txt (deflated 56%)
+  adding: licenses/fonts/Inter-OFL.txt (deflated 56%)
+  adding: licenses/fonts/IBMPlexMono-OFL.txt (deflated 56%)
+  adding: MpcVoyager.vst3/ (stored 0%)
+  adding: MpcVoyager.vst3/Contents/ (stored 0%)
+  adding: MpcVoyager.vst3/Contents/x86_64-linux/ (stored 0%)
+  adding: MpcVoyager.vst3/Contents/x86_64-linux/MpcVoyager.so (deflated 60%)
+  adding: MpcVoyager.vst3/Contents/Resources/ (stored 0%)
+  adding: MpcVoyager.vst3/Contents/Resources/moduleinfo.json (deflated 73%)
+  adding: INSTALL.txt (deflated 41%)
+Package: /agent/repos/Instruments/release/MpcVoyager/MpcVoyager-1.0.0-vst3.zip
+Contents: /agent/repos/Instruments/release/MpcVoyager/staging
+[OK] MpcVoyager

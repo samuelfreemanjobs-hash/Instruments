@@ -15,7 +15,7 @@ JUCE_DIR="${ROOT}/vst/JUCE"
 
 is_template_dir() {
   case "$(basename "$1")" in
-    template|template-effect) return 0 ;;
+    template|template-effect|JUCE|factory-lib) return 0 ;;
     *) return 1 ;;
   esac
 }

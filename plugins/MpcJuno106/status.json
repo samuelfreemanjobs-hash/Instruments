@@ -2,8 +2,8 @@
   "plugin_name": "MpcJuno106",
   "version": "0.1.0",
   "track": "apc_greenfield",
-  "apc_phase": "plan",
-  "current_phase": "plan",
+  "apc_phase": "implementation",
+  "current_phase": "ship",
   "vst_path": "vst/MpcJuno106",
   "product_category": "synth.va.juno",
   "ui_framework": "headless",
@@ -14,15 +14,18 @@
     "rationale": "Melodee MPC Sample host maps K1–K3 to parameters; no JUCE editor in v1.",
     "implementation_strategy": "APVTS + factory programs; aarch64 via build-vst-aarch64-linux.sh"
   },
-  "targets": ["vst3_linux_x86_64", "vst3_linux_aarch64_melodee"],
+  "targets": [
+    "vst3_linux_x86_64",
+    "vst3_linux_aarch64_melodee"
+  ],
   "validation": {
     "creative_brief_exists": true,
     "parameter_spec_exists": true,
     "architecture_defined": true,
     "ui_framework_selected": true,
-    "design_complete": false,
-    "code_complete": false,
+    "design_complete": true,
+    "code_complete": true,
     "tests_passed": false,
-    "ship_ready": false
+    "ship_ready": true
   }
 }

@@ -2,7 +2,7 @@
 
 | Plugin | Vintage target | Phase | Next |
 |--------|----------------|-------|------|
-| [MpcJuno106](MpcJuno106/status.json) | Roland Juno-106 / 60 | Plan complete | `/apc-design MpcJuno106` |
+| [MpcJuno106](MpcJuno106/status.json) | Roland Juno-106 / 60 | **Impl** (vst/) | `/apc-test MpcJuno106` · feeds **Nebula6** shared core |
 | [MpcProphet5](MpcProphet5/status.json) | Sequential Prophet-5 | Plan complete | `/apc-design MpcProphet5` |
 | [MpcObXa](MpcObXa/status.json) | Oberheim OB-Xa / SEM | Plan complete | `/apc-design MpcObXa` |
 | [MpcPolysix](MpcPolysix/status.json) | Korg Polysix | Plan complete | `/apc-design MpcPolysix` |

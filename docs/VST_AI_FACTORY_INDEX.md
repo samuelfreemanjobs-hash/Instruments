@@ -54,6 +54,7 @@ cd disklordz/vst-factory && pip install -e ".[dev]" && uvicorn vst_factory.main:
 | Headless contract | `disklordz/vst-factory/data/mpc_play_factory_contract.md` |
 | Template (reuses `juce8-synth-base` DSP) | `templates/mpc-play-synth-base/` |
 | Linux batch + Claude | `disklordz/vst-factory/scripts/run-factory-mpc-play6.sh` (alias: `tools/run-factory-mpc-play6.sh`) |
+| Finish all `vst/*` ship | `tools/finish-all-vst3.sh` · matrix `docs/VST3_FINISH_MATRIX.md` |
 | Verify bundle | `scripts/vst/verify-mpc-sample-vst3.sh` |
 | General MPC rules | `docs/MPC_SAMPLE_VST3.md` |
 
