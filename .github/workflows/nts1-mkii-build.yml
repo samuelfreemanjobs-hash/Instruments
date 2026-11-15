@@ -52,7 +52,8 @@ jobs:
           GCC_BIN_PATH: /usr/bin
         run: |
           ./tools/build-all-bass-mkii.sh
-          ./tools/package-nts1.sh
+          chmod +x tools/package-mkii-end-product.sh
+          ./tools/package-mkii-end-product.sh
 
       - name: Verify packaged units
         run: |
@@ -66,3 +67,10 @@ jobs:
           name: nts1-mkii-units
           path: release/nts1-custom-oscillators/
           retention-days: 30
+
+      - name: Upload end product zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: nts1-mkii-end-product
+          path: release/nts1-mkii-genre-oscillators.zip
+          retention-days: 90

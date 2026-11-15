@@ -61,4 +61,20 @@ gh auth login
 
 **Download EOF / fails:** download the zip in the browser from that Actions run, or WSL: `bash ./scripts/windows/download-mkii-ci-artifact.sh` or `bash ./scripts/windows/build-mkii-wsl.sh`.
 
+## End product (one zip to flash)
+
+After build:
+
+```bash
+bash ./tools/package-mkii-end-product.sh
+```
+
+Output: `release/nts1-mkii-genre-oscillators.zip` (all `.nts1mkiiunit` + INSTALL).
+
+**Windows all-in-one:**
+
+```powershell
+.\scripts\windows\make-mkii-end-product.ps1
+```
+
 More detail: [NTS1_MKII_WINDOWS_TEST.md](NTS1_MKII_WINDOWS_TEST.md)
