@@ -18,6 +18,8 @@ BANK = ROOT / "assets/factory/preset_bank.json"
 PROBE_DIR = ROOT / "build" / "category-probes"
 MANIFEST = ROOT / "assets" / "factory" / "audition_manifest.json"
 
+_AUDITION_PEAK_CACHE: dict[int, float] = {}
+
 sys.path.insert(0, str(ROOT / "tools"))
 from preset_probe import probe_wav_path, render_category_probe  # noqa: E402
 from trap_lord_audio_metrics import (  # noqa: E402
@@ -39,15 +41,22 @@ def sync_probe_cache() -> None:
     fp = bank_fingerprint()
     if meta.exists() and meta.read_text(encoding="utf-8").strip() == fp:
         return
+    _AUDITION_PEAK_CACHE.clear()
     shutil.rmtree(PROBE_DIR, ignore_errors=True)
     PROBE_DIR.mkdir(parents=True, exist_ok=True)
     meta.write_text(fp, encoding="utf-8")
 
 
 def audition_peak(idx: int) -> float:
+    cached = _AUDITION_PEAK_CACHE.get(idx)
+    if cached is not None:
+        return cached
     wav = PROBE_DIR / f"aud_check_{idx:04d}.wav"
-    subprocess.check_call([str(CLI), "audition", str(idx), str(wav)], cwd=ROOT)
-    return analyze_file(wav).peak
+    if not wav.exists():
+        subprocess.check_call([str(CLI), "audition", str(idx), str(wav)], cwd=ROOT)
+    pk = analyze_file(wav).peak
+    _AUDITION_PEAK_CACHE[idx] = pk
+    return pk
 
 
 def is_audible_preset(idx: int, presets: list[dict]) -> bool:
@@ -83,31 +92,28 @@ def farthest_pair(vectors: dict[int, np.ndarray]) -> tuple[int, int]:
     return best
 
 
-def ranked_audible_indices(idxs: list[int], presets: list[dict]) -> list[int]:
-    scored: list[tuple[float, int]] = []
+def ranked_audible_candidates(
+    idxs: list[int], presets: list[dict]
+) -> list[tuple[float, int, np.ndarray]]:
+    scored: list[tuple[float, int, np.ndarray]] = []
     for idx in idxs:
         if not is_audible_preset(idx, presets):
             continue
         wav = probe_wav_path(PROBE_DIR, idx)
         if not wav.exists():
             render_category_probe(presets[idx], idx, PROBE_DIR)
-        scored.append((audition_peak(idx), idx))
+        scored.append((audition_peak(idx), idx, category_feature_vector(wav)))
     scored.sort(key=lambda t: t[0], reverse=True)
-    return [i for _, i in scored]
+    return scored
 
 
-def pick_pair_for_category(idxs: list[int], presets: list[dict]) -> list[int]:
-    vecs: dict[int, np.ndarray] = {}
-    for idx in ranked_audible_indices(idxs, presets):
-        wav = probe_wav_path(PROBE_DIR, idx)
-        vecs[idx] = category_feature_vector(wav)
-        if len(vecs) >= max(2, len(idxs)):
-            break
-    audible = list(vecs.keys())
-    if len(audible) < 1:
-        raise SystemExit(f"No audible presets in category (indices {idxs[:5]}…)")
-    if len(audible) == 1:
-        return audible[:1]
+def pick_pair_from_candidates(candidates: list[tuple[float, int, np.ndarray]]) -> list[int]:
+    if not candidates:
+        raise SystemExit("No audible presets in category")
+    if len(candidates) == 1:
+        return [candidates[0][1]]
+    vecs = {idx: vec for _pk, idx, vec in candidates}
+    audible = [idx for _pk, idx, _vec in candidates]
     ranked_pairs: list[tuple[float, tuple[int, int]]] = []
     for i, a in enumerate(audible):
         for b in audible[i + 1 :]:
@@ -141,18 +147,14 @@ def main() -> int:
     chosen: dict[str, list[int]] = {}
 
     for category in sorted(by_cat):
-        picks = pick_pair_for_category(by_cat[category], presets)
-        # If this category is too close to an earlier pick (e.g. Bells vs Swells), try alt pairs.
-        idxs = ranked_audible_indices(by_cat[category], presets)
+        candidates = ranked_audible_candidates(by_cat[category], presets)
+        idxs = [idx for _pk, idx, _vec in candidates]
         vecs: dict[int, np.ndarray] = {}
-        for idx in idxs:
-            wav = probe_wav_path(PROBE_DIR, idx)
-            if not wav.exists():
-                render_category_probe(presets[idx], idx, PROBE_DIR)
-            vecs[idx] = category_feature_vector(wav)
-            vecs_all[idx] = vecs[idx]
+        for _pk, idx, vec in candidates:
+            vecs[idx] = vec
+            vecs_all[idx] = vec
 
-        best_picks = picks
+        best_picks = pick_pair_from_candidates(candidates)
         if len(idxs) >= 2:
             pairs: list[tuple[float, list[int]]] = []
             for i, a in enumerate(idxs):
