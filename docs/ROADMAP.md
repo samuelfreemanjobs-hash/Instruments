@@ -7,7 +7,7 @@ Single place to see **where we are going** and **what is done**. PM Agent refres
 ---
 
 <!-- ROADMAP_PROGRESS_BEGIN -->
-*Last updated:* 2026-11-15 06:49 UTC · regenerate: `python3 scripts/update-roadmap-progress.py`
+*Last updated:* 2026-11-15 06:51 UTC · regenerate: `python3 scripts/update-roadmap-progress.py`
 
 | Metric | Value |
 |--------|------:|
