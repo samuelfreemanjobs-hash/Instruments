@@ -18,6 +18,8 @@ public:
     void paint (juce::Graphics& g) override;
     void resized() override;
 
+    void syncForSnapshot();
+
 private:
     JunovaXAudioProcessor& processor_;
     junovax::ui::JunovaLookAndFeel skin_;

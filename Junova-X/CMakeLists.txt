@@ -27,6 +27,7 @@ target_sources (JunovaX
         Source/UI/Celestial/LabeledFader.cpp
         Source/UI/Celestial/VoiceLedCluster.cpp
         Source/UI/Celestial/PresetLcdStrip.cpp
+        Source/UI/Celestial/WheelV2Strip.cpp
         Source/DSP/SynthEngine.cpp
         Source/DSP/DiagTone.cpp
         Source/DSP/Arpeggiator.cpp

@@ -5,6 +5,7 @@
 #include "Parameters/ParameterIds.h"
 #include "PresetLcdStrip.h"
 #include "VoiceLedCluster.h"
+#include "WheelV2Strip.h"
 #include "../JunovaLookAndFeel.h"
 #include "../UiLayout.h"
 
@@ -43,6 +44,7 @@ public:
 
     void refreshPresetLabel();
     void refreshHostBar();
+    void syncPerformanceMeters();
 
     void setVaultOpener (std::function<void()> fn) { onOpenVault_ = std::move (fn); }
 
@@ -115,13 +117,11 @@ private:
     juce::ToggleButton arpLatch_ { "LATCH" };
 
     juce::Component peakMeter_;
-    juce::Slider pitchWheel_;
-    juce::Slider modWheel_;
-    juce::TextButton transposeDown_ { "-1" };
+    WheelV2Strip pitchWheel_ { WheelV2Strip::Kind::pitch };
+    WheelV2Strip modWheel_ { WheelV2Strip::Kind::mod };
+    juce::TextButton transposeDown_ { "-12" };
     juce::TextButton transposeZero_ { "0" };
-    juce::TextButton transposeUp_ { "+1" };
-    juce::Label pitchLabel_ { {}, {} };
-    juce::Label modLabel_ { {}, {} };
+    juce::TextButton transposeUp_ { "+12" };
     juce::Label transposeLabel_ { {}, {} };
     juce::Label ampEnvTag_ { {}, {} };
     juce::Label filtEnvTag_ { {}, {} };
@@ -144,5 +144,9 @@ private:
     LabeledFader* masterFader_ = nullptr;
 
     float peakLevel_ = 0.0f;
+    int transposeDisplay_ = 0;
+
+    void refreshTransposeUi();
+    static int countWhiteKeysInRange (int lowNote, int highNote) noexcept;
 };
 } // namespace junovax::ui::celestial

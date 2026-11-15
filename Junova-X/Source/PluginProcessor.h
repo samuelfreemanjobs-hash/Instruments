@@ -58,6 +58,9 @@ public:
     std::uint8_t getActiveVoiceMask() const noexcept { return activeVoiceMask_.load (std::memory_order_relaxed); }
     juce::MidiKeyboardState& getKeyboardState() noexcept { return keyboardState_; }
 
+    int getMidiTransposeSemitones() const noexcept { return midiTranspose_.load (std::memory_order_relaxed); }
+    void setMidiTransposeSemitones (int semitones) noexcept;
+
     void initToDefaultPatch();
     void saveUserPresetToFile();
     void copyPatchA();
@@ -79,7 +82,10 @@ private:
     std::atomic<std::uint8_t> activeVoiceMask_ { 0 };
     double lastSampleRate_ = 48000.0;
     juce::MidiKeyboardState keyboardState_;
+    std::atomic<int> midiTranspose_ { 0 };
     juce::ValueTree patchA_;
+
+    static void applyTransposeToMidiBuffer (juce::MidiBuffer& midi, int semitones) noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JunovaXAudioProcessor)
 };

@@ -35,3 +35,8 @@ void JunovaXAudioProcessorEditor::resized()
     celestialPanel_.setBounds (getLocalBounds());
     vault_.setBounds (getLocalBounds());
 }
+
+void JunovaXAudioProcessorEditor::syncForSnapshot()
+{
+    celestialPanel_.syncPerformanceMeters();
+}

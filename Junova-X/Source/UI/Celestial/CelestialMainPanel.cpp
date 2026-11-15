@@ -162,18 +162,25 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
     masterFader_ = &addFader (masterModule_, junovax::ParameterIDs::masterGain, "VOL", junovax::ui::JunovaLookAndFeel::Accent::cyan);
     masterModule_.addAndMakeVisible (peakMeter_);
 
-    pitchWheel_.setRange (0.0, 1.0);
-    pitchWheel_.setSliderStyle (juce::Slider::LinearVertical);
-    pitchWheel_.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
-    modWheel_.setRange (0.0, 1.0);
-    modWheel_.setSliderStyle (juce::Slider::LinearVertical);
-    modWheel_.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
-    junovax::ui::JunovaLookAndFeel::tagSlider (pitchWheel_, junovax::ui::JunovaLookAndFeel::Accent::crimson);
-    junovax::ui::JunovaLookAndFeel::tagSlider (modWheel_, junovax::ui::JunovaLookAndFeel::Accent::cyan);
     addAndMakeVisible (pitchWheel_);
     addAndMakeVisible (modWheel_);
     for (auto* b : { &transposeDown_, &transposeZero_, &transposeUp_ })
         addAndMakeVisible (*b);
+    transposeDown_.onClick = [this]
+    {
+        processor_.setMidiTransposeSemitones (processor_.getMidiTransposeSemitones() - 12);
+        refreshTransposeUi();
+    };
+    transposeZero_.onClick = [this]
+    {
+        processor_.setMidiTransposeSemitones (0);
+        refreshTransposeUi();
+    };
+    transposeUp_.onClick = [this]
+    {
+        processor_.setMidiTransposeSemitones (processor_.getMidiTransposeSemitones() + 12);
+        refreshTransposeUi();
+    };
 
     keyboard_ = std::make_unique<juce::MidiKeyboardComponent> (
         processor_.getKeyboardState(), juce::MidiKeyboardComponent::horizontalKeyboard);
@@ -183,10 +190,6 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
     keyboard_->setColour (juce::MidiKeyboardComponent::keySeparatorLineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible (*keyboard_);
 
-    pitchLabel_.setFont (Theme::labelFont());
-    pitchLabel_.setColour (juce::Label::textColourId, Theme::stellarCrimson());
-    modLabel_.setFont (Theme::labelFont());
-    modLabel_.setColour (juce::Label::textColourId, Theme::electricCyan());
     transposeLabel_.setFont (Theme::labelFont());
     transposeLabel_.setColour (juce::Label::textColourId, Theme::textMuted());
     transposeLabel_.setJustificationType (juce::Justification::centred);
@@ -196,17 +199,14 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
     filtEnvTag_.setColour (juce::Label::textColourId, Theme::stellarCrimson());
     envModule_.addAndMakeVisible (ampEnvTag_);
     envModule_.addAndMakeVisible (filtEnvTag_);
-    addAndMakeVisible (pitchLabel_);
-    addAndMakeVisible (modLabel_);
     addAndMakeVisible (transposeLabel_);
     ampEnvTag_.setText ("VCA ADSR", juce::dontSendNotification);
     filtEnvTag_.setText ("VCF ADSR", juce::dontSendNotification);
-    pitchLabel_.setText ("PITCH", juce::dontSendNotification);
-    modLabel_.setText ("MOD", juce::dontSendNotification);
-    transposeLabel_.setText ("TRANS", juce::dontSendNotification);
+    transposeLabel_.setText ("TRANSPOSE", juce::dontSendNotification);
 
     refreshPresetLabel();
     refreshHostBar();
+    refreshTransposeUi();
     startTimerHz (12);
 }
 
@@ -263,9 +263,46 @@ void CelestialMainPanel::timerCallback()
 {
     refreshPresetLabel();
     refreshHostBar();
+    syncPerformanceMeters();
+}
+
+void CelestialMainPanel::syncPerformanceMeters()
+{
     peakLevel_ = processor_.getOutputPeak();
     voiceLeds_.setActiveMask (processor_.getActiveVoiceMask());
     peakMeter_.repaint();
+}
+
+int CelestialMainPanel::countWhiteKeysInRange (int lowNote, int highNote) noexcept
+{
+    static constexpr int kWhiteDeg[] = { 0, 2, 4, 5, 7, 9, 11 };
+    int count = 0;
+    for (int note = lowNote; note <= highNote; ++note)
+    {
+        const int deg = note % 12;
+        for (int w : kWhiteDeg)
+        {
+            if (deg == w)
+            {
+                ++count;
+                break;
+            }
+        }
+    }
+    return juce::jmax (1, count);
+}
+
+void CelestialMainPanel::refreshTransposeUi()
+{
+    transposeDisplay_ = processor_.getMidiTransposeSemitones();
+    const bool active = transposeDisplay_ != 0;
+    for (auto* b : { &transposeDown_, &transposeUp_ })
+        b->setColour (juce::TextButton::buttonColourId, Theme::panelGrey().brighter (0.05f));
+    transposeZero_.setColour (juce::TextButton::buttonColourId,
+                              active ? Theme::electricCyan().withAlpha (0.25f) : Theme::panelGrey().brighter (0.05f));
+    const juce::String suffix = active ? (" (" + juce::String (transposeDisplay_ > 0 ? "+" : "") + juce::String (transposeDisplay_) + " st)")
+                                       : juce::String{};
+    transposeLabel_.setText ("TRANSPOSE" + suffix, juce::dontSendNotification);
 }
 
 void CelestialMainPanel::refreshHostBar()
@@ -368,20 +405,29 @@ void CelestialMainPanel::resized()
 
     const int kbH = L::keyboardBayHeight;
     auto kbArea = getLocalBounds().removeFromBottom (kbH).reduced (m, 4);
-    const int wheelW = 26;
+    const int wheelW = 30;
     pitchWheel_.setBounds (kbArea.removeFromLeft (wheelW));
     modWheel_.setBounds (kbArea.removeFromLeft (wheelW).reduced (0, 2));
-    auto tr = kbArea.removeFromRight (72);
-    transposeDown_.setBounds (tr.removeFromTop (22).reduced (1));
-    transposeZero_.setBounds (tr.removeFromTop (22).reduced (1));
-    transposeUp_.setBounds (tr.removeFromTop (22).reduced (1));
-    pitchLabel_.setBounds (pitchWheel_.getX(), pitchWheel_.getY() - 14, pitchWheel_.getWidth() + 4, 12);
-    modLabel_.setBounds (modWheel_.getX(), modWheel_.getY() - 14, modWheel_.getWidth() + 4, 12);
-    transposeLabel_.setBounds (transposeUp_.getX() - 4, transposeUp_.getY() - 14, 80, 12);
+    const int trW = 56;
+    auto tr = kbArea.removeFromRight (trW);
+    transposeLabel_.setBounds (tr.getX(), tr.getY(), trW, 12);
+    tr.removeFromTop (14);
+    const int btnH = juce::jmax (20, (tr.getHeight() - 4) / 3);
+    transposeUp_.setBounds (tr.removeFromTop (btnH).reduced (1));
+    transposeZero_.setBounds (tr.removeFromTop (btnH).reduced (1));
+    transposeDown_.setBounds (tr.reduced (1));
     if (keyboard_ != nullptr)
     {
-        const float kw = static_cast<float> (kbArea.getWidth()) / 37.0f;
-        keyboard_->setKeyWidth (juce::jlimit (12.0f, 22.0f, kw));
+        constexpr int low = 36;
+        constexpr int high = 96;
+        const float kw = static_cast<float> (kbArea.getWidth()) / static_cast<float> (countWhiteKeysInRange (low, high));
+        keyboard_->setAvailableRange (low, high);
+        keyboard_->setKeyWidth (juce::jmax (10.0f, kw * 1.02f));
+        keyboard_->setBounds (kbArea);
+        keyboard_->resized();
+        const int keyStripW = keyboard_->getWidth();
+        if (keyStripW > 0 && keyStripW < kbArea.getWidth())
+            keyboard_->setKeyWidth (keyboard_->getKeyWidth() * static_cast<float> (kbArea.getWidth()) / static_cast<float> (keyStripW));
         keyboard_->setBounds (kbArea);
     }
 
@@ -395,22 +441,25 @@ void CelestialMainPanel::resized()
     auto row2 = modules;
 
     const int innerW = w - 2 * m;
-    const int colW = (innerW - gap * 4) / 5;
+    constexpr int kHpfW = 108;
+    const int flexW = innerW - kHpfW - gap * 4;
+    const int colW = flexW / 4;
     int x1 = m;
-    lfoModule_.setBounds (x1, row1.getY(), colW, row1.getHeight());
-    x1 += colW + gap;
-    dcoModule_.setBounds (x1, row1.getY(), colW, row1.getHeight());
-    x1 += colW + gap;
-    hpfModule_.setBounds (x1, row1.getY(), juce::jmax (72, colW - 24), row1.getHeight());
-    x1 += hpfModule_.getWidth() + gap;
+    lfoModule_.setBounds (x1, row1.getY(), colW + 16, row1.getHeight());
+    x1 += lfoModule_.getWidth() + gap;
+    dcoModule_.setBounds (x1, row1.getY(), colW + 8, row1.getHeight());
+    x1 += dcoModule_.getWidth() + gap;
+    hpfModule_.setBounds (x1, row1.getY(), kHpfW, row1.getHeight());
+    x1 += kHpfW + gap;
     vcfModule_.setBounds (x1, row1.getY(), colW + 8, row1.getHeight());
     x1 += vcfModule_.getWidth() + gap;
     envModule_.setBounds (x1, row1.getY(), w - m - x1, row1.getHeight());
 
+    const int extraCh = juce::jmax (0, colW - kHpfW);
     const int w4 = (innerW - gap * 3) / 4;
     int x2 = m;
-    chorusModule_.setBounds (x2, row2.getY(), w4, row2.getHeight());
-    x2 += w4 + gap;
+    chorusModule_.setBounds (x2, row2.getY(), w4 + extraCh, row2.getHeight());
+    x2 += chorusModule_.getWidth() + gap;
     driftModule_.setBounds (x2, row2.getY(), w4, row2.getHeight());
     x2 += w4 + gap;
     arpModule_.setBounds (x2, row2.getY(), w4, row2.getHeight());
@@ -422,8 +471,9 @@ void CelestialMainPanel::resized()
     lfoTri_.setBounds (lfoArea.getX(), lfoArea.getY(), 36, chipH);
     lfoSqr_.setBounds (lfoArea.getX() + 40, lfoArea.getY(), 36, chipH);
     lfoSh_.setBounds (lfoArea.getX() + 80, lfoArea.getY(), 44, chipH);
-    lfoSync_.setBounds (lfoArea.getX(), lfoArea.getBottom() - chipH - 2, lfoArea.getWidth() - 4, chipH);
-    layoutFaderRow (lfoArea, lfoFaders_, chipH + 4);
+    const int syncW = juce::jmin (92, lfoArea.getWidth() - 130);
+    lfoSync_.setBounds (lfoArea.getRight() - syncW - 2, lfoArea.getY(), syncW, chipH);
+    layoutFaderRow (lfoArea.withTrimmedTop (chipH + 6), lfoFaders_, 0);
 
     auto dcoArea = dcoModule_.getContentArea();
     dcoPulse_.setBounds (dcoArea.getX(), dcoArea.getY(), 48, chipH);

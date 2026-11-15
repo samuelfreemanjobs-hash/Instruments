@@ -286,6 +286,7 @@ void JunovaXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     displayBpm_.store (static_cast<float> (host.bpm), std::memory_order_relaxed);
 
     keyboardState_.processNextMidiBuffer (midi, 0, buffer.getNumSamples(), true);
+    applyTransposeToMidiBuffer (midi, midiTranspose_.load (std::memory_order_relaxed));
 
     auto params = readParamsFromApvts();
     params.hostBpm = static_cast<float> (host.bpm);
@@ -456,6 +457,34 @@ void JunovaXAudioProcessor::setStateInformation (const void* data, int sizeInByt
             pushParamsToEngine();
         }
     }
+}
+
+void JunovaXAudioProcessor::setMidiTransposeSemitones (int semitones) noexcept
+{
+    const int clamped = juce::jlimit (-48, 48, semitones);
+    midiTranspose_.store (clamped, std::memory_order_relaxed);
+}
+
+void JunovaXAudioProcessor::applyTransposeToMidiBuffer (juce::MidiBuffer& midi, int semitones) noexcept
+{
+    if (semitones == 0)
+        return;
+
+    juce::MidiBuffer out;
+    for (const auto metadata : midi)
+    {
+        auto msg = metadata.getMessage();
+        if (msg.isNoteOnOrOff())
+        {
+            const int note = juce::jlimit (0, 127, msg.getNoteNumber() + semitones);
+            if (msg.isNoteOn())
+                msg = juce::MidiMessage::noteOn (msg.getChannel(), note, msg.getVelocity());
+            else
+                msg = juce::MidiMessage::noteOff (msg.getChannel(), note);
+        }
+        out.addEvent (msg, metadata.samplePosition);
+    }
+    midi.swapWith (out);
 }
 
 juce::AudioProcessorEditor* JunovaXAudioProcessor::createEditor()
