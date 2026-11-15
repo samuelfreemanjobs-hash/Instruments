@@ -579,7 +579,7 @@ def run_generation(
             continue
 
         fresh = regen_only is not None and category in regen_only
-        accepted: list[dict] = [] if fresh else list(resume_by_cat.get(category, []))[:want]
+        accepted: list[dict] = list(resume_by_cat.get(category, []))[:want]
         accepted_vecs: list[np.ndarray] = []
         if audio_gate and accepted and not fresh:
             for i, p in enumerate(accepted):

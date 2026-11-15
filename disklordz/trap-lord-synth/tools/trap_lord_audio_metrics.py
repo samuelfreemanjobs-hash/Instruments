@@ -242,8 +242,10 @@ def analyze_file(path: Path, category: str = "", tail_fraction: float = 0.12) ->
     )
 
 
-def category_spectral_passes(metrics: AudioMetrics, category: str) -> tuple[bool, str]:
-    rules = CATEGORY_SPECTRAL_RULES.get(category)
+def category_spectral_passes(
+    metrics: AudioMetrics, category: str, rules: dict[str, float] | None = None
+) -> tuple[bool, str]:
+    rules = rules or CATEGORY_SPECTRAL_RULES.get(category)
     if not rules:
         return True, ""
     if "sub30_max" in rules and metrics.sub30_energy_ratio > rules["sub30_max"]:
@@ -265,6 +267,15 @@ def category_spectral_passes(metrics: AudioMetrics, category: str) -> tuple[bool
     if "centroid_max" in rules and metrics.centroid_hz > rules["centroid_max"]:
         return False, f"centroid {metrics.centroid_hz:.1f} > {rules['centroid_max']}"
     return True, ""
+
+
+def category_spectral_passes_audition(metrics: AudioMetrics, category: str) -> tuple[bool, str]:
+    """Audition phrases: enforce tonal/hiss/subsonic guards, not probe-style sub30 floors."""
+    rules = CATEGORY_SPECTRAL_RULES.get(category)
+    if not rules:
+        return True, ""
+    audition_rules = {k: v for k, v in rules.items() if k not in ("sub30_min",)}
+    return category_spectral_passes(metrics, category, audition_rules)
 
 
 def mpc_note_peak_levels(program_folder: Path) -> dict[int, float]:

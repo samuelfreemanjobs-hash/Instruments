@@ -22,7 +22,7 @@ from trap_lord_audio_metrics import (  # noqa: E402
     AUDITION_PEAK_MIN_LINEAR,
     analyze_file,
     assert_wav_format,
-    category_spectral_passes,
+    category_spectral_passes_audition,
     write_metrics_csv,
 )
 
@@ -191,7 +191,7 @@ def qa_file(metrics, wav_path: Path) -> None:
         assert metrics.centroid_hz < cap, (
             f"{metrics.path}: centroid {metrics.centroid_hz} Hz > {cap}"
         )
-        ok, reason = category_spectral_passes(metrics, metrics.category)
+        ok, reason = category_spectral_passes_audition(metrics, metrics.category)
         assert ok, f"{metrics.path}: category spectral gate failed: {reason}"
 
 
