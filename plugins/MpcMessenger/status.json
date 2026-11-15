@@ -1,0 +1,12 @@
+{
+  "plugin_name": "MpcMessenger",
+  "version": "1.0.0",
+  "apc_phase": "impl",
+  "vst_path": "vst/MpcMessenger",
+  "ui_framework": "headless",
+  "validation": {
+    "creative_brief_exists": true,
+    "design_complete": true,
+    "code_complete": true
+  }
+}

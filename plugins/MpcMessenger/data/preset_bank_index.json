@@ -1,0 +1,7 @@
+{
+  "plugin": "MpcMessenger",
+  "version": 1,
+  "factory_programs": 8,
+  "expansion_target": 200,
+  "notes": "Load JSON bank via shared preset loader (same pattern as MpcVoyager)."
+}

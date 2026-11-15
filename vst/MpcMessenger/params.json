@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "plugin": "MpcMessenger",
+  "melodee_macro_order": ["cutoff", "res", "resBass"],
+  "parameters": [
+    {
+      "id": "cutoff",
+      "name": "Cutoff",
+      "type": "float",
+      "min": 20,
+      "max": 18000,
+      "default": 520,
+      "smoothingMs": 8,
+      "targets": { "vst": "cutoff" }
+    },
+    {
+      "id": "res",
+      "name": "Resonance",
+      "type": "float",
+      "min": 0,
+      "max": 0.96,
+      "default": 0.38,
+      "smoothingMs": 5,
+      "targets": { "vst": "res" }
+    },
+    {
+      "id": "resBass",
+      "name": "Res Bass",
+      "type": "float",
+      "min": 0,
+      "max": 1,
+      "default": 0.55,
+      "smoothingMs": 5,
+      "targets": { "vst": "resBass" }
+    }
+  ],
+  "presets": [
+    {
+      "name": "Messenger Init",
+      "values": { "cutoff": 520, "res": 0.38, "resBass": 0.55 }
+    }
+  ]
+}

@@ -14,6 +14,7 @@
 | [MpcMinimoog](MpcMinimoog/status.json) | Minimoog Model D | Plan complete | `/apc-design MpcMinimoog` |
 | [MpcVoyager](MpcVoyager/status.json) | Voyager-style mono ladder | **Impl** (vst/) | `/apc-test MpcVoyager` |
 | [MpcSubPhatty](MpcSubPhatty/status.json) | Sub Phatty multidrive bass | **Impl** (vst/) | `/apc-test MpcSubPhatty` |
+| [MpcMessenger](MpcMessenger/status.json) | Messenger wavefold + Res Bass | **Impl** (vst/) | `/apc-test MpcMessenger` |
 | [MpcSh101](MpcSh101/status.json) | Roland SH-101 | Plan complete | `/apc-design MpcSh101` |
 
 ### Early digital & hybrid (FM)
