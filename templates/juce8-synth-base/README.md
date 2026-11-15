@@ -1,43 +1,52 @@
-# JUCE 8 desktop synth factory template
+# JUCE 8 PlaySynth Core (pre-wired factory template)
 
-First-pass **PlaySynth 6-Pack** scaffold: dual-layer shell, XY + Dice, 8 macros, BinaryData-ready CMake.
+Compiles as a **12-voice dual-layer** instrument with working audio, WebView chrome, arp/chord/scale lock, macro lock, 2× master saturation, pluginval-friendly APVTS, and **`--render-test`** on the Standalone target.
 
-## Quick start (per plugin)
-
-1. Copy entire `templates/juce8-synth-base/` to repo root as `AnalogDreams84/` (or `CloudSupplyTrap` / `LoFiGlowTape`).
-2. Rename `CMakeLists.template.txt` → `CMakeLists.txt`; match `PLUGIN_CODE` (`Ad84`, `CsTr`, `LgTp`).
-3. Search-replace `PlaySeriesTemplate` → `AnalogDreams84` in `Source/*.h` / `*.cpp`.
-4. Add `add_subdirectory(AnalogDreams84)` to root `CMakeLists.txt` (see `ProphetRev2Trap`).
-5. Drop 12 preset JSON under `Resources/presets/`; extend `juce_add_binary_data` in CMake.
-6. Replace `processBlock` silence with `Source/AnalogDreams84Engine.h` (plugin-specific DSP).
+## Quick start (Windows)
 
 ```powershell
-cmake -B build -G "Visual Studio 17 2022" -A x64
-cmake --build build --config Release --target AnalogDreams84_VST3
+cd templates/juce8-synth-base
+copy CMakeLists.template.txt CMakeLists.txt
+cmake -B build -G "Visual Studio 17 2022" -A x64 -DPLUGIN_NAME=PlaySynthBase -DPLUGIN_CODE=PsBs
+cmake --build build --config Release --parallel
 ```
 
-## Files
+Smoke (no GUI):
 
-| Path | Purpose |
-|------|---------|
-| `Source/PlaySeriesCommon.h` | Equal-power blend, shared APVTS IDs |
-| `Source/PluginProcessor.*` | APVTS, presets, bounded Dice |
-| `Source/PluginEditor.*` | WebView host + Dice button |
-| `Source/FactoryPresets.h` | 12-slot placeholder table (replace) |
-| `CMakeLists.template.txt` | WebView + BinaryData example |
-| `BinaryData.cmake.snippet` | Minimal preset embedding |
+```powershell
+.\build\PlaySynthBase_artefacts\Release\Standalone\PlaySynthBase.exe --render-test
+```
 
-## Overnight queue (6-pack)
+Batch all six SKUs:
 
-See `plugins/PLAY_SYNTH_6PACK.md` and `disklordz/vst-factory/data/overnight-queue.json` (`suite: play_synth_6pack`, priority 10):
+```powershell
+pwsh -File disklordz/vst-factory/scripts/setup-play-factory-windows.ps1
+pwsh -File disklordz/vst-factory/scripts/run-factory-play6.ps1
+```
 
-`Ad84`, `CsTr`, `LgTp`, `Pc94`, `Fk40`, `Ss70` — each clones this template with unique `*Engine.h`.
+## What Claude should edit per SKU
 
-## Other factory SKUs
+Only **five surfaces** (see `play_synth_factory_contract.md`):
 
-| Plugin | CODE | Voices |
-|--------|------|--------|
-| ProphetMod16 | Pm16 | 16 |
-| OxfordPeak8 | Opk8 | 8 |
+1. `Source/LayerAEngine.h`
+2. `Source/LayerBEngine.h`
+3. `Source/MacroRouter.h` (optional curves)
+4. `Assets/index.html`, `style.css`, `app.js`
+5. `Source/FactoryPresets.h` + `Assets/Presets/*.xml`
 
-There is no in-repo `run-factory.ps1`; point your runner at `overnight-queue.json` or paste prompts manually on Windows.
+## Core modules (leave alone unless fixing bugs)
+
+| Path | Role |
+|------|------|
+| `Source/PluginProcessor.*` | Synthesiser, performance engine, oversampling |
+| `Source/PlaySynthVoice.*` | Dual-layer voice + ladder filter |
+| `Source/PerformanceEngine.*` | Arp, chord, scale lock, MIDI export |
+| `Source/RenderSmokeTest.*` | C minor 9 · 2 s offline render + WAV |
+| `Source/StandaloneCustomApp.cpp` | `--render-test` entry |
+| `Source/ScopeRingBuffer.h` | Lock-free peaks for UI |
+| `Assets/` | WebView + preset XML (BinaryData) |
+
+## Factory data
+
+- Compact queue: `disklordz/vst-factory/data/play_synth_6pack_master.json`
+- Docs index: `docs/VST_AI_FACTORY_INDEX.md`

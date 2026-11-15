@@ -3,10 +3,13 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_dsp/juce_dsp.h>
 
+#include "MacroRouter.h"
+#include "PerformanceEngine.h"
 #include "PlaySeriesCommon.h"
+#include "PlaySynthSound.h"
+#include "PlaySynthVoice.h"
 #include "ScopeRingBuffer.h"
 
-// Rename class + file when cloning for AnalogDreams84 / CloudSupplyTrap / LoFiGlowTape.
 class PlaySeriesTemplateAudioProcessor : public juce::AudioProcessor {
 public:
   PlaySeriesTemplateAudioProcessor();
@@ -30,20 +33,29 @@ public:
 
   juce::AudioProcessorValueTreeState &getAPVTS() noexcept { return apvts_; }
 
-  /** Call from UI/message thread only (Dice button). */
   void randomizePatchBounded();
+  int readScopePeaks(float *dest, int maxItems) const noexcept;
+  void exportMidiPattern();
 
   static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 private:
   void applyFactoryPreset(int index);
   float effectiveBlend() const noexcept;
-  int readScopePeaks(float *dest, int maxItems) const noexcept;
+  play_series::MacroTargets readMacroTargets() const noexcept;
 
   juce::AudioProcessorValueTreeState apvts_;
+  juce::Synthesiser synth_;
+  PlaySynthSound sound_;
+  play_series::PerformanceEngine performance_;
+  play_series::MacroRouter macroRouter_;
+  juce::dsp::Oversampling<float> masterOversample_{2, 1,
+                                                   juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR};
+  juce::SmoothedValue<float> spaceSend_, delaySend_;
+  mutable play_series::ScopeRingBuffer scope_;
   juce::Random rng_;
   int currentProgram_ = 0;
-  mutable ScopeRingBuffer scope_;
+  double currentBpm_ = 120.0;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlaySeriesTemplateAudioProcessor)
 };

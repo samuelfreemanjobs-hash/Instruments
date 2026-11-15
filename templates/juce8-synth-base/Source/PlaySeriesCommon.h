@@ -24,6 +24,9 @@ inline constexpr const char *kArpMode = "arp_mode";
 inline constexpr const char *kArpRate = "arp_rate";
 inline constexpr const char *kChordMode = "chord_mode";
 inline constexpr const char *kGlideMs = "glide_ms";
+inline constexpr const char *kScaleLock = "scale_lock";
+inline constexpr const char *kUiScale = "ui_scale";
+inline constexpr const char *kMidiExportTrigger = "midi_export_trigger";
 
 inline constexpr int kVoiceCount = 12;
 inline constexpr int kMacroCount = 8;

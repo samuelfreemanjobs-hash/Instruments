@@ -1,49 +1,82 @@
-# Rename to CMakeLists.txt and replace PlaySeriesTemplate / PLUGIN_CODE.
 cmake_minimum_required(VERSION 3.22)
-project(AnalogDreams84 VERSION 1.0.0 LANGUAGES CXX)
+
+set(PLUGIN_NAME "PlaySynthBase" CACHE STRING "Plugin product name")
+set(PLUGIN_CODE "PsBs" CACHE STRING "4-char JUCE plugin code")
+
+project(${PLUGIN_NAME} VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-juce_add_plugin(AnalogDreams84
+set(PLAY_JUCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../vst/JUCE" CACHE PATH "JUCE checkout")
+if(NOT EXISTS "${PLAY_JUCE_DIR}/CMakeLists.txt")
+  set(PLAY_JUCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../vst/JUCE")
+endif()
+if(NOT EXISTS "${PLAY_JUCE_DIR}/CMakeLists.txt")
+  message(FATAL_ERROR "Set PLAY_JUCE_DIR to a JUCE 7/8 CMake tree (expected vst/JUCE)")
+endif()
+
+add_subdirectory("${PLAY_JUCE_DIR}" "${CMAKE_BINARY_DIR}/JUCE")
+
+juce_add_plugin(${PLUGIN_NAME}
     COMPANY_NAME "Instruments"
-    BUNDLE_ID com.instruments.analogdreams84
+    BUNDLE_ID com.instruments.playsynthbase
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
+    NEEDS_MIDI_OUTPUT FALSE
+    IS_MIDI_EFFECT FALSE
+    EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     COPY_PLUGIN_AFTER_BUILD FALSE
     PLUGIN_MANUFACTURER_CODE Inst
-    PLUGIN_CODE Ad84
+    PLUGIN_CODE ${PLUGIN_CODE}
     FORMATS VST3 Standalone
-    PRODUCT_NAME "AnalogDreams84")
+    PRODUCT_NAME "${PLUGIN_NAME}")
 
-target_sources(AnalogDreams84
-    PRIVATE
-        Source/PluginProcessor.cpp
-        Source/PluginEditor.cpp
-        Source/PlaySeriesCommon.h
-        Source/FactoryPresets.h)
-# Future: Source/<Plugin>Engine.h
+file(GLOB_RECURSE PLAY_SOURCE CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.h")
+list(FILTER PLAY_SOURCE EXCLUDE REGEX "StandaloneCustomApp\\.cpp$")
+target_sources(${PLUGIN_NAME} PRIVATE ${PLAY_SOURCE})
 
-juce_add_binary_data(AnalogDreams84Presets
-    SOURCES
-        Resources/presets/miami_sunset_brass.json)
-target_link_libraries(AnalogDreams84 PRIVATE AnalogDreams84Presets)
+target_sources(${PLUGIN_NAME}_Standalone PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/Source/StandaloneCustomApp.cpp")
+target_compile_definitions(${PLUGIN_NAME}_Standalone PRIVATE JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1)
 
-target_compile_definitions(AnalogDreams84
+file(GLOB_RECURSE PLAY_ASSETS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Assets/*")
+if(PLAY_ASSETS)
+    juce_add_binary_data(${PLUGIN_NAME}_Assets SOURCES ${PLAY_ASSETS})
+    target_link_libraries(${PLUGIN_NAME} PRIVATE ${PLUGIN_NAME}_Assets)
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE PLAY_SYNTH_HAS_BINARY_ASSETS=1)
+endif()
+
+option(PLAY_SYNTH_HEADLESS_CI "Disable WebView for Linux CI smoke builds" OFF)
+if(PLAY_SYNTH_HEADLESS_CI)
+    set(PLAY_WEB_BROWSER 0)
+else()
+    set(PLAY_WEB_BROWSER 1)
+endif()
+
+target_compile_definitions(${PLUGIN_NAME}
     PUBLIC
-        JUCE_WEB_BROWSER=1
+        JUCE_WEB_BROWSER=${PLAY_WEB_BROWSER}
         JUCE_USE_CURL=0
-        JUCE_VST3_CAN_REPLACE_VST2=0)
-
-target_link_libraries(AnalogDreams84
+        JUCE_VST3_CAN_REPLACE_VST2=0
+        JUCE_DISPLAY_SPLASH_SCREEN=0
     PRIVATE
-        juce::juce_audio_utils
-        juce::juce_dsp
-        juce::juce_gui_extra
+        $<$<PLATFORM_ID:Windows>:JUCE_USE_WIN_WEBVIEW2=1>)
+
+set(PLAY_JUCE_LIBS juce::juce_audio_utils juce::juce_dsp)
+if(NOT PLAY_SYNTH_HEADLESS_CI)
+    list(APPEND PLAY_JUCE_LIBS juce::juce_gui_extra)
+endif()
+
+target_link_libraries(${PLUGIN_NAME}
+    PRIVATE
+        ${PLAY_JUCE_LIBS}
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_warning_flags)
 
-target_include_directories(AnalogDreams84 PRIVATE Source)
-juce_generate_juce_header(AnalogDreams84)
+target_include_directories(${PLUGIN_NAME} PRIVATE Source)
+juce_generate_juce_header(${PLUGIN_NAME})

@@ -1,3 +1,17 @@
+# PlaySynth 6-pack — factory build contract (v3 — prewired core)
+
+**Pre-wired in `templates/juce8-synth-base/Source/`** (do not regenerate each run):
+
+| File | Customize per SKU |
+|------|-------------------|
+| `LayerAEngine.h` | Foundation DSP |
+| `LayerBEngine.h` | Texture DSP |
+| `MacroRouter.h` | Macro → DSP mapping |
+| `Assets/*` | Theme, SVG knobs, presets XML |
+| `FactoryPresets.h` | Preset names + macro rows |
+
+Core already includes: `PlaySynthVoice`, `PerformanceEngine`, WebView shell, scope FIFO, 2× master OS dirt, `--render-test` standalone, APVTS, Dice, macro lock.
+
 # PlaySynth 6-pack — factory build contract (v2)
 
 Inject this block into every Claude Code / Cursor overnight prompt for the six SKUs.

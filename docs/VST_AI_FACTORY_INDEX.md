@@ -29,7 +29,10 @@ cd disklordz/vst-factory && pip install -e ".[dev]" && uvicorn vst_factory.main:
 | Full roadmap (Prophet, Oxford, Play 6-pack, stubs…) | `disklordz/vst-factory/data/overnight-queue.json` |
 | **Play 6-pack compact contract** | `disklordz/vst-factory/data/play_synth_6pack_master.json` |
 | Build contract (arp, macro lock, 2x OS, FIFO viz) | `disklordz/vst-factory/data/play_synth_factory_contract.md` |
-| Windows runner | `disklordz/vst-factory/scripts/run-factory-play6.ps1` |
+| Windows runner | `disklordz/vst-factory/scripts/run-factory-play6.ps1` (template build → pluginval → `--render-test` → optional Claude SKU pass) |
+| Windows one-time setup | `disklordz/vst-factory/scripts/setup-play-factory-windows.ps1` |
+| Linux CI template smoke | `tools/build-play-template-smoke.sh` |
+| Pre-wired core | `templates/juce8-synth-base/` (`LayerAEngine`, `LayerBEngine`, `MacroRouter`, `Assets/`, render smoke) |
 
 ## PlaySynth Producer Suite (pure synth, Kontakt Play-style)
 
