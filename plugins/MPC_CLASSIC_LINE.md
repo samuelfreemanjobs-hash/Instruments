@@ -22,7 +22,7 @@
 
 | Plugin | Vintage target | Phase | Next |
 |--------|----------------|-------|------|
-| [MpcDxFm](MpcDxFm/status.json) | Yamaha DX7 / TX81Z | Plan complete | `/apc-design MpcDxFm` |
+| [MpcDxFm](MpcDxFm/status.json) | Yamaha DX7 / TX81Z | **Impl** (vst/) | `/apc-test MpcDxFm` |
 
 ### Sample + synth hybrid (M1 / D-50)
 
