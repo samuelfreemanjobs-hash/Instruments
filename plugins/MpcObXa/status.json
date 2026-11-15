@@ -1,0 +1,28 @@
+{
+  "plugin_name": "MpcObXa",
+  "version": "0.1.0",
+  "track": "apc_greenfield",
+  "apc_phase": "plan",
+  "current_phase": "plan",
+  "vst_path": "vst/MpcObXa",
+  "product_category": "synth.va.obxa",
+  "ui_framework": "headless",
+  "complexity_score": 7,
+  "complexity_tier": "L1",
+  "framework_selection": {
+    "decision": "headless",
+    "rationale": "Melodee; SVF sweeps via first parameters.",
+    "implementation_strategy": "Fork/refine MpcAnalogSynth SVF voice + stereo pan"
+  },
+  "targets": ["vst3_linux_x86_64", "vst3_linux_aarch64_melodee"],
+  "validation": {
+    "creative_brief_exists": true,
+    "parameter_spec_exists": true,
+    "architecture_defined": true,
+    "ui_framework_selected": true,
+    "design_complete": false,
+    "code_complete": false,
+    "tests_passed": false,
+    "ship_ready": false
+  }
+}
