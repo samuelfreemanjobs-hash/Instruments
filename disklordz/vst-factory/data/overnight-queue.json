@@ -1,0 +1,12 @@
+[
+  {
+    "name": "ProphetMod16",
+    "type": "synth",
+    "code": "Pm16",
+    "priority": 10,
+    "apc_path": "plugins/ProphetMod16",
+    "scaffold_template": "templates/juce8-synth-base",
+    "engine_fork": "ProphetRev2Trap/Source/ProphetRev2Engine.h",
+    "prompt": "Build a 16-voice deep-modulation polyphonic analog VST3 synthesizer called ProphetMod16 inspired by the Sequential Prophet '08 and Rev2, using C++20, JUCE 8, and CMake. Follow AGENTS.md and docs/JUCE8_VST3_PROJECT_RULES.md strictly.\n\nREPO CONTEXT:\n- Fork and extend patterns from ProphetRev2Trap/Source/ProphetRev2Engine.h (slop, 2/4-pole filter, ADSR).\n- New root target ProphetMod16/ (not vst/Mpc*). PLUGIN_CODE Pm16.\n- Mod matrix: 8 slots as APVTS params modN_src/modN_dst/modN_amt (enum indices); no std::vector on audio thread.\n- Update mod sources at control rate every 16 samples; SmoothedValue on cutoff/pitch with 10–20 ms ramps.\n\nAUDIO & DSP ARCHITECTURE:\n1. Oscillators (per voice): 2 alias-free PolyBLEP oscillators (Saw, Triangle, Saw+Tri, Variable Pulse) with Octave, Fine Detune, Pulse Width, and Osc Mix, plus a -1 Octave Square Sub-Oscillator and White Noise level.\n2. Analog Slop: Voice Slop (0-100%) independent pitch and filter cutoff drift per voice.\n3. Filter: Switchable 12dB and 24dB resonant LP with pre-filter drive and key tracking.\n4. Envelopes & LFOs: 3 ADSR (Amp, Bipolar Filter, Aux) and 4 LFOs (Triangle, Saw, Square, Random S&H).\n5. 8-Slot Modulation Matrix: lock-free enum routing (LFO1-4, Filter Env, Aux Env, Velocity, Mod Wheel, Aftertouch, KeyTrack) → (Osc pitch/PW, mix, filter, LFO rate, amp, pan).\n6. Voice modes: Poly, Mono Legato, 4-voice Unison; chorus, tempo-sync stereo delay, soft-clip limiter.\n\nUI & PRESETS:\n- JUCE 8 WebView HTML/CSS/JS: Oscillators, Filter, Envelopes, LFOs, 8-row Mod Matrix, Master FX.\n- APVTS XML state; 10 BinaryData factory presets: Init Saw Poly, Rev2 Warm Brass, Evolving Glass Pad, Analog PWM Strings, Deep Sub Bass, Sync Lead, Modulated Bell Keys, Unison Reese, Cosmic Arp Pluck, Dark Cinematic Drone.\n\nBUILD (Windows): cmake -B build -G \"Visual Studio 17 2022\" -A x64; cmake --build build --config Release --target ProphetMod16_VST3.\n\nOPTIONAL v1.1 (do not implement unless asked): bi-timbral Layer A/B split-stack."
+  }
+]
