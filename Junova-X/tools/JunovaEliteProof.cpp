@@ -1,3 +1,4 @@
+#include "DSP/OctaveMipSawBank.h"
 #include "DSP/SynthEngine.h"
 #include "DSP/ZdfMoogLadder.h"
 #include "Presets/PresetParams.h"
@@ -96,7 +97,11 @@ junovax::dsp::RuntimeParams dryC7SawBase() noexcept
     p.vcfLfo = 0.0f;
     p.vcfDrive = 0.0f;
     p.dcoOctave = 2;
-    p.ampAttack = 0.002f;
+    p.width = 0.0f;
+    p.masterGainDb = 0.0f;
+    p.vcaGateMode = true;
+    p.ampAttack = 0.00005f;
+    p.ampDecay = 0.01f;
     p.ampSustain = 1.0f;
     p.filtSustain = 1.0f;
     return p;
@@ -178,6 +183,24 @@ int main (int argc, char** argv)
     constexpr double sr = 44100.0;
     constexpr int c7 = 96;
     const float fundHz = midiNoteToHz (c7);
+
+    {
+        const int n = samplesForIntegerCycles (sr, fundHz, 256);
+        juce::AudioBuffer<float> bankBuf (1, n);
+        junovax::dsp::OctaveMipSawBank bank;
+        bank.prepare (sr);
+        double phase = 0.0;
+        const double phaseInc = static_cast<double> (fundHz) / sr;
+        for (int i = 0; i < n; ++i)
+        {
+            phase += phaseInc;
+            bankBuf.setSample (0, i, bank.saw (phase, phaseInc) * 0.11f);
+        }
+        juce::AudioBuffer<float> stereo (2, n);
+        stereo.copyFrom (0, 0, bankBuf, 0, 0, n);
+        stereo.copyFrom (1, 0, bankBuf, 0, 0, n);
+        writeWav (outDir.getChildFile ("c7-mip-bank-direct.wav"), stereo, sr);
+    }
 
     junovax::dsp::SynthEngine engine;
 
