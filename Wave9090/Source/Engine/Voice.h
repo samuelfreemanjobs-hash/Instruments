@@ -173,7 +173,8 @@ public:
         oscR *= unisonGain;
 
         subPhase_ += (static_cast<double> (baseFreq) * 0.5) / sampleRate_;
-        const float sub = bank_->sampleSine (subPhase_) * params_.subLevel * 0.55f;
+        const double subPhaseInc = (static_cast<double> (baseFreq) * 0.5) / sampleRate_;
+        const float sub = bank_->sampleSine (subPhase_, subPhaseInc) * params_.subLevel * 0.55f;
         oscL += sub * 0.7071f;
         oscR += sub * 0.7071f;
 

@@ -175,7 +175,7 @@ wave9090::SynthParams Wave9090AudioProcessor::readParamsFromApvts() const noexce
     p.filterRes = load (PID::filterRes);
     if (auto* type = apvts_.getParameter (PID::filterType))
         if (auto* choice = dynamic_cast<juce::AudioParameterChoice*> (type))
-            p.filterMode = choice->getIndex();
+            p.filterMode = choice != nullptr ? choice->getIndex() : 1;
     p.filterDestructive = load (PID::filterCircuit) > 0.5f;
     p.drive = load (PID::drive);
     p.crush = load (PID::crush);

@@ -16,7 +16,7 @@ int main()
     const juce::File out = juce::File::getSpecialLocation (juce::File::tempDirectory)
                                .getChildFile ("wave9090-editor.png");
 
-    const auto artifactPath = juce::File ("/opt/cursor/artifacts/wave9090-editor.png");
+    const auto artifactPath = juce::File ("/opt/cursor/artifacts/wave9090-editor-vcf-filter-type.png");
     artifactPath.getParentDirectory().createDirectory();
 
     const juce::File browserShot = juce::File ("/opt/cursor/artifacts/wave9090-preset-browser.png");
