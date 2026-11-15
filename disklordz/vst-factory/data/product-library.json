@@ -12,6 +12,18 @@
       "dsp_modules": ["analysis.peak_rms"],
       "gui_modules": ["gui.meter"],
       "notes": "Internal factory proof SKU before market-research SKU #1."
+    },
+    {
+      "sku": "MemphisPhonkFactory",
+      "plugin_name": "MemphisPhonkFactory",
+      "plugin_class": "generator",
+      "product_category": "drums.memphis_phonk",
+      "track": "apc_greenfield",
+      "status": "dogfood",
+      "prompt": "MPC-oriented procedural Memphis phonk kit + loop factory: infinite packs, pattern editor, stems/MIDI/manifest, Dust macro, VST3+Standalone.",
+      "dsp_modules": ["procedural.drums", "tape.cassette"],
+      "gui_modules": ["pattern.grid"],
+      "notes": "Pack maker lane; sync via scripts/sync-memphis-phonk-factory.sh"
     }
   ]
 }

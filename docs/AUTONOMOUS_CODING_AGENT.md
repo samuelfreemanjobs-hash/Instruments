@@ -34,6 +34,8 @@ Cloud slices in `coding-queue.json` are finite. When all are **complete**, `--em
 
 Antigravity parallel work (e.g. **WO-AG-001** docs) does not block the VST proof.
 
+While **`plugin-skeleton`** is open and `PASTE_TO_FACTORY.md` says **`human-windows`**, Cloud should **not** keep adding low-value doc-only queue items. Prefer **idle** (`waiting`) over churn; only ship slices that fix automation, security, or sprint blockers. Add new `coding-queue.json` cloud items after Coach marks `plugin-skeleton` done (or Samuel asks).
+
 ## Safety
 
 - No `Source/` / `DPF-*` C++ without factory escalation file.

@@ -1,0 +1,71 @@
+name: Build ProphetRev2Trap
+
+on:
+  push:
+    branches:
+      - main
+      - 'cursor/prophet-rev2-trap-**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  linux-vst3:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            g++-12 \
+            libstdc++-12-dev \
+            libasound2-dev \
+            libfreetype6-dev \
+            libfontconfig1-dev \
+            libgl1-mesa-dev \
+            libx11-dev \
+            libxrandr-dev \
+            libxcursor-dev \
+            libxinerama-dev \
+            libxext-dev \
+            libcurl4-openssl-dev \
+            unzip \
+            xvfb
+
+      - name: Configure
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++-12 \
+            -DCMAKE_C_COMPILER=gcc-12
+
+      - name: Build ProphetRev2Trap VST3
+        # -j4 cap: avoid OOM on standard GH runners (7 GB RAM)
+        run: cmake --build build --target ProphetRev2Trap_VST3 -j4
+
+      - name: Upload VST3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ProphetRev2Trap-VST3-linux
+          path: "build/ProphetRev2Trap/ProphetRev2Trap_artefacts/Release/VST3/Prophet Rev2 Trap.vst3"
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Cache pluginval binary
+        run: python3 scripts/vst/run_pluginval.py --install-only
+
+      - name: Validate VST3 with pluginval
+        env:
+          CI: "true"
+        run: |
+          xvfb-run -a python3 scripts/vst/run_pluginval.py \
+            --discover "build/ProphetRev2Trap/ProphetRev2Trap_artefacts/Release/VST3" \
+            --strictness-level 5 \
+            --timeout-ms 120000

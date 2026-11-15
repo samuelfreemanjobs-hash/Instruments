@@ -164,6 +164,56 @@
       "allowlist": ["docs/"],
       "context_paths": ["DiskLordz-Audio/BUILD.md"],
       "priority": 16
+    },
+    {
+      "id": "cloud-liaison-doc-human-windows",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "CURSOR_FACTORY_LIAISON: human-windows = Samuel not Factory",
+      "acceptance": "Section cites PASTE_TO_FACTORY, Windows CI, operator doc",
+      "allowlist": ["docs/"],
+      "context_paths": ["disklordz/audio-command/data/PASTE_TO_FACTORY.md"],
+      "priority": 17
+    },
+    {
+      "id": "cloud-agents-md-plugin-skeleton-ci",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "AGENTS.md: CHORD ENGINE Windows CI + plugin-skeleton gate",
+      "acceptance": "DiskLordz Audio section cites BUILD.md and Windows workflow",
+      "allowlist": ["AGENTS.md"],
+      "context_paths": ["docs/AUDIO_PLUGIN_AGENT_LANE.md"],
+      "priority": 18
+    },
+    {
+      "id": "cloud-paste-refresh-timestamp",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Refresh PASTE_TO_FACTORY timestamp + ROADMAP Stage B note",
+      "acceptance": "factory-queue.py run; ROADMAP mentions main Stage B / plugin-skeleton",
+      "allowlist": ["docs/", "disklordz/audio-command/data/", "scripts/audio-plugin/"],
+      "context_paths": ["docs/DISKLORDZ_MASTER_PLAN.md"],
+      "priority": 19
+    },
+    {
+      "id": "cloud-next-factory-inbox-open",
+      "owner": "cloud",
+      "kind": "factory_escalation",
+      "title": "next-factory: list open Antigravity handoffs (parallel)",
+      "acceptance": "Parallel section names open HO + WO ids; does not block plugin-skeleton",
+      "allowlist": ["disklordz/autonomous-coder/factory-escalation/"],
+      "context_paths": ["disklordz/antigravity/inbox/"],
+      "priority": 20
+    },
+    {
+      "id": "cloud-autonomous-reduce-churn",
+      "owner": "cloud",
+      "kind": "code_slice",
+      "title": "Idle + human-windows: prefer no doc-only queue spam",
+      "acceptance": "AUTONOMOUS_CODING_AGENT.md states defer new cloud slices until plugin-skeleton done",
+      "allowlist": ["docs/", "disklordz/autonomous-coder/"],
+      "context_paths": ["disklordz/audio-command/data/progress.json"],
+      "priority": 21
     }
   ]
 }

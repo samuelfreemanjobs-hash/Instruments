@@ -19,9 +19,6 @@ CLI = ROOT / "build" / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLor
 BANK = ROOT / "assets/factory/preset_bank.json"
 PROBE_DIR = ROOT / "build" / "audio-cull-probes"
 CORR_MAX = 0.92
-# Sam's priority lanes: never drop for cross-category similarity during post-regen cull.
-CROSS_CATEGORY_EXEMPT = frozenset({"Pads", "Synth Keys", "Leads", "Swells"})
-
 sys.path.insert(0, str(ROOT / "tools"))
 from generate_preset_bank import select_diverse_presets  # noqa: E402
 from trap_lord_audio_metrics import (  # noqa: E402
@@ -107,15 +104,12 @@ def main() -> int:
                 continue
             v = vec_map[i]
             too_close = False
-            if cat not in CROSS_CATEGORY_EXEMPT:
-                for other_cat, ov in global_kept:
-                    if other_cat == cat:
-                        continue
-                    if other_cat in CROSS_CATEGORY_EXEMPT:
-                        continue
-                    if float(np.dot(v, ov)) > CROSS_CATEGORY_CORR_MAX:
-                        too_close = True
-                        break
+            for other_cat, ov in global_kept:
+                if other_cat == cat:
+                    continue
+                if float(np.dot(v, ov)) > CROSS_CATEGORY_CORR_MAX:
+                    too_close = True
+                    break
             if too_close:
                 cross_rejects += 1
                 continue

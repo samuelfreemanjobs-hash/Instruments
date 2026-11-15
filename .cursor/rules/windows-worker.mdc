@@ -46,6 +46,13 @@ npx.cmd next start -p 3100       # avoid 3000; other agents use it
 
 Smoke: `POST /api/factory/batch` with `{"prompt":"go-live pack","presetId":"boulevard-86","spec":{"engine":"studio"}}`.
 
+## NTS-1 mkII custom oscillators (test on hardware)
+
+- **One command:** `.\scripts\windows\build-and-prepare-mkii.ps1` (WSL compile + Explorer). Prepare-only: `-PrepareOnly`.
+- **Do not** native-compile in PowerShell — WSL or CI artifact **`nts1-mkii-units`**.
+- **KORG KONTROL Editor** → NTS-1 mkII → Oscillator → Load → Write.
+- `scripts/windows/README.md` · `docs/NTS1_MKII_WINDOWS_TEST.md`.
+
 ## Never on this machine
 
 - Global installs, registry or system setting changes, writes outside `C:\dev`.

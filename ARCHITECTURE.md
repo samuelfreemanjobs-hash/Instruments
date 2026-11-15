@@ -9,6 +9,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **JD Upgraded** (VST3 + CLAP + standalone synth) | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [Source/UI/ARCHITECTURE.md](Source/UI/ARCHITECTURE.md) | `JDUpgraded_VST3`, `JDUpgraded_CLAP`, `JDUpgraded_Standalone` |
 | **Offline tooling** (ROM gen, render, regression) | [tools/ARCHITECTURE.md](tools/ARCHITECTURE.md) | `GenerateCleanroomRom`, `OfflineRender`, `SpectralDiff` |
 | **SynthForge** (hardware preset workstation) | [tools/synth-forge/ARCHITECTURE.md](tools/synth-forge/ARCHITECTURE.md) | `pytest tests -v` · `uvicorn synth_forge.main:app --port 8000` in `tools/synth-forge/` |
+| **Black Friday Madness** (AI shopping intelligence PWA) | [tools/deal-hunter/ARCHITECTURE.md](tools/deal-hunter/ARCHITECTURE.md) | `npm run dev` in `tools/deal-hunter/` |
 | **VST testing ops** (pluginval command center) | [vst-testing-ops/ARCHITECTURE.md](vst-testing-ops/ARCHITECTURE.md) | `python3 vst-testing-ops/run_business.py --profile ci` · `streamlit run vst-testing-ops/app.py` |
 | **HISE sketch lane** (rompler / sampler R&D) | [docs/HISE_ANTIGRAVITY_LANE.md](docs/HISE_ANTIGRAVITY_LANE.md) · [hise-sketch/ARCHITECTURE.md](hise-sketch/ARCHITECTURE.md) | HISE local export (Antigravity); not in root CMake |
 | **Disklordz** (package index) | [disklordz/ARCHITECTURE.md](disklordz/ARCHITECTURE.md) · [docs/ROADMAP.md](docs/ROADMAP.md) | `./scripts/run-agent-fleet-now.sh` |
@@ -23,6 +24,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **META LLM charter** | [disklordz/agents/charter/ARCHITECTURE.md](disklordz/agents/charter/ARCHITECTURE.md) · [CLAUDE.md](CLAUDE.md) | `./scripts/sync-meta-llm-charter.sh` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-9090** (sampleless trap wavetable synth) | [Wave9090/ARCHITECTURE.md](Wave9090/ARCHITECTURE.md) | `Wave9090_VST3`, `Wave9090_Standalone`, `Wave9090Tests` |
+| **Prophet Rev2 Trap** (8-voice analog-style VST3) | [ProphetRev2Trap/ARCHITECTURE.md](ProphetRev2Trap/ARCHITECTURE.md) | `ProphetRev2Trap` |
 | **SP-1200 Drumulator** (standalone + VST3 sampler) | [SP1200/ARCHITECTURE.md](SP1200/ARCHITECTURE.md) · [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md) | `SP1200_Standalone`, `SP1200_VST3`, `ctest -R SP1200` |
 | **DiskLordz 808 Lab** (lanes, sprint kits, MPC500 workflow) | [docs/disklordz/808-LAB.md](docs/disklordz/808-LAB.md) · [disklordz/website/](disklordz/website/) | `npm run export:sprint-1-5` in `disklordz/website/` |
 | **DiskLordz Phonk Box** (PC phonk engine) | [disklordz/phonk-box/ARCHITECTURE.md](disklordz/phonk-box/ARCHITECTURE.md) | `python phonk_engine.py --self-test` in `disklordz/phonk-box/engine/` |

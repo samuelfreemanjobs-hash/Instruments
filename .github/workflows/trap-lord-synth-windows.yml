@@ -52,7 +52,7 @@ jobs:
       - name: Upload TRAP LORD SYNTH.vst3 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: trap-lord-synth-vst3-windows-${{ github.run_number }}
+          name: trap-lord-synth-vst3-windows-x64
           path: ${{ steps.vst3.outputs.path }}
           if-no-files-found: error
           retention-days: 14
