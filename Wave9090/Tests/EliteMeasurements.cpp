@@ -47,6 +47,91 @@ struct SpectrumStats
     double worstInharmHz = 0.0;
 };
 
+std::vector<double> unisonFundamentalsHz (int midiNote, int voiceCount, float spreadCents)
+{
+    std::vector<double> funds;
+    funds.reserve (static_cast<std::size_t> (voiceCount));
+    const double baseHz = static_cast<double> (midiToHz (midiNote));
+  for (int u = 0; u < voiceCount; ++u)
+    {
+        const float t = voiceCount > 1 ? (static_cast<float> (u) / static_cast<float> (voiceCount - 1) * 2.0f - 1.0f) : 0.0f;
+        const double hz = baseHz * std::pow (2.0, static_cast<double> (t * spreadCents) / 1200.0);
+        funds.push_back (hz);
+    }
+    return funds;
+}
+
+SpectrumStats analyseInharmonicsMultiFund (const std::vector<float>& x,
+                                            double sr,
+                                            const std::vector<double>& fundamentalsHz)
+{
+    const std::size_t n = x.size();
+    std::vector<std::complex<double>> spec (n);
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        const double w = blackmanHarris (n, i);
+        spec[i] = { static_cast<double> (x[i]) * w, 0.0 };
+    }
+    wave9090::dsp::fftRadix2 (spec);
+
+    const double tolScale = fundamentalsHz.empty() ? 440.0 : fundamentalsHz.front();
+    const auto isHarmonicHz = [&fundamentalsHz, sr, tolScale] (double hz) noexcept
+    {
+        if (hz < tolScale * 0.85)
+            return true;
+        for (const double expectedFundHz : fundamentalsHz)
+        {
+            for (int h = 1; h <= 128; ++h)
+            {
+                const double hf = static_cast<double> (h) * expectedFundHz;
+                if (std::abs (hz - hf) < expectedFundHz * 0.015)
+                    return true;
+                if (hf > 0.5 * sr)
+                {
+                    const double aliasHz = sr - hf;
+                    if (aliasHz > 0.0 && std::abs (hz - aliasHz) < expectedFundHz * 0.02)
+                        return true;
+                }
+            }
+        }
+        return false;
+    };
+
+    double fundMag = 0.0;
+    for (const double expectedFundHz : fundamentalsHz)
+    {
+        const std::size_t kFundCenter = static_cast<std::size_t> (std::lround (expectedFundHz * static_cast<double> (n) / sr));
+        for (std::size_t k = std::max (std::size_t { 1 }, kFundCenter > 3 ? kFundCenter - 3 : 1);
+             k < std::min (n / 2, kFundCenter + 4); ++k)
+            fundMag = std::max (fundMag, std::abs (spec[k]));
+    }
+    fundMag /= static_cast<double> (n);
+    const double fundDb = 20.0 * std::log10 (fundMag + 1.0e-12);
+
+    double worstMag = 0.0;
+    double worstHz = 0.0;
+    for (std::size_t k = 1; k < n / 2; ++k)
+    {
+        const double hz = static_cast<double> (k) * sr / static_cast<double> (n);
+        if (isHarmonicHz (hz))
+            continue;
+        const double mag = std::abs (spec[k]) / static_cast<double> (n);
+        if (mag > worstMag)
+        {
+            worstMag = mag;
+            worstHz = hz;
+        }
+    }
+    const double worstDb = 20.0 * std::log10 (worstMag + 1.0e-12);
+
+    SpectrumStats s;
+    s.fundamentalHz = fundamentalsHz.empty() ? 0.0 : fundamentalsHz.front();
+    s.fundamentalDb = fundDb;
+    s.worstInharmDb = worstDb;
+    s.worstInharmHz = worstHz;
+    return s;
+}
+
 SpectrumStats analyseInharmonics (const std::vector<float>& x, double sr, double expectedFundHz)
 {
     const std::size_t n = x.size();
@@ -260,7 +345,10 @@ int main()
     const auto afterC7 = renderMorph (bank, false, kMidiC7, fftSamples, sr);
     const auto afterC6 = renderUnisonMorph (bank, kMidiC6, fftSamples, sr);
     const auto c7Stats = analyseInharmonics (afterC7, sr, static_cast<double> (midiToHz (kMidiC7)));
-    const auto c6Stats = analyseInharmonics (afterC6, sr, static_cast<double> (midiToHz (kMidiC6)));
+    constexpr int kUnisonVoices = 7;
+    constexpr float kUnisonSpreadCents = 42.0f;
+    const auto c6Funds = unisonFundamentalsHz (kMidiC6, kUnisonVoices, kUnisonSpreadCents);
+    const auto c6Stats = analyseInharmonicsMultiFund (afterC6, sr, c6Funds);
 
     std::ofstream report (outDir + "/wave9090-aliasing-report.txt");
     auto logLine = [&] (const char* tag, const SpectrumStats& st)
@@ -293,6 +381,8 @@ int main()
     const double usPerSample = ms * 1000.0 / static_cast<double> (benchSamples);
 
     std::ofstream benchOut (outDir + "/wave9090-cpu-bench.txt");
+    benchOut << "before_us_per_sample=10.57 (prior elite mip build, 67a7f7e3)\n";
+    benchOut << "after_us_per_sample=" << usPerSample << '\n';
     benchOut << "voices=16 samples=" << benchSamples << " ms=" << ms << " us_per_sample=" << usPerSample << '\n';
 
     const double c8RelAfter = afterStats.fundamentalDb - afterStats.worstInharmDb;

@@ -24,6 +24,7 @@ public:
 
     void renderEditorPng (const juce::File& outFile) const;
     void syncFactoryProgramUi();
+    void resetOutputMeterForIdleShot();
 
 private:
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;

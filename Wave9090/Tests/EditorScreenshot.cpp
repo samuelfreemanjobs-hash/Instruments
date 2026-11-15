@@ -9,8 +9,10 @@ int main()
 {
     juce::ScopedJuceInitialiser_GUI juceInit;
     Wave9090AudioProcessor proc;
+    proc.resetOutputPeak();
     proc.setCurrentProgram (8);
     Wave9090AudioProcessorEditor editor (proc);
+    editor.resetOutputMeterForIdleShot();
     editor.syncFactoryProgramUi();
 
     const juce::File out = juce::File::getSpecialLocation (juce::File::tempDirectory)

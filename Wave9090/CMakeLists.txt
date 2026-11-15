@@ -43,6 +43,8 @@ target_compile_definitions (Wave9090
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
         JUCE_DISPLAY_SPLASH_SCREEN=0
+    PRIVATE
+        WAVE9090_USE_SIMD=1
 )
 
 target_link_libraries (Wave9090

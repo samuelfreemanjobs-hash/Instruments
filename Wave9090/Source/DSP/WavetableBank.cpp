@@ -54,29 +54,48 @@ float WavetableBank::mipBlend (double phaseInc) const noexcept
     return static_cast<float> (std::clamp (mipFloat, 0.0, static_cast<double> (kMipLevels - 1)));
 }
 
-float WavetableBank::sampleMorph (double phase01, float positionNorm, double phaseInc) const noexcept
+MorphContext WavetableBank::buildMorphContext (float positionNorm, double phaseInc) const noexcept
 {
+    MorphContext ctx;
     positionNorm = std::clamp (positionNorm, 0.0f, 1.0f);
     const float scaled = positionNorm * static_cast<float> (kWavetableCount - 1);
-    const auto i0 = static_cast<std::size_t> (scaled);
-    const auto i1 = std::min (i0 + 1, kWavetableCount - 1);
-    const float frac = scaled - static_cast<float> (i0);
+    ctx.waveIndex0 = static_cast<std::size_t> (scaled);
+    ctx.waveIndex1 = std::min (ctx.waveIndex0 + 1, kWavetableCount - 1);
+    ctx.morphFrac = scaled - static_cast<float> (ctx.waveIndex0);
 
     const float mipF = mipBlend (phaseInc);
-    const int mipLow = static_cast<int> (std::floor (mipF));
-    const int mipHigh = std::min (mipLow + 1, static_cast<int> (kMipLevels) - 1);
-    const float mipXf = mipF - static_cast<float> (mipLow);
+    ctx.mipLow = static_cast<int> (std::floor (mipF));
+    ctx.mipHigh = std::min (ctx.mipLow + 1, static_cast<int> (kMipLevels) - 1);
+    ctx.mipXf = mipF - static_cast<float> (ctx.mipLow);
+    return ctx;
+}
 
-    const float a = sampleAt (mipTables_[static_cast<std::size_t> (mipLow)][i0], phase01);
-    const float b = sampleAt (mipTables_[static_cast<std::size_t> (mipLow)][i1], phase01);
-    const float c = sampleAt (mipTables_[static_cast<std::size_t> (mipHigh)][i0], phase01);
-    const float d = sampleAt (mipTables_[static_cast<std::size_t> (mipHigh)][i1], phase01);
-
-    const float morphLow = a + (b - a) * frac;
-    if (mipHigh == mipLow)
+float WavetableBank::sampleMorphContext (double phase01, const MorphContext& ctx) const noexcept
+{
+    const float a = sampleAt (mipTables_[static_cast<std::size_t> (ctx.mipLow)][ctx.waveIndex0], phase01);
+    const float b = sampleAt (mipTables_[static_cast<std::size_t> (ctx.mipLow)][ctx.waveIndex1], phase01);
+    const float morphLow = a + (b - a) * ctx.morphFrac;
+    if (ctx.mipHigh == ctx.mipLow)
         return morphLow;
-    const float morphHigh = c + (d - c) * frac;
-    return morphLow + (morphHigh - morphLow) * mipXf;
+    const float c = sampleAt (mipTables_[static_cast<std::size_t> (ctx.mipHigh)][ctx.waveIndex0], phase01);
+    const float d = sampleAt (mipTables_[static_cast<std::size_t> (ctx.mipHigh)][ctx.waveIndex1], phase01);
+    const float morphHigh = c + (d - c) * ctx.morphFrac;
+    return morphLow + (morphHigh - morphLow) * ctx.mipXf;
+}
+
+float WavetableBank::sampleSineContext (double phase01, const MorphContext& ctx) const noexcept
+{
+    const float a = sampleAt (mipTables_[static_cast<std::size_t> (ctx.mipLow)][0], phase01);
+    if (ctx.mipHigh == ctx.mipLow)
+        return a;
+    const float b = sampleAt (mipTables_[static_cast<std::size_t> (ctx.mipHigh)][0], phase01);
+    return a + (b - a) * ctx.mipXf;
+}
+
+float WavetableBank::sampleMorph (double phase01, float positionNorm, double phaseInc) const noexcept
+{
+    const auto ctx = buildMorphContext (positionNorm, phaseInc);
+    return sampleMorphContext (phase01, ctx);
 }
 
 float WavetableBank::sampleLegacyMorph (double phase01, float positionNorm, double phaseInc) const noexcept
@@ -94,13 +113,7 @@ float WavetableBank::sampleLegacyMorph (double phase01, float positionNorm, doub
 
 float WavetableBank::sampleSine (double phase01, double phaseInc) const noexcept
 {
-    const float mipF = mipBlend (phaseInc);
-    const int mipLow = static_cast<int> (std::floor (mipF));
-    const int mipHigh = std::min (mipLow + 1, static_cast<int> (kMipLevels) - 1);
-    const float mipXf = mipF - static_cast<float> (mipLow);
-    const float a = sampleAt (mipTables_[static_cast<std::size_t> (mipLow)][0], phase01);
-    const float b = sampleAt (mipTables_[static_cast<std::size_t> (mipHigh)][0], phase01);
-    return a + (b - a) * mipXf;
+    return sampleSineContext (phase01, buildMorphContext (0.0f, phaseInc));
 }
 
 void WavetableBank::removeDc (std::array<float, kWavetableSize>& table) noexcept

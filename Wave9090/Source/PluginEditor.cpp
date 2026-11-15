@@ -156,6 +156,12 @@ void Wave9090AudioProcessorEditor::syncFactoryProgramUi()
     updatePresetLcd();
 }
 
+void Wave9090AudioProcessorEditor::resetOutputMeterForIdleShot()
+{
+    processor_.resetOutputPeak();
+    ledMeter_.setLevelDb (-100.0f);
+}
+
 void Wave9090AudioProcessorEditor::refreshPresetCombo()
 {
     presetBox_.clear();

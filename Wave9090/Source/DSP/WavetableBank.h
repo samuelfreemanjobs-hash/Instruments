@@ -13,11 +13,26 @@ constexpr std::size_t kWavetableSize = 2048;
 constexpr std::size_t kMipLevels = 11;
 constexpr std::size_t kHarmSafetyBins = 2;
 
+/** Cached frame + mip indices for block-rate wavetable morph (no per-sample log2). */
+struct MorphContext
+{
+    std::size_t waveIndex0 = 0;
+    std::size_t waveIndex1 = 0;
+    float morphFrac = 0.0f;
+    int mipLow = 0;
+    int mipHigh = 0;
+    float mipXf = 0.0f;
+};
+
 /** 64-wave bank with FFT band-limited per-octave mip tables. */
 class WavetableBank
 {
 public:
     void rebuild() noexcept;
+
+    MorphContext buildMorphContext (float positionNorm, double phaseInc) const noexcept;
+    float sampleMorphContext (double phase01, const MorphContext& ctx) const noexcept;
+    float sampleSineContext (double phase01, const MorphContext& ctx) const noexcept;
 
     const std::array<float, kWavetableSize>& getTable (std::size_t index, std::size_t mip = 0) const noexcept
     {
