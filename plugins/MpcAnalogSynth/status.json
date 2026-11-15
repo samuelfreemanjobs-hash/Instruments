@@ -1,0 +1,19 @@
+{
+  "plugin_name": "MpcAnalogSynth",
+  "version": "1.0.0",
+  "track": "apc_greenfield",
+  "apc_phase": "impl",
+  "current_phase": "impl",
+  "vst_path": "vst/MpcAnalogSynth",
+  "ui_framework": "headless",
+  "complexity_tier": "L1",
+  "validation": {
+    "creative_brief_exists": true,
+    "parameter_spec_exists": true,
+    "architecture_defined": true,
+    "design_complete": true,
+    "code_complete": true,
+    "tests_passed": true,
+    "ship_ready": false
+  }
+}

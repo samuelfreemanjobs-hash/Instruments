@@ -46,6 +46,7 @@ Melodee is **headless**: it does not open a desktop plugin window. You ship **DS
 
 ### JUCE in this repo (summary)
 
+- Reference plugin: **`vst/MpcAnalogSynth/`** — headless 6-voice analog polysynth, factory programs, `MPC_VST3_HEADLESS=ON` by default.
 - Full **VST3** bundle layout Melodee expects.
 - Use **program chain first** (DSP), keep editors minimal or headless—Melodee ignores most GUI anyway.
 - Cross-build docs in the sections below; verify every release with `verify-mpc-sample-vst3.sh`.
