@@ -2,6 +2,8 @@
 
 **Next:** `/apc-design MpcDxFm`
 
+**Method 1 (optional):** After VA v1 ships, optional CMake flag to wrap **Nuked-OPN2** (or similar) and load user YM2612 ROM from `Melodee/Data/MpcDxFm/` — see [docs/MPC_CHIP_EMULATION.md](../../../docs/MPC_CHIP_EMULATION.md).
+
 ## Complexity (spec §8)
 
 | Dimension | Score | Notes |
