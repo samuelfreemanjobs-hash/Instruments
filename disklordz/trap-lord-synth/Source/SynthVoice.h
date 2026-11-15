@@ -70,6 +70,7 @@ private:
     static double wrap (double p);
     static float triangle (float p);
     static float ladderStep (float in, float& z1, float& z2, float& z3, float& z4, float g);
+    static float dcBlockSample (float x, float& zIn, float& zOut);
 
     juce::ADSR env;
     juce::dsp::StateVariableTPTFilter<float> svf;
@@ -91,6 +92,9 @@ private:
     double pitchDecay = 0.;
     int midiNote = 60;
     float voiceDrift = 0.f;
+    float dcBlockIn = 0.f;
+    float dcBlockOut = 0.f;
+    bool applyPostLfoHpf = false;
     float pitchTrackedCutoff (float baseHz) const;
     static constexpr double tau = juce::MathConstants<double>::twoPi;
 };

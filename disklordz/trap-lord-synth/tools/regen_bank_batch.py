@@ -50,6 +50,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
     parser.add_argument(
+        "--max-batches",
+        type=int,
+        default=0,
+        help="Max gate batches per regen'd category (0 = use generate_preset_bank MAX_GATE_BATCHES)",
+    )
+    parser.add_argument(
         "--pipeline",
         action="store_true",
         help="Run tools/post_regen_pipeline.sh after generation",
@@ -78,12 +84,14 @@ def main() -> int:
 
     target = dict(TARGET_QUOTAS)
     regen_only = set(cats)
+    max_batches = args.max_batches if args.max_batches > 0 else None
     presets, meta = run_generation(
         args.seed,
         target,
         audio_gate=True,
         resume_presets=resume,
         regen_only=regen_only,
+        max_gate_batches=max_batches,
     )
     write_bank(BANK, presets, meta["achievedQuotas"], meta["gate"])
     report = ROOT / "build" / f"factory-regen-{'-'.join(c.replace('/', '_') for c in cats)}.json"

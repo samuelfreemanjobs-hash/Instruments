@@ -30,6 +30,25 @@ AUDIBLE_CHECK_NOTES_BY_CATEGORY: dict[str, tuple[int, ...]] = {
 
 # Dominant FFT peak (full spectrum) must stay above this for listed categories (blocks subsonic "keys").
 SPECTRAL_PEAK_FLOOR_HZ = 80.0
+# Probe/gate analysis: ignore sub-audio bins; measure sub30 on HP path for LFO-heavy cats.
+SPECTRAL_ANALYSIS_HPF_HZ = 40.0
+HP_GATED_SUB30_CATEGORIES = frozenset({"Pads", "Synth Keys", "Swells", "Leads"})
+
+
+def highpass_dc_block(x: np.ndarray, sr: int, corner_hz: float = SPECTRAL_ANALYSIS_HPF_HZ) -> np.ndarray:
+    """Light DC blocker for spectral QA (matches post-LFO voice cleanup intent)."""
+    if len(x) < 4:
+        return x.astype(np.float64, copy=False)
+    r = float(np.exp(-2.0 * np.pi * corner_hz / sr))
+    y = np.zeros_like(x, dtype=np.float64)
+    z_in = 0.0
+    z_out = 0.0
+    for i, sample in enumerate(x.astype(np.float64)):
+        z_in_prev = z_in
+        z_in = float(sample)
+        z_out = z_in - z_in_prev + r * z_out
+        y[i] = z_out
+    return y
 
 CATEGORY_SPECTRAL_RULES: dict[str, dict[str, float]] = {
     "Leads": {
@@ -215,15 +234,21 @@ def analyze_file(path: Path, category: str = "", tail_fraction: float = 0.12) ->
 
     centroid, fundamental, fund_ratio = spectral_features(x, sr)
 
-    w = np.hanning(len(x))
-    spec = np.abs(np.fft.rfft(x * w))
-    freqs = np.fft.rfftfreq(len(x), 1.0 / sr)
+    gate_x = highpass_dc_block(x, sr) if category in HP_GATED_SUB30_CATEGORIES else x.astype(np.float64)
+
+    w = np.hanning(len(gate_x))
+    spec = np.abs(np.fft.rfft(gate_x * w))
+    freqs = np.fft.rfftfreq(len(gate_x), 1.0 / sr)
     power = spec * spec
     total_p = float(np.sum(power)) + 1e-20
     sub30 = float(np.sum(power[freqs < 30.0]))
     sub30_ratio = sub30 / total_p
-    bright5k = energy_ratio_above_hz(x, sr, 5000.0)
-    peak_bin = int(np.argmax(spec))
+    bright5k = energy_ratio_above_hz(gate_x, sr, 5000.0)
+    tonal_bins = freqs >= 30.0
+    if np.any(tonal_bins):
+        peak_bin = int(np.where(tonal_bins)[0][int(np.argmax(spec[tonal_bins]))])
+    else:
+        peak_bin = int(np.argmax(spec))
     spectral_peak = float(freqs[peak_bin]) if peak_bin < len(freqs) else 0.0
 
     return AudioMetrics(

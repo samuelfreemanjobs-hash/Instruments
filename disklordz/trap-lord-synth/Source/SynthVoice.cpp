@@ -83,9 +83,19 @@ void TrapVoice::seedPhases()
     voiceDrift = float ((midiNote % 7) * 0.0013 - 0.003);
 }
 
+float TrapVoice::dcBlockSample (float x, float& zIn, float& zOut)
+{
+    constexpr float kR = 0.9958f;
+    const float y = x - zIn + kR * zOut;
+    zIn = x;
+    zOut = y;
+    return y;
+}
+
 void TrapVoice::setPatch (const TrapPatch& p)
 {
     patch = p;
+    applyPostLfoHpf = p.swellDepth > 0.06f;
     juce::ADSR::Parameters e;
     e.attack = p.attack;
     e.decay = p.decay;
@@ -127,6 +137,7 @@ void TrapVoice::startNote (int note, float vel, juce::SynthesiserSound*, int whe
     glideFreq = newFreq;
     seedPhases();
     fastReleaseGain = 1.f;
+    dcBlockIn = dcBlockOut = 0.f;
     pitchEnv = patch.pitchEnvSemi > 0.01f ? 1.f : 0.f;
     activeSample.reset();
     noiseSeed = note * 13.17 + vel * 991.0;
@@ -422,6 +433,9 @@ void TrapVoice::renderNextBlock (juce::AudioBuffer<float>& out, int start, int n
         float y = (std::tanh (filtered * patch.drive) / normDrive) * envAmp * velocity * patch.gain * swellGain;
         if (! std::isfinite (y))
             y = 0.f;
+
+        if (applyPostLfoHpf)
+            y = dcBlockSample (y, dcBlockIn, dcBlockOut);
 
         if (fastReleaseGain < 1.f)
         {

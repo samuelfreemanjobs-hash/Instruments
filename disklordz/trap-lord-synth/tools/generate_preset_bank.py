@@ -528,6 +528,7 @@ def run_generation(
     audio_gate: bool,
     resume_presets: list[dict] | None = None,
     regen_only: set[str] | None = None,
+    max_gate_batches: int | None = None,
 ) -> tuple[list[dict], dict]:
     rng = random.Random(seed)
     resume_presets = list(resume_presets or [])
@@ -551,6 +552,8 @@ def run_generation(
         build_cli()
 
     cross_category_refs: list[np.ndarray] = []
+    batch_cap = int(max_gate_batches) if max_gate_batches is not None and max_gate_batches > 0 else MAX_GATE_BATCHES
+
     if audio_gate and resume_presets:
         print(f"Resume: seeding cross-category refs from {len(resume_presets)} presets…", flush=True)
         for i, p in enumerate(resume_presets):
@@ -604,7 +607,7 @@ def run_generation(
                 write_bank(out_path, all_presets, achieved, gate_meta)
             print(f"{category}: {achieved[category]}/{quota} (resumed)", flush=True)
             continue
-        while len(accepted) < want and batch < MAX_GATE_BATCHES:
+        while len(accepted) < want and batch < batch_cap:
             batch += 1
             need = want - len(accepted)
             pool_size = min(POOL_CAP, max(need * 6, int(want * CANDIDATE_OVERSHOOT)))

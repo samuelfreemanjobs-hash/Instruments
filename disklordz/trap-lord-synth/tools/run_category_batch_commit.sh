@@ -3,13 +3,14 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REPO="$(cd "$ROOT/../.." && pwd)"
-CATEGORY="${1:?usage: run_category_batch_commit.sh <Category> [seed]}"
+CATEGORY="${1:?usage: run_category_batch_commit.sh <Category> [seed] [max_batches]}"
 SEED="${2:-301520}"
+MAX_BATCHES="${3:-6}"
 export PYTHONUNBUFFERED=1
 
 cd "$ROOT"
-echo "=== Regen: $CATEGORY seed=$SEED ==="
-python3 -u tools/regen_bank_batch.py --categories "$CATEGORY" --seed "$SEED" \
+echo "=== Regen: $CATEGORY seed=$SEED max_batches=$MAX_BATCHES ==="
+python3 -u tools/regen_bank_batch.py --categories "$CATEGORY" --seed "$SEED" --max-batches "$MAX_BATCHES" \
   2>&1 | tee "build/batch-${CATEGORY//\//_}-regen.log"
 bash tools/post_regen_pipeline.sh
 
