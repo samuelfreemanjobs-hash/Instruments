@@ -8,6 +8,7 @@
 #include <JuceHeader.h>
 
 #include <atomic>
+#include <cstdint>
 
 class JunovaXAudioProcessor final : public juce::AudioProcessor
 {
@@ -54,6 +55,7 @@ public:
     float getDisplayBpm() const noexcept { return displayBpm_.load (std::memory_order_relaxed); }
     double getEffectiveSampleRate() const noexcept { return lastSampleRate_; }
     float getOutputPeak() const noexcept { return outputPeak_.load (std::memory_order_relaxed); }
+    std::uint8_t getActiveVoiceMask() const noexcept { return activeVoiceMask_.load (std::memory_order_relaxed); }
     juce::MidiKeyboardState& getKeyboardState() noexcept { return keyboardState_; }
 
     void initToDefaultPatch();
@@ -74,6 +76,7 @@ private:
     int currentProgram_ = 0;
     std::atomic<float> displayBpm_ { 120.0f };
     std::atomic<float> outputPeak_ { 0.0f };
+    std::atomic<std::uint8_t> activeVoiceMask_ { 0 };
     double lastSampleRate_ = 48000.0;
     juce::MidiKeyboardState keyboardState_;
     juce::ValueTree patchA_;

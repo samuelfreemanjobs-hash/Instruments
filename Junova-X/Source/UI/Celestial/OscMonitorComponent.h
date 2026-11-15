@@ -20,5 +20,6 @@ private:
 
     JunovaXAudioProcessor& processor_;
     std::array<float, 256> samples_{};
+    float previewPhase_ = 0.0f;
 };
 } // namespace junovax::ui::celestial

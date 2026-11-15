@@ -307,6 +307,7 @@ void JunovaXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
                            buffer.getNumSamples());
     engine_.render (buffer, arpMidi);
     outputPeak_.store (engine_.readAndResetPeak(), std::memory_order_relaxed);
+    activeVoiceMask_.store (engine_.getActiveVoiceMask(), std::memory_order_relaxed);
 
     if (buffer.getNumChannels() > 0)
     {

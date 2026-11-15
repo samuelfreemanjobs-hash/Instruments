@@ -24,6 +24,9 @@ target_sources (JunovaX
         Source/UI/Celestial/CelestialMainPanel.cpp
         Source/UI/Celestial/OscMonitorComponent.cpp
         Source/UI/Celestial/PresetVaultBrowser.cpp
+        Source/UI/Celestial/LabeledFader.cpp
+        Source/UI/Celestial/VoiceLedCluster.cpp
+        Source/UI/Celestial/PresetLcdStrip.cpp
         Source/DSP/SynthEngine.cpp
         Source/DSP/DiagTone.cpp
         Source/DSP/Arpeggiator.cpp
@@ -76,6 +79,21 @@ target_link_libraries (JunovaXSynthEngineTests
 )
 
 add_test (NAME JunovaXSynthEngine COMMAND JunovaXSynthEngineTests)
+
+add_executable (JunovaCaptureEditorSnapshot tools/CaptureEditorSnapshot.cpp)
+target_include_directories (JunovaCaptureEditorSnapshot PRIVATE Source
+    "${CMAKE_BINARY_DIR}/Junova-X/JunovaX_artefacts/JuceLibraryCode"
+)
+target_compile_definitions (JunovaCaptureEditorSnapshot PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
+add_dependencies (JunovaCaptureEditorSnapshot JunovaX)
+target_link_libraries (JunovaCaptureEditorSnapshot
+    PRIVATE
+        JunovaX
+        juce::juce_gui_basics
+        juce::juce_audio_utils
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_warning_flags
+)
 
 add_executable (JunovaOfflineRender tools/OfflineRender.cpp)
 target_include_directories (JunovaOfflineRender PRIVATE Source)

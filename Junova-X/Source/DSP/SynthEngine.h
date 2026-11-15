@@ -85,6 +85,7 @@ public:
 
     void render (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi) noexcept;
     float readAndResetPeak() noexcept;
+    std::uint8_t getActiveVoiceMask() const noexcept;
 
 private:
     struct Voice

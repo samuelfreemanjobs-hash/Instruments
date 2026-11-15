@@ -132,6 +132,19 @@ float SynthEngine::readAndResetPeak() noexcept
     return p;
 }
 
+std::uint8_t SynthEngine::getActiveVoiceMask() const noexcept
+{
+    std::uint8_t mask = 0;
+    const int limit = maxPolyVoices();
+    for (int i = 0; i < limit; ++i)
+    {
+        const auto& v = voices_[static_cast<std::size_t> (i)];
+        if (v.ampEnv.isActive() || v.keyDown)
+            mask = static_cast<std::uint8_t> (mask | (1u << i));
+    }
+    return mask;
+}
+
 float SynthEngine::polyBlep (float phase, float inc) const noexcept
 {
     if (inc <= 0.0f)
