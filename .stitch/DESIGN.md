@@ -35,6 +35,8 @@ A restrained, hardware-inspired **Cockpit Dense** (density 8/10) desktop audio p
 
 **Disklordz products:** default DESKTOP frame **960×600** for new WebView UIs; **JD Upgraded** native skin scaffold uses **1020×780** until Sam’s Stitch export lands (see `shared/disklordz_ui/skins/jdupgraded_default/layout.json`).
 
+**JD Upgraded Hardware v1.0 (Sam):** component library reference at `shared/disklordz_ui/skins/jdupgraded_default/assets/reference/jd-upgraded-component-library-v1.jpg`. Active hardware glow may read **~#FF8C00** on the mockup; token `primary` / `accent_primary` stays **#D98838** until Sam picks one accent for lint + Stitch upload.
+
 ## Colors
 
 - **Anodized Obsidian Slate (#141619):** Outer chassis, dark text on engaged amber toggles, frame dividers.

@@ -28,6 +28,26 @@ MCP (Cursor): add `stitch` server in `.cursor/mcp.json` with `X-Goog-Api-Key` fr
 
 Default JD Upgraded scaffold: **1020 × 780** (`skins/jdupgraded_default/layout.json`).
 
+## JD Upgraded — Hardware Component Library v1.0 (Sam)
+
+Reference sheet (repo):  
+`shared/disklordz_ui/skins/jdupgraded_default/assets/reference/jd-upgraded-component-library-v1.jpg`
+
+This is the **export target** for Canva/Stitch: skeuomorphic rack hardware, orange active glow (~`#FF8C00`–`#FF9A2E`; align with `.stitch/DESIGN.md` primary `#D98838` if you want one token set), dark navy chassis, brushed metal knobs.
+
+| Region on sheet | Export as (PNG) | `layout.json` / code notes |
+|-----------------|-----------------|---------------------------|
+| **Knobs** Master 48px / Param 38px / Trim 28px | `knob_master_48_strip.png`, `knob_param_38_strip.png`, `knob_trim_28_strip.png` (64-frame filmstrips + default/hover/active stills) | Map **Master** → `masterGain`; most rotaries → 38px param; small trims → 28px |
+| **Preset browser** recessed LCD | `display_preset_lcd.png` (static bezel) + optional dot-font atlas | Live text stays JUCE (`presetName` label); export bezel only |
+| **Scope / analyzer** (if used) | `display_scope_bezel.png` | Optional; JD scaffold uses level meter not scope today |
+| **Vertical faders** | `fader_track.png`, `fader_cap.png`, `fader_scale.png` | Tone levels today are vertical sliders — match 56×120 slots in layout |
+| **Jog / pitch / mod wheels** | optional for v2 | Not in current APVTS; skip unless product adds performance controls |
+| **LED meters** L/R | `meter_led_strip.png` (green→amber→red segments) | `outputMeter` uses code-driven level; PNG is backing scale |
+| **Pushbuttons** ON/BYPASS/MUTE/SOLO + slope pills | `btn_toggle_off.png`, `btn_toggle_on.png`, `btn_filter_slope_*.png` | Map toggles to `groupAEnable`, mutes, `filterLink`, etc. |
+| **Materials** wood cheek, felt, anodized trim | `mat_wood.png`, `mat_felt.png`, `mat_brushed_alu.png` | Optional panel accents in `background.png` composite |
+
+**States to export per interactive family:** default, active (orange indicator), hover (outer glow), inactive/grayed (see fader “INACTIVE” on sheet).
+
 ## Layer exports (PNG)
 
 Export **one PNG per static layer** (no embedded text that JUCE will draw live):
