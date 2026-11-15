@@ -13,6 +13,14 @@ import { creditCostForSpec, PRODUCT_PACK_CREDIT_COST } from "@/lib/generation/mo
 import type { KitManifest, ProductPackManifest } from "@/lib/manifest";
 import { STYLE_PRESETS, type StylePreset } from "@/lib/presets";
 
+const FEATURED_PRESET_IDS = [
+  "midnight-circuit",
+  "disklordz-screw",
+  "mpc-ready-808",
+  "terminal-mirage",
+  "boulevard-86",
+] as const;
+
 type FrozenRequest = {
   prompt: string;
   presetId: string;
@@ -62,6 +70,7 @@ export function KitGenerator() {
   const [ragNote, setRagNote] = useState<string | null>(null);
   const [productPack, setProductPack] = useState<ProductPackManifest | null>(null);
   const [packLoading, setPackLoading] = useState(false);
+  const [laneQuery, setLaneQuery] = useState("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -224,15 +233,19 @@ export function KitGenerator() {
   }, [frozen, runGenerate]);
 
   const playSample = useCallback((url: string, playKey: string) => {
-    if (audioRef.current) {
-      audioRef.current.pause();
+    const current = audioRef.current;
+    if (current && playingKey === playKey && !current.paused) {
+      current.pause();
+      setPlayingKey(null);
+      return;
     }
+    if (current) current.pause();
     const audio = new Audio(url);
     audioRef.current = audio;
     setPlayingKey(playKey);
     audio.play().catch(() => setPlayingKey(null));
     audio.onended = () => setPlayingKey(null);
-  }, []);
+  }, [playingKey]);
 
   const runProductPack = useCallback(async () => {
     setPackLoading(true);
@@ -342,6 +355,25 @@ export function KitGenerator() {
 
   const variationCountHint =
     spec.engine === "creative" ? "3 variations" : "2 variations";
+  const featuredPresets = FEATURED_PRESET_IDS.flatMap((id) => {
+    const preset = STYLE_PRESETS.find((item) => item.id === id);
+    return preset ? [preset] : [];
+  });
+  const laneNeedle = laneQuery.trim().toLowerCase();
+  const laneMatches =
+    laneNeedle.length < 2
+      ? []
+      : STYLE_PRESETS.filter((preset) => {
+          if ((FEATURED_PRESET_IDS as readonly string[]).includes(preset.id)) return false;
+          const haystack = `${preset.label} ${preset.description} ${preset.tags.join(" ")}`.toLowerCase();
+          return haystack.includes(laneNeedle);
+        }).slice(0, 8);
+  const selectedOffList =
+    selectedPreset &&
+    !featuredPresets.some((preset) => preset.id === selectedPreset.id) &&
+    !laneMatches.some((preset) => preset.id === selectedPreset.id)
+      ? selectedPreset
+      : null;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">

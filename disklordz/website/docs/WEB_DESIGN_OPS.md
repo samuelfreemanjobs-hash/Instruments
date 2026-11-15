@@ -26,6 +26,7 @@ Do not print a founding year. The crest artwork is used as a mark, not as a hist
 ## What is real today
 
 - Drum kit generator in `disklordz/website/` (prompt, preview, ZIP).
+- Memphis Phonk Factory, the Dust VST, in `vst/MemphisPhonkFactory/`. The site describes it. It does not host an installer.
 - Memphis Vault Vol. 1: 56 synthesized one-shots plus cover, at `disklordz/sound-factory/kits/memphis-vault-vol-1/` and `kits/Memphis-Vault-Vol-1.zip`.
 - Stripe Pro credits only when server env is configured. Prices on a mockup are sample figures until billing-ops publishes a live price.
 

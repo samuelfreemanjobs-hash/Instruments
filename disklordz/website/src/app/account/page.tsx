@@ -16,7 +16,7 @@ export default async function AccountPage() {
           Configure Supabase env vars to enable accounts. See{" "}
           <code className="text-zinc-300">.env.example</code>.
         </p>
-        <Link href="/" className="mt-4 inline-block text-emerald-400">← Home</Link>
+        <Link href="/" className="mt-4 inline-block text-gold">← Home</Link>
       </div>
     );
   }
@@ -40,7 +40,7 @@ export default async function AccountPage() {
       <div className="mx-auto max-w-3xl space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">Your kits</h1>
-          <Link href="/" className="text-sm text-emerald-400">New kit</Link>
+          <Link href="/drum-factory" className="text-sm text-gold">New kit</Link>
         </div>
         <p className="text-sm text-zinc-500">{user.email}</p>
         <AccountBilling

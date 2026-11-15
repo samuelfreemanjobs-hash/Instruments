@@ -61,6 +61,7 @@ Store (public)                         Drum Factory (app)
 /sounds      catalog                   /account         kits, credits
 /sounds/memphis-vault-vol-1            /login
 /plugins     honest status             /daw-inbox
+/plugins/memphis-phonk-factory         Dust VST, no installer
 /free        generator, within limits
 /learn       short guides
 /legal/*     draft policies
@@ -68,7 +69,7 @@ Store (public)                         Drum Factory (app)
 
 Today `/` is the generator. The store shell replaces that page. The generator moves to `/drum-factory` and keeps its API. Do not offer Add to Cart, Instant Checkout, or a dollar amount until a product row has a server-side price and the pack has been auditioned.
 
-Plugins on the store: Chord Engine is **in development**. Other plugin names are **coming soon**. No download and no payment for those.
+Plugins on the store: Memphis Phonk Factory (the Dust VST) is built in `vst/MemphisPhonkFactory/`. Chord Engine is **in development**. Trap Lord Synth is **coming soon**. No download and no payment for any of them.
 
 ## Data flow
 

@@ -23,8 +23,8 @@ export default function LoginPage() {
             (see <code className="text-amber-200">.env.example</code>).
           </p>
         )}
-        <Link href="/" className="text-sm text-emerald-400 hover:text-emerald-300">
-          ← Back to generator
+        <Link href="/drum-factory" className="text-sm text-gold hover:text-ivory">
+          ← Drum Factory
         </Link>
       </div>
     </div>

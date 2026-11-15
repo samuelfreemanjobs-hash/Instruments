@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function DawInboxPage() {
   return (
-    <main className="mx-auto max-w-2xl px-4 py-12 text-zinc-100">
+    <div className="mx-auto max-w-2xl px-4 py-12 text-zinc-100">
       <p className="text-sm font-medium uppercase tracking-widest text-emerald-400/90">
         WO-SAAS-016
       </p>
@@ -16,7 +16,7 @@ export default function DawInboxPage() {
         <h2 className="text-lg font-semibold">In the browser</h2>
         <p className="text-sm text-zinc-400">
           After you generate a kit on the{" "}
-          <Link href="/" className="text-emerald-400 hover:underline">home page</Link>, use{" "}
+          <Link href="/drum-factory" className="text-gold hover:underline">Drum Factory</Link>, use{" "}
           <strong className="font-medium text-zinc-200">Save WAVs to folder</strong> (Chrome or Edge).
           Files land in a subfolder you choose — drag into your DAW.
         </p>
@@ -46,8 +46,8 @@ npm start`}
       </section>
 
       <p className="mt-8 text-sm text-zinc-500">
-        <Link href="/" className="text-emerald-400 hover:underline">← Back to generator</Link>
+        <Link href="/drum-factory" className="text-gold hover:underline">← Drum Factory</Link>
       </p>
-    </main>
+    </div>
   );
 }

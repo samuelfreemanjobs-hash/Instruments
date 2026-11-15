@@ -33,29 +33,26 @@ export function AuthNav() {
     }
   }
 
-  if (!ready) return null;
+  if (!ready || !email) {
+    return (
+      <Link href="/login" className="font-condensed text-sm tracking-wide text-ivory uppercase hover:text-gold">
+        Account
+      </Link>
+    );
+  }
 
   return (
-    <nav className="mx-auto flex max-w-3xl items-center justify-end gap-4 pb-4 text-sm">
-      {email ? (
-        <>
-          <Link href="/account" className="text-zinc-400 hover:text-zinc-200">
-            Account
-          </Link>
-          <span className="text-zinc-500">{email}</span>
-          <button
-            type="button"
-            onClick={signOut}
-            className="text-emerald-400 hover:text-emerald-300"
-          >
-            Sign out
-          </button>
-        </>
-      ) : (
-        <Link href="/login" className="text-emerald-400 hover:text-emerald-300">
-          Sign in
-        </Link>
-      )}
-    </nav>
+    <div className="flex items-center gap-3">
+      <Link href="/account" className="font-condensed text-sm tracking-wide text-ivory uppercase hover:text-gold">
+        Account
+      </Link>
+      <button
+        type="button"
+        onClick={() => void signOut()}
+        className="min-h-11 font-condensed text-sm tracking-wide text-gold uppercase"
+      >
+        Sign out
+      </button>
+    </div>
   );
 }
