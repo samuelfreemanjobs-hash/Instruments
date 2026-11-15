@@ -12,7 +12,8 @@ on:
       - "JUCE_VERSION"
       - ".github/workflows/instruments-windows.yml"
   pull_request:
-    branches: [main]
+  # Stack PRs (e.g. WAVE-9090) merge into the Windows pluginval lane before main.
+    branches: [main, cursor/instruments-windows-pluginval-e82f]
     paths:
       - "Source/**"
       - "Wave9090/**"
