@@ -40,18 +40,19 @@ void SynthEngine::prepare (double sampleRate, int maxBlockSize) noexcept
     sampleRate_ = sampleRate;
     spec_.sampleRate = sampleRate;
     spec_.maximumBlockSize = static_cast<juce::uint32> (maxBlockSize);
-    spec_.numChannels = 2;
+    spec_.numChannels = 1;
 
     diagTone_.prepare (sampleRate);
     masterGain_.reset (sampleRate, 0.02);
     masterGain_.setCurrentAndTargetValue (1.0f);
+    initParamSmoothers();
 
     for (auto& v : voices_)
     {
-        v.filter.prepare (spec_);
-        v.filter.setType (juce::dsp::StateVariableTPTFilterType::lowpass);
+        v.filter.prepare (sampleRate);
         v.ampEnv.setSampleRate (sampleRate);
         v.filtEnv.setSampleRate (sampleRate);
+        v.analogDrift.seed (rng_);
     }
 
     hpfL_.prepare (spec_);
@@ -59,6 +60,23 @@ void SynthEngine::prepare (double sampleRate, int maxBlockSize) noexcept
     chorus_.prepare (sampleRate);
     rng_.setSeed (0x4a434u);
     reset();
+}
+
+void SynthEngine::initParamSmoothers() noexcept
+{
+    const double smoothSec = 0.01;
+    smFilterCutoff_.reset (sampleRate_, smoothSec);
+    smFilterRes_.reset (sampleRate_, smoothSec);
+    smPwm_.reset (sampleRate_, smoothSec);
+    smSubLvl_.reset (sampleRate_, smoothSec);
+    smNoise_.reset (sampleRate_, smoothSec);
+    smVcfDrive_.reset (sampleRate_, smoothSec);
+    smFilterCutoff_.setCurrentAndTargetValue (params_.filterCutoff);
+    smFilterRes_.setCurrentAndTargetValue (params_.filterRes);
+    smPwm_.setCurrentAndTargetValue (params_.dcoPwm);
+    smSubLvl_.setCurrentAndTargetValue (params_.dcoSubLvl);
+    smNoise_.setCurrentAndTargetValue (params_.dcoNoise);
+    smVcfDrive_.setCurrentAndTargetValue (params_.vcfDrive);
 }
 
 void SynthEngine::reset() noexcept
@@ -72,6 +90,9 @@ void SynthEngine::reset() noexcept
         v.filtEnv.reset();
         v.phase = 0.0f;
         v.subPhase = 0.0f;
+        v.lastOscSample = 0.0f;
+        v.filter.reset();
+        v.analogDrift.seed (rng_);
     }
     lfoPhase_ = 0.0f;
     lfoDelaySamples_ = params_.lfoDelay * static_cast<float> (sampleRate_);
@@ -88,6 +109,12 @@ void SynthEngine::setParams (const RuntimeParams& p) noexcept
 {
     params_ = p;
     updateEnvelopes();
+    smFilterCutoff_.setTargetValue (p.filterCutoff);
+    smFilterRes_.setTargetValue (p.filterRes);
+    smPwm_.setTargetValue (p.dcoPwm);
+    smSubLvl_.setTargetValue (p.dcoSubLvl);
+    smNoise_.setTargetValue (p.dcoNoise);
+    smVcfDrive_.setTargetValue (p.vcfDrive);
     if (p.hpfMode > 0)
     {
         const auto hpfHz = hpfHzForMode (p.hpfMode, sampleRate_);
@@ -99,22 +126,10 @@ void SynthEngine::setParams (const RuntimeParams& p) noexcept
 
 void SynthEngine::updateEnvelopes() noexcept
 {
-    juce::ADSR::Parameters amp;
-    amp.attack = params_.ampAttack;
-    amp.decay = params_.ampDecay;
-    amp.sustain = params_.ampSustain;
-    amp.release = params_.ampRelease;
-
-    juce::ADSR::Parameters filt;
-    filt.attack = params_.filtAttack;
-    filt.decay = params_.filtDecay;
-    filt.sustain = params_.filtSustain;
-    filt.release = params_.filtRelease;
-
     for (auto& v : voices_)
     {
-        v.ampEnv.setParameters (amp);
-        v.filtEnv.setParameters (filt);
+        v.ampEnv.setParameters (params_.ampAttack, params_.ampDecay, params_.ampSustain, params_.ampRelease);
+        v.filtEnv.setParameters (params_.filtAttack, params_.filtDecay, params_.filtSustain, params_.filtRelease);
     }
 }
 
@@ -123,6 +138,15 @@ int SynthEngine::maxPolyVoices() const noexcept
     if (params_.voiceMode == 4)
         return 6;
     return kMaxVoices;
+}
+
+int SynthEngine::filterOversampleFactor() const noexcept
+{
+    if (params_.oversampleMode >= 2)
+        return 4;
+    if (params_.oversampleMode >= 1)
+        return 2;
+    return 1;
 }
 
 float SynthEngine::readAndResetPeak() noexcept
@@ -162,6 +186,16 @@ float SynthEngine::polyBlep (float phase, float inc) const noexcept
     return 0.0f;
 }
 
+float SynthEngine::blepPulse (float phase, float inc, float pw) const noexcept
+{
+    pw = juce::jlimit (0.05f, 0.95f, pw);
+    float out = phase < pw ? 1.0f : -1.0f;
+    out -= polyBlep (phase, inc);
+    const float phase2 = std::fmod (phase - pw + 1.0f, 1.0f);
+    out += polyBlep (phase2, inc);
+    return out;
+}
+
 float SynthEngine::lfoValueAtPhase (float phase) const noexcept
 {
     switch (params_.lfoWaveform)
@@ -180,8 +214,17 @@ int SynthEngine::findFreeVoice() noexcept
 {
     const int limit = maxPolyVoices();
     for (int i = 0; i < limit; ++i)
-        if (voices_[static_cast<std::size_t> (i)].note < 0 && ! voices_[static_cast<std::size_t> (i)].ampEnv.isActive())
+    {
+        const auto& v = voices_[static_cast<std::size_t> (i)];
+        if (v.note < 0 && ! v.ampEnv.isActive())
             return i;
+    }
+    for (int i = 0; i < limit; ++i)
+    {
+        const auto& v = voices_[static_cast<std::size_t> (i)];
+        if (! v.keyDown && ! v.ampEnv.isActive())
+            return i;
+    }
     return 0;
 }
 
@@ -207,20 +250,19 @@ void SynthEngine::startVoice (Voice& v, int note, float velocity, bool retrigger
     {
         v.frequency = target;
     }
+    const int prevNote = v.note;
     v.note = note;
     v.keyDown = true;
-    if (retrigger || params_.voiceMode != 3)
+    v.analogDrift.seed (rng_);
+    const bool sameNoteRetrig = retrigger && note == prevNote;
+    if (! sameNoteRetrig)
     {
-        v.ampEnv.noteOn();
-        v.filtEnv.noteOn();
         v.phase = 0.0f;
         v.subPhase = 0.0f;
+        v.lastOscSample = 0.0f;
     }
-    else
-    {
-        v.ampEnv.noteOn();
-        v.filtEnv.noteOn();
-    }
+    v.ampEnv.noteOn();
+    v.filtEnv.noteOn();
     monoActiveNote_ = note;
 }
 
@@ -294,9 +336,9 @@ void SynthEngine::handleMidi (const juce::MidiBuffer& midi) noexcept
     }
 }
 
-float SynthEngine::cutoffHzForVoice (const Voice& v, float filtEnvLevel, float lfo) const noexcept
+float SynthEngine::cutoffHzForVoice (const Voice& v, float filtEnvLevel, float lfo, float smCutoff) const noexcept
 {
-    const float base = normToCutoffHz (params_.filterCutoff, sampleRate_);
+    const float base = normToCutoffHz (smCutoff, sampleRate_) * v.analogDrift.cutoffMul (params_.drift);
     const float envAmt = params_.vcfEnv * 0.01f;
     const float lfoAmt = params_.vcfLfo * 0.01f;
     const float keyTrack = params_.vcfKey * 0.01f;
@@ -314,6 +356,32 @@ float SynthEngine::cutoffHzForVoice (const Voice& v, float filtEnvLevel, float l
     return juce::jlimit (40.0f, static_cast<float> (sampleRate_ * 0.45), hz);
 }
 
+float SynthEngine::filterVoiceSample (Voice& v, float raw, float cutoffHz, float smRes) noexcept
+{
+    const float res = juce::jlimit (0.0f, 1.0f, smRes);
+    const float drive = 1.0f + smVcfDrive_.getCurrentValue() * 0.04f + res * 1.6f;
+    v.filter.setTargets (cutoffHz, res, drive);
+
+    const int os = filterOversampleFactor();
+    float out = raw;
+    if (os <= 1)
+        out = v.filter.processSample (raw);
+    else
+    {
+        const float step = 1.0f / static_cast<float> (os);
+        float acc = v.lastOscSample;
+        for (int i = 0; i < os; ++i)
+        {
+            const float t = static_cast<float> (i + 1) * step;
+            const float upsampled = v.lastOscSample + (raw - v.lastOscSample) * t;
+            acc = v.filter.processSample (upsampled);
+        }
+        out = acc;
+    }
+    v.lastOscSample = raw;
+    return out;
+}
+
 float SynthEngine::advanceLfo() noexcept
 {
     if (lfoDelaySamples_ > 0.0f)
@@ -325,7 +393,6 @@ float SynthEngine::advanceLfo() noexcept
     if (params_.lfoBpmSync)
         hz = params_.hostBpm / 60.0f * (params_.lfoRate / 8.0f);
     const float inc = hz / static_cast<float> (sampleRate_);
-    const float prev = lfoPhase_;
     lfoPhase_ += inc;
     if (lfoPhase_ > 1.0f)
     {
@@ -333,17 +400,18 @@ float SynthEngine::advanceLfo() noexcept
         if (params_.lfoWaveform == 2)
             lfoRandHold_ = rng_.nextFloat() * 2.0f - 1.0f;
     }
-    juce::ignoreUnused (prev);
     return lfoValueAtPhase (lfoPhase_);
 }
 
-float SynthEngine::renderVoiceSample (Voice& v, float lfo) noexcept
+float SynthEngine::renderVoiceSample (Voice& v, float lfo, float smCutoff, float smRes, float smPwm) noexcept
 {
     if (! v.ampEnv.isActive() && ! v.keyDown)
     {
         v.note = -1;
         return 0.0f;
     }
+
+    v.analogDrift.advance (sampleRate_, params_.drift, rng_);
 
     if (params_.voiceMode == 3 && v.note >= 0)
     {
@@ -358,8 +426,7 @@ float SynthEngine::renderVoiceSample (Voice& v, float lfo) noexcept
     const float octaveMul = kOctaveMul[static_cast<std::size_t> (octIdx)];
     const float pitchMod = 1.0f + (params_.dcoLfoMod * 0.01f) * lfo * 0.02f;
     const float detuneRatio = std::pow (2.0f, v.detuneCents / 1200.0f);
-    const float drift = 1.0f + (params_.drift * 0.0001f) * (rng_.nextFloat() - 0.5f);
-    const float freq = v.frequency * pitchMod * detuneRatio * drift * octaveMul;
+    const float freq = v.frequency * pitchMod * detuneRatio * v.analogDrift.pitchRatio (params_.drift) * octaveMul;
     const float inc = freq / static_cast<float> (sampleRate_);
 
     v.phase += inc;
@@ -370,49 +437,60 @@ float SynthEngine::renderVoiceSample (Voice& v, float lfo) noexcept
     if (v.subPhase >= 1.0f)
         v.subPhase -= 1.0f;
 
-    const float pwmManual = juce::jlimit (0.05f, 0.95f, params_.dcoPwm * 0.01f);
+    const float pwmManual = juce::jlimit (0.05f, 0.95f, smPwm * 0.01f);
     const float pwm = params_.pwmSourceLfo
-                          ? juce::jlimit (0.05f, 0.95f, 0.5f + lfo * params_.dcoPwm * 0.004f)
+                          ? juce::jlimit (0.05f, 0.95f, 0.5f + lfo * smPwm * 0.004f)
                           : pwmManual;
+
     float saw = 0.0f;
     if (params_.dcoSawOn)
     {
-        saw = (2.0f * v.phase - 1.0f) - polyBlep (v.phase, inc);
+        saw = 2.0f * v.phase - 1.0f;
+        if (! params_.measurementLegacyOsc)
+            saw -= polyBlep (v.phase, inc);
     }
+
     float pulse = 0.0f;
     if (params_.dcoPulseOn)
     {
-        pulse = v.phase < pwm ? 1.0f : -1.0f;
-        pulse -= polyBlep (v.phase, inc);
+        pulse = params_.measurementLegacyOsc ? (v.phase < pwm ? 1.0f : -1.0f) : blepPulse (v.phase, inc, pwm);
     }
-    const float osc = 0.65f * saw + 0.35f * pulse;
+
+    float osc = 0.0f;
+    if (params_.dcoSawOn && params_.dcoPulseOn)
+        osc = 0.52f * saw + 0.48f * pulse;
+    else if (params_.dcoSawOn)
+        osc = saw;
+    else if (params_.dcoPulseOn)
+        osc = pulse;
 
     float sub = 0.0f;
     if (params_.dcoSubOn)
-        sub = std::sin (v.subPhase * juce::MathConstants<float>::twoPi);
-    const float noise = (rng_.nextFloat() * 2.0f - 1.0f) * (params_.dcoNoise * 0.01f);
-    const float subMix = params_.dcoSubLvl * 0.01f;
+    {
+        sub = v.subPhase < 0.5f ? 1.0f : -1.0f;
+        sub -= polyBlep (v.subPhase, inc * subDiv);
+    }
 
-    float raw = osc + sub * subMix + noise;
+    const float rawNoise = rng_.nextFloat() * 2.0f - 1.0f;
+    v.noiseLp += 0.08f * (rawNoise - v.noiseLp);
+    const float noiseAmt = smNoise_.getCurrentValue() * 0.0075f;
+    const float subMix = smSubLvl_.getCurrentValue() * 0.0038f;
+
+    float raw = osc + sub * subMix + v.noiseLp * noiseAmt;
 
     const float filtLevel = v.filtEnv.getNextSample();
-    const float cutoff = cutoffHzForVoice (v, filtLevel, lfo);
-    v.filter.setCutoffFrequency (cutoff);
-    v.filter.setResonance (0.707f + params_.filterRes * 3.5f);
-    raw = v.filter.processSample (0, raw);
-
-    const float driveAmt = params_.vcfDrive * 0.04f + params_.filterRes * 1.6f;
-    const float otaDrive = 1.0f + driveAmt;
-    raw = std::tanh (raw * otaDrive) / std::tanh (otaDrive);
+    const float cutoff = cutoffHzForVoice (v, filtLevel, lfo, smCutoff);
+    raw = filterVoiceSample (v, raw, cutoff, smRes);
 
     const float gateOrEnv = params_.vcaGateMode
                                 ? (v.keyDown ? 1.0f : 0.0f)
                                 : v.ampEnv.getNextSample();
-    return raw * gateOrEnv * 0.11f;
+    return raw * gateOrEnv * 0.105f;
 }
 
 void SynthEngine::render (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi) noexcept
 {
+    juce::ScopedNoDenormals noDenormals;
     handleMidi (midi);
 
     if (params_.diagTestTone)
@@ -446,12 +524,22 @@ void SynthEngine::render (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& mi
     const float ceiling = 0.9441f;
   #endif
 
+    float dcAccumulator = 0.0f;
+    const float dcCoeff = 1.0f - std::exp (-2.0f * juce::MathConstants<float>::pi * 18.0f / static_cast<float> (sampleRate_));
+
     for (int i = 0; i < numSamples; ++i)
     {
+        const float smCutoff = smFilterCutoff_.getNextValue();
+        const float smRes = smFilterRes_.getNextValue();
+        const float smPwm = smPwm_.getNextValue();
+        smSubLvl_.getNextValue();
+        smNoise_.getNextValue();
+        smVcfDrive_.getNextValue();
+
         const float lfo = advanceLfo();
         float mix = 0.0f;
         for (auto& v : voices_)
-            mix += renderVoiceSample (v, lfo);
+            mix += renderVoiceSample (v, lfo, smCutoff, smRes, smPwm);
 
         const float width = juce::jlimit (0.0f, 2.0f, params_.width * 0.01f);
         float l = mix * (1.0f - 0.15f * width);
@@ -469,6 +557,10 @@ void SynthEngine::render (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& mi
             l = hpfL_.processSample (l);
             r = hpfR_.processSample (r);
         }
+
+        dcAccumulator += dcCoeff * (l - dcAccumulator);
+        l -= dcAccumulator * 0.35f;
+        r -= dcAccumulator * 0.35f;
 
         const float g = masterGain_.getNextValue();
         left[i] = l * g;

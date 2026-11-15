@@ -40,7 +40,7 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .arpRate = 0.25f,
                 .arpLatch = false
             } },
-        { "Disk Bass", "BASS", PresetParams {
+        { "Phonk 808 Slide", "TRAP", PresetParams {
                 .masterGain = 0.0f,
                 .ampAttack = 0.01f,
                 .ampDecay = 0.35f,
@@ -403,7 +403,7 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .arpRate = 0.25f,
                 .arpLatch = false
             } },
-        { "Midnight Air", "PAD", PresetParams {
+        { "Trap Smoke Pad", "TRAP", PresetParams {
                 .masterGain = 0.0f,
                 .ampAttack = 0.08f,
                 .ampDecay = 0.22f,
@@ -601,7 +601,7 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
                 .arpRate = 0.25f,
                 .arpLatch = false
             } },
-        { "Neon Solo", "LEAD", PresetParams {
+        { "Phonk Lead Wire", "PHONK", PresetParams {
                 .masterGain = 0.0f,
                 .ampAttack = 0.01f,
                 .ampDecay = 0.18f,

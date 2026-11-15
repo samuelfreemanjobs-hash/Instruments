@@ -96,6 +96,29 @@ target_link_libraries (JunovaCaptureEditorSnapshot
         juce::juce_recommended_warning_flags
 )
 
+add_executable (JunovaEliteProof tools/JunovaEliteProof.cpp
+    Source/DSP/SynthEngine.cpp
+    Source/DSP/BbdChorus.cpp
+    Source/DSP/DiagTone.cpp
+    Source/Presets/FactoryPresets.cpp
+)
+target_include_directories (JunovaEliteProof PRIVATE Source
+    "${CMAKE_BINARY_DIR}/Junova-X/JunovaX_artefacts/JuceLibraryCode"
+)
+add_dependencies (JunovaEliteProof JunovaX)
+target_compile_features (JunovaEliteProof PRIVATE cxx_std_20)
+target_compile_definitions (JunovaEliteProof PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
+target_link_libraries (JunovaEliteProof
+    PRIVATE
+        juce::juce_core
+        juce::juce_audio_basics
+        juce::juce_audio_formats
+        juce::juce_audio_utils
+        juce::juce_dsp
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_warning_flags
+)
+
 add_executable (JunovaOfflineRender tools/OfflineRender.cpp)
 target_include_directories (JunovaOfflineRender PRIVATE Source)
 target_compile_definitions (JunovaOfflineRender PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)

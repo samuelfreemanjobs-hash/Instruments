@@ -390,6 +390,8 @@ junovax::dsp::RuntimeParams JunovaXAudioProcessor::readParamsFromApvts() const n
     p.arpLatch = f (PID::arpLatch) > 0.5f;
     p.diagTestTone = f (PID::diagTestTone) > 0.5f;
     p.diagToneFreqHz = f (PID::diagToneFreq);
+    if (auto* os = dynamic_cast<juce::AudioParameterChoice*> (apvts_.getParameter (PID::oversampleMode)))
+        p.oversampleMode = os->getIndex();
     return p;
 }
 

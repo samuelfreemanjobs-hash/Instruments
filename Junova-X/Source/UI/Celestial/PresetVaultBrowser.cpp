@@ -29,6 +29,7 @@ PresetVaultBrowser::PresetVaultBrowser (JunovaXAudioProcessor& processor, std::f
     categoryFilter_.addItem ("PLUCKS", 6);
     categoryFilter_.addItem ("FX", 7);
     categoryFilter_.addItem ("106 CLASSICS", 8);
+    categoryFilter_.addItem ("TRAP / PHONK", 9);
     categoryFilter_.setSelectedId (1, juce::dontSendNotification);
     categoryFilter_.onChange = [this] { rebuildFilteredIndices(); };
     addAndMakeVisible (categoryFilter_);
@@ -97,6 +98,8 @@ void PresetVaultBrowser::rebuildFilteredIndices()
                 return u.contains ("FX") || u.contains ("SCI");
             case 8:
                 return u.contains ("106") || u.contains ("CLASSIC") || u.contains ("JUNO");
+            case 9:
+                return u.contains ("TRAP") || u.contains ("PHONK");
             default:
                 return true;
         }
