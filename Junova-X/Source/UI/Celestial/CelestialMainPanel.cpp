@@ -45,8 +45,19 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
     tagline_.setColour (juce::Label::textColourId, Theme::textMuted());
     hostBar_.setFont (Theme::readoutFont (11.0f));
     hostBar_.setColour (juce::Label::textColourId, Theme::textMuted());
-    oversampleBadge_.setFont (Theme::labelFont());
-    oversampleBadge_.setColour (juce::Label::textColourId, Theme::ledInactive().brighter (0.4f));
+    oversampleBadge_.setClickingTogglesState (false);
+    oversampleBadge_.onClick = [this]
+    {
+        if (auto* p = processor_.getApvts().getParameter (junovax::ParameterIDs::oversampleMode))
+        {
+            if (auto* choice = dynamic_cast<juce::AudioParameterChoice*> (p))
+            {
+                const int next = (choice->getIndex() + 1) % 3;
+                p->setValueNotifyingHost (choice->convertTo0to1 (next));
+            }
+        }
+        refreshOversampleBadge();
+    };
 
     for (auto* b : { &voicePoly1_, &voicePoly2_, &voiceUnison_, &voiceMono_ })
     {
@@ -210,6 +221,7 @@ CelestialMainPanel::CelestialMainPanel (JunovaXAudioProcessor& processor)
 
     refreshPresetLabel();
     refreshHostBar();
+    refreshOversampleBadge();
     refreshTransposeUi();
     startTimerHz (12);
 }
@@ -267,7 +279,21 @@ void CelestialMainPanel::timerCallback()
 {
     refreshPresetLabel();
     refreshHostBar();
+    refreshOversampleBadge();
     syncPerformanceMeters();
+}
+
+void CelestialMainPanel::refreshOversampleBadge()
+{
+    static constexpr const char* kLabels[] = { "OVERSAMPLE 1x", "OVERSAMPLE 2x", "OVERSAMPLE 4x" };
+    int idx = 1;
+    if (auto* choice = dynamic_cast<juce::AudioParameterChoice*> (
+            processor_.getApvts().getParameter (junovax::ParameterIDs::oversampleMode)))
+        idx = juce::jlimit (0, 2, choice->getIndex());
+    oversampleBadge_.setButtonText (kLabels[static_cast<std::size_t> (idx)]);
+    oversampleBadge_.setColour (juce::TextButton::buttonColourId, Theme::panelGrey().darker (0.15f));
+    oversampleBadge_.setColour (juce::TextButton::buttonOnColourId, Theme::panelBlue());
+    oversampleBadge_.setColour (juce::TextButton::textColourOffId, Theme::electricCyan());
 }
 
 void CelestialMainPanel::syncPerformanceMeters()

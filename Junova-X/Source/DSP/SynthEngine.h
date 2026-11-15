@@ -3,7 +3,7 @@
 #include "BbdChorus.h"
 #include "DiagTone.h"
 #include "ExpAdsr.h"
-#include "OtaLadderFilter.h"
+#include "VoiceLadderFilter.h"
 #include "VoiceAnalogDrift.h"
 
 #include <JuceHeader.h>
@@ -77,6 +77,8 @@ struct RuntimeParams
     float diagToneFreqHz = 440.0f;
 
     bool measurementLegacyOsc = false;
+    bool measurementBypassFilter = false;
+    int measurementOsFactor = 0;
 };
 
 class SynthEngine
@@ -107,8 +109,13 @@ private:
         float noiseLp = 0.0f;
         ExpAdsr ampEnv;
         ExpAdsr filtEnv;
-        OtaLadderFilter filter;
+        VoiceLadderFilter ladder1x;
+        VoiceLadderFilter ladder2x;
+        VoiceLadderFilter ladder4x;
+        VoiceLadderFilter ladder8x;
         VoiceAnalogDrift analogDrift;
+        float selfOscPhase = 0.0f;
+        juce::dsp::Oscillator<float> bandlimitedSaw;
     };
 
     void updateEnvelopes() noexcept;
@@ -119,8 +126,8 @@ private:
     void startVoice (Voice& v, int note, float velocity, bool retrigger) noexcept;
     void releaseVoice (Voice& v) noexcept;
     float cutoffHzForVoice (const Voice& v, float filtEnvLevel, float lfo, float smCutoff) const noexcept;
+    float synthesizeOsc (Voice& v, float phase, float subPhase, float blepInc, float subBlepInc, float pwm) const noexcept;
     float renderVoiceSample (Voice& v, float lfo, float smCutoff, float smRes, float smPwm) noexcept;
-    float filterVoiceSample (Voice& v, float raw, float cutoffHz, float smRes) noexcept;
     float advanceLfo() noexcept;
     float polyBlep (float phase, float inc) const noexcept;
     float blepPulse (float phase, float inc, float pw) const noexcept;

@@ -45,6 +45,7 @@ public:
 
     void refreshPresetLabel();
     void refreshHostBar();
+    void refreshOversampleBadge();
     void syncPerformanceMeters();
 
     void setVaultOpener (std::function<void()> fn) { onOpenVault_ = std::move (fn); }
@@ -70,7 +71,7 @@ private:
     juce::TextButton initBtn_ { "INIT" };
     juce::TextButton vaultBtn_ { "VAULT" };
     juce::TextButton abBtn_ { "A/B" };
-    juce::Label oversampleBadge_ { {}, "OVERSAMPLE 2x (v2)" };
+    juce::TextButton oversampleBadge_ { "OVERSAMPLE 1x" };
 
     std::function<void()> onOpenVault_;
 
