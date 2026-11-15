@@ -1,80 +1,61 @@
-# WAVE-9090 — GUI skin map (for Canva / Stitch)
+# WAVE-9090 — GUI skin map (Sam v1 mockup → v1 APVTS)
 
-The editor is a **placeholder skin** only. DSP lives in `Wave9090/Source/Engine/` and `Wave9090/Source/DSP/`. Skin lives under `Wave9090/Source/UI/` + `Wave9090/Assets/skin/` (BinaryData).
+Design reference:
 
-## Swap-in workflow (no DSP edits)
+- Mockup: [`Wave9090/Docs/design/wave9090-mockup-v1.png`](../Wave9090/Docs/design/wave9090-mockup-v1.png)
+- Components: [`Wave9090/Docs/design/wave9090-component-sheet-v1.png`](../Wave9090/Docs/design/wave9090-component-sheet-v1.png)
+- Tokens/spec: [`Wave9090/Docs/design/WAVE-9090_DESIGN_SYSTEM.md`](../Wave9090/Docs/design/WAVE-9090_DESIGN_SYSTEM.md)
+- Stitch: https://stitch.google.com/projects/14288623377553782524/screens/51789caf2f05415fa837622f01f1bdab
+- Unbuilt sections: [`WAVE-9090_V2_ROADMAP.md`](WAVE-9090_V2_ROADMAP.md)
 
-1. Replace PNGs in `Wave9090/Assets/skin/` (keep filenames or update `CMakeLists.txt` + `SkinAssets.cpp`).
-2. Tune colours in `Wave9090LookAndFeel.cpp` (or replace with image-only draws).
-3. Adjust rects in `LayoutConstants.h` / `PluginEditor::layoutControls()` to match Sam’s layout grid.
+## v1 layout (SYNTH MAIN tab only)
 
-## Editor size (baseline)
+Code: `Wave9090/Source/UI/{DesignTokens,UiChrome,LayoutConstants,Wave9090LookAndFeel,*}.` + `PluginEditor.*`  
+Assets: `Wave9090/Assets/skin/*.png` (BinaryData via `SkinAssets`)
 
-| Constant | Value |
-|----------|-------|
-| Width | 960 (`Layout::editorWidth`) |
-| Height | 640 (`Layout::editorHeight`) |
-| Header | 56 px |
-| Footer meter | 48 px |
-| On-screen keyboard | 108 px |
+## Mockup section → control → APVTS ID
 
-## Controls Sam must place (APVTS IDs unchanged)
+| Mockup region (Sam) | v1 control in editor | APVTS / state ID | Host range |
+|---------------------|----------------------|------------------|------------|
+| **Header** logo | `brandTitle_` / `brandSub_` | — | — |
+| **Header** preset browser | `presetPrev_` / `presetBox_` / `presetNext_` | `currentProgram`* | 0…7 programs |
+| **Header** LED output | `ledMeter_` | (read `getOutputPeakDb()`) | dBFS display |
+| **Header** PANIC | — | — | **v2** `panic` (see roadmap) |
+| **Tabs** SYNTH MAIN | `tabSynthMain_` (active) | — | — |
+| **Tabs** others | `tabFuture1_`, `tabFuture2_` (labels only) | — | no fake modules |
+| **OSC 1** wavetable scope | `wtScope_` + `wtPosition` knob | `wtPosition` | 0…1 |
+| **OSC 1** position / scan | knobs | `wtPosition`, `wtScan` | 0…1 |
+| **OSC 1** sub | knob | `subLevel` | 0…1 |
+| **OSC 1** detune / semi | knob | `detune` | −50…+50 ct |
+| **OSC 2 Transwave** | — | — | **v2** `osc2*` |
+| **VCF 1** cutoff / res | knobs | `filterCutoff`, `filterRes` | 0…1 |
+| **VCF 1** drive / saturation | knobs | `drive`, `crush` | 0…1 |
+| **VCF 1** destructive circuit | `circuitButton_` | `filterCircuit` | bool |
+| **VCF 2** multimode | — | — | **v2** `vcf2*` |
+| **ENV 1 Amp** ADSR | knobs + curve | `ampAttack`, `ampDecay`, `ampSustain`, `ampRelease` | times / 0…1 |
+| **ENV 2 Filter** ADSR + depth | knobs + curve | `filtAttack`…`filtRelease`, `filtEnvAmt` | times / 0…1 |
+| **ENV 3** pitch/mod | — | — | **v2** `env3*` |
+| **LFO 1 / 2** | — | — | **v2** `lfo1*`, `lfo2*` |
+| **Mod matrix / ring** | — | — | **v2** |
+| **Macro M1 Tape** | knob (maps mockup M3) | `tapeWobble` | 0…1 |
+| **Macros M1–M4** (other) | — | — | **v2** `macro1`…`macro4` |
+| **Output / width** | knobs | `stereoWidth`, `outputGain` | 0…1, −24…+12 dB |
+| **Performance** glide | knob | `glide` | 0…500 ms |
+| **Performance** octave | `octaveButtons_` | — (keyboard range UI) |
+| **Keybed** | `keyboard_` | `MidiKeyboardState` | MIDI |
 
-| Design slot | Widget type | APVTS parameter ID | Display name | Range (host) |
-|-------------|-------------|-------------------|--------------|--------------|
-| header.title | Label (static) | — | WAVE-9090 | — |
-| header.preset | Preset browser / combo | `currentProgram`* | (factory name) | 0…7 programs |
-| osc.wtPosition | Rotary + value | `wtPosition` | Wavetable | 0…1 |
-| osc.wtScan | Rotary + value | `wtScan` | Scan | 0…1 |
-| osc.sub | Rotary + value | `subLevel` | Sub | 0…1 |
-| osc.detune | Rotary + value (bipolar) | `detune` | Detune | −50…+50 ct |
-| osc.glide | Rotary + value | `glide` | Glide | 0…500 ms |
-| filter.cutoff | Rotary + value | `filterCutoff` | Cutoff | 0…1 |
-| filter.res | Rotary + value | `filterRes` | Res | 0…1 |
-| filter.drive | Rotary + value | `drive` | Drive | 0…1 |
-| filter.crush | Rotary + value | `crush` | Crush | 0…1 |
-| filter.circuitToggle | Toggle | `filterCircuit` | Destructive | bool |
-| env.ampAttack | Rotary + value | `ampAttack` | Amp A | 1 ms…2 s |
-| env.ampDecay | Rotary + value | `ampDecay` | Amp D | 1 ms…2 s |
-| env.ampSustain | Rotary + value | `ampSustain` | Amp S | 0…1 |
-| env.ampRelease | Rotary + value | `ampRelease` | Amp R | 1 ms…5 s |
-| env.filtAttack | Rotary + value | `filtAttack` | Filt A | 1 ms…2 s |
-| env.filtDecay | Rotary + value | `filtDecay` | Filt D | 1 ms…2 s |
-| env.filtSustain | Rotary + value | `filtSustain` | Filt S | 0…1 |
-| env.filtRelease | Rotary + value | `filtRelease` | Filt R | 1 ms…5 s |
-| env.filtAmt | Rotary + value | `filtEnvAmt` | F Env | 0…1 |
-| macro.tape | Rotary + value | `tapeWobble` | Tape | 0…1 |
-| out.width | Rotary + value | `stereoWidth` | Width | 0…1 |
-| master.output | Rotary + value | `outputGain` | Output | −24…+12 dB |
-| footer.outputMeter | Meter / bar | (read-only peak from processor) | OUTPUT | peak dBFS |
-| play.keyboard | MIDI keyboard | — (routes to `MidiKeyboardState`) | — | full range |
+\*Preset index stored in plugin state XML; UI calls `applyFactoryPreset(index)`.
 
-\*`currentProgram` is stored in plugin state XML, not a public APVTS float; preset UI calls `applyFactoryPreset(index)`.
+## Colour domains (v1)
 
-## Section groupings (placeholder columns)
+| Mockup domain | Parameters | Knob halo colour |
+|---------------|------------|------------------|
+| Cyan | OSC1 + ENV1 amp | `#00f0d0` |
+| Amber | VCF1 + ENV2 filter + tape macro | `#ff9900` |
+| Blue | Output / width | `#3877ff` |
 
-| Column | Label | Parameter IDs |
-|--------|-------|----------------|
-| 1 | OSCILLATOR | `wtPosition`, `wtScan`, `subLevel`, `detune`, `glide` |
-| 2 | FILTER | `filterCutoff`, `filterRes`, `drive`, `crush`, `filterCircuit` |
-| 3 | ENVELOPES | `ampAttack`…`ampRelease`, `filtAttack`…`filtRelease`, `filtEnvAmt` |
-| 4 | MACRO / OUTPUT | `tapeWobble`, `stereoWidth`, `outputGain` |
+## Swap-in art (no DSP)
 
-## BinaryData asset keys
-
-| File | Role |
-|------|------|
-| `panel_bg.png` | Body background tile |
-| `knob_dial.png` | Rotary face (optional; LAF draws pointer) |
-| `header_strip.png` | Top bar strip |
-
-## Factory program names (for preset UI copy)
-
-1. Trap 808  
-2. Phonk Lead  
-3. Crisp Pluck  
-4. Dark Bell  
-5. Phonk Cowbell  
-6. Memphis Keys  
-7. Underground Stab  
-8. Tape Pad  
+1. Replace `Wave9090/Assets/skin/*.png`
+2. Tune `DesignTokens.h` / `Wave9090LookAndFeel.cpp`
+3. Adjust bay rects in `PluginEditor::layoutControls()`

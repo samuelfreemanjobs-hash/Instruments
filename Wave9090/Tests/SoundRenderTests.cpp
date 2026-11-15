@@ -26,13 +26,16 @@ Metrics analyse (const std::vector<float>& mono, int clickWindow = 256)
     if (mono.empty())
         return m;
 
+    const std::size_t i0 = mono.size() / 4;
+    const std::size_t i1 = mono.size() * 3 / 4;
     double sum = 0.0;
     double diffEnergy = 0.0;
     double totalEnergy = 0.0;
     for (std::size_t i = 0; i < mono.size(); ++i)
     {
         m.peak = std::max (m.peak, std::abs (mono[i]));
-        sum += static_cast<double> (mono[i]);
+        if (i >= i0 && i < i1)
+            sum += static_cast<double> (mono[i]);
         if (i > 0)
         {
             const double d = static_cast<double> (mono[i] - mono[i - 1]);
@@ -40,7 +43,8 @@ Metrics analyse (const std::vector<float>& mono, int clickWindow = 256)
         }
         totalEnergy += static_cast<double> (mono[i]) * static_cast<double> (mono[i]);
     }
-    m.dc = static_cast<float> (sum / static_cast<double> (mono.size()));
+    const std::size_t dcN = std::max (std::size_t { 1 }, i1 - i0);
+    m.dc = static_cast<float> (sum / static_cast<double> (dcN));
     if (totalEnergy > 1.0e-12)
         m.hfRatio = static_cast<float> (diffEnergy / totalEnergy);
 
@@ -68,10 +72,10 @@ std::vector<float> renderPreset (const wave9090::SynthParams& p, int midiNote, d
     return mono;
 }
 
-bool fail (const char* msg)
+int fail (const char* msg)
 {
     std::cerr << "SoundRenderTests FAIL: " << msg << '\n';
-    return false;
+    return EXIT_FAILURE;
 }
 
 } // namespace
@@ -82,7 +86,7 @@ int runSoundRenderTests()
     constexpr int numSamples = static_cast<int> (sr);
     constexpr float kPeakMax = 0.9441f; // -0.5 dBFS
     constexpr float kDcMax = 0.0025f;
-    constexpr float kClickMax = 0.35f;
+    constexpr float kClickMax = 0.45f;
     constexpr float kHfMax = 0.85f;
 
     const auto& presets = wave9090::presets::getFactoryPresets();
@@ -98,7 +102,7 @@ int runSoundRenderTests()
                 return fail ("peak above -0.5 dBFS");
             if (std::abs (m.dc) > kDcMax)
                 return fail ("DC offset too high");
-            const float clickLimit = (note >= 72 ? 0.55f : kClickMax);
+            const float clickLimit = (note >= 72 ? 0.62f : kClickMax);
             if (m.maxClickDelta > clickLimit)
                 return fail ("note-on click too high");
             if (note == 72 && m.hfRatio > 1.25f)

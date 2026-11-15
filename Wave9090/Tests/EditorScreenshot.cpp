@@ -1,5 +1,6 @@
 #include "PluginEditor.h"
 #include "PluginProcessor.h"
+#include "UI/LayoutConstants.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -9,7 +10,8 @@ int main()
     juce::ScopedJuceInitialiser_GUI juceInit;
     Wave9090AudioProcessor proc;
     Wave9090AudioProcessorEditor editor (proc);
-    editor.setSize (920, 560);
+    editor.setSize (wave9090::ui::Layout::editorWidth, wave9090::ui::Layout::editorHeight);
+    editor.resized();
 
     const juce::File out = juce::File::getSpecialLocation (juce::File::tempDirectory)
                                .getChildFile ("wave9090-editor.png");

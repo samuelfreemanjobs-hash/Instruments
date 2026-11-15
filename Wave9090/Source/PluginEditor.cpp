@@ -1,6 +1,7 @@
 #include "PluginEditor.h"
 #include "Parameters/ParameterIds.h"
-#include "UI/SkinAssets.h"
+#include "UI/DesignTokens.h"
+#include "UI/UiChrome.h"
 
 namespace
 {
@@ -15,79 +16,127 @@ float mapDb (float norm, float lo, float hi)
 {
     return lo + norm * (hi - lo);
 }
+
+float readNorm (Wave9090AudioProcessor& proc, const char* id)
+{
+    if (auto* p = proc.getApvts().getParameter (id))
+        return p->getValue();
+    return 0.0f;
+}
 } // namespace
 
 const std::vector<Wave9090AudioProcessorEditor::ParamUiSpec>& Wave9090AudioProcessorEditor::allUiSpecs()
 {
     static const std::vector<ParamUiSpec> kSpecs = {
-        { PID::outputGain, "Output", "master.output", "Master output level (dB)." },
-        { PID::wtPosition, "Wavetable", "osc.wtPosition", "Wavetable morph position." },
-        { PID::wtScan, "Scan", "osc.wtScan", "Wavetable scan LFO depth." },
-        { PID::subLevel, "Sub", "osc.sub", "Sub oscillator level." },
-        { PID::detune, "Detune", "osc.detune", "Fine detune (cents)." },
-        { PID::glide, "Glide", "osc.glide", "Portamento glide time (ms)." },
-        { PID::filterCutoff, "Cutoff", "filter.cutoff", "Lowpass cutoff." },
-        { PID::filterRes, "Res", "filter.res", "Filter resonance." },
-        { PID::drive, "Drive", "filter.drive", "Saturation drive." },
-        { PID::crush, "Crush", "filter.crush", "Bit/sample crush (destructive path)." },
-        { PID::tapeWobble, "Tape", "macro.tape", "Wow/flutter + hiss macro." },
-        { PID::ampAttack, "Amp A", "env.ampAttack", "Amp envelope attack." },
-        { PID::ampDecay, "Amp D", "env.ampDecay", "Amp envelope decay." },
-        { PID::ampSustain, "Amp S", "env.ampSustain", "Amp envelope sustain." },
-        { PID::ampRelease, "Amp R", "env.ampRelease", "Amp envelope release." },
-        { PID::filtAttack, "Filt A", "env.filtAttack", "Filter envelope attack." },
-        { PID::filtDecay, "Filt D", "env.filtDecay", "Filter envelope decay." },
-        { PID::filtSustain, "Filt S", "env.filtSustain", "Filter envelope sustain." },
-        { PID::filtRelease, "Filt R", "env.filtRelease", "Filter envelope release." },
-        { PID::filtEnvAmt, "F Env", "env.filtAmt", "Filter envelope amount." },
-        { PID::stereoWidth, "Width", "out.width", "Stereo spread." },
+        { PID::wtPosition, "Position", "OSC 1 scope bay", "osc1.position", "cyan", "Wavetable morph index." },
+        { PID::wtScan, "Scan", "OSC 1", "osc1.scan", "cyan", "Position LFO depth." },
+        { PID::subLevel, "Sub", "OSC 1", "osc1.sub", "cyan", "Sub osc level." },
+        { PID::detune, "Detune", "OSC 1", "osc1.detune", "cyan", "Fine tune cents." },
+        { PID::glide, "Glide", "Performance row", "perf.glide", "cyan", "Portamento ms." },
+        { PID::filterCutoff, "Cutoff", "VCF 1", "vcf1.cutoff", "amber", "Main lowpass cutoff." },
+        { PID::filterRes, "Res", "VCF 1", "vcf1.res", "amber", "Resonance." },
+        { PID::drive, "Drive", "VCF 1", "vcf1.drive", "amber", "Preamp drive." },
+        { PID::crush, "Crush", "VCF 1", "vcf1.crush", "amber", "Destructive crush depth." },
+        { PID::ampAttack, "Attack", "ENV 1 Amp", "env1.attack", "cyan", "Amp attack." },
+        { PID::ampDecay, "Decay", "ENV 1 Amp", "env1.decay", "cyan", "Amp decay." },
+        { PID::ampSustain, "Sustain", "ENV 1 Amp", "env1.sustain", "cyan", "Amp sustain." },
+        { PID::ampRelease, "Release", "ENV 1 Amp", "env1.release", "cyan", "Amp release." },
+        { PID::filtAttack, "Attack", "ENV 2 Filter", "env2.attack", "amber", "Filter attack." },
+        { PID::filtDecay, "Decay", "ENV 2 Filter", "env2.decay", "amber", "Filter decay." },
+        { PID::filtSustain, "Sustain", "ENV 2 Filter", "env2.sustain", "amber", "Filter sustain." },
+        { PID::filtRelease, "Release", "ENV 2 Filter", "env2.release", "amber", "Filter release." },
+        { PID::filtEnvAmt, "F Env", "ENV 2 Filter", "env2.amount", "amber", "Filter env amount." },
+        { PID::tapeWobble, "Tape", "Hardware macro", "macro.m1Tape", "amber", "Tape wobble macro." },
+        { PID::stereoWidth, "Width", "Output wing", "out.width", "blue", "Stereo spread." },
+        { PID::outputGain, "Output", "Header meter", "master.output", "blue", "Master gain dB." },
     };
     return kSpecs;
 }
 
 Wave9090AudioProcessorEditor::Wave9090AudioProcessorEditor (Wave9090AudioProcessor& p)
-    : AudioProcessorEditor (&p),
-      processor_ (p),
-      titleLabel_ ({}, "WAVE-9090"),
-      meterBar_ (meterNorm_)
+    : AudioProcessorEditor (&p), processor_ (p)
 {
     setLookAndFeel (&laf_);
     tooltipWindow_ = std::make_unique<juce::TooltipWindow> (this, 450);
     setResizable (true, true);
-    setResizeLimits (wave9090::ui::Layout::editorWidth - 200, 520,
-                     wave9090::ui::Layout::editorWidth + 240, 900);
+    setResizeLimits (1040, 580, 1600, 920);
     setSize (wave9090::ui::Layout::editorWidth, wave9090::ui::Layout::editorHeight);
 
-    titleLabel_.setFont (juce::Font (20.0f, juce::Font::bold));
-    titleLabel_.setJustificationType (juce::Justification::centredLeft);
-    addAndMakeVisible (titleLabel_);
+    brandTitle_.setText ("WAVE-9090", juce::dontSendNotification);
+    brandTitle_.setFont (juce::Font (juce::FontOptions (20.0f, juce::Font::bold)));
+    brandTitle_.setColour (juce::Label::textColourId, wave9090::ui::tokens::cyanGlow());
+    addAndMakeVisible (brandTitle_);
 
-    for (int i = 0; i < p.getNumPrograms(); ++i)
-        presetBox_.addItem (p.getProgramName (i), i + 1);
-    presetBox_.setSelectedId (p.getCurrentProgram() + 1, juce::dontSendNotification);
-    presetBox_.setTooltip (tooltip ("Preset", "Factory program — design slot: header.preset"));
-    presetBox_.onChange = [this]
-    {
-        processor_.applyFactoryPreset (presetBox_.getSelectedId() - 1);
-    };
+    brandSub_.setText ("CROSS-WAVE  |  PHYSICAL HYBRID", juce::dontSendNotification);
+    brandSub_.setFont (juce::Font (juce::FontOptions (9.5f)));
+    brandSub_.setColour (juce::Label::textColourId, wave9090::ui::tokens::textDim());
+    addAndMakeVisible (brandSub_);
+
+    refreshPresetCombo();
+    presetBox_.onChange = [this] { processor_.applyFactoryPreset (presetBox_.getSelectedId() - 1); };
     addAndMakeVisible (presetBox_);
+    addAndMakeVisible (presetPrev_);
+    addAndMakeVisible (presetNext_);
+    presetPrev_.onClick = [this] { processor_.applyFactoryPreset (juce::jmax (0, processor_.getCurrentProgram() - 1)); refreshPresetCombo(); };
+    presetNext_.onClick = [this] { processor_.applyFactoryPreset ((processor_.getCurrentProgram() + 1) % processor_.getNumPrograms()); refreshPresetCombo(); };
 
+    tabSynthMain_.setText ("SYNTH MAIN", juce::dontSendNotification);
+    tabSynthMain_.setColour (juce::Label::textColourId, wave9090::ui::tokens::cyanGlow());
+    tabSynthMain_.setJustificationType (juce::Justification::centred);
+    addAndMakeVisible (tabSynthMain_);
+    for (auto* tab : { &tabFuture1_, &tabFuture2_ })
+    {
+        tab->setColour (juce::Label::textColourId, wave9090::ui::tokens::textDim());
+        tab->setJustificationType (juce::Justification::centred);
+        addAndMakeVisible (*tab);
+    }
+    tabFuture1_.setText ("MOD / FX (v2)", juce::dontSendNotification);
+    tabFuture2_.setText ("SEQ (v2)", juce::dontSendNotification);
+
+    addAndMakeVisible (wtScope_);
+    addAndMakeVisible (ledMeter_);
     buildControls();
 
     circuitButton_.setClickingTogglesState (true);
-    circuitButton_.setTooltip (tooltip ("Destructive Circuit", "APVTS id filterCircuit — design slot: filter.circuitToggle"));
     addAndMakeVisible (circuitButton_);
     circuitAttachment_ = std::make_unique<ButtonAttachment> (processor_.getApvts(), PID::filterCircuit, circuitButton_);
 
-    keyboard_.setKeyWidth (15.0);
+    keyboard_.setKeyWidth (17.0);
+    keyboard_.setColour (juce::MidiKeyboardComponent::whiteNoteColourId, juce::Colour (0xfff1efe7));
+    keyboard_.setColour (juce::MidiKeyboardComponent::blackNoteColourId, juce::Colour (0xff1a1e26));
+    keyboard_.setColour (juce::MidiKeyboardComponent::keySeparatorLineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible (keyboard_);
 
-    meterLabel_.setText ("OUTPUT", juce::dontSendNotification);
-    meterLabel_.setJustificationType (juce::Justification::centredLeft);
-    addAndMakeVisible (meterLabel_);
-    addAndMakeVisible (meterBar_);
+    const std::array<const char*, 5> octLbl { { "−2", "−1", "0", "+1", "+2" } };
+    for (std::size_t i = 0; i < octaveButtons_.size(); ++i)
+    {
+        octaveButtons_[i].setButtonText (octLbl[i]);
+        octaveButtons_[i].onClick = [this, shift = static_cast<int> (i) - 2] { applyOctaveShift (shift); };
+        addAndMakeVisible (octaveButtons_[i]);
+    }
+    applyOctaveShift (0);
 
-    startTimerHz (24);
+    startTimerHz (30);
+}
+
+void Wave9090AudioProcessorEditor::refreshPresetCombo()
+{
+    presetBox_.clear();
+    for (int i = 0; i < processor_.getNumPrograms(); ++i)
+        presetBox_.addItem (processor_.getProgramName (i), i + 1);
+    presetBox_.setSelectedId (processor_.getCurrentProgram() + 1, juce::dontSendNotification);
+}
+
+void Wave9090AudioProcessorEditor::applyOctaveShift (int shift)
+{
+    octaveShift_ = juce::jlimit (-2, 2, shift);
+    keyboard_.setLowestVisibleKey (36 + octaveShift_ * 12);
+    for (std::size_t i = 0; i < octaveButtons_.size(); ++i)
+    {
+        const bool active = static_cast<int> (i) - 2 == octaveShift_;
+        octaveButtons_[i].setColour (juce::TextButton::textColourOffId,
+                                     active ? wave9090::ui::tokens::cyanGlow() : wave9090::ui::tokens::textSecondary());
+    }
 }
 
 void Wave9090AudioProcessorEditor::buildControls()
@@ -95,8 +144,9 @@ void Wave9090AudioProcessorEditor::buildControls()
     for (const auto& spec : allUiSpecs())
     {
         auto knob = std::make_unique<wave9090::ui::LabeledKnob> (spec.label);
+        knob->setKnobDomain (spec.knobDomain);
         const auto tip = tooltip (spec.label, spec.tooltip + " APVTS: " + spec.paramId
-                                               + " — design slot: " + spec.designSlot);
+                                               + " — mockup: " + spec.mockupSection);
         knob->getSlider().setTooltip (tip);
         knob->getLegend().setTooltip (tip);
         knob->formatValue = [id = juce::String (spec.paramId)] (float n)
@@ -140,80 +190,135 @@ wave9090::ui::LabeledKnob* Wave9090AudioProcessorEditor::knobForId (const char* 
     return nullptr;
 }
 
+void Wave9090AudioProcessorEditor::paintEnvCurve (juce::Graphics& g, juce::Rectangle<int> area, juce::Colour c,
+                                                   float a, float d, float s, float r) const
+{
+    juce::ignoreUnused (r);
+    juce::Path p;
+    const float w = static_cast<float> (area.getWidth());
+    const float h = static_cast<float> (area.getHeight());
+    const float ax = w * juce::jlimit (0.03f, 0.35f, a);
+    const float dx = w * juce::jlimit (0.03f, 0.35f, d);
+    p.startNewSubPath (0.0f, static_cast<float> (area.getBottom()));
+    p.lineTo (ax, static_cast<float> (area.getY()) + 2.0f);
+    p.lineTo (ax + dx, static_cast<float> (area.getY()) + h * (1.0f - s) + 2.0f);
+    p.lineTo (w, static_cast<float> (area.getBottom()));
+    g.setColour (c.withAlpha (0.2f));
+    g.fillPath (p, juce::AffineTransform::translation (static_cast<float> (area.getX()), 0.0f));
+    g.setColour (c);
+    g.strokePath (p, juce::PathStrokeType (1.4f), juce::AffineTransform::translation (static_cast<float> (area.getX()), 0.0f));
+}
+
 void Wave9090AudioProcessorEditor::paint (juce::Graphics& g)
 {
-    auto full = getLocalBounds().toFloat();
-    const auto header = wave9090::ui::headerArea (getLocalBounds());
-    const auto headerImg = wave9090::ui::SkinAssets::loadHeaderStrip();
-    if (headerImg.isValid())
-        g.drawImage (headerImg, header.toFloat(), juce::RectanglePlacement::stretchToFit);
-    else
-        g.fillAll (juce::Colour (0xff101018));
+    g.fillAll (wave9090::ui::tokens::bgChassis());
+    wave9090::ui::paintWalnutCheeks (g, getLocalBounds(), wave9090::ui::Layout::woodCheekW);
 
-    const auto panel = laf_.getPanelBackground();
-    auto body = getLocalBounds();
-    body.removeFromTop (wave9090::ui::Layout::headerHeight);
-    body.removeFromBottom (wave9090::ui::Layout::keyboardHeight + wave9090::ui::Layout::footerMeterHeight);
-    if (panel.isValid())
-        g.drawImage (panel, body.toFloat(), juce::RectanglePlacement::fillDestination);
-    else
-    {
-        g.setColour (juce::Colour (0xff14141c));
-        g.fillRect (body);
-    }
+    auto face = wave9090::ui::Regions::faceplate (getLocalBounds());
+    g.setColour (wave9090::ui::tokens::surfacePanel());
+    g.fillRect (face);
 
-    g.setColour (juce::Colour (0xff3a3a48));
-    g.drawRoundedRectangle (full.reduced (4.0f), 8.0f, 1.2f);
+    wave9090::ui::paintModuleBay (g, bayOsc1_, "OSC 1: CYAN-MORPH", wave9090::ui::tokens::cyanGlow());
+    wave9090::ui::paintModuleBay (g, bayVcf1_, "VCF 1: LADDER", wave9090::ui::tokens::amberGlow());
+    wave9090::ui::paintModuleBay (g, bayEnvAmp_, "ENV 1: AMP (VCA)", wave9090::ui::tokens::cyanGlow());
+    wave9090::ui::paintModuleBay (g, bayEnvFilt_, "ENV 2: FILTER", wave9090::ui::tokens::amberGlow());
+    wave9090::ui::paintModuleBay (g, bayMacro_, "MACRO / OUTPUT", wave9090::ui::tokens::amberGlow());
 
-    const char* sections[] = { "OSCILLATOR", "FILTER", "ENVELOPES", "MACRO / OUTPUT" };
-    juce::Rectangle<int> sectionBounds = wave9090::ui::contentArea (getLocalBounds());
-    const int colW = sectionBounds.getWidth() / 4;
-    for (int i = 0; i < 4; ++i)
-    {
-        auto r = sectionBounds.withX (sectionBounds.getX() + i * colW).withWidth (colW).reduced (6, 4);
-        g.setColour (juce::Colour (0xff252532));
-        g.fillRoundedRectangle (r.toFloat(), 6.0f);
-        g.setColour (juce::Colour (0xff9898a8));
-        g.setFont (juce::Font (11.0f, juce::Font::bold));
-        g.drawText (sections[i], r.removeFromTop (20), juce::Justification::centred);
-    }
+    auto ampCurve = bayEnvAmp_.reduced (8, 30).removeFromTop (bayEnvAmp_.getHeight() / 3);
+    paintEnvCurve (g, ampCurve, wave9090::ui::tokens::cyanGlow(),
+                   readNorm (processor_, PID::ampAttack), readNorm (processor_, PID::ampDecay),
+                   readNorm (processor_, PID::ampSustain), readNorm (processor_, PID::ampRelease));
+    auto filtCurve = bayEnvFilt_.reduced (8, 30).removeFromTop (bayEnvFilt_.getHeight() / 3);
+    paintEnvCurve (g, filtCurve, wave9090::ui::tokens::amberGlow(),
+                   readNorm (processor_, PID::filtAttack), readNorm (processor_, PID::filtDecay),
+                   readNorm (processor_, PID::filtSustain), readNorm (processor_, PID::filtRelease));
+
+    auto kb = wave9090::ui::Regions::keyboard (getLocalBounds());
+    g.setColour (wave9090::ui::tokens::feltCrimson());
+    g.fillRect (kb.removeFromTop (6));
 }
 
 void Wave9090AudioProcessorEditor::layoutControls()
 {
-    titleLabel_.setBounds (wave9090::ui::Layout::margin, 14, 220, 28);
-    presetBox_.setBounds (getWidth() - 280, 12, 260, 28);
+    auto header = wave9090::ui::Regions::header (getLocalBounds());
+    brandTitle_.setBounds (header.getX() + 12, header.getY() + 8, 260, 26);
+    brandSub_.setBounds (header.getX() + 14, header.getY() + 32, 340, 14);
 
-    auto content = wave9090::ui::contentArea (getLocalBounds());
-    const int colW = content.getWidth() / 4;
+    const int presetW = 220;
+    presetNext_.setBounds (header.getRight() - 26, header.getY() + 10, 22, 22);
+    presetBox_.setBounds (header.getRight() - 26 - presetW, header.getY() + 8, presetW, 26);
+    presetPrev_.setBounds (presetBox_.getX() - 24, header.getY() + 10, 22, 22);
 
-    auto layoutColumn = [&] (int column, std::initializer_list<const char*> ids)
+    ledMeter_.setBounds (presetPrev_.getX() - 170, header.getY() + 12, 150, 22);
+
+    auto tabs = wave9090::ui::Regions::tabs (header);
+    const int tabW = tabs.getWidth() / 3;
+    tabSynthMain_.setBounds (tabs.removeFromLeft (tabW));
+    tabFuture1_.setBounds (tabs.removeFromLeft (tabW));
+    tabFuture2_.setBounds (tabs);
+
+    const auto body = wave9090::ui::Regions::body (getLocalBounds());
+    const int gap = wave9090::ui::Layout::bayGap;
+    const int w5 = (body.getWidth() - 4 * gap) / 5;
+    int x = body.getX();
+    bayOsc1_ = { x, body.getY(), w5 * 2 + gap, body.getHeight() };
+    x += w5 * 2 + gap + gap;
+    bayVcf1_ = { x, body.getY(), w5, body.getHeight() };
+    x += w5 + gap;
+    bayEnvAmp_ = { x, body.getY(), w5, body.getHeight() };
+    x += w5 + gap;
+    bayEnvFilt_ = { x, body.getY(), w5, body.getHeight() };
+    x += w5 + gap;
+    bayMacro_ = { x, body.getY(), body.getRight() - x, body.getHeight() };
+
+    auto osc = bayOsc1_.reduced (10, 26);
+    wtScope_.setBounds (osc.removeFromTop (juce::jmax (90, osc.getHeight() / 2)));
+    osc.removeFromTop (6);
+
+    auto placeGrid = [&] (juce::Rectangle<int> area, std::initializer_list<const char*> ids, int cols)
     {
-        auto col = content.withX (content.getX() + column * colW).withWidth (colW).reduced (12, 28);
-        const int rows = static_cast<int> (ids.size());
-        const int cellH = col.getHeight() / juce::jmax (1, rows);
-        int row = 0;
+        const int rows = (static_cast<int> (ids.size()) + cols - 1) / cols;
+        const int cw = area.getWidth() / cols;
+        const int ch = area.getHeight() / juce::jmax (1, rows);
+        int idx = 0;
         for (const char* id : ids)
         {
             if (auto* k = knobForId (id))
-                k->setBounds (col.getX(), col.getY() + row * cellH, col.getWidth(), cellH);
-            ++row;
+            {
+                const int col = idx % cols;
+                const int row = idx / cols;
+                k->setBounds (area.getX() + col * cw, area.getY() + row * ch, cw, ch);
+            }
+            ++idx;
         }
     };
 
-    layoutColumn (0, { PID::wtPosition, PID::wtScan, PID::subLevel, PID::detune, PID::glide });
-    layoutColumn (1, { PID::filterCutoff, PID::filterRes, PID::drive, PID::crush });
-    circuitButton_.setBounds (content.getX() + colW + 20, content.getY() + content.getHeight() - 56, colW - 40, 32);
+    placeGrid (osc, { PID::wtPosition, PID::wtScan, PID::subLevel, PID::detune }, 2);
 
-    layoutColumn (2, { PID::ampAttack, PID::ampDecay, PID::ampSustain, PID::ampRelease,
-                     PID::filtAttack, PID::filtDecay, PID::filtSustain, PID::filtRelease, PID::filtEnvAmt });
-    layoutColumn (3, { PID::tapeWobble, PID::stereoWidth, PID::outputGain });
+    auto vcf = bayVcf1_.reduced (10, 28);
+    vcf.removeFromTop (bayVcf1_.getHeight() / 4);
+    placeGrid (vcf, { PID::filterCutoff, PID::filterRes, PID::drive, PID::crush }, 2);
+    circuitButton_.setBounds (vcf.removeFromBottom (30).withSizeKeepingCentre (vcf.getWidth() - 8, 26));
 
-    auto footer = wave9090::ui::footerArea (getLocalBounds());
-    meterLabel_.setBounds (footer.getX() + 12, footer.getY() + 8, 80, 24);
-    meterBar_.setBounds (footer.getX() + 100, footer.getY() + 14, 260, 18);
+    auto envAmp = bayEnvAmp_.reduced (8, 28);
+    envAmp.removeFromTop (bayEnvAmp_.getHeight() / 3 + 6);
+    placeGrid (envAmp, { PID::ampAttack, PID::ampDecay, PID::ampSustain, PID::ampRelease }, 2);
 
-    keyboard_.setBounds (wave9090::ui::keyboardArea (getLocalBounds()));
+    auto envFilt = bayEnvFilt_.reduced (8, 28);
+    envFilt.removeFromTop (bayEnvFilt_.getHeight() / 3 + 6);
+    placeGrid (envFilt, { PID::filtAttack, PID::filtDecay, PID::filtSustain, PID::filtRelease, PID::filtEnvAmt }, 2);
+
+    auto macro = bayMacro_.reduced (10, 28);
+    placeGrid (macro, { PID::tapeWobble, PID::stereoWidth, PID::outputGain }, 1);
+
+    auto perf = wave9090::ui::Regions::perfRow (getLocalBounds());
+    const int obw = 34;
+    for (std::size_t i = 0; i < octaveButtons_.size(); ++i)
+        octaveButtons_[i].setBounds (perf.getX() + static_cast<int> (i) * (obw + 4), perf.getY(), obw, perf.getHeight());
+    if (auto* glide = knobForId (PID::glide))
+        glide->setBounds (perf.getX() + 190, perf.getY() - 4, 120, perf.getHeight() + 8);
+
+    keyboard_.setBounds (wave9090::ui::Regions::keyboard (getLocalBounds()).withTrimmedTop (6));
 }
 
 void Wave9090AudioProcessorEditor::resized()
@@ -223,15 +328,16 @@ void Wave9090AudioProcessorEditor::resized()
 
 void Wave9090AudioProcessorEditor::timerCallback()
 {
-    const float db = processor_.getOutputPeakDb();
-    meterNorm_ = static_cast<double> (juce::jlimit (0.0f, 1.0f, juce::jmap (db, -48.0f, 0.0f, 0.0f, 1.0f)));
+    ledMeter_.setLevelDb (processor_.getOutputPeakDb());
+    if (auto* raw = processor_.getApvts().getRawParameterValue (PID::wtPosition))
+        wtScope_.setWavetablePosition (raw->load());
 }
 
 void Wave9090AudioProcessorEditor::renderEditorPng (const juce::File& outFile) const
 {
-    juce::Image img (juce::Image::ARGB, getWidth(), getHeight(), true);
-    juce::Graphics g (img);
-    const_cast<Wave9090AudioProcessorEditor*> (this)->paintEntireComponent (g, true);
+    const auto scale = 1.0f;
+    auto img = const_cast<Wave9090AudioProcessorEditor*> (this)->createComponentSnapshot (
+        getLocalBounds(), true, scale);
     outFile.getParentDirectory().createDirectory();
     outFile.deleteFile();
     juce::FileOutputStream stream (outFile);

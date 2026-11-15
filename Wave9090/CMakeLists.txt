@@ -32,6 +32,8 @@ target_sources (Wave9090
         Source/UI/Wave9090LookAndFeel.cpp
         Source/UI/SkinAssets.cpp
         Source/UI/LabeledControl.cpp
+        Source/UI/WavetableScope.cpp
+        Source/UI/LedOutputMeter.cpp
 )
 
 target_compile_definitions (Wave9090

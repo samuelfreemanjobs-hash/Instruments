@@ -5,68 +5,106 @@ namespace wave9090::ui
 
 Wave9090LookAndFeel::Wave9090LookAndFeel()
 {
-    setColour (juce::Slider::thumbColourId, accent_);
-    setColour (juce::Slider::trackColourId, juce::Colour (0xff2a2a36));
-    setColour (juce::Slider::backgroundColourId, panelFill_);
-    setColour (juce::ComboBox::backgroundColourId, juce::Colour (0xff1e1e28));
-    setColour (juce::ComboBox::textColourId, textPrimary_);
-    setColour (juce::ComboBox::outlineColourId, juce::Colour (0xff3a3a48));
-    setColour (juce::Label::textColourId, textMuted_);
-    setColour (juce::ToggleButton::textColourId, textPrimary_);
-    setColour (juce::TextButton::buttonColourId, juce::Colour (0xff222230));
-    setColour (juce::TextButton::textColourOffId, textPrimary_);
+    setColour (juce::Slider::thumbColourId, tokens::cyanGlow());
+    setColour (juce::Slider::trackColourId, tokens::surfaceInset());
+    setColour (juce::Slider::backgroundColourId, tokens::surfacePanel());
+    setColour (juce::ComboBox::backgroundColourId, tokens::surfaceInset());
+    setColour (juce::ComboBox::textColourId, tokens::textPrimary());
+    setColour (juce::ComboBox::outlineColourId, tokens::textDim());
+    setColour (juce::Label::textColourId, tokens::textSecondary());
+    setColour (juce::ToggleButton::textColourId, tokens::textPrimary());
+    setColour (juce::TextButton::buttonColourId, tokens::surfaceInset());
+    setColour (juce::TextButton::textColourOffId, tokens::textSecondary());
+    setColour (juce::TextButton::textColourOnId, tokens::cyanGlow());
 
-    panelBg_ = SkinAssets::loadPanelBackground();
     knobDial_ = SkinAssets::loadKnobDial();
 }
 
-void Wave9090LookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height,
-                                            float sliderPos, float startAngle, float endAngle, juce::Slider& slider)
+tokens::KnobDomain Wave9090LookAndFeel::domainFromSlider (const juce::Slider& slider) noexcept
 {
-    juce::ignoreUnused (slider);
-    const auto bounds = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (6.0f);
-    const float angle = startAngle + sliderPos * (endAngle - startAngle);
-    const float radius = juce::jmin (bounds.getWidth(), bounds.getHeight()) * 0.5f;
+    const auto id = slider.getComponentID();
+    if (id == "amber" || id == "filter" || id == "macro")
+        return tokens::KnobDomain::amber;
+    if (id == "blue")
+        return tokens::KnobDomain::blue;
+    return tokens::KnobDomain::cyan;
+}
 
-    g.setColour (panelFill_);
-    g.fillEllipse (bounds);
+void Wave9090LookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height,
+                                              float sliderPos, float startAngle, float endAngle, juce::Slider& slider)
+{
+    const auto accent = tokens::domainColour (domainFromSlider (slider));
+    const auto bounds = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (5.0f);
+    const float radius = juce::jmin (bounds.getWidth(), bounds.getHeight()) * 0.5f;
+    const float angle = startAngle + sliderPos * (endAngle - startAngle);
+
+    // Halo arc ~270° (7 o'clock → 5 o'clock)
+    juce::Path halo;
+    halo.addCentredArc (bounds.getCentreX(), bounds.getCentreY(), radius - 2.0f, radius - 2.0f, 0.0f,
+                        juce::MathConstants<float>::pi * 0.83f, juce::MathConstants<float>::pi * 2.33f, true);
+    g.setColour (accent.withAlpha (0.14f));
+    g.strokePath (halo, juce::PathStrokeType (4.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+
+    // Titanium cap
+    juce::ColourGradient cap (juce::Colour (0xff2c313c), bounds.getX(), bounds.getY(),
+                              juce::Colour (0xff10141b), bounds.getRight(), bounds.getBottom(), true);
+    g.setGradientFill (cap);
+    g.fillEllipse (bounds.reduced (radius * 0.08f));
+    g.setColour (juce::Colours::black.withAlpha (0.4f));
+    g.drawEllipse (bounds.reduced (radius * 0.08f), 1.2f);
 
     if (knobDial_.isValid())
-        g.drawImage (knobDial_, bounds, juce::RectanglePlacement::centred | juce::RectanglePlacement::onlyReduceInSize);
+        g.drawImage (knobDial_, bounds.reduced (radius * 0.14f), juce::RectanglePlacement::centred | juce::RectanglePlacement::onlyReduceInSize);
 
-    juce::Path p;
-    p.addRectangle (-2.0f, -radius + 8.0f, 4.0f, radius * 0.42f);
-    g.setColour (accent_);
-    g.fillPath (p, juce::AffineTransform::rotation (angle).translated (bounds.getCentreX(), bounds.getCentreY()));
+    // Pointer
+    juce::Path pointer;
+    pointer.addRectangle (-1.5f, -radius + 10.0f, 3.0f, radius * 0.42f);
+    g.setColour (accent.withAlpha (0.35f));
+    g.fillPath (pointer, juce::AffineTransform::rotation (angle).translated (bounds.getCentreX(), bounds.getCentreY()));
+    g.setColour (accent);
+    g.fillPath (pointer, juce::AffineTransform::rotation (angle).scaled (0.92f).translated (bounds.getCentreX(), bounds.getCentreY()));
 }
 
 void Wave9090LookAndFeel::drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
-                                             bool highlighted, bool down)
+                                           bool highlighted, bool down)
 {
     juce::ignoreUnused (highlighted, down);
-    auto area = button.getLocalBounds().toFloat().reduced (1.0f);
-    g.setColour (button.getToggleState() ? accent_.withAlpha (0.35f) : juce::Colour (0xff222230));
-    g.fillRoundedRectangle (area, 6.0f);
-    g.setColour (button.getToggleState() ? accent_ : textMuted_);
-    g.drawRoundedRectangle (area, 6.0f, 1.0f);
-    g.setColour (textPrimary_);
-    g.setFont (juce::Font (12.0f));
-    g.drawText (button.getButtonText(), button.getLocalBounds(), juce::Justification::centred);
+    auto area = button.getLocalBounds().toFloat();
+    const bool on = button.getToggleState();
+    g.setColour (on ? tokens::amberGlow().withAlpha (0.25f) : tokens::surfaceInset());
+    g.fillRoundedRectangle (area, 3.0f);
+    g.setColour (on ? tokens::amberGlow() : tokens::textDim());
+    g.drawRoundedRectangle (area.reduced (0.5f), 3.0f, 1.0f);
+    g.setColour (on ? tokens::textPrimary() : tokens::textSecondary());
+    g.setFont (juce::Font (juce::FontOptions (10.0f, juce::Font::bold)));
+    g.drawText (button.getButtonText().toUpperCase(), button.getLocalBounds(), juce::Justification::centred);
 }
 
 void Wave9090LookAndFeel::drawComboBox (juce::Graphics& g, int width, int height, bool isButtonDown,
-                                         int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox& box)
+                                       int, int, int, int, juce::ComboBox& box)
 {
-    juce::ignoreUnused (isButtonDown, buttonX, buttonY, buttonW, buttonH, box);
-    g.setColour (findColour (juce::ComboBox::backgroundColourId));
-    g.fillRoundedRectangle (0, 0, static_cast<float> (width), static_cast<float> (height), 6.0f);
-    g.setColour (findColour (juce::ComboBox::outlineColourId));
-    g.drawRoundedRectangle (0.5f, 0.5f, static_cast<float> (width) - 1.0f, static_cast<float> (height) - 1.0f, 6.0f, 1.0f);
+    juce::ignoreUnused (isButtonDown, box);
+    auto r = juce::Rectangle<float> (0.0f, 0.0f, static_cast<float> (width), static_cast<float> (height));
+    g.setColour (tokens::surfaceInset());
+    g.fillRoundedRectangle (r, 4.0f);
+    g.setColour (tokens::cyanGlow().withAlpha (0.35f));
+    g.drawRoundedRectangle (r.reduced (0.5f), 4.0f, 1.0f);
+}
+
+void Wave9090LookAndFeel::drawButtonBackground (juce::Graphics& g, juce::Button& button,
+                                                const juce::Colour&, bool highlighted, bool down)
+{
+    juce::ignoreUnused (highlighted, down);
+    auto r = button.getLocalBounds().toFloat();
+    g.setColour (tokens::surfaceInset().brighter (button.isMouseOver() ? 0.12f : 0.0f));
+    g.fillRoundedRectangle (r, 3.0f);
+    g.setColour (tokens::textDim());
+    g.drawRoundedRectangle (r.reduced (0.5f), 3.0f, 1.0f);
 }
 
 juce::Font Wave9090LookAndFeel::getLabelFont (juce::Label&)
 {
-    return juce::Font (11.0f);
+    return juce::Font (juce::FontOptions (10.0f, juce::Font::bold));
 }
 
 } // namespace wave9090::ui

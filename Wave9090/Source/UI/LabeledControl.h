@@ -11,6 +11,7 @@ class LabeledKnob final : public juce::Component
 public:
     explicit LabeledKnob (juce::String legendText);
 
+    void setKnobDomain (const juce::String& domainId) noexcept;
     void resized() override;
     juce::Slider& getSlider() noexcept { return slider_; }
     juce::Label& getLegend() noexcept { return legend_; }

@@ -2,43 +2,62 @@
 
 #include <JuceHeader.h>
 
-/** Fixed layout contract for the WAVE-9090 placeholder skin — replace art via BinaryData only. */
 namespace wave9090::ui
 {
 
+/** Sam v1 layout grid (SYNTH MAIN tab only). */
 struct Layout
 {
-    static constexpr int editorWidth = 960;
-    static constexpr int editorHeight = 640;
-    static constexpr int headerHeight = 56;
-    static constexpr int keyboardHeight = 108;
-    static constexpr int footerMeterHeight = 48;
-    static constexpr int margin = 12;
-    static constexpr int sectionGap = 8;
-    static constexpr int knobSize = 76;
-    static constexpr int knobLabelHeight = 18;
+    static constexpr int editorWidth = 1280;
+    static constexpr int editorHeight = 720;
+    static constexpr int woodCheekW = 14;
+    static constexpr int headerHeight = 86;
+    static constexpr int tabHeight = 26;
+    static constexpr int keyboardHeight = 124;
+    static constexpr int perfRowHeight = 36;
+    static constexpr int margin = 10;
+    static constexpr int bayGap = 8;
 };
 
-inline juce::Rectangle<int> headerArea (juce::Rectangle<int> full)
+struct Regions
 {
-    return full.removeFromTop (Layout::headerHeight);
-}
+    static juce::Rectangle<int> faceplate (juce::Rectangle<int> full)
+    {
+        return full.reduced (Layout::woodCheekW, 0);
+    }
 
-inline juce::Rectangle<int> keyboardArea (juce::Rectangle<int> full)
-{
-    return full.removeFromBottom (Layout::keyboardHeight);
-}
+    static juce::Rectangle<int> header (juce::Rectangle<int> full)
+    {
+        auto f = faceplate (full);
+        return f.removeFromTop (Layout::headerHeight);
+    }
 
-inline juce::Rectangle<int> footerArea (juce::Rectangle<int> full)
-{
-    return full.removeFromBottom (Layout::footerMeterHeight);
-}
+    static juce::Rectangle<int> tabs (juce::Rectangle<int> header)
+    {
+        return header.removeFromBottom (Layout::tabHeight);
+    }
 
-inline juce::Rectangle<int> contentArea (juce::Rectangle<int> full)
-{
-    full.removeFromTop (Layout::headerHeight + Layout::sectionGap);
-    full.removeFromBottom (Layout::keyboardHeight + Layout::footerMeterHeight + Layout::sectionGap);
-    return full.reduced (Layout::margin, 0);
-}
+    static juce::Rectangle<int> body (juce::Rectangle<int> full)
+    {
+        auto f = faceplate (full);
+        f.removeFromTop (Layout::headerHeight);
+        f.removeFromBottom (Layout::keyboardHeight + Layout::perfRowHeight);
+        return f.reduced (Layout::margin, Layout::bayGap);
+    }
+
+    static juce::Rectangle<int> keyboard (juce::Rectangle<int> full)
+    {
+        auto f = faceplate (full);
+        f.removeFromBottom (Layout::keyboardHeight);
+        return f;
+    }
+
+    static juce::Rectangle<int> perfRow (juce::Rectangle<int> full)
+    {
+        auto f = faceplate (full);
+        f.removeFromBottom (Layout::perfRowHeight);
+        return f.reduced (Layout::margin, 4);
+    }
+};
 
 } // namespace wave9090::ui

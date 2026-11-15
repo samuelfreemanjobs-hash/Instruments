@@ -1,4 +1,5 @@
 #include "UI/LabeledControl.h"
+#include "UI/DesignTokens.h"
 
 namespace wave9090::ui
 {
@@ -8,6 +9,7 @@ LabeledKnob::LabeledKnob (juce::String legendText)
 {
     legend_.setJustificationType (juce::Justification::centred);
     legend_.setInterceptsMouseClicks (false, false);
+    legend_.setColour (juce::Label::textColourId, tokens::textSecondary());
     addAndMakeVisible (legend_);
 
     slider_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
@@ -18,7 +20,14 @@ LabeledKnob::LabeledKnob (juce::String legendText)
 
     value_.setJustificationType (juce::Justification::centred);
     value_.setInterceptsMouseClicks (false, false);
+    value_.setFont (juce::Font (juce::FontOptions (11.0f, juce::Font::bold)));
+    value_.setColour (juce::Label::textColourId, tokens::textPrimary());
     addAndMakeVisible (value_);
+}
+
+void LabeledKnob::setKnobDomain (const juce::String& domainId) noexcept
+{
+    slider_.setComponentID (domainId);
 }
 
 void LabeledKnob::resized()
