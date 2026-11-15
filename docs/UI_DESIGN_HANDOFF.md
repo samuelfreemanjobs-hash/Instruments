@@ -30,7 +30,9 @@ Default JD Upgraded scaffold: **1020 × 780** (`skins/jdupgraded_default/layout.
 
 ## JD Upgraded — Hardware Component Library v1.0 (Sam)
 
-Reference sheet (repo):  
+**Full panel mockup v1:** [JD_UPGRADED_UI_MOCKUP_V1.md](JD_UPGRADED_UI_MOCKUP_V1.md) · image `shared/disklordz_ui/skins/jdupgraded_default/assets/reference/jd-upgraded-workstation-mockup-v1.jpg`
+
+**Component library v1.0** (knobs/meters/buttons):  
 `shared/disklordz_ui/skins/jdupgraded_default/assets/reference/jd-upgraded-component-library-v1.jpg`
 
 This is the **export target** for Canva/Stitch: skeuomorphic rack hardware, orange active glow (~`#FF8C00`–`#FF9A2E`; align with `.stitch/DESIGN.md` primary `#D98838` if you want one token set), dark navy chassis, brushed metal knobs.

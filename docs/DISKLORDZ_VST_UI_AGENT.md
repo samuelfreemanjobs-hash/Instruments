@@ -58,7 +58,7 @@ Cloud snapshots also run `install-stitch-cli.sh` from `.cursor/environment.json`
 ## Typical tasks
 
 1. **JD Upgraded skin pass** — extend `skins/jdupgraded_default/layout.json`, bind `componentID`, PNG filmstrips in BinaryData.
-2. **Handoff from Sam** — map exports per `docs/UI_DESIGN_HANDOFF.md`; verify every APVTS id has a control slot.
+2. **Handoff from Sam** — `docs/UI_DESIGN_HANDOFF.md` + full panel `docs/JD_UPGRADED_UI_MOCKUP_V1.md`; verify every APVTS id has a control slot.
 3. **Stitch Loop** — `flows/prototype.md`: capture → upload → variants; export PNG layers for `dl_ui` (not WebView unless product opts in).
 4. **Screenshot artifact** — `build/RenderJdEditor /opt/cursor/artifacts/<plugin>-editor.png`.
 
