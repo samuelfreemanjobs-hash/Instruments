@@ -9,4 +9,5 @@ python3 tests/test_trap_lord_audio_qa.py
 python3 tools/package_audition_artifacts.py
 python3 tools/package_mpc_live_examples.py
 python3 tools/split_mpc_to_artifacts.py
+python3 tools/sync_trap_lord_artifacts_to_store.py
 python3 -c "import json; b=json.load(open('assets/factory/preset_bank.json')); print('BANK',len(b['presets'])); print(json.dumps(b.get('achievedQuotas',{}),indent=2))"

@@ -28,13 +28,36 @@ AUDIBLE_CHECK_NOTES_BY_CATEGORY: dict[str, tuple[int, ...]] = {
     "Swells": (48, 60),
 }
 
+# Dominant FFT peak (full spectrum) must stay above this for listed categories (blocks subsonic "keys").
+SPECTRAL_PEAK_FLOOR_HZ = 80.0
+
 CATEGORY_SPECTRAL_RULES: dict[str, dict[str, float]] = {
-    "Leads": {"sub30_max": 0.12, "fund_min": 120.0, "fund_max": 5200.0, "centroid_min": 220.0},
+    "Leads": {
+        "sub30_max": 0.12,
+        "fund_min": 120.0,
+        "fund_max": 5200.0,
+        "centroid_min": 220.0,
+        "spec_peak_min": SPECTRAL_PEAK_FLOOR_HZ,
+        "bright5k_max": 0.30,
+        "fund_ratio_min": 0.12,
+    },
+    "Synth Keys": {
+        "spec_peak_min": SPECTRAL_PEAK_FLOOR_HZ,
+        "fund_min": SPECTRAL_PEAK_FLOOR_HZ,
+        "centroid_min": 120.0,
+        "sub30_max": 0.20,
+        "bright5k_max": 0.42,
+    },
     "Church Keys/EP": {"sub30_max": 0.09, "bright5k_max": 0.38, "centroid_min": 180.0},
     "Bells": {"centroid_min": 650.0, "sub30_max": 0.12, "fund_min": 400.0},
     "Hits/FX": {"centroid_min": 350.0, "sub30_max": 0.22},
     "Bass": {"sub30_min": 0.04, "centroid_max": 2200.0},
-    "Pads": {"sub30_max": 0.35, "centroid_min": 80.0},
+    "Pads": {
+        "sub30_max": 0.35,
+        "centroid_min": 80.0,
+        "spec_peak_min": SPECTRAL_PEAK_FLOOR_HZ,
+        "fund_min": SPECTRAL_PEAK_FLOOR_HZ,
+    },
     "Swells": {"sub30_max": 0.35, "centroid_min": 80.0},
 }
 
@@ -133,6 +156,7 @@ class AudioMetrics:
     centroid_hz: float
     fundamental_hz: float
     fundamental_ratio: float
+    spectral_peak_hz: float = 0.0
     sub30_energy_ratio: float = 0.0
     bright5k_energy_ratio: float = 0.0
     category: str = ""
@@ -199,6 +223,8 @@ def analyze_file(path: Path, category: str = "", tail_fraction: float = 0.12) ->
     sub30 = float(np.sum(power[freqs < 30.0]))
     sub30_ratio = sub30 / total_p
     bright5k = energy_ratio_above_hz(x, sr, 5000.0)
+    peak_bin = int(np.argmax(spec))
+    spectral_peak = float(freqs[peak_bin]) if peak_bin < len(freqs) else 0.0
 
     return AudioMetrics(
         path=path.name,
@@ -209,6 +235,7 @@ def analyze_file(path: Path, category: str = "", tail_fraction: float = 0.12) ->
         centroid_hz=centroid,
         fundamental_hz=fundamental,
         fundamental_ratio=fund_ratio,
+        spectral_peak_hz=spectral_peak,
         sub30_energy_ratio=sub30_ratio,
         bright5k_energy_ratio=bright5k,
         category=category,
@@ -225,6 +252,10 @@ def category_spectral_passes(metrics: AudioMetrics, category: str) -> tuple[bool
         return False, f"sub30 {metrics.sub30_energy_ratio:.3f} < {rules['sub30_min']}"
     if "bright5k_max" in rules and metrics.bright5k_energy_ratio > rules["bright5k_max"]:
         return False, f"bright5k {metrics.bright5k_energy_ratio:.3f} > {rules['bright5k_max']}"
+    if "spec_peak_min" in rules and 0 < metrics.spectral_peak_hz < rules["spec_peak_min"]:
+        return False, f"spectral peak {metrics.spectral_peak_hz:.1f} < {rules['spec_peak_min']}"
+    if "fund_ratio_min" in rules and metrics.fundamental_ratio < rules["fund_ratio_min"]:
+        return False, f"fund_ratio {metrics.fundamental_ratio:.3f} < {rules['fund_ratio_min']}"
     if "fund_min" in rules and 0 < metrics.fundamental_hz < rules["fund_min"]:
         return False, f"fundamental {metrics.fundamental_hz:.1f} < {rules['fund_min']}"
     if "fund_max" in rules and metrics.fundamental_hz > rules["fund_max"]:
