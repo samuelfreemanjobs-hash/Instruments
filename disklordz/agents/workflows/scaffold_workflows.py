@@ -53,6 +53,8 @@ ACTIVATION: dict[str, str] = {
     "audio-business-copilot": "ci_scheduled",
     "plugin-factory-liaison": "ci_scheduled",
     "autonomous-coding-agent": "ci_scheduled",
+    "vst-factory-director": "ci_scheduled",
+    "linux-vst3-dsp-engineer": "ci_on_pr",
 }
 
 CI_WORKFLOWS = [
@@ -66,7 +68,14 @@ CI_WORKFLOWS = [
     (".github/workflows/airtable-antigravity-handoff.yml", "ship-velocity, airtable-wo-triage"),
     (".github/workflows/build.yml", "golden-wav-qa"),
     (".github/workflows/synth-forge.yml", "hardware-preset-designer"),
-    (".github/workflows/audio-plugin-fleet.yml", "audio-business-copilot, plugin-factory-liaison, golden-wav-qa"),
+    (
+        ".github/workflows/audio-plugin-fleet.yml",
+        "audio-business-copilot, plugin-factory-liaison, golden-wav-qa, vst-factory-director, linux-vst3-dsp-engineer",
+    ),
+    (
+        ".github/workflows/repo-health.yml",
+        "vst-factory-director, linux-vst3-dsp-engineer, golden-wav-qa",
+    ),
     (".github/workflows/audio-coach-daily-nudge.yml", "audio-business-copilot"),
     (".github/workflows/audio-plugin-weekly.yml", "audio-business-copilot, plugin-factory-liaison"),
     (".github/workflows/autonomous-coding-agent.yml", "autonomous-coding-agent"),
@@ -210,6 +219,14 @@ ANNOUNCE: dict[str, str] = {
     "plugin-factory-liaison": (
         "I'm **Plugin Factory Liaison** — I refresh PASTE_TO_FACTORY and slice Milestone 001 "
         "for Cursor Factory without writing JUCE myself."
+    ),
+    "vst-factory-director": (
+        "I'm **VST Factory Director** — I run hybrid factory gates, portfolio and product work orders; "
+        "I delegate Linux VST3 DSP implementation to linux-vst3-dsp-engineer."
+    ),
+    "linux-vst3-dsp-engineer": (
+        "I'm **Linux VST3 DSP Engineer** — I implement JUCE VST3 for Linux x86_64 and aarch64 "
+        "(MPC Sample / Melodee), APC test/ship, and pluginval evidence."
     ),
     "autonomous-coding-agent": (
         "I'm **Autonomous Coding Agent** — I drain the 24/7 coding queue on allowlisted paths "
@@ -436,6 +453,27 @@ WORKFLOWS: dict[str, dict] = {
         "steps": [
             "Refresh PASTE_TO_FACTORY.md",
             "Cursor timer: paste to Factory chat",
+        ],
+    },
+    "vst-factory-director": {
+        "platform": "github",
+        "trigger": "daily schedule + repo-health on push/PR",
+        "workflow_file": ".github/workflows/audio-plugin-fleet.yml",
+        "steps": [
+            "scripts/vst-factory/fleet_tick.py (vst-factory pytest + agent trees)",
+            "disklordz/vst-factory HTTP portfolio gates (manual uvicorn)",
+            "Route C++ slices to linux-vst3-dsp-engineer",
+        ],
+    },
+    "linux-vst3-dsp-engineer": {
+        "platform": "github",
+        "trigger": "pull_request + daily fleet tick",
+        "workflow_file": ".github/workflows/repo-health.yml",
+        "steps": [
+            "APC gates + doc links (repo-health)",
+            "build.yml vst paths on PR when C++ changes",
+            "tools/build-vst-aarch64-linux.sh (operator / cloud agent)",
+            "scripts/vst/verify-mpc-sample-vst3.sh",
         ],
     },
     "autonomous-coding-agent": {

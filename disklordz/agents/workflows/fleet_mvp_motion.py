@@ -177,6 +177,14 @@ def run(*, full: bool = False) -> int:
             ["python3", "disklordz/integrations/scripts/promote-integrations.py", "--write"],
         )
     )
+    results.append(
+        _run_shell(
+            "vst-factory-director",
+            "vst-factory fleet_tick.py",
+            ["python3", "scripts/vst-factory/fleet_tick.py"],
+            allow_fail=True,
+        )
+    )
 
     stub = REPO / "disklordz/agents/workflows/scripts/stub-agent-env-check.sh"
     if stub.is_file():

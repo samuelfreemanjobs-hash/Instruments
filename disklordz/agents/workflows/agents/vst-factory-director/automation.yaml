@@ -1,10 +1,13 @@
 # Automation — VST Factory Director (`vst-factory-director`)
 
-platform: manual
-trigger: manual
-primary: TBD
+platform: github
+trigger: daily schedule + repo-health on push/PR
+primary: .github/workflows/audio-plugin-fleet.yml
 
 ## Steps
+1. scripts/vst-factory/fleet_tick.py (vst-factory pytest + agent trees)
+2. disklordz/vst-factory HTTP portfolio gates (manual uvicorn)
+3. Route C++ slices to linux-vst3-dsp-engineer
 
 ## Invoke agent
 Read: disklordz/agents/profit/vst-factory-director/agent.md
