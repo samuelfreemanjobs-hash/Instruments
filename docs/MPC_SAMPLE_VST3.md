@@ -106,6 +106,15 @@ sudo apt-get install -y \
 ./tools/build-vst-aarch64-linux.sh <PluginName>
 ```
 
+**Podman / Docker (dockcross)** — when host `lib*:arm64` multiarch is awkward, use the repo wrapper (pulls `docker.io/dockcross/linux-arm64`):
+
+```bash
+MPC_HEADLESS=1 ./tools/build-vst-aarch64-podman.sh MpcMessenger
+./scripts/vst/verify-mpc-sample-vst3.sh vst/MpcMessenger/build-aarch64/.../MpcMessenger.vst3
+```
+
+Example Messenger-style mono on card: `Melodee/Plugins/MpcMessenger.vst3` with **K1–K3** = cutoff / resonance / res bass.
+
 This uses `cmake/toolchains/linux-aarch64-gnu.cmake` and writes artifacts under `vst/<PluginName>/build-aarch64/`. JUCE places the shared library in:
 
 `YourPlugin.vst3/Contents/aarch64-linux/YourPlugin.so`
