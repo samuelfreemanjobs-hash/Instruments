@@ -22,7 +22,9 @@ coding-queue.json
        ▼
 tick.py ──► antigravity sync (shell)
        │
-       ├──► NEXT_SLICE.md ──► Cursor Cloud API (`tick.py --launch-agent`, secret `CURSOR_API_KEY`)
+       ├──► NEXT_SLICE.md ──► `tick.py --launch-agent` classifies easy vs hard
+       │         ├── easy → Gemini / Aider / Jules issue (see `docs/AUTOMATION.md`)
+       │         └── hard → Cursor Cloud API (`CURSOR_API_KEY`)
        │
        └──► factory-escalation/*.md ──► plugin-factory-liaison / issue
 ```

@@ -25,4 +25,8 @@ MyFirstPlugin/build-ninja/
 
 disklordz/agents/workflows/fleet-activity.jsonl
 __pycache__/
+
+# run-gemini-cli (https://github.com/google-github-actions/run-gemini-cli)
+.gemini/
+gha-creds-*.json
 vst/JUCE

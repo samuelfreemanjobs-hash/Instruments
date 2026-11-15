@@ -1,0 +1,122 @@
+# DiskLordz — easy-job agent via google-github-actions/run-gemini-cli
+name: Agent — Gemini CLI
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to work on
+        required: true
+        type: string
+      task:
+        description: Task instructions (defaults to PR body if empty)
+        required: false
+        type: string
+  pull_request:
+    types: [labeled]
+    branches: ["**"]
+
+concurrency:
+  group: agent-gemini-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  gemini:
+    timeout-minutes: 45
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'pull_request' &&
+        github.event.label.name == 'agent:gemini' &&
+        github.event.pull_request.head.repo.full_name == github.repository
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve PR number
+        id: meta
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "pr=${{ inputs.pr_number }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "pr=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout PR branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr checkout "${{ steps.meta.outputs.pr }}"
+
+      - name: Load task text
+        id: task
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CUSTOM='${{ inputs.task }}'
+          if [ -n "$CUSTOM" ]; then
+            TASK="$CUSTOM"
+          else
+            TASK=$(gh pr view "${{ steps.meta.outputs.pr }}" --json body -q .body)
+          fi
+          RULES=$(cat disklordz/autonomous-coder/agent-rules.md)
+          {
+            echo "text<<EOF"
+            echo "Autonomous Gemini agent for PR #${{ steps.meta.outputs.pr }}"
+            echo ""
+            echo "$RULES"
+            echo ""
+            echo "## Task"
+            echo "$TASK"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run Gemini CLI
+        id: run_gemini
+        uses: google-github-actions/run-gemini-cli@v0.1.22
+        env:
+          GEMINI_CLI_TRUST_WORKSPACE: "true"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          github_pr_number: ${{ steps.meta.outputs.pr }}
+          prompt: ${{ steps.task.outputs.text }}
+
+      - name: Commit and push if Gemini changed files
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No file changes to commit"
+            exit 0
+          fi
+          git add -A
+          git commit -m "chore(agent-gemini): PR #${{ steps.meta.outputs.pr }} autonomous fix"
+          git push origin HEAD
+
+      - name: Comment summary on PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUMMARY: ${{ steps.run_gemini.outputs.summary }}
+        run: |
+          BODY_FILE=$(mktemp)
+          {
+            echo "### Gemini agent run"
+            echo ""
+            echo "$SUMMARY"
+            echo ""
+            echo "---"
+            echo "_Automated by \`agent-gemini.yml\` — does not merge._"
+          } > "$BODY_FILE"
+          gh pr comment "${{ steps.meta.outputs.pr }}" --body-file "$BODY_FILE"

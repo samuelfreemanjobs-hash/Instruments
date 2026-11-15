@@ -9,6 +9,8 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+from agent_rules import agent_rules_block
+
 API_V0 = "https://api.cursor.com/v0/agents"
 MAX_CONCURRENT = 3
 
@@ -22,19 +24,6 @@ RUNNING_STATUSES = frozenset(
         "IN_PROGRESS",
     }
 )
-
-AGENT_RULES = """
-## Non-negotiable rules (Sam's automation lane)
-
-1. Fix merge conflicts and failing CI checks on your branch.
-2. Bring the plugin to **MVP** (loads in a DAW, core DSP/UI wired, no placeholder ship).
-3. Ensure GitHub Actions on this PR produces a **downloadable Windows x64 VST3 artifact** (add or fix workflow if missing).
-4. Run **pluginval strictness 5** on the VST3 and fix failures.
-5. **Open or update** a pull request for your work — **NEVER merge** yourself.
-6. **Never** publish releases, post to Slack/social, or comment on issues/PRs unless fixing CI via code only.
-7. **Never** modify committed **master audio files** (golden WAVs, shipped sample libraries) unless the slice explicitly requires it — prefer DSP fixes.
-8. Read `AGENTS.md` and `docs/CLAUDE_VST_ENGINEER.md` before editing JUCE/C++.
-"""
 
 
 def api_key() -> str | None:
@@ -141,7 +130,7 @@ def build_prompt(item: dict, slice_md: str, *, pr: dict | None) -> str:
 **Queue id:** `{item['id']}`
 **Title:** {item.get('title', '')}
 {pr_block}
-{AGENT_RULES}
+{agent_rules_block()}
 
 ---
 

@@ -16,7 +16,15 @@ if str(_SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPT_DIR))
 
 from cursor_cloud import launch_slice_agent
+from dispatch import dispatch_aider, dispatch_gemini, dispatch_jules_issue
 from github_pr import fetch_pr, github_token, pr_is_open, search_open_pr_by_title
+from router import (
+    classify_job,
+    job_already_assigned,
+    pick_agent,
+    record_assignment,
+    secret_available,
+)
 
 REPO = _SCRIPT_DIR.parents[1]
 QUEUE = REPO / "disklordz/autonomous-coder/coding-queue.json"
@@ -279,7 +287,11 @@ def pick_emit_item(state: dict) -> tuple[dict, dict | None] | tuple[dict, None]:
     return {"id": "waiting", "title": "waiting"}, None
 
 
-def launch_agent_from_slice(state: dict) -> int:
+def _runtime_env() -> dict[str, str]:
+    return {k: os.environ.get(k) or "" for k in os.environ}
+
+
+def route_and_launch_agent(state: dict) -> int:
     if not SLICE_OUT.is_file():
         print("SKIP launch: NEXT_SLICE.md missing — run --emit-slice first")
         return 0
@@ -313,21 +325,106 @@ def launch_agent_from_slice(state: dict) -> int:
     if pr:
         ref = (pr.get("head") or {}).get("ref") or pr.get("headRefName") or default_ref
 
-    ok = launch_slice_agent(
-        item,
-        slice_md,
-        repo_url=repo_url,
-        ref=ref,
-        pr=pr,
-        state=state,
-    )
+    if job_already_assigned(state, pr_number, item_id):
+        print(f"SKIP launch: agent already assigned for {item_id} / PR #{pr_number}")
+        return 0
+
+    env = _runtime_env()
+    if token:
+        env.setdefault("GITHUB_TOKEN", token)
+    task_text = pending.get("task") or slice_md
+    tier = classify_job(item, pr=pr, task_text=task_text)
+    chosen_agent = pending.get("force_agent")
+    if not chosen_agent:
+        _, chosen_agent = pick_agent(item, pr=pr, task_text=task_text, env=env)
+
+    print(f"route tier={tier} agent={chosen_agent} slice={item_id} pr={pr_number}")
+
+    ok = False
+    dispatch_extra: dict = {}
+
+    if chosen_agent == "cursor":
+        ok = launch_slice_agent(
+            item,
+            slice_md,
+            repo_url=repo_url,
+            ref=ref,
+            pr=pr,
+            state=state,
+        )
+    elif chosen_agent == "gemini" and pr_number and token:
+        ok = dispatch_gemini(owner, repo, int(pr_number), task_text, token, ref=default_ref)
+    elif chosen_agent == "aider" and pr_number and token:
+        ok = dispatch_aider(owner, repo, int(pr_number), task_text, token, ref=default_ref)
+    elif chosen_agent == "jules" and token:
+        ok = dispatch_jules_issue(
+            owner,
+            repo,
+            pr_number=int(pr_number) if pr_number else None,
+            slice_id=item_id,
+            task=task_text,
+            token=token,
+            state=state,
+        )
+        dispatch_extra["jules_issue"] = (state.get("jules_issues") or {}).get(
+            f"pr:{pr_number}" if pr_number else f"slice:{item_id}"
+        )
+    elif tier == "easy" and not secret_available("CURSOR_API_KEY", env):
+        print("SKIP: no free agents configured and CURSOR_API_KEY missing")
+        return 0
+    else:
+        # Fallback: easy job but preferred agent unavailable → try chain or Cursor
+        if tier == "easy":
+            for fallback in ("gemini", "aider", "jules", "cursor"):
+                if fallback == chosen_agent:
+                    continue
+                if fallback == "gemini" and pr_number and secret_available("GEMINI_API_KEY", env):
+                    ok = dispatch_gemini(owner, repo, int(pr_number), task_text, token or "", ref=default_ref)
+                    chosen_agent = "gemini"
+                    break
+                if fallback == "aider" and pr_number and secret_available("OPENROUTER_API_KEY", env):
+                    ok = dispatch_aider(owner, repo, int(pr_number), task_text, token or "", ref=default_ref)
+                    chosen_agent = "aider"
+                    break
+                if fallback == "jules" and token:
+                    ok = dispatch_jules_issue(
+                        owner,
+                        repo,
+                        pr_number=int(pr_number) if pr_number else None,
+                        slice_id=item_id,
+                        task=task_text,
+                        token=token,
+                        state=state,
+                    )
+                    chosen_agent = "jules"
+                    break
+                if fallback == "cursor" and secret_available("CURSOR_API_KEY", env):
+                    ok = launch_slice_agent(item, slice_md, repo_url=repo_url, ref=ref, pr=pr, state=state)
+                    chosen_agent = "cursor"
+                    break
+
     if ok:
+        record_assignment(
+            state,
+            agent=chosen_agent,
+            pr_number=pr_number,
+            slice_id=item_id,
+            tier=tier,
+            extra=dispatch_extra or None,
+        )
         state.setdefault("active_plugin_slices", {})[item_id] = datetime.now(
             timezone.utc
         ).strftime("%Y-%m-%dT%H:%M:%SZ")
         state["last_tick_at"] = state["active_plugin_slices"][item_id]
+        state.setdefault("router", {})["last_agent"] = chosen_agent
+        state["router"]["last_tier"] = tier
         save_state(state)
-    return 0 if ok else 0
+    return 0
+
+
+def launch_agent_from_slice(state: dict) -> int:
+    """Backward-compatible entrypoint — routes then launches."""
+    return route_and_launch_agent(state)
 
 
 def main() -> int:
@@ -365,7 +462,13 @@ def main() -> int:
             return 0
         emit_slice(item, pr=pr)
         pr_num = (pr or {}).get("number")
-        state["pending_launch"] = {"slice_id": item["id"], "pr": pr_num}
+        tier = classify_job(item, pr=pr)
+        state["pending_launch"] = {
+            "slice_id": item["id"],
+            "pr": pr_num,
+            "tier": tier,
+            "task": SLICE_OUT.read_text(encoding="utf-8"),
+        }
         state["last_tick_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         save_state(state)
         if item["id"].startswith("plugin-"):
