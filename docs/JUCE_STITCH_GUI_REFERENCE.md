@@ -1,5 +1,7 @@
 # JUCE, VST3, and Google Stitch — repo reference
 
+**Source brief (Sam):** [Gemini share — Stitch JUCE/VST3 GUI agent reference](https://share.gemini.google/Pk0wiTg1pZed) (resolves to [gemini.google.com/share/113fccb8c182](https://gemini.google.com/share/113fccb8c182)). Condensed into this repo; full Part 3 tables live in that thread if you need them verbatim.
+
 Stitch outputs HTML/CSS, tokens, and Figma — not JUCE C++. Disklordz uses two production paths:
 
 | Path | Products | Ship target |
