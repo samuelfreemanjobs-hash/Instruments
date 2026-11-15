@@ -44,11 +44,11 @@ jobs:
       - name: Validate VST3 with pluginval
         env:
           CI: "true"
-        run: |
-          python scripts/vst/run_pluginval.py ^
-            --discover "build/AutoSampler/AutoSampler_artefacts/Release/VST3" ^
-            --strictness-level 5 ^
-            --timeout-ms 120000
+        run: >
+          python scripts/vst/run_pluginval.py
+          --discover "build/AutoSampler/AutoSampler_artefacts/Release/VST3"
+          --strictness-level 5
+          --timeout-ms 120000
 
       - name: Stage prebuild package
         shell: pwsh
