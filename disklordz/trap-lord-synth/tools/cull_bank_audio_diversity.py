@@ -55,6 +55,7 @@ def main() -> int:
     spectral_rejects = 0
     cross_rejects = 0
     audible_rejects = 0
+    priority_removals: list[dict[str, str]] = []
 
     def probe_index(i: int, preset: dict) -> tuple[int, np.ndarray]:
         wav = PROBE_DIR / f"p_{i:04d}.wav"
@@ -93,30 +94,36 @@ def main() -> int:
             if i not in vec_map:
                 vec_map[i] = category_feature_vector(wav)
             metrics = analyze_file(wav, category=cat)
+            preset_name = presets[i].get("name", f"index_{i}")
             if not peak_passes_audible_gate(metrics.peak):
                 audible_rejects += 1
+                if cat in CROSS_CATEGORY_EXEMPT:
+                    priority_removals.append(
+                        {"category": cat, "name": preset_name, "reason": f"audible: probe peak {metrics.peak:.4f}"}
+                    )
                 continue
             if not aud_ok_index(i):
                 audible_rejects += 1
+                if cat in CROSS_CATEGORY_EXEMPT:
+                    priority_removals.append(
+                        {"category": cat, "name": preset_name, "reason": "audible: failed multi-note check"}
+                    )
                 continue
-            ok, _reason = category_spectral_passes(metrics, cat)
+            ok, reason = category_spectral_passes(metrics, cat)
             if not ok:
                 spectral_rejects += 1
+                if cat in CROSS_CATEGORY_EXEMPT:
+                    priority_removals.append({"category": cat, "name": preset_name, "reason": f"spectral: {reason}"})
                 continue
             v = vec_map[i]
             too_close = False
-            for other_cat, ov in global_kept:
-                if other_cat == cat:
-                    continue
-                corr = float(np.dot(v, ov))
-                if cat in CROSS_CATEGORY_EXEMPT and other_cat not in CROSS_CATEGORY_EXEMPT:
-                    continue
-                limit = CROSS_CATEGORY_CORR_MAX
-                if cat in CROSS_CATEGORY_EXEMPT and other_cat in CROSS_CATEGORY_EXEMPT:
-                    limit = 0.98
-                if corr > limit:
-                    too_close = True
-                    break
+            if cat not in CROSS_CATEGORY_EXEMPT:
+                for other_cat, ov in global_kept:
+                    if other_cat == cat:
+                        continue
+                    if float(np.dot(v, ov)) > CROSS_CATEGORY_CORR_MAX:
+                        too_close = True
+                        break
             if too_close:
                 cross_rejects += 1
                 continue
@@ -124,9 +131,15 @@ def main() -> int:
             vecs.append(v)
         print(f"{cat}: probing {len(idxs)} presets, eligible {len(filtered_idxs)}…", flush=True)
         quota = int(target.get(cat, len(idxs)))
-        fake = [{"bankIndex": i} for i in filtered_idxs]
-        picked, _ = select_diverse_presets(fake, vecs, min(quota, len(filtered_idxs)), CORR_MAX, None)
-        cat_keep = [p["bankIndex"] for p in picked]
+        if cat in CROSS_CATEGORY_EXEMPT:
+            # Sam's lanes: keep every gate-passing preset (audible + spectral only), cap at quota.
+            cat_keep = filtered_idxs[:quota]
+        else:
+            fake = [{"bankIndex": i} for i in filtered_idxs]
+            picked, _ = select_diverse_presets(
+                fake, vecs, min(quota, len(filtered_idxs)), CORR_MAX, None
+            )
+            cat_keep = [p["bankIndex"] for p in picked]
         for bi in cat_keep:
             global_kept.append((cat, vec_map[bi]))
         achieved[cat] = len(cat_keep)
@@ -156,6 +169,9 @@ def main() -> int:
     report = ROOT / "build" / "factory-audio-cull-report.json"
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(json.dumps({"achievedQuotas": achieved, "total": len(new_presets)}, indent=2), encoding="utf-8")
+    (ROOT / "build" / "priority-cull-removals.json").write_text(
+        json.dumps(priority_removals, indent=2), encoding="utf-8"
+    )
     artifacts_report = Path("/opt/cursor/artifacts/factory-audio-cull-report.json")
     try:
         artifacts_report.parent.mkdir(parents=True, exist_ok=True)

@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BANK = ROOT / "assets/factory/preset_bank.json"
-PRIORITY = ("Synth Keys", "Leads", "Swells")
+PRIORITY = ("Pads", "Synth Keys", "Leads", "Swells")
 DEFAULT_GOLDEN = "f1e4526e"
 
 
