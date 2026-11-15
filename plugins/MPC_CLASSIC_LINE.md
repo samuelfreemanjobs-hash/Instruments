@@ -20,6 +20,12 @@
 |--------|----------------|-------|------|
 | [MpcDxFm](MpcDxFm/status.json) | Yamaha DX7 / TX81Z | Plan complete | `/apc-design MpcDxFm` |
 
+### Sample + synth hybrid (M1 / D-50)
+
+| Plugin | Vintage target | Phase | Next |
+|--------|----------------|-------|------|
+| [MpcLaSynth](MpcLaSynth/status.json) | Korg M1 / Roland D-50 | Plan complete | `/apc-design MpcLaSynth` |
+
 **Platform:** Linux **x86_64** (DAW + pluginval) and **aarch64** VST3 for **Melodee** (`docs/MPC_SAMPLE_VST3.md`). Default **headless** (`hasEditor() == false`). Reference precursor: `vst/MpcAnalogSynth` (Prophet-lite sketch).
 
 **Stop after Plan** — run Design per SKU, do not impl all four in one turn.
