@@ -2,6 +2,18 @@
 
 Sam designs the **visual** UI in Canva or Google Stitch. Engineering drops assets into `shared/disklordz_ui/skins/<plugin>/` and updates `layout.json`. **No DSP or APVTS ID changes** are required for a skin refresh.
 
+## Google Stitch Loop (optional)
+
+For multi-screen DESKTOP mockups and codebase-aware prototyping (not committed skin PNGs):
+
+1. Install CLI (Node 20+): `npm install -g @google/stitch` (or user prefix `~/.npm-global` on Cloud Agents).
+2. Enable Loop experiment: `stitch enable loop` (sets `yolo.loop: true` in `~/.stitch.json`; adds `flows/prototype.md` to the bundled `/stitch` skill).
+3. Project playbooks: `stitch agent-skills add --dir .agents/skills/stitch` (already vendored in this repo).
+4. Sign in and run onboarding: `stitch status --flow=loop --json` → follow `.agents/skills/stitch/stitch/flows/prototype.md`.
+5. Native JUCE skin path here remains **`shared/disklordz_ui`** + Canva/Stitch **exported PNGs** per sections below; Loop is for canvas iteration before export.
+
+MCP (Cursor): add `stitch` server in `.cursor/mcp.json` with `X-Goog-Api-Key` from [Stitch settings](https://stitch.withgoogle.com) (no keys in git).
+
 ## Canvas / frame
 
 | Export | JUCE mapping |
