@@ -26,6 +26,12 @@
 |--------|----------------|-------|------|
 | [MpcLaSynth](MpcLaSynth/status.json) | Korg M1 / Roland D-50 | Plan complete | `/apc-design MpcLaSynth` |
 
+### Drum machines (synth, not samples)
+
+| Plugin | Vintage target | Phase | Next |
+|--------|----------------|-------|------|
+| [MpcTr808909](MpcTr808909/status.json) | Roland TR-808 / TR-909 | Plan complete | `/apc-design MpcTr808909` |
+
 **Platform:** Linux **x86_64** (DAW + pluginval) and **aarch64** VST3 for **Melodee** (`docs/MPC_SAMPLE_VST3.md`). Default **headless** (`hasEditor() == false`). Reference precursor: `vst/MpcAnalogSynth` (Prophet-lite sketch).
 
 **Stop after Plan** — run Design per SKU, do not impl all four in one turn.
