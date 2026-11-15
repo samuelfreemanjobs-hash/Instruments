@@ -24,6 +24,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout Wave9090AudioProcessor::crea
     addFloatParam (layout, PID::wtScan, "WT Scan", { 0.0f, 1.0f, 0.0001f }, 0.0f);
     addFloatParam (layout, PID::filterCutoff, "Cutoff", { 0.0f, 1.0f, 0.0001f }, 0.72f);
     addFloatParam (layout, PID::filterRes, "Resonance", { 0.0f, 1.0f, 0.0001f }, 0.25f);
+    layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID { PID::filterType, 1 },
+                                                           "Filter Type",
+                                                           juce::StringArray { "LP 12", "LP 24", "BP 12", "BP 24", "HP 12", "HP 24" },
+                                                           1));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { PID::filterCircuit, 1 }, "Destructive Circuit", false));
     addFloatParam (layout, PID::drive, "Drive", { 0.0f, 1.0f, 0.0001f }, 0.2f);
     addFloatParam (layout, PID::crush, "Crush", { 0.0f, 1.0f, 0.0001f }, 0.0f);
@@ -109,6 +113,9 @@ void Wave9090AudioProcessor::applyFactoryPreset (int index)
     set (PID::wtScan, p.wtScan);
     set (PID::filterCutoff, p.filterCutoff);
     set (PID::filterRes, p.filterRes);
+    if (auto* type = apvts_.getParameter (PID::filterType))
+        if (auto* choice = dynamic_cast<juce::AudioParameterChoice*> (type))
+            type->setValueNotifyingHost (choice->convertTo0to1 (std::clamp (p.filterMode, 0, 5)));
     if (auto* circuit = apvts_.getParameter (PID::filterCircuit))
         circuit->setValueNotifyingHost (p.filterDestructive ? 1.0f : 0.0f);
     set (PID::drive, p.drive);
@@ -166,6 +173,9 @@ wave9090::SynthParams Wave9090AudioProcessor::readParamsFromApvts() const noexce
     p.wtScan = load (PID::wtScan);
     p.filterCutoff = load (PID::filterCutoff);
     p.filterRes = load (PID::filterRes);
+    if (auto* type = apvts_.getParameter (PID::filterType))
+        if (auto* choice = dynamic_cast<juce::AudioParameterChoice*> (type))
+            p.filterMode = choice->getIndex();
     p.filterDestructive = load (PID::filterCircuit) > 0.5f;
     p.drive = load (PID::drive);
     p.crush = load (PID::crush);

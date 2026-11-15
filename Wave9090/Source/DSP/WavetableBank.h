@@ -56,14 +56,18 @@ public:
         return ((c3 * frac + c2) * frac + c1) * frac + c0;
     }
 
-    std::size_t selectMip (double phaseInc) const noexcept
+    std::size_t selectMip (double phaseInc, int sourceHarmonics = 48) const noexcept
     {
-        // phaseInc = cycles per sample; folding harmonics above ~0.45 Nyquist
-        const double cycles = phaseInc * static_cast<double> (kWavetableSize);
-        if (cycles < 2.0)
-            return 0;
-        const int mip = static_cast<int> (std::floor (std::log2 (cycles)));
-        return static_cast<std::size_t> (std::clamp (mip, 0, static_cast<int> (kMipLevels) - 1));
+        phaseInc = std::max (phaseInc, 1.0e-9);
+        const double maxHarmNyquist = 0.48 / phaseInc;
+        int mipsNeeded = 0;
+        int harmonics = std::max (1, sourceHarmonics);
+        while (harmonics > maxHarmNyquist && mipsNeeded < static_cast<int> (kMipLevels) - 1)
+        {
+            harmonics >>= 1;
+            ++mipsNeeded;
+        }
+        return static_cast<std::size_t> (mipsNeeded);
     }
 
     float sampleMorph (double phase01, float positionNorm, double phaseInc) const noexcept
@@ -74,10 +78,12 @@ public:
         const auto i1 = std::min (i0 + 1, kWavetableCount - 1);
         const float frac = scaled - static_cast<float> (i0);
 
-        const auto mip = selectMip (phaseInc);
+        const int srcHarm = harmonicsForWave (i0);
+        const auto mip = selectMip (phaseInc, srcHarm);
         const float a = sampleAt (mipTables_[mip][i0], phase01);
         const float b = sampleAt (mipTables_[mip][i1], phase01);
-        return a + (b - a) * frac;
+        const float morph = a + static_cast<double> (b - a) * static_cast<double> (frac);
+        return static_cast<float> (morph);
     }
 
     float sampleSine (double phase01) const noexcept

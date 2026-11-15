@@ -7,6 +7,7 @@
 | wtScan | WT Scan | 0..1 | 0 | LFO depth on position |
 | filterCutoff | Cutoff | 0..1 | 0.72 | Maps 20 Hz–18 kHz |
 | filterRes | Resonance | 0..1 | 0.25 | |
+| filterType | Filter Type | LP12..HP24 | LP24 | ZDF multimode |
 | filterCircuit | Circuit | 0/1 | 0 | Pristine / Destructive |
 | drive | Drive | 0..1 | 0.2 | Destructive path |
 | crush | Crush | 0..1 | 0 | Bit depth reduction |

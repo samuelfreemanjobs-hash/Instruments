@@ -11,6 +11,7 @@ SynthParams baseParams()
 {
     SynthParams p;
     p.outputGainDb = -4.0f;
+    p.filterMode = 1;
     return p;
 }
 } // namespace
@@ -476,7 +477,441 @@ const std::vector<FactoryPreset>& getFactoryPresets() noexcept
               p.outputGainDb = -7.0f;
               return p;
           }() },
-    };
+        { "Midnight 808", "808", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.08f;
+              p.filterCutoff = 0.25f;
+              p.filterRes = 0.20f;
+              p.filterMode = 0;
+              p.drive = 0.25f;
+              p.subLevel = 0.5f;
+              p.detuneCents = -9.0f;
+              p.stereoWidth = 0.15f;
+              p.ampDecay = 0.12f;
+              p.outputGainDb = -4.0f;
+              return p;
+          }() },
+        { "Grime Tomb", "808", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.22f;
+              p.filterCutoff = 0.35f;
+              p.filterRes = 0.33f;
+              p.filterMode = 1;
+              p.drive = 0.35f;
+              p.subLevel = 0.6f;
+              p.detuneCents = -6.0f;
+              p.stereoWidth = 0.23f;
+              p.ampDecay = 0.20f;
+              p.outputGainDb = -4.5f;
+              return p;
+          }() },
+        { "South Memphis", "BASS", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.40f;
+              p.filterCutoff = 0.45f;
+              p.filterRes = 0.45f;
+              p.filterMode = 2;
+              p.drive = 0.45f;
+              p.subLevel = 0.7f;
+              p.detuneCents = -3.0f;
+              p.stereoWidth = 0.31f;
+              p.ampDecay = 0.28f;
+              p.outputGainDb = -5.0f;
+              return p;
+          }() },
+        { "Backroom Sub", "BASS", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.55f;
+              p.filterCutoff = 0.55f;
+              p.filterRes = 0.20f;
+              p.filterMode = 3;
+              p.drive = 0.55f;
+              p.subLevel = 0.8f;
+              p.detuneCents = 0.0f;
+              p.stereoWidth = 0.39f;
+              p.ampDecay = 0.36f;
+              p.outputGainDb = -5.5f;
+              return p;
+          }() },
+        { "Ronin Blade", "LEAD", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.70f;
+              p.filterCutoff = 0.65f;
+              p.filterRes = 0.33f;
+              p.filterMode = 4;
+              p.drive = 0.25f;
+              p.subLevel = 0.9f;
+              p.detuneCents = 3.0f;
+              p.stereoWidth = 0.47f;
+              p.ampDecay = 0.44f;
+              p.outputGainDb = -6.0f;
+              return p;
+          }() },
+        { "Alley Scream", "LEAD", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.85f;
+              p.filterCutoff = 0.25f;
+              p.filterRes = 0.45f;
+              p.filterMode = 5;
+              p.drive = 0.35f;
+              p.subLevel = 0.5f;
+              p.detuneCents = 6.0f;
+              p.stereoWidth = 0.55f;
+              p.ampDecay = 0.12f;
+              p.outputGainDb = -4.0f;
+              return p;
+          }() },
+        { "Gutter Ping", "PLUCK", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.08f;
+              p.filterCutoff = 0.35f;
+              p.filterRes = 0.20f;
+              p.filterMode = 0;
+              p.drive = 0.45f;
+              p.subLevel = 0.6f;
+              p.detuneCents = 9.0f;
+              p.stereoWidth = 0.15f;
+              p.ampDecay = 0.20f;
+              p.outputGainDb = -4.5f;
+              return p;
+          }() },
+        { "Chrome Stab", "PLUCK", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.22f;
+              p.filterCutoff = 0.45f;
+              p.filterRes = 0.33f;
+              p.filterMode = 1;
+              p.drive = 0.55f;
+              p.subLevel = 0.7f;
+              p.detuneCents = -9.0f;
+              p.stereoWidth = 0.23f;
+              p.ampDecay = 0.28f;
+              p.outputGainDb = -5.0f;
+              return p;
+          }() },
+        { "Ash Choir", "PAD", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.40f;
+              p.filterCutoff = 0.55f;
+              p.filterRes = 0.45f;
+              p.filterMode = 2;
+              p.drive = 0.25f;
+              p.subLevel = 0.8f;
+              p.detuneCents = -6.0f;
+              p.stereoWidth = 0.31f;
+              p.ampDecay = 0.36f;
+              p.outputGainDb = -5.5f;
+              return p;
+          }() },
+        { "Cemetery Mist", "PAD", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.55f;
+              p.filterCutoff = 0.65f;
+              p.filterRes = 0.20f;
+              p.filterMode = 3;
+              p.drive = 0.35f;
+              p.subLevel = 0.9f;
+              p.detuneCents = -3.0f;
+              p.stereoWidth = 0.39f;
+              p.ampDecay = 0.44f;
+              p.outputGainDb = -6.0f;
+              return p;
+          }() },
+        { "Porcelain Trap", "KEYS", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.70f;
+              p.filterCutoff = 0.25f;
+              p.filterRes = 0.33f;
+              p.filterMode = 4;
+              p.drive = 0.45f;
+              p.subLevel = 0.5f;
+              p.detuneCents = 0.0f;
+              p.stereoWidth = 0.47f;
+              p.ampDecay = 0.12f;
+              p.outputGainDb = -4.0f;
+              return p;
+          }() },
+        { "Loft Rhodes", "KEYS", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.85f;
+              p.filterCutoff = 0.35f;
+              p.filterRes = 0.45f;
+              p.filterMode = 5;
+              p.drive = 0.55f;
+              p.subLevel = 0.6f;
+              p.detuneCents = 3.0f;
+              p.stereoWidth = 0.55f;
+              p.ampDecay = 0.20f;
+              p.outputGainDb = -4.5f;
+              return p;
+          }() },
+        { "Rust Cathedral", "FX", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.08f;
+              p.filterCutoff = 0.45f;
+              p.filterRes = 0.20f;
+              p.filterMode = 0;
+              p.drive = 0.25f;
+              p.subLevel = 0.7f;
+              p.detuneCents = 6.0f;
+              p.stereoWidth = 0.15f;
+              p.ampDecay = 0.28f;
+              p.outputGainDb = -5.0f;
+              return p;
+          }() },
+        { "Shattered Choir", "FX", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.22f;
+              p.filterCutoff = 0.55f;
+              p.filterRes = 0.33f;
+              p.filterMode = 1;
+              p.drive = 0.35f;
+              p.subLevel = 0.8f;
+              p.detuneCents = 9.0f;
+              p.stereoWidth = 0.23f;
+              p.ampDecay = 0.36f;
+              p.outputGainDb = -5.5f;
+              return p;
+          }() },
+        { "Basement Boom", "808", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.40f;
+              p.filterCutoff = 0.65f;
+              p.filterRes = 0.45f;
+              p.filterMode = 2;
+              p.drive = 0.45f;
+              p.subLevel = 0.9f;
+              p.detuneCents = -9.0f;
+              p.stereoWidth = 0.31f;
+              p.ampDecay = 0.44f;
+              p.outputGainDb = -6.0f;
+              return p;
+          }() },
+        { "Boulevard Ghost", "808", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.55f;
+              p.filterCutoff = 0.25f;
+              p.filterRes = 0.20f;
+              p.filterMode = 3;
+              p.drive = 0.55f;
+              p.subLevel = 0.5f;
+              p.detuneCents = -6.0f;
+              p.stereoWidth = 0.39f;
+              p.ampDecay = 0.12f;
+              p.outputGainDb = -4.0f;
+              return p;
+          }() },
+        { "Tar Pit", "BASS", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.70f;
+              p.filterCutoff = 0.35f;
+              p.filterRes = 0.33f;
+              p.filterMode = 4;
+              p.drive = 0.25f;
+              p.subLevel = 0.6f;
+              p.detuneCents = -3.0f;
+              p.stereoWidth = 0.47f;
+              p.ampDecay = 0.20f;
+              p.outputGainDb = -4.5f;
+              return p;
+          }() },
+        { "Warehouse Low", "BASS", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.85f;
+              p.filterCutoff = 0.45f;
+              p.filterRes = 0.45f;
+              p.filterMode = 5;
+              p.drive = 0.35f;
+              p.subLevel = 0.7f;
+              p.detuneCents = 0.0f;
+              p.stereoWidth = 0.55f;
+              p.ampDecay = 0.28f;
+              p.outputGainDb = -5.0f;
+              return p;
+          }() },
+        { "Siren District", "LEAD", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.08f;
+              p.filterCutoff = 0.55f;
+              p.filterRes = 0.20f;
+              p.filterMode = 0;
+              p.drive = 0.45f;
+              p.subLevel = 0.8f;
+              p.detuneCents = 3.0f;
+              p.stereoWidth = 0.15f;
+              p.ampDecay = 0.36f;
+              p.outputGainDb = -5.5f;
+              return p;
+          }() },
+        { "Velvet Knife", "LEAD", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.22f;
+              p.filterCutoff = 0.65f;
+              p.filterRes = 0.33f;
+              p.filterMode = 1;
+              p.drive = 0.55f;
+              p.subLevel = 0.9f;
+              p.detuneCents = 6.0f;
+              p.stereoWidth = 0.23f;
+              p.ampDecay = 0.44f;
+              p.outputGainDb = -6.0f;
+              return p;
+          }() },
+        { "Ice Pick", "PLUCK", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.40f;
+              p.filterCutoff = 0.25f;
+              p.filterRes = 0.45f;
+              p.filterMode = 2;
+              p.drive = 0.25f;
+              p.subLevel = 0.5f;
+              p.detuneCents = 9.0f;
+              p.stereoWidth = 0.31f;
+              p.ampDecay = 0.12f;
+              p.outputGainDb = -4.0f;
+              return p;
+          }() },
+        { "Graveyard Bell", "PLUCK", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.55f;
+              p.filterCutoff = 0.35f;
+              p.filterRes = 0.20f;
+              p.filterMode = 3;
+              p.drive = 0.35f;
+              p.subLevel = 0.6f;
+              p.detuneCents = -9.0f;
+              p.stereoWidth = 0.39f;
+              p.ampDecay = 0.20f;
+              p.outputGainDb = -4.5f;
+              return p;
+          }() },
+        { "Smoke Cathedral", "PAD", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.70f;
+              p.filterCutoff = 0.45f;
+              p.filterRes = 0.33f;
+              p.filterMode = 4;
+              p.drive = 0.45f;
+              p.subLevel = 0.7f;
+              p.detuneCents = -6.0f;
+              p.stereoWidth = 0.47f;
+              p.ampDecay = 0.28f;
+              p.outputGainDb = -5.0f;
+              return p;
+          }() },
+        { "Vacant Lot", "PAD", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.85f;
+              p.filterCutoff = 0.55f;
+              p.filterRes = 0.45f;
+              p.filterMode = 5;
+              p.drive = 0.55f;
+              p.subLevel = 0.8f;
+              p.detuneCents = -3.0f;
+              p.stereoWidth = 0.55f;
+              p.ampDecay = 0.36f;
+              p.outputGainDb = -5.5f;
+              return p;
+          }() },
+        { "Dusty Choir", "KEYS", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.08f;
+              p.filterCutoff = 0.65f;
+              p.filterRes = 0.20f;
+              p.filterMode = 0;
+              p.drive = 0.25f;
+              p.subLevel = 0.9f;
+              p.detuneCents = 0.0f;
+              p.stereoWidth = 0.15f;
+              p.ampDecay = 0.44f;
+              p.outputGainDb = -6.0f;
+              return p;
+          }() },
+        { "Night School", "KEYS", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.22f;
+              p.filterCutoff = 0.25f;
+              p.filterRes = 0.33f;
+              p.filterMode = 1;
+              p.drive = 0.35f;
+              p.subLevel = 0.5f;
+              p.detuneCents = 3.0f;
+              p.stereoWidth = 0.23f;
+              p.ampDecay = 0.12f;
+              p.outputGainDb = -4.0f;
+              return p;
+          }() },
+        { "Scorched Tape", "FX", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.40f;
+              p.filterCutoff = 0.35f;
+              p.filterRes = 0.45f;
+              p.filterMode = 2;
+              p.drive = 0.45f;
+              p.subLevel = 0.6f;
+              p.detuneCents = 6.0f;
+              p.stereoWidth = 0.31f;
+              p.ampDecay = 0.20f;
+              p.outputGainDb = -4.5f;
+              return p;
+          }() },
+        { "Broken Siren", "FX", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.55f;
+              p.filterCutoff = 0.45f;
+              p.filterRes = 0.20f;
+              p.filterMode = 3;
+              p.drive = 0.55f;
+              p.subLevel = 0.7f;
+              p.detuneCents = 9.0f;
+              p.stereoWidth = 0.39f;
+              p.ampDecay = 0.28f;
+              p.outputGainDb = -5.0f;
+              return p;
+          }() },
+        { "Chrome Howl", "LEAD", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.70f;
+              p.filterCutoff = 0.55f;
+              p.filterRes = 0.33f;
+              p.filterMode = 4;
+              p.drive = 0.25f;
+              p.subLevel = 0.8f;
+              p.detuneCents = -9.0f;
+              p.stereoWidth = 0.47f;
+              p.ampDecay = 0.36f;
+              p.outputGainDb = -5.5f;
+              return p;
+          }() },
+        { "Dungeon Glide", "BASS", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.85f;
+              p.filterCutoff = 0.65f;
+              p.filterRes = 0.45f;
+              p.filterMode = 5;
+              p.drive = 0.35f;
+              p.subLevel = 0.9f;
+              p.detuneCents = -6.0f;
+              p.stereoWidth = 0.55f;
+              p.ampDecay = 0.44f;
+              p.outputGainDb = -6.0f;
+              return p;
+          }() },
+        { "Trap Mirror", "PLUCK", [] {
+              auto p = baseParams();
+              p.wtPosition = 0.08f;
+              p.filterCutoff = 0.25f;
+              p.filterRes = 0.20f;
+              p.filterMode = 0;
+              p.drive = 0.45f;
+              p.subLevel = 0.5f;
+              p.detuneCents = -3.0f;
+              p.stereoWidth = 0.15f;
+              p.ampDecay = 0.12f;
+              p.outputGainDb = -4.0f;
+              return p;
+          }() },    };
+
     return kPresets;
 }
 

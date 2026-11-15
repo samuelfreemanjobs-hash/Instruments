@@ -14,19 +14,22 @@ public:
 
     void setSampleRate (double sr) noexcept { sampleRate_ = sr > 0.0 ? sr : 44100.0; updateCoeffs(); }
 
-    void setParams (float a, float d, float s, float r) noexcept
+    void setParams (float a, float d, float s, float r, float curve = 1.0f) noexcept
     {
-        attackSec_ = std::max (0.003f, a);
-        decaySec_ = std::max (0.003f, d);
+        attackSec_ = std::max (0.001f, a);
+        decaySec_ = std::max (0.001f, d);
         sustain_ = std::clamp (s, 0.0f, 1.0f);
-        releaseSec_ = std::max (0.003f, r);
+        releaseSec_ = std::max (0.001f, r);
+        curve_ = std::clamp (curve, 0.35f, 4.0f);
         updateCoeffs();
     }
 
     void noteOn() noexcept
     {
         if (stage_ == Stage::idle && level_ <= 1.0e-6f)
-            level_ = 1.0e-5f;
+            level_ = 1.0e-6f;
+        else if (stage_ == Stage::release || stage_ == Stage::sustain || stage_ == Stage::decay)
+            level_ = std::max (level_, 1.0e-5f);
         stage_ = Stage::attack;
     }
 
@@ -43,6 +46,7 @@ public:
     }
 
     bool isActive() const noexcept { return stage_ != Stage::idle; }
+    float currentLevel() const noexcept { return level_; }
 
     float process() noexcept
     {
@@ -78,7 +82,8 @@ public:
                 level_ = 0.0f;
                 break;
         }
-        return level_;
+        const float out = std::pow (std::clamp (level_, 0.0f, 1.0f), 1.0f / curve_);
+        return out;
     }
 
 private:
@@ -98,6 +103,7 @@ private:
     float decaySec_ = 0.2f;
     float sustain_ = 0.8f;
     float releaseSec_ = 0.4f;
+    float curve_ = 1.2f;
     float attackCoef_ = 0.01f;
     float decayCoef_ = 0.01f;
     float releaseCoef_ = 0.01f;

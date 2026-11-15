@@ -81,6 +81,24 @@ private:
 
     Voice* stealVoice() noexcept
     {
+        Voice* candidate = nullptr;
+        float quietest = 1.0e9f;
+        for (auto& v : voices_)
+        {
+            if (! v.isActive())
+                return &v;
+            const float level = v.ampLevel();
+            if (level < quietest)
+            {
+                quietest = level;
+                candidate = &v;
+            }
+        }
+        if (candidate != nullptr)
+        {
+            candidate->stop (false);
+            return candidate;
+        }
         return &voices_[0];
     }
 
