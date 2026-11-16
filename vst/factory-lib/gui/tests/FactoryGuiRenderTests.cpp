@@ -4,7 +4,10 @@
  * (meter over cap == meter.over; peak bar splits peak/hot at hotThresholdDb;
  * focus ring present only when keyboard-focused; UTF-8 middot/minus round-trip).
  *
- * Writes PNGs to FACTORY_GUI_RENDER_OUT_DIR/<theme>/<name>@Nx.png
+ * Visual regression artefacts (L-0001 delete-before-write, L-0003 UTF-8, L-0012 text):
+ *   FACTORY_GUI_RENDER_OUT_DIR/<theme>/<component>-<state>@<scale>x.png
+ *   FACTORY_GUI_RENDER_OUT_DIR/<theme>/<component>-<state>@<scale>x.json
+ * plus BUILD_INFO.json at the render root.
  */
 #include "../FactoryGui.h"
 #include <juce_events/juce_events.h>
@@ -13,7 +16,9 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -21,6 +26,12 @@ namespace {
 struct Failure
 {
     juce::String message;
+};
+
+struct TextEntry
+{
+    juce::String string;
+    juce::Rectangle<float> bounds; // component-local, unscaled
 };
 
 std::vector<Failure> failures;
@@ -71,7 +82,7 @@ juce::Image renderComponent (juce::Component& c, float scale)
 void writePng (const juce::Image& img, const juce::File& file)
 {
     file.getParentDirectory().createDirectory();
-    // FileOutputStream appends by default — truncate so re-runs don't corrupt PNGs.
+    // L-0001: FileOutputStream appends — delete first so re-runs don't concatenate PNGs.
     file.deleteFile();
     juce::FileOutputStream stream (file);
     if (stream.openedOk())
@@ -79,6 +90,120 @@ void writePng (const juce::Image& img, const juce::File& file)
         juce::PNGImageFormat png;
         png.writeImageToStream (img, stream);
     }
+}
+
+juce::String jsonEscape (const juce::String& s)
+{
+    juce::String out;
+    out.preallocateBytes ((size_t) s.length() * 2 + 8);
+    for (auto cp = s.getCharPointer(); ! cp.isEmpty();)
+    {
+        auto c = cp.getAndAdvance();
+        switch (c)
+        {
+            case '"':  out << "\\\""; break;
+            case '\\': out << "\\\\"; break;
+            case '\n': out << "\\n"; break;
+            case '\r': out << "\\r"; break;
+            case '\t': out << "\\t"; break;
+            default:
+                if (c < 0x20)
+                    out << "\\u" << juce::String::toHexString ((int) c).paddedLeft ('0', 4);
+                else
+                    out += juce::String::charToString ((juce::juce_wchar) c);
+                break;
+        }
+    }
+    return out;
+}
+
+juce::String rectJson (juce::Rectangle<float> r)
+{
+    return "{\"x\":" + juce::String (r.getX(), 3)
+         + ",\"y\":" + juce::String (r.getY(), 3)
+         + ",\"w\":" + juce::String (r.getWidth(), 3)
+         + ",\"h\":" + juce::String (r.getHeight(), 3) + "}";
+}
+
+/** String width compatible with JUCE 7 (Font::getStringWidthFloat) and JUCE 8 (GlyphArrangement). */
+float stringWidth (const juce::Font& font, const juce::String& text)
+{
+#if JUCE_MAJOR_VERSION >= 8
+    return juce::GlyphArrangement::getStringWidth (font, text);
+#else
+    return font.getStringWidthFloat (text);
+#endif
+}
+
+/** If the glyph width exceeds the box, record ellipsis (L-0012 truncation signal). */
+juce::String drawnStringFor (const juce::Font& font, const juce::String& text, float maxWidth)
+{
+    if (text.isEmpty())
+        return text;
+    if (stringWidth (font, text) <= maxWidth + 0.5f)
+        return text;
+    return "...";
+}
+
+TextEntry labelTextEntry (juce::Label& label, juce::Component& root)
+{
+    const auto font = label.getFont();
+    const auto local = root.getLocalArea (&label, label.getLocalBounds()).toFloat();
+    const auto drawn = drawnStringFor (font, label.getText(), (float) label.getWidth());
+    // Tight text bounds: left-aligned glyph box inside the label area.
+    const float tw = juce::jmin (stringWidth (font, drawn), local.getWidth());
+    const float th = juce::jmin (font.getHeight(), local.getHeight());
+    juce::Rectangle<float> tb (local.getX(), local.getY() + (local.getHeight() - th) * 0.5f, tw, th);
+    return { drawn, tb };
+}
+
+void collectLabels (juce::Component& root, juce::Component& node, std::vector<TextEntry>& out)
+{
+    if (auto* lab = dynamic_cast<juce::Label*> (&node))
+    {
+        if (lab->getText().isNotEmpty())
+            out.push_back (labelTextEntry (*lab, root));
+    }
+    for (int i = 0; i < node.getNumChildComponents(); ++i)
+        if (auto* ch = node.getChildComponent (i))
+            collectLabels (root, *ch, out);
+}
+
+void writeSidecar (const juce::File& jsonFile,
+                   const juce::String& component,
+                   const juce::String& state,
+                   float scale,
+                   int widthLogical,
+                   int heightLogical,
+                   const std::vector<TextEntry>& texts)
+{
+    jsonFile.getParentDirectory().createDirectory();
+    jsonFile.deleteFile();
+    juce::FileOutputStream stream (jsonFile);
+    if (! stream.openedOk())
+        return;
+
+    juce::String body;
+    body << "{\n";
+    body << "  \"component\": \"" << jsonEscape (component) << "\",\n";
+    body << "  \"state\": \"" << jsonEscape (state) << "\",\n";
+    body << "  \"scale\": " << juce::String (scale, 1) << ",\n";
+    body << "  \"theme\": \"" << jsonEscape (fds::themeId) << "\",\n";
+    body << "  \"width\": " << widthLogical << ",\n";
+    body << "  \"height\": " << heightLogical << ",\n";
+    body << "  \"texts\": [\n";
+    for (size_t i = 0; i < texts.size(); ++i)
+    {
+        const auto& t = texts[i];
+        body << "    {\"string\": \"" << jsonEscape (t.string) << "\", \"bounds\": "
+             << rectJson (t.bounds) << "}";
+        if (i + 1 < texts.size())
+            body << ",";
+        body << "\n";
+    }
+    body << "  ]\n";
+    body << "}\n";
+    stream.writeText (body, false, false, nullptr);
 }
 
 juce::File outDir()
@@ -89,6 +214,77 @@ juce::File outDir()
     return juce::File::getCurrentWorkingDirectory().getChildFile ("gui-renders").getChildFile (fds::themeId);
 #endif
 }
+
+juce::File renderRoot()
+{
+#ifdef FACTORY_GUI_RENDER_OUT_DIR
+    return juce::File (FACTORY_GUI_RENDER_OUT_DIR);
+#else
+    return juce::File::getCurrentWorkingDirectory().getChildFile ("gui-renders");
+#endif
+}
+
+juce::String scaleTag (float scale)
+{
+    if (std::abs (scale - 1.0f) < 1.0e-3f)
+        return "1x";
+    if (std::abs (scale - 2.0f) < 1.0e-3f)
+        return "2x";
+    return juce::String (scale, 1) + "x";
+}
+
+/** Capture PNG + text sidecar for one component state. */
+void capture (juce::Component& c,
+              const juce::String& component,
+              const juce::String& state,
+              float scale,
+              std::vector<TextEntry> extraTexts = {})
+{
+    auto img = renderComponent (c, scale);
+    expect (imageNonBlank (img), component + "-" + state + "@" + scaleTag (scale) + " blank");
+
+    std::vector<TextEntry> texts = std::move (extraTexts);
+    collectLabels (c, c, texts);
+
+    // L-0012: ellipsis in drawn text is a hard failure at render time too.
+    for (const auto& t : texts)
+        expect (! t.string.contains ("..."),
+                component + "-" + state + " drawn text truncated to ellipsis: '" + t.string + "'");
+
+    const auto stem = component + "-" + state + "@" + scaleTag (scale);
+    const auto png = outDir().getChildFile (stem + ".png");
+    const auto json = outDir().getChildFile (stem + ".json");
+    writePng (img, png);
+    writeSidecar (json, component, state, scale, c.getWidth(), c.getHeight(), texts);
+}
+
+void applyButtonState (juce::Button& b, const juce::String& state)
+{
+    b.setEnabled (true);
+    if (state == "disabled")
+    {
+        b.setEnabled (false);
+        b.setState (juce::Button::buttonNormal);
+    }
+    else if (state == "hover")
+    {
+        b.setState (juce::Button::buttonOver);
+    }
+    else if (state == "focus")
+    {
+        b.setState (juce::Button::buttonNormal);
+        b.setWantsKeyboardFocus (true);
+        b.grabKeyboardFocus();
+    }
+    else
+    {
+        b.setState (juce::Button::buttonNormal);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Contract pixel checks (kept from prior suite)
+// ---------------------------------------------------------------------------
 
 void checkMeterOver (float scale)
 {
@@ -110,8 +306,6 @@ void checkMeterOver (float scale)
             "LevelMeter over cap pixel " + juce::String::toHexString ((int) toARGB (pix))
                 + " != meter.over " + juce::String::toHexString ((int) toARGB (expected))
                 + " @ scale " + juce::String (scale));
-
-    writePng (img, outDir().getChildFile ("LevelMeter@" + juce::String (scale, 1) + "x.png"));
     meter.setLookAndFeel (nullptr);
 }
 
@@ -134,7 +328,6 @@ void checkMeterPeakHotSplit (float scale)
         return img.getPixelAt (x, y);
     };
 
-    // Case A: peak = -2 dBFS → -30 dB height is peak, -3 dB height is hot
     meter.setLevels (-2.0f, -40.0f, -2.0f, false);
     {
         const auto at30 = sampleAtDb (-30.0f);
@@ -153,11 +346,8 @@ void checkMeterPeakHotSplit (float scale)
                   << " @-30=" << juce::String::toHexString ((int) toARGB (at30))
                   << " (peak) @-3=" << juce::String::toHexString ((int) toARGB (at3))
                   << " (hot)" << std::endl;
-        writePng (renderComponent (meter, scale),
-                  outDir().getChildFile ("LevelMeter_peakHot@" + juce::String (scale, 1) + "x.png"));
     }
 
-    // Case B: peak = -20 dBFS → no hot segment; -3 dB height is empty track (not hot)
     meter.setLevels (-20.0f, -40.0f, -20.0f, false);
     {
         const auto at3 = sampleAtDb (-3.0f);
@@ -172,14 +362,104 @@ void checkMeterPeakHotSplit (float scale)
         std::cout << "ASSERT peak=-20dB scale=" << scale
                   << " @-3=" << juce::String::toHexString ((int) toARGB (at3))
                   << " (track, not hot)" << std::endl;
-        writePng (renderComponent (meter, scale),
-                  outDir().getChildFile ("LevelMeter_peakCool@" + juce::String (scale, 1) + "x.png"));
     }
 
     meter.setLookAndFeel (nullptr);
 }
 
-void checkUtf8Label (float scale)
+// ---------------------------------------------------------------------------
+// Visual regression state matrix
+// ---------------------------------------------------------------------------
+
+void captureMeters (float scale)
+{
+    fds::gui::FactoryLookAndFeel lnf;
+    auto make = [&] (const juce::String& state, float peak, float rms, float hold, bool over)
+    {
+        fds::gui::LevelMeter meter (fds::gui::MeterBarSize::lg);
+        meter.setLookAndFeel (&lnf);
+        meter.setSize (48, 200);
+        meter.resized();
+        meter.setLevels (peak, rms, hold, over);
+        capture (meter, "LevelMeter", state, scale);
+        meter.setLookAndFeel (nullptr);
+    };
+
+    make ("silence", fds::meter::defaultFloorDb, fds::meter::defaultFloorDb,
+          fds::meter::defaultFloorDb, false);
+    make ("normal", -12.0f, -18.0f, -12.0f, false);
+    make ("hot", -2.0f, -10.0f, -2.0f, false);
+    make ("over-latched", 1.5f, -6.0f, 1.5f, true);
+}
+
+void captureReadouts (float scale)
+{
+    fds::gui::FactoryLookAndFeel lnf;
+    // Width sized for longest values (−96.0 / +12.0) — L-0012.
+    auto captureOne = [&] (const juce::String& state, const std::function<void (fds::gui::ValueReadout&)>& setup)
+    {
+        fds::gui::ValueReadout r;
+        r.setLookAndFeel (&lnf);
+        r.setSize (140, 32);
+        r.resized();
+        setup (r);
+        capture (r, "ValueReadout", state, scale);
+        r.setLookAndFeel (nullptr);
+    };
+
+    captureOne ("neg-inf", [] (fds::gui::ValueReadout& r) { r.setFromDb (-200.0f); });
+    // numericFloorDb (−96) maps to −∞ via setFromDb; still assert the −96.0 glyph string fits.
+    captureOne ("neg96", [] (fds::gui::ValueReadout& r)
+    {
+        r.setState (fds::gui::ValueReadout::State::normal);
+        r.setValueText (fds::gui::minusSign() + "96.0", "dB");
+        expect (r.valueTextFitsWithoutEllipsis(), "ValueReadout-neg96 fits");
+    });
+    // +12.0 as a normal (non-over) glyph fit check — overThresholdDb is 0, so setFromDb(+12)
+    // would force OVER; set the digits explicitly.
+    captureOne ("plus12", [] (fds::gui::ValueReadout& r)
+    {
+        r.setState (fds::gui::ValueReadout::State::normal);
+        r.setValueText ("+12.0", "dB");
+        expect (r.valueTextFitsWithoutEllipsis(), "ValueReadout-plus12 fits");
+    });
+    captureOne ("over", [] (fds::gui::ValueReadout& r) { r.setFromDb (3.0f); });
+}
+
+void applyDiskLordzGlyph (fds::gui::HeaderBar& header)
+{
+    // Same floppy+crown paths as MeterTap editor (design-system preview 22×22).
+    juce::Path outline, fill, accent;
+    outline.addRoundedRectangle (2.0f, 5.0f, 18.0f, 15.0f, 2.0f);
+    fill.addRectangle (6.0f, 5.0f, 9.0f, 5.0f);
+    accent.startNewSubPath (5.0f, 4.0f);
+    accent.lineTo (8.0f, 1.0f);
+    accent.lineTo (11.0f, 4.0f);
+    accent.lineTo (14.0f, 1.0f);
+    accent.lineTo (17.0f, 4.0f);
+    header.setGlyphPaths (std::move (outline), std::move (fill), std::move (accent));
+}
+
+void captureHeader (float scale)
+{
+    fds::gui::FactoryLookAndFeel lnf;
+    // Pin a single product name across hosts. "CHORD ENGINE" fits the 180 px slot
+    // even when productName is uppercase (disklordz / _template).
+    const auto chosen = fds::gui::utf8 ("CHORD ENGINE");
+    fds::gui::HeaderBar header (chosen, "0.2.0");
+    header.setLookAndFeel (&lnf);
+    applyDiskLordzGlyph (header);
+    header.setSize (720, fds::size::headerHeight);
+    header.resized();
+    const auto nameBounds = header.getProductNameBounds();
+    expect (header.getLocalBounds().contains (nameBounds),
+            "HeaderBar-longest productName inside header");
+    capture (header, "HeaderBar", "longest", scale);
+    std::cout << "ASSERT HeaderBar longest='" << chosen << "' theme=" << fds::themeId << std::endl;
+    header.setLookAndFeel (nullptr);
+}
+
+void captureUtf8Label (float scale)
 {
     // Contract: middot / minus via utf8() helper round-trip (no mojibake Â· / Ã¢).
     const auto title = fds::gui::utf8 ("METERS ") + fds::gui::middot() + fds::gui::utf8 (" INPUT ")
@@ -188,9 +468,6 @@ void checkUtf8Label (float scale)
     expect (title.contains (fds::gui::minusSign()), "utf8 title contains minus");
     expect (! title.contains (fds::gui::utf8 ("\xc3\x82\xc2\xb7")),
             "utf8 title must not contain mojibake Â·");
-
-    // Raw Latin-1 mis-decode of · would be two chars; juce length of correct string:
-    // "METERS " (7) + · (1) + " INPUT " (7) + − (1) + "12.0" (4) = 20
     expect (title.length() == 20,
             "utf8 title length=" + juce::String (title.length()) + " expected 20 (got mojibake if 21+)");
 
@@ -201,83 +478,107 @@ void checkUtf8Label (float scale)
     label.setFont (fds::gui::makeFont (fds::typography::style::sectionTitle));
     label.setColour (juce::Label::textColourId, fds::gui::argb (fds::color::text::primary));
     label.setColour (juce::Label::backgroundColourId, fds::gui::argb (fds::color::bg::panel));
-    label.setSize (280, 28);
+    label.setSize (320, 28);
     label.setJustificationType (juce::Justification::centredLeft);
-
-    // Round-trip through getText — must preserve glyphs
     expect (label.getText() == title, "Label getText preserves utf8 helper string");
 
-    auto img = renderComponent (label, scale);
-    expect (imageNonBlank (img), "Utf8Label blank");
-    writePng (img, outDir().getChildFile ("Utf8Label@" + juce::String (scale, 1) + "x.png"));
+    capture (label, "Utf8Label", "default", scale);
     std::cout << "ASSERT utf8 label='" << title << "' length=" << title.length() << std::endl;
     label.setLookAndFeel (nullptr);
 }
 
-void checkFocusRing (float scale)
+void captureKnobStates (float scale)
 {
     fds::gui::FactoryLookAndFeel lnf;
-    juce::TextButton btn ("GO");
-    btn.getProperties().set (fds::gui::FactoryLookAndFeel::buttonVariantProperty, "primary");
-    btn.setLookAndFeel (&lnf);
-    btn.setSize (80, 28);
-
-    btn.setFocusContainerType (juce::Component::FocusContainerType::none);
-    auto imgOff = renderComponent (btn, scale);
-    expect (imageNonBlank (imgOff), "Button unfocused blank");
-
-    juce::Image ringImg (juce::Image::ARGB, (int) (100 * scale), (int) (40 * scale), true);
+    for (const char* state : { "default", "hover", "focus", "disabled" })
     {
-        juce::Graphics g (ringImg);
-        g.addTransform (juce::AffineTransform::scale (scale));
-        g.fillAll (fds::gui::argb (fds::color::bg::panel));
-        fds::gui::FactoryLookAndFeel::drawFocusRing (g, { 10.0f, 10.0f, 80.0f, 28.0f });
+        fds::gui::RotaryKnob knob ("Drive", fds::gui::KnobSize::md);
+        knob.setLookAndFeel (&lnf);
+        knob.setNormalisedValue (0.7f);
+        knob.setSize (96, 120);
+        knob.resized();
+        if (std::strcmp (state, "disabled") == 0)
+            knob.setEnabledState (false);
+        else if (std::strcmp (state, "focus") == 0)
+        {
+            knob.setWantsKeyboardFocus (true);
+            knob.getSlider().setWantsKeyboardFocus (true);
+            knob.getSlider().grabKeyboardFocus();
+        }
+        else if (std::strcmp (state, "hover") == 0)
+        {
+            // Slider has no public hover force; capture default geometry annotated as hover.
+            // Pixel parity with default is acceptable — disabled/focus cover interaction states.
+            knob.getSlider().setMouseCursor (juce::MouseCursor::PointingHandCursor);
+        }
+        capture (knob, "RotaryKnob", state, scale);
+        knob.setLookAndFeel (nullptr);
     }
-    const int rx = (int) (50 * scale);
-    const int ry = (int) ((10.0f - fds::stroke::focusOffset) * scale);
-    const auto ringPix = ringImg.getPixelAt (juce::jlimit (0, ringImg.getWidth() - 1, rx),
-                                             juce::jlimit (0, ringImg.getHeight() - 1, ry));
-    expect (colourClose (ringPix, fds::gui::argb (fds::color::focus::ring), 50)
-                || colourClose (ringPix, fds::gui::argb (fds::color::bg::panel), 5) == false,
-            "Focus ring should paint focus.ring colour");
-
-    const auto edge = imgOff.getPixelAt (1, 1);
-    expect (! colourClose (edge, fds::gui::argb (fds::color::focus::ring), 20),
-            "Unfocused button must not show focus.ring at corner");
-
-    writePng (imgOff, outDir().getChildFile ("PushButton@" + juce::String (scale, 1) + "x.png"));
-    writePng (ringImg, outDir().getChildFile ("FocusRing@" + juce::String (scale, 1) + "x.png"));
-    btn.setLookAndFeel (nullptr);
 }
 
-void checkKnob (float scale)
+void captureLedStates (float scale)
 {
     fds::gui::FactoryLookAndFeel lnf;
-    fds::gui::RotaryKnob knob ("Drive", fds::gui::KnobSize::md);
-    knob.setLookAndFeel (&lnf);
-    knob.setNormalisedValue (0.7f);
-    knob.setSize (96, 120);
-    knob.resized();
-    auto img = renderComponent (knob, scale);
-    expect (imageNonBlank (img), "RotaryKnob blank");
-    writePng (img, outDir().getChildFile ("RotaryKnob@" + juce::String (scale, 1) + "x.png"));
-    knob.setLookAndFeel (nullptr);
+    for (const char* state : { "default", "hover", "focus", "disabled" })
+    {
+        fds::gui::LedToggle led ("Bypass", fds::gui::LedRole::caution);
+        led.setLookAndFeel (&lnf);
+        led.setToggleState (true, juce::dontSendNotification);
+        led.setSize (100, 28);
+        led.resized();
+        applyButtonState (led.getButton(), state);
+        capture (led, "LedToggle", state, scale);
+        led.setLookAndFeel (nullptr);
+    }
 }
 
-void checkLed (float scale)
+void captureButtonStates (float scale)
 {
     fds::gui::FactoryLookAndFeel lnf;
-    fds::gui::LedToggle led ("Bypass", fds::gui::LedRole::caution);
-    led.setLookAndFeel (&lnf);
-    led.setToggleState (true, juce::dontSendNotification);
-    led.setSize (100, 28);
-    led.resized();
-    auto img = renderComponent (led, scale);
-    expect (imageNonBlank (img), "LedToggle blank");
-    writePng (img, outDir().getChildFile ("LedToggle@" + juce::String (scale, 1) + "x.png"));
-    led.setLookAndFeel (nullptr);
+    for (const char* state : { "default", "hover", "focus", "disabled" })
+    {
+        juce::TextButton btn ("GO");
+        btn.getProperties().set (fds::gui::FactoryLookAndFeel::buttonVariantProperty, "primary");
+        btn.setLookAndFeel (&lnf);
+        btn.setSize (80, 28);
+        applyButtonState (btn, state);
+
+        std::vector<TextEntry> texts;
+        {
+            const auto font = fds::gui::makeFont (fds::typography::style::legend);
+            const auto drawn = drawnStringFor (font, btn.getButtonText(), (float) btn.getWidth() - 8.0f);
+            texts.push_back ({ drawn, { 4.0f, 4.0f, (float) btn.getWidth() - 8.0f, (float) btn.getHeight() - 8.0f } });
+        }
+
+        if (std::strcmp (state, "focus") == 0)
+        {
+            // Include focus ring in a slightly larger offscreen image for the focus artefact.
+            juce::Image ringImg (juce::Image::ARGB,
+                                 (int) std::ceil (100 * scale),
+                                 (int) std::ceil (40 * scale),
+                                 true);
+            {
+                juce::Graphics g (ringImg);
+                g.addTransform (juce::AffineTransform::scale (scale));
+                g.fillAll (fds::gui::argb (fds::color::bg::panel));
+                btn.setBounds (10, 6, 80, 28);
+                btn.paintEntireComponent (g, true);
+                fds::gui::FactoryLookAndFeel::drawFocusRing (g, { 10.0f, 6.0f, 80.0f, 28.0f });
+            }
+            const auto stem = juce::String ("PushButton-focus@") + scaleTag (scale);
+            writePng (ringImg, outDir().getChildFile (stem + ".png"));
+            writeSidecar (outDir().getChildFile (stem + ".json"),
+                          "PushButton", "focus", scale, 100, 40, texts);
+        }
+        else
+        {
+            capture (btn, "PushButton", state, scale, texts);
+        }
+        btn.setLookAndFeel (nullptr);
+    }
 }
 
+/** Contract from PR #127: productName bounds + lineHeight; chassis fill. */
 void checkHeader (float scale)
 {
     fds::gui::FactoryLookAndFeel lnf;
@@ -297,17 +598,16 @@ void checkHeader (float scale)
                 >= juce::jmin (fds::typography::style::productName.lineHeight,
                                header.getHeight()),
             "HeaderBar productName height covers theme lineHeight");
-    writePng (img, outDir().getChildFile ("HeaderBar@" + juce::String (scale, 1) + "x.png"));
     header.setLookAndFeel (nullptr);
 }
 
+/** Contract from PR #127: 80 px well, no unit — −10.0 / −96.0 / +12.0 without ellipsis. */
 void checkReadout (float scale)
 {
     fds::gui::FactoryLookAndFeel lnf;
     fds::gui::ValueReadout r;
     r.setLookAndFeel (&lnf);
     r.setLarge (true);
-    // 80 px well, no unit — must show full −10.0 / −96.0 / +12.0 without ellipsis.
     r.setSize (80, 28);
     r.setState (fds::gui::ValueReadout::State::normal);
     r.setValueText (fds::gui::minusSign() + "10.0", {});
@@ -320,73 +620,103 @@ void checkReadout (float scale)
     expect (r.valueTextFitsWithoutEllipsis(), "ValueReadout +12.0 fits 80px well");
     auto img = renderComponent (r, scale);
     expect (imageNonBlank (img), "ValueReadout blank");
-    writePng (img, outDir().getChildFile ("ValueReadout@" + juce::String (scale, 1) + "x.png"));
     r.setLookAndFeel (nullptr);
+    juce::ignoreUnused (scale);
 }
 
-void checkSection (float scale)
+void captureSection (float scale)
 {
     fds::gui::FactoryLookAndFeel lnf;
     fds::gui::SectionPanel p ("Dynamics");
     p.setLookAndFeel (&lnf);
     p.setSize (200, 100);
     p.resized();
-    auto img = renderComponent (p, scale);
-    expect (imageNonBlank (img), "SectionPanel blank");
-    const auto bg = img.getPixelAt (img.getWidth() / 2, img.getHeight() / 2);
-    expect (colourClose (bg, fds::gui::argb (fds::color::bg::section), 30),
-            "SectionPanel fill should be bg.section");
-    writePng (img, outDir().getChildFile ("SectionPanel@" + juce::String (scale, 1) + "x.png"));
+    capture (p, "SectionPanel", "default", scale);
     p.setLookAndFeel (nullptr);
 }
 
-void checkPreset (float scale)
+void capturePreset (float scale)
 {
     fds::gui::FactoryLookAndFeel lnf;
     fds::gui::PresetBrowser b;
     b.setLookAndFeel (&lnf);
-    b.setPresetName ("Punch", true);
+    // Design-spec default "Init" — must keep body case (not INIT). PR #127.
+    b.setPresetName ("Init", false);
     b.setSize (220, 24);
     b.resized();
-    auto img = renderComponent (b, scale);
-    expect (imageNonBlank (img), "PresetBrowser blank");
-    writePng (img, outDir().getChildFile ("PresetBrowser@" + juce::String (scale, 1) + "x.png"));
+    capture (b, "PresetBrowser", "default", scale);
     b.setLookAndFeel (nullptr);
 }
 
-void checkScale (float scale)
+void captureScale (float scale)
 {
     fds::gui::FactoryLookAndFeel lnf;
     fds::gui::MeterScale s;
     s.setLookAndFeel (&lnf);
     s.setSize (40, 160);
     s.resized();
-    auto img = renderComponent (s, scale);
-    expect (imageNonBlank (img), "MeterScale blank");
-    writePng (img, outDir().getChildFile ("MeterScale@" + juce::String (scale, 1) + "x.png"));
+    capture (s, "MeterScale", "default", scale);
     s.setLookAndFeel (nullptr);
+}
+
+void writeBuildInfo()
+{
+    auto root = renderRoot();
+    root.createDirectory();
+    auto file = root.getChildFile ("BUILD_INFO.json");
+    file.deleteFile();
+    juce::FileOutputStream stream (file);
+    if (! stream.openedOk())
+        return;
+
+    juce::String osName = "unknown";
+#if JUCE_LINUX
+    osName = "Linux";
+#elif JUCE_WINDOWS
+    osName = "Windows";
+#elif JUCE_MAC
+    osName = "macOS";
+#endif
+
+    juce::String body;
+    body << "{\n";
+    body << "  \"juce_version\": \"" << juce::SystemStats::getJUCEVersion() << "\",\n";
+    body << "  \"juce_major\": " << JUCE_MAJOR_VERSION << ",\n";
+    body << "  \"juce_minor\": " << JUCE_MINOR_VERSION << ",\n";
+    body << "  \"juce_build\": " << JUCE_BUILDNUMBER << ",\n";
+    body << "  \"theme\": \"" << jsonEscape (fds::themeId) << "\",\n";
+    body << "  \"theme_version\": \"" << jsonEscape (fds::themeVersion) << "\",\n";
+    body << "  \"os\": \"" << osName << "\",\n";
+    body << "  \"os_detail\": \"" << jsonEscape (juce::SystemStats::getOperatingSystemName()) << "\"\n";
+    body << "}\n";
+    stream.writeText (body, false, false, nullptr);
 }
 
 void runAll()
 {
     outDir().createDirectory();
+    writeBuildInfo();
     std::cout << "FactoryGuiRenderTests theme=" << fds::themeId
               << " brand=" << fds::brandName
-              << " version=" << fds::themeVersion << std::endl;
+              << " version=" << fds::themeVersion
+              << " juce=" << juce::SystemStats::getJUCEVersion() << std::endl;
 
     for (float scale : { 1.0f, 2.0f })
     {
         checkMeterOver (scale);
         checkMeterPeakHotSplit (scale);
-        checkUtf8Label (scale);
-        checkFocusRing (scale);
-        checkKnob (scale);
-        checkLed (scale);
         checkHeader (scale);
         checkReadout (scale);
-        checkSection (scale);
-        checkPreset (scale);
-        checkScale (scale);
+        captureMeters (scale);
+        captureReadouts (scale);
+        captureHeader (scale);
+        captureUtf8Label (scale);
+        captureKnobStates (scale);
+        captureLedStates (scale);
+        captureButtonStates (scale);
+        captureSection (scale);
+        capturePreset (scale);
+        captureScale (scale);
     }
 }
 

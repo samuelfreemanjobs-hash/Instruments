@@ -1,0 +1,10 @@
+{
+  "component": "LedToggle",
+  "state": "default",
+  "scale": 2.0,
+  "theme": "_template",
+  "width": 100,
+  "height": 28,
+  "texts": [
+  ]
+}

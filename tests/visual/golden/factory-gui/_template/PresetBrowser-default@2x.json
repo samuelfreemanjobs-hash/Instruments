@@ -1,0 +1,10 @@
+{
+  "component": "PresetBrowser",
+  "state": "default",
+  "scale": 2.0,
+  "theme": "_template",
+  "width": 220,
+  "height": 24,
+  "texts": [
+  ]
+}
