@@ -9,6 +9,7 @@
 #include "TayKeithMemphisEngine.h"
 #include "ToompDrumEngine.h"
 #include "Purps808MafiaEngine.h"
+#include "../DNA/HyperDNAMorph.h"
 #include "../Factory/SoundEditBridge.h"
 #include "../Presets/GenreBankLibrary.h"
 #include "../Presets/HitmakerBank.h"
@@ -260,6 +261,63 @@ public:
         return v;
     }
 
+    DrumRecipe& padRecipe(int padIndex) noexcept
+    {
+        const int p = (padIndex < 0) ? 0 : (padIndex % static_cast<int>(KitProgram::kPadCount));
+        return kit_.pads[static_cast<size_t>(p)].recipe;
+    }
+
+    const DrumRecipe& padRecipe(int padIndex) const noexcept
+    {
+        const int p = (padIndex < 0) ? 0 : (padIndex % static_cast<int>(KitProgram::kPadCount));
+        return kit_.pads[static_cast<size_t>(p)].recipe;
+    }
+
+    void captureDnaBase(int padIndex) noexcept
+    {
+        dnaBase_ = padRecipe(padIndex);
+        hasDnaBase_ = true;
+    }
+
+    void applyHyperDna(int padIndex, float x, float y, float influence01,
+                       dna::MatrixMode mode = dna::MatrixMode::HyperDNA) noexcept
+    {
+        if (! usesThreeLayerPads())
+            return;
+        if (! hasDnaBase_)
+            captureDnaBase(padIndex);
+        const auto w = dna::HyperDNAMorph::calculateWeights(x, y, mode);
+        padRecipe(padIndex) = dna::HyperDNAMorph::morphRecipe(dnaBase_, w, influence01, {}, mode);
+    }
+
+    void setDestruction(int padIndex, DestructionTier tier) noexcept
+    {
+        if (usesThreeLayerPads())
+            padRecipe(padIndex).destruction = tier;
+    }
+
+    void mutatePad(int padIndex, float strength01, uint64_t seed) noexcept
+    {
+        auto& r = padRecipe(padIndex);
+        const uint64_t s = seed ^ (static_cast<uint64_t>(padIndex) * 0x9E3779B97F4A7C15ULL);
+        const float t = sound_edit::clamp(strength01, 0.f, 1.f);
+        auto u = [&](int k) {
+            uint64_t x = s + static_cast<uint64_t>(k) * 0x10001ULL;
+            x ^= x >> 33;
+            x *= 0xff51afd7ed558ccdULL;
+            return static_cast<float>((x >> 40) & 0xffff) / 65535.f;
+        };
+        r.masterSeed ^= s;
+        r.drive = sound_edit::clamp(r.drive * (0.85f + 0.35f * u(1) * t), 0.5f, 6.f);
+        r.dirtBlend = sound_edit::clamp(r.dirtBlend + (u(2) - 0.5f) * 0.4f * t, 0.f, 1.f);
+        r.samplerGrit12Bit = sound_edit::clamp(r.samplerGrit12Bit + (u(3) - 0.3f) * 0.5f * t, 0.f, 1.f);
+        r.body.decayMs = sound_edit::clamp(r.body.decayMs * (0.75f + 0.5f * u(4) * t), 15.f, 2500.f);
+        r.body.pitchStart = sound_edit::clamp(r.body.pitchStart * (0.85f + 0.4f * u(5) * t), 60.f, 500.f);
+        r.attack.level = sound_edit::clamp(r.attack.level + (u(6) - 0.5f) * 0.35f * t, 0.f, 1.25f);
+        r.texture.level = sound_edit::clamp(r.texture.level + (u(7) - 0.5f) * 0.35f * t, 0.f, 1.25f);
+        captureDnaBase(padIndex);
+    }
+
     /** Message-thread / non-RT: edit focused pad (ThreeLayer) or voice family (specialty engines). */
     void applySoundEdit(int padIndex, const sound_edit::Values& values) noexcept
     {
@@ -268,6 +326,7 @@ public:
         {
             sound_edit::applyToRecipe(kit_.pads[static_cast<size_t>(p)].recipe, values);
             kit_.pads[static_cast<size_t>(p)].padGain = sound_edit::clamp(values.padGain, 0.1f, 2.f);
+            captureDnaBase(p);
             return;
         }
         switch (style_)
@@ -333,10 +392,11 @@ public:
             break;
         }
         reset();
-        // Keep kit_ after reset — reset() clears voices only; re-apply kit after setStyle pattern
         kit_ = genre_bank::makeFormulaKit(dnaFormulaIndex_);
         if (useFusionBass_)
             fusion_.setParams(genre_bank::fusionForFormula(dnaFormulaIndex_));
+        hasDnaBase_ = false;
+        captureDnaBase(0);
     }
 
     void handleMidiNote(int midiNote, float velocity01) noexcept
@@ -484,6 +544,9 @@ private:
     taykeith::TayKeithParams taykeithParams_ {};
     toomp::ToompParams toompParams_ {};
     purps::PurpsParams purpsParams_ {};
+
+    DrumRecipe dnaBase_ {};
+    bool hasDnaBase_ = false;
 };
 
 } // namespace disklordz
