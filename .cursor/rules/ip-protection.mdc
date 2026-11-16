@@ -1,0 +1,12 @@
+---
+description: Block live secrets, signing material, and absolute sample paths
+alwaysApply: true
+---
+
+# IP protection
+
+- Never print a full license key, `sk_live_`, `whsec_`, or a private key. Redact to the first 4 and last 4 characters.
+- Never commit an absolute sample-library path (`/Users/.../Samples`, `C:\Users\...\Samples`). Use a repo-relative path or an env var named in `.env.example` only.
+- Stripe MCP is read-only unless the user confirms a write. License minting stays in the website webhook, not in the agent.
+- `.cursor/hooks/scan-secrets.py` records a violation after an edit. `.cursor/hooks/guard-shell.py` refuses `rm -rf` of kit masters and a force-push to main.
+- Docs may name an env var. Source may not contain a live value.

@@ -1,0 +1,23 @@
+---
+description: Lock-free, allocation-free audio callbacks
+globs: ["disklordz/drum-engine/**", "Source/DSP/**", "vst/**/Source/**", "SP1200/Source/**", "Wave9090/Source/**", "ProphetRev2Trap/Source/**", "DiskLordz-Audio/**"]
+alwaysApply: false
+---
+
+# Real-time audio
+
+Inside `processBlock`, `process()`, or `renderNextBlock`:
+
+- No `new`, `delete`, `malloc`, `std::vector` growth, `std::string`, or `setSize` that can reallocate.
+- No mutexes, critical sections, file I/O, logging, or network.
+- Size every buffer in `prepare` / `prepareToPlay`. Chunk later calls to that capacity.
+- Smooth continuous parameters with `juce::SmoothedValue` or a one-pole. Do not read a raw APVTS value per sample.
+- Put `juce::ScopedNoDenormals` at the start of the audio function.
+- On a drum trigger, reset oscillator phase to 0 unless the request asks for free-running drift.
+
+```cpp
+// Bad: allocates if the host block grows
+scratch.setSize(1, numSamples);
+// Good: scratch was sized to the prepare() maximum
+jassert(numSamples <= scratch.getNumSamples());
+```

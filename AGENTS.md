@@ -74,6 +74,14 @@ Deploy: [disklordz/website/DEPLOY.md](disklordz/website/DEPLOY.md). Env: `NEXT_P
 
 **Stripe MCP (Cursor):** [disklordz/website/docs/STRIPE_MCP.md](disklordz/website/docs/STRIPE_MCP.md) — install Stripe plugin or OAuth **stripe** server; optional `STRIPE_RESTRICTED_KEY` for agents.
 
+**Audio workstation (rules, skills, hooks):** [docs/CURSOR_AUDIO_WORKSTATION.md](docs/CURSOR_AUDIO_WORKSTATION.md). Drum voices and the headless one-shot exporter: [disklordz/drum-engine/ARCHITECTURE.md](disklordz/drum-engine/ARCHITECTURE.md).
+
+```bash
+python3 disklordz/drum-engine/python/test_workflows.py
+cmake -S disklordz/drum-engine -B disklordz/drum-engine/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
+cmake --build disklordz/drum-engine/build --target DrumEngineTests && ctest --test-dir disklordz/drum-engine/build --output-on-failure
+```
+
 Roadmap: [docs/DISKLORDZ_ILLUGEN_RESEARCH.md](docs/DISKLORDZ_ILLUGEN_RESEARCH.md) (WO-SAAS-007+).
 
 Integrations hub: [disklordz/integrations/ARCHITECTURE.md](disklordz/integrations/ARCHITECTURE.md) · `./scripts/setup-open-source-integrations.sh`

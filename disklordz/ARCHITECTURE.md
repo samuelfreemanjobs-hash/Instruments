@@ -10,6 +10,7 @@
 |------|--------------|-------------|
 | **Web SaaS** | [website/ARCHITECTURE.md](website/ARCHITECTURE.md) | `cd website && npm run build` |
 | **Sound factory** | [sound-factory/ARCHITECTURE.md](sound-factory/ARCHITECTURE.md) | `python3 sound-factory/scripts/generate_kit.py` |
+| **Drum engine** | [drum-engine/ARCHITECTURE.md](drum-engine/ARCHITECTURE.md) | `ctest --test-dir drum-engine/build` |
 | **Memphis phonk architect** | [memphis-architect/ARCHITECTURE.md](memphis-architect/ARCHITECTURE.md) | `cd memphis-architect && python3 -m http.server 8765` |
 | **RAG** | [rag/ARCHITECTURE.md](rag/ARCHITECTURE.md) | `python3 rag/scripts/chunk_corpus.py` |
 | **Integrations (35 OSS)** | [integrations/ARCHITECTURE.md](integrations/ARCHITECTURE.md) | `./scripts/setup-open-source-integrations.sh` |

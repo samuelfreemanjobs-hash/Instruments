@@ -34,6 +34,7 @@ Optional wrapper (when present):
 - Target links
 - Artifact exists, e.g.:
   - `build/<Plugin>_artefacts/Release/VST3/<Plugin>.vst3`
+- For a VST3, run `python3 scripts/vst/run_pluginval.py` on that artefact when the binary is available. A GitHub 504 on the pluginval download is infrastructure, not a DSP failure.
 
 ## On failure
 

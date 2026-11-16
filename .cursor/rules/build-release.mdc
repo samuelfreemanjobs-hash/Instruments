@@ -1,0 +1,15 @@
+---
+description: CMake releases, pluginval, and installer scripts
+globs: ["**/CMakeLists.txt", "disklordz/drum-engine/packaging/**", ".github/workflows/**"]
+alwaysApply: false
+---
+
+# Build and release
+
+- CMake is the build. Do not add a Projucer-only project.
+- Drum engine: `cmake -S disklordz/drum-engine -B disklordz/drum-engine/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12`
+- Then `cmake --build disklordz/drum-engine/build --target DrumEngineTests DrumBatchExporter` and `ctest --test-dir disklordz/drum-engine/build --output-on-failure`.
+- VST3 products use `python3 scripts/vst/run_pluginval.py` after the artefact exists. Cache misses and HTTP 504 are infrastructure, not a DSP failure.
+- macOS release artifacts are universal, hardened, notarized, and stapled. Windows installers are Inno Setup scripts in `packaging/windows/`. This Linux agent cannot notarize or sign.
+- One version source: `project(... VERSION x.y.z)`. Bump the changelog in the same change.
+- Do not copy a built VST3 into the system plug-in folder from CI or from this agent.

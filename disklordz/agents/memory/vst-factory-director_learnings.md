@@ -171,3 +171,23 @@ Factory, plugin (APC/DPCS), design-system and JUCE work. Format and rules: [MEMO
 - **evidence:** PR #130 repo_health.sh local run; git status clean only after checkout
 - **confidence:** executed
 - **status:** active
+
+### L-0018 · JUCE Oversampling factor is an exponent
+- **date:** 2026-11-16
+- **area:** disklordz/drum-engine
+- **when:** Constructing juce::dsp::Oversampling for the 808 waveshaper
+- **lesson:** The Oversampling constructor factor is the number of times the rate doubles. Factor 2 is 4x, and getOversamplingFactor() returns 4.
+- **do:** Pass factor 2 when the design asks for 4x oversampling. Assert getOversamplingFactor()==4 in DrumEngineTests.
+- **evidence:** DrumEngineTests passed after the factor-2 constructor; juce_Oversampling.h documents the doubling stages.
+- **confidence:** executed
+- **status:** active
+
+### L-0019 · Headless JUCE console apps link data_structures, not gui_basics
+- **date:** 2026-11-16
+- **area:** disklordz/drum-engine
+- **when:** Linking DrumEngineTests PropertiesFile and compiling juce_gui_basics on the cloud image
+- **lesson:** PropertiesFile is in juce_data_structures. juce_gui_basics pulls webkit2gtk and gtk+-x11, which this image does not have, and a console exporter does not need a GUI initialiser.
+- **do:** Link juce_audio_basics, juce_audio_formats, juce_dsp, and juce_data_structures. Leave juce_gui_basics off headless targets.
+- **evidence:** Drum engine link failed on PropertiesFile symbols until juce_data_structures was added; the earlier gui_basics build stopped after webkit/gtk were reported missing. DrumEngineTests then passed headless.
+- **confidence:** executed
+- **status:** active
