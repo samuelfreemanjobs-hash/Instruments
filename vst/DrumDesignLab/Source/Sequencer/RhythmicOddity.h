@@ -232,6 +232,12 @@ inline OddityPattern makeOddity(GrooveFamily family, uint64_t seed = 1ull) noexc
     return g;
 }
 
+inline bool rngSkip(int i) noexcept
+{
+    // Deterministic alternate without PRNG dependency in reduction path
+    return (i % 3) == 0;
+}
+
 inline OddityPattern applyMinimalMonster(OddityPattern g, MinimalMode mode) noexcept
 {
     if (mode == MinimalMode::Aggressive && g.family == GrooveFamily::MinimalMonster)
@@ -271,12 +277,6 @@ inline OddityPattern applyMinimalMonster(OddityPattern g, MinimalMode mode) noex
             p.active = !p.active; // invert sparse perc for experimental
     }
     return g;
-}
-
-inline bool rngSkip(int i) noexcept
-{
-    // Deterministic alternate without PRNG dependency in reduction path
-    return (i % 3) == 0;
 }
 
 struct ScheduledHit

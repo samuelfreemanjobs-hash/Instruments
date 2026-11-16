@@ -57,30 +57,30 @@ public:
     static constexpr size_t kNodeCount = 5;
     using Weights                      = std::array<float, kNodeCount>;
 
-    static constexpr const std::array<NodeTarget, kNodeCount>& nodesFor(MatrixMode mode) noexcept
+    static const std::array<NodeTarget, kNodeCount>& nodesFor(MatrixMode mode) noexcept
     {
-        static constexpr std::array<NodeTarget, kNodeCount> kHyper {{
+        static const std::array<NodeTarget, kNodeCount> kHyper {{
             { "Plugg",     0.12f, 0.16f, 50.f, 120.f, 55.f, 520.f, 20.f, 1.15f, 0.15f, 0.12f, 0.00f, 0.30f, 0.08f },
             { "Rage",      0.85f, 0.14f, 50.f, 195.f, 24.f, 400.f, 30.f, 4.40f, 0.35f, 0.28f, 0.04f, 0.90f, 0.05f },
             { "Hypertrap", 0.77f, 0.68f, 50.f, 180.f, 32.f, 620.f, 90.f, 3.40f, 0.90f, 0.30f, 0.12f, 0.78f, 0.10f },
             { "Hyperpop",  0.22f, 0.85f, 50.f, 145.f, 62.f, 330.f, 65.f, 2.40f, 2.40f, 0.48f, 0.35f, 0.68f, 0.14f },
             { "Digicore",  0.51f, 0.47f, 50.f, 170.f, 44.f, 420.f, 42.f, 3.70f, 1.85f, 0.55f, 0.78f, 0.82f, 0.09f }
         }};
-        static constexpr std::array<NodeTarget, kNodeCount> kPerc {{
+        static const std::array<NodeTarget, kNodeCount> kPerc {{
             { "BRICK",   0.14f, 0.18f, 55.f, 175.f, 18.f, 260.f, 5.f,  2.8f, 0.2f, 0.22f, 0.10f, 0.85f, 0.06f },
             { "WARFARE", 0.86f, 0.18f, 55.f, 210.f, 22.f, 780.f, 12.f, 4.2f, 0.8f, 0.40f, 0.08f, 0.92f, 0.20f },
             { "ANTHEM",  0.80f, 0.82f, 55.f, 160.f, 34.f, 950.f, 15.f, 2.2f, 0.5f, 0.30f, 0.00f, 0.74f, 0.26f },
             { "DARK",    0.18f, 0.82f, 55.f, 125.f, 48.f, 880.f, 20.f, 1.9f, 1.1f, 0.18f, 0.18f, 0.45f, 0.22f },
             { "ARENA",   0.50f, 0.50f, 55.f, 170.f, 28.f, 1200.f,10.f, 2.6f, 0.6f, 0.35f, 0.00f, 0.80f, 0.32f }
         }};
-        static constexpr std::array<NodeTarget, kNodeCount> kZay {{
+        static const std::array<NodeTarget, kNodeCount> kZay {{
             { "BrickTrap",     0.15f, 0.20f, 49.f, 168.f, 26.f, 420.f, 15.f, 3.1f, 0.2f, 0.24f, 0.12f, 0.82f, 0.04f },
             { "TrapGospel",    0.84f, 0.20f, 49.f, 132.f, 38.f, 540.f, 28.f, 1.5f, 0.9f, 0.18f, 0.00f, 0.58f, 0.14f },
             { "Classic2000s",  0.80f, 0.80f, 49.f, 155.f, 22.f, 310.f, 8.f,  2.2f, 0.4f, 0.26f, 0.55f, 0.76f, 0.05f },
             { "BeastBounce",   0.20f, 0.82f, 49.f, 190.f, 20.f, 490.f, 18.f, 3.6f, 0.3f, 0.22f, 0.08f, 0.88f, 0.06f },
             { "LuxuryAtlanta", 0.50f, 0.50f, 49.f, 140.f, 34.f, 580.f, 32.f, 1.7f, 0.7f, 0.16f, 0.00f, 0.64f, 0.12f }
         }};
-        static constexpr std::array<NodeTarget, kNodeCount> kSouth {{
+        static const std::array<NodeTarget, kNodeCount> kSouth {{
             { "MafiaPressure", 0.14f, 0.16f, 46.f, 195.f, 20.f, 460.f, 20.f, 4.1f, 0.2f, 0.24f, 0.05f, 0.88f, 0.04f },
             { "DarkFuture",    0.86f, 0.16f, 46.f, 150.f, 36.f, 680.f, 45.f, 2.9f, 0.8f, 0.18f, 0.10f, 0.65f, 0.16f },
             { "StreetWarfare", 0.82f, 0.82f, 46.f, 215.f, 18.f, 390.f, 15.f, 4.8f, 0.5f, 0.34f, 0.15f, 0.94f, 0.06f },
