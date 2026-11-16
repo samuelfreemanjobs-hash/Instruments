@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import math
 import struct
 import subprocess
 import sys
@@ -16,6 +17,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from pcmio import read_wav  # noqa: E402
+from stitch_preview import pick  # noqa: E402
 from visualize_wav import audit  # noqa: E402
 
 
@@ -23,6 +25,17 @@ def write_pcm16(path: Path, samples: list[float], rate: int = 48000) -> None:
     frames = b"".join(struct.pack("<h", int(max(-1.0, min(1.0, sample)) * 32767)) for sample in samples)
     with wave.open(str(path), "wb") as handle:
         handle.setnchannels(1)
+        handle.setsampwidth(2)
+        handle.setframerate(rate)
+        handle.writeframes(frames)
+
+
+def write_stereo16(path: Path, left: list[float], right: list[float], rate: int = 48000) -> None:
+    frames = bytearray()
+    for left_sample, right_sample in zip(left, right):
+        frames.extend(struct.pack("<hh", int(max(-1.0, min(1.0, left_sample)) * 32767), int(max(-1.0, min(1.0, right_sample)) * 32767)))
+    with wave.open(str(path), "wb") as handle:
+        handle.setnchannels(2)
         handle.setsampwidth(2)
         handle.setframerate(rate)
         handle.writeframes(frames)
@@ -112,6 +125,12 @@ class WorkflowTests(unittest.TestCase):
             self.assertIn("lovel=1 hivel=63", text)
             self.assertIn("lovel=64 hivel=127", text)
             self.assertIn("seq_position=1", text)
+            self.assertIn("sample=wavs/DLZ_808Lab_808_01_G1_v1.wav", text)
+            for line in text.splitlines():
+                if "sample=" not in line:
+                    continue
+                sample = line.split("sample=", 1)[1].split()[0]
+                self.assertTrue((sfz.parent / sample).is_file(), sample)
 
     def test_preview_length(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -143,6 +162,56 @@ class WorkflowTests(unittest.TestCase):
                 duration = handle.getnframes() / handle.getframerate()
             self.assertEqual(rate, 48000)
             self.assertAlmostEqual(duration, 2.0, delta=0.05)
+            samples, _rate, _channels = read_wav(destination)
+            self.assertGreater(samples[0], 0.7)
+
+    def test_sfz_keeps_nested_sample_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            nested = root / "wavs" / "kicks"
+            nested.mkdir(parents=True)
+            write_pcm16(nested / "DLZ_808Lab_808_01_C1.wav", [0.1, 0.0])
+            sfz = root / "maps" / "kit.sfz"
+            sfz.parent.mkdir()
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "preset_factory.py"),
+                    "--out",
+                    str(root / "presets"),
+                    "--sfz-from",
+                    str(root / "wavs"),
+                    "--sfz-out",
+                    str(sfz),
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            text = sfz.read_text(encoding="utf-8")
+            self.assertIn("sample=../wavs/kicks/DLZ_808Lab_808_01_C1.wav", text)
+            self.assertTrue((sfz.parent / "../wavs/kicks/DLZ_808Lab_808_01_C1.wav").resolve().is_file())
+
+    def test_visualizer_flags_inverted_stereo_sub(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            rate = 48000
+            left = [0.5 * math.sin(2.0 * math.pi * 60.0 * index / rate) for index in range(rate)]
+            inverted = Path(tmp) / "inverted.wav"
+            matched = Path(tmp) / "matched.wav"
+            write_stereo16(inverted, left, [-sample for sample in left], rate)
+            write_stereo16(matched, left, left, rate)
+            bad = audit(inverted)
+            good = audit(matched)
+            self.assertIn("sub-bass phase", bad["problems"])
+            self.assertLess(bad["subCoherence"], 0.0)
+            self.assertNotIn("sub-bass phase", good["problems"])
+            self.assertGreater(good["subCoherence"], 0.95)
+
+    def test_preview_pick_skips_unmatched_names(self) -> None:
+        files = [Path("hat.wav"), Path("kick.wav"), Path("snare.wav")]
+        self.assertIsNone(pick(files, "808"))
+        self.assertEqual(pick(files, "kick"), Path("kick.wav"))
 
     def test_filmstrip_writes_a_strip(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

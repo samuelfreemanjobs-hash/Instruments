@@ -201,3 +201,13 @@ Factory, plugin (APC/DPCS), design-system and JUCE work. Format and rules: [MEMO
 - **evidence:** Fetched CommandLine.cpp from the v1.0.4 tag. run_pluginval.py --help still documents --install-only and a default strictness of 5.
 - **confidence:** inspected
 - **status:** active
+
+### L-0021 · Kit SFZ, preview pick, and stereo sub coherence
+- **date:** 2026-11-16
+- **area:** disklordz/drum-engine/python
+- **when:** Codex review of the drum-engine Python tools
+- **lesson:** SFZ sample opcodes must be relative to the SFZ file, including nested folders. pick() must return None when the token misses so later voice names still run. Sub-bass coherence has to correlate the original channels; a mono mix correlates with itself and always scores 1.
+- **do:** Assert the SFZ path resolves next to the map, that an 808 search does not steal hat.wav when kick.wav exists, and that an inverted stereo 60 Hz sine fails sub-bass phase.
+- **evidence:** test_workflows.py: 8 tests OK, including nested SFZ, inverted stereo coherence, and preview sample 0 above 0.7.
+- **confidence:** executed
+- **status:** active

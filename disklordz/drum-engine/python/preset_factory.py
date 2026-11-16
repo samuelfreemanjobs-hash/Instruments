@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import random
 import re
 import sys
@@ -49,6 +50,11 @@ def write_presets(params: Path, out: Path, seed: int) -> int:
     return written
 
 
+def sfz_sample_path(wav: Path, destination: Path) -> str:
+    relative = os.path.relpath(wav.resolve(), destination.parent.resolve())
+    return Path(relative).as_posix()
+
+
 def write_sfz(folder: Path, destination: Path) -> int:
     regions: list[str] = []
     velocity_re = re.compile(r"_v(\d+)", re.IGNORECASE)
@@ -69,8 +75,9 @@ def write_sfz(folder: Path, destination: Path) -> int:
             lovel, hivel = 1, 127
         robin = robin_re.search(stem)
         sequence = f" seq_position={robin.group(1)}" if robin else ""
+        sample = sfz_sample_path(wav, destination)
         regions.append(
-            f"<region> sample={wav.name} key={note} lovel={lovel} hivel={hivel}{sequence}"
+            f"<region> sample={sample} key={note} lovel={lovel} hivel={hivel}{sequence}"
         )
     destination.write_text("<group>\n" + "\n".join(regions) + "\n", encoding="utf-8")
     return len(regions)

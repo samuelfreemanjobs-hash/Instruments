@@ -8,7 +8,19 @@ import wave
 from pathlib import Path
 
 
-def read_wav(path: Path) -> tuple[list[float], int, int]:
+def _decode_sample(chunk: bytes, width: int) -> float:
+    if width == 2:
+        return struct.unpack_from("<h", chunk)[0] / 32768.0
+    if width == 3:
+        integer = int.from_bytes(chunk, "little", signed=False)
+        if integer & 0x800000:
+            integer -= 0x1000000
+        return integer / 8388608.0
+    return struct.unpack_from("<i", chunk)[0] / 2147483648.0
+
+
+def read_wav_channels(path: Path) -> tuple[list[list[float]], int]:
+    """Return one sample list per channel. Callers that want a mono mix use read_wav."""
     with wave.open(str(path), "rb") as handle:
         channels = handle.getnchannels()
         width = handle.getsampwidth()
@@ -17,25 +29,24 @@ def read_wav(path: Path) -> tuple[list[float], int, int]:
         raw = handle.readframes(frames)
     if width not in (2, 3, 4):
         raise ValueError(f"{path.name}: unsupported sample width {width}")
-    samples: list[float] = []
+    separated: list[list[float]] = [[] for _ in range(channels)]
     step = width * channels
     for offset in range(0, len(raw), step):
-        mixed = 0.0
         for channel in range(channels):
             start = offset + channel * width
-            chunk = raw[start : start + width]
-            if width == 2:
-                value = struct.unpack_from("<h", chunk)[0] / 32768.0
-            elif width == 3:
-                integer = int.from_bytes(chunk, "little", signed=False)
-                if integer & 0x800000:
-                    integer -= 0x1000000
-                value = integer / 8388608.0
-            else:
-                value = struct.unpack_from("<i", chunk)[0] / 2147483648.0
-            mixed += value
-        samples.append(mixed / channels)
-    return samples, rate, channels
+            separated[channel].append(_decode_sample(raw[start : start + width], width))
+    return separated, rate
+
+
+def read_wav(path: Path) -> tuple[list[float], int, int]:
+    separated, rate = read_wav_channels(path)
+    if not separated or not separated[0]:
+        return [], rate, len(separated)
+    mixed = [
+        sum(channel[index] for channel in separated) / len(separated)
+        for index in range(len(separated[0]))
+    ]
+    return mixed, rate, len(separated)
 
 
 def write_wav24(path: Path, samples: list[float], rate: int) -> None:

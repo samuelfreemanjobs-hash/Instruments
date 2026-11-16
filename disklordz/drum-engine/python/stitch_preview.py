@@ -18,7 +18,7 @@ def pick(files: list[Path], token: str) -> Path | None:
     for path in files:
         if token in path.stem.lower():
             return path
-    return files[0] if files else None
+    return None
 
 
 def stitch(folder: Path, destination: Path, bpm: float, seconds: float, rate: int) -> None:

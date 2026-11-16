@@ -11,7 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from pcmio import read_wav
+from pcmio import read_wav_channels
 
 
 def lowpass(samples: list[float], rate: int, cutoff: float = 120.0) -> list[float]:
@@ -58,18 +58,35 @@ def correlation(left: list[float], right: list[float]) -> float:
     return num / den
 
 
+def channel_coherence(channels: list[list[float]], rate: int) -> tuple[float, float]:
+    """Lowest sub-bass correlation between any two original channels."""
+    if len(channels) < 2:
+        return 1.0, 0.0
+    filtered = [lowpass(channel, rate) for channel in channels]
+    energy = 0.0
+    coherence = 1.0
+    for index, left in enumerate(filtered):
+        energy = max(energy, sum(sample * sample for sample in left) / len(left))
+        for right in filtered[index + 1 :]:
+            coherence = min(coherence, correlation(left, right))
+    return coherence, energy
+
+
 def audit(path: Path) -> dict:
-    samples, rate, channels = read_wav(path)
-    if not samples:
+    separated, rate = read_wav_channels(path)
+    if not separated or not separated[0]:
         return {"file": path.name, "passed": False, "problems": ["empty"]}
+    channels = len(separated)
+    samples = [
+        sum(channel[index] for channel in separated) / channels
+        for index in range(len(separated[0]))
+    ]
     mean = sum(samples) / len(samples)
     peak = max(abs(sample) for sample in samples)
     rms = math.sqrt(sum(sample * sample for sample in samples) / len(samples))
     crest = peak / rms if rms > 1.0e-9 else 0.0
     intersample = interpolate_peak(samples)
-    sub = lowpass(samples, rate)
-    sub_energy = sum(sample * sample for sample in sub) / len(sub)
-    coherence = correlation(sub, sub)
+    coherence, sub_energy = channel_coherence(separated, rate)
     problems: list[str] = []
     if abs(mean) > 0.02:
         problems.append("dc offset")
