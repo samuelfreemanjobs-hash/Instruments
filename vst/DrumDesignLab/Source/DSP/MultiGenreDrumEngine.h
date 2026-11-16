@@ -9,6 +9,7 @@
 #include "TayKeithMemphisEngine.h"
 #include "ToompDrumEngine.h"
 #include "Purps808MafiaEngine.h"
+#include "../Presets/GenreBankLibrary.h"
 #include "../Presets/HitmakerBank.h"
 #include "../Presets/MelodyMotionBank.h"
 #include "../ThreeLayerDrum.h"
@@ -148,6 +149,37 @@ public:
 
     KitStyle style() const noexcept { return style_; }
     const KitProgram& kit() const noexcept { return kit_; }
+    int dnaFormulaIndex() const noexcept { return dnaFormulaIndex_; }
+
+    /** Load any of the 32 DNA formula kits into the ThreeLayer pad map (live + offline). */
+    void loadDnaFormula(int formulaIndex) noexcept
+    {
+        dnaFormulaIndex_ = formulaIndex % genre_bank::kFormulaCount;
+        if (dnaFormulaIndex_ < 0)
+            dnaFormulaIndex_ = 0;
+        kit_ = genre_bank::makeFormulaKit(dnaFormulaIndex_);
+        useFusionBass_ = genre_bank::usesFusionBass(dnaFormulaIndex_);
+        if (useFusionBass_)
+            fusion_.setParams(genre_bank::fusionForFormula(dnaFormulaIndex_));
+        // Prefer ThreeLayer/Fusion path for DNA kits
+        switch (genre_bank::formulaAt(dnaFormulaIndex_).line)
+        {
+        case genre_bank::Line::Hitmaker:
+            style_ = KitStyle::HitmakerEarthquake;
+            break;
+        case genre_bank::Line::MelodyMotion:
+            style_ = KitStyle::MelodyMotionRichBounce;
+            break;
+        default:
+            style_ = KitStyle::CinematicShadows;
+            break;
+        }
+        reset();
+        // Keep kit_ after reset — reset() clears voices only; re-apply kit after setStyle pattern
+        kit_ = genre_bank::makeFormulaKit(dnaFormulaIndex_);
+        if (useFusionBass_)
+            fusion_.setParams(genre_bank::fusionForFormula(dnaFormulaIndex_));
+    }
 
     void handleMidiNote(int midiNote, float velocity01) noexcept
     {
@@ -273,6 +305,7 @@ private:
     KitStyle style_ = KitStyle::HitmakerEarthquake;
     KitProgram kit_ {};
     bool useFusionBass_ = true;
+    int dnaFormulaIndex_ = 8; // hitmaker_earthquake
 
     DrumVoiceManager threeLayer_;
     hitmaker::Multi808FusionReactor fusion_;
