@@ -1,5 +1,5 @@
 #pragma once
-// Unified DNA formula catalog — Bang / Hitmaker / MelodyMotion / SouthernTriumph (32 kits).
+// Unified DNA formula catalog  -  Bang / Hitmaker / MelodyMotion / SouthernTriumph (32 kits).
 #include "BangBank.h"
 #include "HitmakerBank.h"
 #include "MelodyMotionBank.h"
@@ -28,41 +28,41 @@ struct Formula
 
 inline constexpr Formula kFormulas[32] = {
     // Bang (0–7)
-    { Line::Bang, 0, "bang_milli_pressure", "Bang — Milli Pressure" },
-    { Line::Bang, 1, "bang_dirty_digital", "Bang — Dirty Digital" },
-    { Line::Bang, 2, "bang_atlanta_eccentric", "Bang — Atlanta Eccentric" },
-    { Line::Bang, 3, "bang_boss_drums", "Bang — Boss Drums" },
-    { Line::Bang, 4, "bang_street_experimental", "Bang — Street Experimental" },
-    { Line::Bang, 5, "bang_southern_futurism", "Bang — Southern Futurism" },
-    { Line::Bang, 6, "bang_raw_machine", "Bang — Raw Machine" },
-    { Line::Bang, 7, "bang_minimal_monster", "Bang — Minimal Monster" },
+    { Line::Bang, 0, "bang_milli_pressure", "Bang  -  Milli Pressure" },
+    { Line::Bang, 1, "bang_dirty_digital", "Bang  -  Dirty Digital" },
+    { Line::Bang, 2, "bang_atlanta_eccentric", "Bang  -  Atlanta Eccentric" },
+    { Line::Bang, 3, "bang_boss_drums", "Bang  -  Boss Drums" },
+    { Line::Bang, 4, "bang_street_experimental", "Bang  -  Street Experimental" },
+    { Line::Bang, 5, "bang_southern_futurism", "Bang  -  Southern Futurism" },
+    { Line::Bang, 6, "bang_raw_machine", "Bang  -  Raw Machine" },
+    { Line::Bang, 7, "bang_minimal_monster", "Bang  -  Minimal Monster" },
     // Hitmaker (8–15)
-    { Line::Hitmaker, 0, "hitmaker_earthquake", "Hitmaker — Earthquake" },
-    { Line::Hitmaker, 1, "hitmaker_atlanta_heat", "Hitmaker — Atlanta Heat" },
-    { Line::Hitmaker, 2, "hitmaker_trunk_rattle", "Hitmaker — Trunk Rattle" },
-    { Line::Hitmaker, 3, "hitmaker_hit_record", "Hitmaker — Hit Record" },
-    { Line::Hitmaker, 4, "hitmaker_dark_experiment", "Hitmaker — Dark Experiment" },
-    { Line::Hitmaker, 5, "hitmaker_club_anthem", "Hitmaker — Club Anthem" },
-    { Line::Hitmaker, 6, "hitmaker_melodic_pressure", "Hitmaker — Melodic Pressure" },
-    { Line::Hitmaker, 7, "hitmaker_future_machine", "Hitmaker — Future Machine" },
+    { Line::Hitmaker, 0, "hitmaker_earthquake", "Hitmaker  -  Earthquake" },
+    { Line::Hitmaker, 1, "hitmaker_atlanta_heat", "Hitmaker  -  Atlanta Heat" },
+    { Line::Hitmaker, 2, "hitmaker_trunk_rattle", "Hitmaker  -  Trunk Rattle" },
+    { Line::Hitmaker, 3, "hitmaker_hit_record", "Hitmaker  -  Hit Record" },
+    { Line::Hitmaker, 4, "hitmaker_dark_experiment", "Hitmaker  -  Dark Experiment" },
+    { Line::Hitmaker, 5, "hitmaker_club_anthem", "Hitmaker  -  Club Anthem" },
+    { Line::Hitmaker, 6, "hitmaker_melodic_pressure", "Hitmaker  -  Melodic Pressure" },
+    { Line::Hitmaker, 7, "hitmaker_future_machine", "Hitmaker  -  Future Machine" },
     // Melody & Motion (16–23)
-    { Line::MelodyMotion, 0, "mm_rich_bounce", "MelodyMotion — Rich Bounce" },
-    { Line::MelodyMotion, 1, "mm_slime_melody", "MelodyMotion — Slime Melody" },
-    { Line::MelodyMotion, 2, "mm_church_to_trap", "MelodyMotion — Church To Trap" },
-    { Line::MelodyMotion, 3, "mm_atlanta_lifestyle", "MelodyMotion — Atlanta Lifestyle" },
-    { Line::MelodyMotion, 4, "mm_keys_and_bells", "MelodyMotion — Keys And Bells" },
-    { Line::MelodyMotion, 5, "mm_street_anthem", "MelodyMotion — Street Anthem" },
-    { Line::MelodyMotion, 6, "mm_melodic_luxury", "MelodyMotion — Melodic Luxury" },
-    { Line::MelodyMotion, 7, "mm_late_night_london", "MelodyMotion — Late Night London" },
+    { Line::MelodyMotion, 0, "mm_rich_bounce", "MelodyMotion  -  Rich Bounce" },
+    { Line::MelodyMotion, 1, "mm_slime_melody", "MelodyMotion  -  Slime Melody" },
+    { Line::MelodyMotion, 2, "mm_church_to_trap", "MelodyMotion  -  Church To Trap" },
+    { Line::MelodyMotion, 3, "mm_atlanta_lifestyle", "MelodyMotion  -  Atlanta Lifestyle" },
+    { Line::MelodyMotion, 4, "mm_keys_and_bells", "MelodyMotion  -  Keys And Bells" },
+    { Line::MelodyMotion, 5, "mm_street_anthem", "MelodyMotion  -  Street Anthem" },
+    { Line::MelodyMotion, 6, "mm_melodic_luxury", "MelodyMotion  -  Melodic Luxury" },
+    { Line::MelodyMotion, 7, "mm_late_night_london", "MelodyMotion  -  Late Night London" },
     // Southern Triumph (24–31)
-    { Line::SouthernTriumph, 0, "st_southern_triumph", "SouthernTriumph — Southern Triumph" },
-    { Line::SouthernTriumph, 1, "st_memphis_roots", "SouthernTriumph — Memphis Roots" },
-    { Line::SouthernTriumph, 2, "st_atlanta_anthem", "SouthernTriumph — Atlanta Anthem" },
-    { Line::SouthernTriumph, 3, "st_orchestral_soul", "SouthernTriumph — Orchestral Soul" },
-    { Line::SouthernTriumph, 4, "st_triple_kick_warfare", "SouthernTriumph — Triple Kick Warfare" },
-    { Line::SouthernTriumph, 5, "st_drum_squad_classics", "SouthernTriumph — Drum Squad Classics" },
-    { Line::SouthernTriumph, 6, "st_blues_and_trap", "SouthernTriumph — Blues And Trap" },
-    { Line::SouthernTriumph, 7, "st_epic_street_cinema", "SouthernTriumph — Epic Street Cinema" },
+    { Line::SouthernTriumph, 0, "st_southern_triumph", "SouthernTriumph  -  Southern Triumph" },
+    { Line::SouthernTriumph, 1, "st_memphis_roots", "SouthernTriumph  -  Memphis Roots" },
+    { Line::SouthernTriumph, 2, "st_atlanta_anthem", "SouthernTriumph  -  Atlanta Anthem" },
+    { Line::SouthernTriumph, 3, "st_orchestral_soul", "SouthernTriumph  -  Orchestral Soul" },
+    { Line::SouthernTriumph, 4, "st_triple_kick_warfare", "SouthernTriumph  -  Triple Kick Warfare" },
+    { Line::SouthernTriumph, 5, "st_drum_squad_classics", "SouthernTriumph  -  Drum Squad Classics" },
+    { Line::SouthernTriumph, 6, "st_blues_and_trap", "SouthernTriumph  -  Blues And Trap" },
+    { Line::SouthernTriumph, 7, "st_epic_street_cinema", "SouthernTriumph  -  Epic Street Cinema" },
 };
 
 inline constexpr int kFormulaCount = 32;
