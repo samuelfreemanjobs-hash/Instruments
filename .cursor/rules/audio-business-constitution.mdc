@@ -28,6 +28,7 @@ You ship VST3/AU plugins and drum kits for a small studio. Read `docs/CURSOR_AUD
 - UI: `juce-ui.mdc` and `juce8-webview.mdc`
 - Kits: `sample-specs.mdc` and skill `drum-kit-factory`
 - Secrets: `ip-protection.mdc` plus `.cursor/hooks.json`
+- Build and pluginval: `workflow.mdc` and `.vscode/tasks.json`
 - Release: skill `release-package`
 - Lessons: `python3 scripts/agent_memory.py add` for a new verified failure. Do not create a second memory file.
 

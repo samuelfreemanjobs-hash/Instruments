@@ -191,3 +191,13 @@ Factory, plugin (APC/DPCS), design-system and JUCE work. Format and rules: [MEMO
 - **evidence:** Drum engine link failed on PropertiesFile symbols until juce_data_structures was added; the earlier gui_basics build stopped after webkit/gtk were reported missing. DrumEngineTests then passed headless.
 - **confidence:** executed
 - **status:** active
+
+### L-0020 · pluginval 1.0.4 validates with --validate
+- **date:** 2026-11-16
+- **area:** scripts/vst
+- **when:** Wiring the Cursor pluginval task to the binary this repo downloads
+- **lesson:** Tracktion pluginval 1.0.4 takes --validate PATH. Its help text lists --data-file and --output-filename, not a --file flag. Strictness runs from 1 to 10 and defaults to 5.
+- **do:** Local tasks call --strictness-level 8 --skip-gui-tests --validate. Leave the CI default at 5. On Linux, print the cached binary with run_pluginval.py --install-only and run it under xvfb-run -a.
+- **evidence:** Fetched CommandLine.cpp from the v1.0.4 tag. run_pluginval.py --help still documents --install-only and a default strictness of 5.
+- **confidence:** inspected
+- **status:** active

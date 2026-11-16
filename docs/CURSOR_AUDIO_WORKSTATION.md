@@ -14,6 +14,7 @@ How this repo turns Cursor into the VST and drum-kit workbench. Components live 
 | Hooks | `.cursor/hooks.json` | Format drum-engine C++, block destructive shell, flag secrets |
 | MCP | `.cursor/mcp.json` | Supabase, Stripe, Context7, Playwright |
 | Editor | `.vscode/extensions.json` | clangd, CMake Tools, Hex Editor, WAV Preview |
+| Tasks | `.vscode/tasks.json` | Default build is the drum engine. pluginval is a separate test task |
 
 ## MCP
 
@@ -27,6 +28,8 @@ How this repo turns Cursor into the VST and drum-kit workbench. Components live 
 
 Linear, S3, and Shopify stay unwired until an env var exists. A server entry with an empty secret fails every session.
 
+The project file is the MCP config that ships. Context7 is the OAuth endpoint, so a prompt can say "use context7" without an API key in git. A global `~/.cursor/mcp.json` is optional and should not replace these servers. Do not add `@modelcontextprotocol/server-filesystem`: the editor already has the workspace, and a server rooted at `.` widens access without a new capability. Do not add a second Context7 stdio process next to the OAuth server.
+
 ## CLI the agent can run
 
 | Tool | Command |
@@ -34,7 +37,7 @@ Linear, S3, and Shopify stay unwired until an env var exists. A server entry wit
 | Drum tests | `ctest --test-dir disklordz/drum-engine/build --output-on-failure` |
 | One-shots | `DrumBatchExporter --out /tmp/dlz-kit --count 50 --voice all` |
 | Kit zip | `python3 disklordz/drum-engine/python/process_kit.py RAW --out OUT --zip` |
-| pluginval | `python3 scripts/vst/run_pluginval.py PATH.vst3` |
+| pluginval | `python3 scripts/vst/run_pluginval.py --install-only`, then `xvfb-run -a "$bin" --strictness-level 8 --skip-gui-tests --validate PATH.vst3`. CI stays at 5. |
 | Preview | `ffmpeg` via `stitch_preview.py --mp3`; spectrogram via `sox` |
 | Notarize | `packaging/macos/notarize.sh` on a Mac. Exit 2 here. |
 
