@@ -3,73 +3,67 @@
 
 namespace
 {
-struct KnobSpec
-{
-    const char* id;
-    const char* label;
-};
-
-constexpr KnobSpec kKnobSpecs[15] = {
-    { "ddl_sub_freq_hz", "Sub Hz" },
-    { "ddl_punch_freq_hz", "Punch" },
-    { "ddl_pitch_sweep_ms", "Sweep" },
-    { "ddl_amp_decay_ms", "Decay" },
-    { "ddl_body_level", "Body" },
-    { "ddl_attack_level", "Attack" },
-    { "ddl_texture_level", "Texture" },
-    { "ddl_drive", "Drive" },
-    { "ddl_dirt_blend", "Dirt" },
-    { "ddl_sampler_grit", "Grit" },
-    { "ddl_stereo_width", "Width" },
-    { "ddl_reverb_mix", "Space" },
-    { "ddl_filter_cutoff_hz", "Cutoff" },
-    { "ddl_fm_ratio", "FM Ratio" },
-    { "ddl_fm_index", "FM Index" },
+constexpr const char* kPadNames[16] = {
+    "Kick", "Rim", "Snare", "Clap", "808", "Perc", "CH", "808B",
+    "CH2", "Tom", "OH", "FX", "Kick2", "Ride", "Snare2", "Impact"
 };
 } // namespace
 
 DrumDesignLabAudioProcessorEditor::DrumDesignLabAudioProcessorEditor(DrumDesignLabAudioProcessor& p)
     : AudioProcessorEditor(&p), proc_(p)
 {
-    setSize(1120, 720);
+    setSize(1280, 800);
     setResizable(true, true);
     setResizeLimits(960, 620, 1920, 1200);
 
-    title_.setText("DiskLordz Drum Design Lab", juce::dontSendNotification);
-    title_.setFont(juce::FontOptions(22.0f, juce::Font::bold));
+    title_.setText("DiskLordz", juce::dontSendNotification);
+    title_.setFont(juce::FontOptions(28.0f, juce::Font::bold));
     title_.setColour(juce::Label::textColourId, juce::Colour(0xfff4b35b));
     addAndMakeVisible(title_);
 
-    buildModeChrome();
-    buildPadButtons();
-    buildEditControls();
-    updateModeVisibility();
-    refreshPadHighlights();
-    startTimerHz(20);
-}
+    subtitle_.setText("Drum Kit Factory", juce::dontSendNotification);
+    subtitle_.setFont(juce::FontOptions(16.0f));
+    subtitle_.setColour(juce::Label::textColourId, juce::Colour(0xffc8c8d0));
+    addAndMakeVisible(subtitle_);
 
-void DrumDesignLabAudioProcessorEditor::buildModeChrome()
-{
-    modeBox_.addItemList({ "SYNTH", "DESIGN", "DNA", "GROOVE", "FACTORY" }, 1);
-    addAndMakeVisible(modeBox_);
-    modeAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
-        proc_.apvts, "ddl_mode", modeBox_);
-
-    styleLabel_.setText("Kit Style", juce::dontSendNotification);
-    addAndMakeVisible(styleLabel_);
-    for (int i = 0; i < static_cast<int>(disklordz::KitStyle::Count); ++i)
-        styleBox_.addItem(disklordz::kitStyleName(static_cast<disklordz::KitStyle>(i)), i + 1);
-    addAndMakeVisible(styleBox_);
-    styleAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
-        proc_.apvts, "ddl_kit_style", styleBox_);
-
-    formulaLabel_.setText("DNA Formula", juce::dontSendNotification);
+    formulaLabel_.setText("Kit Formula", juce::dontSendNotification);
+    formulaLabel_.setColour(juce::Label::textColourId, juce::Colour(0xfff4b35b));
     addAndMakeVisible(formulaLabel_);
     for (int i = 0; i < disklordz::genre_bank::kFormulaCount; ++i)
         formulaBox_.addItem(disklordz::genre_bank::formulaAt(i).displayName, i + 1);
     addAndMakeVisible(formulaBox_);
     formulaAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
         proc_.apvts, "ddl_dna_formula", formulaBox_);
+    formulaBox_.onChange = [this] {
+        // Selecting a formula forces DNA bank mode (all 16 pads)
+        proc_.loadDnaFormula(formulaBox_.getSelectedItemIndex());
+    };
+
+    engineLabel_.setText("Producer Engine", juce::dontSendNotification);
+    addAndMakeVisible(engineLabel_);
+    for (int i = 0; i < static_cast<int>(disklordz::KitStyle::Count); ++i)
+        engineBox_.addItem(disklordz::kitStyleName(static_cast<disklordz::KitStyle>(i)), i + 1);
+    addAndMakeVisible(engineBox_);
+    engineAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
+        proc_.apvts, "ddl_kit_style", engineBox_);
+
+    useEngineToggle_.setToggleState(false, juce::dontSendNotification);
+    useEngineToggle_.onClick = [this] {
+        if (useEngineToggle_.getToggleState())
+        {
+            // Leave DNA bank; use selected producer engine
+            if (auto* eng = proc_.apvts.getParameter("ddl_kit_style"))
+            {
+                // Trigger style apply via setKitStyle
+                proc_.setKitStyle(static_cast<disklordz::KitStyle>(engineBox_.getSelectedItemIndex()));
+            }
+        }
+        else
+        {
+            proc_.loadDnaFormula(formulaBox_.getSelectedItemIndex());
+        }
+    };
+    addAndMakeVisible(useEngineToggle_);
 
     gainLabel_.setText("Output", juce::dontSendNotification);
     addAndMakeVisible(gainLabel_);
@@ -79,130 +73,47 @@ void DrumDesignLabAudioProcessorEditor::buildModeChrome()
     gainAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         proc_.apvts, "ddl_output_gain", gainSlider_);
 
-    masterLabel_.setText("Master dB", juce::dontSendNotification);
-    addAndMakeVisible(masterLabel_);
-    masterDbSlider_.setSliderStyle(juce::Slider::LinearHorizontal);
-    masterDbSlider_.setTextBoxStyle(juce::Slider::TextBoxRight, false, 52, 18);
-    addAndMakeVisible(masterDbSlider_);
-    masterAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        proc_.apvts, "ddl_master_gain_db", masterDbSlider_);
-
-    addAndMakeVisible(bypassToggle_);
-    bypassAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
-        proc_.apvts, "ddl_bypass", bypassToggle_);
-
-    statusLabel_.setJustificationType(juce::Justification::centredLeft);
-    addAndMakeVisible(statusLabel_);
-
-    editTitle_.setText("Sound Edit", juce::dontSendNotification);
-    editTitle_.setFont(juce::FontOptions(16.0f, juce::Font::bold));
-    editTitle_.setColour(juce::Label::textColourId, juce::Colour(0xfff4b35b));
-    addAndMakeVisible(editTitle_);
-
-    destructionBox_.addItemList({ "Clean", "Mixed", "Destroyed" }, 1);
-    addAndMakeVisible(destructionBox_);
-    destructionAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
-        proc_.apvts, "ddl_destruction_mode", destructionBox_);
-
-    mutateBtn_.onClick = [this] { proc_.mutateSelectedPad(); };
-    addAndMakeVisible(mutateBtn_);
-    mutateStrength_.setSliderStyle(juce::Slider::LinearHorizontal);
-    mutateStrength_.setTextBoxStyle(juce::Slider::TextBoxRight, false, 48, 16);
-    addAndMakeVisible(mutateStrength_);
-    mutateAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        proc_.apvts, "ddl_mutate_strength", mutateStrength_);
-
-    // DNA panel
-    dnaTitle_.setText("Hyper DNA Morph", juce::dontSendNotification);
-    dnaTitle_.setFont(juce::FontOptions(16.0f, juce::Font::bold));
-    dnaTitle_.setColour(juce::Label::textColourId, juce::Colour(0xffb48cff));
-    addAndMakeVisible(dnaTitle_);
-    dnaMatrixBox_.addItemList({ "HyperDNA", "PercussionDNA", "ZayDNA", "SouthDNA" }, 1);
-    addAndMakeVisible(dnaMatrixBox_);
-    dnaMatrixAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
-        proc_.apvts, "ddl_dna_matrix", dnaMatrixBox_);
-    for (auto* s : { &dnaX_, &dnaY_, &dnaInfl_ })
-    {
-        s->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-        s->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 56, 16);
-        s->setColour(juce::Slider::rotarySliderFillColourId, juce::Colour(0xffb48cff));
-        addAndMakeVisible(*s);
-    }
-    dnaXAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        proc_.apvts, "ddl_dna_x", dnaX_);
-    dnaYAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        proc_.apvts, "ddl_dna_y", dnaY_);
-    dnaInflAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        proc_.apvts, "ddl_dna_influence", dnaInfl_);
-    applyDnaBtn_.onClick = [this] {
-        proc_.applyHyperDnaFromApvts();
-        pullKnobsIfNeeded();
-    };
-    addAndMakeVisible(applyDnaBtn_);
-
-    // Groove panel
-    grooveTitle_.setText("Groove Sequencer", juce::dontSendNotification);
-    grooveTitle_.setFont(juce::FontOptions(16.0f, juce::Font::bold));
-    grooveTitle_.setColour(juce::Label::textColourId, juce::Colour(0xff7ec8ff));
-    addAndMakeVisible(grooveTitle_);
-    addAndMakeVisible(seqToggle_);
-    seqAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
-        proc_.apvts, "ddl_seq_enabled", seqToggle_);
-    grooveBox_.addItemList({ "Milli Pressure", "Dirty Digital", "Boss Bounce", "Southern Oddity",
-                             "Raw Machine", "Minimal Monster", "Eccentric Atlanta", "Mechanical Bounce",
-                             "Digital Funk", "Experimental Street", "Sparse Knock", "Rhythmic Hypnosis" },
-                           1);
-    addAndMakeVisible(grooveBox_);
-    grooveAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
-        proc_.apvts, "ddl_groove_family", grooveBox_);
-    bpmSlider_.setSliderStyle(juce::Slider::LinearHorizontal);
-    bpmSlider_.setTextBoxStyle(juce::Slider::TextBoxRight, false, 48, 16);
-    addAndMakeVisible(bpmSlider_);
-    bpmAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        proc_.apvts, "ddl_bpm", bpmSlider_);
-    swingSlider_.setSliderStyle(juce::Slider::LinearHorizontal);
-    swingSlider_.setTextBoxStyle(juce::Slider::TextBoxRight, false, 48, 16);
-    addAndMakeVisible(swingSlider_);
-    swingAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        proc_.apvts, "ddl_swing", swingSlider_);
-
-    // Factory panel
-    factoryTitle_.setText("Kit Sample Factory", juce::dontSendNotification);
-    factoryTitle_.setFont(juce::FontOptions(16.0f, juce::Font::bold));
+    factoryTitle_.setText("Build Pack", juce::dontSendNotification);
+    factoryTitle_.setFont(juce::FontOptions(18.0f, juce::Font::bold));
     factoryTitle_.setColour(juce::Label::textColourId, juce::Colour(0xff8fd49a));
     addAndMakeVisible(factoryTitle_);
+
+    variationsLabel_.setText("Variations", juce::dontSendNotification);
+    addAndMakeVisible(variationsLabel_);
+    variationsSlider_.setSliderStyle(juce::Slider::LinearHorizontal);
+    variationsSlider_.setTextBoxStyle(juce::Slider::TextBoxRight, false, 40, 18);
+    variationsSlider_.setRange(1.0, 8.0, 1.0);
+    addAndMakeVisible(variationsSlider_);
+    variationsAttach_ = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        proc_.apvts, "ddl_factory_variations", variationsSlider_);
+
+    exportCurrentBtn_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xfff4b35b));
+    exportCurrentBtn_.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
     exportCurrentBtn_.onClick = [this] { exportCurrentKit(); };
-    exportAllBtn_.onClick = [this] { exportAllKits(); };
     addAndMakeVisible(exportCurrentBtn_);
+
+    exportAllBtn_.onClick = [this] { exportAllKits(); };
     addAndMakeVisible(exportAllBtn_);
+
+    qaLabel_.setColour(juce::Label::textColourId, juce::Colour(0xffa0a0a8));
+    qaLabel_.setJustificationType(juce::Justification::topLeft);
+    addAndMakeVisible(qaLabel_);
+
+    statusLabel_.setColour(juce::Label::textColourId, juce::Colour(0xffc8c8d0));
+    addAndMakeVisible(statusLabel_);
+
+    buildPads();
+    // Default product path: DNA kit formula (all pads work)
+    proc_.loadDnaFormula(formulaBox_.getSelectedItemIndex() >= 0 ? formulaBox_.getSelectedItemIndex() : 8);
+    refreshPadHighlights();
+    startTimerHz(15);
 }
 
-void DrumDesignLabAudioProcessorEditor::buildEditControls()
+void DrumDesignLabAudioProcessorEditor::buildPads()
 {
-    for (size_t i = 0; i < knobs_.size(); ++i)
-    {
-        auto& k = knobs_[i];
-        k.slider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-        k.slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 64, 16);
-        k.slider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colour(0xfff4b35b));
-        k.label.setText(kKnobSpecs[i].label, juce::dontSendNotification);
-        k.label.setJustificationType(juce::Justification::centred);
-        addAndMakeVisible(k.slider);
-        addAndMakeVisible(k.label);
-        k.attach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-            proc_.apvts, kKnobSpecs[i].id, k.slider);
-    }
-}
-
-void DrumDesignLabAudioProcessorEditor::buildPadButtons()
-{
-    static constexpr const char* names[16] = {
-        "Kick", "Rim", "Snare", "Clap", "808", "Perc", "CH", "808B",
-        "CH2", "Tom", "OH", "FX", "Kick2", "Ride", "Snare2", "Impact"
-    };
     for (int i = 0; i < 16; ++i)
     {
-        pads_[static_cast<size_t>(i)].setButtonText(names[i]);
+        pads_[static_cast<size_t>(i)].setButtonText(kPadNames[i]);
         pads_[static_cast<size_t>(i)].onClick = [this, i] {
             proc_.selectPad(i, true);
             refreshPadHighlights();
@@ -225,145 +136,83 @@ void DrumDesignLabAudioProcessorEditor::refreshPadHighlights()
     }
 }
 
-void DrumDesignLabAudioProcessorEditor::pullKnobsIfNeeded()
-{
-    if (proc_.consumeKnobsNeedPull())
-        proc_.pullKnobsFromEngine();
-
-    const int style = static_cast<int>(proc_.getKitStyle());
-    const int pad = proc_.getSelectedPad();
-    if (style == lastStyle_ && pad == lastPad_)
-        return;
-    lastStyle_ = style;
-    lastPad_ = pad;
-    static constexpr const char* names[16] = {
-        "Kick", "Rim", "Snare", "Clap", "808", "Perc", "CH", "808B",
-        "CH2", "Tom", "OH", "FX", "Kick2", "Ride", "Snare2", "Impact"
-    };
-    const char* mode = proc_.engineUsesThreeLayerPads() ? "pad recipe" : "engine voice";
-    editTitle_.setText(juce::String("Sound Edit — ") + names[pad] + " (" + mode + ")",
-                       juce::dontSendNotification);
-    refreshPadHighlights();
-}
-
-void DrumDesignLabAudioProcessorEditor::updateModeVisibility()
-{
-    const auto mode = proc_.getWorkspaceMode();
-    const int mi = static_cast<int>(mode);
-    if (mi == lastMode_)
-        return;
-    lastMode_ = mi;
-
-    const bool synthOrDesign = mode == DrumDesignLabAudioProcessor::WorkspaceMode::Synth
-                               || mode == DrumDesignLabAudioProcessor::WorkspaceMode::Design;
-    const bool dna = mode == DrumDesignLabAudioProcessor::WorkspaceMode::Dna;
-    const bool groove = mode == DrumDesignLabAudioProcessor::WorkspaceMode::Groove;
-    const bool factory = mode == DrumDesignLabAudioProcessor::WorkspaceMode::Factory;
-
-    for (auto& k : knobs_)
-    {
-        k.slider.setVisible(synthOrDesign || dna);
-        k.label.setVisible(synthOrDesign || dna);
-    }
-    destructionBox_.setVisible(synthOrDesign);
-    mutateBtn_.setVisible(synthOrDesign || dna);
-    mutateStrength_.setVisible(synthOrDesign || dna);
-
-    dnaTitle_.setVisible(dna);
-    dnaMatrixBox_.setVisible(dna);
-    dnaX_.setVisible(dna);
-    dnaY_.setVisible(dna);
-    dnaInfl_.setVisible(dna);
-    applyDnaBtn_.setVisible(dna);
-
-    grooveTitle_.setVisible(groove);
-    seqToggle_.setVisible(groove);
-    grooveBox_.setVisible(groove);
-    bpmSlider_.setVisible(groove);
-    swingSlider_.setVisible(groove);
-
-    factoryTitle_.setVisible(factory);
-    exportCurrentBtn_.setVisible(factory);
-    exportAllBtn_.setVisible(factory);
-    resized();
-}
-
 void DrumDesignLabAudioProcessorEditor::exportCurrentKit()
 {
-    auto chooser = std::make_shared<juce::FileChooser>("Export current kit pack",
-                                                       juce::File::getSpecialLocation(juce::File::userDocumentsDirectory),
-                                                       "*");
+    auto chooser = std::make_shared<juce::FileChooser>(
+        "Export kit pack",
+        juce::File::getSpecialLocation(juce::File::userDocumentsDirectory).getChildFile("DiskLordz_Kits"),
+        "*");
     chooser->launchAsync(juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectDirectories,
                          [this, chooser](const juce::FileChooser& fc) {
-                             auto dir = fc.getResult();
+                             const auto dir = fc.getResult();
                              if (dir == juce::File())
                                  return;
-                             const int vars = static_cast<int>(proc_.apvts.getRawParameterValue("ddl_factory_variations")->load());
-                             proc_.exportKitPack(dir, false, vars);
+                             const int vars = static_cast<int>(
+                                 proc_.apvts.getRawParameterValue("ddl_factory_variations")->load());
+                             qaLabel_.setText(proc_.exportKitPack(dir, false, vars), juce::dontSendNotification);
                          });
 }
 
 void DrumDesignLabAudioProcessorEditor::exportAllKits()
 {
-    auto chooser = std::make_shared<juce::FileChooser>("Export all 32 DNA kit packs",
-                                                       juce::File::getSpecialLocation(juce::File::userDocumentsDirectory),
-                                                       "*");
+    auto chooser = std::make_shared<juce::FileChooser>(
+        "Export all 32 DNA kits",
+        juce::File::getSpecialLocation(juce::File::userDocumentsDirectory).getChildFile("DiskLordz_Kits"),
+        "*");
     chooser->launchAsync(juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectDirectories,
                          [this, chooser](const juce::FileChooser& fc) {
-                             auto dir = fc.getResult();
+                             const auto dir = fc.getResult();
                              if (dir == juce::File())
                                  return;
-                             const int vars = static_cast<int>(proc_.apvts.getRawParameterValue("ddl_factory_variations")->load());
-                             proc_.exportKitPack(dir, true, vars);
+                             const int vars = static_cast<int>(
+                                 proc_.apvts.getRawParameterValue("ddl_factory_variations")->load());
+                             qaLabel_.setText(proc_.exportKitPack(dir, true, vars), juce::dontSendNotification);
                          });
 }
 
 void DrumDesignLabAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    g.fillAll(juce::Colour(0xff121214));
-    g.setColour(juce::Colour(0xff1c1c22));
-    g.fillRoundedRectangle(getLocalBounds().toFloat().reduced(8.0f), 10.0f);
-}
+    g.fillAll(juce::Colour(0xff101014));
+    auto bounds = getLocalBounds().toFloat().reduced(10.0f);
+    g.setColour(juce::Colour(0xff18181e));
+    g.fillRoundedRectangle(bounds, 12.0f);
+    g.setColour(juce::Colour(0xff2a2a32));
+    g.drawRoundedRectangle(bounds, 12.0f, 1.0f);
 
-void DrumDesignLabAudioProcessorEditor::layoutKnob(juce::Slider& s, juce::Label& l, juce::Rectangle<int> area)
-{
-    l.setBounds(area.removeFromTop(18));
-    s.setBounds(area.reduced(4));
+    // Factory panel backdrop
+    auto r = getLocalBounds().reduced(16);
+    r.removeFromTop(100);
+    auto right = r.removeFromRight(r.getWidth() / 2).reduced(8);
+    g.setColour(juce::Colour(0xff14141a));
+    g.fillRoundedRectangle(right.toFloat(), 10.0f);
 }
 
 void DrumDesignLabAudioProcessorEditor::resized()
 {
-    auto r = getLocalBounds().reduced(14);
-    title_.setBounds(r.removeFromTop(28));
-    r.removeFromTop(4);
-    auto top = r.removeFromTop(28);
-    modeBox_.setBounds(top.removeFromLeft(120));
-    top.removeFromLeft(8);
-    styleLabel_.setBounds(top.removeFromLeft(60));
-    styleBox_.setBounds(top.removeFromLeft(220));
-    top.removeFromLeft(8);
-    formulaLabel_.setBounds(top.removeFromLeft(80));
-    formulaBox_.setBounds(top.removeFromLeft(220));
-    top.removeFromLeft(8);
-    gainLabel_.setBounds(top.removeFromLeft(48));
-    gainSlider_.setBounds(top.removeFromLeft(140));
-    masterLabel_.setBounds(top.removeFromLeft(70));
-    masterDbSlider_.setBounds(top.removeFromLeft(120));
-    bypassToggle_.setBounds(top.removeFromLeft(80));
+    auto r = getLocalBounds().reduced(20);
+    auto header = r.removeFromTop(36);
+    title_.setBounds(header.removeFromLeft(160));
+    subtitle_.setBounds(header.removeFromLeft(180));
+    header.removeFromLeft(12);
+    gainLabel_.setBounds(header.removeFromLeft(50));
+    gainSlider_.setBounds(header.removeFromLeft(180));
 
-    r.removeFromTop(4);
-    statusLabel_.setBounds(r.removeFromTop(20));
-    r.removeFromTop(6);
+    r.removeFromTop(8);
+    auto row = r.removeFromTop(32);
+    formulaLabel_.setBounds(row.removeFromLeft(90));
+    formulaBox_.setBounds(row.removeFromLeft(320));
+    row.removeFromLeft(16);
+    engineLabel_.setBounds(row.removeFromLeft(110));
+    engineBox_.setBounds(row.removeFromLeft(240));
+    row.removeFromLeft(12);
+    useEngineToggle_.setBounds(row);
+
+    r.removeFromTop(8);
+    statusLabel_.setBounds(r.removeFromTop(22));
+    r.removeFromTop(8);
 
     auto left = r.removeFromLeft(r.getWidth() / 2).reduced(4);
-    auto right = r.reduced(4);
-
-    editTitle_.setBounds(right.removeFromTop(22));
-    auto destRow = right.removeFromTop(26);
-    destructionBox_.setBounds(destRow.removeFromLeft(120));
-    destRow.removeFromLeft(8);
-    mutateBtn_.setBounds(destRow.removeFromLeft(110));
-    mutateStrength_.setBounds(destRow);
+    auto right = r.reduced(8);
 
     const int cols = 4;
     const int rows = 4;
@@ -373,64 +222,34 @@ void DrumDesignLabAudioProcessorEditor::resized()
     {
         const int c = i % cols;
         const int rw = i / cols;
-        pads_[static_cast<size_t>(i)].setBounds(left.getX() + c * padW + 2,
-                                                left.getY() + rw * padH + 2,
-                                                padW - 4, padH - 4);
+        pads_[static_cast<size_t>(i)].setBounds(left.getX() + c * padW + 3,
+                                                left.getY() + rw * padH + 3,
+                                                padW - 6, padH - 6);
     }
 
-    const auto mode = proc_.getWorkspaceMode();
-    if (mode == DrumDesignLabAudioProcessor::WorkspaceMode::Dna)
-    {
-        dnaTitle_.setBounds(right.removeFromTop(22));
-        dnaMatrixBox_.setBounds(right.removeFromTop(26));
-        right.removeFromTop(4);
-        auto dnaRow = right.removeFromTop(120);
-        const int w = dnaRow.getWidth() / 3;
-        dnaX_.setBounds(dnaRow.removeFromLeft(w).reduced(6));
-        dnaY_.setBounds(dnaRow.removeFromLeft(w).reduced(6));
-        dnaInfl_.setBounds(dnaRow.reduced(6));
-        applyDnaBtn_.setBounds(right.removeFromTop(28).removeFromLeft(160));
-        right.removeFromTop(8);
-    }
-    else if (mode == DrumDesignLabAudioProcessor::WorkspaceMode::Groove)
-    {
-        grooveTitle_.setBounds(right.removeFromTop(22));
-        seqToggle_.setBounds(right.removeFromTop(26).removeFromLeft(140));
-        grooveBox_.setBounds(right.removeFromTop(28));
-        right.removeFromTop(6);
-        bpmSlider_.setBounds(right.removeFromTop(28));
-        swingSlider_.setBounds(right.removeFromTop(28));
-    }
-    else if (mode == DrumDesignLabAudioProcessor::WorkspaceMode::Factory)
-    {
-        factoryTitle_.setBounds(right.removeFromTop(22));
-        right.removeFromTop(8);
-        exportCurrentBtn_.setBounds(right.removeFromTop(36));
-        right.removeFromTop(8);
-        exportAllBtn_.setBounds(right.removeFromTop(36));
-    }
-
-    if (mode == DrumDesignLabAudioProcessor::WorkspaceMode::Synth
-        || mode == DrumDesignLabAudioProcessor::WorkspaceMode::Design
-        || mode == DrumDesignLabAudioProcessor::WorkspaceMode::Dna)
-    {
-        const int kCols = 5;
-        const int kRows = 3;
-        const int kW = right.getWidth() / kCols;
-        const int kH = juce::jmax(90, right.getHeight() / kRows);
-        for (size_t i = 0; i < knobs_.size(); ++i)
-        {
-            const int c = static_cast<int>(i) % kCols;
-            const int rw = static_cast<int>(i) / kCols;
-            auto cell = juce::Rectangle<int>(right.getX() + c * kW, right.getY() + rw * kH, kW, kH).reduced(4);
-            layoutKnob(knobs_[i].slider, knobs_[i].label, cell);
-        }
-    }
+    factoryTitle_.setBounds(right.removeFromTop(28));
+    right.removeFromTop(8);
+    auto varRow = right.removeFromTop(28);
+    variationsLabel_.setBounds(varRow.removeFromLeft(80));
+    variationsSlider_.setBounds(varRow);
+    right.removeFromTop(16);
+    exportCurrentBtn_.setBounds(right.removeFromTop(44));
+    right.removeFromTop(10);
+    exportAllBtn_.setBounds(right.removeFromTop(36));
+    right.removeFromTop(16);
+    qaLabel_.setBounds(right);
 }
 
 void DrumDesignLabAudioProcessorEditor::timerCallback()
 {
-    updateModeVisibility();
-    pullKnobsIfNeeded();
-    statusLabel_.setText(proc_.getStatusLine(), juce::dontSendNotification);
+    if (proc_.getSelectedPad() != lastPad_)
+    {
+        lastPad_ = proc_.getSelectedPad();
+        refreshPadHighlights();
+    }
+    const auto& f = disklordz::genre_bank::formulaAt(proc_.getDnaFormula());
+    statusLabel_.setText(
+        juce::String("Selected: ") + kPadNames[proc_.getSelectedPad()] + "  ·  " + f.displayName
+            + (proc_.engineUsesThreeLayerPads() ? "  ·  DNA kit (16 pads)" : "  ·  producer engine"),
+        juce::dontSendNotification);
 }

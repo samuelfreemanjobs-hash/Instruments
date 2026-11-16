@@ -75,7 +75,7 @@ DrumVoiceManager (32 preallocated ThreeLayerVoice slots, choke groups, 2.5 ms de
 | `Source/Presets/GenreBankLibrary.h` | 32 DNA formula catalog (Bang / Hitmaker / MelodyMotion / SouthernTriumph) |
 | `Source/Factory/KitFactory.h` | Offline kit pack exporter (family folders, variations, MANIFEST.json) |
 | `Source/Factory/SoundEditBridge.h` | Focused-pad / voice-family sound edits → DrumRecipe or genre-engine params |
-| `Source/Plugin/PluginProcessor.*` | JUCE shell — modes (SYNTH/DESIGN/DNA/GROOVE/FACTORY), 32 DNA formulas, HyperDNA, groove, kit export, pad sound knobs |
+| `Source/Plugin/PluginProcessor.*` | JUCE shell — kit factory: DNA formula (32 banks) → 16-pad audition → export pack; optional producer engine |
 
 ## 6. Extension Points
 

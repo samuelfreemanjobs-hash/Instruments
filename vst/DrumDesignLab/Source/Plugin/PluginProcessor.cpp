@@ -259,9 +259,9 @@ void DrumDesignLabAudioProcessor::selectPad(int padIndex, bool preview)
     {
         engine_->captureDnaBase(selectedPad_);
         writeEditValuesToApvts(engine_->readSoundEdit(selectedPad_));
+        if (preview)
+            engine_->triggerUiPad(selectedPad_, 0.9f);
     }
-    if (preview)
-        queueUiNote(36 + selectedPad_, 0.85f);
 }
 
 void DrumDesignLabAudioProcessor::loadDnaFormula(int formulaIndex)
@@ -271,8 +271,8 @@ void DrumDesignLabAudioProcessor::loadDnaFormula(int formulaIndex)
         p->setValueNotifyingHost(p->convertTo0to1(static_cast<float>(dnaFormula_)));
     if (engine_ != nullptr)
     {
+        // DNA formula is independent of Kit Style — activates 16-pad bank mode
         engine_->loadDnaFormula(dnaFormula_);
-        currentStyle_ = engine_->style();
         hasLastApplied_ = false;
         writeEditValuesToApvts(engine_->readSoundEdit(selectedPad_));
         knobsNeedPull_.store(true, std::memory_order_release);
@@ -354,10 +354,12 @@ void DrumDesignLabAudioProcessor::prepareToPlay(double sampleRate, int /*samples
     if (engine_ == nullptr)
         engine_ = std::make_unique<disklordz::MultiGenreDrumEngine>();
     engine_->prepare(sampleRate);
-    engine_->setStyle(currentStyle_);
+    if (auto* f = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter("ddl_dna_formula")))
+        dnaFormula_ = f->getIndex();
+    engine_->loadDnaFormula(dnaFormula_);
     writeEditValuesToApvts(engine_->readSoundEdit(selectedPad_));
     const float bpm = apvts.getRawParameterValue("ddl_bpm")->load();
-    samplesPerStep_ = (60.0 / static_cast<double>(juce::jmax(40.f, bpm))) * sampleRate_ * 0.25; // 16th
+    samplesPerStep_ = (60.0 / static_cast<double>(juce::jmax(40.f, bpm))) * sampleRate_ * 0.25;
 }
 
 bool DrumDesignLabAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
@@ -370,11 +372,13 @@ void DrumDesignLabAudioProcessor::setKitStyle(disklordz::KitStyle style)
 {
     currentStyle_ = style;
     if (engine_ != nullptr)
-        engine_->setStyle(style);
+        engine_->setStyle(style); // clears DNA bank mode
     if (auto* p = apvts.getParameter("ddl_kit_style"))
         p->setValueNotifyingHost(p->convertTo0to1(static_cast<float>(static_cast<int>(style))));
+    hasLastApplied_ = false;
     if (engine_ != nullptr)
         writeEditValuesToApvts(engine_->readSoundEdit(selectedPad_));
+    knobsNeedPull_.store(true, std::memory_order_release);
 }
 
 void DrumDesignLabAudioProcessor::setCurrentProgram(int index)
