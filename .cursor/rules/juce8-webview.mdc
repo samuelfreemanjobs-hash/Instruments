@@ -1,0 +1,24 @@
+---
+description: JUCE 8 WebView relay instead of LookAndFeel boilerplate
+globs: ["vst/**/*Editor.*", "Source/UI/**", "**/*Web*.cpp", "**/*Web*.h"]
+alwaysApply: false
+---
+
+# JUCE 8 WebView
+
+Factory CMake sets `JUCE_WEB_BROWSER=0`. Do not add a WebView unless the product's design spec turns that flag on and the target is JUCE 8.
+
+When it is on, bind parameters with the JUCE 8 relays. Do not invent a JUCE 6/7 `LookAndFeel` for that UI.
+
+```cpp
+juce::WebSliderRelay cutoffRelay { "cutoff" };
+juce::WebBrowserComponent web {
+    juce::WebBrowserComponent::Options{}
+        .withOptionsFrom(cutoffRelay)
+};
+// member lives as long as the relay
+juce::WebSliderParameterAttachment cutoffAttachment {
+    *apvts.getParameter("cutoff"), cutoffRelay };
+```
+
+JavaScript uses `Juce.getSliderState("cutoff")` from `juce-framework-frontend`. The same pattern exists for `WebToggleButtonRelay` and `WebComboBoxRelay`. Read `juce_WebControlRelays.h` for the target JUCE before writing a new call. Fetch JUCE docs with Context7 when the header is not in the tree.

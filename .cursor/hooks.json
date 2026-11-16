@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "python3 .cursor/hooks/guard-shell.py",
+        "matcher": "rm|git push|git tag"
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "python3 .cursor/hooks/format-cpp.py"
+      },
+      {
+        "command": "python3 .cursor/hooks/scan-secrets.py"
+      }
+    ],
+    "stop": [
+      {
+        "command": "python3 .cursor/hooks/stop-gate.py"
+      }
+    ]
+  }
+}

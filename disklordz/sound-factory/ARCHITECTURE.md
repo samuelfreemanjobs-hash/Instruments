@@ -34,5 +34,6 @@ Next product path: recipe → original WAVs → `kit_qa.py` → human audition �
 
 ## Related docs
 
-- [disklordz/website/ARCHITECTURE.md](../website/ARCHITECTURE.md)  
+- [disklordz/website/ARCHITECTURE.md](../website/ARCHITECTURE.md)
+- [disklordz/drum-engine/ARCHITECTURE.md](../drum-engine/ARCHITECTURE.md) — 24-bit / 48 kHz one-shots. Do not resample Memphis Vault to match it.  
 - [docs/DISKLORDZ_SAAS_V0.md](../../docs/DISKLORDZ_SAAS_V0.md)

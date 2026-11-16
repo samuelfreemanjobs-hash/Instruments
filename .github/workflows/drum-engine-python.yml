@@ -1,0 +1,24 @@
+name: Drum engine Python
+
+on:
+  pull_request:
+    paths:
+      - "disklordz/drum-engine/python/**"
+      - "disklordz/drum-engine/params.json"
+      - ".github/workflows/drum-engine-python.yml"
+  push:
+    branches: [main]
+    paths:
+      - "disklordz/drum-engine/python/**"
+      - "disklordz/drum-engine/params.json"
+
+jobs:
+  workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Kit, audit, preset, and preview tests
+        run: python3 disklordz/drum-engine/python/test_workflows.py

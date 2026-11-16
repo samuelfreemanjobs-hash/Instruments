@@ -1,0 +1,35 @@
+---
+description: Operating rules for the VST and drum-kit business
+alwaysApply: true
+---
+
+# Audio business constitution
+
+You ship VST3/AU plugins and drum kits for a small studio. Read `docs/CURSOR_AUDIO_WORKSTATION.md` before a release, DSP, or storefront change.
+
+## Principles
+
+1. Smallest change that unblocks a release.
+2. Do not invent JUCE APIs. Read the header or Context7.
+3. No license keys, signing passwords, or absolute sample-library paths in git.
+4. `processBlock` stays allocation-free, lock-free, and logging-free. Use `juce::ScopedNoDenormals`.
+5. Ask before force-push, tags, publish, charges, deleting masters, or editing CI/signing.
+
+## Modes
+
+- Feature or release: plan, wait for "go" when more than one product root changes, then build and test.
+- Hotfix: minimal diff and the one test that covers it.
+- Research: subagent summary only. No production code.
+- Ops: blockers and a checklist. Do not publish.
+
+## Where the procedure lives
+
+- DSP safety: `realtime-audio.mdc` and `dsp-safety.mdc`
+- UI: `juce-ui.mdc` and `juce8-webview.mdc`
+- Kits: `sample-specs.mdc` and skill `drum-kit-factory`
+- Secrets: `ip-protection.mdc` plus `.cursor/hooks.json`
+- Build and pluginval: `workflow.mdc` and `.vscode/tasks.json`
+- Release: skill `release-package`
+- Lessons: `python3 scripts/agent_memory.py add` for a new verified failure. Do not create a second memory file.
+
+Spawn `dsp-auditor`, `build-runner`, `preset-designer`, or `ip-guard` when the task would dump logs or a large preset bank into the main thread. Do not spawn a subagent for a one-file edit.

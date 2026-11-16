@@ -171,3 +171,43 @@ Factory, plugin (APC/DPCS), design-system and JUCE work. Format and rules: [MEMO
 - **evidence:** PR #130 repo_health.sh local run; git status clean only after checkout
 - **confidence:** executed
 - **status:** active
+
+### L-0018 · JUCE Oversampling factor is an exponent
+- **date:** 2026-11-16
+- **area:** disklordz/drum-engine
+- **when:** Constructing juce::dsp::Oversampling for the 808 waveshaper
+- **lesson:** The Oversampling constructor factor is the number of times the rate doubles. Factor 2 is 4x, and getOversamplingFactor() returns 4.
+- **do:** Pass factor 2 when the design asks for 4x oversampling. Assert getOversamplingFactor()==4 in DrumEngineTests.
+- **evidence:** DrumEngineTests passed after the factor-2 constructor; juce_Oversampling.h documents the doubling stages.
+- **confidence:** executed
+- **status:** active
+
+### L-0019 · Headless JUCE console apps link data_structures, not gui_basics
+- **date:** 2026-11-16
+- **area:** disklordz/drum-engine
+- **when:** Linking DrumEngineTests PropertiesFile and compiling juce_gui_basics on the cloud image
+- **lesson:** PropertiesFile is in juce_data_structures. juce_gui_basics pulls webkit2gtk and gtk+-x11, which this image does not have, and a console exporter does not need a GUI initialiser.
+- **do:** Link juce_audio_basics, juce_audio_formats, juce_dsp, and juce_data_structures. Leave juce_gui_basics off headless targets.
+- **evidence:** Drum engine link failed on PropertiesFile symbols until juce_data_structures was added; the earlier gui_basics build stopped after webkit/gtk were reported missing. DrumEngineTests then passed headless.
+- **confidence:** executed
+- **status:** active
+
+### L-0020 · pluginval 1.0.4 validates with --validate
+- **date:** 2026-11-16
+- **area:** scripts/vst
+- **when:** Wiring the Cursor pluginval task to the binary this repo downloads
+- **lesson:** Tracktion pluginval 1.0.4 takes --validate PATH. Its help text lists --data-file and --output-filename, not a --file flag. Strictness runs from 1 to 10 and defaults to 5.
+- **do:** Local tasks call --strictness-level 8 --skip-gui-tests --validate. Leave the CI default at 5. On Linux, print the cached binary with run_pluginval.py --install-only and run it under xvfb-run -a.
+- **evidence:** Fetched CommandLine.cpp from the v1.0.4 tag. run_pluginval.py --help still documents --install-only and a default strictness of 5.
+- **confidence:** inspected
+- **status:** active
+
+### L-0021 · Kit SFZ, preview pick, and stereo sub coherence
+- **date:** 2026-11-16
+- **area:** disklordz/drum-engine/python
+- **when:** Codex review of the drum-engine Python tools
+- **lesson:** SFZ sample opcodes must be relative to the SFZ file, including nested folders. pick() must return None when the token misses so later voice names still run. Sub-bass coherence has to correlate the original channels; a mono mix correlates with itself and always scores 1.
+- **do:** Assert the SFZ path resolves next to the map, that an 808 search does not steal hat.wav when kick.wav exists, and that an inverted stereo 60 Hz sine fails sub-bass phase.
+- **evidence:** test_workflows.py: 8 tests OK, including nested SFZ, inverted stereo coherence, and preview sample 0 above 0.7.
+- **confidence:** executed
+- **status:** active

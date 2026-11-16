@@ -1,0 +1,14 @@
+---
+description: DPI-aware JUCE editors and hardware-style layout
+globs: ["Source/UI/**", "vst/**/*Editor.*", "disklordz/drum-engine/include/Theme.h"]
+alwaysApply: false
+---
+
+# JUCE UI
+
+- Layout from `getLocalBounds()` in `resized()`. Do not place controls at absolute pixels that ignore scale.
+- Design size is `dlz::ui::designWidth` x `designHeight` in `Theme.h`. Support 100%, 125%, and 150% by scaling that size and laying out again.
+- Automatable controls use APVTS attachments. The editor does not process audio.
+- Meters read atomics. They do not lock and they do not poll the audio thread.
+- Filmstrips are 128 frames from `disklordz/drum-engine/python/render_filmstrip.py`. Embed them with BinaryData after the APC design phase.
+- `JUCE_VERSION` in the repo root is 7.0.12 for some targets. Root CMake fetches JUCE 8.0.15. Do not call a JUCE 8-only API on a 7.0.12 target.

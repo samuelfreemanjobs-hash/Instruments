@@ -34,6 +34,7 @@ Optional wrapper (when present):
 - Target links
 - Artifact exists, e.g.:
   - `build/<Plugin>_artefacts/Release/VST3/<Plugin>.vst3`
+- For a VST3, run pluginval 1.0.4 with `--validate` on that artefact (`--strictness-level 8` locally, `--skip-gui-tests`). On Linux, `python3 scripts/vst/run_pluginval.py --install-only` prints the binary, then run it under `xvfb-run -a`. CI still calls the script at strictness 5. A GitHub 504 on the pluginval download is infrastructure, not a DSP failure.
 
 ## On failure
 

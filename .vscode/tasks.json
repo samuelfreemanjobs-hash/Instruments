@@ -1,0 +1,67 @@
+{
+  "version": "2.0.0",
+  "inputs": [
+    {
+      "id": "vst3Path",
+      "type": "promptString",
+      "description": "Path to a .vst3 bundle",
+      "default": "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3"
+    }
+  ],
+  "tasks": [
+    {
+      "label": "Drum engine: Configure",
+      "type": "shell",
+      "command": "cmake -S disklordz/drum-engine -B disklordz/drum-engine/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "windows": {
+        "command": "cmake -S disklordz/drum-engine -B disklordz/drum-engine/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+      },
+      "group": "build",
+      "problemMatcher": ["$gcc", "$msCompile"]
+    },
+    {
+      "label": "Drum engine: Build and test",
+      "type": "shell",
+      "command": "cmake --build disklordz/drum-engine/build --config Release --parallel --target DrumEngineTests --target DrumBatchExporter && ctest --test-dir disklordz/drum-engine/build --output-on-failure -R DrumEngineTests",
+      "dependsOn": ["Drum engine: Configure"],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc", "$msCompile"]
+    },
+    {
+      "label": "JD Upgraded: Build VST3",
+      "type": "shell",
+      "command": "cmake --build build --target JDUpgraded_VST3 --config Release --parallel",
+      "group": "build",
+      "problemMatcher": ["$gcc", "$msCompile"],
+      "detail": "Uses the existing repo-root build directory. Does not copy the VST3 into the system plug-in folder."
+    },
+    {
+      "label": "pluginval: Validate VST3",
+      "type": "shell",
+      "command": "bin=$$(python3 scripts/vst/run_pluginval.py --install-only) && xvfb-run -a \"$$bin\" --strictness-level 8 --skip-gui-tests --validate \"${input:vst3Path}\"",
+      "osx": {
+        "command": "pluginval --strictness-level 8 --skip-gui-tests --validate \"${input:vst3Path}\""
+      },
+      "windows": {
+        "command": "pluginval.exe --strictness-level 8 --skip-gui-tests --validate \"${input:vst3Path}\""
+      },
+      "group": "test",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "JD Upgraded: Build and pluginval",
+      "dependsOn": ["JD Upgraded: Build VST3", "pluginval: Validate VST3"],
+      "dependsOrder": "sequence",
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}

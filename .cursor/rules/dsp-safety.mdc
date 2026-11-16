@@ -1,0 +1,17 @@
+---
+description: Denormals, NaNs, smoothing, and drum-voice phase resets
+globs: ["disklordz/drum-engine/**", "Source/DSP/**", "vst/**/Source/**"]
+alwaysApply: false
+---
+
+# DSP safety
+
+- Prefer `float` on the audio thread. Use `double` for phase or pitch envelopes that would drift, and say why in a comment.
+- After a block, debug builds may scan for NaN/Inf and clear the block. Release builds still must not produce them.
+- Nonlinear stages (`std::tanh`, waveshapers) run inside `juce::dsp::Oversampling`. On JUCE 8.0.15 the factor argument is an exponent: `2` means 4x.
+- 808/kick: hard phase reset, exponential pitch drop, a short click, then oversampled soft clip.
+- Snare: pitched body plus bandpass noise (`juce::dsp::StateVariableTPTFilter`).
+- Clap: 3–4 bursts spaced 8–15 ms, then a noise tail.
+- Hat: six non-harmonic squares at ratios 1.0, 1.483, 1.932, 2.546, 2.630, 3.897, then highpass and bandpass. Generate the squares at the oversampled rate.
+- Do not copy the example that calls `AudioBuffer::setSize` inside `process()`. The repo voices live in `disklordz/drum-engine/include/`.
+- Register every new drum voice in `MidiMaps.h` (GM: kick 36, snare 38, clap 39, closed hat 42).

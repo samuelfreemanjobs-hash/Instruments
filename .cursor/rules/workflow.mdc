@@ -1,0 +1,41 @@
+---
+description: Build, pluginval, and sample-kit checks after DSP or asset edits
+alwaysApply: true
+---
+
+# Build, validation, and kit workflow
+
+## JUCE docs
+
+When a JUCE 8 API is uncertain, add "use context7" and read the header under `build/_deps/juce-src`. Do not invent `WebSliderRelay` or `juce::dsp` signatures.
+
+## C++ verification
+
+After a change to DSP, parameters, or preset state:
+
+- Drum engine: run the **Drum engine: Build and test** task, or:
+
+```bash
+cmake -S disklordz/drum-engine -B disklordz/drum-engine/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build disklordz/drum-engine/build --config Release --parallel --target DrumEngineTests --target DrumBatchExporter
+ctest --test-dir disklordz/drum-engine/build --output-on-failure -R DrumEngineTests
+```
+
+- VST3: build that product's `*_VST3` target, then validate. pluginval 1.0.4 takes `--validate`. On Linux, resolve the binary with `python3 scripts/vst/run_pluginval.py --install-only` and run it under `xvfb-run -a`:
+
+```bash
+bin=$(python3 scripts/vst/run_pluginval.py --install-only)
+xvfb-run -a "$bin" --strictness-level 8 --skip-gui-tests --validate "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3"
+```
+
+Replace the path with the bundle you built. macOS and Windows use `pluginval` / `pluginval.exe` on `PATH` with the same flags. Do not copy the VST3 into the system plug-in folder.
+
+Strictness 8 is this local loop. CI and `scripts/vst/run_pluginval.py` stay at strictness 5. A crash, an audio-thread allocation, or a failure at level 5 is a stop. A failure only above level 5 is a finding: report it, and do not change the CI default. An HTTP 504 while downloading pluginval is infrastructure. Re-run the download. It is not a DSP regression.
+
+Keep `compile_commands.json` for the target you edited. Drum engine: `disklordz/drum-engine/build/compile_commands.json`. Leave the repo `.clangd` on `MyFirstPlugin/build`.
+
+## Sample kits
+
+Use `python3 disklordz/drum-engine/python/process_kit.py`. Do not add a second normalizer on `soundfile`, `numpy`, or `scipy`. Those libraries are for a local venv analysis that `pcmio.py` cannot do, and they stay out of the CI gate.
+
+Follow `sample-specs.mdc`: new one-shots are mono 24-bit 48 kHz at -0.3 dBFS, named `Brand_Kit_Type_01_Note.wav`. Loops peak at -1.0 dBFS. Memphis Vault stays 44.1 kHz / 16-bit.

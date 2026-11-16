@@ -1,0 +1,15 @@
+---
+description: Drum-kit sample rate, peak, fades, and filenames
+globs: ["disklordz/drum-engine/python/**", "disklordz/sound-factory/**", ".cursor/skills/**/scripts/**"]
+alwaysApply: false
+---
+
+# Sample specs
+
+- New commercial one-shots: mono WAV, 24-bit, 48 kHz, peak -0.3 dBFS, leading silence trimmed on a zero crossing.
+- Loops: peak -1.0 dBFS so a later limiter has headroom.
+- Memphis Vault and other packs that already pass `kit_qa.py` stay 44.1 kHz / 16-bit mono. Do not resample that SKU and keep the same name.
+- Names: `Brand_Kit_Type_01_Note.wav` (example `DLZ_808Lab_808_01_G1.wav`).
+- Write a new WAV. Do not copy DAW metadata chunks forward.
+- `qa.json` can pass while a human still has to audition the kit before it is for sale.
+- Prototype new synthesis in Python, then port the math into `disklordz/drum-engine`. Do not prototype inside `processBlock`.

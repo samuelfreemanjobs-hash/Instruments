@@ -1,0 +1,14 @@
+---
+description: Offline license checks that stay off the audio thread
+globs: ["disklordz/drum-engine/include/LicenseManager.h", "disklordz/website/**/stripe/**", "**/*license*"]
+alwaysApply: false
+---
+
+# Licensing
+
+- The audio thread may only load `LicenseManager::allowsProcessing()`. No `juce::URL`, no `PropertiesFile`, no lock.
+- `requestActivation()` returns false on the audio thread. Network and disk run on `juce::Thread`.
+- A cached token is valid for 14 days offline (`evaluateLicense`). No token fails closed.
+- Webhooks verify the signature on the raw body, compare in constant time, and are idempotent on the provider event id.
+- Do not delete a license row on refund. Suspend it so the audit trail remains.
+- Default activation budget is 2 machines. The module does not phone home unless an endpoint string is passed in.
