@@ -72,7 +72,10 @@ DrumVoiceManager (32 preallocated ThreeLayerVoice slots, choke groups, 2.5 ms de
 | `Source/Export/WavExporter.h` | 16-bit stereo WAV writer + peak/DC/NaN QA |
 | `Source/DNA/HyperDNAMorph.h` | 5-node 2D XY morph + single-pass log ratio & locks |
 | `Source/Lab/IntelligentDrumLab.h` | Prompt → deterministic recipe batch → QA/rank/name (AI models optional, off-RT) |
-| `Source/Plugin/PluginProcessor.*` | JUCE shell — **not verified in M1** (`DISKLORDZ_BUILD_JUCE_PLUGIN=OFF`) |
+| `Source/Presets/GenreBankLibrary.h` | 32 DNA formula catalog (Bang / Hitmaker / MelodyMotion / SouthernTriumph) |
+| `Source/Factory/KitFactory.h` | Offline kit pack exporter (family folders, variations, MANIFEST.json) |
+| `Source/Factory/SoundEditBridge.h` | Focused-pad / voice-family sound edits → DrumRecipe or genre-engine params |
+| `Source/Plugin/PluginProcessor.*` | JUCE shell — kit style, pad select, APVTS sound knobs → engine |
 
 ## 6. Extension Points
 

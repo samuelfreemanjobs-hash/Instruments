@@ -9,6 +9,7 @@
 #include "TayKeithMemphisEngine.h"
 #include "ToompDrumEngine.h"
 #include "Purps808MafiaEngine.h"
+#include "../Factory/SoundEditBridge.h"
 #include "../Presets/GenreBankLibrary.h"
 #include "../Presets/HitmakerBank.h"
 #include "../Presets/MelodyMotionBank.h"
@@ -111,35 +112,43 @@ public:
             useFusionBass_ = false;
             break;
         case KitStyle::OpiumCarti:
-            opium_.setParams(opium::presetStopBreathing());
+            opiumParams_ = opium::presetStopBreathing();
+            opium_.setParams(opiumParams_);
             useFusionBass_ = false;
             break;
         case KitStyle::DrakeFutureOvo:
-            ovo_.setParams(ovofreebandz::makePreset("40 Underwater"));
+            ovoParams_ = ovofreebandz::makePreset("40 Underwater");
+            ovo_.setParams(ovoParams_);
             useFusionBass_ = false;
             break;
         case KitStyle::SgpRaider:
-            sgp_.setParams(sgp::presetMysteriousPhonk());
+            sgpParams_ = sgp::presetMysteriousPhonk();
+            sgp_.setParams(sgpParams_);
             useFusionBass_ = false;
             break;
         case KitStyle::JuicySp1200:
-            juicy_.setParams(juicysp::presetBlacklandRadio());
+            juicyParams_ = juicysp::presetBlacklandRadio();
+            juicy_.setParams(juicyParams_);
             useFusionBass_ = false;
             break;
         case KitStyle::ShawtyRedd:
-            shawty_.setParams(shawtyredd::presetTrapOrDie());
+            shawtyParams_ = shawtyredd::presetTrapOrDie();
+            shawty_.setParams(shawtyParams_);
             useFusionBass_ = false;
             break;
         case KitStyle::TayKeithMemphis:
-            taykeith_.setParams(taykeith::presetNonstopClub());
+            taykeithParams_ = taykeith::presetNonstopClub();
+            taykeith_.setParams(taykeithParams_);
             useFusionBass_ = false;
             break;
         case KitStyle::DjToompAtlanta:
-            toomp_.setParams(toomp::presetTrapMuzik());
+            toompParams_ = toomp::presetTrapMuzik();
+            toomp_.setParams(toompParams_);
             useFusionBass_ = false;
             break;
         case KitStyle::Purps808Mafia:
-            purps_.setParams(purps::presetGrapeful());
+            purpsParams_ = purps::presetGrapeful();
+            purps_.setParams(purpsParams_);
             useFusionBass_ = false;
             break;
         default:
@@ -150,6 +159,155 @@ public:
     KitStyle style() const noexcept { return style_; }
     const KitProgram& kit() const noexcept { return kit_; }
     int dnaFormulaIndex() const noexcept { return dnaFormulaIndex_; }
+
+    bool usesThreeLayerPads() const noexcept
+    {
+        switch (style_)
+        {
+        case KitStyle::CinematicShadows:
+        case KitStyle::HitmakerEarthquake:
+        case KitStyle::MelodyMotionRichBounce:
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    sound_edit::Values readSoundEdit(int padIndex) const noexcept
+    {
+        const int p = (padIndex < 0) ? 0 : (padIndex % static_cast<int>(KitProgram::kPadCount));
+        if (usesThreeLayerPads())
+            return sound_edit::fromRecipe(kit_.pads[static_cast<size_t>(p)].recipe,
+                                          kit_.pads[static_cast<size_t>(p)].padGain);
+        // Specialty engines: synthesize Values from active engine params for the pad family
+        sound_edit::Values v;
+        switch (style_)
+        {
+        case KitStyle::TayKeithMemphis:
+            v.subHz = taykeithParams_.subFreq;
+            v.punchHz = taykeithParams_.knockHz;
+            v.sweepMs = taykeithParams_.knockMs;
+            v.decayMs = taykeithParams_.subDecayMs;
+            v.drive01 = sound_edit::clamp((taykeithParams_.drive - 0.5f) / 5.5f, 0.f, 1.f);
+            v.width01 = taykeithParams_.stereoWidth;
+            v.padGain = taykeithParams_.outputGain;
+            break;
+        case KitStyle::DjToompAtlanta:
+            v.subHz = toompParams_.subFreq;
+            v.decayMs = toompParams_.subDecayMs;
+            v.sweepMs = toompParams_.pitchEnvDecayMs;
+            v.drive01 = toompParams_.masterKnockDrive;
+            v.dirt01 = toompParams_.mpcDrive;
+            v.width01 = toompParams_.stereoWidth;
+            v.padGain = toompParams_.outputGain;
+            break;
+        case KitStyle::Purps808Mafia:
+            v.subHz = purpsParams_.subFreq;
+            v.punchHz = purpsParams_.knockHz;
+            v.sweepMs = purpsParams_.knockMs;
+            v.decayMs = purpsParams_.subDecayMs;
+            v.drive01 = sound_edit::clamp((purpsParams_.preDrive - 0.5f) / 5.5f, 0.f, 1.f);
+            v.dirt01 = purpsParams_.hardClip;
+            v.width01 = purpsParams_.stereoWidth;
+            v.padGain = purpsParams_.outputGain;
+            break;
+        case KitStyle::OpiumCarti:
+            v.subHz = opiumParams_.subFreq;
+            v.punchHz = opiumParams_.knockFreq;
+            v.decayMs = opiumParams_.subDecayMs;
+            v.drive01 = sound_edit::clamp((opiumParams_.blowOutDrive - 0.5f) / 5.5f, 0.f, 1.f);
+            v.dirt01 = opiumParams_.wavefoldAmt;
+            v.padGain = opiumParams_.outputGain;
+            break;
+        case KitStyle::DrakeFutureOvo:
+            v.subHz = ovoParams_.subFreq;
+            v.punchHz = ovoParams_.punchFreq;
+            v.sweepMs = ovoParams_.punchDecayMs;
+            v.decayMs = ovoParams_.subDecayMs;
+            v.drive01 = sound_edit::clamp((ovoParams_.gritDrive - 0.5f) / 5.5f, 0.f, 1.f);
+            v.grit01 = ovoParams_.ovoUnderwaterMacro;
+            v.width01 = ovoParams_.stereoWidth;
+            v.padGain = ovoParams_.outputGain;
+            break;
+        case KitStyle::SgpRaider:
+            v.subHz = sgpParams_.subFreq;
+            v.punchHz = sgpParams_.knockFreq;
+            v.decayMs = sgpParams_.subDecayMs;
+            v.drive01 = sound_edit::clamp((sgpParams_.subWarmth - 0.5f) / 5.5f, 0.f, 1.f);
+            v.grit01 = sgpParams_.cassetteGrit;
+            v.reverb01 = sgpParams_.darkReverbMix;
+            v.padGain = sgpParams_.outputGain;
+            break;
+        case KitStyle::JuicySp1200:
+            v.subHz = juicyParams_.subFreq;
+            v.punchHz = juicyParams_.kickPunchHz;
+            v.decayMs = juicyParams_.subDecayMs;
+            v.drive01 = sound_edit::clamp((juicyParams_.tapeSaturation - 0.5f) / 5.5f, 0.f, 1.f);
+            v.cutoffHz = juicyParams_.ssm2044CutoffHz;
+            v.padGain = juicyParams_.outputGain;
+            break;
+        case KitStyle::ShawtyRedd:
+            v.subHz = shawtyParams_.subFreq;
+            v.punchHz = shawtyParams_.kickAttackHz;
+            v.decayMs = shawtyParams_.subDecayMs;
+            v.drive01 = sound_edit::clamp((shawtyParams_.tubeDrive - 0.5f) / 5.5f, 0.f, 1.f);
+            v.width01 = shawtyParams_.stereoWidth;
+            v.padGain = shawtyParams_.outputGain;
+            break;
+        default:
+            break;
+        }
+        return v;
+    }
+
+    /** Message-thread / non-RT: edit focused pad (ThreeLayer) or voice family (specialty engines). */
+    void applySoundEdit(int padIndex, const sound_edit::Values& values) noexcept
+    {
+        const int p = (padIndex < 0) ? 0 : (padIndex % static_cast<int>(KitProgram::kPadCount));
+        if (usesThreeLayerPads())
+        {
+            sound_edit::applyToRecipe(kit_.pads[static_cast<size_t>(p)].recipe, values);
+            kit_.pads[static_cast<size_t>(p)].padGain = sound_edit::clamp(values.padGain, 0.1f, 2.f);
+            return;
+        }
+        switch (style_)
+        {
+        case KitStyle::TayKeithMemphis:
+            sound_edit::applyToTayKeith(taykeithParams_, p, values);
+            taykeith_.setParams(taykeithParams_);
+            break;
+        case KitStyle::DjToompAtlanta:
+            sound_edit::applyToToomp(toompParams_, p, values);
+            toomp_.setParams(toompParams_);
+            break;
+        case KitStyle::Purps808Mafia:
+            sound_edit::applyToPurps(purpsParams_, p, values);
+            purps_.setParams(purpsParams_);
+            break;
+        case KitStyle::OpiumCarti:
+            sound_edit::applyToOpium(opiumParams_, p, values);
+            opium_.setParams(opiumParams_);
+            break;
+        case KitStyle::DrakeFutureOvo:
+            sound_edit::applyToOvo(ovoParams_, p, values);
+            ovo_.setParams(ovoParams_);
+            break;
+        case KitStyle::SgpRaider:
+            sound_edit::applyToSgp(sgpParams_, p, values);
+            sgp_.setParams(sgpParams_);
+            break;
+        case KitStyle::JuicySp1200:
+            sound_edit::applyToJuicy(juicyParams_, p, values);
+            juicy_.setParams(juicyParams_);
+            break;
+        case KitStyle::ShawtyRedd:
+            sound_edit::applyToShawty(shawtyParams_, p, values);
+            shawty_.setParams(shawtyParams_);
+            break;
+        default:
+            break;
+        }
+    }
 
     /** Load any of the 32 DNA formula kits into the ThreeLayer pad map (live + offline). */
     void loadDnaFormula(int formulaIndex) noexcept
@@ -317,6 +475,15 @@ private:
     taykeith::TayKeithMemphisEngine taykeith_;
     toomp::ToompDrumEngine toomp_;
     purps::Purps808MafiaEngine purps_;
+
+    opium::OpiumParams opiumParams_ {};
+    ovofreebandz::DrakeFutureParams ovoParams_ {};
+    sgp::SgpParams sgpParams_ {};
+    juicysp::JuicySp1200Params juicyParams_ {};
+    shawtyredd::ShawtyReddParams shawtyParams_ {};
+    taykeith::TayKeithParams taykeithParams_ {};
+    toomp::ToompParams toompParams_ {};
+    purps::PurpsParams purpsParams_ {};
 };
 
 } // namespace disklordz
