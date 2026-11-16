@@ -85,3 +85,6 @@ DrumVoiceManager (32 preallocated ThreeLayerVoice slots, choke groups, 2.5 ms de
 
 - APC Constitution & Specs: `../../plugins/DrumDesignLab/DPCS_PHASE0_CONSTITUTION.md`, `../../plugins/DrumDesignLab/.ideas/`
 - Repo Architecture Index: `../../ARCHITECTURE.md`
+- Agent skills: `.cursor/skills/drum-design-lab/`, `genre-drum-engine/`, `intelligent-drum-lab/`, `overnight-kit-agent/`, `ddl-standalone-build/`
+- Intelligent Lab: `docs/INTELLIGENT_DRUM_LAB.md`
+- Overnight harness: `../../overnight-agent/ARCHITECTURE.md`
