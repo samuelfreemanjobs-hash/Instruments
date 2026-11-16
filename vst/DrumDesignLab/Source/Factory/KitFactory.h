@@ -294,7 +294,7 @@ inline ExportResult exportKitProgram(const KitProgram& kitIn, const fs::path& ou
     std::vector<std::string> relativeFiles;
     for (int v = 0; v < vars; ++v)
     {
-        auto kit = mutateKitSeeds(kitIn, v, 0xLIVE0001ULL);
+        auto kit = mutateKitSeeds(kitIn, v, 0xD15C0001ULL);
         for (int pad = 0; pad < static_cast<int>(KitProgram::kPadCount); ++pad)
         {
             const auto& recipe = kit.pads[static_cast<size_t>(pad)].recipe;
