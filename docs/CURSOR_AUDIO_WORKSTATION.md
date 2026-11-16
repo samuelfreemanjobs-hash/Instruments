@@ -10,7 +10,7 @@ How this repo turns Cursor into the VST and drum-kit workbench. Components live 
 | Rules | `.cursor/rules/*.mdc` | DSP, UI, WebView, samples, licensing, IP, release |
 | Skills | `.cursor/skills/*/SKILL.md` | `/drum-kit-factory`, `/drum-synth-dsp`, `/release-package`, and the rest |
 | Commands | `.cursor/commands/*.md` | `/new-voice`, `/prep-kit`, `/bump-version`, `/hotfix`, `/weekly-ops` |
-| Subagents | `.cursor/agents/*.md` | `dsp-auditor`, `preset-designer`, `build-runner`, `ip-guard`, `release-engineer` |
+| Subagents | `.cursor/agents/*.md` | `dsp-auditor`, `dsp-reviewer`, `preset-designer`, `build-runner`, `ip-guard`, `release-engineer` |
 | Hooks | `.cursor/hooks.json` | Format drum-engine C++, block destructive shell, flag secrets |
 | MCP | `.cursor/mcp.json` | Supabase, Stripe, Context7, Playwright |
 | Editor | `.vscode/extensions.json` | clangd, CMake Tools, Hex Editor, WAV Preview |
