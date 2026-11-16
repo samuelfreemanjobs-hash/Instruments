@@ -96,12 +96,15 @@ public:
     void setStyle(KitStyle style) noexcept
     {
         style_ = style;
+        dnaBankActive_ = false;
         reset();
+        // Fallthrough kit so unused specialty pads still click
+        kit_ = makeDefault16PadKit(cinematic::Mood::Dark);
+        useFusionBass_ = false;
         switch (style_)
         {
         case KitStyle::CinematicShadows:
             kit_ = makeDefault16PadKit(cinematic::Mood::Dark);
-            useFusionBass_ = false;
             break;
         case KitStyle::HitmakerEarthquake:
             kit_ = hitmaker::makeKit(hitmaker::Bank::Earthquake);
@@ -161,8 +164,12 @@ public:
     const KitProgram& kit() const noexcept { return kit_; }
     int dnaFormulaIndex() const noexcept { return dnaFormulaIndex_; }
 
+    bool dnaBankActive() const noexcept { return dnaBankActive_; }
+
     bool usesThreeLayerPads() const noexcept
     {
+        if (dnaBankActive_)
+            return true;
         switch (style_)
         {
         case KitStyle::CinematicShadows:
@@ -172,6 +179,45 @@ public:
         default:
             return false;
         }
+    }
+
+    /** GM-ish MIDI for each UI pad — used by specialty engines. */
+    static int padToMidi(int padIndex) noexcept
+    {
+        static constexpr int kMap[16] = {
+            36, 37, 38, 39, 40, 41, 42, 43,
+            44, 45, 46, 47, 36, 51, 40, 49
+        };
+        if (padIndex < 0 || padIndex >= 16)
+            return 36;
+        return kMap[padIndex];
+    }
+
+    /** Trigger from UI pad grid — DNA banks always hit ThreeLayer; engines map MIDI + fallthrough. */
+    void triggerUiPad(int padIndex, float velocity01) noexcept
+    {
+        const int p = (padIndex < 0) ? 0 : (padIndex % 16);
+        const float vel = velocity01 <= 0.f ? 0.05f : velocity01;
+        if (dnaBankActive_ || usesThreeLayerPads())
+        {
+            // Hitmaker DNA / ThreeLayer: fusion only on 808 pad (4), not Kick (0)
+            if (useFusionBass_ && p == 4)
+            {
+                fusion_.noteOnMidi(padToMidi(p), vel,
+                                   genre_bank::usesFusionBass(dnaFormulaIndex_)
+                                       ? genre_bank::fusionForFormula(dnaFormulaIndex_).rootHz
+                                       : hitmaker::fusionFor(hitmaker::Bank::Earthquake).rootHz);
+                return;
+            }
+            threeLayer_.triggerPad(kit_, p, vel);
+            return;
+        }
+
+        const int midi = padToMidi(p);
+        handleMidiNote(midi, vel);
+        // Specialty engines ignore many pads — also fire ThreeLayer fallthrough kit
+        if (p != 0 && p != 2 && p != 4 && p != 6 && p != 10 && p != 3 && p != 1)
+            threeLayer_.triggerPad(kit_, p, vel * 0.9f);
     }
 
     sound_edit::Values readSoundEdit(int padIndex) const noexcept
@@ -369,38 +415,44 @@ public:
     }
 
     /** Load any of the 32 DNA formula kits into the ThreeLayer pad map (live + offline). */
+    /** Load one of 32 DNA banks — independent from Kit Style (engine) selector. */
     void loadDnaFormula(int formulaIndex) noexcept
     {
         dnaFormulaIndex_ = formulaIndex % genre_bank::kFormulaCount;
         if (dnaFormulaIndex_ < 0)
             dnaFormulaIndex_ = 0;
-        kit_ = genre_bank::makeFormulaKit(dnaFormulaIndex_);
-        useFusionBass_ = genre_bank::usesFusionBass(dnaFormulaIndex_);
-        if (useFusionBass_)
-            fusion_.setParams(genre_bank::fusionForFormula(dnaFormulaIndex_));
-        // Prefer ThreeLayer/Fusion path for DNA kits
-        switch (genre_bank::formulaAt(dnaFormulaIndex_).line)
-        {
-        case genre_bank::Line::Hitmaker:
-            style_ = KitStyle::HitmakerEarthquake;
-            break;
-        case genre_bank::Line::MelodyMotion:
-            style_ = KitStyle::MelodyMotionRichBounce;
-            break;
-        default:
-            style_ = KitStyle::CinematicShadows;
-            break;
-        }
+        dnaBankActive_ = true;
         reset();
         kit_ = genre_bank::makeFormulaKit(dnaFormulaIndex_);
+        useFusionBass_ = genre_bank::usesFusionBass(dnaFormulaIndex_);
         if (useFusionBass_)
             fusion_.setParams(genre_bank::fusionForFormula(dnaFormulaIndex_));
         hasDnaBase_ = false;
         captureDnaBase(0);
     }
 
+    /** Leave DNA bank mode and return to Kit Style engine routing. */
+    void clearDnaBankMode() noexcept
+    {
+        dnaBankActive_ = false;
+        setStyle(style_);
+    }
+
     void handleMidiNote(int midiNote, float velocity01) noexcept
     {
+        // DNA bank mode: always 16-pad ThreeLayer kit (fusion only for melodic 808 range)
+        if (dnaBankActive_)
+        {
+            if (useFusionBass_ && midiNote >= 48 && midiNote <= 72)
+            {
+                fusion_.noteOnMidi(midiNote, velocity01, genre_bank::fusionForFormula(dnaFormulaIndex_).rootHz);
+                return;
+            }
+            if (midiNote >= 36 && midiNote <= 51)
+                threeLayer_.triggerPad(kit_, midiNote - 36, velocity01);
+            return;
+        }
+
         switch (style_)
         {
         case KitStyle::OpiumCarti:
@@ -428,19 +480,18 @@ public:
             purps_.handleMidiNote(midiNote, velocity01);
             return;
         case KitStyle::HitmakerEarthquake:
-            if (useFusionBass_ && (midiNote == 36 || (midiNote >= 48 && midiNote <= 72)))
+            // Do NOT steal Kick (MIDI 36) — only 808 pad (40) + melodic range
+            if (useFusionBass_ && (midiNote == 40 || (midiNote >= 48 && midiNote <= 72)))
             {
                 const auto fp = hitmaker::fusionFor(hitmaker::Bank::Earthquake);
                 fusion_.noteOnMidi(midiNote, velocity01, fp.rootHz);
                 return;
             }
-            // fall through to pad map for snare/hats/etc.
             break;
         default:
             break;
         }
 
-        // Three-layer pad map: MIDI 36–51 → pads 0–15
         if (midiNote >= 36 && midiNote <= 51)
             threeLayer_.triggerPad(kit_, midiNote - 36, velocity01);
     }
@@ -448,34 +499,37 @@ public:
     void renderTick(float& outL, float& outR) noexcept
     {
         outL = outR = 0.0f;
-        switch (style_)
+        if (! dnaBankActive_)
         {
-        case KitStyle::OpiumCarti:
-            opium_.renderTick(outL, outR);
-            return;
-        case KitStyle::DrakeFutureOvo:
-            ovo_.renderTick(outL, outR);
-            return;
-        case KitStyle::SgpRaider:
-            sgp_.renderTick(outL, outR);
-            return;
-        case KitStyle::JuicySp1200:
-            juicy_.renderTick(outL, outR);
-            return;
-        case KitStyle::ShawtyRedd:
-            shawty_.renderTick(outL, outR);
-            return;
-        case KitStyle::TayKeithMemphis:
-            taykeith_.renderTick(outL, outR);
-            return;
-        case KitStyle::DjToompAtlanta:
-            toomp_.renderTick(outL, outR);
-            return;
-        case KitStyle::Purps808Mafia:
-            purps_.renderTick(outL, outR);
-            return;
-        default:
-            break;
+            switch (style_)
+            {
+            case KitStyle::OpiumCarti:
+                opium_.renderTick(outL, outR);
+                return;
+            case KitStyle::DrakeFutureOvo:
+                ovo_.renderTick(outL, outR);
+                return;
+            case KitStyle::SgpRaider:
+                sgp_.renderTick(outL, outR);
+                return;
+            case KitStyle::JuicySp1200:
+                juicy_.renderTick(outL, outR);
+                return;
+            case KitStyle::ShawtyRedd:
+                shawty_.renderTick(outL, outR);
+                return;
+            case KitStyle::TayKeithMemphis:
+                taykeith_.renderTick(outL, outR);
+                return;
+            case KitStyle::DjToompAtlanta:
+                toomp_.renderTick(outL, outR);
+                return;
+            case KitStyle::Purps808Mafia:
+                purps_.renderTick(outL, outR);
+                return;
+            default:
+                break;
+            }
         }
 
         float fusL = 0.f, fusR = 0.f;
@@ -524,6 +578,7 @@ private:
     KitProgram kit_ {};
     bool useFusionBass_ = true;
     int dnaFormulaIndex_ = 8; // hitmaker_earthquake
+    bool dnaBankActive_ = false;
 
     DrumVoiceManager threeLayer_;
     hitmaker::Multi808FusionReactor fusion_;
