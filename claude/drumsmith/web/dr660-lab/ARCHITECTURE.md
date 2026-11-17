@@ -38,7 +38,7 @@ Browser audio thread is owned by Web Audio. UI never calls `setTimeout` for *aud
 
 | Path | Role |
 |------|------|
-| `index.html` | 4-section workspace shell |
+| `index.html` | Single-rack UI: transport, 16-step grid, FX mixer |
 | `js/Sequencer.js` | Lookahead clock, swing, catch-up, pattern, velocity |
 | `js/DrumEngine.js` | Lightweight synth one-shots + stopAll |
 | `js/MasterChain.js` | `MemphisFXBus` — HPF → bitcrush → LPF → cassette → tape delay |
@@ -46,7 +46,7 @@ Browser audio thread is owned by Web Audio. UI never calls `setTimeout` for *aud
 | `js/cassetteCurve.js` | Soft-clip tape WaveShaper curves |
 | `js/bitcrush-processor.js` | AudioWorklet 12-bit + downsample |
 | `js/app.js` | Wire UI ↔ audio |
-| `css/lab.css` | Console layout |
+| `css/lab.css` | Obsidian/gunmetal + burgundy rack styling |
 | `tests/sequencer_math.test.mjs` | Swing / 16th / catch-up |
 | `tests/cassette_curve.test.mjs` | Cassette curve shape |
 

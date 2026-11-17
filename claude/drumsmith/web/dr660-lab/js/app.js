@@ -4,6 +4,54 @@ import { MasterChain } from './MasterChain.js';
 
 const TRACKS = ['kick', 'snare', 'rim', 'chh', 'ohh', 'cowbell', 'perc1', 'perc2'];
 
+/** FX rack presets — maps to MasterChain UI params */
+const FX_PRESETS = {
+  stock12Bit: {
+    cassette: 0.25,
+    cutoff: 12000,
+    reso: 0.7,
+    bits: 12,
+    downsample: 2,
+    crushMix: 0.55,
+    delayWet: 0.15,
+    delayMs: 280,
+    delayFb: 0.25,
+  },
+  classicSampler: {
+    cassette: 0.35,
+    cutoff: 7800,
+    reso: 1.8,
+    bits: 12,
+    downsample: 6,
+    crushMix: 0.9,
+    delayWet: 0.22,
+    delayMs: 320,
+    delayFb: 0.35,
+  },
+  warmCassette: {
+    cassette: 0.72,
+    cutoff: 6200,
+    reso: 1.0,
+    bits: 14,
+    downsample: 3,
+    crushMix: 0.45,
+    delayWet: 0.4,
+    delayMs: 420,
+    delayFb: 0.55,
+  },
+  undergroundMemphis: {
+    cassette: 0.55,
+    cutoff: 9500,
+    reso: 1.2,
+    bits: 12,
+    downsample: 4,
+    crushMix: 0.85,
+    delayWet: 0.35,
+    delayMs: 375,
+    delayFb: 0.45,
+  },
+};
+
 /** Dummy context so we can edit patterns before a user gesture. */
 function makePlaceholderCtx() {
   return {
@@ -57,6 +105,10 @@ async function ensureAudio() {
   master.syncDelayToBpm(seq.bpm);
 }
 
+function setRange(id, value) {
+  /** @type {HTMLInputElement} */ (document.getElementById(id)).value = String(value);
+}
+
 function applyFxFromUi() {
   if (!master) return;
   master.setDrive(Number(/** @type {HTMLInputElement} */ (document.getElementById('cassette')).value));
@@ -68,6 +120,7 @@ function applyFxFromUi() {
   master.setBitcrush(bits, down, mix);
   document.getElementById('bits-val').textContent = String(bits);
   document.getElementById('down-val').textContent = `${down}×`;
+  document.getElementById('cutoff-val').textContent = `${/** @type {HTMLInputElement} */ (document.getElementById('cutoff')).value} Hz`;
 
   const delayMs = Number(/** @type {HTMLInputElement} */ (document.getElementById('delay-ms')).value);
   const feedback = Number(/** @type {HTMLInputElement} */ (document.getElementById('delay-fb')).value);
@@ -80,9 +133,28 @@ function applyFxFromUi() {
   document.getElementById('delay-wet-val').textContent = wet.toFixed(2);
 }
 
+/** @param {keyof typeof FX_PRESETS} name */
+function loadFxPreset(name) {
+  const p = FX_PRESETS[name];
+  if (!p) return;
+  setRange('cassette', p.cassette);
+  setRange('cutoff', p.cutoff);
+  setRange('reso', p.reso);
+  setRange('bits', p.bits);
+  setRange('downsample', p.downsample);
+  setRange('crush-mix', p.crushMix);
+  setRange('delay-wet', p.delayWet);
+  setRange('delay-ms', p.delayMs);
+  setRange('delay-fb', p.delayFb);
+  document.querySelectorAll('[data-fx-preset]').forEach((btn) => {
+    btn.classList.toggle('active', btn.getAttribute('data-fx-preset') === name);
+  });
+  applyFxFromUi();
+}
+
 function paintPlayhead(step) {
-  document.querySelectorAll('.cell').forEach((el) => {
-    el.classList.toggle('now', Number(el.dataset.step) === step);
+  document.querySelectorAll('.step-btn').forEach((el) => {
+    el.classList.toggle('is-playing', Number(el.dataset.step) === step);
   });
 }
 
@@ -104,22 +176,27 @@ function renderGrid() {
   for (const track of TRACKS) {
     const row = document.createElement('div');
     row.className = 'grid-row';
+    row.dataset.track = track;
     const label = document.createElement('span');
-    label.className = 'trk';
+    label.className = 'track-label';
     label.textContent = track;
     row.appendChild(label);
     for (let s = 0; s < 16; s += 1) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'cell';
+      btn.className = 'step-btn';
       btn.dataset.track = track;
       btn.dataset.step = String(s);
       const vel = seq.pattern[track][s];
+      btn.dataset.velocity = String(vel);
       btn.dataset.vel = vel === 0 ? 'off' : vel < 1 ? 'ghost' : 'accent';
+      if (vel > 0) btn.classList.add('is-active');
       btn.addEventListener('click', async () => {
         await ensureAudio();
         const next = seq.toggleStep(track, s);
+        btn.dataset.velocity = String(next);
         btn.dataset.vel = next === 0 ? 'off' : next < 1 ? 'ghost' : 'accent';
+        btn.classList.toggle('is-active', next > 0);
       });
       row.appendChild(btn);
     }
@@ -140,7 +217,7 @@ function bind() {
     if (master && /** @type {HTMLInputElement} */ (document.getElementById('delay-sync')).checked) {
       master.syncDelayToBpm(seq.bpm);
       const ms = Math.round(master.tapeDelay.delayNode.delayTime.value * 1000);
-      /** @type {HTMLInputElement} */ (document.getElementById('delay-ms')).value = String(ms);
+      setRange('delay-ms', ms);
       document.getElementById('delay-ms-val').textContent = `${ms} ms`;
     }
   });
@@ -153,31 +230,28 @@ function bind() {
     syncControlsFromSeq();
     renderGrid();
   });
+
   for (const id of ['cassette', 'cutoff', 'reso', 'bits', 'downsample', 'crush-mix', 'delay-ms', 'delay-fb', 'delay-wet']) {
     document.getElementById(id).addEventListener('input', async () => {
       await ensureAudio();
       applyFxFromUi();
-      const hz = /** @type {HTMLInputElement} */ (document.getElementById('cutoff')).value;
-      document.getElementById('cutoff-val').textContent = `${hz} Hz`;
     });
   }
+
   document.getElementById('delay-sync').addEventListener('change', async (e) => {
     await ensureAudio();
     if (/** @type {HTMLInputElement} */ (e.target).checked && master) {
       master.syncDelayToBpm(seq.bpm);
       const ms = Math.round(master.tapeDelay.delayNode.delayTime.value * 1000);
-      /** @type {HTMLInputElement} */ (document.getElementById('delay-ms')).value = String(ms);
+      setRange('delay-ms', ms);
       document.getElementById('delay-ms-val').textContent = `${ms} ms`;
     }
   });
 
-  document.querySelectorAll('[data-section-btn]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const id = btn.getAttribute('data-section-btn');
-      document.querySelectorAll('[data-section-btn]').forEach((b) => b.classList.toggle('on', b === btn));
-      document.querySelectorAll('[data-section]').forEach((panel) => {
-        panel.classList.toggle('on', panel.getAttribute('data-section') === id);
-      });
+  document.querySelectorAll('[data-fx-preset]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      await ensureAudio();
+      loadFxPreset(/** @type {keyof typeof FX_PRESETS} */ (btn.getAttribute('data-fx-preset')));
     });
   });
 
