@@ -1,6 +1,7 @@
 # Kit spec — Converter Night (CNV)
 
-**Intake:** `intake-answers.md` · **R2P:** `R2P.md` · **SKU:** CNV  
+**Store title (locked):** **Converter Night** · **SKU:** CNV · see `PRODUCT.md`  
+**Intake:** `intake-answers.md` · **R2P:** `R2P.md`  
 **Generated:** 2026-11-17 · DRUMSMITH W1 product design  
 **Ship status:** **DRAFT** — `release_ready=false` until RELEASE_GATE HITL
 

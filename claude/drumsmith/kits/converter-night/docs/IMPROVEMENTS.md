@@ -27,7 +27,7 @@ Until then RATE stays **technique-led** with TR-808 lofi + DR-5 proxies.
 | 5 | **Archetype MIDI packs** | Ship groove MIDI next to loops for DAW users | research ready — `RESEARCH_MEMPHIS_TOP20.md`; impl queued |
 | 6 | **SP-1200 / Drumulator refs** | Lock BIT12 honesty | blocked — WAV missing |
 | 7 | **HITL listening pass** | Price/cover/ear — only path to `release_ready` | open |
-| 8 | **Product rename** | Still awaiting locked store title | blocked — need title |
+| 8 | **Product rename** | Lock commercial store title | **done** — **Converter Night** (`PRODUCT.md`) |
 
 ## Already shipped
 

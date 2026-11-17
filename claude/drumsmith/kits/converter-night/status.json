@@ -1,6 +1,7 @@
 {
   "sku": "CNV",
   "title": "Converter Night",
+  "store_title_locked": true,
   "path": "claude/drumsmith/kits/converter-night",
   "phase": "W3_verify",
   "status": "draft",
