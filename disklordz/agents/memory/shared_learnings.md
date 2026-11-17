@@ -161,3 +161,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** PR #165 Codex P2 + commit 33e72745; node --test 10/10
 - **confidence:** executed
 - **status:** active
+
+### L-0017 · Elite phonk kit: parallel RAW/TAPE/LOFI + BPM mini-kits
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** Competitive deep-research for commercial phonk kit
+- **lesson:** Compete on parallel process banks and matched oneshot+BPM-loop mini-kits; own original converter-crawl wedge; never clone DR-5/SP authenticity claims.
+- **do:** Use build_elite_phonk_kit.py; keep release_ready false until HITL; price band $20-34 drums-only.
+- **evidence:** RESEARCH_ELITE_PHONK_KIT.md; Firecrawl MU V1/Loopmasters Drift/LANDR 2026-11-17
+- **confidence:** inspected
+- **status:** active
