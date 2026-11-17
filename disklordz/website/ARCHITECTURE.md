@@ -2,14 +2,17 @@
 
 ## Purpose
 
-Prompt-driven **drum sample kit** web app: vibe → preview one-shots → ZIP download with manifest. Growth SKU per [docs/DISKLORDZ_SAAS_V0.md](../../docs/DISKLORDZ_SAAS_V0.md).
+**DiskLordz Drum Kit Factory** web product: DNA formula → 16-pad audition → WAV / product-pack export.
+Also ships the prompt studio path (vibe → variations → ZIP). Growth SKU per
+[docs/DISKLORDZ_SAAS_V0.md](../../docs/DISKLORDZ_SAAS_V0.md). Mirrors the JUCE Standalone kit-factory UX
+in `vst/DrumDesignLab/`.
 
 ## Build & run
 
 ```bash
 cd disklordz/website
 npm install
-npm run dev    # http://localhost:3000
+npm run dev    # http://localhost:3100 preferred on shared Windows workers
 npm run build && npm start
 ```
 
@@ -19,10 +22,25 @@ Regenerate stub WAVs:
 python3 ../sound-factory/scripts/generate_stub_kits.py
 ```
 
+## Routes
+
+| Path | Role |
+|------|------|
+| `/` | Brand landing + **Kit Factory** (32 DNA formulas, 16 pads, export) |
+| `/studio` | Prompt studio (`KitGenerator`) — presets, variations, product pack |
+| `/daw-inbox` | Folder export + desktop watcher docs |
+| `/login`, `/account` | Auth + credits / kit history |
+
 ## Data flow
 
 ```text
-Browser (KitGenerator)
+Browser KitFactoryLab (/)
+  → DNA formula catalog (`src/lib/dna-formulas.ts`, 32 banks)
+  → Tone.js pad audition (`src/lib/preview/pad-preview.ts`) before WAV build
+  → POST /api/generate | /api/factory/batch (same backend as studio)
+  → POST /api/download | /api/factory/download → ZIP
+
+Browser KitGenerator (/studio)
   → POST /api/generate { prompt, presetId, spec? }
        → rate limit (IP, in-memory v0)
        → buildVariationBatch(): 2 (studio) or 3 (creative) kits per request
@@ -46,8 +64,12 @@ Generation is **sync stub** in v0 (no WebSocket). Future factory jobs will be as
 
 | Path | Role |
 |------|------|
+| `src/components/KitFactoryLab.tsx` | DNA formula → 16 pads → kit/pack export |
+| `src/components/SiteChrome.tsx` | Global nav (Factory / Prompt studio / DAW) |
+| `src/lib/dna-formulas.ts` | 32 DNA formulas (Bang / Hitmaker / MelodyMotion / SouthernTriumph) |
+| `src/lib/preview/pad-preview.ts` | Tone.js pad audition by family |
 | `src/components/KitGenerator.tsx` | Prompt UI, presets, preview, download |
-| `src/lib/presets.ts` | Five presets (4 artist lanes + MPC neutral) |
+| `src/lib/presets.ts` | Five presets (4 artist lanes + MPC neutral) + SparkLE lanes |
 | `src/lib/generation/generation-spec.ts` | WO-SAAS-007 spec parse + preset defaults |
 | `src/lib/generation/engine-render.ts` | WO-SAAS-013 studio vs creative render + provenance |
 | `src/lib/generation/loop-render.ts`, `sfx-render.ts`, `mode-utils.ts` | WO-SAAS-014 loop/SFX + credit tiers |

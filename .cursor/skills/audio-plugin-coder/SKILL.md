@@ -36,6 +36,9 @@ description: Orchestrates VST/VSTi and cross-target DSP work using the DSP archi
 | Sounds wrong / clicks | dsp-program-chain + dsp-parameter-mapping (smoothing) |
 | NTS-1 unit | logue-hardware-port; do not use JUCE in `src/oscillators` |
 | Same sound VST + NTS-1 | shared/dsp float core + two glue layers |
+| Drum Design Lab / genre drum engine | skill `drum-design-lab` → `genre-drum-engine` / `ddl-standalone-build` |
+| Overnight kit evolution | skill `overnight-kit-agent` |
+| Prompt → ranked one-shots | skill `intelligent-drum-lab` |
 
 ## Output format for the user
 
