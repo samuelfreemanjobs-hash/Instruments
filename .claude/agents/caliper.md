@@ -1,1 +1,0 @@
-../../claude/drumsmith/.claude/agents/caliper.md

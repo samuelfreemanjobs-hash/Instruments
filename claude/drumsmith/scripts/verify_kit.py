@@ -1,170 +1,184 @@
-#!/usr/bin/env python3
-"""verify_kit.py — delivery checks for rendered drum samples.
-
-Usage:  python3 scripts/verify_kit.py <dir_or_wav> [--profile splice] [--json]
-Exit:   0 = no FAIL   1 = at least one FAIL   2 = no WAV files found
-
-stdlib only. Statuses: PASS / FAIL / WARN. Only FAIL changes the exit code.
-Profile "splice" encodes: 24-bit WAV, >= 44.1 kHz and uniform across the pack,
-sample peak at -1.0 dBFS or below, no clipping, micro-fades, no DC, loops on bar lines.
-Pitch accuracy and by-ear judgement are NOT checked here (see CALIPER).
-"""
+"""Dependency-free WAV QA with optional ffmpeg EBU R128 metering. Exit 0 only on technical PASS."""
+import argparse
+import hashlib
 import json
 import math
-import os
+from pathlib import Path, PurePosixPath
 import re
+import shutil
 import struct
+import subprocess
 import sys
 import wave
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import dsp_math as dm  # noqa: E402
-
-PROFILES = {
-    "splice": {
-        "bits": 24,
-        "min_sr": 44100,
-        "peak_ceiling_dbfs": -1.0,
-        "peak_tolerance_db": 0.01,
-        "normalized_floor_dbfs": -1.5,   # quieter than this -> WARN (not normalized)
-        "true_peak_warn_dbtp": -0.5,     # above this -> WARN (approximate meter)
-        "edge_max_linear": 0.01,         # first/last sample, about -40 dBFS
-        "dc_fail": 0.005,
-        "dc_warn": 0.001,
-        "clip_level": 0.999,
-        "clip_run": 3,
-        "silence_floor": 1e-4,
-    }
-}
-
-LOOP_RE = re.compile(r"(\d+(?:\.\d+)?)\s*bpm.*?(\d+)\s*bars?", re.IGNORECASE)
+from dsp_math import dbfs, rms
+from pitch_check import inspect_pitch
 
 
-def read_wav(path):
-    """Return (channels_of_floats, sr, bits). Supports 16- and 24-bit PCM."""
-    with wave.open(path, "rb") as w:
-        ch, sw, sr, n = w.getnchannels(), w.getsampwidth(), w.getframerate(), w.getnframes()
-        raw = w.readframes(n)
-    if sw == 2:
-        vals = [v / 32768.0 for v in struct.unpack("<%dh" % (n * ch), raw)]
-    elif sw == 3:
-        vals = []
-        for i in range(0, len(raw), 3):
-            v = raw[i] | (raw[i + 1] << 8) | (raw[i + 2] << 16)
-            if v & 0x800000:
-                v -= 0x1000000
-            vals.append(v / 8388608.0)
-    else:
-        raise ValueError("unsupported sample width: %d bytes" % sw)
-    chans = [vals[c::ch] for c in range(ch)]
-    return chans, sr, sw * 8
+def safe_relative(raw):
+    if not isinstance(raw, str) or not raw or '\\' in raw or raw.startswith('/'):
+        return False
+    p = PurePosixPath(raw)
+    return not any(part in ('.', '..') for part in raw.split('/')) and len(p.parts) > 1 and p.suffix.lower() == '.wav'
 
 
-def _max_run(chan, level):
-    run = best = 0
-    for s in chan:
-        if abs(s) >= level:
-            run += 1
-            best = max(best, run)
-        else:
-            run = 0
-    return best
+def ffmpeg_ebur128(path):
+    if not shutil.which('ffmpeg'):
+        return {'status': 'UNAVAILABLE', 'reason': 'ffmpeg not on PATH'}
+    cmd = ['ffmpeg', '-hide_banner', '-nostdin', '-i', str(path), '-filter_complex',
+           'ebur128=peak=true', '-f', 'null', '-']
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=35)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {'status': 'ERROR', 'reason': str(exc)}
+    output = result.stderr
+    # Read final summary only; per-window lines may contain multiple transient values.
+    summary = output.rsplit('Summary:', 1)[-1] if 'Summary:' in output else ''
+    integrated = re.search(r'Integrated loudness:\s*I:\s*(-?[\d.]+) LUFS', summary)
+    truepeak = re.search(r'True peak:\s*Peak:\s*(-?[\d.]+) dBFS', summary)
+    if result.returncode != 0 or not integrated or not truepeak:
+        return {'status': 'ERROR', 'reason': 'ffmpeg did not return complete EBU R128 summary'}
+    return {'status': 'MEASURED_FFMPEG_EBUR128', 'integrated_lufs': float(integrated.group(1)),
+            'true_peak_dbtp': float(truepeak.group(1)), 'note': 'Short percussive clips may not have meaningful integrated LUFS'}
 
 
-def check_file(path, profile):
-    p = PROFILES[profile]
-    out = {}
-    chans, sr, bits = read_wav(path)
-    frames = len(chans[0])
-    flat_peak = max((max(abs(s) for s in c) if c else 0.0) for c in chans)
-
-    out["bit_depth"] = ("PASS" if bits == p["bits"] else "FAIL", "%d-bit (need %d)" % (bits, p["bits"]))
-    out["sample_rate"] = ("PASS" if sr >= p["min_sr"] else "FAIL", "%d Hz (min %d)" % (sr, p["min_sr"]))
-
-    if flat_peak < p["silence_floor"] or frames == 0:
-        out["not_silent"] = ("FAIL", "file is silent or empty")
-        return out, sr, bits
-    out["not_silent"] = ("PASS", "peak %.1f dBFS" % dm.dbfs(flat_peak))
-
-    pk = dm.dbfs(flat_peak)
-    ceil = p["peak_ceiling_dbfs"] + p["peak_tolerance_db"]
-    out["peak_ceiling"] = ("PASS" if pk <= ceil else "FAIL", "sample peak %.3f dBFS (ceiling %.1f)" % (pk, p["peak_ceiling_dbfs"]))
-    out["normalized"] = ("PASS" if pk >= p["normalized_floor_dbfs"] else "WARN", "peak %.3f dBFS (target %.1f)" % (pk, p["peak_ceiling_dbfs"]))
-
-    tp = max(dm.true_peak(c) for c in chans)
-    tpd = dm.dbfs(tp)
-    out["true_peak"] = ("PASS" if tpd <= p["true_peak_warn_dbtp"] else "WARN", "approx true peak %.2f dBTP (approximate meter)" % tpd)
-
-    run = max(_max_run(c, p["clip_level"]) for c in chans)
-    out["no_clipping"] = ("PASS" if run < p["clip_run"] else "FAIL", "longest run at full scale: %d samples" % run)
-
-    edge = max(max(abs(c[0]), abs(c[-1])) for c in chans)
-    out["edges_faded"] = ("PASS" if edge <= p["edge_max_linear"] else "FAIL", "max edge sample %.4f (limit %.2f)" % (edge, p["edge_max_linear"]))
-
-    dc = max(abs(sum(c) / len(c)) for c in chans)
-    st = "PASS" if dc <= p["dc_warn"] else ("WARN" if dc <= p["dc_fail"] else "FAIL")
-    out["dc_offset"] = (st, "mean %.5f" % dc)
-
-    m = LOOP_RE.search(os.path.basename(path))
-    if m:
-        bpm, bars = float(m.group(1)), int(m.group(2))
-        want = dm.loop_samples(bars, bpm, sr)
-        out["loop_length"] = ("PASS" if abs(frames - want) <= 1 else "FAIL", "%d frames (want %d for %d bar @ %s bpm)" % (frames, want, bars, m.group(1)))
-    return out, sr, bits
+def measure(path):
+    with wave.open(str(path), 'rb') as w:
+        channels, width, rate = w.getnchannels(), w.getsampwidth(), w.getframerate()
+        frames, comp = w.getnframes(), w.getcomptype()
+        if comp != 'NONE' or width != 2:
+            raise ValueError('only uncompressed PCM16 WAV supported by this meter')
+        if frames <= 0 or channels <= 0 or rate <= 0:
+            raise ValueError('invalid WAV dimensions')
+        raw = w.readframes(frames)
+    if len(raw) != frames*channels*width:
+        raise ValueError('truncated sample data')
+    count = frames * channels
+    peak, energy, fullscale, nonzero = 0, 0, 0, 0
+    for (v,) in struct.iter_unpack('<h', raw):
+        mag = abs(v)
+        peak = max(peak, mag)
+        energy += (v / 32768.0)**2
+        fullscale += (v in (-32768, 32767))
+        nonzero += (v != 0)
+    return {'sample_rate': rate, 'channels': channels, 'bit_depth': width*8,
+            'frames': frames, 'duration_sec': round(frames/rate, 6),
+            'sample_peak_dbfs': round(dbfs(peak/32768), 4),
+            'rms_dbfs': round(dbfs(math.sqrt(energy/count)), 4),
+            'clipped_fraction': fullscale/count, 'nonzero_fraction': nonzero/count}
 
 
-def verify(target, profile="splice"):
-    files = []
-    if os.path.isdir(target):
-        for root, _, names in os.walk(target):
-            files += [os.path.join(root, n) for n in sorted(names) if n.lower().endswith(".wav")]
-    elif target.lower().endswith(".wav"):
-        files = [target]
-    report = {"profile": profile, "files": {}, "pack": {}, "summary": {"files": len(files), "fail": 0, "warn": 0}}
-    rates, depths = set(), set()
-    for f in sorted(files):
+def verify(kit, manifest_path, use_ffmpeg=False, check_pitch=True):
+    report = {'status': 'FAIL', 'technical_status': 'FAIL', 'errors': [], 'warnings': [], 'files': [],
+              'release_ready': False, 'qa_scope': 'technical PCM WAV checks only'}
+    try:
+        kit = kit.resolve(strict=True)
+        manifest = json.loads(manifest_path.read_text(encoding='utf8'))
+        if manifest.get('schema_version') != 1 or not isinstance(manifest.get('samples'), list) or not manifest['samples']:
+            raise ValueError('invalid or empty manifest')
+    except (OSError, ValueError, KeyError) as exc:
+        report['errors'].append(f'Cannot load kit/manifest: {exc}')
+        return report
+    expected = set()
+    seen_ids = set()
+    for entry in manifest['samples']:
+        if not isinstance(entry, dict):
+            report['errors'].append('invalid sample entry'); continue
+        rel = entry.get('path')
+        sample_id = entry.get('id')
+        if not safe_relative(rel) or rel in expected or not sample_id or sample_id in seen_ids:
+            report['errors'].append(f'bad/duplicate path or ID: {rel}'); continue
+        expected.add(rel)
+        seen_ids.add(sample_id)
+        path = (kit / rel).resolve()
+        if not path.is_relative_to(kit) or not path.is_file():
+            report['errors'].append(f'missing or outside kit: {rel}'); continue
+        row = {'id': sample_id, 'path': rel, 'errors': []}
         try:
-            checks, sr, bits = check_file(f, profile)
-            rates.add(sr)
-            depths.add(bits)
-        except Exception as e:  # unreadable file is a FAIL, never a skip
-            checks = {"readable": ("FAIL", str(e))}
-        report["files"][f] = checks
-        for status, _ in checks.values():
-            if status == "FAIL":
-                report["summary"]["fail"] += 1
-            elif status == "WARN":
-                report["summary"]["warn"] += 1
-    if len(files) > 1:
-        ok = len(rates) <= 1 and len(depths) <= 1
-        report["pack"]["uniform_format"] = ("PASS" if ok else "FAIL", "rates=%s bits=%s" % (sorted(rates), sorted(depths)))
-        if not ok:
-            report["summary"]["fail"] += 1
+            m = measure(path)
+            row.update(m)
+            if not entry.get('provenance'):
+                row['errors'].append('missing provenance')
+            if entry.get('recipe') == 'parametric-v2':
+                from recipe_engine import validate_recipe, recipe_hash
+                try:
+                    validate_recipe(entry.get('recipe_params'))
+                    if entry.get('recipe_sha256') != recipe_hash(entry['recipe_params']):
+                        row['errors'].append('recipe provenance hash mismatch')
+                except (ValueError, TypeError, KeyError):
+                    row['errors'].append('invalid recipe parameters')
+            for field in ('sample_rate', 'channels', 'bit_depth'):
+                if field not in entry or m[field] != entry[field]:
+                    row['errors'].append(f'{field} mismatch')
+            if not (entry.get('duration_min_sec', 0) <= m['duration_sec'] <= entry.get('duration_max_sec', math.inf)):
+                row['errors'].append('duration out of bounds')
+            if m['sample_peak_dbfs'] > entry.get('peak_ceiling_dbfs', -0.1):
+                row['errors'].append('sample peak exceeds ceiling')
+            if m['clipped_fraction'] > 0:
+                row['errors'].append('PCM fullscale sample detected')
+            if m['nonzero_fraction'] < 0.02:
+                row['errors'].append('mostly silent/empty waveform')
+            actual_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+            if not entry.get('sha256') or entry['sha256'] != actual_hash:
+                row['errors'].append('missing or mismatched SHA256')
+            row['sha256'] = actual_hash
+            if check_pitch and entry.get('pitch_target_hz') is not None:
+                row['pitch_check'] = inspect_pitch(path, entry['pitch_target_hz'])
+                if row['pitch_check']['status'] == 'FAIL':
+                    row['errors'].append('pitch target mismatch')
+                elif row['pitch_check']['status'] == 'INCONCLUSIVE':
+                    report['warnings'].append(f'{rel}: pitch check inconclusive')
+            if use_ffmpeg:
+                row['ebur128'] = ffmpeg_ebur128(path)
+                if row['ebur128']['status'] != 'MEASURED_FFMPEG_EBUR128':
+                    report['warnings'].append(f'{rel}: optional ffmpeg measurement unavailable')
+        except (OSError, ValueError, EOFError, struct.error, wave.Error) as exc:
+            row['errors'].append(f'Invalid WAV: {exc}')
+        for err in row['errors']:
+            report['errors'].append(f'{rel}: {err}')
+        report['files'].append(row)
+    actual = {str(p.relative_to(kit).as_posix()) for p in kit.rglob('*.wav') if p.is_file()}
+    for rel in sorted(actual-expected):
+        report['errors'].append(f'unlisted WAV: {rel}')
+    approvals = manifest.get('approvals') or {}
+    def signed(kind):
+        approval = approvals.get(kind)
+        return (isinstance(approval,dict) and isinstance(approval.get('reviewer'),str)
+                and bool(approval['reviewer'].strip()) and isinstance(approval.get('date'),str)
+                and bool(re.fullmatch(r'\d{4}-\d{2}-\d{2}', approval['date']))
+                and isinstance(approval.get('evidence'),str) and bool(approval['evidence'].strip()))
+    if not manifest.get('human_listening_approved') or not signed('listening'):
+        report['warnings'].append('HUMAN GATE: listening not approved')
+    if not manifest.get('release_approved') or not signed('release'):
+        report['warnings'].append('HUMAN GATE: release not approved')
+    if any(v == 'UNVERIFIED' for v in manifest.get('device_profiles', {}).values()):
+        report['warnings'].append('device compatibility unverified')
+    required_profiles = manifest.get('required_device_profiles', [])
+    if not isinstance(required_profiles, list) or not all(isinstance(x,str) and x for x in required_profiles):
+        report['errors'].append('invalid required_device_profiles')
+        required_profiles = []
+    for target in required_profiles:
+        if manifest.get('device_profiles',{}).get(target) != 'TESTED':
+            report['warnings'].append(f'DEVICE GATE: {target} lacks TESTED proof')
+    report['technical_status'] = 'FAIL' if report['errors'] else 'PASS'
+    report['status'] = report['technical_status']
+    report['release_ready'] = bool(not report['errors'] and manifest.get('human_listening_approved') and signed('listening')
+                                   and manifest.get('release_approved') and signed('release')
+                                   and all(manifest.get('device_profiles',{}).get(x) == 'TESTED' for x in required_profiles))
     return report
 
 
-def main(argv):
-    if not argv:
-        print(__doc__)
-        return 2
-    target = argv[0]
-    profile = argv[argv.index("--profile") + 1] if "--profile" in argv else "splice"
-    rep = verify(target, profile)
-    if rep["summary"]["files"] == 0:
-        print("no WAV files found at %s" % target)
-        return 2
-    if "--json" in argv:
-        print(json.dumps(rep, indent=2))
-    else:
-        for f, checks in rep["files"].items():
-            print(f)
-            for k, (s, d) in checks.items():
-                print("  %-14s %-4s %s" % (k, s, d))
-        for k, (s, d) in rep["pack"].items():
-            print("PACK %-14s %-4s %s" % (k, s, d))
-        print("SUMMARY files=%(files)d fail=%(fail)d warn=%(warn)d" % rep["summary"])
-    return 1 if rep["summary"]["fail"] else 0
-
-
-if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+if __name__ == '__main__':
+    p = argparse.ArgumentParser()
+    p.add_argument('--kit', type=Path, required=True)
+    p.add_argument('--manifest', type=Path, required=True)
+    p.add_argument('--json', type=Path)
+    p.add_argument('--ffmpeg', action='store_true')
+    p.add_argument('--skip-pitch', action='store_true', help='Reference only; skip pitch gate')
+    args = p.parse_args()
+    result = verify(args.kit, args.manifest, args.ffmpeg, not args.skip_pitch)
+    encoded = json.dumps(result, indent=2, allow_nan=False) + '\n'
+    if args.json:
+        args.json.write_text(encoded, encoding='utf8')
+    print(encoded)
+    sys.exit(0 if result['technical_status'] == 'PASS' else 1)

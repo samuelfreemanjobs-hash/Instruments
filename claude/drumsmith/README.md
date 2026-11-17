@@ -1,49 +1,102 @@
-# DRUMSMITH — Drum Sample & Kit Product Designer + DSP Audio Engineer
-> Four-layer architecture. Fail-closed. DONE = a command that exits 0.
+# DRUMSMITH v1.3 — DiskLordz Drum Product + DSP Agent
 
-## What it does
-Designs drum kit products (concept, hit list, naming, export plan, QA gate) and the DSP behind the sounds (voice recipes, real-time-safe render core, measurement). Built for Disklordz kits, the Tail Light Static kit, and SEANCE BOX samples.
+**Monorepo:** this tree lives at `claude/drumsmith/` in Instruments (PR branch). Status: `project.md`. Workbench UI: `workbench/DRUMSMITH_Workbench.html`.
 
-## Quickstart
 ```bash
-python3 scripts/self_test.py            # must exit 0 before first use
-python3 scripts/verify_kit.py kits/MyKit # delivery checks on a folder of WAVs
-```
-Copy this folder to a repo root so `CLAUDE.md` and `.claude/` auto-load in Claude Code.
-
-**Workbench:** template `workbench/DRUMSMITH_Workbench.html` (local HTTP) · hosted [artifact](https://claude.ai/artifact/FwE8VaPi2a5vXRMPoX19zH) with docked agent — verify matches `verify_kit.py`; see `project.md` § Workbench v1.
-
-## Architecture Decision Record
-```
-GATE 1 CONTROL LEVEL       Moderate: Sam checkpoints spec, ship, publish   -> not fully autonomous
-GATE 2 PROBLEM COMPLEXITY  Multi-domain (product + DSP), predictable flow  -> sequential workflows
-GATE 3 RESOURCES           Limited budget, solo founder                    -> single agent
-GATE 4 DOMAIN EXPERTISE    Two linked domains, shared vocabulary           -> single agent + skills
-
-SELECTED PATTERN:  Single agent + 3 skills + 1 read-only evaluator subagent (CALIPER, T3 only)
-RATIONALE:         Product and DSP decisions share context (a hit list is a promise the DSP must keep).
-                   Splitting them would cost 10-15x tokens for little gain. QA stays separate so the
-                   work does not grade itself.
-UPGRADE TRIGGERS:  Parallel kit lines run by separate sessions; melodic Sample Factory scope added.
-TOKEN COST EST:    [A] single agent baseline; CALIPER adds one extra read-only pass on T3 only.
+cd claude/drumsmith
+python3 scripts/self_test.py && python3 scripts/test_upgrade.py && python3 scripts/test_v13.py
+python3 scripts/factory.py --out /tmp/my_phonk_kit --genre drift-phonk --sku DKL --count 64
+python3 scripts/kit_browser.py --kit /tmp/my_phonk_kit   # http://127.0.0.1:8765
 ```
 
-## Layers
-| Layer | File | Owns |
-|-------|------|------|
-| L1 | SOUL.md | identity, voice, values |
-| L2 | DUTIES.md | scope, tiers, HITL gates, hard halts, known gaps |
-| L3 | system-prompt.md | intake, 5 workflows, tool rules |
-| L4 | core-config.xml | env gates, models, delivery profile, halts |
+A Claude Code repo-local 4-layer agent configuration with one read-only CALIPER QA subagent, three skills and portable Python 3 WAV tools. No API key is needed for scripts; using Claude Code requires access to a compatible model/service and is **not** necessarily free. Scripts use Python stdlib; optional `ffmpeg` enables R128 checks.
 
-Priority: L1 overrides all; conflicts are resolved by hierarchy and logged, never silent.
+## Install
+1. In this monorepo, use `claude/drumsmith/` as the package root (`.claude/` + `CLAUDE.md` already present here; repo-root `.claude` symlinks agents/skills).
+2. Open a terminal in that directory. Run `python3 scripts/self_test.py` (or `py -3 scripts/self_test.py` on Windows).
+3. Optionally install ffmpeg and add it to PATH. Confirm `ffmpeg -version`.
+4. In Claude Code started from repository root, ask **“DRUMSMITH: W1 SPEC for Tail Light Static using INTAKE.md. Do not imply files have been rendered.”** Agent/project instructions will auto-load in compatible Claude Code setups. To invoke CALIPER, ask it to audit a pre-generated report, or delegate to CALIPER using the Agent tool if available.
 
-## Contents
-- `.claude/agents/caliper.md` — independent QA subagent
-- `.claude/skills/drum-voice-recipes` — cowbell, 808, kick, snare/clap/hats, bus, aliasing, real-time rules
-- `.claude/skills/kit-product-spec` — hit list, folder tree, naming, device export, provenance
-- `.claude/skills/sample-delivery-qa` — verify_kit.py usage and what it cannot judge
-- `scripts/dsp_math.py`, `verify_kit.py`, `self_test.py` — stdlib only
+## CLI demonstration (technical pipeline, not a completed product)
+```sh
+python scripts/scaffold_kit.py --out demo_kit --sku TLS --count 3
+python scripts/render_reference.py --kit demo_kit
+python scripts/verify_kit.py --kit demo_kit --manifest demo_kit/manifest.json --json demo_kit/qa-report.json
+python scripts/verify_kit.py --kit demo_kit --manifest demo_kit/manifest.json --ffmpeg
+```
+`render_reference.py` generates original *experimental reference sounds* only, not a mastered commercial pack. `verify_kit.py` tests WAV technical quality; it cannot listen. Nonzero exit means at least one hard technical failure. The manifest uses SHA-256 after rendering; edit/re-render files only with corresponding manifest updates.
 
-## Known gaps
-See DUTIES.md. Short version: it cannot listen, phonk numbers are presets, device profiles are unverified, true peak is approximate.
+## Architecture Decision Record (ADR-001)
+- Single DRUMSMITH orchestrator avoids coordination overhead and owns product + engineering decisions.
+- CALIPER read-only reviewer challenges claims; it cannot approve releases.
+- JSON manifest is the machine-readable source of truth; YAML configuration is human-readable policy. Portable stdlib tools minimize setup and vendor lock-in.
+- LUFS and true peak are delegated to ffmpeg (optional), not approximated by WAV sample peaks.
+- Device profiles start UNVERIFIED, even when generic PCM format is valid.
+- Production JUCE 8/C++20 work is explicitly handed to FORGE, not silently embedded here.
+
+## Measured vs asserted
+`verify_kit.py` sample-peak and RMS values are exact within PCM quantization. Its clipped fraction counts PCM full-scale occurrences and is **not** a true-peak measurement. Optional ffmpeg values use the installed build's EBU R128 meter and are reported with metadata. Tune and listening decisions must be corroborated by humans.
+
+## Folder contents
+`CLAUDE.md`, `SOUL.md`, `DUTIES.md`, `SYSTEM_PROMPT.md`, `agent.yaml`, `INTAKE.md`, `.claude/agents/CALIPER.md`, `.claude/skills/*`, `config/core-config.yaml`, `scripts/`, `docs/provenance/`, `examples/tail-light-static/`.
+
+## v1.1 improvements (November 17, 2026)
+- A real 64-hit Tail Light Static layout matching the draft intake counts: 8 808 / 8 kick / 8 snare / 6 clap / 12 hat / 8 cowbell / 8 perc / 6 FX.
+- A new `scripts/pitch_check.py` evaluates sustained pitched 808 tails by autocorrelation AND a target-centered spectral search (stdlib, not an FFT/YIN implementation). Pitch targets are validated by default; inconclusive checks are warned, not silently passed as tuned.
+- Human release/listening approvals now require reviewer/date/evidence metadata. Explicit `required_device_profiles` block readiness unless marked TESTED. TESTED is a declaration, not a live hardware test.
+- Render preflight blocks traversal paths and existing target files before first output is written. Added distinct experimental clap and FX recipes.
+- 28 deterministic tests, including pitch mismatch, release evidence, device-gate and path-security regressions.
+
+### Full draft kit command sequence
+```powershell
+python scripts/scaffold_kit.py --out TLS_64 --sku TLS --plan tail-light-static
+python scripts/render_reference.py --kit TLS_64
+python scripts/verify_kit.py --kit TLS_64 --manifest TLS_64/manifest.json --json TLS_64/qa-report.json
+```
+The generated WAVs are **experimental placeholders**, not 64 distinct, commercial-ready voices; variation/production sound design and human listening remain required. For auditing and approvals see `docs/RELEASE_GATE.md`.
+
+## v1.2 — Recipe Production Upgrade (2026-11-17)
+**New working commands** (Python stdlib, no API key):
+```powershell
+python scripts/self_test.py
+python scripts/test_upgrade.py
+python scripts/build_recipe_kit.py --out TLS_RECIPE_64 --sku TLS --plan tail-light-static
+python scripts/render_recipes.py --kit TLS_RECIPE_64
+python scripts/verify_kit.py --kit TLS_RECIPE_64 --manifest TLS_RECIPE_64/manifest.json --json TLS_RECIPE_64/qa-report.json
+python scripts/diversity_audit.py --kit TLS_RECIPE_64 --json TLS_RECIPE_64/diversity-report.json
+python scripts/export_forge.py --kit TLS_RECIPE_64 --out TLS_RECIPE_64/forge-handoff.json
+```
+New modules: `recipe_engine.py`, `build_recipe_kit.py`, `render_recipes.py`, `diversity_audit.py`, `export_forge.py`, `test_upgrade.py`. The old v1.1 reference tools continue to work. Recipe manifests are schema v1 for backward compatibility but use `parametric-v2` entries with hash-pinned DSP parameters. Every rendered WAV has an independent SHA-256. Modified recipes are rejected before rendering and flagged by QA. Drift phonk kit layouts are *reference experiments*, not commercial sound-design claims.
+
+**Distinction**: This is a deterministic offline Python synthesis implementation, **not** a compiled JUCE/VST3 plugin and not a production-ready DSP engine. FORGE handoff JSON is a parameter contract awaiting C++ implementation and audio/real-time validation. All machine profiles remain UNVERIFIED. Noise, clipping, and pitch are still subject to listening. Simple within-family RMS-envelope comparisons are only advisory, not proof of perceptual uniqueness. Do not use the reference sounds commercially without listening/curation and release gates.
+
+---
+
+## v1.3 — Genre Factory + Local Audition Browser
+
+**New:** Five original genre-guided recipes (`drift-phonk`, `memphis-tape`, `detroit-trap`, `southern-trap`, `cloud-rap`), reproducible batch orchestration, local read-only browser, six additional tests, and a separate release-blocking technical QA report. Genre profiles are creative starting points, not faithful recreations of any commercial machine or artist. The browser binds to `127.0.0.1` and needs no cloud login.
+
+```powershell
+# From the DRUMSMITH repo root
+python scripts/factory.py --out my_phonk_kit --genre drift-phonk --sku DKL --count 64
+python scripts/kit_browser.py --kit my_phonk_kit --port 8765
+# Open http://127.0.0.1:8765 in your Windows browser; Ctrl+C to stop.
+```
+
+For a Tail Light Static category distribution:
+
+```powershell
+python scripts/factory.py --out tls_new --genre drift-phonk --sku TLS --plan tail-light-static
+```
+
+Choose another name for each run. **The factory refuses existing output directories**. Generated outputs include `manifest.json`, `masters/*.wav`, `qa-report.json`, `diversity-report.json`, and `forge-handoff.json`. Only `technical_qa: PASS` means numeric QA passed; **it does not authorize sale**. Listen and record approval, complete provenance, and verify each hardware compatibility claim separately. No physical-device or VST3 builds were tested.
+
+Test all layers:
+
+```powershell
+python scripts/self_test.py
+python scripts/test_upgrade.py
+python scripts/test_v13.py
+```
+
+Details: `docs/WORKFLOW_V13.md`.

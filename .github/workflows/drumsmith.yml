@@ -12,10 +12,19 @@ on:
 jobs:
   self-test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: claude/drumsmith
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: DRUMSMITH self_test
-        run: python3 claude/drumsmith/scripts/self_test.py
+      - name: DRUMSMITH self_test (28)
+        run: python3 scripts/self_test.py
+      - name: DRUMSMITH test_upgrade (v1.2)
+        run: python3 scripts/test_upgrade.py
+      - name: DRUMSMITH test_v13
+        run: python3 scripts/test_v13.py
+      - name: Verify Tail Light Static drift example (64)
+        run: python3 scripts/verify_kit.py --kit examples/tail-light-static/tls-v13-drift --manifest examples/tail-light-static/tls-v13-drift/manifest.json

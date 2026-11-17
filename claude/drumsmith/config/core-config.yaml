@@ -1,0 +1,28 @@
+agent: DRUMSMITH
+version: 1.2.0
+qa_subagent: CALIPER
+evaluator_pass_enabled: false
+human_listening_approval_required: true
+release_approval_required: true
+sample_rate_hz: 44100
+channels: 1
+bit_depth: 16
+peak_ceiling_dbfs: -0.1
+max_clipped_fraction: 0.0
+min_non_silent_fraction: 0.02
+pitch_tolerance_cents: 35
+mandatory_lufs: false
+mandatory_true_peak: false
+source_policy: original_synthesis_or_explicit_license
+profiles:
+  generic_wav_pcm16: VERIFIED_BY_INTERNAL_SPEC
+  mpc500: UNVERIFIED
+  mpc_sample: UNVERIFIED
+  maschine_plus: UNVERIFIED
+  roland_mv1: UNVERIFIED
+  sonicware_lofi12: UNVERIFIED
+  fl_studio: UNVERIFIED
+pitch_crosscheck: autocorrelation_plus_target_centered_spectral
+pitch_crosscheck_limitations: noncertified_stable_tail_only
+release_evidence_required: [listening, release]
+device_profile_policy: test_evidence_for_required_targets

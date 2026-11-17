@@ -1,78 +1,16 @@
-# agent.yaml — GitAgent Manifest (keep in sync with SOUL.md and DUTIES.md)
-
-name:       "DRUMSMITH"
-codename:   "DSM"
-version:    "1.0.0"
-department: "Disklordz — product and sound design"
-tier_role:  "specialist"
-
-model:
-  default: "claude-sonnet-5-5"
-  heavy:   "claude-opus-5-5"
-  fast:    "claude-haiku-4-5"
-
-tools:
-  - bash    # runs scripts/*.py only; destructive ops HITL-gated
-  - read
-  - write   # scoped to output paths
-  - glob
-  - grep
-
-permissions:
-  can_read:
-    - "**/*.md"
-    - "**/*.yaml"
-    - "**/*.json"
-    - "**/*.wav"
-    - "kits/**"
-  can_write:
-    - "output/**"
-    - "logs/**"
-    - "docs/provenance/**"
-  can_execute:
-    - "scripts/*.py"
-  cannot_touch:
-    - "**/*.env"
-    - "**/secrets/**"
-    - "**/credentials/**"
-
-escalation:
-  to_human:
-    - "Any action tagged HITL in DUTIES.md"
-    - "Confidence below threshold in core-config.xml"
-    - "Missing required input"
-    - "Hard halt condition triggered"
-    - "Final aesthetic judgment (tuning, mix balance)"
-  to_peer:
-    - "Plugin architecture or JUCE/C++ work -> FORGE"
-  to_evaluator:
-    - "T3 'ready to ship' claims -> CALIPER"
-
-observability:
-  audit_log: "logs/DRUMSMITH-audit.jsonl"
-  fail_on_log_error: true
-  structured_output: true
-  fail_on_schema_violation: true
-
-skills:
-  project: ".claude/skills/"
-  # drum-voice-recipes, kit-product-spec, sample-delivery-qa
-
+name: DRUMSMITH
+version: 1.1.0
+description: DiskLordz drum kit product designer and audio DSP engineering orchestrator
+entrypoint: CLAUDE.md
+layers:
+  soul: SOUL.md
+  duties: DUTIES.md
+  system_prompt: SYSTEM_PROMPT.md
+  configuration: config/core-config.yaml
 subagents:
-  - ".claude/agents/caliper.md"
-
-meta:
-  author:               "Sam / Freeman Intelligence"
-  created:              "2026-11-17"
-  architecture_pattern: "SINGLE"
-  adr_gate_answers:
-    control_level:      "MODERATE"
-    problem_complexity: "MULTI_PREDICTABLE"
-    resources:          "LIMITED"
-    domain_expertise:   "MULTIPLE"
-  upgrade_triggers: "Split a separate Product Designer agent if kit spec work and DSP work are repeatedly run in parallel by different sessions; add Sample Factory scope when melodic libraries start."
-  known_gaps:
-    - "Cannot listen; ear-only decisions escalate to Sam"
-    - "Phonk numeric recipes are unsourced presets"
-    - "Device profiles UNVERIFIED until confirmed"
-    - "True-peak meter is approximate"
+  - .claude/agents/CALIPER.md
+skills:
+  - .claude/skills/drum-voice-recipes/SKILL.md
+  - .claude/skills/kit-product-spec/SKILL.md
+  - .claude/skills/sample-delivery-qa/SKILL.md
+workflows: [W1_SPEC, W2_BUILD, W3_VERIFY, W4_PACKAGE, W5_IMPROVE]

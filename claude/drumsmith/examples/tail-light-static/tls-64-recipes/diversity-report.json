@@ -1,0 +1,73 @@
+{
+  "status": "PASS",
+  "exact_duplicate_groups": [],
+  "similar_envelope_pairs_advisory": [
+    {
+      "a": "TLS-020",
+      "b": "TLS-021",
+      "shape_mse": 0.0002029
+    },
+    {
+      "a": "TLS-033",
+      "b": "TLS-034",
+      "shape_mse": 0.0001141
+    },
+    {
+      "a": "TLS-033",
+      "b": "TLS-035",
+      "shape_mse": 0.0003056
+    },
+    {
+      "a": "TLS-034",
+      "b": "TLS-035",
+      "shape_mse": 0.0001585
+    },
+    {
+      "a": "TLS-037",
+      "b": "TLS-042",
+      "shape_mse": 0.0003605
+    },
+    {
+      "a": "TLS-038",
+      "b": "TLS-039",
+      "shape_mse": 0.0002424
+    },
+    {
+      "a": "TLS-038",
+      "b": "TLS-040",
+      "shape_mse": 0.0002
+    },
+    {
+      "a": "TLS-039",
+      "b": "TLS-040",
+      "shape_mse": 7.9e-05
+    },
+    {
+      "a": "TLS-051",
+      "b": "TLS-053",
+      "shape_mse": 0.0003193
+    },
+    {
+      "a": "TLS-052",
+      "b": "TLS-055",
+      "shape_mse": 0.0003691
+    },
+    {
+      "a": "TLS-053",
+      "b": "TLS-054",
+      "shape_mse": 0.0003265
+    },
+    {
+      "a": "TLS-053",
+      "b": "TLS-055",
+      "shape_mse": 0.0003212
+    },
+    {
+      "a": "TLS-054",
+      "b": "TLS-055",
+      "shape_mse": 0.000302
+    }
+  ],
+  "files_checked": 64,
+  "limitations": "Envelope similarity cannot replace listening, spectral analysis or content review"
+}
