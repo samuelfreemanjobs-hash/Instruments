@@ -1,6 +1,6 @@
 # project.md — DRUMSMITH (Drum Sample & Kit Product Designer + DSP Audio Engineer Agent)
 
-**Updated:** 2026-11-17 · **Phase:** **agent build** (not a commercial kit release) · **In-repo:** **v1.3** · Workbench HTML · Tail Light Static as the first exercise kit
+**Updated:** 2026-11-17 · **Phase:** **agent build** (not a commercial kit release) · **In-repo:** **v1.3** · **Announced:** v2.0 Native Synthesis Edition (**ZIP not yet on Cloud VM**)
 
 ## Scope
 
@@ -23,9 +23,10 @@ Four-layer agent + CALIPER for Disklordz: design kits, synthesize reference soun
 |---------|----------------|
 | v1.0 tarball | Superseded by v1.3 tree |
 | v1.2 zip | Uploaded; capabilities covered by v1.3 merge |
-| **v1.3 zip** | **Canonical tree** |
+| **v1.3 zip** | **Canonical tree (current)** |
+| **v2.0 zip** | **Announced; attach `drumsmith-v2.0.zip` to merge** — C++20 `native/` renderer, 8 voice types, 32-voice poly, `native_factory.py`, JUCE 8 VST3/standalone **source** (not compiled here), 46 Python tests claimed |
 
-### v1.3 surface
+### v1.3 surface (in-repo now)
 
 - Genres: drift-phonk, memphis-tape, detroit-trap, southern-trap, cloud-rap (`genre_profiles.py`)
 - `factory.py` → render → `verify_kit.py` → `diversity_audit.py` → `export_forge.py`
@@ -38,11 +39,12 @@ Four-layer agent + CALIPER for Disklordz: design kits, synthesize reference soun
 
 ## To do (agent build)
 
+- [ ] **BLOCKER for v2.0:** Upload `drumsmith-v2.0.zip` / `.tar.gz` (same as v1.2/v1.3) so Cloud can merge `native/` + `native_factory.py` and run cmake/ctest + Python 46-test suite
+- [ ] After merge: `cmake -S native -B native/build && cmake --build … && ctest`; `python scripts/native_factory.py …` smoke
+- [ ] JUCE VST3/standalone: Windows build when toolchain available (`-DDRUMSMITH_BUILD_JUCE=ON`) — integration test, not this Linux agent milestone
 - [ ] Exercise W1–W5 end-to-end from Claude Code / workbench on Tail Light Static (agent UX)
-- [ ] Keep CI green on script changes (`self_test` + `test_upgrade` + `test_v13`)
-- [ ] Optional: tighten agent docs so “technical PASS” never reads as storefront-ready
-- [ ] Optional DPCS on factory/render scripts
-- [ ] Deferred: ear review, release authorization, device profiles, ffmpeg R128, v2.0 JUCE factory
+- [ ] Keep CI green on script changes
+- [ ] Deferred commercial: ear review, release authorization, device profiles, waveform editor GUI
 
 ## Quick verify
 
