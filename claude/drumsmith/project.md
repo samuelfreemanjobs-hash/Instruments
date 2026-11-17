@@ -1,10 +1,10 @@
 # project.md — DRUMSMITH (Drum Sample & Kit Product Designer + DSP Audio Engineer Agent)
 
-**Updated:** 2026-11-17 · **In-repo:** **v1.3** (merged from `drumsmith-v1.3.zip`; v1.2 zip retained as lineage) · Workbench HTML · Tail Light Static W1 notes · **Commercial release still blocked**
+**Updated:** 2026-11-17 · **Phase:** **agent build** (not a commercial kit release) · **In-repo:** **v1.3** · Workbench HTML · Tail Light Static as the first exercise kit
 
 ## Scope
 
-Four-layer agent + CALIPER: kit product design and offline DSP reference synthesis for Disklordz / Tail Light Static / SEANCE BOX; FORGE gets JSON handoffs (not a compiled VST3). Genre factory (v1.3), recipe engine (v1.2), verify + diversity + kit browser.
+Four-layer agent + CALIPER for Disklordz: design kits, synthesize reference sounds, run technical QA, hand specs to FORGE. **Current goal = ship a working agent package in the monorepo**, with CI-green scripts and a Tail Light Static example path. Storefront / commercial masters / device-certified packs are **later** — release-gate machinery stays in-tree so we do not invent a fake “ready” claim, but it is not the active milestone.
 
 **Monorepo path:** `claude/drumsmith/`
 
@@ -32,18 +32,17 @@ Four-layer agent + CALIPER: kit product design and offline DSP reference synthes
 - `kit_browser.py` @ `http://127.0.0.1:8765`
 - Example kits under `examples/tail-light-static/` (`tls-64-recipes`, `tls-v13-drift`, small `reference-demo`)
 
-### Ship gates
+### Later (not this phase)
 
-Technical PASS ≠ commercial release. Ear approval + device profiles still required. Reference WAVs are experimental (often 16-bit mono @ 44.1 kHz in examples). Pitch checks are dependency-free approximations.
+`docs/RELEASE_GATE.md` exists for when Sam wants a commercial pack. Until then: technical PASS on examples is enough for agent development; do not chase ear-signoff or device TESTED flags for this PR.
 
-## To do
+## To do (agent build)
 
-- [ ] Sam: open workbench / kit_browser; ear-review TLS drift kit (and v1.2 envelope-similar pairs if still relevant)
-- [ ] Named release authorization when ready (`docs/RELEASE_GATE.md`)
-- [ ] Confirm device profiles; flip UNVERIFIED
-- [ ] Optional ffmpeg R128 / certified true-peak for release claims
+- [ ] Exercise W1–W5 end-to-end from Claude Code / workbench on Tail Light Static (agent UX)
+- [ ] Keep CI green on script changes (`self_test` + `test_upgrade` + `test_v13`)
+- [ ] Optional: tighten agent docs so “technical PASS” never reads as storefront-ready
 - [ ] Optional DPCS on factory/render scripts
-- [ ] v2.0 roadmap: JUCE 8 drum manufacturing system (FORGE lane)
+- [ ] Deferred: ear review, release authorization, device profiles, ffmpeg R128, v2.0 JUCE factory
 
 ## Quick verify
 
