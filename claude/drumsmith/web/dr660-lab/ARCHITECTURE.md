@@ -41,7 +41,7 @@ Browser audio thread is owned by Web Audio. UI never calls `setTimeout` for *aud
 |------|------|
 | `index.html` | Single-rack UI: transport, 16-step grid, FX mixer |
 | `js/Sequencer.js` | Lookahead clock, swing, catch-up, pattern, velocity |
-| `js/DrumEngine.js` | Synth one-shots + stopAll |
+| `js/DrumEngine.js` | Synth one-shots (MEMPHIS-660 kick stack + DR660 snare triad) + stopAll |
 | `js/CowbellSynth.js` | Dual-square 808 cowbell + pitch |
 | `js/MasterChain.js` | HPF → bitcrush → LPF → cassette → wow → tape delay |
 | `js/TapeFlutter.js` | Wow/flutter LFO delay modulation |

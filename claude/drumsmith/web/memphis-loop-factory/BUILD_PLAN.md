@@ -50,6 +50,12 @@ Still open: port richer Factory OS mutate heuristics from `index.html` `generate
 2. Python Engine B: `scripts/memphis_oneshots/phonk_kick.py` (12-bit / 26.04 kHz + tape LPF + tanh clip → 24-bit WAV)
 3. Lab `DrumEngine` kick upgraded to click + body + sub stack
 
+### P1c — MEMPHIS-DR660 snare oneshot CLI ✅
+
+1. Gem prompt: `claude/drumsmith/docs/GEM_MEMPHIS_DR660_SNARE.md`
+2. Python Engine B: `scripts/memphis_oneshots/phonk_snare.py` (membrane + BP wires + flam → 12-bit/26.04 kHz → tape → soft clip → 24-bit WAV)
+3. Lab `DrumEngine` snare upgraded to acoustic triad
+
 ### P2 — Cursor + Claude Code: Offline loop render
 
 1. `OfflineAudioContext` 2-bar render with master FX chain

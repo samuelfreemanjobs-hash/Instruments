@@ -167,10 +167,77 @@ export class DrumEngine {
     this.#track(click, time, time + 0.02);
   }
 
-  /** @param {number} time @param {number} v */
+  /**
+   * MEMPHIS-DR660 snare triad: membrane pitch drop + delayed BP wires + flam clap.
+   * @param {number} time
+   * @param {number} v
+   */
   #snare(time, v) {
-    this.#tone(time, v * 0.35, 180, 0.08);
-    this.#noiseBurst(time, v * 0.55, 0.12, 3500);
+    const end = time + 0.32;
+    const root = 220;
+
+    // Membrane body ~220 Hz with +24 st pitch spike (~18 ms)
+    const membrane = this.ctx.createOscillator();
+    const membraneGain = this.ctx.createGain();
+    membrane.type = 'sine';
+    membrane.frequency.setValueAtTime(root * Math.pow(2, 24 / 12), time);
+    membrane.frequency.exponentialRampToValueAtTime(root, time + 0.018);
+    membraneGain.gain.setValueAtTime(0.0001, time);
+    membraneGain.gain.linearRampToValueAtTime(0.72 * v, time + 0.003);
+    membraneGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.09);
+    membrane.connect(membraneGain);
+    membraneGain.connect(this.destination);
+    membrane.start(time);
+    membrane.stop(end);
+    this.#track(membrane, time, end);
+
+    // Noise wires BP ~2.4 kHz, onset delayed ~2.5 ms
+    const noiseDur = 0.2;
+    const noiseFrames = Math.max(1, Math.floor(this.ctx.sampleRate * noiseDur));
+    const noiseBuf = this.ctx.createBuffer(1, noiseFrames, this.ctx.sampleRate);
+    const noiseData = noiseBuf.getChannelData(0);
+    for (let i = 0; i < noiseFrames; i += 1) noiseData[i] = Math.random() * 2 - 1;
+    const wires = this.ctx.createBufferSource();
+    wires.buffer = noiseBuf;
+    const bp = this.ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 2400;
+    bp.Q.value = 1.2;
+    const wireGain = this.ctx.createGain();
+    const wireStart = time + 0.0025;
+    wireGain.gain.setValueAtTime(0.0001, wireStart);
+    wireGain.gain.linearRampToValueAtTime(0.5 * v, wireStart + 0.002);
+    wireGain.gain.exponentialRampToValueAtTime(0.0001, wireStart + 0.19);
+    wires.connect(bp);
+    bp.connect(wireGain);
+    wireGain.connect(this.destination);
+    wires.start(wireStart);
+    wires.stop(wireStart + noiseDur);
+    this.#track(wires, wireStart, wireStart + noiseDur);
+
+    // Flam / clap layer ~4 ms late, HPF ~500 Hz
+    const flamDelay = 0.004;
+    const clapDur = 0.08;
+    const clapFrames = Math.max(1, Math.floor(this.ctx.sampleRate * clapDur));
+    const clapBuf = this.ctx.createBuffer(1, clapFrames, this.ctx.sampleRate);
+    const clapData = clapBuf.getChannelData(0);
+    for (let i = 0; i < clapFrames; i += 1) clapData[i] = Math.random() * 2 - 1;
+    const clap = this.ctx.createBufferSource();
+    clap.buffer = clapBuf;
+    const hp = this.ctx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 500;
+    const clapGain = this.ctx.createGain();
+    const clapStart = time + flamDelay;
+    clapGain.gain.setValueAtTime(0.0001, clapStart);
+    clapGain.gain.linearRampToValueAtTime(0.42 * v, clapStart + 0.001);
+    clapGain.gain.exponentialRampToValueAtTime(0.0001, clapStart + 0.045);
+    clap.connect(hp);
+    hp.connect(clapGain);
+    clapGain.connect(this.destination);
+    clap.start(clapStart);
+    clap.stop(clapStart + clapDur);
+    this.#track(clap, clapStart, clapStart + clapDur);
   }
 
   /**
