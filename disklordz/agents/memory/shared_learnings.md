@@ -151,3 +151,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** loadedsamples.com product scrapes 2026-11-17: V1 220+86+39+82; V2 357+156+141+34+23
 - **confidence:** inspected
 - **status:** active
+
+### L-0016 · Web Audio lookahead Stop must cancel sources
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** DR-660 Web Audio lab transport Stop
+- **lesson:** Lookahead sequencers must skip expired nextNoteTime slots and stopAll tracked AudioScheduledSourceNodes on Stop; clearing setInterval alone leaves queued sources ringing.
+- **do:** Export catchUpExpiredSteps; pass onStopAudio into DR660Sequencer; track sources in DrumEngine._active.
+- **evidence:** PR #165 Codex P2 + commit 33e72745; node --test 10/10
+- **confidence:** executed
+- **status:** active
