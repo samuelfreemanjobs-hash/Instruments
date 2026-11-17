@@ -22,32 +22,32 @@ Original DiskLordz **Memphis converter phonk** drums: rate-dropped subs, 12-bit 
 | Peak ceiling | −0.1 dBFS sample peak | S |
 | Key anchor | F minor for pitched subs/cowbell | A |
 
-## Hit manifest (88)
+## Hit manifest (128 — factory max)
+
+Restores the storefront/bank guide mix and maxes DRUMSMITH `count` (1…128). Refs stay analysis-only; all ship hits are original synthesis.
 
 | # | Role | Count | Folder | Banks | Naming prefix |
 |---|------|------:|--------|-------|---------------|
-| 1 | Kick | 12 | `01_…/Kicks/` | BIT12, ANLG, ROMP, SIMM, 707 | `CNV_01_KICK_` |
-| 2 | Snare | 12 | `01_…/Snares/` | ROMP, RX, CAVE, BIT12 | `CNV_01_SNR_` |
-| 3 | Clap | 4 | `01_…/Snares/` (or Claps/) | CAVE, metallic | `CNV_01_CLAP_` |
-| 4 | Hat closed | 10 | `01_…/Hi-Hats_Closed/` | EDGE, ANLG, 808-lofi | `CNV_01_CH_` |
-| 5 | Hat open | 6 | `01_…/Hi-Hats_Open/` | EDGE, ANLG, ROMP | `CNV_01_OH_` |
-| 6 | Perc / cowbell | 8 | `01_…/Percussion/` | Latin≤, RATE cowbell | `CNV_01_PERC_` / `CNV_01_COW_` |
-| 7 | Crash / ride | 6 | `01_…/Crashes_Rides/` | ROMP, RX | `CNV_01_CYM_` |
-| 8 | Pitched sub | 12 | `02_…/Pitched_Sub_Basses/` | RATE | `CNV_02_SUB_` |
-| 9 | Aliased one-shot | 6 | `02_…/Aliased_One_Shots/` | BIT12, ROMP | `CNV_02_ALS_` |
-| 10 | Rhythm loop | 4 | `03_…/Acoustic_Rhythm_Loops/` | — | `CNV_03_LOOP_` |
-| 11 | Top loop | 4 | `03_…/Top_Percussion_Loops/` | — | `CNV_03_TOP_` |
+| 1 | Kick | 16 | `01_…/Kicks/` | BIT12, ANLG, ROMP, SIMM, 707 | `CNV_01_KICK_` |
+| 2 | Snare | 18 | `01_…/Snares/` | ROMP, RX, CAVE, BIT12 | `CNV_01_SNR_` |
+| 3 | Clap | 8 | `01_…/Snares/` (or Claps/) | CAVE, metallic | `CNV_01_CLAP_` |
+| 4 | Hat closed | 14 | `01_…/Hi-Hats_Closed/` | EDGE, ANLG, 808-lofi | `CNV_01_CH_` |
+| 5 | Hat open | 8 | `01_…/Hi-Hats_Open/` | EDGE, ANLG, ROMP | `CNV_01_OH_` |
+| 6 | Perc / cowbell | 10 | `01_…/Percussion/` | Latin≤, RATE cowbell | `CNV_01_PERC_` / `CNV_01_COW_` |
+| 7 | Crash / ride | 8 | `01_…/Crashes_Rides/` | ROMP, RX | `CNV_01_CYM_` |
+| 8 | Pitched sub | 20 | `02_…/Pitched_Sub_Basses/` | RATE | `CNV_02_SUB_` |
+| 9 | Aliased one-shot | 10 | `02_…/Aliased_One_Shots/` | BIT12, ROMP | `CNV_02_ALS_` |
+| 10 | Rhythm loop | 6 | `03_…/Acoustic_Rhythm_Loops/` | true 2-bar | `CNV_03_LOOP_` |
+| 11 | Top loop | 6 | `03_…/Top_Percussion_Loops/` | true 2-bar | `CNV_03_TOP_` |
 | 12 | Texture | 4 | `04_…/` | synth noise | `CNV_04_TEX_` |
-| | **Total** | **88** | | | |
+| | **Total** | **128** | | | |
 
 Full filename: `CNV_<CODE>_<VOICE>_<DESC>_<KEY|NA>_<##>.wav`  
 Example: `CNV_02_SUB_RateDrop_F_01.wav`
 
 ### Count check
 
-12+12+4+10+6+8+6+12+6+4+4+4 = **88** ✓
-
-Plan draft row totals summed to 98; trimmed snares (−2), claps (−2), perc (−2), aliased (−2), textures (−2) to honor the locked **88** SKU size while keeping RATE/EDGE/ROMP hero weight.
+16+18+8+14+8+10+8+20+10+6+6+4 = **128** ✓ (DRUMSMITH scaffold/factory ceiling)
 
 ## Storefront tree
 

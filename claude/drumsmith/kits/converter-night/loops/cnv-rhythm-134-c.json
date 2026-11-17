@@ -1,0 +1,210 @@
+{
+  "schema": "drumsmith-loop-blueprint-v1",
+  "name": "cnv-rhythm-134c",
+  "genre_profile": "detroit-trap",
+  "bpm": 134.0,
+  "bars": 2,
+  "sample_rate": 44100,
+  "grid_subdivisions_per_bar": 16,
+  "samples_per_bar": 78985,
+  "samples_per_bar_tag": "C",
+  "feel": "half-time snare",
+  "promise": "Original detroit-trap drum loop sketch \u2014 not a recreation of any artist or brand kit",
+  "lanes": {
+    "KICK": [
+      {
+        "step": 0,
+        "vel": 100
+      },
+      {
+        "step": 16,
+        "vel": 100
+      },
+      {
+        "step": 10,
+        "vel": 85
+      }
+    ],
+    "SNARE": [
+      {
+        "step": 8,
+        "vel": 110
+      },
+      {
+        "step": 24,
+        "vel": 110
+      }
+    ],
+    "HAT": [
+      {
+        "step": 0,
+        "vel": 90
+      },
+      {
+        "step": 1,
+        "vel": 70
+      },
+      {
+        "step": 2,
+        "vel": 70
+      },
+      {
+        "step": 3,
+        "vel": 70
+      },
+      {
+        "step": 4,
+        "vel": 90
+      },
+      {
+        "step": 5,
+        "vel": 70
+      },
+      {
+        "step": 6,
+        "vel": 70
+      },
+      {
+        "step": 7,
+        "vel": 70
+      },
+      {
+        "step": 8,
+        "vel": 90
+      },
+      {
+        "step": 9,
+        "vel": 70
+      },
+      {
+        "step": 10,
+        "vel": 70
+      },
+      {
+        "step": 11,
+        "vel": 70
+      },
+      {
+        "step": 12,
+        "vel": 90
+      },
+      {
+        "step": 13,
+        "vel": 70
+      },
+      {
+        "step": 14,
+        "vel": 70
+      },
+      {
+        "step": 15,
+        "vel": 70
+      },
+      {
+        "step": 16,
+        "vel": 90
+      },
+      {
+        "step": 17,
+        "vel": 70
+      },
+      {
+        "step": 18,
+        "vel": 70
+      },
+      {
+        "step": 19,
+        "vel": 70
+      },
+      {
+        "step": 20,
+        "vel": 90
+      },
+      {
+        "step": 21,
+        "vel": 70
+      },
+      {
+        "step": 22,
+        "vel": 70
+      },
+      {
+        "step": 23,
+        "vel": 70
+      },
+      {
+        "step": 24,
+        "vel": 90
+      },
+      {
+        "step": 25,
+        "vel": 70
+      },
+      {
+        "step": 26,
+        "vel": 70
+      },
+      {
+        "step": 27,
+        "vel": 70
+      },
+      {
+        "step": 28,
+        "vel": 90
+      },
+      {
+        "step": 29,
+        "vel": 70
+      },
+      {
+        "step": 30,
+        "vel": 70
+      },
+      {
+        "step": 31,
+        "vel": 70
+      },
+      {
+        "step": 28,
+        "vel": 60
+      },
+      {
+        "step": 29,
+        "vel": 70
+      },
+      {
+        "step": 30,
+        "vel": 80
+      },
+      {
+        "step": 31,
+        "vel": 90
+      }
+    ],
+    "808": [
+      {
+        "step": 0,
+        "vel": 100,
+        "note": "set key in product spec"
+      }
+    ]
+  },
+  "808": {
+    "key": "TBD",
+    "glide": "A",
+    "length_bars": 2
+  },
+  "variants": [
+    {
+      "id": "full",
+      "bars": 2
+    },
+    {
+      "id": "sparse",
+      "bars": 2,
+      "notes": "drop hats / thin kicks \u2014 A"
+    }
+  ],
+  "status": "agent-demo",
+  "device_exports": "UNVERIFIED"
+}

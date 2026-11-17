@@ -1,6 +1,6 @@
 {
   "schema": "drumsmith-loop-blueprint-v1",
-  "name": "cnv-rhythm-134-b",
+  "name": "cnv-rhythm-134b",
   "genre_profile": "memphis-tape",
   "bpm": 134.0,
   "bars": 2,
@@ -22,11 +22,11 @@
       },
       {
         "step": 10,
-        "vel": 70
+        "vel": 72
       },
       {
         "step": 26,
-        "vel": 70
+        "vel": 72
       }
     ],
     "SNARE": [

@@ -6,10 +6,10 @@
 
 | File | BPM | Frames |
 |------|----:|-------:|
-| `CNV_03_LOOP_Rhythm_94_0{1,2}.wav` | 94 | 225191 |
-| `CNV_03_LOOP_Rhythm_134_0{1,2}.wav` | 134 | 157970 |
-| `CNV_03_TOP_Hats_94_0{1,2}.wav` | 94 | 225191 |
-| `CNV_03_TOP_Hats_134_0{1,2}.wav` | 134 | 157970 |
+| `CNV_03_LOOP_Rhythm_94_0{1,2,3}.wav` | 94 | 225191 |
+| `CNV_03_LOOP_Rhythm_134_0{1,2,3}.wav` | 134 | 157970 |
+| `CNV_03_TOP_Hats_94_0{1,2,3}.wav` | 94 | 225191 |
+| `CNV_03_TOP_Hats_134_0{1,2,3}.wav` | 134 | 157970 |
 
-Installed into storefront `03_LOOP_BUILDERS_AND_GROOVES/` (replaced FX one-shot stubs).  
+**12** loops installed into storefront `03_…` for the 128-hit max pack.  
 Still `release_ready=false` until HITL.

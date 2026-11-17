@@ -3,6 +3,8 @@
 **Auditor:** Cursor agent draft (CALIPER Task subagent unavailable this turn)  
 **Date:** 2026-11-17  
 **Kit:** `claude/drumsmith/kits/converter-night/`  
+**Kit size:** 128 (factory max)
+
 **Verdict for commercial release:** **BLOCKED/UNVERIFIED**  
 **Technical verifier:** PASS (observed) · **Diversity:** PASS (observed) · **`release_ready`:** false
 
@@ -10,7 +12,7 @@
 
 | Artifact | Evidence |
 |----------|----------|
-| 88 masters + SHA in manifest | `manifest.json` (local), `masters/*.wav` |
+| 128 masters + SHA in manifest | `manifest.json` (local), `masters/*.wav` |
 | `technical_status: PASS`, `errors: []` | `qa-report.json` |
 | Warnings: listening/release gates; devices unverified | `qa-report.json` → `warnings` |
 | Diversity PASS; no exact duplicates | `diversity-report.json` |

@@ -84,9 +84,13 @@
   },
   "variants": [
     {
+      "id": "full",
+      "bars": 2
+    },
+    {
       "id": "sparse",
       "bars": 2,
-      "notes": "quarter hats only"
+      "notes": "drop hats / thin kicks \u2014 A"
     }
   ],
   "status": "agent-demo",

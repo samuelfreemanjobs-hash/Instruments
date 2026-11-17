@@ -2,7 +2,7 @@
   "sku": "CNV",
   "title": "Converter Night",
   "path": "claude/drumsmith/kits/converter-night",
-  "phase": "W3_verify_loops",
+  "phase": "W3_verify",
   "status": "draft",
   "release_ready": false,
   "technical_status": "PASS",
@@ -25,8 +25,8 @@
     "lofi12": "UNVERIFIED",
     "sp404": "UNVERIFIED"
   },
-  "hit_count_designed": 88,
-  "hit_count_rendered": 88,
+  "hit_count_designed": 128,
+  "hit_count_rendered": 128,
   "references_unique": 26,
   "references_role": "analysis_only",
   "genre_profile": "memphis-tape",
@@ -37,16 +37,15 @@
     "bit_depth": 16,
     "channels": 1
   },
-  "gaps": [
-    "HITL ear/legal/price/cover open",
-    "DR-660 WAV missing \u2014 RATE technique-led",
-    "SP-1200/Drumulator WAV missing \u2014 BIT12 technique-led",
-    "CALIPER notes draft \u2014 not a human release gate"
-  ],
-  "updated": "2026-11-17",
   "true_loops": {
     "status": "rendered",
     "script": "scripts/render_loop_from_blueprint.py",
-    "count": 8
-  }
+    "count": 12
+  },
+  "gaps": [
+    "HITL ear/legal/price/cover open",
+    "DR-660 WAV missing — RATE technique-led",
+    "SP-1200/Drumulator WAV missing — BIT12 technique-led"
+  ],
+  "updated": "2026-11-17"
 }

@@ -50,7 +50,7 @@ See `intake-answers.md` (commercial intent; devices UNVERIFIED; price HITL).
 
 ## Spec status
 
-`draft` — agent design complete when kit-spec + recipes + docs + provenance land; **not** ship-candidate until RELEASE_GATE HITL.
+`draft` — kit maxed to **128** (factory ceiling) following storefront/bank guide; **not** ship-candidate until RELEASE_GATE HITL.
 
 ## Next skills
 

@@ -7,16 +7,17 @@ from pathlib import Path
 TAIL_LIGHT_STATIC_PLAN = [("808",8),("KICK",8),("SNARE",8),("CLAP",6),
                           ("HAT",12),("COWBELL",8),("PERC",8),("FX",6)]
 
-# Converter Night (CNV) — maps kit-spec 88 roles onto native kinds (loops/textures as FX stubs).
+# Converter Night (CNV) — max factory count (128). Storefront/bank guide expanded:
+# RATE/EDGE/ROMP hero weight + full guide roles (kicks/snares/claps/hats/perc/crash/subs/alias/loops/tex).
 CONVERTER_NIGHT_PLAN = [
-    ("808", 12),   # pitched subs (RATE)
-    ("KICK", 12),
-    ("SNARE", 12),
-    ("CLAP", 4),
-    ("HAT", 16),   # 10 closed + 6 open
-    ("COWBELL", 4),
-    ("PERC", 4),
-    ("FX", 24),    # crashes 6 + aliased 6 + rhythm loops 4 + top loops 4 + textures 4
+    ("808", 20),   # pitched subs (RATE) — hero
+    ("KICK", 16),  # BIT12, ANLG, ROMP, SIMM, 707-punch
+    ("SNARE", 18), # ROMP, RX, CAVE, BIT12
+    ("CLAP", 8),   # CAVE / metallic
+    ("HAT", 22),   # 14 closed + 8 open (EDGE / ANLG / ROMP)
+    ("COWBELL", 5),
+    ("PERC", 5),   # Latin capped (with cowbell = 10)
+    ("FX", 34),    # crash 8 + aliased 10 + rhythm 6 + top 6 + tex 4
 ]
 
 PLANS = {
