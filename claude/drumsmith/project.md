@@ -4,7 +4,7 @@
 
 ## Scope
 
-A four-layer agent (template format) that does two jobs in one: (1) designs drum kit products (concept, hit list, naming, folder and device-export spec, channel notes, QA gate) and (2) engineers the DSP behind the sounds (voice recipes, real-time-safe render rules, measurement and verification). Single agent plus one read-only QA subagent (CALIPER). Feeds Disklordz kits, Tail Light Static kit, SEANCE BOX sample library, and hands plugin work to FORGE. A web workbench UI with the agent docked beside it fronts the same rules (artifact; not committed in this repo).
+A four-layer agent (template format) that does two jobs in one: (1) designs drum kit products (concept, hit list, naming, folder and device-export spec, channel notes, QA gate) and (2) engineers the DSP behind the sounds (voice recipes, real-time-safe render rules, measurement and verification). Single agent plus one read-only QA subagent (CALIPER). Feeds Disklordz kits, Tail Light Static kit, SEANCE BOX sample library, and hands plugin work to FORGE. A web workbench UI with the agent docked beside it fronts the same rules. **Template in git:** `workbench/DRUMSMITH_Workbench.html` (hosted artifact for docked agent + save).
 
 **Monorepo path:** `claude/drumsmith/` · Claude Code symlinks: `.claude/agents/drumsmith.md`, `.claude/agents/caliper.md`, `.claude/skills/drumsmith-*`
 
@@ -55,7 +55,7 @@ Sam. Faster, verifiable drum kit production: every kit ships with a passing chec
 - [ ] Expand provenance on first render batch (`docs/provenance/<kit>.md`)
 - [ ] Workbench v2 ideas: persist spec between visits (db capability), share with collaborators, export per-device package list
 - [ ] Optional: run verify_kit.py and the workbench through full DPCS phases if wanted
-- [ ] Optional: commit workbench single-file HTML to repo (currently artifact-only)
+- [x] Workbench template in repo: `workbench/DRUMSMITH_Workbench.html`
 
 ## AI agents created
 

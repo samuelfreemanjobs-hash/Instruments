@@ -11,7 +11,7 @@ python3 scripts/verify_kit.py kits/MyKit # delivery checks on a folder of WAVs
 ```
 Copy this folder to a repo root so `CLAUDE.md` and `.claude/` auto-load in Claude Code.
 
-**Workbench (UI + docked agent):** [DRUMSMITH Workbench](https://claude.ai/artifact/FwE8VaPi2a5vXRMPoX19zH) — in-browser verify matches `verify_kit.py`; see `project.md` § Workbench v1.
+**Workbench:** template `workbench/DRUMSMITH_Workbench.html` (local HTTP) · hosted [artifact](https://claude.ai/artifact/FwE8VaPi2a5vXRMPoX19zH) with docked agent — verify matches `verify_kit.py`; see `project.md` § Workbench v1.
 
 ## Architecture Decision Record
 ```

@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DRUMSMITH Workbench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: studio console. Workbench (tabs) on the left, DRUMSMITH agent docked on the right; on phones the agent becomes a tab. */
+:root{
+  --bg:#e8eaee; --panel:#ffffff; --panel2:#f2f4f7; --ink:#14171c; --muted:#566070; --line:#d2d7df;
+  --accent:#a35f00; --accent-ink:#ffffff; --accent-soft:#fbe9c8;
+  --pass:#1b7d45; --warn:#9a6400; --fail:#bd3030;
+  --tok-s:#2a69ac; --tok-c:#12766f;
+  --disp:'Barlow Condensed','Arial Narrow',sans-serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1115; --panel:#171a20; --panel2:#1e222a; --ink:#e7e9ed; --muted:#98a0ac; --line:#2a2f38;
+    --accent:#f2a31b; --accent-ink:#1b1306; --accent-soft:#2c2209;
+    --pass:#4cc57e; --warn:#e5b13a; --fail:#ff7070;
+    --tok-s:#6ea8e8; --tok-c:#4cc4ba;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1115; --panel:#171a20; --panel2:#1e222a; --ink:#e7e9ed; --muted:#98a0ac; --line:#2a2f38;
+  --accent:#f2a31b; --accent-ink:#1b1306; --accent-soft:#2c2209;
+  --pass:#4cc57e; --warn:#e5b13a; --fail:#ff7070;
+  --tok-s:#6ea8e8; --tok-c:#4cc4ba;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--body);display:flex;flex-direction:column;overflow:hidden}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.mark{width:38px;height:38px;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:700 20px var(--disp);letter-spacing:.04em}
+.brand h1{font:700 24px/1 var(--disp);letter-spacing:.08em}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:500 11px var(--mono);padding:3px 8px;border:1px solid var(--line);border-radius:99px;color:var(--muted);background:var(--panel2);white-space:nowrap}
+.chip.warn{color:var(--warn);border-color:var(--warn)}
+
+/* shell */
+.shell{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 430px}
+.work{min-width:0;display:flex;flex-direction:column;min-height:0}
+nav.tabs{display:flex;gap:2px;padding:8px 16px 0;border-bottom:1px solid var(--line);background:var(--bg);overflow-x:auto}
+nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:8px 14px;cursor:pointer;color:var(--muted);font:600 13px var(--body);white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs .only-narrow{display:none}
+.panels{flex:1;min-height:0;overflow-y:auto;padding:16px}
+.panel{display:none;max-width:980px}
+.panel.on{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.card h2{font:700 20px/1.1 var(--disp);letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+.card h3{font:600 13px var(--body);margin:0 0 8px}
+.sub{color:var(--muted);font-size:12.5px;margin:0 0 12px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+input[type=text],input[type=number],select,textarea{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:7px 9px;color:var(--ink);min-width:0;width:100%}
+input[type=number]{font-family:var(--mono)}
+input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:7px 12px;cursor:pointer;font-weight:600;font-size:13px}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13px}
+th{font:600 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.scroll-x{overflow-x:auto}
+pre{margin:0;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;font:12px/1.55 var(--mono)}
+code{font-family:var(--mono);font-size:.92em;background:var(--panel2);padding:1px 4px;border-radius:4px}
+
+/* status pills */
+.pill{display:inline-block;font:600 11px var(--mono);padding:2px 8px;border-radius:4px;border:1px solid;letter-spacing:.04em}
+.pill.PASS,.pill.CONFIRMED{color:var(--pass);border-color:var(--pass)}
+.pill.WARN{color:var(--warn);border-color:var(--warn)}
+.pill.FAIL,.pill.UNVERIFIED,.pill.BLOCKED{color:var(--fail);border-color:var(--fail)}
+.pill.READY{color:var(--pass);border-color:var(--pass)}
+.banner{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:8px;border:1px solid var(--line);border-left:6px solid var(--fail);background:var(--panel2);margin-bottom:12px}
+.banner.ok{border-left-color:var(--pass)}
+.banner strong{font:700 15px var(--disp);letter-spacing:.06em;text-transform:uppercase}
+ul.q{margin:6px 0 0;padding-left:18px}
+ul.q li{margin:2px 0}
+
+/* provenance tokens */
+.tok{font:500 11px var(--mono);padding:1px 6px;border-radius:4px;border:1px solid currentColor;white-space:nowrap}
+.tok i{font-style:normal;color:var(--muted);margin-left:5px}
+.tok-S{color:var(--tok-s)} .tok-C{color:var(--tok-c)} .tok-A{color:var(--accent)}
+
+/* calculators */
+.out{font:500 15px var(--mono);font-variant-numeric:tabular-nums}
+.res{display:flex;justify-content:space-between;gap:8px;align-items:baseline;border-top:1px dashed var(--line);padding:6px 0;flex-wrap:wrap}
+.res span:first-child{color:var(--muted);font-size:12.5px}
+.err{color:var(--fail);font-size:12.5px}
+
+/* verify */
+.drop{border:2px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--muted);background:var(--panel2)}
+.drop.over{border-color:var(--accent);color:var(--ink)}
+.checks{display:flex;gap:4px;flex-wrap:wrap}
+.sumbar{display:flex;gap:16px;flex-wrap:wrap;align-items:baseline}
+.sumbar b{font:700 26px var(--disp)}
+
+/* agent */
+.agent{border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0;min-width:0}
+.agent header{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;align-items:center}
+.agent header h2{font:700 18px var(--disp);letter-spacing:.07em}
+.agent header span{font-size:12px;color:var(--muted)}
+.msgs{flex:1;min-height:0;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:100%;border-radius:10px;padding:9px 12px;font-size:13.5px;overflow-wrap:anywhere}
+.msg.user{align-self:flex-end;background:var(--accent-soft);border:1px solid var(--accent);max-width:92%}
+.msg.assistant{background:var(--panel2);border:1px solid var(--line)}
+.msg .who{font:600 10.5px var(--mono);letter-spacing:.08em;color:var(--muted);margin-bottom:3px;text-transform:uppercase}
+.msg p{margin:0 0 7px} .msg p:last-child{margin-bottom:0}
+.msg h4{font:700 15px var(--disp);letter-spacing:.05em;text-transform:uppercase;margin:8px 0 3px}
+.msg ul,.msg ol{margin:4px 0 7px;padding-left:20px}
+.msg pre{font-size:11.5px;margin:6px 0}
+.msg table{font-size:12px;margin:6px 0}
+.msg .tbl{overflow-x:auto}
+.toolrun{font:11.5px var(--mono);color:var(--muted);margin-top:6px;border-top:1px dashed var(--line);padding-top:5px}
+.toolrun div{margin:1px 0}
+.gate{margin-top:8px;display:flex;gap:8px}
+.think{color:var(--muted);font-style:italic}
+.quick{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 8px}
+.quick button{background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:4px 10px;font-size:12px;cursor:pointer}
+.quick button:hover{border-color:var(--accent)}
+.composer{border-top:1px solid var(--line);padding:10px 14px;display:flex;gap:8px;align-items:flex-end}
+.composer textarea{resize:none;height:54px}
+.note{font-size:12px;color:var(--muted)}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;max-width:90vw}
+#toast.show{opacity:1}
+#fallback{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;place-items:center;z-index:30;padding:16px}
+#fallback.show{display:grid}
+#fallback div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;width:min(640px,100%)}
+#fallback textarea{height:260px;font:12px var(--mono);margin:8px 0}
+
+@media (max-width:959px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .agent{display:none;border-left:0}
+  nav.tabs .only-narrow{display:block}
+  body[data-tab="agent"] .agent{display:flex}
+  body[data-tab="agent"] .work .panels{display:none}
+  .panels{padding:12px}
+  .top{padding:8px 12px}
+}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body data-tab="spec">
+
+<header class="top">
+  <div class="brand">
+    <div class="mark" aria-hidden="true">DS</div>
+    <div><h1>DRUMSMITH</h1><p>Drum kit product designer and DSP engineer</p></div>
+  </div>
+  <div class="chips">
+    <span class="chip">single agent + CALIPER QA</span>
+    <span class="chip">delivery profile: splice</span>
+    <span class="chip warn">cannot listen: ears are yours</span>
+  </div>
+</header>
+
+<div class="shell">
+  <main class="work">
+    <nav class="tabs" role="tablist" aria-label="Workbench">
+      <button role="tab" id="t-spec" data-tab="spec" aria-selected="true">Kit spec</button>
+      <button role="tab" id="t-voices" data-tab="voices" aria-selected="false">Voice recipes</button>
+      <button role="tab" id="t-calc" data-tab="calc" aria-selected="false">DSP calculators</button>
+      <button role="tab" id="t-verify" data-tab="verify" aria-selected="false">Verify WAVs</button>
+      <button role="tab" id="t-agent" data-tab="agent" class="only-narrow" aria-selected="false">Agent</button>
+    </nav>
+    <div class="panels">
+      <section id="p-spec" class="panel on" aria-labelledby="t-spec"></section>
+      <section id="p-voices" class="panel" aria-labelledby="t-voices"></section>
+      <section id="p-calc" class="panel" aria-labelledby="t-calc"></section>
+      <section id="p-verify" class="panel" aria-labelledby="t-verify"></section>
+    </div>
+  </main>
+
+  <aside id="agent" class="agent" aria-label="DRUMSMITH agent">
+    <header><h2>DRUMSMITH</h2><span id="agent-status">checking Claude access…</span></header>
+    <div class="msgs" id="msgs" aria-live="polite"></div>
+    <div class="quick" id="quick"></div>
+    <form class="composer" id="composer">
+      <textarea id="input" placeholder="Ask about the kit, a voice, or your verify results" aria-label="Message DRUMSMITH"></textarea>
+      <button class="btn pri" id="send" type="submit">Send</button>
+      <button class="btn" id="stop" type="button" hidden>Stop</button>
+    </form>
+  </aside>
+</div>
+
+<div id="toast" role="status"></div>
+<div id="fallback"><div><strong>Copy this text</strong><textarea id="fb-text" readonly></textarea><button class="btn" id="fb-close" type="button">Close</button></div></div>
+
+<script id="core">
+/*CORE-START*/
+// ---- dsp_math port: same formulas as scripts/dsp_math.py ----
+function roundHalfEven(x){const f=Math.floor(x),d=x-f;if(Math.abs(d-0.5)<1e-9)return f%2===0?f:f+1;return Math.round(x);}
+const DM={
+  midiToHz:n=>440*Math.pow(2,(n-69)/12),
+  cents:(m,t)=>{if(!(m>0&&t>0))throw new Error('frequencies must be > 0');return 1200*Math.log2(m/t);},
+  dbfs:x=>{if(x===0)throw new Error('amplitude must be non-zero');return 20*Math.log10(Math.abs(x));},
+  dbToLin:d=>Math.pow(10,d/20),
+  loopExact:(bars,bpm,sr,bpb=4)=>{if(!(bars>0&&bpm>0&&sr>0&&bpb>0))throw new Error('bars, bpm, sample rate and beats per bar must be > 0');return bars*bpb*60*sr/bpm;},
+  loopSamples:(bars,bpm,sr,bpb=4)=>roundHalfEven(DM.loopExact(bars,bpm,sr,bpb)),
+  sixteenthMs:bpm=>{if(!(bpm>0))throw new Error('bpm must be > 0');return 15000/bpm;},
+  glideSixteenths:(ms,bpm)=>ms/DM.sixteenthMs(bpm),
+  glideMs:(n,bpm)=>n*DM.sixteenthMs(bpm),
+  fadeSamples:(ms,sr)=>{if(ms<0||!(sr>0))throw new Error('ms >= 0 and sample rate > 0 required');return Math.floor(ms*sr/1000);},
+  cyclesInWindow:(ms,f)=>ms*f/1000,
+  partialRatio:(hi,lo)=>{if(!(lo>0))throw new Error('lower partial must be > 0');return hi/lo;}
+};
+
+// ---- delivery profile "splice": same thresholds as scripts/verify_kit.py ----
+const PROFILE={bits:24,minSr:44100,peakCeil:-1.0,peakTol:0.01,normFloor:-1.5,tpWarn:-0.5,edgeMax:0.01,dcFail:0.005,dcWarn:0.001,clipLevel:0.999,clipRun:3,silence:1e-4};
+const LOOP_RE=/(\d+(?:\.\d+)?)\s*bpm.*?(\d+)\s*bars?/i;
+
+function str4(dv,o){return String.fromCharCode(dv.getUint8(o),dv.getUint8(o+1),dv.getUint8(o+2),dv.getUint8(o+3));}
+function parseWav(buf){
+  const dv=new DataView(buf);
+  if(dv.byteLength<44||str4(dv,0)!=='RIFF'||str4(dv,8)!=='WAVE')throw new Error('Not a RIFF/WAVE file');
+  let p=12,fmt=null,data=null;
+  while(p+8<=dv.byteLength){
+    const id=str4(dv,p),sz=dv.getUint32(p+4,true),b=p+8;
+    if(id==='fmt '){
+      fmt={tag:dv.getUint16(b,true),ch:dv.getUint16(b+2,true),sr:dv.getUint32(b+4,true),bits:dv.getUint16(b+14,true)};
+      if(fmt.tag===0xFFFE&&sz>=26)fmt.tag=dv.getUint16(b+24,true);
+    }else if(id==='data'){data={off:b,len:Math.min(sz,dv.byteLength-b)};}
+    p=b+sz+(sz&1);
+  }
+  if(!fmt||!data)throw new Error('Missing fmt or data chunk');
+  if(!(fmt.ch>0))throw new Error('Zero channels');
+  const bytes=fmt.bits/8;
+  if(!((fmt.tag===1&&(fmt.bits===16||fmt.bits===24))||(fmt.tag===3&&fmt.bits===32)))throw new Error('Unsupported format (tag '+fmt.tag+', '+fmt.bits+'-bit). Use PCM 16/24-bit or 32-bit float.');
+  const frames=Math.floor(data.len/(fmt.ch*bytes));
+  const chans=[];for(let c=0;c<fmt.ch;c++)chans.push(new Float64Array(frames));
+  let o=data.off;
+  for(let i=0;i<frames;i++){
+    for(let c=0;c<fmt.ch;c++){
+      let v;
+      if(fmt.tag===3){v=dv.getFloat32(o,true);}
+      else if(fmt.bits===16){v=dv.getInt16(o,true)/32768;}
+      else{let x=dv.getUint8(o)|(dv.getUint8(o+1)<<8)|(dv.getUint8(o+2)<<16);if(x&0x800000)x-=0x1000000;v=x/8388608;}
+      chans[c][i]=v;o+=bytes;
+    }
+  }
+  return {chans,sr:fmt.sr,bits:fmt.bits};
+}
+
+function truePeak(x,taps=16,floor=0.7,maxC=4000){
+  const n=x.length;if(!n)return 0;
+  let peak=0;for(let i=0;i<n;i++){const a=Math.abs(x[i]);if(a>peak)peak=a;}
+  if(peak===0)return 0;
+  const thr=floor*peak,idx=[];
+  for(let i=0;i<n;i++)if(Math.abs(x[i])>=thr)idx.push(i);
+  idx.sort((a,b)=>Math.abs(x[b])-Math.abs(x[a]));
+  let best=peak;
+  const top=idx.slice(0,maxC);
+  for(const i of top){
+    const lo=Math.max(0,i-taps+1),hi=Math.min(n-1,i+taps);
+    for(const fr of [0.25,0.5,0.75]){
+      const t=i+fr;let acc=0;
+      for(let j=lo;j<=hi;j++){
+        const d=t-j,w=0.5*(1+Math.cos(Math.PI*d/taps)),s=d===0?1:Math.sin(Math.PI*d)/(Math.PI*d);
+        acc+=x[j]*s*w;
+      }
+      if(Math.abs(acc)>best)best=Math.abs(acc);
+    }
+  }
+  return best;
+}
+function maxRun(c,level){let run=0,best=0;for(let i=0;i<c.length;i++){if(Math.abs(c[i])>=level){run++;if(run>best)best=run;}else run=0;}return best;}
+
+// info: {name, chans:[Float64Array], sr, bits} -> {check:[status, detail]}
+function checkFile(info,P=PROFILE){
+  const out={},frames=info.chans[0].length;
+  let flat=0;for(const c of info.chans)for(let i=0;i<c.length;i++){const a=Math.abs(c[i]);if(a>flat)flat=a;}
+  out.bit_depth=[info.bits===P.bits?'PASS':'FAIL',info.bits+'-bit (need '+P.bits+')'];
+  out.sample_rate=[info.sr>=P.minSr?'PASS':'FAIL',info.sr+' Hz (min '+P.minSr+')'];
+  if(flat<P.silence||frames===0){out.not_silent=['FAIL','file is silent or empty'];return out;}
+  out.not_silent=['PASS','peak '+DM.dbfs(flat).toFixed(1)+' dBFS'];
+  const pk=DM.dbfs(flat);
+  out.peak_ceiling=[pk<=P.peakCeil+P.peakTol?'PASS':'FAIL','sample peak '+pk.toFixed(3)+' dBFS (ceiling '+P.peakCeil.toFixed(1)+')'];
+  out.normalized=[pk>=P.normFloor?'PASS':'WARN','peak '+pk.toFixed(3)+' dBFS (target '+P.peakCeil.toFixed(1)+')'];
+  let tp=0;for(const c of info.chans)tp=Math.max(tp,truePeak(c));
+  const tpd=DM.dbfs(tp);
+  out.true_peak=[tpd<=P.tpWarn?'PASS':'WARN','approx true peak '+tpd.toFixed(2)+' dBTP (approximate meter)'];
+  let run=0;for(const c of info.chans)run=Math.max(run,maxRun(c,P.clipLevel));
+  out.no_clipping=[run<P.clipRun?'PASS':'FAIL','longest full-scale run: '+run+' samples'];
+  let edge=0;for(const c of info.chans)edge=Math.max(edge,Math.abs(c[0]),Math.abs(c[c.length-1]));
+  out.edges_faded=[edge<=P.edgeMax?'PASS':'FAIL','max edge sample '+edge.toFixed(4)+' (limit '+P.edgeMax.toFixed(2)+')'];
+  let dc=0;for(const c of info.chans){let s=0;for(let i=0;i<c.length;i++)s+=c[i];dc=Math.max(dc,Math.abs(s/c.length));}
+  out.dc_offset=[dc<=P.dcWarn?'PASS':(dc<=P.dcFail?'WARN':'FAIL'),'mean '+dc.toFixed(5)];
+  const m=LOOP_RE.exec(info.name);
+  if(m){const bpm=parseFloat(m[1]),bars=parseInt(m[2],10),want=DM.loopSamples(bars,bpm,info.sr);
+    out.loop_length=[Math.abs(frames-want)<=1?'PASS':'FAIL',frames+' frames (want '+want+' for '+bars+' bar @ '+m[1]+' bpm)'];}
+  return out;
+}
+function verifyAll(infos){
+  const rep={files:[],pack:null,summary:{files:infos.length,fail:0,warn:0}};
+  const rates=new Set(),depths=new Set();
+  for(const f of infos){
+    if(f.error){rep.files.push({name:f.name,checks:{readable:['FAIL',f.error]}});rep.summary.fail++;continue;}
+    rates.add(f.sr);depths.add(f.bits);
+    const checks=checkFile(f);
+    for(const k in checks){const s=checks[k][0];if(s==='FAIL')rep.summary.fail++;else if(s==='WARN')rep.summary.warn++;}
+    rep.files.push({name:f.name,checks});
+  }
+  if(infos.length>1){
+    const ok=rates.size<=1&&depths.size<=1;
+    rep.pack=['uniform_format',ok?'PASS':'FAIL','rates='+[...rates].join(',')+' bits='+[...depths].join(',')];
+    if(!ok)rep.summary.fail++;
+  }
+  return rep;
+}
+/*CORE-END*/
+</script>
+
+<script>
+// ================= helpers =================
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let toastT;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
+async function copyText(text){
+  try{await navigator.clipboard.writeText(text);toast('Copied');}
+  catch(e){$('#fb-text').value=text;$('#fallback').classList.add('show');$('#fb-text').select();}
+}
+$('#fb-close').onclick=()=>$('#fallback').classList.remove('show');
+function tok(kind,label){return '<span class="tok tok-'+kind+'" title="'+({S:'sourced',C:'computed by script',A:'assumption: tunable preset, confirm by ear'}[kind])+'">'+kind+(label?'<i>'+esc(label)+'</i>':'')+'</span>';}
+const fmt=(n,d=2)=>Number.isFinite(n)?n.toFixed(d):'—';
+
+// ================= tabs / hash routing =================
+const TABS=['spec','voices','calc','verify','agent'];
+function setTab(t,push){
+  if(!TABS.includes(t))t='spec';
+  document.body.dataset.tab=t;
+  $$('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t?'true':'false'));
+  $$('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+t));
+  if(push)try{history.replaceState(null,'','#'+t);}catch(e){location.hash=t;}
+}
+$$('nav.tabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab,true));
+addEventListener('hashchange',()=>setTab(location.hash.slice(1)));
+
+// ================= kit spec =================
+const HIT_CATS=[
+  {k:'kicks',name:'Kicks',folder:'01_Kicks',stem:'Kick',n:20,note:'layer-ready, short and long'},
+  {k:'s808',name:'808s',folder:'02_808s',stem:'808',n:20,note:'each in a labeled key; pitch checked',pitched:true},
+  {k:'snares',name:'Snares',folder:'03_Snares',stem:'Snare',n:15,note:''},
+  {k:'claps',name:'Claps / rims',folder:'04_Claps',stem:'Clap',n:15,note:''},
+  {k:'hats',name:'Hats (closed/open)',folder:'05_Hats',stem:'Hat',n:25,note:'vary decay'},
+  {k:'cowbells',name:'Cowbells',folder:'06_Cowbells',stem:'Cowbell',n:15,note:'each in a labeled key; ratio locked',pitched:true},
+  {k:'percs',name:'Percs / FX',folder:'07_Percs_FX',stem:'Perc',n:15,note:''}
+];
+const DEVICES=['FL Studio','Akai MPC 500','Akai MPC Sample','Maschine+','Roland MV-1','Liven Lofi12'];
+const ORIGINS={synth:'Synthesized from scratch',recorded:'Recorded by Sam',sliced:'Sliced from loops',mixed:'Mixed sources'};
+const spec={
+  name:'Tail Light Static',style:'Drift phonk',bpmLo:130,bpmHi:160,sr:44100,origin:'synth',provenance:false,
+  hits:Object.fromEntries(HIT_CATS.map(c=>[c.k,c.n])),
+  loops:{on:true,bpm:74,bars:4,count:4},
+  devices:Object.fromEntries(DEVICES.map(d=>[d,{on:d==='FL Studio'||d==='Akai MPC Sample',status:'UNVERIFIED'}]))
+};
+const slug=s=>s.trim().replace(/[^A-Za-z0-9]+/g,'_').replace(/^_+|_+$/g,'')||'Kit';
+function totalHits(){return HIT_CATS.reduce((a,c)=>a+(+spec.hits[c.k]||0),0);}
+function openQuestions(){
+  const q=[];
+  if(!spec.name.trim())q.push('Kit name is empty.');
+  if(!(spec.bpmLo>0&&spec.bpmHi>=spec.bpmLo))q.push('BPM range is invalid.');
+  if(totalHits()<1)q.push('Hit list is empty.');
+  if(spec.origin==='sliced'||spec.origin==='mixed')q.push('Origin is "'+ORIGINS[spec.origin].toLowerCase()+'": do not call this kit original; the provenance record must list sources and licences.');
+  if(!spec.provenance)q.push('Provenance record docs/provenance/'+slug(spec.name)+'.md is not on file.');
+  const picked=DEVICES.filter(d=>spec.devices[d].on);
+  if(!picked.length)q.push('No target device selected.');
+  picked.filter(d=>spec.devices[d].status!=='CONFIRMED').forEach(d=>q.push(d+' export profile is UNVERIFIED (blocks "ready").'));
+  if(spec.loops.on){try{DM.loopSamples(spec.loops.bars,spec.loops.bpm,spec.sr);}catch(e){q.push('Loop settings invalid: '+e.message);}}
+  return q;
+}
+function folderTree(){
+  const root='Disklordz_'+slug(spec.name);
+  const pad=n=>String(n).padStart(2,'0');
+  let t=root+'/\n';
+  for(const c of HIT_CATS){
+    const n=+spec.hits[c.k]||0;if(!n)continue;
+    const ex=c.pitched?c.stem+'_F1_01.wav … ('+n+')':c.stem+'_01.wav … '+c.stem+'_'+pad(n)+'.wav ('+n+')';
+    t+='  '+c.folder+'/  '+ex+'\n';
+  }
+  if(spec.loops.on&&spec.loops.count>0)t+='  08_Loops/  Loop_'+spec.loops.bpm+'bpm_'+spec.loops.bars+'bar_01.wav … ('+spec.loops.count+')\n';
+  t+='  README.txt  LICENSE.txt  Cover.jpg\n';
+  return t;
+}
+function specJSON(){
+  const q=openQuestions();
+  return {schema_version:'1.0',output_type:'kit_spec',kit:{name:spec.name,style:spec.style,bpm_range:[spec.bpmLo,spec.bpmHi],sample_rate:spec.sr,bit_depth:24,origin:ORIGINS[spec.origin]},
+    hit_list:Object.fromEntries(HIT_CATS.map(c=>[c.name,+spec.hits[c.k]||0])),total_hits:totalHits(),
+    loops:spec.loops.on?{bpm:spec.loops.bpm,bars:spec.loops.bars,count:spec.loops.count,frames_at_sr:safe(()=>DM.loopSamples(spec.loops.bars,spec.loops.bpm,spec.sr))}:null,
+    devices:Object.fromEntries(DEVICES.filter(d=>spec.devices[d].on).map(d=>[d,spec.devices[d].status])),
+    provenance_record_on_file:spec.provenance,open_questions:q,
+    provenance:{assumptions:['hit counts are starting presets [A]','BPM range is a placeholder [A]']},
+    hitl_status:'NOT_TRIGGERED'};
+}
+function safe(f,d=null){try{return f();}catch(e){return d;}}
+
+function renderSpec(){
+  const q=openQuestions(),ready=q.length===0;
+  const p=$('#p-spec');
+  const focusId=document.activeElement&&document.activeElement.id;
+  const selStart=document.activeElement&&document.activeElement.selectionStart;
+  p.innerHTML=`
+  <div class="card">
+    <h2>Kit spec</h2>
+    <p class="sub">Workflow W1. Example values from your Tail Light Static notes; the BPM range and hit counts are placeholders. Edit them.</p>
+    <div class="grid">
+      <label class="f">Kit name<input type="text" id="s-name" value="${esc(spec.name)}"></label>
+      <label class="f">Style target<input type="text" id="s-style" value="${esc(spec.style)}"></label>
+      <label class="f">BPM low<input type="number" id="s-bpmlo" value="${spec.bpmLo}" min="1"></label>
+      <label class="f">BPM high<input type="number" id="s-bpmhi" value="${spec.bpmHi}" min="1"></label>
+      <label class="f">Sample rate<select id="s-sr"><option value="44100"${spec.sr===44100?' selected':''}>44.1 kHz / 24-bit</option><option value="48000"${spec.sr===48000?' selected':''}>48 kHz / 24-bit</option></select></label>
+      <label class="f">How the sounds are made<select id="s-origin">${Object.entries(ORIGINS).map(([k,v])=>`<option value="${k}"${spec.origin===k?' selected':''}>${v}</option>`).join('')}</select></label>
+    </div>
+  </div>
+
+  <div class="banner ${ready?'ok':''}">
+    <span class="pill ${ready?'READY':'BLOCKED'}">${ready?'READY':'BLOCKED'}</span>
+    <div><strong>${ready?'Spec gate clear. Next: CALIPER pass, then your CONFIRM.':q.length+' open question'+(q.length>1?'s':'')+' before this kit can be called ready'}</strong>
+    ${ready?'':'<ul class="q">'+q.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'}</div>
+  </div>
+
+  <div class="card">
+    <h3>Hit list ${tok('A','starting presets')} <span class="mono" style="float:right">${totalHits()} hits</span></h3>
+    <div class="scroll-x"><table><thead><tr><th>Category</th><th>Count</th><th>Folder</th><th>Note</th></tr></thead><tbody>
+    ${HIT_CATS.map(c=>`<tr><td>${c.name}</td><td style="width:90px"><input type="number" min="0" id="h-${c.k}" value="${spec.hits[c.k]}"></td><td class="mono">${c.folder}</td><td>${c.note}</td></tr>`).join('')}
+    <tr><td>Loops</td><td colspan="3"><div class="row"><label class="row"><input type="checkbox" id="l-on"${spec.loops.on?' checked':''}> include</label>
+      <label class="row">BPM <input type="number" id="l-bpm" value="${spec.loops.bpm}" style="width:80px"></label>
+      <label class="row">bars <input type="number" id="l-bars" value="${spec.loops.bars}" style="width:70px"></label>
+      <label class="row">count <input type="number" id="l-count" value="${spec.loops.count}" style="width:70px"></label>
+      <span class="mono">${spec.loops.on?(safe(()=>DM.loopSamples(spec.loops.bars,spec.loops.bpm,spec.sr)+' frames @ '+spec.sr,'invalid')):''}</span>${spec.loops.on?tok('C','loop_samples'):''}</div></td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="card">
+    <h3>Target devices</h3>
+    <p class="sub">Every profile starts UNVERIFIED. Mark CONFIRMED only from a cited source or your working export (disklordz_slicer.py).</p>
+    <div class="scroll-x"><table><thead><tr><th>Use</th><th>Device</th><th>Profile status</th></tr></thead><tbody>
+    ${DEVICES.map((d,i)=>`<tr><td style="width:50px"><input type="checkbox" id="d-on-${i}" aria-label="Target ${d}"${spec.devices[d].on?' checked':''}></td><td>${d}</td><td style="width:190px"><select id="d-st-${i}" aria-label="${d} status"><option${spec.devices[d].status==='UNVERIFIED'?' selected':''}>UNVERIFIED</option><option${spec.devices[d].status==='CONFIRMED'?' selected':''}>CONFIRMED</option></select></td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="row" style="margin-top:10px"><label class="row"><input type="checkbox" id="s-prov"${spec.provenance?' checked':''}> Provenance record docs/provenance/${esc(slug(spec.name))}.md is on file</label></div>
+  </div>
+
+  <div class="card">
+    <h3>Folder tree</h3>
+    <pre>${esc(folderTree())}</pre>
+  </div>
+
+  <div class="card">
+    <h3>Every promise has a check</h3>
+    <div class="scroll-x"><table><thead><tr><th>Promise</th><th>Proven by</th></tr></thead><tbody>
+      <tr><td>24-bit WAV at ${spec.sr/1000} kHz, uniform pack</td><td class="mono">bit_depth, sample_rate, pack uniform_format</td></tr>
+      <tr><td>Peak at −1.0 dBFS, no clipping</td><td class="mono">peak_ceiling, normalized, no_clipping</td></tr>
+      <tr><td>No clicks at start or end</td><td class="mono">edges_faded, dc_offset</td></tr>
+      <tr><td>808s and cowbells in the labeled key</td><td>CALIPER pitch check, 5 cents ${tok('A')}, cross-checked by FFT or YIN</td></tr>
+      <tr><td>Loops land on the bar line</td><td class="mono">loop_length</td></tr>
+      <tr><td>Kit is original</td><td>Provenance record on file, then your CONFIRM</td></tr>
+      <tr><td>It sounds right</td><td><strong>Your ears.</strong> DRUMSMITH cannot judge this.</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="row">
+    <button class="btn pri" id="s-ask">Ask DRUMSMITH to review this spec</button>
+    <button class="btn" id="s-copy">Copy spec JSON</button>
+    <button class="btn" id="s-save" hidden>Save spec .json</button>
+  </div>`;
+  const bind=(id,fn,ev='input')=>{const el=$(id,p);if(el)el.addEventListener(ev,fn);};
+  bind('#s-name',e=>{spec.name=e.target.value;renderSpec();});
+  bind('#s-style',e=>{spec.style=e.target.value;});
+  bind('#s-bpmlo',e=>{spec.bpmLo=+e.target.value;renderSpec();});
+  bind('#s-bpmhi',e=>{spec.bpmHi=+e.target.value;renderSpec();});
+  bind('#s-sr',e=>{spec.sr=+e.target.value;renderSpec();},'change');
+  bind('#s-origin',e=>{spec.origin=e.target.value;renderSpec();},'change');
+  bind('#s-prov',e=>{spec.provenance=e.target.checked;renderSpec();},'change');
+  HIT_CATS.forEach(c=>bind('#h-'+c.k,e=>{spec.hits[c.k]=Math.max(0,+e.target.value||0);renderSpec();}));
+  bind('#l-on',e=>{spec.loops.on=e.target.checked;renderSpec();},'change');
+  bind('#l-bpm',e=>{spec.loops.bpm=+e.target.value;renderSpec();});
+  bind('#l-bars',e=>{spec.loops.bars=+e.target.value;renderSpec();});
+  bind('#l-count',e=>{spec.loops.count=Math.max(0,+e.target.value||0);renderSpec();});
+  DEVICES.forEach((d,i)=>{bind('#d-on-'+i,e=>{spec.devices[d].on=e.target.checked;renderSpec();},'change');bind('#d-st-'+i,e=>{spec.devices[d].status=e.target.value;renderSpec();},'change');});
+  $('#s-copy',p).onclick=()=>copyText(JSON.stringify(specJSON(),null,2));
+  $('#s-ask',p).onclick=()=>{setTab(window.matchMedia('(max-width:959px)').matches?'agent':document.body.dataset.tab,true);send('Review the kit spec in the workbench. List the open questions in priority order, then say what you would cut or add to the hit list for this style. Keep it short.');};
+  if(dlApi){const b=$('#s-save',p);b.hidden=false;b.onclick=async()=>{try{await dlApi.save({filename:'drumsmith-spec-'+slug(spec.name)+'.json',data:JSON.stringify(specJSON(),null,2)});}catch(e){if(e.code!=='declined')toast('Save unavailable here. Use Copy instead.');}};}
+  if(focusId){const el=document.getElementById(focusId);if(el){el.focus();try{if(selStart!=null&&el.setSelectionRange&&el.type!=='number')el.setSelectionRange(selStart,selStart);}catch(e){}}}
+}
+
+// ================= voice recipes =================
+const V={
+  cowbell:{note:'Two squares at 540 and 800 Hz share one decay envelope, bandpass after the sum. Lock the ratio; move only base pitch.',
+    p:{base:{label:'Lower partial',v:540,u:'Hz',prov:['S'],ear:true,range:'move with key; ratio stays locked'},decay:{label:'Decay',v:500,u:'ms',prov:['A'],ear:true,range:'400–600'},pw:{label:'Pulse width',v:0.48,u:'',prov:['A'],ear:true,range:'0.47–0.50'},drive:{label:'Drive',v:2.5,u:'x',prov:['A'],ear:true,range:'1–6'},crush:{label:'Bit crush',v:10,u:'bits',prov:['A'],ear:true,range:'8–12'}},
+    fixed:[['Partial ratio',()=>fmt(DM.partialRatio(800,540),4),[ 'S','C'],'800 / 540, locked'],['Upper partial',()=>fmt(V.cowbell.p.base.v*DM.partialRatio(800,540),1)+' Hz',['C'],'base × ratio']]},
+  s808:{note:'Mono legato sine with a short pitch dive. Distort above the sub only; split near 123 Hz with much less drive on the low band.',
+    p:{note:{label:'Note (MIDI)',v:29,u:'',prov:['A'],ear:true,range:'29 = F1'},dive:{label:'Dive depth',v:12,u:'semitones',prov:['A'],ear:true,range:'unsourced'},diveMs:{label:'Dive time',v:40,u:'ms',prov:['A'],ear:true,range:'unsourced'},decay:{label:'Decay',v:900,u:'ms',prov:['A'],ear:true,range:'set per tempo'},bpm:{label:'Tempo',v:140,u:'BPM',prov:['A'],ear:false,range:'for glide scaling'},glide16:{label:'Glide',v:1.5,u:'sixteenths',prov:['A'],ear:true,range:'0–4'},split:{label:'Band split',v:123,u:'Hz',prov:['S','A'],ear:true,range:'80–160'}},
+    fixed:[['Fundamental',()=>fmt(DM.midiToHz(V.s808.p.note.v),2)+' Hz',['C'],'midi_to_hz'],['Glide length',()=>fmt(DM.glideMs(V.s808.p.glide16.v,V.s808.p.bpm.v),1)+' ms',['C'],'glide_ms at this tempo'],['300 ms glide equals',()=>fmt(DM.glideSixteenths(300,V.s808.p.bpm.v),2)+' sixteenths',['C'],'one sourced recipe uses 300 ms'],['Grit layer high-pass',()=>'0.8–3 kHz',['S'],'parallel layer, keep mono']]},
+  kick:{note:'The kick gives the transient, the 808 gives the body. Sweep numbers are design intent only.',
+    p:{f0:{label:'Sweep start',v:200,u:'Hz',prov:['A'],ear:true,range:'150–250'},f1:{label:'Sweep end',v:50,u:'Hz',prov:['A'],ear:true,range:'45–55'},ms:{label:'Sweep time',v:50,u:'ms',prov:['A'],ear:true,range:'30–80'},click:{label:'Click',v:2,u:'ms',prov:['A'],ear:true,range:'1–3'}},
+    fixed:[['Sweep interval',()=>fmt(1200*Math.log2(V.kick.p.f0.v/V.kick.p.f1.v)/100,1)+' semitones',['C'],'12·log2(start/end)']]},
+  drums:{note:'Layer snare with clap or rim, bus with EQ and saturation, optional short plate. Cowbell can replace hats.',
+    p:{mode:{label:'Backbeat mode',v:'half-time',u:'',prov:['A'],ear:false,range:'half-time: beat 3 · four-on-floor: 2 and 4'},swing:{label:'Swing',v:10,u:'%',prov:['A'],ear:true,range:'sources disagree: 5–20'},plate:{label:'Plate decay',v:0.4,u:'s',prov:['A'],ear:true,range:'short'}},fixed:[]},
+  bus:{note:'Order: per-voice distortion and EQ, bus saturation, glue compression, parallel crush, clipper, optional lo-fi, true-peak ceiling.',
+    p:{ratio:{label:'Glue ratio',v:2,u:': 1',prov:['A'],ear:true,range:'about 2:1'},gr:{label:'Gain reduction',v:1.5,u:'dB',prov:['A'],ear:true,range:'1–2'},os:{label:'Oversampling',v:4,u:'x',prov:['S'],ear:false,range:'2x–8x around clipper'}},
+    fixed:[['Output ceiling',()=>'−1.0 dBFS',['S'],'delivery rule'],['Ceiling as linear',()=>fmt(DM.dbToLin(-1),6),['C'],'db_to_linear']]}
+};
+const VOICE_NAMES={cowbell:'Cowbell',s808:'808',kick:'Kick',drums:'Snare / clap / hats',bus:'Bus and master'};
+let voice='cowbell';
+function renderVoices(){
+  const p=$('#p-voices'),v=V[voice];
+  p.innerHTML=`
+  <div class="card"><h2>Voice recipes</h2>
+    <p class="sub">Workflow W2. Public phonk sources give almost no phonk-specific numbers: every ${tok('A')} value is a tunable preset, not a fact.</p>
+    <div class="row">${Object.keys(V).map(k=>`<button class="btn${k===voice?' pri':''}" data-v="${k}">${VOICE_NAMES[k]}</button>`).join('')}</div>
+  </div>
+  <div class="card"><h3>${VOICE_NAMES[voice]}</h3><p class="sub">${esc(v.note)}</p>
+    <div class="scroll-x"><table><thead><tr><th>Parameter</th><th>Start</th><th>Range</th><th>Provenance</th><th>By ear</th></tr></thead><tbody>
+    ${Object.entries(v.p).map(([k,x])=>`<tr><td>${x.label}</td><td style="width:150px"><div class="row" style="flex-wrap:nowrap"><input id="vp-${k}" type="${typeof x.v==='number'?'number':'text'}" step="any" value="${x.v}" style="width:90px"><span class="note">${x.u}</span></div></td><td class="note">${esc(x.range)}</td><td>${x.prov.map(t=>tok(t)).join(' ')}</td><td>${x.ear?'tune':'—'}</td></tr>`).join('')}
+    ${v.fixed.map(f=>`<tr><td>${f[0]}</td><td class="mono">${f[1]()}</td><td class="note">${esc(f[3])}</td><td>${f[2].map(t=>tok(t)).join(' ')}</td><td>—</td></tr>`).join('')}
+    </tbody></table></div>
+    ${(voice==='cowbell'||voice==='s808'||voice==='kick')?`<div class="row" style="margin-top:12px"><button class="btn pri" id="v-play">Preview in browser</button><span class="note">Quick Web Audio sketch of these numbers, not the render core. It cannot show aliasing, and your ears decide.</span></div>`:''}
+  </div>`;
+  $$('[data-v]',p).forEach(b=>b.onclick=()=>{voice=b.dataset.v;renderVoices();});
+  Object.keys(v.p).forEach(k=>{const el=$('#vp-'+k,p);if(el)el.addEventListener('change',e=>{v.p[k].v=typeof v.p[k].v==='number'?(+e.target.value):e.target.value;renderVoices();});});
+  const pb=$('#v-play',p);if(pb)pb.onclick=()=>previewVoice();
+}
+let ac;
+function actx(){ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();return ac;}
+function previewVoice(){
+  try{
+    const a=actx(),t=a.currentTime;
+    if(voice==='s808'){
+      const q=V.s808.p,f=DM.midiToHz(q.note.v),o=a.createOscillator(),g=a.createGain(),d=Math.max(0.1,q.decay.v/1000);
+      o.type='sine';o.frequency.setValueAtTime(f*Math.pow(2,q.dive.v/12),t);o.frequency.exponentialRampToValueAtTime(f,t+Math.max(0.005,q.diveMs.v/1000));
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.5,t+0.004);g.gain.exponentialRampToValueAtTime(0.001,t+d);
+      o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+0.05);
+    }else if(voice==='cowbell'){
+      const q=V.cowbell.p,lo=q.base.v,hi=lo*DM.partialRatio(800,540),d=Math.max(0.05,q.decay.v/1000);
+      const g=a.createGain(),bp=a.createBiquadFilter(),sh=a.createWaveShaper(),c=new Float32Array(1024);
+      for(let i=0;i<1024;i++){const x=i/512-1;c[i]=Math.tanh(x*q.drive.v);}
+      sh.curve=c;bp.type='bandpass';bp.frequency.value=hi;bp.Q.value=1.2;
+      g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(0.18,t+0.002);g.gain.exponentialRampToValueAtTime(0.001,t+d);
+      [lo,hi].forEach(f=>{const o=a.createOscillator();o.type='square';o.frequency.value=f;o.connect(sh);o.start(t);o.stop(t+d+0.05);});
+      sh.connect(bp).connect(g).connect(a.destination);
+    }else if(voice==='kick'){
+      const q=V.kick.p,o=a.createOscillator(),g=a.createGain(),d=0.35;
+      o.type='sine';o.frequency.setValueAtTime(q.f0.v,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,q.f1.v),t+Math.max(0.01,q.ms.v/1000));
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.6,t+Math.max(0.001,q.click.v/1000));g.gain.exponentialRampToValueAtTime(0.001,t+d);
+      o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+0.05);
+    }
+  }catch(e){toast('Audio preview is not available in this view.');}
+}
+
+// ================= calculators =================
+function calcCard(title,sub,inputs,compute){
+  const id='c'+Math.random().toString(36).slice(2,7);
+  return {id,html:`<div class="card" id="${id}"><h3>${title}</h3><p class="sub">${sub}</p>
+    <div class="grid">${inputs.map(i=>`<label class="f">${i.l}<input type="number" step="any" data-k="${i.k}" value="${i.v}"></label>`).join('')}</div>
+    <div class="outs" style="margin-top:8px"></div></div>`,inputs,compute};
+}
+function renderCalc(){
+  const cards=[
+    calcCard('Loop length','Exact and rendered samples for a loop on the bar line (4/4). A bar is rarely a whole number of samples.',[{l:'Bars',k:'bars',v:1},{l:'BPM',k:'bpm',v:74},{l:'Sample rate',k:'sr',v:44100}],o=>{const ex=DM.loopExact(o.bars,o.bpm,o.sr),r=DM.loopSamples(o.bars,o.bpm,o.sr);return [['Exact',ex.toFixed(3)+' samples',['C','loop_samples']],['Render to',r+' samples',['C','loop_samples']],['Duration',(r/o.sr).toFixed(4)+' s',['C']]];}),
+    calcCard('808 glide','Convert a glide in ms to note divisions at your tempo, or the reverse. A fixed 300 ms means different things at different tempos.',[{l:'Glide (ms)',k:'ms',v:300},{l:'BPM',k:'bpm',v:74},{l:'Sixteenths',k:'n',v:1.5}],o=>[['Sixteenth note',DM.sixteenthMs(o.bpm).toFixed(3)+' ms',['C','sixteenth_ms']],['ms as sixteenths',DM.glideSixteenths(o.ms,o.bpm).toFixed(3),['C','glide_sixteenths']],['Sixteenths as ms',DM.glideMs(o.n,o.bpm).toFixed(2)+' ms',['C','glide_ms']]]),
+    calcCard('Pitch and tuning','Note to frequency, and how far a measured pitch is from its target.',[{l:'MIDI note',k:'n',v:29},{l:'Measured Hz',k:'m',v:43.8},{l:'Target Hz (blank = note)',k:'t',v:''}],o=>{const f=DM.midiToHz(o.n),t=o.t>0?o.t:f,c=DM.cents(o.m,t);return [['Note frequency',f.toFixed(3)+' Hz',['C','midi_to_hz']],['Error vs target',(c>=0?'+':'')+c.toFixed(2)+' cents',['C','cents_between']],['Within 5 cents',Math.abs(c)<=5?'yes':'no',['A','working target']]];}),
+    calcCard('Level','dBFS and linear amplitude. Delivery ceiling is −1.0 dBFS.',[{l:'Peak (linear)',k:'lin',v:0.891},{l:'Level (dB)',k:'db',v:-1}],o=>[['Peak in dBFS',DM.dbfs(o.lin).toFixed(3)+' dBFS',['C','dbfs']],['dB as linear',DM.dbToLin(o.db).toFixed(6),['C','db_to_linear']],['Under the ceiling',DM.dbfs(o.lin)<=-1+PROFILE.peakTol?'yes':'no',['S','delivery rule']]]),
+    calcCard('Fades and pitch windows','Whole samples in a micro-fade under 3 ms, and cycles in a pitch-measurement window (aim for several).',[{l:'Fade (ms)',k:'ms',v:3},{l:'Sample rate',k:'sr',v:44100},{l:'Window (ms)',k:'w',v:100},{l:'Pitch (Hz)',k:'f',v:49}],o=>[['Fade length',DM.fadeSamples(o.ms,o.sr)+' samples',['C','fade_samples']],['Cycles in window',DM.cyclesInWindow(o.w,o.f).toFixed(2),['C','cycles_in_window']]]),
+    calcCard('Cowbell partial ratio','The 808 cowbell uses two squares at 540 and 800 Hz. Compare any pair to the locked ratio.',[{l:'Upper (Hz)',k:'hi',v:800},{l:'Lower (Hz)',k:'lo',v:540}],o=>{const r=DM.partialRatio(o.hi,o.lo),ref=800/540;return [['Ratio',r.toFixed(4),['C','partial_ratio']],['Reference 800/540',ref.toFixed(4),['S']],['Off by',DM.cents(r,ref).toFixed(2)+' cents',['C']]];})
+  ];
+  const p=$('#p-calc');
+  p.innerHTML='<div class="card"><h2>DSP calculators</h2><p class="sub">Same formulas as scripts/dsp_math.py in the agent package. Every result names how it was produced.</p></div>'+cards.map(c=>c.html).join('');
+  cards.forEach(c=>{
+    const root=document.getElementById(c.id),outs=$('.outs',root);
+    const run=()=>{
+      const o={};$$('input',root).forEach(i=>{o[i.dataset.k]=i.value===''?NaN:parseFloat(i.value);});
+      try{
+        const rows=c.compute(o);
+        outs.innerHTML=rows.map(r=>`<div class="res"><span>${r[0]}</span><span><span class="out">${r[1]}</span> ${tok(r[2][0],r[2][1])}</span></div>`).join('');
+      }catch(e){outs.innerHTML='<div class="err">'+esc(e.message)+'</div>';}
+    };
+    $$('input',root).forEach(i=>i.addEventListener('input',run));run();
+  });
+}
+
+// ================= verify =================
+function synth(name,{freq=220,amp=Math.pow(10,-1/20),n=13230,sr=44100,bits=24,fade=true,clip=false,dc=0}){
+  const x=new Float64Array(n);
+  for(let i=0;i<n;i++){let s=amp*Math.sin(2*Math.PI*freq*i/sr)+dc;if(clip)s=Math.max(-1,Math.min(1,s*3));x[i]=s;}
+  if(fade){const f=DM.fadeSamples(3,sr);for(let i=0;i<f;i++){const g=i/f;x[i]*=g;x[n-1-i]*=g;}}
+  return {name,chans:[x],sr,bits};
+}
+let verifyInfos=[synth('Kick_demo.wav',{freq:55,n:22050}),synth('808_F1_demo_clipped.wav',{freq:43.65,amp:1,clip:true,n:22050}),synth('Hat_demo_16bit.wav',{freq:6000,n:6615,bits:16})];
+let verifyReport=null,verifyIsDemo=true;
+function renderVerify(){
+  verifyReport=verifyAll(verifyInfos);
+  const r=verifyReport,p=$('#p-verify');
+  p.innerHTML=`
+  <div class="card"><h2>Verify WAVs</h2>
+    <p class="sub">Workflow W3. Same checks and thresholds as scripts/verify_kit.py. Files are read in this page and never uploaded.</p>
+    <div class="drop" id="drop">Drop .wav files here, or <button class="btn" id="pick" type="button">choose files</button>
+      <input type="file" id="files" accept=".wav,audio/wav,audio/x-wav" multiple hidden></div>
+    ${verifyIsDemo?'<p class="note" style="margin:10px 0 0">Showing 3 synthetic demo files (a clean 55 Hz tone, a clipped 808, and a 16-bit hat) so you can see PASS and FAIL. Drop your own files to replace them.</p>':''}
+  </div>
+  <div class="card"><div class="sumbar"><b>${r.summary.files}</b><span>files</span><b style="color:${r.summary.fail?'var(--fail)':'var(--pass)'}">${r.summary.fail}</b><span>fail</span><b style="color:var(--warn)">${r.summary.warn}</b><span>warn</span>
+    <span style="margin-left:auto" class="row"><button class="btn" id="v-copy">Copy report JSON</button><button class="btn" id="v-ask">Ask DRUMSMITH for fixes</button></span></div>
+    ${r.pack?`<p style="margin:10px 0 0"><span class="pill ${r.pack[1]}">${r.pack[1]}</span> <span class="mono">pack ${r.pack[0]}</span> <span class="note">${esc(r.pack[2])}</span></p>`:''}</div>
+  ${r.files.map(f=>{const bad=Object.values(f.checks).some(c=>c[0]==='FAIL');return `<div class="card"><h3 class="mono">${esc(f.name)} <span class="pill ${bad?'FAIL':'PASS'}">${bad?'FAIL':'PASS'}</span></h3>
+    <div class="scroll-x"><table><tbody>${Object.entries(f.checks).map(([k,c])=>`<tr><td class="mono" style="width:140px">${k}</td><td style="width:70px"><span class="pill ${c[0]}">${c[0]}</span></td><td class="note">${esc(c[1])}</td></tr>`).join('')}</tbody></table></div></div>`;}).join('')}
+  <p class="note">Not judged here: tone, tuning feel, mix balance, aliasing audibility, loudness. True peak is an approximate meter; use a certified meter for release claims.</p>`;
+  const drop=$('#drop',p),inp=$('#files',p);
+  $('#pick',p).onclick=()=>inp.click();
+  inp.onchange=()=>loadFiles(inp.files);
+  drop.ondragover=e=>{e.preventDefault();drop.classList.add('over');};
+  drop.ondragleave=()=>drop.classList.remove('over');
+  drop.ondrop=e=>{e.preventDefault();drop.classList.remove('over');loadFiles(e.dataTransfer.files);};
+  $('#v-copy',p).onclick=()=>copyText(JSON.stringify(reportJSON(),null,2));
+  $('#v-ask',p).onclick=()=>{if(window.matchMedia('(max-width:959px)').matches)setTab('agent',true);send('Explain the verify results in the workbench. List each failure with the likely upstream cause and the fix, most serious first. Keep it short.');};
+}
+function reportJSON(){const r=verifyReport;return {profile:'splice',summary:r.summary,pack:r.pack,files:Object.fromEntries(r.files.map(f=>[f.name,f.checks]))};}
+async function loadFiles(list){
+  const files=[...list].filter(f=>/\.wav$/i.test(f.name));
+  if(!files.length){toast('Choose .wav files.');return;}
+  toast('Reading '+files.length+' file'+(files.length>1?'s':'')+'…');
+  const infos=[];
+  for(const f of files){
+    try{const buf=await f.arrayBuffer();const w=parseWav(buf);infos.push({name:f.name,...w});}
+    catch(e){infos.push({name:f.name,error:e.message});}
+    await new Promise(r=>setTimeout(r,0));
+  }
+  verifyInfos=infos;verifyIsDemo=false;renderVerify();
+}
+
+// ================= agent =================
+const RULES=`You are DRUMSMITH, Sam's drum kit product designer and DSP audio engineer (Disklordz). You live inside a workbench page; the current workbench state is attached to each message and also available from the get_workbench_state tool.
+
+Rules:
+- You cannot hear audio. Never call a sound good, clean, tuned or original without a measurement or a provenance record. Ear-only judgement belongs to Sam.
+- Numbers about loop length, glide, pitch, cents and dB come from the tools, never from mental arithmetic. Tag every number: [S: source] sourced, [C: tool_name] computed by a tool, [A: assumption] a preset to confirm by ear.
+- Public phonk sources give almost no phonk-specific numbers. Sourced facts: the 808 cowbell is two square oscillators at 540 and 800 Hz (ratio about 1.48; lock the ratio and move only base pitch) with one shared decay envelope and a bandpass after the sum. A phonk 808 is a mono legato sine with a short pitch dive, distortion only above the sub, a multiband split near 123 Hz with much less drive on the low band, and an optional grit layer high-passed at 0.8 to 3 kHz. The kick gives the transient and the 808 gives the body. Clippers alias: oversample 2x to 8x or use ADAA, and put a true-peak limiter after. Everything else numeric (dive depth and time, decay, kick sweep, drive amounts, mix levels) is an unsourced preset [A].
+- Delivery profile: 24-bit WAV, at least 44.1 kHz and uniform across the pack, sample peak at or below -1.0 dBFS, no clipping, micro-fades under 3 ms, trimmed one-shots, loops on bar lines.
+- Tiers: T1 routine, T2 design (Sam reviews), T3 consequential: marking a kit ready to ship, publishing, pricing, originality claims, licence text. T3 needs a CALIPER pass and Sam's CONFIRM. For any T3 action, output exactly this block and stop:
+HITL GATE — [ACTION TYPE]
+    Action:  [what will happen]
+    Target:  [file, store or recipient]
+    Payload: [summary]
+    Tier:    T3
+    Confirm: Type CONFIRM to proceed or ABORT to cancel.
+- Hard halts, stated as "HARD HALT — reason" with the exact condition: peak above -1.0 dBFS, not 24-bit in a splice-profile kit, loop length off by more than 1 sample, provenance gap, an UNVERIFIED device in a "ready" claim.
+- Device export profiles are UNVERIFIED unless Sam marked them CONFIRMED in the workbench. Never invent a device's format limits.
+- Plugin or JUCE/C++ implementation goes to FORGE. Licence wording needs a qualified human; say so.
+- Missing required input (style, BPM range, sample rate, target devices) blocks the task: ask for it, do not guess.
+- Style: concise, tables over paragraphs, numbers with units, no filler, no praise. Keep answers under about 250 words unless asked for more.`;
+
+const history=[];
+let busy=false,ctl=null,sampleFn=null,toolsOK=false,dlApi=null,agentGone=false;
+const INTRO='I am DRUMSMITH, Sam\'s drum kit product designer and DSP engineer. I design kits (concept, hit list, naming, export plan) and the sound engine behind them (voice recipes, render, verification). I cannot hear audio, so I measure what I can and hand you what only your ears can judge. Any number I cannot source is marked as a preset [A].';
+const QUICK=[
+  ['Review my spec','Review the kit spec in the workbench. List the open questions in priority order, then say what you would cut or add to the hit list for this style.'],
+  ['Design the 808','Design a drift phonk 808 voice for F1 at 140 BPM. Give the parameter table with provenance tokens and say which values need your ears.'],
+  ['Loop math','Give the exact and rendered loop lengths for 1, 2 and 4 bars at 74 BPM, at 44.1 and 48 kHz.'],
+  ['Audit verify results','Explain the verify results in the workbench and give the top fixes.'],
+  ['Is it ready to ship?','Is this kit ready to ship? Check every gate.']
+];
+function stateSummary(){
+  const r=verifyReport;
+  return {kit_spec:specJSON(),verify:r?{profile:'splice',demo_files:verifyIsDemo,summary:r.summary,pack:r.pack,failing:r.files.flatMap(f=>Object.entries(f.checks).filter(c=>c[1][0]!=='PASS').map(c=>f.name+' · '+c[0]+' · '+c[1][0]+' · '+c[1][1])).slice(0,24)}:null,voice_params:Object.fromEntries(Object.entries(V).map(([k,v])=>[k,Object.fromEntries(Object.entries(v.p).map(([a,b])=>[a,b.v]))]))};
+}
+function makeTools(a){
+  const log=(name,args,res)=>{a.tools.push({name,args,res});paintMsgs();};
+  const num=x=>{const n=Number(x);if(!Number.isFinite(n))throw new Error('Not a number: '+x);return n;};
+  return [
+    {name:'loop_samples',description:'Exact and rendered (rounded) sample length of a loop on the bar line. Returns {exact, rendered, seconds}. Use for any loop length question.',inputSchema:{type:'object',properties:{bars:{type:'number'},bpm:{type:'number'},sample_rate:{type:'number'},beats_per_bar:{type:'number',description:'default 4'}},required:['bars','bpm','sample_rate']},
+      execute:i=>{const bpb=i.beats_per_bar?num(i.beats_per_bar):4,ex=DM.loopExact(num(i.bars),num(i.bpm),num(i.sample_rate),bpb),r=DM.loopSamples(num(i.bars),num(i.bpm),num(i.sample_rate),bpb),res={exact:+ex.toFixed(3),rendered:r,seconds:+(r/num(i.sample_rate)).toFixed(5)};log('loop_samples',[i.bars,i.bpm,i.sample_rate].join(', '),'rendered '+r);return res;}},
+    {name:'glide_conversion',description:'Convert an 808 glide between milliseconds and sixteenth notes at a tempo. Pass bpm plus either ms or sixteenths. Returns {sixteenth_ms, ms, sixteenths}.',inputSchema:{type:'object',properties:{bpm:{type:'number'},ms:{type:'number'},sixteenths:{type:'number'}},required:['bpm']},
+      execute:i=>{const b=num(i.bpm),res={sixteenth_ms:+DM.sixteenthMs(b).toFixed(4)};if(i.ms!=null){res.ms=num(i.ms);res.sixteenths=+DM.glideSixteenths(res.ms,b).toFixed(4);}if(i.sixteenths!=null){res.sixteenths=num(i.sixteenths);res.ms=+DM.glideMs(res.sixteenths,b).toFixed(3);}log('glide_conversion',JSON.stringify(i),JSON.stringify(res));return res;}},
+    {name:'pitch_math',description:'Note and tuning math. Pass midi_note to get its frequency in Hz. Pass measured_hz and target_hz to get the error in cents. Returns {hz, cents}.',inputSchema:{type:'object',properties:{midi_note:{type:'number'},measured_hz:{type:'number'},target_hz:{type:'number'}}},
+      execute:i=>{const res={};if(i.midi_note!=null)res.hz=+DM.midiToHz(num(i.midi_note)).toFixed(4);if(i.measured_hz!=null&&i.target_hz!=null)res.cents=+DM.cents(num(i.measured_hz),num(i.target_hz)).toFixed(3);log('pitch_math',JSON.stringify(i),JSON.stringify(res));return res;}},
+    {name:'level_math',description:'Level conversions. Pass linear to get dBFS, or db to get linear amplitude. Also returns whether a linear peak is under the -1.0 dBFS delivery ceiling.',inputSchema:{type:'object',properties:{linear:{type:'number'},db:{type:'number'}}},
+      execute:i=>{const res={};if(i.linear!=null){const d=DM.dbfs(num(i.linear));res.dbfs=+d.toFixed(4);res.under_ceiling=d<=PROFILE.peakCeil+PROFILE.peakTol;}if(i.db!=null)res.linear=+DM.dbToLin(num(i.db)).toFixed(6);log('level_math',JSON.stringify(i),JSON.stringify(res));return res;}},
+    {name:'get_workbench_state',description:'Returns the live kit spec (with open questions), the latest WAV verify report summary and failing checks, and the voice parameter values on the page.',
+      execute:()=>{log('get_workbench_state','','ok');return stateSummary();}}
+  ];
+}
+function buildMessages(){
+  const turns=history.filter(h=>h.content&&h.state!=='thinking'&&!(h.role==='assistant'&&h.state==='error'&&!h.content));
+  const recent=turns.slice(-14);
+  while(recent.length&&recent[0].role!=='user')recent.shift();
+  const msgs=[{role:'user',content:RULES},...recent.map(h=>({role:h.role,content:h.content}))];
+  const last=msgs[msgs.length-1];
+  last.content+='\n\n---\nWORKBENCH STATE (live, from the page):\n'+JSON.stringify(stateSummary());
+  return msgs;
+}
+const ERR={not_granted:'Claude access was not allowed for this page, so the agent is off. The workbench still works.',sampling_disabled:'Claude is not available for this account, so the agent is off.',not_declared:'This page is not set up to ask Claude.',rate_limited:'Too many requests right now. Wait a moment, then send again.',session_expired:'Your session expired. Sign in again, then retry.',refused:'Claude declined that input. Rephrase and try again.',empty_completion:'No answer came back. Try asking for something narrower.',prompt_too_large:'The conversation got too long. Clear it and ask again.',upstream_error:'The connection dropped. Send again.',cancelled:''};
+const FATAL=['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'];
+async function send(text){
+  text=(text||'').trim();
+  if(busy||!text||!sampleFn||agentGone)return;
+  history.push({role:'user',content:text,state:'done'});
+  const a={role:'assistant',content:'',tools:[],state:'thinking'};
+  history.push(a);
+  const msgs=buildMessages().filter(m=>m.content);
+  ctl=new AbortController();busy=true;setBusy();paintMsgs();
+  try{
+    const opts={signal:ctl.signal,cache:false,modelTier:'default',onText:({text})=>{a.content=text;a.state='streaming';paintMsgs();}};
+    if(toolsOK)opts.tools=makeTools(a);
+    const r=await sampleFn(msgs,opts);
+    a.content=r.text;a.truncated=r.truncated;a.state='done';
+  }catch(e){
+    a.content=e.text||a.content||'';
+    a.state=e.code==='cancelled'?'stopped':'error';
+    a.err=ERR[e.code]!==undefined?ERR[e.code]:'Something went wrong. Send again.';
+    if(FATAL.includes(e.code)){agentGone=true;$('#agent-status').textContent='agent off';}
+  }
+  busy=false;ctl=null;setBusy();paintMsgs();
+}
+function setBusy(){$('#send').disabled=busy||agentGone;$('#stop').hidden=!busy;$('#input').disabled=agentGone;}
+function mdInline(s){
+  return esc(s).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/\[(S|C|A):\s*([^\]]*)\]/g,(m,k,v)=>tok(k,v.trim()));
+}
+function md(src){
+  const L=src.split('\n');let o='',list=null,code=false,buf=[],tbl=[];
+  const close=()=>{if(list){o+='</'+list+'>';list=null;}};
+  const flushT=()=>{if(!tbl.length)return;const rows=tbl.filter(r=>!/^\s*\|?\s*:?-{2,}/.test(r)).map(r=>r.trim().replace(/^\||\|$/g,'').split('|').map(c=>c.trim()));
+    o+='<div class="tbl"><table>'+rows.map((r,i)=>'<tr>'+r.map(c=>(i===0?'<th>':'<td>')+mdInline(c)+(i===0?'</th>':'</td>')).join('')+'</tr>').join('')+'</table></div>';tbl=[];};
+  for(const line of L){
+    if(/^```/.test(line)){if(code){o+='<pre>'+esc(buf.join('\n'))+'</pre>';buf=[];code=false;}else{close();flushT();code=true;}continue;}
+    if(code){buf.push(line);continue;}
+    if(/^\s*\|.*\|\s*$/.test(line)){close();tbl.push(line);continue;}else flushT();
+    let m;
+    if((m=/^#{1,4}\s+(.*)/.exec(line))){close();o+='<h4>'+mdInline(m[1])+'</h4>';}
+    else if((m=/^\s*[-*]\s+(.*)/.exec(line))){if(list!=='ul'){close();o+='<ul>';list='ul';}o+='<li>'+mdInline(m[1])+'</li>';}
+    else if((m=/^\s*\d+[.)]\s+(.*)/.exec(line))){if(list!=='ol'){close();o+='<ol>';list='ol';}o+='<li>'+mdInline(m[1])+'</li>';}
+    else if(!line.trim()){close();}
+    else{close();o+='<p>'+mdInline(line)+'</p>';}
+  }
+  close();flushT();if(code)o+='<pre>'+esc(buf.join('\n'))+'</pre>';
+  return o;
+}
+function paintMsgs(){
+  const box=$('#msgs'),near=box.scrollHeight-box.scrollTop-box.clientHeight<80;
+  let html=`<div class="msg assistant"><div class="who">DRUMSMITH</div>${md(INTRO)}</div>`;
+  history.forEach((h,i)=>{
+    if(h.role==='user'){html+=`<div class="msg user">${esc(h.content).replace(/\n/g,'<br>')}</div>`;return;}
+    const last=i===history.length-1;
+    let body=h.content?md(h.content):(h.state==='thinking'?'<p class="think">Thinking…</p>':'');
+    if(h.truncated)body+='<p class="note">Cut short. Ask for less at a time.</p>';
+    if(h.err)body+='<p class="err">'+esc(h.err)+'</p>';
+    if(h.state==='stopped')body+='<p class="note">Stopped.</p>';
+    if(h.tools&&h.tools.length)body+='<div class="toolrun">'+h.tools.map(t=>`<div>ran ${esc(t.name)}(${esc(t.args)}) → ${esc(String(t.res).slice(0,90))}</div>`).join('')+'</div>';
+    if(last&&!busy&&/HITL GATE/.test(h.content||''))body+='<div class="gate"><button class="btn pri" data-gate="CONFIRM">Confirm</button><button class="btn" data-gate="ABORT">Abort</button></div>';
+    html+=`<div class="msg assistant"><div class="who">DRUMSMITH</div>${body}</div>`;
+  });
+  box.innerHTML=html;
+  $$('[data-gate]',box).forEach(b=>b.onclick=()=>send(b.dataset.gate));
+  if(near||busy)box.scrollTop=box.scrollHeight;
+}
+function paintQuick(){
+  const q=$('#quick');q.innerHTML=QUICK.map((x,i)=>`<button type="button" data-q="${i}">${x[0]}</button>`).join('');
+  $$('button',q).forEach(b=>b.onclick=()=>send(QUICK[+b.dataset.q][1]));
+}
+$('#composer').addEventListener('submit',e=>{e.preventDefault();const t=$('#input').value;$('#input').value='';send(t);});
+$('#input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#composer').requestSubmit();}});
+$('#stop').onclick=()=>{if(ctl)ctl.abort();};
+
+// ================= boot =================
+renderSpec();renderVoices();renderCalc();renderVerify();paintMsgs();paintQuick();setBusy();
+setTab(location.hash.slice(1)||'spec');
+(async()=>{
+  try{
+    const c=window.claude;
+    if(c&&c.use){
+      sampleFn=await c.use('sample');
+      if(sampleFn){try{const lim=await sampleFn.limits();toolsOK=!!(lim&&lim.tools);}catch(e){toolsOK=false;}}
+      try{dlApi=await c.use('downloads');if(dlApi)renderSpec();}catch(e){dlApi=null;}
+    }
+  }catch(e){sampleFn=null;}
+  if(sampleFn){$('#agent-status').textContent=toolsOK?'ready · calculator tools on':'ready';}
+  else{agentGone=true;$('#agent-status').textContent='agent unavailable here';setBusy();$('#quick').innerHTML='<span class="note">The agent needs Claude access, which this view does not provide. The workbench tabs still work.</span>';}
+})();
+</script>
+</body>
+</html>

@@ -46,6 +46,13 @@ INTAKE.md → W1 kit-spec.md → W2 voice tables → render WAVs → verify_kit.
 - Fill `docs/provenance/<kit>.md` on first render batch.
 - Device profiles: confirm then flip UNVERIFIED in spec.
 
+## Workbench
+
+| Path | Role |
+|------|------|
+| `workbench/DRUMSMITH_Workbench.html` | Single-file UI (verify + calculators + spec); agent when hosted |
+| `workbench/README.md` | Local serve instructions |
+
 ## Related docs
 
 - `project.md` — Rule #1 status log
