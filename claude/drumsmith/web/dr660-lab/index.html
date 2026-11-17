@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DR-660 Memphis DSP Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/lab.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <div class="badge">Draft lab · not a Boss ROM</div>
+      <h1>DR-660 Memphis DSP Lab</h1>
+      <p>Lookahead 16-step sequencer + swing, live synth voices, cassette/filter stubs. Inspired by 90s Memphis crawl — original synthesis only.</p>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Workspace sections">
+    <button type="button" class="on" data-section-btn="seq">1 · Sequencer</button>
+    <button type="button" data-section-btn="voices">2 · Voices</button>
+    <button type="button" data-section-btn="cassette">3 · Cassette</button>
+    <button type="button" data-section-btn="filter">4 · Filter grit</button>
+  </nav>
+
+  <main>
+    <section class="panel on" data-section="seq" aria-label="Sequencer">
+      <div class="row">
+        <button type="button" class="btn pri" id="btn-start">Start</button>
+        <button type="button" class="btn" id="btn-stop">Stop</button>
+        <label>Preset
+          <select id="preset">
+            <option value="crawl">Converter crawl (94)</option>
+            <option value="bounce">Club bounce (134)</option>
+          </select>
+        </label>
+        <label>BPM <input id="bpm" type="range" min="50" max="200" value="94" /> <span id="bpm-val">94</span></label>
+        <label>Swing <input id="swing" type="range" min="50" max="75" value="56" /> <span id="swing-val">56%</span></label>
+      </div>
+      <p class="note">Click cells: off → ghost → accent. Audio uses Web Audio lookahead (not <code>setInterval</code> alone). Even 16ths (1-based) get swing delay.</p>
+      <div id="grid"></div>
+    </section>
+
+    <section class="panel" data-section="voices" aria-label="Voices">
+      <p class="note">Tracks: kick, snare, rim, closed/open hat, cowbell, perc1/2. Synth sketches only — swap for decoded CNV/DR-660 buffers later (<code>ARCHITECTURE.md</code>).</p>
+      <p class="note">Cowbell + pitched-sub language mirrors Converter Night crawl blueprints; do not label UI with artist names.</p>
+    </section>
+
+    <section class="panel" data-section="cassette" aria-label="Cassette">
+      <div class="row">
+        <label>Drive <input id="cassette" type="range" min="0" max="1" step="0.01" value="0.35" /></label>
+      </div>
+      <p class="note">WaveShaper stub for 4-track compression/harmonics. Next: pre-emphasis HPF before shaper + gentle HF rolloff after.</p>
+    </section>
+
+    <section class="panel" data-section="filter" aria-label="Filter">
+      <div class="row">
+        <label>Cutoff <input id="cutoff" type="range" min="400" max="16000" step="10" value="9200" /> <span id="cutoff-val">9200 Hz</span></label>
+        <label>Resonance <input id="reso" type="range" min="0.1" max="12" step="0.1" value="0.7" /></label>
+      </div>
+      <p class="note">Low-pass grit stand-in for dark sampler response. Tune against SP-1200 / DR-660 refs when WAVs are staged.</p>
+    </section>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
