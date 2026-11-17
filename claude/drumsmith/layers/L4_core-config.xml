@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coreConfig agentId="drumsmith" version="1">
+  <deliveryProfile>
+    <sampleRate>44100</sampleRate>
+    <bitDepth>24</bitDepth>
+    <channels>1</channels>
+    <peakCeilingDbfs>-1.0</peakCeilingDbfs>
+    <metering approximateTruePeak="true" note="Use certified meter for release-critical claims"/>
+  </deliveryProfile>
+  <evaluatorPassEnabled>false</evaluatorPassEnabled>
+  <subagents>
+    <subagent id="caliper" mode="readOnly" requiredForShip="true"/>
+  </subagents>
+  <deviceProfiles verified="false">
+    <profile id="fl-studio" status="UNVERIFIED"/>
+    <profile id="mpc-500" status="UNVERIFIED"/>
+    <profile id="mpc-sample" status="UNVERIFIED"/>
+    <profile id="maschine-plus" status="UNVERIFIED"/>
+    <profile id="mv-1" status="UNVERIFIED"/>
+    <profile id="lofi12" status="UNVERIFIED"/>
+  </deviceProfiles>
+</coreConfig>

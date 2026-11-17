@@ -1,0 +1,16 @@
+id: drumsmith
+name: DRUMSMITH
+description: Drum kit product designer and DSP engineer (verify-first delivery)
+model: inherit
+subagents:
+  - id: caliper
+    path: .claude/agents/caliper.md
+skills:
+  - drum-voice-recipes
+  - kit-product-spec
+  - sample-delivery-qa
+scripts:
+  self_test: scripts/self_test.py
+  verify_kit: scripts/verify_kit.py
+  dsp_math: scripts/dsp_math.py
+core_config: layers/L4_core-config.xml
