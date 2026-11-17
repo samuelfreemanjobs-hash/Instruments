@@ -1,0 +1,31 @@
+{
+  "sku": "BB96",
+  "title": "BLACK BOX 96",
+  "identity": "The Original Machine",
+  "era": "Signature Era",
+  "sample_rate": 44100,
+  "bit_depth_out": 16,
+  "engine": {
+    "bit_depth": 12,
+    "lofi_sr": 26040,
+    "tape_lpf_hz": 11800,
+    "kick_pitch_st": 48,
+    "kick_clip_db": 4.5,
+    "snare_clip_db": 5.5,
+    "hat_center_hz": 9200,
+    "cow_f1": 540,
+    "cow_f2": 800
+  },
+  "inventory": {
+    "808": 36,
+    "KICK": 24,
+    "SNR": 40,
+    "CLAP": 24,
+    "CH": 32,
+    "OH": 16,
+    "COW": 24,
+    "TOM": 20,
+    "PERC": 12,
+    "LOOP": 12
+  }
+}

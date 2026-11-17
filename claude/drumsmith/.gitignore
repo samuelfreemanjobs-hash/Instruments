@@ -27,3 +27,8 @@ kits/converter-night/banks/**/*.WAV
 kits/converter-night/banks/**/manifest.json
 kits/converter-night/banks/elite_phonk_preview/
 kits/converter-night/banks/full_pack_staging/
+# BLACK BOX kit PCM
+kits/black-box-96/masters/
+kits/black-box-96/pack_staging/
+kits/black-box-*/masters/
+kits/black-box-*/pack_staging/

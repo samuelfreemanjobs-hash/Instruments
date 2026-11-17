@@ -1,0 +1,7 @@
+{
+  "sku": "BBDC",
+  "title": "DIRTY CIRCUITS",
+  "identity": "Corrupted Machine",
+  "modes": ["CLEAN", "DIRTY", "RUINED"],
+  "notes": "Process bus for clean-to-dirty variants; BB96 Dirty Circuits Edition expands flagship exclusives."
+}

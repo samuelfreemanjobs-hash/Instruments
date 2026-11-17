@@ -1,0 +1,17 @@
+{
+  "sku": "BB00",
+  "title": "BLACK BOX 2000",
+  "identity": "Southern Circuitry",
+  "era": "Digital Transition",
+  "target_samples": [200, 250],
+  "engine": {
+    "bit_depth": 15,
+    "lofi_sr": 44100,
+    "tape_lpf_hz": 16000,
+    "kick_pitch_st": 28,
+    "kick_clip_db": 2.5,
+    "snare_clip_db": 3.0,
+    "hat_center_hz": 10500
+  },
+  "notes": "Punchy digital kicks, snappy snares, tight hats, tuned 808s — generate in a later slice."
+}

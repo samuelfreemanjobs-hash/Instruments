@@ -1,0 +1,17 @@
+{
+  "sku": "BB93",
+  "title": "BLACK BOX 93",
+  "identity": "Memphis Archives",
+  "era": "Underground Era",
+  "target_samples": [175, 225],
+  "engine": {
+    "bit_depth": 11,
+    "lofi_sr": 22050,
+    "tape_lpf_hz": 9500,
+    "kick_pitch_st": 38,
+    "kick_clip_db": 2.5,
+    "snare_clip_db": 3.5,
+    "hat_center_hz": 7800
+  },
+  "notes": "Hollow 808s, papery snares, eerie cowbells, tape-degraded hats — generate in a later slice."
+}
