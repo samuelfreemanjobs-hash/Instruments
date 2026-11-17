@@ -131,3 +131,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** native_factory /tmp/CNV_W2_384 technical_qa PASS diversity PASS samples 384
 - **confidence:** executed
 - **status:** active
+
+### L-0014 · CNV: DR-660 zip must be re-attached; uploads had DR-5/55 only
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** user claims DR-660 zip but Cloud uploads lack Boss_DR-660*
+- **lesson:** Inventory /home/ubuntu/.cursor/projects/*/uploads for Boss_DR-660 before staging; DR-5/DR-55 are not substitutes. Document STAGED.md NOT STAGED and ask re-attach.
+- **do:** Refuse to mark dr660 staged; keep RATE technique-led with TR-808+DR-5 proxies; list exact upload filenames in IMPROVEMENTS.md.
+- **evidence:** uploads listing 2026-11-17: Boss_DR-5*, Boss_DR-55 only; find *660* empty of zips
+- **confidence:** executed
+- **status:** active

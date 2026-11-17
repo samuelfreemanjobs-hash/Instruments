@@ -3,7 +3,11 @@
 **Status:** No `Boss_DR-660*.zip` (or equivalent) is present in this agent’s upload set  
 (`/home/ubuntu/.cursor/projects/agent-repos-Instruments/uploads/`).
 
-Inventoried uploads include Boss **DR-5** and **DR-55**, plus Roland **TR-808 lofi set**, but **not** DR-660.
+**What *is* present (Boss family only):**
+- `Boss_DR-5__2__0615.zip` / `Boss_DR-5_9f45.zip` (duplicate)
+- `Boss_DR-55_5dce.zip`
+
+These are **not** DR-660. Please **re-attach** the DR-660 zip in this Cursor Cloud chat so it lands in uploads.
 
 ## Proxy RE (analysis-only until true 660 WAV)
 

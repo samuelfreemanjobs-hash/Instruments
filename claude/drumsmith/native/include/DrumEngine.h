@@ -17,6 +17,8 @@ struct Recipe {
     float noiseColor{0.5f};
     float durationSeconds{1.0f};
     std::uint32_t seed{12345};
+    // FX family (0 crash · 1 alias · 2 reverse/sweep · 3 stab · 4 texture). Ignored for other kinds.
+    int fxFamily{0};
 };
 inline bool valid(const Recipe& r) noexcept {
     return static_cast<int>(r.kind)>=0 && static_cast<int>(r.kind)<=7 &&
@@ -37,8 +39,11 @@ struct Voice {
     int midiNote{-1};
     bool active{false};
     float velocity{1};
+    double holdSample{0.0};
+    int holdCountdown{0};
     void start(const Recipe& r, float vel, int note) noexcept {
         recipe=r;phase=0;phase2=0;age=0;noiseLow=0;rng=r.seed?r.seed:1;
+        holdSample=0;holdCountdown=0;
         midiNote=note;velocity=std::clamp(vel,0.f,1.f);active=valid(r)&&velocity>0;
     }
     float noise() noexcept {
@@ -76,8 +81,45 @@ struct Voice {
             } else if(r.kind==Kind::Hat) burst=std::exp(-t/(.025+.055*r.tone))/std::max(env,1e-8);
             else if(r.kind==Kind::Snare) burst=1+.35*std::sin(tau*150*t);
             else if(r.kind==Kind::Perc) burst=std::sin(tau*(230+r.tone*330)*t)*1.1;
-            else if(r.kind==Kind::Fx) burst=std::sin(tau*(15*t+45*t*t));
+            else if(r.kind==Kind::Fx) {
+                const int fam = (r.fxFamily % 5 + 5) % 5;
+                const double dur = std::max(0.08, static_cast<double>(r.durationSeconds));
+                const double u = std::clamp(t / dur, 0.0, 1.0);
+                if(fam == 0) { // crash / ride — bright noise splash + slow metallic
+                    burst = (0.55 + 0.45 * std::sin(tau * (180 + r.tone * 420) * t))
+                            * (1.0 + 0.35 * std::exp(-t / (0.04 + r.tone * 0.08)));
+                } else if(fam == 1) { // aliased one-shot — stepped noise / harsh fold
+                    const double step = std::floor(t * (18.0 + r.tone * 40.0)) / (18.0 + r.tone * 40.0);
+                    burst = 0.7 + 0.6 * std::sin(tau * (90 + r.tone * 500) * step);
+                } else if(fam == 2) { // reverse / sweep — rising chirp + reverse-ish env
+                    burst = std::sin(tau * (8 * t + 90 * t * t + r.tone * 40 * t));
+                    const double rev = std::pow(u, 0.55 + r.tone * 0.35);
+                    x = std::tanh(r.drive * (hp * r.noiseColor + 0.28 * burst) * rev) * env * 0.52;
+                    age += 1.0 / sr;
+                    if(age >= r.durationSeconds || env < .000001) active = false;
+                    return std::clamp(static_cast<float>(x) * velocity, -.97f, .97f);
+                } else if(fam == 3) { // stab / impact — short click + body thump
+                    const double click = std::exp(-t / (0.008 + r.tone * 0.01));
+                    const double body = std::sin(tau * (55 + r.tone * 90) * t) * std::exp(-t / (0.05 + r.decaySeconds * 0.2));
+                    burst = click * 1.4 + body;
+                } else { // texture — slow noise bed / hum grit
+                    burst = 0.35 + 0.25 * std::sin(tau * (12 + r.tone * 28) * t)
+                            + 0.2 * std::sin(tau * (0.7 + r.noiseColor) * t);
+                }
+            }
             x=std::tanh(r.drive*(hp*r.noiseColor+.22*std::sin(tau*(120+r.tone*150)*t))*burst)*env*.49;
+            // BIT12 honesty for aliased FX: sample-and-hold + 12-bit quantize
+            if(r.kind==Kind::Fx && ((r.fxFamily % 5 + 5) % 5) == 1) {
+                const int period = std::max(2, static_cast<int>(sr / (1500.0 + static_cast<double>(r.tone) * 6500.0)));
+                if(holdCountdown <= 0) {
+                    holdSample = x;
+                    holdCountdown = period;
+                }
+                --holdCountdown;
+                x = holdSample;
+                constexpr double levels = 2048.0;
+                x = std::round(x * levels) / levels;
+            }
         }
         age+=1.0/sr;
         if(age>=r.durationSeconds || env<.000001) active=false;

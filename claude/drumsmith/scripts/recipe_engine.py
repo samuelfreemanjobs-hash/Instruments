@@ -82,7 +82,28 @@ def render_recipe(r, rate, seed):
             elif kind=='HAT': burst=math.exp(-t/(.025+.055*tone)) / max(env,1e-8)
             elif kind=='SNARE': burst=1.0+.35*math.sin(2*math.pi*150*t)
             elif kind=='PERC': burst=math.sin(2*math.pi*(230+tone*330)*t)*1.1
-            elif kind=='FX': burst=math.sin(2*math.pi*(15*t+45*t*t))
+            elif kind=='FX':
+                fam = int(r.get('variant', 0)) % 5
+                dur = max(0.08, float(r['duration_sec']))
+                u = min(1.0, max(0.0, t / dur))
+                if fam == 0:
+                    burst = (0.55 + 0.45 * math.sin(2 * math.pi * (180 + tone * 420) * t)) * (1.0 + 0.35 * math.exp(-t / (0.04 + tone * 0.08)))
+                elif fam == 1:
+                    step_hz = 18.0 + tone * 40.0
+                    step = math.floor(t * step_hz) / step_hz
+                    burst = 0.7 + 0.6 * math.sin(2 * math.pi * (90 + tone * 500) * step)
+                elif fam == 2:
+                    burst = math.sin(2 * math.pi * (8 * t + 90 * t * t + tone * 40 * t))
+                    rev = u ** (0.55 + tone * 0.35)
+                    x = math.tanh(drive * (hp * r['noise_color'] + 0.28 * burst) * rev) * env * 0.52
+                    samples.append(max(-0.97, min(0.97, x)))
+                    continue
+                elif fam == 3:
+                    click = math.exp(-t / (0.008 + tone * 0.01))
+                    body = math.sin(2 * math.pi * (55 + tone * 90) * t) * math.exp(-t / (0.05 + decay * 0.2))
+                    burst = click * 1.4 + body
+                else:
+                    burst = 0.35 + 0.25 * math.sin(2 * math.pi * (12 + tone * 28) * t) + 0.2 * math.sin(2 * math.pi * (0.7 + r['noise_color']) * t)
             x=math.tanh(drive*(hp*r['noise_color'] + .22*math.sin(2*math.pi*(120+tone*150)*t))*burst)*env*.49
         samples.append(max(-0.97,min(.97,x)))
     return samples

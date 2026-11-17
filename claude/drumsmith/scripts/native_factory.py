@@ -35,6 +35,8 @@ def native_run(out, renderer, genre='drift-phonk', count=64, sku='DKL', plan=Non
         r=e['recipe_params'];dst=out/e['path'];dst.parent.mkdir(parents=True,exist_ok=True)
         cmd=[str(renderer),str(dst),str(KINDS[e['kind']]),str(r['pitch_hz'] or 52),str(e['seed']),
              str(r['decay_sec']),str(r['drive']),str(r['tone']),str(r['noise_color']),str(r['duration_sec']),str(e['sample_rate'])]
+        if e['kind']=='FX':
+            cmd.append(str(int(r.get('variant', 0)) % 5))
         subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=35)
         e['sha256']=hashlib.sha256(dst.read_bytes()).hexdigest()
     manifest['status']='NATIVE_RENDERED_NOT_RELEASED'

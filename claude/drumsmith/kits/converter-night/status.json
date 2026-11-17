@@ -62,17 +62,19 @@
     "reverse_sweep": 40,
     "stab_impact": 40,
     "texture": 26,
-    "loop_slots": 36
+    "loop_slots": 36,
+    "dsp": "native DrumEngine fxFamily 0-4 (distinct); fam1 BIT12 S&H+quantize"
   },
   "dr660_proxy": {
     "wav_staged": false,
     "proxy_refs": ["tr808/808_CHARACTER.md", "dr5 kicks/hats"],
-    "loops": ["cnv-dr660-94-a", "cnv-dr660-94-clave", "cnv-dr660-94-thick", "cnv-dr660-134-ht", "cnv-dr660-134-bell", "cnv-dr660-134-crawl"]
+    "loops": ["cnv-dr660-94-a", "cnv-dr660-94-clave", "cnv-dr660-94-thick", "cnv-dr660-134-ht", "cnv-dr660-134-bell", "cnv-dr660-134-crawl"],
+    "note": "Boss_DR-660 zip not in agent uploads — re-attach to stage"
   },
   "gaps": [
     "HITL ear/legal/price/cover open",
     "DR-660 WAV missing from uploads — RATE uses TR-808 808-character proxies + technique; upload Boss_DR-660 zip to lock",
-    "SP-1200/Drumulator WAV missing — BIT12 technique-led"
+    "SP-1200/Drumulator WAV missing — deeper BIT12 calibration still technique-led"
   ],
   "updated": "2026-11-17"
 }
