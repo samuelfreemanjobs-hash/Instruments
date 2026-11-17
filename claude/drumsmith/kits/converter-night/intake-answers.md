@@ -11,7 +11,7 @@ Template: `../../INTAKE.md` · Spec: `kit-spec.md` · R2P: `R2P.md`
 
 ## Full (ship-bound)
 
-5. **Kit name and promise:** **Converter Night** (locked store title, SKU CNV) — original DiskLordz phonk drums: rate-dropped subs, 12-bit snap, cutting hats, cavern claps, cassette dust. See `PRODUCT.md`.
+5. **Kit name and promise:** **Night Crawl** — Memphis Phonk Drum Kit (locked store title; product code CNV) — original DiskLordz phonk drums: rate-dropped subs, 12-bit snap, cutting hats, cavern claps, cassette dust. See `PRODUCT.md`.
 6. **How made:** [x] synthesized from scratch (DRUMSMITH native / recipes). Hardware WAVs = **analysis-only** reverse-engineering unless Sam clears an archive
 7. **Hit-list size:** **88** designed units (see kit-spec) — 74 one-shots + 8 loops + 6 textures
 8. **Pitched content:** [x] yes — subs/cowbells keyed (default **F minor** anchors `[A]`); unpitched NA

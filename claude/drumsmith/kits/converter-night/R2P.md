@@ -34,7 +34,7 @@ Producer-archetype ear lanes (no artist names on SKUs): Converter Crawl · Bitcr
 | XE8, DDD1, RZ-1, Drumtraks, DR-55 `[executed]` | use | Fill | |
 | Roland R-8 ~243 WAV `[executed]` | use | Subsample ≤12 exemplars | Do not inflate |
 | Boss DR-5 duplicate zip `[executed]` | reject | — | Same as `Boss_DR-5__2__0615` |
-| Trademarked machine product titles `[inspected]` | reject | Marketing | Converter Night only |
+| Trademarked machine product titles `[inspected]` | reject | Marketing | **Night Crawl** store title only |
 | 24-bit claim if factory is PCM16 `[inspected]` | reject | Delivery | Spec **44.1 kHz / PCM16 / mono** to match verify_kit |
 | Drift-phonk-only factory `[inspected]` | use | Genre `memphis-tape` + CNV recipes | Deep-research #2 |
 | Illugen SaaS bridge `[inspected]` | park | Post v1 | |

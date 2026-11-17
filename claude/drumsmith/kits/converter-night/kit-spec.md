@@ -1,6 +1,6 @@
-# Kit spec — Converter Night (CNV)
+# Kit spec — Night Crawl (CNV)
 
-**Store title (locked):** **Converter Night** · **SKU:** CNV · see `PRODUCT.md`  
+**Store title (locked):** **Night Crawl** · *Memphis Phonk Drum Kit* · **SKU/code:** CNV · see `PRODUCT.md`  
 **Intake:** `intake-answers.md` · **R2P:** `R2P.md`  
 **Generated:** 2026-11-17 · DRUMSMITH W1 product design  
 **Ship status:** **DRAFT** — `release_ready=false` until RELEASE_GATE HITL
@@ -59,7 +59,7 @@ Example: `CNV_02_SUB_RateDrop_F_01.wav`
 ## Storefront tree
 
 ```text
-CNV_Converter_Night/
+Night_Crawl/
   01_RAW_HARDWARE_ONESHOTS/
     Kicks/  Snares/  Hi-Hats_Closed/  Hi-Hats_Open/
     Percussion/  Crashes_Rides/
@@ -70,7 +70,10 @@ CNV_Converter_Night/
     Acoustic_Rhythm_Loops/  Top_Percussion_Loops/
   04_LOFI_TEXTURES_AND_NOISE/
     Converter_Hum_And_Preamp_Noise/  Vinyl_And_Dust_Layers/
+  05_PARALLEL_PROCESS_BANKS/
+  06_MATCHED_MINI_KITS/
   _DOCS/
+    PRODUCT.txt
     ReadMe_License.txt
     Hardware_Processing_Guide.md
 ```

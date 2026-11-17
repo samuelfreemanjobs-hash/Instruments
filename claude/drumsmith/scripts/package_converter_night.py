@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Package the full Converter Night commercial kit zip.
+"""Package the full Night Crawl commercial kit zip.
 
 Assembles the 512-hit storefront + parallel process banks + matched mini-kits
 under the locked store title. WAVs stay gitignored; zip lands in artifacts.
@@ -16,9 +16,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STOREFRONT = ROOT / "kits/converter-night/storefront/CNV_Converter_Night"
-KIT_TITLE = "Converter Night"
+KIT_TITLE = "Night Crawl"
+KIT_SUBTITLE = "Memphis Phonk Drum Kit"
 SKU = "CNV"
-PACK_DIR_NAME = "CNV_Converter_Night"
+PACK_DIR_NAME = "Night_Crawl"
 
 
 def _count_wavs(path: Path) -> int:
@@ -62,9 +63,10 @@ def package(
         "\n".join(
             [
                 f"{KIT_TITLE}",
-                f"SKU: {SKU}",
+                f"{KIT_SUBTITLE}",
+                f"Product code: {SKU}",
                 "Category: Drum sample kit (oneshots + loops)",
-                "Promise: Original 90s Memphis rap / phonk drums —",
+                "Promise: Original 90s Memphis / phonk drums —",
                 "  rate-dropped subs · converter snap · tape-cutting hats",
                 "Format: 44.1 kHz · PCM16 · mono",
                 "Original synthesis only — not a hardware ROM dump.",
@@ -135,7 +137,7 @@ def main() -> None:
     parser.add_argument(
         "--zip",
         type=Path,
-        default=Path("/opt/cursor/artifacts/CNV_Converter_Night.zip"),
+        default=Path("/opt/cursor/artifacts/Night_Crawl.zip"),
     )
     parser.add_argument("--no-extras", action="store_true")
     args = parser.parse_args()
@@ -144,7 +146,7 @@ def main() -> None:
     pack_root = args.out / PACK_DIR_NAME
     zip_pack(pack_root, args.zip)
     # Stage a few listen picks (full tree can hit artifact FS quirks)
-    listen = Path("/opt/cursor/artifacts") / "CNV_Converter_Night_listen"
+    listen = Path("/opt/cursor/artifacts") / "Night_Crawl_listen"
     if listen.exists():
         shutil.rmtree(listen, ignore_errors=True)
     listen.mkdir(parents=True, exist_ok=True)

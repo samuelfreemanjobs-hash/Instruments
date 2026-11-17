@@ -1,6 +1,8 @@
 # Storefront pack (local)
 
-Tree: `CNV_Converter_Night/` — **512** WAVs (drums @ 3× guide + full FX set) + `_DOCS/`.
+**Store title:** Night Crawl (Memphis Phonk Drum Kit) · product code CNV  
+Source tree: `CNV_Converter_Night/` — **512** WAVs (drums @ 3× guide + full FX set) + `_DOCS/`.  
+Ship zip root: `Night_Crawl/` via `scripts/package_converter_night.py`.
 
 WAVs are **gitignored**. Rebuild:
 

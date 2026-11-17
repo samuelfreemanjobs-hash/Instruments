@@ -1,6 +1,8 @@
 {
   "sku": "CNV",
-  "title": "Converter Night",
+  "title": "Night Crawl",
+  "subtitle": "Memphis Phonk Drum Kit",
+  "former_working_title": "Converter Night",
   "store_title_locked": true,
   "path": "claude/drumsmith/kits/converter-night",
   "phase": "W3_verify",
