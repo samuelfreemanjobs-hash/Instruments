@@ -28,8 +28,8 @@
 | Eerie cowbell | 18 | Detuned dual-square, slow decay, muted |
 | Tape hats CH/OH | 36 | Soft EDGE, heavy tape LPF, 12-bit @ ~22–26 kHz |
 | Grimy perc | 20 | Rim / clave / scrap metal |
-| Loops (optional) | 8 | Sparse 94 BPM crawl |
-| **Target total** | **~162–200** | Mid band 175–225 |
+| Loops | 12 | Sparse 94 BPM crawl |
+| **Locked total** | **180** | Mid band 175–225 |
 
 **Profile knobs:** `bit_depth=11–12`, `tape_lpf=9.5k`, `clip_db=2–3.5`, `pitch_st_kick=36–42`
 
@@ -71,7 +71,7 @@
 | Hard perc | 20 | Conga/tom hybrid |
 | Hats | 28 | Tighter than BB93, less tape |
 | Loops | 10 | 134 half-time bounce |
-| **Target** | **~200** | 175–225 |
+| **Locked total** | **194** | 175–225 |
 
 **Profile knobs:** `root_bias=-2st`, `amp_decay_kick=0.22`, `clip_db=5–7`, `hpf_snare=120`
 
@@ -90,7 +90,7 @@
 | Synced perc | 24 | Cleaner metallic |
 | Tuned 808 bass | 40 | Keyed chromatic set |
 | Loops | 12 | 95–100 / 140 feel |
-| **Target** | **~208–230** | 200–250 |
+| **Locked total** | **208** | 200–250 |
 
 **Profile knobs:** `bit_depth=14–16`, `lofi_sr=44100` (light or off), `tape_lpf=16k`, `clip_db=2–3.5`
 

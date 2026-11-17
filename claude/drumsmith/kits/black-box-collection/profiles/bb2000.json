@@ -3,7 +3,12 @@
   "title": "BLACK BOX 2000",
   "identity": "Southern Circuitry",
   "era": "Digital Transition",
+  "pack_dir": "Black_Box_2000",
+  "prefix": "BB00",
   "target_samples": [200, 250],
+  "sample_rate": 44100,
+  "bit_depth_out": 16,
+  "character": "digital_south",
   "engine": {
     "bit_depth": 15,
     "lofi_sr": 44100,
@@ -11,7 +16,40 @@
     "kick_pitch_st": 28,
     "kick_clip_db": 2.5,
     "snare_clip_db": 3.0,
-    "hat_center_hz": 10500
+    "hat_center_hz": 10500,
+    "kick_duration": 0.2,
+    "amp_decay_kick": 0.12,
+    "cow_f1": 560,
+    "cow_f2": 820
   },
-  "notes": "Punchy digital kicks, snappy snares, tight hats, tuned 808s — generate in a later slice."
+  "inventory": {
+    "KICK": 32,
+    "SNR": 36,
+    "CLAP": 24,
+    "CH": 28,
+    "OH": 12,
+    "PERC": 24,
+    "808": 40,
+    "LOOP": 12
+  },
+  "folder_map": {
+    "KICK": "01_Digital_Kicks",
+    "SNR": "02_Snares",
+    "CLAP": "03_Claps",
+    "CH": "04_Hats_Closed",
+    "OH": "05_Hats_Open",
+    "PERC": "06_Synth_Perc",
+    "808": "07_Tuned_808",
+    "LOOP": "08_Loops"
+  },
+  "name_tags": {
+    "KICK": "Digital",
+    "SNR": "Snappy",
+    "CLAP": "Bright",
+    "CH": "Tight",
+    "OH": "Tight",
+    "PERC": "Synth",
+    "808": "Tuned",
+    "LOOP": "Circuit"
+  }
 }

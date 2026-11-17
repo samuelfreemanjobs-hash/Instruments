@@ -2,6 +2,17 @@
   "sku": "BBDC",
   "title": "DIRTY CIRCUITS",
   "identity": "Corrupted Machine",
+  "pack_dir": "Dirty_Circuits",
+  "prefix": "BBDC",
   "modes": ["CLEAN", "DIRTY", "RUINED"],
-  "notes": "Process bus for clean-to-dirty variants; BB96 Dirty Circuits Edition expands flagship exclusives."
+  "source_sku": "BB96",
+  "target_samples": [120, 200],
+  "edition_bb96dc": {
+    "sku": "BB96DC",
+    "title": "BLACK BOX 96: Dirty Circuits Edition",
+    "identity": "Expanded Flagship",
+    "pack_dir": "Black_Box_96_Dirty_Circuits",
+    "prefix": "BB96DC"
+  },
+  "notes": "Corruption bus: CLEAN/DIRTY/RUINED pairs from BB96 cores + exclusives for BB96DC."
 }

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import sys
 import tempfile
 import unittest
@@ -12,11 +11,9 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.black_box.generate_bb96 import generate_all  # noqa: E402
+from scripts.black_box.generate_era import generate_all, load_profile  # noqa: E402
 
-PROFILE = json.loads(
-    (ROOT / "kits/black-box-collection/profiles/bb96.json").read_text(encoding="utf-8")
-)
+PROFILE = load_profile("bb96")
 
 
 class BlackBox96Tests(unittest.TestCase):

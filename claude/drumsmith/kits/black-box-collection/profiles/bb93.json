@@ -3,7 +3,12 @@
   "title": "BLACK BOX 93",
   "identity": "Memphis Archives",
   "era": "Underground Era",
+  "pack_dir": "Black_Box_93",
+  "prefix": "BB93",
   "target_samples": [175, 225],
+  "sample_rate": 44100,
+  "bit_depth_out": 16,
+  "character": "hollow_tape",
   "engine": {
     "bit_depth": 11,
     "lofi_sr": 22050,
@@ -11,7 +16,42 @@
     "kick_pitch_st": 38,
     "kick_clip_db": 2.5,
     "snare_clip_db": 3.5,
-    "hat_center_hz": 7800
+    "hat_center_hz": 7800,
+    "kick_duration": 0.38,
+    "amp_decay_kick": 0.18,
+    "cow_f1": 510,
+    "cow_f2": 760,
+    "cow_mute": 0.7,
+    "snare_noise_long": true
   },
-  "notes": "Hollow 808s, papery snares, eerie cowbells, tape-degraded hats — generate in a later slice."
+  "inventory": {
+    "808": 32,
+    "SNR": 36,
+    "CLAP": 22,
+    "COW": 20,
+    "CH": 24,
+    "OH": 12,
+    "PERC": 22,
+    "LOOP": 12
+  },
+  "folder_map": {
+    "808": "01_808_Subs",
+    "SNR": "02_Snares",
+    "CLAP": "03_Claps",
+    "COW": "04_Cowbells",
+    "CH": "05_Hats_Closed",
+    "OH": "06_Hats_Open",
+    "PERC": "07_Percussion",
+    "LOOP": "08_Loops"
+  },
+  "name_tags": {
+    "808": "Hollow",
+    "SNR": "Paper",
+    "CLAP": "Dry",
+    "COW": "Eerie",
+    "CH": "Tape",
+    "OH": "Tape",
+    "PERC": "Grimy",
+    "LOOP": "Crawl"
+  }
 }

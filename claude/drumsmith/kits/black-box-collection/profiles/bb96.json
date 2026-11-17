@@ -3,8 +3,12 @@
   "title": "BLACK BOX 96",
   "identity": "The Original Machine",
   "era": "Signature Era",
+  "pack_dir": "Black_Box_96",
+  "prefix": "BB96",
+  "target_samples": [200, 250],
   "sample_rate": 44100,
   "bit_depth_out": 16,
+  "character": "signature",
   "engine": {
     "bit_depth": 12,
     "lofi_sr": 26040,
@@ -13,6 +17,8 @@
     "kick_clip_db": 4.5,
     "snare_clip_db": 5.5,
     "hat_center_hz": 9200,
+    "kick_duration": 0.35,
+    "amp_decay_kick": 0.14,
     "cow_f1": 540,
     "cow_f2": 800
   },
@@ -27,5 +33,29 @@
     "TOM": 20,
     "PERC": 12,
     "LOOP": 12
+  },
+  "folder_map": {
+    "808": "01_808_Subs",
+    "KICK": "02_Kicks",
+    "SNR": "03_Snares",
+    "CLAP": "04_Claps",
+    "CH": "05_Hats_Closed",
+    "OH": "06_Hats_Open",
+    "COW": "07_Cowbells",
+    "TOM": "08_Toms",
+    "PERC": "09_Percussion",
+    "LOOP": "10_Loops"
+  },
+  "name_tags": {
+    "808": "Thick",
+    "KICK": "Punch",
+    "SNR": "Aggro",
+    "CLAP": "Dry",
+    "CH": "Crunch",
+    "OH": "Crunch",
+    "COW": "Metal",
+    "TOM": "Analog",
+    "PERC": "Rim",
+    "LOOP": "Groove"
   }
 }

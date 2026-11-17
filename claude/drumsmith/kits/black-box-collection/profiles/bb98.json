@@ -3,7 +3,12 @@
   "title": "BLACK BOX 98",
   "identity": "Trunk Pressure",
   "era": "Bass Era",
+  "pack_dir": "Black_Box_98",
+  "prefix": "BB98",
   "target_samples": [175, 225],
+  "sample_rate": 44100,
+  "bit_depth_out": 16,
+  "character": "trunk_bass",
   "engine": {
     "bit_depth": 12,
     "lofi_sr": 26040,
@@ -11,8 +16,44 @@
     "kick_pitch_st": 42,
     "kick_clip_db": 6.0,
     "snare_clip_db": 6.5,
+    "hat_center_hz": 8800,
+    "kick_duration": 0.28,
     "amp_decay_kick": 0.22,
-    "root_bias_st": -2
+    "root_bias_st": -2,
+    "cow_f1": 540,
+    "cow_f2": 800
   },
-  "notes": "Heavy sub kicks, booming 808s, cracking snares — generate in a later slice."
+  "inventory": {
+    "KICK": 28,
+    "808": 32,
+    "SNR": 36,
+    "CLAP": 24,
+    "RIM": 16,
+    "PERC": 20,
+    "CH": 20,
+    "OH": 8,
+    "LOOP": 10
+  },
+  "folder_map": {
+    "KICK": "01_Sub_Kicks",
+    "808": "02_808_Bass",
+    "SNR": "03_Snares",
+    "CLAP": "04_Claps",
+    "RIM": "05_Rimshots",
+    "PERC": "06_Hard_Perc",
+    "CH": "07_Hats_Closed",
+    "OH": "08_Hats_Open",
+    "LOOP": "09_Loops"
+  },
+  "name_tags": {
+    "KICK": "Heavy",
+    "808": "Boom",
+    "SNR": "Crack",
+    "CLAP": "Layer",
+    "RIM": "Hard",
+    "PERC": "Hard",
+    "CH": "Tight",
+    "OH": "Tight",
+    "LOOP": "Bounce"
+  }
 }
