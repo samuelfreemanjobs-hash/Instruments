@@ -1,0 +1,30 @@
+{
+  "plugin_name": "SemV",
+  "version": "0.1.0",
+  "track": "apc_greenfield",
+  "apc_phase": "plan",
+  "current_phase": "plan",
+  "vst_path": "vst/SemV",
+  "product_category": "synth.va.sem.arturia_clone",
+  "reference_product": "Arturia SEM V",
+  "ui_framework": "juce-native",
+  "plugin_code": "SemV",
+  "complexity_score": 12,
+  "complexity_tier": "L2",
+  "framework_selection": {
+    "decision": "juce-native",
+    "rationale": "Classic SEM control surface; Arturia-style sections without WebView dependency.",
+    "implementation_strategy": "SemEngine in Source/Dsp/; PluginEditor mirroring osc/filter/env/lfo/fx strips"
+  },
+  "targets": ["vst3_linux_x86_64", "vst3_standalone"],
+  "validation": {
+    "creative_brief_exists": true,
+    "parameter_spec_exists": true,
+    "architecture_defined": true,
+    "ui_framework_selected": true,
+    "design_complete": false,
+    "code_complete": false,
+    "tests_passed": false,
+    "ship_ready": false
+  }
+}

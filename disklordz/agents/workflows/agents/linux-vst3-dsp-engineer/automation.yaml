@@ -1,0 +1,17 @@
+# Automation — Linux VST3 DSP Engineer (`linux-vst3-dsp-engineer`)
+
+platform: github
+trigger: pull_request + daily fleet tick
+primary: .github/workflows/repo-health.yml
+
+## Steps
+1. APC gates + doc links (repo-health)
+2. build.yml vst paths on PR when C++ changes
+3. tools/build-vst-aarch64-linux.sh (operator / cloud agent)
+4. scripts/vst/verify-mpc-sample-vst3.sh
+
+## Invoke agent
+Read: disklordz/agents/profit/linux-vst3-dsp-engineer/agent.md
+
+## PM ADD
+See: disklordz/agents/workflows/PM_ADD.md#linux-vst3-dsp-engineer

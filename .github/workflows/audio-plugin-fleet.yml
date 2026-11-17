@@ -30,6 +30,10 @@ jobs:
         run: |
           python3 scripts/audio-plugin/factory-queue.py
           python3 disklordz/audio-command/scripts/coach_outreach.py || true
+      - name: VST factory fleet health (vst-factory-director)
+        run: |
+          python3 -m pip install -q -e "disklordz/vst-factory[dev]"
+          python3 scripts/vst-factory/fleet_tick.py
       - name: Weekly review (manual dispatch only)
         if: github.event.inputs.weekly_review == 'true'
         run: |

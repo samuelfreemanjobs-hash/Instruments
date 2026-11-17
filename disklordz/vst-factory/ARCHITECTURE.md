@@ -65,6 +65,8 @@ Prompt + category
   → model_router (Phase 1: export Cursor prompt text to DB / API)
 ```
 
+Overnight agent queue (manual / Claude Code): `data/overnight-queue.json` — JSON array of `{ name, type, code, prompt, ... }` entries (e.g. **ProphetMod16**). Not consumed automatically by `uvicorn` yet; paste prompt or wire a future worker.
+
 Portfolio / taxonomy (read-only overlays):
 
 - `GET /api/portfolio` — `data/product-library.json` merged with SQLite projects

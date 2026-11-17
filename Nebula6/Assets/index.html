@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlaySynth</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-theme="base">
+  <header class="chassis">
+    <h1 id="plugin-title">PlaySynth</h1>
+    <div class="screws"><span></span><span></span></div>
+  </header>
+  <main class="panel">
+  <section class="xy-stack">
+      <canvas id="scope" width="640" height="80"></canvas>
+      <motion class="xy-pad" id="xy-pad">
+        <svg viewBox="0 0 200 200" class="xy-svg">
+          <rect x="8" y="8" width="184" height="184" rx="12" class="xy-frame"/>
+          <circle cx="100" cy="100" r="68" class="xy-grid"/>
+          <circle id="xy-dot" cx="100" cy="100" r="10" class="xy-dot"/>
+        </svg>
+      </motion>
+      <label>A/B BLEND</label>
+    </section>
+    <section class="knob-row" id="macro-knobs"></section>
+    <footer class="actions">
+      <button type="button" id="dice" class="btn">Dice</button>
+      <button type="button" id="lock-macros" class="btn">Lock Macros</button>
+      <select id="ui-scale" aria-label="UI scale">
+        <option value="0">75%</option>
+        <option value="1" selected>100%</option>
+        <option value="2">125%</option>
+        <option value="3">150%</option>
+      </select>
+      <button type="button" id="midi-drag" class="btn">Drag MIDI</button>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

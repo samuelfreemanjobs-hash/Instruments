@@ -6,7 +6,8 @@ Factory specialists are **internal** role prompts under `disklordz/vst-factory/a
 
 | ID | Role |
 |----|------|
-| [vst-factory-director](../disklordz/agents/profit/vst-factory-director/agent.md) | Hybrid factory foreman: portfolio, gates, product WO; delegates C++ to Cursor |
+| [vst-factory-director](../disklordz/agents/profit/vst-factory-director/agent.md) | Hybrid factory foreman: portfolio, gates, product WO; **CI** via `audio-plugin-fleet.yml` + `fleet_tick.py` |
+| [linux-vst3-dsp-engineer](../disklordz/agents/profit/linux-vst3-dsp-engineer/agent.md) | **Active implementer**: Linux/x86_64 + **aarch64** JUCE VST3 (MPC Sample), APC test/ship — **CI** via `repo-health` + `build.yml` on plugin paths |
 
 ## Internal factory roles
 
@@ -15,7 +16,7 @@ Factory specialists are **internal** role prompts under `disklordz/vst-factory/a
 | [architect.md](../disklordz/vst-factory/agents/architect.md) | `factory-spec/v2`, taxonomy, acceptance |
 | [dsp.md](../disklordz/vst-factory/agents/dsp.md) | factory-lib composition, DSP contracts |
 | [dsp-research.md](../disklordz/vst-factory/agents/dsp-research.md) | Algorithm compare → `approve_dsp_promotion` |
-| [cpp.md](../disklordz/vst-factory/agents/cpp.md) | APC/JUCE implementation slices |
+| [cpp.md](../disklordz/vst-factory/agents/cpp.md) | APC/JUCE implementation slices (greenfield); **`linux-vst3-dsp-engineer`** owns shipped Linux VST3 + arm64 evidence |
 | [gui.md](../disklordz/vst-factory/agents/gui.md) | GUI DSL, APVTS bindings |
 | [midi.md](../disklordz/vst-factory/agents/midi.md) | MIDI/MPE modules |
 | [sampler-architect.md](../disklordz/vst-factory/agents/sampler-architect.md) | Keygroup / slice maps |

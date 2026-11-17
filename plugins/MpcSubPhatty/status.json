@@ -1,0 +1,13 @@
+{
+  "plugin_name": "MpcSubPhatty",
+  "version": "1.0.0",
+  "apc_phase": "impl",
+  "vst_path": "vst/MpcSubPhatty",
+  "ui_framework": "headless",
+  "validation": {
+    "creative_brief_exists": true,
+    "design_complete": true,
+    "code_complete": true,
+    "tests_passed": true
+  }
+}

@@ -10,7 +10,7 @@
     "workflow-automation",
     "pm-agent"
   ],
-  "agent_count": 36,
+  "agent_count": 37,
   "agents": [
     {
       "id": "workflow-automation",
@@ -628,12 +628,41 @@
     {
       "id": "vst-factory-director",
       "title": "VST Factory Director",
-      "activation": "manual",
-      "announcement": "",
-      "automation": {},
+      "activation": "ci_scheduled",
+      "announcement": "I'm **VST Factory Director** \u2014 I run hybrid factory gates, portfolio and product work orders; I delegate Linux VST3 DSP implementation to linux-vst3-dsp-engineer.",
+      "automation": {
+        "platform": "github",
+        "trigger": "daily schedule + repo-health on push/PR",
+        "workflow_file": ".github/workflows/audio-plugin-fleet.yml",
+        "steps": [
+          "scripts/vst-factory/fleet_tick.py (vst-factory pytest + agent trees)",
+          "disklordz/vst-factory HTTP portfolio gates (manual uvicorn)",
+          "Route C++ slices to linux-vst3-dsp-engineer"
+        ]
+      },
       "profit_entry": "disklordz/agents/profit/vst-factory-director/agent.md",
       "copilot_skill": ".github/skills/disklordz-vst-factory-director/SKILL.md",
       "automation_path": "disklordz/agents/workflows/agents/vst-factory-director/automation.yaml"
+    },
+    {
+      "id": "linux-vst3-dsp-engineer",
+      "title": "Linux VST3 DSP Engineer",
+      "activation": "ci_on_pr",
+      "announcement": "I'm **Linux VST3 DSP Engineer** \u2014 I implement JUCE VST3 for Linux x86_64 and aarch64 (MPC Sample / Melodee), APC test/ship, and pluginval evidence.",
+      "automation": {
+        "platform": "github",
+        "trigger": "pull_request + daily fleet tick",
+        "workflow_file": ".github/workflows/repo-health.yml",
+        "steps": [
+          "APC gates + doc links (repo-health)",
+          "build.yml vst paths on PR when C++ changes",
+          "tools/build-vst-aarch64-linux.sh (operator / cloud agent)",
+          "scripts/vst/verify-mpc-sample-vst3.sh"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/linux-vst3-dsp-engineer/agent.md",
+      "copilot_skill": ".github/skills/disklordz-linux-vst3-dsp-engineer/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/linux-vst3-dsp-engineer/automation.yaml"
     },
     {
       "id": "hardware-preset-designer",
@@ -698,7 +727,11 @@
     },
     {
       "path": ".github/workflows/audio-plugin-fleet.yml",
-      "serves": "audio-business-copilot, plugin-factory-liaison, golden-wav-qa"
+      "serves": "audio-business-copilot, plugin-factory-liaison, golden-wav-qa, vst-factory-director, linux-vst3-dsp-engineer"
+    },
+    {
+      "path": ".github/workflows/repo-health.yml",
+      "serves": "vst-factory-director, linux-vst3-dsp-engineer, golden-wav-qa"
     },
     {
       "path": ".github/workflows/audio-coach-daily-nudge.yml",

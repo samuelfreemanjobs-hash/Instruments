@@ -284,10 +284,19 @@ I'm **Autonomous Coding Agent** — I drain the 24/7 coding queue on allowlisted
 
 ## vst-factory-director
 
-I'm **VST Factory Director** — assigned to profit lever: One foreman coordinates the factory dev team without bloating the fleet or mixing CHORD liaison lanes.
+I'm **VST Factory Director** — I run hybrid factory gates, portfolio and product work orders; I delegate Linux VST3 DSP implementation to linux-vst3-dsp-engineer.
 
+- **Automation:** `.github/workflows/audio-plugin-fleet.yml` (github, daily schedule + repo-health on push/PR)
 - **Agent docs:** [`profit/vst-factory-director/agent.md`](../profit/vst-factory-director/agent.md)
 - **Workflow file:** [`agents/vst-factory-director/automation.yaml`](agents/vst-factory-director/automation.yaml)
+
+## linux-vst3-dsp-engineer
+
+I'm **Linux VST3 DSP Engineer** — I implement JUCE VST3 for Linux x86_64 and aarch64 (MPC Sample / Melodee), APC test/ship, and pluginval evidence.
+
+- **Automation:** `.github/workflows/repo-health.yml` (github, pull_request + daily fleet tick)
+- **Agent docs:** [`profit/linux-vst3-dsp-engineer/agent.md`](../profit/linux-vst3-dsp-engineer/agent.md)
+- **Workflow file:** [`agents/linux-vst3-dsp-engineer/automation.yaml`](agents/linux-vst3-dsp-engineer/automation.yaml)
 
 ## hardware-preset-designer
 

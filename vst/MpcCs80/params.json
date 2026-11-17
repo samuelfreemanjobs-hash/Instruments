@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "plugin": "MpcCs80",
+  "melodee_macro_order": ["cutoff", "res", "layerBalance"],
+  "parameters": [
+    { "id": "cutoff", "name": "Cutoff", "type": "float", "min": 20, "max": 16000, "default": 2200 },
+    { "id": "res", "name": "Resonance", "type": "float", "min": 0, "max": 0.9, "default": 0.42 },
+    { "id": "layerBalance", "name": "Layer Balance", "type": "float", "min": 0, "max": 1, "default": 0.48 }
+  ]
+}

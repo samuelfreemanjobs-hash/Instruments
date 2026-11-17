@@ -1,0 +1,29 @@
+{
+  "plugin_name": "ProphetMod16",
+  "version": "0.1.0",
+  "track": "juce8_desktop",
+  "apc_phase": "plan",
+  "current_phase": "plan",
+  "vst_path": "ProphetMod16",
+  "product_category": "synth.poly.analog_mod",
+  "ui_framework": "webview",
+  "complexity_score": 14,
+  "complexity_tier": "L3",
+  "framework_selection": {
+    "decision": "juce8_webview",
+    "rationale": "Full Sequential-style UI with 8-row mod matrix; desktop VST3 + Standalone first.",
+    "implementation_strategy": "Extend ProphetRev2Trap engine patterns; juce::Synthesiser voices; mod matrix via APVTS flat params; control-rate 16 samples"
+  },
+  "targets": ["vst3_windows_x64", "vst3_linux_x86_64", "standalone"],
+  "validation": {
+    "creative_brief_exists": true,
+    "parameter_spec_exists": true,
+    "architecture_defined": true,
+    "ui_framework_selected": true,
+    "design_complete": false,
+    "code_complete": false,
+    "tests_passed": false,
+    "ship_ready": false
+  },
+  "related_products": ["ProphetRev2Trap"]
+}

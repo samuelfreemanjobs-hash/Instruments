@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "agent_count": 36,
+  "agent_count": 37,
   "agents": [
     {
       "id": "workflow-automation",
@@ -516,9 +516,35 @@
     {
       "id": "vst-factory-director",
       "title": "VST Factory Director",
-      "announcement": "",
-      "automation": {},
+      "announcement": "I'm **VST Factory Director** \u2014 I run hybrid factory gates, portfolio and product work orders; I delegate Linux VST3 DSP implementation to linux-vst3-dsp-engineer.",
+      "automation": {
+        "platform": "github",
+        "trigger": "daily schedule + repo-health on push/PR",
+        "workflow_file": ".github/workflows/audio-plugin-fleet.yml",
+        "steps": [
+          "scripts/vst-factory/fleet_tick.py (vst-factory pytest + agent trees)",
+          "disklordz/vst-factory HTTP portfolio gates (manual uvicorn)",
+          "Route C++ slices to linux-vst3-dsp-engineer"
+        ]
+      },
       "automation_path": "disklordz/agents/workflows/agents/vst-factory-director/automation.yaml"
+    },
+    {
+      "id": "linux-vst3-dsp-engineer",
+      "title": "Linux VST3 DSP Engineer",
+      "announcement": "I'm **Linux VST3 DSP Engineer** \u2014 I implement JUCE VST3 for Linux x86_64 and aarch64 (MPC Sample / Melodee), APC test/ship, and pluginval evidence.",
+      "automation": {
+        "platform": "github",
+        "trigger": "pull_request + daily fleet tick",
+        "workflow_file": ".github/workflows/repo-health.yml",
+        "steps": [
+          "APC gates + doc links (repo-health)",
+          "build.yml vst paths on PR when C++ changes",
+          "tools/build-vst-aarch64-linux.sh (operator / cloud agent)",
+          "scripts/vst/verify-mpc-sample-vst3.sh"
+        ]
+      },
+      "automation_path": "disklordz/agents/workflows/agents/linux-vst3-dsp-engineer/automation.yaml"
     },
     {
       "id": "hardware-preset-designer",

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "plugin": "MpcSubPhatty",
+  "shipped_in_binary": 16,
+  "expansion_target": 200,
+  "seed_programs": [
+    "Sub Phatty 808",
+    "Growl Reese Bass",
+    "Acid Phatty",
+    "Grit Moog Bass"
+  ]
+}

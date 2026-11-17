@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "plugin": "MpcAnalogSynth",
+  "parameters": [
+    { "id": "cutoff", "name": "Cutoff", "type": "float", "min": 40, "max": 16000, "default": 1200 },
+    { "id": "res", "name": "Resonance", "type": "float", "min": 0.7, "max": 8, "default": 1.2 },
+    { "id": "detune", "name": "Osc Detune", "type": "float", "min": -0.5, "max": 0.5, "default": 0.08 },
+    { "id": "attack", "name": "Attack", "type": "float", "min": 0.005, "max": 2, "default": 0.02 },
+    { "id": "decay", "name": "Decay", "type": "float", "min": 0.01, "max": 2, "default": 0.3 },
+    { "id": "sustain", "name": "Sustain", "type": "float", "min": 0, "max": 1, "default": 0.7 },
+    { "id": "release", "name": "Release", "type": "float", "min": 0.01, "max": 3, "default": 0.25 }
+  ],
+  "presets": [
+    { "name": "Init", "values": { "cutoff": 1200, "res": 1.2, "detune": 0.08 } },
+    { "name": "Warm Pad", "values": { "cutoff": 2800, "res": 0.9, "detune": 0.12 } },
+    { "name": "Acid Lead", "values": { "cutoff": 900, "res": 5.5, "detune": 0.18 } },
+    { "name": "Soft Brass", "values": { "cutoff": 4200, "res": 1.8, "detune": 0.05 } }
+  ]
+}

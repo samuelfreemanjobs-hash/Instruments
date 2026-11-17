@@ -38,7 +38,8 @@ Repo-wide companion to [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) and [PM ADD
 | `audio-business-copilot` | Audio Business Copilot | `ci_scheduled` | `.github/workflows/audio-plugin-fleet.yml` | `.github/skills/disklordz-audio-business-copilot/SKILL.md` |
 | `plugin-factory-liaison` | Plugin Factory Liaison | `ci_scheduled` | `.github/workflows/audio-plugin-fleet.yml` | `.github/skills/disklordz-plugin-factory-liaison/SKILL.md` |
 | `autonomous-coding-agent` | Autonomous Coding Agent (24/7) | `ci_scheduled` | `.github/workflows/autonomous-coding-agent.yml` | `.github/skills/disklordz-autonomous-coding-agent/SKILL.md` |
-| `vst-factory-director` | VST Factory Director | `manual` | `TBD` | `.github/skills/disklordz-vst-factory-director/SKILL.md` |
+| `vst-factory-director` | VST Factory Director | `ci_scheduled` | `.github/workflows/audio-plugin-fleet.yml` | `.github/skills/disklordz-vst-factory-director/SKILL.md` |
+| `linux-vst3-dsp-engineer` | Linux VST3 DSP Engineer | `ci_on_pr` | `.github/workflows/repo-health.yml` | `.github/skills/disklordz-linux-vst3-dsp-engineer/SKILL.md` |
 | `hardware-preset-designer` | Hardware Preset Designer | `ci_on_pr` | `.github/workflows/synth-forge.yml` | `.github/skills/disklordz-hardware-preset-designer/SKILL.md` |
 
 ### Activation legend
