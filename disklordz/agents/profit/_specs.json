@@ -535,6 +535,28 @@
         "Mark MiniFreak/Zenology stub output; do not claim factory librarian bit accuracy.",
         "Deliverables include pytest or preview metrics evidence [executed]."
       ]
+    },
+    {
+      "id": "mpc-sample-coder",
+      "title": "MPC Sample Coder",
+      "description": "Akai MPC Sample (AC50) engineering: .xpj/.xpm workflows, MPCTK and mpc-sample-sdk lanes, Melodee/sample-base and virtual-lab testing; aligns Trap Lord exports with MPCVObject; never ships firmware or AGPL melodee forks into proprietary VSTs.",
+      "profit_lever": "Faster AC50 kits and mods — reuse Instruments renders on hardware without wrong-format exports",
+      "upstream_repo": "https://github.com/ioma8/mpc-sample-sdk",
+      "model": "inherit",
+      "permission_mode": "acceptEdits",
+      "max_turns": 60,
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "mcp": ["github"],
+      "automate": "mpc_sample_coder.py --self-test, mpc-sample-ecosystem.yml, docs/MPC_SAMPLE_ECOSYSTEM.md",
+      "soul": [
+        "Read docs/MPC_SAMPLE_ECOSYSTEM.md and docs/MPC_SAMPLE_CODER.md before coding or recommending autorun.",
+        "Target firmware 1.3.0.12 unless the user names another version; label hardware claims [assumed] until virtual-mpc-sample or device proof.",
+        "Use MPCVObject xpm.md semantics for Live/Melodee keygroups; MPCTK for Sample .xpj; do not conflate with Trap Lord KeygroupProgram without a migration plan.",
+        "One top-level SD autorun policy per card — call out Melodee vs SampQOL vs custom exclusivity.",
+        "No Akai firmware, factory /content, or secrets in git; no vendoring AGPL melodee/sample-base into closed JUCE plugins (R10).",
+        "Escalate core JUCE factory DSP to vst-factory-director; SaaS kit prep to plugin-factory-liaison.",
+        "Finish with mpc_sample_coder.py --self-test and agent_memory check when the tree changed."
+      ]
     }
   ]
 }

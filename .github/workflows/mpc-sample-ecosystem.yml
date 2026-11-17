@@ -1,0 +1,30 @@
+name: MPC Sample ecosystem
+
+on:
+  pull_request:
+    paths:
+      - "docs/MPC_SAMPLE*.md"
+      - ".cursor/skills/mpc-sample-*/**"
+      - ".agents/skills/mpc-sample-coder/**"
+      - "disklordz/agents/profit/mpc-sample-coder/**"
+      - "disklordz/agents/profit/_specs.json"
+      - "disklordz/integrations/agents/mpc_sample_coder.py"
+      - "disklordz/trap-lord-synth/tests/test_mpc_xpm_export.py"
+      - "disklordz/trap-lord-synth/Source/MpcXpmWriter.*"
+      - ".github/workflows/mpc-sample-ecosystem.yml"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: MPC Sample Coder self-test
+        run: python3 disklordz/integrations/agents/mpc_sample_coder.py --self-test
+      - name: Trap Lord xpm schema smoke
+        run: python3 disklordz/trap-lord-synth/tests/test_mpc_xpm_export.py
+      - name: Fleet agent tree
+        run: python3 disklordz/agents/profit/scaffold_agents.py --check

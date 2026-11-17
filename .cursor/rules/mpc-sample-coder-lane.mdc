@@ -1,0 +1,22 @@
+---
+description: Route Akai MPC Sample (AC50) coding to the mpc-sample-coder fleet agent
+globs:
+  - "docs/MPC_SAMPLE*.md"
+  - ".cursor/skills/mpc-sample-*/**"
+  - "disklordz/agents/profit/mpc-sample-coder/**"
+  - "disklordz/integrations/agents/mpc_sample_coder.py"
+alwaysApply: false
+---
+
+# MPC Sample coder lane
+
+When the task touches **MPC Sample (AC50)**, **`.xpj`**, **`.xpm`**, **MPCTK**, **mpc-sample-sdk**, **Melodee**, **virtual-mpc-sample**, or **SD autorun**:
+
+1. Read `docs/MPC_SAMPLE_ECOSYSTEM.md` and `disklordz/agents/profit/mpc-sample-coder/PLAYBOOK.md`.
+2. Load `.cursor/skills/mpc-sample-coder/SKILL.md`, then the lane skill (`mpc-sample-xpj`, `mpc-sample-xpm-keygroup`, `mpc-sample-rust-mod`, `mpc-sample-virtual-lab`, or `mpc-sample-sd-autorun`).
+3. Fleet agent: `disklordz/agents/profit/mpc-sample-coder/agent.md` · Copilot: `disklordz-mpc-sample-coder`.
+4. Run `python3 scripts/agent_memory.py recall --agent mpc-sample-coder <keywords>` at session start.
+5. Do **not** mix Live `MPCVObject` keygroups with Sample `.xpj` without stating the target device.
+6. Escalate Trap Lord / JUCE DSP to `vst-factory-director`; AGPL Melodee code is study-only for proprietary plugins.
+
+Verify: `python3 disklordz/integrations/agents/mpc_sample_coder.py --self-test`.

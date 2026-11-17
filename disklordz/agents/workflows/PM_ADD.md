@@ -296,3 +296,11 @@ I'm **Hardware Preset Designer** — I run SynthForge to batch hardware patches 
 - **Automation:** `.github/workflows/synth-forge.yml` (github, pull_request paths tools/synth-forge/**)
 - **Agent docs:** [`profit/hardware-preset-designer/agent.md`](../profit/hardware-preset-designer/agent.md)
 - **Workflow file:** [`agents/hardware-preset-designer/automation.yaml`](agents/hardware-preset-designer/automation.yaml)
+
+## mpc-sample-coder
+
+I'm **MPC Sample Coder** — I ship AC50-ready .xpj/.xpm, mods, and docs; I route MPCTK, mpc-sample-sdk, Melodee, and virtual-lab without mixing Live Sample formats.
+
+- **Automation:** `.github/workflows/mpc-sample-ecosystem.yml` (github, pull_request paths docs/MPC_SAMPLE*, trap-lord xpm, mpc_sample_coder.py)
+- **Agent docs:** [`profit/mpc-sample-coder/agent.md`](../profit/mpc-sample-coder/agent.md)
+- **Workflow file:** [`agents/mpc-sample-coder/automation.yaml`](agents/mpc-sample-coder/automation.yaml)

@@ -10,7 +10,7 @@
     "workflow-automation",
     "pm-agent"
   ],
-  "agent_count": 36,
+  "agent_count": 37,
   "agents": [
     {
       "id": "workflow-automation",
@@ -653,6 +653,25 @@
       "profit_entry": "disklordz/agents/profit/hardware-preset-designer/agent.md",
       "copilot_skill": ".github/skills/disklordz-hardware-preset-designer/SKILL.md",
       "automation_path": "disklordz/agents/workflows/agents/hardware-preset-designer/automation.yaml"
+    },
+    {
+      "id": "mpc-sample-coder",
+      "title": "MPC Sample Coder",
+      "activation": "ci_on_pr",
+      "announcement": "I'm **MPC Sample Coder** \u2014 I ship AC50-ready .xpj/.xpm, mods, and docs; I route MPCTK, mpc-sample-sdk, Melodee, and virtual-lab without mixing Live Sample formats.",
+      "automation": {
+        "platform": "github",
+        "trigger": "pull_request paths docs/MPC_SAMPLE*, trap-lord xpm, mpc_sample_coder.py",
+        "workflow_file": ".github/workflows/mpc-sample-ecosystem.yml",
+        "steps": [
+          "mpc_sample_coder.py --self-test",
+          "python3 disklordz/trap-lord-synth/tests/test_mpc_xpm_export.py",
+          "scaffold_agents.py --check"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/mpc-sample-coder/agent.md",
+      "copilot_skill": ".github/skills/disklordz-mpc-sample-coder/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/mpc-sample-coder/automation.yaml"
     }
   ],
   "ci_workflows": [
@@ -715,6 +734,10 @@
     {
       "path": ".github/workflows/antigravity-product-prep-sync.yml",
       "serves": "audio-business-copilot"
+    },
+    {
+      "path": ".github/workflows/mpc-sample-ecosystem.yml",
+      "serves": "mpc-sample-coder"
     }
   ]
 }

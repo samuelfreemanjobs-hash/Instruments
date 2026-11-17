@@ -53,6 +53,7 @@ ACTIVATION: dict[str, str] = {
     "audio-business-copilot": "ci_scheduled",
     "plugin-factory-liaison": "ci_scheduled",
     "autonomous-coding-agent": "ci_scheduled",
+    "mpc-sample-coder": "ci_on_pr",
 }
 
 CI_WORKFLOWS = [
@@ -71,6 +72,7 @@ CI_WORKFLOWS = [
     (".github/workflows/audio-plugin-weekly.yml", "audio-business-copilot, plugin-factory-liaison"),
     (".github/workflows/autonomous-coding-agent.yml", "autonomous-coding-agent"),
     (".github/workflows/antigravity-product-prep-sync.yml", "audio-business-copilot"),
+    (".github/workflows/mpc-sample-ecosystem.yml", "mpc-sample-coder"),
 ]
 
 # First-person announcements + one-line help for Disklordz
@@ -214,6 +216,10 @@ ANNOUNCE: dict[str, str] = {
     "autonomous-coding-agent": (
         "I'm **Autonomous Coding Agent** — I drain the 24/7 coding queue on allowlisted paths "
         "and escalate plugin C++ to the factory."
+    ),
+    "mpc-sample-coder": (
+        "I'm **MPC Sample Coder** — I ship AC50-ready .xpj/.xpm, mods, and docs; "
+        "I route MPCTK, mpc-sample-sdk, Melodee, and virtual-lab without mixing Live Sample formats."
     ),
 }
 
@@ -443,6 +449,16 @@ WORKFLOWS: dict[str, dict] = {
         "trigger": "every 6h",
         "workflow_file": ".github/workflows/autonomous-coding-agent.yml",
         "steps": ["tick.py", "Cursor timer 4h cloud slices"],
+    },
+    "mpc-sample-coder": {
+        "platform": "github",
+        "trigger": "pull_request paths docs/MPC_SAMPLE*, trap-lord xpm, mpc_sample_coder.py",
+        "workflow_file": ".github/workflows/mpc-sample-ecosystem.yml",
+        "steps": [
+            "mpc_sample_coder.py --self-test",
+            "python3 disklordz/trap-lord-synth/tests/test_mpc_xpm_export.py",
+            "scaffold_agents.py --check",
+        ],
     },
 }
 
