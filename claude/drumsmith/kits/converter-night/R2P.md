@@ -52,7 +52,7 @@ See `intake-answers.md` (commercial intent; devices UNVERIFIED; price HITL).
 
 ## Spec status
 
-`draft` — kit maxed to **384** (3× storefront guide; factory ceiling 512); **not** ship-candidate until RELEASE_GATE HITL.
+`draft` — kit maxed to **512** (drums @ 3× guide + full useful FX set); **not** ship-candidate until RELEASE_GATE HITL.
 
 ## Next skills
 

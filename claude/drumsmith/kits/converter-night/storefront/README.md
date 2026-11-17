@@ -1,6 +1,6 @@
 # Storefront pack (local)
 
-Tree: `CNV_Converter_Night/` — **384** WAVs mapped from native kinds + `_DOCS/`.
+Tree: `CNV_Converter_Night/` — **512** WAVs (drums @ 3× guide + full FX set) + `_DOCS/`.
 
 WAVs are **gitignored**. Rebuild:
 
@@ -8,9 +8,9 @@ WAVs are **gitignored**. Rebuild:
 cd claude/drumsmith
 cmake -S native -B native/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12
 cmake --build native/build -j --target drumsmith-render
-rm -rf /tmp/CNV_W2_384
+rm -rf /tmp/CNV_W2_512
 python3 scripts/native_factory.py \
-  --out /tmp/CNV_W2_384 \
+  --out /tmp/CNV_W2_512 \
   --renderer native/build/drumsmith-render \
   --genre memphis-tape --sku CNV --plan converter-night
 ```

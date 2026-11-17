@@ -7,8 +7,8 @@ from pathlib import Path
 TAIL_LIGHT_STATIC_PLAN = [("808",8),("KICK",8),("SNARE",8),("CLAP",6),
                           ("HAT",12),("COWBELL",8),("PERC",8),("FX",6)]
 
-# Converter Night (CNV) — 384-hit SKU (3× prior 128 guide mix). Factory ceiling raised to 512.
-# RATE/EDGE/ROMP hero weight + full storefront roles.
+# Converter Night (CNV) — 512-hit SKU (drums @ 3× guide + full useful FX set).
+# RATE/EDGE/ROMP hero weight; FX covers crash/alias/reverse/stab/texture + loop slots.
 CONVERTER_NIGHT_PLAN = [
     ("808", 60),   # pitched subs (RATE) — hero
     ("KICK", 48),  # BIT12, ANLG, ROMP, SIMM, 707-punch
@@ -17,7 +17,7 @@ CONVERTER_NIGHT_PLAN = [
     ("HAT", 66),   # 42 closed + 24 open (EDGE / ANLG / ROMP)
     ("COWBELL", 15),
     ("PERC", 15),  # Latin capped (with cowbell = 30)
-    ("FX", 102),   # crash 24 + aliased 30 + rhythm 18 + top 18 + tex 12
+    ("FX", 230),   # crash40 + alias48 + reverse40 + stab40 + tex26 + loop slots36
 ]
 
 PLANS = {

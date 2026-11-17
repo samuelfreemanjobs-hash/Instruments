@@ -24,9 +24,9 @@ Original DiskLordz **90s Memphis rap / phonk** drums — converter crawl, 12-bit
 | Peak ceiling | −0.1 dBFS sample peak | S |
 | Key anchor | F minor for pitched subs/cowbell | A |
 
-## Hit manifest (384 — 3× storefront guide)
+## Hit manifest (512 — drums @ 3× guide + full useful FX)
 
-Restores the storefront/bank guide mix at **3×** prior 128 SKU. Factory ceiling is **512**. Refs stay analysis-only; all ship hits are original synthesis.
+Drums stay at the **3×** storefront guide; FX expands to every useful Memphis/phonk family through the **512** factory ceiling. Refs stay analysis-only; all ship hits are original synthesis.
 
 | # | Role | Count | Folder | Banks | Naming prefix |
 |---|------|------:|--------|-------|---------------|
@@ -36,22 +36,24 @@ Restores the storefront/bank guide mix at **3×** prior 128 SKU. Factory ceiling
 | 4 | Hat closed | 42 | `01_…/Hi-Hats_Closed/` | EDGE, ANLG, 808-lofi | `CNV_01_CH_` |
 | 5 | Hat open | 24 | `01_…/Hi-Hats_Open/` | EDGE, ANLG, ROMP | `CNV_01_OH_` |
 | 6 | Perc / cowbell | 30 | `01_…/Percussion/` | Latin≤, RATE cowbell | `CNV_01_PERC_` / `CNV_01_COW_` |
-| 7 | Crash / ride | 24 | `01_…/Crashes_Rides/` | ROMP, RX | `CNV_01_CYM_` |
+| 7 | Crash / ride | 40 | `01_…/Crashes_Rides/` | ROMP, RX | `CNV_01_CYM_` |
 | 8 | Pitched sub | 60 | `02_…/Pitched_Sub_Basses/` | RATE | `CNV_02_SUB_` |
-| 9 | Aliased one-shot | 30 | `02_…/Aliased_One_Shots/` | BIT12, ROMP | `CNV_02_ALS_` |
-| 10 | Rhythm loop | 18 | `03_…/Acoustic_Rhythm_Loops/` | true 2-bar | `CNV_03_LOOP_` |
-| 11 | Top loop | 18 | `03_…/Top_Percussion_Loops/` | true 2-bar | `CNV_03_TOP_` |
-| 12 | Texture | 12 | `04_…/` | synth noise | `CNV_04_TEX_` |
-| | **Total** | **384** | | | |
+| 9 | Aliased one-shot | 48 | `02_…/Aliased_One_Shots/` | BIT12, ROMP | `CNV_02_ALS_` |
+| 10 | Reverse / sweep | 40 | `02_…/Reverse_And_Sweeps/` | FX family | `CNV_02_REV_` |
+| 11 | Stab / impact | 40 | `02_…/Stabs_And_Impacts/` | FX family | `CNV_02_STAB_` |
+| 12 | Rhythm loop | 18 | `03_…/Acoustic_Rhythm_Loops/` | true 2-bar | `CNV_03_LOOP_` |
+| 13 | Top loop | 18 | `03_…/Top_Percussion_Loops/` | true 2-bar | `CNV_03_TOP_` |
+| 14 | Texture | 26 | `04_…/` | hum + dust | `CNV_04_TEX_` |
+| | **Total** | **512** | | | |
 
-Native plan mix: 808×60 · KICK×48 · SNARE×54 · CLAP×24 · HAT×66 · COWBELL×15 · PERC×15 · FX×102.
+Native plan mix: 808×60 · KICK×48 · SNARE×54 · CLAP×24 · HAT×66 · COWBELL×15 · PERC×15 · FX×230.
 
 Full filename: `CNV_<CODE>_<VOICE>_<DESC>_<KEY|NA>_<##>.wav`  
 Example: `CNV_02_SUB_RateDrop_F_01.wav`
 
 ### Count check
 
-48+54+24+42+24+30+24+60+30+18+18+12 = **384** ✓ (factory ceiling 512)
+48+54+24+42+24+30+40+60+48+40+40+18+18+26 = **512** ✓ (factory ceiling)
 
 ## Storefront tree
 
@@ -62,6 +64,7 @@ CNV_Converter_Night/
     Percussion/  Crashes_Rides/
   02_BITCRUSHED_AND_PITCHED/
     Pitched_Sub_Basses/  Aliased_One_Shots/
+    Reverse_And_Sweeps/  Stabs_And_Impacts/
   03_LOOP_BUILDERS_AND_GROOVES/
     Acoustic_Rhythm_Loops/  Top_Percussion_Loops/
   04_LOFI_TEXTURES_AND_NOISE/

@@ -19,13 +19,31 @@ def recipe_for(kind, variant=0):
     pitch_808 = 58.0 - (variant % 22) * 1.0 - cycle * 0.35
     kick_pitch = 55.0 + (variant % 18) * 2.5 + cycle * 1.5
     cow_pitch = 480.0 + (variant % 12) * 14.0 + cycle * 8.0
+    # FX families widen duration/tone/noise so large kits stay SHA-unique and usefully distinct.
+    fx_family = variant % 5  # 0 crash · 1 alias · 2 reverse/sweep · 3 stab · 4 texture
+    fx_dur = (0.55 + (n % 5) * 0.11 + cycle * 0.04 + (variant % 11) * 0.012
+              if fx_family == 0 else
+              0.28 + (n % 4) * 0.07 + cycle * 0.025 + (variant % 9) * 0.01
+              if fx_family == 1 else
+              0.70 + (n % 6) * 0.12 + cycle * 0.05 + (variant % 7) * 0.015
+              if fx_family == 2 else
+              0.18 + (n % 5) * 0.05 + cycle * 0.02 + (variant % 8) * 0.008
+              if fx_family == 3 else
+              0.90 + (n % 6) * 0.14 + cycle * 0.055 + (variant % 10) * 0.02)
+    fx_decay = (0.12 + (n % 6) * 0.03 + cycle * 0.015 + (variant % 7) * 0.004
+                if fx_family in (0, 2) else
+                0.04 + (n % 5) * 0.012 + cycle * 0.008 + (variant % 9) * 0.002
+                if fx_family in (1, 3) else
+                0.22 + (n % 6) * 0.04 + cycle * 0.02 + (variant % 8) * 0.005)
+    fx_noise = min(1.0, max(0.0, 0.15 + fx_family * 0.12 + (n % 7) * 0.08 + cycle * 0.03 + (variant % 6) * 0.015))
+    fx_tone = min(1.0, max(0.0, 0.08 + fx_family * 0.1 + (n % 7) * 0.07 + cycle * 0.035 + (variant % 9) * 0.012))
     return {'engine':'parametric-v2', 'kind':kind, 'variant':variant,
-            'duration_sec': round(min(2.8, dur_808) if kind=='808' else (0.28+(n%4)*0.045+cycle*0.02+(variant%5)*0.01) if kind=='COWBELL' else (0.42+(n%5)*0.075+cycle*0.03+(variant%7)*0.01) if kind=='FX' else (0.22+(n%5)*0.065+cycle*0.02+(variant%5)*0.008), 4),
-            'decay_sec': round(min(1.9, decay_808) if kind=='808' else (0.065+(n%6)*0.016+cycle*0.008+(variant%8)*0.002),4),
-            'drive': round(min(7.5, 1.05+(n%6)*0.19+cycle*0.11+(variant%5)*0.03),4),
-            'tone': round(min(1.0, max(0.0, 0.12+(n%7)*0.08+cycle*0.04+(variant%9)*0.015)),4),
+            'duration_sec': round(min(2.8, dur_808) if kind=='808' else (0.28+(n%4)*0.045+cycle*0.02+(variant%5)*0.01) if kind=='COWBELL' else (min(2.9, fx_dur) if kind=='FX' else (0.22+(n%5)*0.065+cycle*0.02+(variant%5)*0.008)), 4),
+            'decay_sec': round(min(1.9, decay_808) if kind=='808' else (min(1.6, fx_decay) if kind=='FX' else (0.065+(n%6)*0.016+cycle*0.008+(variant%8)*0.002)),4),
+            'drive': round(min(7.5, 1.05+(n%6)*0.19+cycle*0.11+(variant%5)*0.03 + (fx_family*0.08 if kind=='FX' else 0)),4),
+            'tone': round(fx_tone if kind=='FX' else min(1.0, max(0.0, 0.12+(n%7)*0.08+cycle*0.04+(variant%9)*0.015)),4),
             'pitch_hz': (max(32.0, min(70.0, pitch_808)) if kind=='808' else max(40.0, min(120.0, kick_pitch)) if kind=='KICK' else max(350.0, min(900.0, cow_pitch)) if kind=='COWBELL' else None),
-            'noise_color':round(min(1.0, max(0.0, 0.2+(n%7)*0.095+cycle*0.035+(variant%6)*0.02)),4)}
+            'noise_color':round(fx_noise if kind=='FX' else min(1.0, max(0.0, 0.2+(n%7)*0.095+cycle*0.035+(variant%6)*0.02)),4)}
 
 def validate_recipe(r):
     if not isinstance(r,dict) or r.get('engine')!='parametric-v2' or r.get('kind') not in KINDS: raise ValueError('invalid engine/kind')
