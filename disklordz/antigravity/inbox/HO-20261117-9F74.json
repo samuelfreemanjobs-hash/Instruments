@@ -1,0 +1,20 @@
+{
+  "handoff_id": "HO-20261117-9F74",
+  "direction": "cursor_to_antigravity",
+  "from_agent": "cursor-cloud",
+  "to_agent": "antigravity-batch",
+  "created_at": "2026-11-17T15:49:41Z",
+  "work_order": {
+    "id": "WO-MLF-001",
+    "title": "Memphis Loop Factory: MIDI fixtures + pattern pytest",
+    "acceptance_criteria": "",
+    "branch": "main"
+  },
+  "context_paths": [
+    "docs/HISE_ANTIGRAVITY_LANE.md",
+    "disklordz/antigravity/AGENT_INSTRUCTIONS.md"
+  ],
+  "artifacts": [],
+  "status": "open",
+  "notes": "BUILD_PLAN P3 at claude/drumsmith/web/memphis-loop-factory/BUILD_PLAN.md \u2014 emit MIDI Type-0 fixtures from pattern JSON under kits/converter-night/loops/; pytest for swing/ratchet/mutate lock invariants; original synthesis only, no copyrighted PCM."
+}
