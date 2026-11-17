@@ -1,0 +1,110 @@
+<!-- core-config.xml — DRUMSMITH Environmental Gates -->
+<!-- Layer 4 of 4. Narrowest scope. Changes require a version bump in agent.yaml. -->
+
+<agent_config version="1.0" agent="DRUMSMITH" env="${AGENT_ENV}">
+
+  <environment>
+    <mode>${AGENT_ENV:-development}</mode>
+    <gates>
+      <gate id="hitl_required"           dev="false" staging="true"  prod="true"/>
+      <gate id="external_writes_enabled" dev="false" staging="false" prod="true"/>
+      <gate id="publish_actions"         dev="false" staging="false" prod="true"/>
+      <gate id="audit_log_required"      dev="true"  staging="true"  prod="true"/>
+      <gate id="schema_validation"       dev="false" staging="true"  prod="true"/>
+      <gate id="evaluator_pass"          dev="false" staging="true"  prod="true"/>
+    </gates>
+    <unknown_env_policy>use_production_gates</unknown_env_policy>
+  </environment>
+
+  <models>
+    <tier_map>
+      <tier id="T0" model="${FAST_MODEL:-claude-haiku-4-5}"    max_tokens="1000"/>
+      <tier id="T1" model="${DEFAULT_MODEL:-claude-sonnet-5-5}" max_tokens="4096"/>
+      <tier id="T2" model="${DEFAULT_MODEL:-claude-sonnet-5-5}" max_tokens="8192"/>
+      <tier id="T3" model="${HEAVY_MODEL:-claude-opus-5-5}"     max_tokens="16384"/>
+      <tier id="T4" model="${HEAVY_MODEL:-claude-opus-5-5}"     max_tokens="32768"/>
+    </tier_map>
+    <max_tier_non_production>T2</max_tier_non_production>
+  </models>
+
+  <confidence>
+    <threshold tier="T0" min="0.90" action="auto_retry_once_then_escalate"/>
+    <threshold tier="T1" min="0.85" action="surface_to_human"/>
+    <threshold tier="T2" min="0.80" action="surface_to_human_with_alternatives"/>
+    <threshold tier="T3" min="0.75" action="halt_and_require_human_review"/>
+    <threshold tier="T4" min="0.70" action="halt_escalate_to_human"/>
+    <require_explicit_confidence_declaration>true</require_explicit_confidence_declaration>
+  </confidence>
+
+  <arithmetic>
+    <decimal_precision>28</decimal_precision>
+    <rounding_mode>ROUND_HALF_EVEN</rounding_mode>
+    <hard_halts>
+      <halt condition="division_by_zero"        action="halt_log_escalate"/>
+      <halt condition="non_positive_frequency"  action="halt_log_escalate"/>
+      <halt condition="non_positive_bpm"        action="halt_log_escalate"/>
+      <halt condition="nan_or_inf_in_render"    action="halt_log_escalate"/>
+      <halt condition="peak_above_ceiling"      action="halt_log_escalate"/>
+      <halt condition="loop_length_mismatch"    action="halt_log_escalate"/>
+    </hard_halts>
+    <require_provenance_tokens>true</require_provenance_tokens>
+  </arithmetic>
+
+  <resource_limits>
+    <tool_calls>
+      <max_per_run tier="T0">5</max_per_run>
+      <max_per_run tier="T1">15</max_per_run>
+      <max_per_run tier="T2">40</max_per_run>
+      <max_per_run tier="T3">100</max_per_run>
+      <max_per_run tier="T4">unlimited</max_per_run>
+      <exceed_action>checkpoint_and_surface_to_human</exceed_action>
+    </tool_calls>
+    <context_window>
+      <compact_at_percent>60</compact_at_percent>
+      <compact_action>run_state_compaction</compact_action>
+    </context_window>
+  </resource_limits>
+
+  <observability>
+    <audit_log>
+      <path>logs/DRUMSMITH-audit.jsonl</path>
+      <format>jsonl</format>
+      <fields>run_id, timestamp_utc, agent_version, tier, model_used, task_description,
+              inputs_hash, tool_calls_count, tools_used, hitl_gates_triggered, hitl_outcomes,
+              output_schema_version, output_confidence, provenance_complete, halt_reason,
+              verify_summary, gaps_discovered</fields>
+      <fail_on_log_error>true</fail_on_log_error>
+    </audit_log>
+    <structured_output>
+      <validate_on_generate>true</validate_on_generate>
+      <fail_on_schema_violation>true</fail_on_schema_violation>
+    </structured_output>
+  </observability>
+
+  <integrations>
+    <!-- Credentials live in env vars, never in this file. -->
+    <integration id="slack"  mcp_url="${SLACK_MCP_URL}"  enabled="${ENABLE_SLACK:-false}"/>
+    <integration id="github" mcp_url="${GITHUB_MCP_URL}" enabled="${ENABLE_GITHUB:-false}"/>
+  </integrations>
+
+  <feature_flags>
+    <flag id="evaluator_pass_enabled"     default="false"/>
+    <flag id="web_search_enabled"         default="false"/>
+    <flag id="multi_agent_enabled"        default="false"/>
+    <flag id="parallel_execution_enabled" default="false"/>
+    <flag id="auto_retry_on_tool_failure" default="true"/>
+    <flag id="state_persistence_enabled"  default="false"/>
+  </feature_flags>
+
+  <!-- Delivery profile "splice". Values mirror scripts/verify_kit.py PROFILES. -->
+  <domain_config>
+    <setting id="bit_depth"             value="24"    description="PCM WAV"/>
+    <setting id="min_sample_rate_hz"    value="44100" description="uniform across a pack"/>
+    <setting id="peak_ceiling_dbfs"     value="-1.0"  description="sample peak at or below; normalize to this"/>
+    <setting id="micro_fade_ms_max"     value="3"     description="under 3 ms; 132 samples at 44.1k"/>
+    <setting id="edge_sample_max"       value="0.01"  description="first/last sample linear"/>
+    <setting id="pitch_tolerance_cents" value="5"     description="[A] working target, confirm by ear"/>
+    <setting id="beats_per_bar"         value="4"     description="loop math assumes 4/4"/>
+  </domain_config>
+
+</agent_config>

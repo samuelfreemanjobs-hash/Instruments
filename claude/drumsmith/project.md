@@ -52,7 +52,7 @@ Markdown/YAML/XML agent package, Claude Code (.claude/agents, .claude/skills), P
 ## Artifact links
 
 - Workbench UI + agent: https://claude.ai/artifact/FwE8VaPi2a5vXRMPoX19zH (private to Sam)
-- Agent package in git: `claude/drumsmith/` (reconstructed on Cloud where tarball was unavailable; diff against tar if needed)
+- Agent package in git: `claude/drumsmith/` (merged from **drumsmith.tar.gz**, 2026-11-17)
 
 ## Alternative uses / re-niching
 

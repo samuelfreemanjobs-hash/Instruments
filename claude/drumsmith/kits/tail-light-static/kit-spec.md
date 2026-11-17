@@ -6,7 +6,7 @@
 
 ## Concept
 
-Drift-phonk one-shot + loop pack for night-drive beats: long 808 tail, iron cowbell accent, papery snare, dusty hats. Master grid **74 BPM**; bar = **143,027 samples** @ 44.1 kHz `[computed]`.
+Drift-phonk one-shot + loop pack for night-drive beats: long 808 tail, iron cowbell accent, papery snare, dusty hats. Master grid **74 BPM**; bar = **143,027 samples** @ 44.1 kHz — `loop_samples(1, 74, 44100)` in `scripts/dsp_math.py` `[computed]`.
 
 ## Hit manifest
 
