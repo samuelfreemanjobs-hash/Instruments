@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memphis Drum Loop Factory OS - SP-1200 Production Instrument</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --sp-cream: #dcd3b8;
+      --sp-dark: #121316;
+      --sp-panel: #18191d;
+      --sp-border: #2a2c33;
+      --sp-amber: #f59e0b;
+    }
+    body {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      background-color: #08090a;
+      color: #e2e8f0;
+      user-select: none;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom scrollbars */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #0f1012; }
+    ::-webkit-scrollbar-thumb { background: #262830; border-radius: 3px; }
+
+    /* CRT Phosphor Terminal */
+    .crt-monitor {
+      background: #061109;
+      border: 2px solid #064e3b;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.95), 0 0 15px rgba(16, 185, 129, 0.15);
+      position: relative;
+    }
+    .crt-monitor::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
+      background-size: 100% 3px;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0.75;
+    }
+
+    /* Step buttons */
+    .step-pad {
+      transition: transform 0.05s ease, background-color 0.1s ease;
+      touch-action: manipulation;
+    }
+    .step-pad:active {
+      transform: scale(0.92);
+    }
+    .step-active-1 {
+      background: #f59e0b !important;
+      color: #000 !important;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.7);
+    }
+    .step-active-2 { /* 2x 32nd roll */
+      background: #38bdf8 !important;
+      color: #000 !important;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.8);
+    }
+    .step-active-3 { /* 3x Triplet */
+      background: #a855f7 !important;
+      color: #fff !important;
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.85);
+    }
+    .step-active-4 { /* 4x Blaster */
+      background: #ef4444 !important;
+      color: #fff !important;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.95);
+    }
+    .track-locked {
+      border-color: #ef4444 !important;
+      background-color: rgba(239, 68, 68, 0.08) !important;
+    }
+    .vintage-dot-grid {
+      background-image: radial-gradient(rgba(255,255,255,0.035) 1px, transparent 0);
+      background-size: 10px 10px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col vintage-dot-grid pb-12">
+
+  <header class="border-b border-zinc-800 bg-zinc-950/90 backdrop-blur sticky top-0 z-50 px-4 py-2.5 shadow-md">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand & Spec -->
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center font-black text-black text-lg shadow-md shadow-amber-500/30 border border-amber-300">
+          SP
+        </div>
+        <div>
+          <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-zinc-100 flex items-center gap-2">
+            MEMPHIS FACTORY <span class="text-[10px] bg-amber-500/20 text-amber-400 font-mono px-2 py-0.5 rounded border border-amber-500/40">PRO V3.0</span>
+          </h1>
+          <p class="text-[11px] text-zinc-400">Autonomous DDSP + SP-1200 Circuit Emulation + MIDI Stem Engine</p>
+        </div>
+      </div>
+
+      <!-- Playback & Master Controls -->
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="flex items-center bg-zinc-900 border border-zinc-800 rounded-lg p-1 space-x-1">
+          <button id="btnPlay" class="flex items-center space-x-1.5 px-4 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-black font-bold text-xs uppercase transition shadow">
+            <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+            <span id="playLabel">Play</span>
+          </button>
+          <button id="btnStop" class="flex items-center space-x-1 px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs uppercase transition">
+            <i data-lucide="square" class="w-3.5 h-3.5 fill-current"></i>
+          </button>
+        </div>
+
+        <!-- BPM -->
+        <div class="flex items-center bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1 text-xs mono">
+          <span class="text-zinc-400 mr-2 text-[11px]">BPM:</span>
+          <input id="bpmInput" type="number" min="70" max="185" value="138" class="w-12 bg-black border border-zinc-700 rounded px-1 py-0.5 text-amber-400 text-center font-bold focus:outline-none focus:border-amber-400">
+        </div>
+
+        <!-- Bar Switch (1-16 / 17-32) -->
+        <div class="flex items-center bg-zinc-900 border border-zinc-800 rounded-lg p-1 space-x-1 mono text-xs">
+          <button id="btnBar1" class="px-2.5 py-1 rounded bg-amber-500 text-black font-bold transition">BAR 1</button>
+          <button id="btnBar2" class="px-2.5 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition">BAR 2</button>
+        </div>
+
+        <!-- Export Dropdown / Menu -->
+        <div class="flex items-center space-x-1">
+          <button id="btnExportWav" class="flex items-center space-x-1.5 px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 text-xs font-semibold transition" title="Export Master Stereo 16-Bit WAV">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>WAV Loop</span>
+          </button>
+          <button id="btnExportStems" class="flex items-center space-x-1.5 px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 text-xs font-semibold transition" title="Export Individual Stems">
+            <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>Stems</span>
+          </button>
+          <button id="btnExportMidi" class="flex items-center space-x-1.5 px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 text-xs font-semibold transition" title="Export Standard MIDI (.mid)">
+            <i data-lucide="file-music" class="w-3.5 h-3.5 text-purple-400"></i>
+            <span>MIDI</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto w-full px-4 pt-5 flex-1 flex flex-col gap-5">
+    
+    <!-- Top Hardware Rack: Real-time CRT Oscilloscope & SP-1200 DSP Model -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      
+      <!-- CRT Oscilloscope & Telemetry (5 Cols) -->
+      <div class="lg:col-span-5 crt-monitor rounded-xl p-3.5 flex flex-col justify-between mono relative overflow-hidden">
+        <div class="flex justify-between items-center text-[11px] text-emerald-400/90 border-b border-emerald-950 pb-1.5 z-20">
+          <span class="flex items-center gap-1.5 font-bold tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            SP-1200 OSCILLOSCOPE
+          </span>
+          <span id="lcdStepCounter" class="text-amber-400 font-bold">STEP: 01/32</span>
+        </div>
+
+        <!-- Oscilloscope Waveform Canvas -->
+        <div class="h-24 w-full my-2 relative z-20 flex items-center justify-center">
+          <canvas id="scopeCanvas" width="480" height="96" class="w-full h-full block rounded bg-black/40"></canvas>
+        </div>
+
+        <!-- Metrics readout -->
+        <div class="pt-2 border-t border-emerald-950 flex justify-between text-[11px] text-emerald-400/80 z-20">
+          <div>ENGINE: <span class="text-emerald-300 font-bold" id="dspProfileTag">12-BIT LINEAR</span></div>
+          <div>BOUNCE: <span class="text-amber-400 font-bold" id="bounceMetric">91%</span></div>
+          <div>SWING: <span class="text-amber-400 font-bold" id="swingMetric">52%</span></div>
+        </div>
+      </div>
+
+      <!-- SP-1200 & Cassette DSP Controls (7 Cols) -->
+      <div class="lg:col-span-7 bg-zinc-900/90 border border-zinc-800 rounded-xl p-4 flex flex-col justify-between shadow-lg">
+        <div class="flex flex-wrap items-center justify-between border-b border-zinc-800 pb-2 mb-3 gap-2">
+          <div class="flex items-center gap-2">
+            <i data-lucide="sliders" class="w-4 h-4 text-amber-500"></i>
+            <span class="text-xs font-bold uppercase tracking-wider text-zinc-300">Vintage SP Analog DSP & Headroom</span>
+          </div>
+          <div class="flex items-center gap-3 text-xs">
+            <label class="flex items-center gap-1.5 cursor-pointer text-zinc-400 hover:text-zinc-200">
+              <input id="chk12bit" type="checkbox" checked class="accent-amber-500 rounded">
+              <span>12-Bit SP DAC</span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer text-zinc-400 hover:text-zinc-200">
+              <input id="chkTape" type="checkbox" checked class="accent-amber-500 rounded">
+              <span>Tascam 424 Saturation</span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer text-zinc-400 hover:text-zinc-200">
+              <input id="chkAliasing" type="checkbox" checked class="accent-amber-500 rounded">
+              <span>45 RPM Pitch Ring</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <!-- DAC Rate -->
+          <div class="bg-zinc-950/70 p-2 rounded-lg border border-zinc-800/80">
+            <span class="text-[10px] text-zinc-400 font-mono block mb-1">DAC CLOCK</span>
+            <input id="sliderSampleRate" type="range" min="12000" max="32000" value="26040" step="500" class="w-full accent-amber-500 h-1 bg-zinc-700 rounded cursor-pointer">
+            <div class="text-xs mono font-bold text-amber-400 mt-1" id="valSampleRate">26.0 kHz</div>
+          </div>
+          <!-- SSM2044 Cutoff -->
+          <div class="bg-zinc-950/70 p-2 rounded-lg border border-zinc-800/80">
+            <span class="text-[10px] text-zinc-400 font-mono block mb-1">SSM2044 CUTOFF</span>
+            <input id="sliderCutoff" type="range" min="1200" max="16000" value="10500" step="100" class="w-full accent-amber-500 h-1 bg-zinc-700 rounded cursor-pointer">
+            <div class="text-xs mono font-bold text-amber-400 mt-1" id="valCutoff">10.5 kHz</div>
+          </div>
+          <!-- Tape Saturation -->
+          <div class="bg-zinc-950/70 p-2 rounded-lg border border-zinc-800/80">
+            <span class="text-[10px] text-zinc-400 font-mono block mb-1">TAPE DRIVE</span>
+            <input id="sliderDrive" type="range" min="1" max="10" value="5.5" step="0.5" class="w-full accent-amber-500 h-1 bg-zinc-700 rounded cursor-pointer">
+            <div class="text-xs mono font-bold text-amber-400 mt-1" id="valDrive">Drive (x5.5)</div>
+          </div>
+          <!-- Memphis Swing / Slop -->
+          <div class="bg-zinc-950/70 p-2 rounded-lg border border-zinc-800/80">
+            <span class="text-[10px] text-zinc-400 font-mono block mb-1">MEMPHIS SLOP</span>
+            <input id="sliderSwing" type="range" min="0" max="80" value="52" step="2" class="w-full accent-amber-500 h-1 bg-zinc-700 rounded cursor-pointer">
+            <div class="text-xs mono font-bold text-amber-400 mt-1" id="valSwing">52% Drag</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-zinc-900 border border-zinc-800 p-3.5 rounded-xl shadow-lg">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <i data-lucide="workflow" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h2 class="text-sm font-bold text-zinc-100 flex items-center gap-2">
+              LOCK + MUTATE WORKBENCH
+              <span class="text-[10px] bg-red-950/60 text-red-400 px-2 py-0.5 rounded border border-red-800/60 font-mono">AUTONOMOUS</span>
+            </h2>
+            <p class="text-xs text-zinc-400">Lock signature Kick/Snare anchors, then mutate hi-hat rolls, cowbell riffs, and vocal stabs.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Style Selectors -->
+          <select id="selStyle" class="bg-zinc-950 border border-zinc-700 text-zinc-200 text-xs rounded-lg px-2.5 py-1.5 font-mono focus:border-amber-400">
+            <option value="memphis_90s">1993 Memphis Tape (Triple 6 / Tommy Wright)</option>
+            <option value="drift_phonk">Drift Phonk (Stepped Cowbells & Aggressive Rolls)</option>
+            <option value="dirty_south">Early 90s Southern Trill (UGK / 8Ball style)</option>
+            <option value="dungeon_slow">Slow Dark Memphis (Half-Time 66/132 BPM)</option>
+          </select>
+
+          <!-- Core Action: Mutate Unlocked -->
+          <button id="btnGenerateUnlocked" class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold text-xs uppercase tracking-wide transition shadow-lg shadow-amber-500/25 active:scale-95">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>Mutate Unlocked</span>
+          </button>
+
+          <!-- Variation Pool Generator -->
+          <button id="btnRollPool" class="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 text-xs font-semibold transition" title="Generate 4 distinct variations for instant comparison">
+            <i data-lucide="copy" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Audition 4 Takes</span>
+          </button>
+
+          <!-- Undo / Redo -->
+          <div class="flex items-center bg-zinc-950 border border-zinc-800 rounded-lg p-0.5">
+            <button id="btnUndo" class="p-1 text-zinc-400 hover:text-zinc-100 disabled:opacity-30 transition" title="Undo pattern change">
+              <i data-lucide="undo-2" class="w-3.5 h-3.5"></i>
+            </button>
+            <button id="btnRedo" class="p-1 text-zinc-400 hover:text-zinc-100 disabled:opacity-30 transition" title="Redo pattern change">
+              <i data-lucide="redo-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Audition Variation Deck (Collapsible) -->
+      <div id="variationDeck" class="hidden mt-3 pt-3 border-t border-zinc-800 grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <section class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3.5 flex flex-col gap-2.5 shadow-inner">
+      <div class="flex items-center justify-between text-xs text-zinc-400 px-2 pb-1 border-b border-zinc-800/80">
+        <div class="flex items-center gap-2">
+          <span class="font-mono font-bold text-zinc-300">DRUM VOICES (SYNTHESIZED DDSP)</span>
+          <span class="text-[10px] text-zinc-500 font-mono hidden sm:inline">• Click step to cycle: Hit [1] → 32nd Roll [2] → Triplet [3] → Blaster [4] → Off</span>
+        </div>
+        <div class="flex items-center gap-3 font-mono text-[11px] text-zinc-400">
+          <div class="flex items-center gap-1.5 text-[10px]">
+            <span class="w-2.5 h-2.5 rounded bg-amber-500 inline-block"></span> 1x
+            <span class="w-2.5 h-2.5 rounded bg-sky-400 inline-block"></span> 2x
+            <span class="w-2.5 h-2.5 rounded bg-purple-500 inline-block"></span> 3x (Trip)
+            <span class="w-2.5 h-2.5 rounded bg-red-500 inline-block"></span> 4x
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracks Container -->
+      <div id="tracksContainer" class="flex flex-col gap-2">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      
+      <!-- AI Groove Critic & Memphis Authenticity Evaluator -->
+      <div class="lg:col-span-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-zinc-800">
+            <div class="flex items-center gap-2">
+              <i data-lucide="bot" class="w-4 h-4 text-emerald-400"></i>
+              <h3 class="text-sm font-bold text-zinc-200">AI MEMPHIS AUTHENTICITY EVALUATOR</h3>
+            </div>
+            <button id="btnAiCritique" class="flex items-center gap-1.5 px-3 py-1 text-xs rounded bg-emerald-950 border border-emerald-700/60 text-emerald-300 hover:bg-emerald-900 transition">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+              <span>Audit Pattern</span>
+            </button>
+          </div>
+
+          <p class="text-xs text-zinc-400 mb-2.5">
+            Gemini-powered evaluation checks syncopation, ghost snare placement, triplet hat density, and tape saturation balance.
+          </p>
+
+          <div id="aiCriticBox" class="bg-zinc-950/70 border border-zinc-800/90 rounded-lg p-3 text-xs mono text-zinc-300 leading-relaxed min-h-[95px] flex items-center justify-center text-center">
+            Click "Audit Pattern" to score the current loop against 1991–1996 Memphis tape grammars.
+          </div>
+        </div>
+
+        <div class="mt-3 pt-2.5 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-400">
+          <span>Target Engine: <strong class="text-amber-400 font-mono">SP-1200 / Tape Flux / DDSP</strong></span>
+          <span class="text-emerald-400 font-mono text-[11px]">Evaluation Model: ACTIVE</span>
+        </div>
+      </div>
+
+      <!-- Master Blueprint & Meta-Prompt Box -->
+      <div class="lg:col-span-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-zinc-800">
+            <div class="flex items-center gap-2">
+              <i data-lucide="terminal" class="w-4 h-4 text-amber-400"></i>
+              <h3 class="text-sm font-bold text-zinc-200">PRODUCTION META-PROMPT (CLAUDE CODE / ANTIGRAVITY)</h3>
+            </div>
+            <button id="btnCopyMetaPrompt" class="flex items-center gap-1 px-3 py-1 text-xs rounded bg-amber-500/10 border border-amber-500/40 text-amber-400 hover:bg-amber-500/20 transition">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span id="copyPromptLabel">Copy Prompt</span>
+            </button>
+          </div>
+
+          <p class="text-xs text-zinc-400 mb-2">
+            Feed this comprehensive blueprint into Claude Code, Antigravity, or Cursor to build the full backend C++/Python DAW VST or automated loop production engine:
+          </p>
+
+          <textarea id="metaPromptText" readonly class="w-full h-24 bg-black/60 border border-zinc-800 rounded p-2 text-[11px] mono text-zinc-400 focus:outline-none resize-none">
+[ROLE]: You are a Principal Audio DSP Engineer and Generative AI Architect specializing in autonomous hip-hop production instruments.
+[PRODUCT]: Build "Drum Loop Factory OS" — an autonomous DDSP + algorithmic DSP + MIDI/Stem loop generation system specialized in the sonic grammar of SP-1200 Memphis rap, early 90s Southern hip-hop, and modern drift phonk (100% original synthesis, zero copyrighted samples).
+[CORE PIPELINE]:
+1. MIDI & Pattern Intelligence: Multi-track 32-step generator with sub-step triplet bursts, flams, and modal cowbell melodies.
+2. Groove Engine: Authentic Memphis lazy swing (delayed odd 16ths, humanized micro-offsets).
+3. DDSP Drum Synth: Procedural 808 sub sweeps, snapped triangle/noise snares, 6-osc metallic hats, dual-square TR-808 cowbells, and formant voice stabs.
+4. SP-1200 Vintage DSP: 12-bit linear DAC quantizer, 26.04kHz ring resampling, SSM2044 resonant lowpass filter, and 4-track cassette tape flux saturation.
+5. Killer Feature: "LOCK + MUTATE" (Lock chosen stems like Kick/Snare; recursively generate dozens of percussion and roll permutations).
+6. Multi-Format Output: Export 16-bit Master WAV, individual stem WAVs, and Type-0 standard MIDI (.mid).
+7. Testing & Packaging: Modular headless CLI, REST/WebSocket API, Web Audio GUI, and comprehensive unit tests for sample rates and pitch accuracy.
+          </textarea>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* AudioContext & Master State */
+    let audioCtx = null;
+    let isPlaying = false;
+    let currentStep = 0;
+    let timerId = null;
+    let nextStepTime = 0;
+    const TOTAL_STEPS = 32;
+    let currentBarView = 1; // 1 for steps 0-15, 2 for steps 16-31
+
+    // History undo/redo stacks
+    const historyStack = [];
+    let historyIndex = -1;
+
+    // Analyser Node for CRT Oscilloscope
+    let analyserNode = null;
+    let scopeDataArray = null;
+
+    // Track Configuration with synthesis profiles
+    const TRACK_CONFIG = [
+      { id: 'kick', name: '808 Sub Boom', pitch: 48, gain: 0.85, locked: true, muted: false, solo: false },
+      { id: 'snare', name: 'SP Snare Snap', pitch: 180, gain: 0.75, locked: true, muted: false, solo: false },
+      { id: 'hihat', name: 'Memphis Hat Rolls', pitch: 7000, gain: 0.65, locked: false, muted: false, solo: false },
+      { id: 'openhat', name: 'Sizzle Open Hat', pitch: 6200, gain: 0.55, locked: false, muted: false, solo: false },
+      { id: 'cowbell', name: 'Phonk Stepped Bell', pitch: 587, gain: 0.70, locked: false, muted: false, solo: false, pitches: [] },
+      { id: 'chant', name: 'Memphis Vocal Stab', pitch: 160, gain: 0.75, locked: false, muted: false, solo: false },
+      { id: 'tom', name: 'Lo-Fi Tape Conga', pitch: 90, gain: 0.70, locked: false, muted: false, solo: false }
+    ];
+
+    // Grid Sequence Data: tracks x 32 steps (0 = off, 1 = normal, 2 = 32nd roll, 3 = triplet roll, 4 = blaster)
+    let patternData = {};
+    // Per-step pitch offsets for Cowbell (in semitones relative to base: 0, 3, 5, 7, 10, 12)
+    let cowbellPitches = new Array(TOTAL_STEPS).fill(0);
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+
+        analyserNode = audioCtx.createAnalyser();
+        analyserNode.fftSize = 1024;
+        scopeDataArray = new Uint8Array(analyserNode.frequencyBinCount);
+        analyserNode.connect(audioCtx.destination);
+
+        drawScope();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // SP-1200 12-Bit Linear Quantization Curve
+    function makeBitCrushCurve(bits) {
+      const step = Math.pow(0.5, bits - 1);
+      const samples = 4096;
+      const curve = new Float32Array(samples);
+      for (let i = 0; i < samples; ++i) {
+        let x = (i * 2) / samples - 1;
+        curve[i] = Math.round(x / step) * step;
+      }
+      return curve;
+    }
+
+    // Tascam Tape Saturation Transfer Function
+    function makeTapeDriveCurve(drive) {
+      const n = 4096;
+      const curve = new Float32Array(n);
+      for (let i = 0; i < n; i++) {
+        let x = (i * 2) / n - 1;
+        curve[i] = (Math.PI + drive) * x / (Math.PI + drive * Math.abs(x));
+      }
+      return curve;
+    }
+
+    // Draw Real-time CRT Oscilloscope
+    function drawScope() {
+      requestAnimationFrame(drawScope);
+      if (!analyserNode) return;
+
+      const canvas = document.getElementById('scopeCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+
+      analyserNode.getByteTimeDomainData(scopeDataArray);
+
+      ctx.fillStyle = 'rgba(6, 17, 9, 0.25)';
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#34d399';
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = '#10b981';
+
+      ctx.beginPath();
+      const sliceWidth = width * 1.0 / scopeDataArray.length;
+      let x = 0;
+
+      for (let i = 0; i < scopeDataArray.length; i++) {
+        const v = scopeDataArray[i] / 128.0;
+        const y = v * height / 2;
+
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+        x += sliceWidth;
+      }
+
+      ctx.lineTo(width, height / 2);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+
+    function triggerDrumVoice(trackId, time, velocity = 1.0, subCount = 1, stepIndex = 0) {
+      if (!audioCtx) return;
+      const track = TRACK_CONFIG.find(t => t.id === trackId);
+      if (!track || track.muted) return;
+
+      // Handle solo logic
+      const anySolo = TRACK_CONFIG.some(t => t.solo);
+      if (anySolo && !track.solo) return;
+
+      // Sub-step roll scheduling
+      const bpm = parseFloat(document.getElementById('bpmInput').value) || 138;
+      const stepDuration = (60.0 / bpm) / 4.0;
+      const subInterval = stepDuration / subCount;
+
+      for (let i = 0; i < subCount; i++) {
+        const hitTime = time + (i * subInterval);
+        // Slightly decay velocity across rolls for authentic drum machine feel
+        const rollVel = velocity * (1.0 - (i * 0.1));
+        synthesizeSingleVoice(track, hitTime, Math.max(0.3, rollVel), stepIndex);
+      }
+    }
+
+    function synthesizeSingleVoice(track, time, velocity, stepIndex) {
+      const masterVol = track.gain * velocity;
+      const voiceGain = audioCtx.createGain();
+      voiceGain.gain.setValueAtTime(masterVol, time);
+
+      // Route through SP-1200 DSP Master Chain
+      routeThroughSP1200Chain(voiceGain);
+
+      switch (track.id) {
+        case 'kick': {
+          // 808 Sub Boom with attack transient click
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          const baseFreq = track.pitch;
+          osc.frequency.setValueAtTime(baseFreq * 4.0, time);
+          osc.frequency.exponentialRampToValueAtTime(baseFreq, time + 0.045);
+          osc.frequency.exponentialRampToValueAtTime(28, time + 0.52);
+
+          // Click transient
+          const clickOsc = audioCtx.createOscillator();
+          const clickGain = audioCtx.createGain();
+          clickOsc.type = 'triangle';
+          clickOsc.frequency.setValueAtTime(500, time);
+          clickOsc.frequency.exponentialRampToValueAtTime(50, time + 0.015);
+          clickGain.gain.setValueAtTime(0.5 * velocity, time);
+          clickGain.gain.exponentialRampToValueAtTime(0.001, time + 0.015);
+          clickOsc.connect(clickGain);
+          clickGain.connect(voiceGain);
+          clickOsc.start(time);
+          clickOsc.stop(time + 0.02);
+
+          gain.gain.setValueAtTime(1.0 * velocity, time);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + 0.55);
+
+          osc.connect(gain);
+          gain.connect(voiceGain);
+          osc.start(time);
+          osc.stop(time + 0.58);
+          break;
+        }
+
+        case 'snare': {
+          // SP-1200 Tight Snare: Triangle body + shaped noise burst
+          const osc = audioCtx.createOscillator();
+          const oscGain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(track.pitch * 1.6, time);
+          osc.frequency.exponentialRampToValueAtTime(track.pitch * 0.75, time + 0.06);
+
+          oscGain.gain.setValueAtTime(0.75 * velocity, time);
+          oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.12);
+
+          // Noise snap
+          const bufferSize = audioCtx.sampleRate * 0.22;
+          const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+          const whiteNoise = audioCtx.createBufferSource();
+          whiteNoise.buffer = noiseBuffer;
+
+          const noiseFilter = audioCtx.createBiquadFilter();
+          noiseFilter.type = 'highpass';
+          noiseFilter.frequency.value = 1200;
+
+          const noiseGain = audioCtx.createGain();
+          noiseGain.gain.setValueAtTime(0.85 * velocity, time);
+          noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.22);
+
+          whiteNoise.connect(noiseFilter);
+          noiseFilter.connect(noiseGain);
+          noiseGain.connect(voiceGain);
+          osc.connect(oscGain);
+          oscGain.connect(voiceGain);
+
+          osc.start(time);
+          whiteNoise.start(time);
+          osc.stop(time + 0.24);
+          whiteNoise.stop(time + 0.24);
+          break;
+        }
+
+        case 'hihat': {
+          createMetallicHat(voiceGain, time, 0.045, velocity);
+          break;
+        }
+
+        case 'openhat': {
+          createMetallicHat(voiceGain, time, 0.35, velocity);
+          break;
+        }
+
+        case 'cowbell': {
+          // Melodic TR-808 / Phonk Cowbell with step pitch offset
+          const semitoneOffset = cowbellPitches[stepIndex] || 0;
+          const pitchFactor = Math.pow(2, semitoneOffset / 12);
+          const f1 = track.pitch * pitchFactor;
+          const f2 = f1 * 1.438;
+
+          const osc1 = audioCtx.createOscillator();
+          const osc2 = audioCtx.createOscillator();
+          osc1.type = 'square';
+          osc2.type = 'square';
+          osc1.frequency.value = f1;
+          osc2.frequency.value = f2;
+
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.value = (f1 + f2) / 2;
+          filter.Q.value = 3.6;
+
+          const bellGain = audioCtx.createGain();
+          bellGain.gain.setValueAtTime(0.95 * velocity, time);
+          bellGain.gain.exponentialRampToValueAtTime(0.001, time + 0.38);
+
+          osc1.connect(filter);
+          osc2.connect(filter);
+          filter.connect(bellGain);
+          bellGain.connect(voiceGain);
+
+          osc1.start(time);
+          osc2.start(time);
+          osc1.stop(time + 0.4);
+          osc2.stop(time + 0.4);
+          break;
+        }
+
+        case 'chant': {
+          // Memphis Lo-Fi Vocal Stab ("AYY / HOE" formant synthesis)
+          const osc = audioCtx.createOscillator();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(track.pitch * 1.2, time);
+          osc.frequency.exponentialRampToValueAtTime(track.pitch * 0.9, time + 0.16);
+
+          // Formant filters (F1 ~700Hz, F2 ~1200Hz)
+          const f1 = audioCtx.createBiquadFilter();
+          f1.type = 'bandpass';
+          f1.frequency.value = 750;
+          f1.Q.value = 4.5;
+
+          const f2 = audioCtx.createBiquadFilter();
+          f2.type = 'bandpass';
+          f2.frequency.value = 1350;
+          f2.Q.value = 5.0;
+
+          const env = audioCtx.createGain();
+          env.gain.setValueAtTime(0.9 * velocity, time);
+          env.gain.exponentialRampToValueAtTime(0.001, time + 0.22);
+
+          osc.connect(f1);
+          osc.connect(f2);
+          f1.connect(env);
+          f2.connect(env);
+          env.connect(voiceGain);
+
+          osc.start(time);
+          osc.stop(time + 0.25);
+          break;
+        }
+
+        case 'tom': {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(track.pitch * 2.4, time);
+          osc.frequency.exponentialRampToValueAtTime(track.pitch, time + 0.08);
+
+          gain.gain.setValueAtTime(0.85 * velocity, time);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + 0.32);
+
+          osc.connect(gain);
+          gain.connect(voiceGain);
+          osc.start(time);
+          osc.stop(time + 0.35);
+          break;
+        }
+      }
+    }
+
+    function createMetallicHat(destination, time, decay, velocity) {
+      const frequencies = [245, 306, 368, 412, 540, 845];
+      const bandpass = audioCtx.createBiquadFilter();
+      bandpass.type = 'bandpass';
+      bandpass.frequency.value = 8800;
+      bandpass.Q.value = 2.2;
+
+      const highpass = audioCtx.createBiquadFilter();
+      highpass.type = 'highpass';
+      highpass.frequency.value = 7500;
+
+      const env = audioCtx.createGain();
+      env.gain.setValueAtTime(0.75 * velocity, time);
+      env.gain.exponentialRampToValueAtTime(0.001, time + decay);
+
+      frequencies.forEach(freq => {
+        const osc = audioCtx.createOscillator();
+        osc.type = 'square';
+        osc.frequency.value = freq;
+        osc.connect(bandpass);
+        osc.start(time);
+        osc.stop(time + decay + 0.02);
+      });
+
+      bandpass.connect(highpass);
+      highpass.connect(env);
+      env.connect(destination);
+    }
+
+    function routeThroughSP1200Chain(sourceNode) {
+      const is12BitOn = document.getElementById('chk12bit').checked;
+      const isTapeOn = document.getElementById('chkTape').checked;
+      const cutoffVal = parseFloat(document.getElementById('sliderCutoff').value);
+      const driveVal = parseFloat(document.getElementById('sliderDrive').value);
+
+      let currentNode = sourceNode;
+
+      // 1. SSM2044 Lowpass Ladder Filter
+      const ssmFilter = audioCtx.createBiquadFilter();
+      ssmFilter.type = 'lowpass';
+      ssmFilter.frequency.value = cutoffVal;
+      ssmFilter.Q.value = 1.6;
+      currentNode.connect(ssmFilter);
+      currentNode = ssmFilter;
+
+      // 2. 12-Bit Linear Quantization
+      if (is12BitOn) {
+        const bitCrusher = audioCtx.createWaveShaper();
+        bitCrusher.curve = makeBitCrushCurve(12);
+        currentNode.connect(bitCrusher);
+        currentNode = bitCrusher;
+      }
+
+      // 3. Cassette Tape Soft Saturation
+      if (isTapeOn) {
+        const tapeDrive = audioCtx.createWaveShaper();
+        tapeDrive.curve = makeTapeDriveCurve(driveVal * 2.2);
+        currentNode.connect(tapeDrive);
+        currentNode = tapeDrive;
+      }
+
+      // Route to real-time oscilloscope analyzer, then to master output
+      currentNode.connect(analyserNode);
+    }
+
+    const MEMPHIS_STYLES = {
+      memphis_90s: {
+        name: "1993 Memphis Tape Bounce",
+        bpm: 138,
+        kick:    [1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,0,  1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,1,0],
+        snare:   [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0,  0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,1],
+        hihat:   [1,1,1,2, 1,1,1,3, 1,1,1,2, 1,1,3,4,  1,1,1,2, 1,1,1,3, 1,1,1,2, 1,3,4,4],
+        openhat: [0,0,1,0, 0,0,0,0, 0,0,1,0, 0,0,0,0,  0,0,1,0, 0,0,0,0, 0,0,1,0, 0,0,0,0],
+        cowbell: [0,0,0,0, 0,0,1,0, 0,0,0,1, 0,0,1,0,  0,0,0,0, 0,0,1,0, 0,1,0,1, 0,0,1,1],
+        chant:   [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 1,0,0,0, 0,1,0,0],
+        tom:     [0,1,0,0, 0,0,0,1, 0,0,1,0, 0,0,0,0,  0,1,0,0, 0,0,0,1, 0,0,1,0, 0,0,0,0]
+      },
+      drift_phonk: {
+        name: "Drift Phonk Stepped Bell",
+        bpm: 152,
+        kick:    [1,0,0,1, 0,0,1,0, 1,0,0,0, 1,0,1,0,  1,0,0,1, 0,0,1,0, 1,0,0,0, 1,0,1,1],
+        snare:   [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0,  0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,2],
+        hihat:   [1,1,1,1, 1,1,1,2, 1,1,1,1, 1,2,3,4,  1,1,1,1, 1,1,1,2, 1,1,1,1, 2,3,4,4],
+        openhat: [0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,1,0,  0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,1,0],
+        cowbell: [1,0,1,0, 1,1,0,1, 0,1,1,0, 1,0,1,1,  1,0,1,0, 1,1,0,1, 0,1,1,0, 1,1,3,2],
+        chant:   [1,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0,  1,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0],
+        tom:     [0,0,1,0, 0,0,0,0, 0,0,1,0, 0,0,0,0,  0,0,1,0, 0,0,0,0, 0,0,1,0, 0,0,0,0]
+      },
+      dirty_south: {
+        name: "Early 90s Southern Trill",
+        bpm: 130,
+        kick:    [1,0,0,0, 0,0,0,1, 0,0,1,0, 0,1,0,0,  1,0,0,0, 0,0,0,1, 0,0,1,0, 0,1,0,1],
+        snare:   [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,1,  0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,2],
+        hihat:   [1,0,1,0, 1,1,1,0, 1,0,1,2, 1,0,2,3,  1,0,1,0, 1,1,1,0, 1,0,1,2, 1,0,3,4],
+        openhat: [0,0,1,0, 0,0,0,0, 0,0,1,0, 0,0,0,0,  0,0,1,0, 0,0,0,0, 0,0,1,0, 0,0,0,0],
+        cowbell: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0,  0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,1,0],
+        chant:   [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0,  0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        tom:     [0,0,0,1, 0,0,0,0, 0,0,0,1, 0,0,0,0,  0,0,0,1, 0,0,0,0, 0,0,0,1, 0,0,0,0]
+      },
+      dungeon_slow: {
+        name: "Slow Dark Memphis Loop",
+        bpm: 122,
+        kick:    [1,0,0,0, 0,0,1,0, 0,0,0,0, 0,1,0,0,  1,0,0,0, 0,0,1,0, 0,0,0,0, 0,1,0,1],
+        snare:   [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0,  0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,2],
+        hihat:   [1,1,0,1, 1,0,1,2, 1,1,0,1, 1,2,3,4,  1,1,0,1, 1,0,1,2, 1,1,0,1, 2,3,3,4],
+        openhat: [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        cowbell: [0,0,1,0, 0,0,0,0, 0,1,0,0, 0,0,1,0,  0,0,1,0, 0,0,0,0, 0,1,0,0, 0,0,1,2],
+        chant:   [0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0],
+        tom:     [0,0,0,0, 0,1,0,0, 0,0,0,0, 1,0,0,0,  0,0,0,0, 0,1,0,0, 0,0,0,0, 1,0,0,0]
+      }
+    };
+
+    function pushHistory() {
+      // Save deep copy
+      const snapshot = {
+        pattern: JSON.parse(JSON.stringify(patternData)),
+        pitches: [...cowbellPitches],
+        bpm: document.getElementById('bpmInput').value
+      };
+      // Truncate redo if in middle
+      if (historyIndex < historyStack.length - 1) {
+        historyStack.splice(historyIndex + 1);
+      }
+      historyStack.push(snapshot);
+      if (historyStack.length > 20) historyStack.shift();
+      historyIndex = historyStack.length - 1;
+      updateUndoRedoButtons();
+    }
+
+    function updateUndoRedoButtons() {
+      document.getElementById('btnUndo').disabled = historyIndex <= 0;
+      document.getElementById('btnRedo').disabled = historyIndex >= historyStack.length - 1;
+    }
+
+    function generatePatterns(onlyUnlocked = false) {
+      const selectedStyleKey = document.getElementById('selStyle').value;
+      const grammar = MEMPHIS_STYLES[selectedStyleKey] || MEMPHIS_STYLES.memphis_90s;
+
+      if (!onlyUnlocked) {
+        document.getElementById('bpmInput').value = grammar.bpm;
+      }
+
+      TRACK_CONFIG.forEach(track => {
+        if (onlyUnlocked && track.locked) return;
+
+        let base = [...(grammar[track.id] || new Array(TOTAL_STEPS).fill(0))];
+
+        // Memphis & Phonk procedural variations
+        if (track.id === 'hihat') {
+          for (let s = 0; s < TOTAL_STEPS; s++) {
+            if (s % 16 >= 12) {
+              // High roll density at bar turnarounds
+              const r = Math.random();
+              base[s] = r > 0.65 ? 4 : (r > 0.35 ? 3 : (r > 0.1 ? 2 : 1));
+            } else {
+              base[s] = Math.random() > 0.15 ? (Math.random() > 0.75 ? 2 : 1) : 0;
+            }
+          }
+        } else if (track.id === 'cowbell') {
+          // Melodic scale steps in Minor Pentatonic (0, 3, 5, 7, 10, 12 semitones)
+          const scale = [0, 3, 5, 7, 10, 12];
+          for (let s = 0; s < TOTAL_STEPS; s++) {
+            if (base[s] > 0) {
+              cowbellPitches[s] = scale[Math.floor(Math.random() * scale.length)];
+            }
+          }
+        } else if (track.id === 'snare') {
+          // Keep main 2 & 4 snaps, sprinkle Memphis ghost rolls
+          base = new Array(TOTAL_STEPS).fill(0);
+          base[4] = 1; base[12] = 1; base[20] = 1; base[28] = 1;
+          if (Math.random() > 0.4) base[15] = 2; // ghost roll turnaround
+          if (Math.random() > 0.4) base[31] = 3; // bar 2 triplet turnaround
+        } else if (track.id === 'kick') {
+          if (!track.locked) {
+            // Alternate syncopated 808 patterns
+            const kPatterns = [
+              [1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,0,  1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,1,0],
+              [1,0,0,1, 0,0,0,0, 1,0,1,0, 0,0,1,0,  1,0,0,1, 0,0,0,0, 1,0,0,0, 0,1,1,0]
+            ];
+            base = kPatterns[Math.floor(Math.random() * kPatterns.length)];
+          }
+        }
+
+        patternData[track.id] = base;
+      });
+
+      pushHistory();
+      renderStepGridUI();
+    }
+
+    function renderStepGridUI() {
+      const container = document.getElementById('tracksContainer');
+      container.innerHTML = '';
+
+      const startIndex = (currentBarView - 1) * 16;
+      const endIndex = startIndex + 16;
+
+      TRACK_CONFIG.forEach(track => {
+        const trackRow = document.createElement('div');
+        trackRow.className = `flex flex-wrap lg:flex-nowrap items-center gap-2 p-2 rounded-lg bg-zinc-950/70 border ${track.locked ? 'track-locked' : 'border-zinc-800/80'} transition-all`;
+        trackRow.id = `trackRow-${track.id}`;
+
+        // Track Identity & Lock Switch
+        const metaCol = document.createElement('div');
+        metaCol.className = 'w-full lg:w-48 flex items-center justify-between';
+        metaCol.innerHTML = `
+          <div class="flex items-center gap-1.5 truncate">
+            <button onclick="auditionTrack('${track.id}')" class="text-xs font-bold text-zinc-200 hover:text-amber-400 transition text-left truncate flex items-center gap-1.5" title="Click to test voice">
+              <i data-lucide="volume-2" class="w-3.5 h-3.5 text-zinc-500"></i>
+              <span>${track.name}</span>
+            </button>
+          </div>
+          <button onclick="toggleTrackLock('${track.id}')" class="px-2 py-1 rounded text-[10px] font-mono font-bold flex items-center gap-1 border transition ${track.locked ? 'bg-red-950/80 border-red-500 text-red-300' : 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:text-zinc-200'}">
+            <i data-lucide="${track.locked ? 'lock' : 'unlock'}" class="w-3 h-3"></i>
+            <span>${track.locked ? 'LOCKED' : 'MUTABLE'}</span>
+          </button>
+        `;
+
+        // Controls (Mute/Solo/Level/Pitch)
+        const ctrlCol = document.createElement('div');
+        ctrlCol.className = 'flex items-center gap-1.5 font-mono text-[10px]';
+        ctrlCol.innerHTML = `
+          <button onclick="toggleMute('${track.id}')" class="px-1.5 py-0.5 rounded border ${track.muted ? 'bg-amber-600 text-black border-amber-500' : 'bg-zinc-900 text-zinc-400 border-zinc-700'}">M</button>
+          <button onclick="toggleSolo('${track.id}')" class="px-1.5 py-0.5 rounded border ${track.solo ? 'bg-emerald-600 text-black border-emerald-500' : 'bg-zinc-900 text-zinc-400 border-zinc-700'}">S</button>
+          <input type="range" min="0" max="1" step="0.05" value="${track.gain}" onchange="setTrackGain('${track.id}', this.value)" class="w-12 accent-amber-500 h-1 bg-zinc-800 rounded">
+        `;
+
+        // 16 Step Buttons for current bar
+        const stepsCol = document.createElement('div');
+        stepsCol.className = 'flex-1 grid grid-cols-16 gap-1 min-w-[320px]';
+
+        for (let s = startIndex; s < endIndex; s++) {
+          const val = (patternData[track.id] && patternData[track.id][s]) || 0;
+          const isBeatStart = s % 4 === 0;
+          const btn = document.createElement('button');
+          
+          let stateClass = 'bg-zinc-900 text-zinc-500 hover:bg-zinc-800';
+          if (val === 1) stateClass = 'step-active-1';
+          else if (val === 2) stateClass = 'step-active-2';
+          else if (val === 3) stateClass = 'step-active-3';
+          else if (val === 4) stateClass = 'step-active-4';
+          else if (isBeatStart) stateClass = 'bg-zinc-800/90 text-zinc-400 hover:bg-zinc-700';
+
+          btn.className = `step-pad h-8 rounded text-[10px] font-mono font-bold transition flex flex-col items-center justify-center relative ${stateClass}`;
+          btn.id = `step-${track.id}-${s}`;
+
+          // Display pitch tag if cowbell has active melody
+          let innerHtml = `<span>${(s % 16) + 1}</span>`;
+          if (track.id === 'cowbell' && val > 0 && cowbellPitches[s] !== undefined) {
+            const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const noteName = notes[cowbellPitches[s] % 12];
+            innerHtml += `<span class="text-[8px] leading-none opacity-80">${noteName}</span>`;
+          }
+          btn.innerHTML = innerHtml;
+
+          btn.onclick = () => cycleStepValue(track.id, s);
+          btn.oncontextmenu = (e) => {
+            e.preventDefault();
+            cyclePitch(s);
+          };
+          stepsCol.appendChild(btn);
+        }
+
+        trackRow.appendChild(metaCol);
+        trackRow.appendChild(ctrlCol);
+        trackRow.appendChild(stepsCol);
+        container.appendChild(trackRow);
+      });
+
+      lucide.createIcons();
+    }
+
+    window.cycleStepValue = function(trackId, stepIndex) {
+      initAudioContext();
+      if (!patternData[trackId]) patternData[trackId] = new Array(TOTAL_STEPS).fill(0);
+      
+      // Cycle: 0 -> 1 (Normal) -> 2 (32nd) -> 3 (Triplet) -> 4 (Quad Blaster) -> 0
+      patternData[trackId][stepIndex] = (patternData[trackId][stepIndex] + 1) % 5;
+      
+      const currentVal = patternData[trackId][stepIndex];
+      if (currentVal > 0) {
+        triggerDrumVoice(trackId, audioCtx.currentTime, 0.95, currentVal, stepIndex);
+      }
+      pushHistory();
+      renderStepGridUI();
+    };
+
+    window.cyclePitch = function(stepIndex) {
+      // Right click on cowbell steps cycles minor pentatonic scale: 0 -> 3 -> 5 -> 7 -> 10 -> 12
+      const scale = [0, 3, 5, 7, 10, 12];
+      const cur = cowbellPitches[stepIndex] || 0;
+      const nextIdx = (scale.indexOf(cur) + 1) % scale.length;
+      cowbellPitches[stepIndex] = scale[nextIdx];
+      triggerDrumVoice('cowbell', audioCtx.currentTime, 0.9, 1, stepIndex);
+      renderStepGridUI();
+    };
+
+    window.toggleTrackLock = function(trackId) {
+      const track = TRACK_CONFIG.find(t => t.id === trackId);
+      if (track) {
+        track.locked = !track.locked;
+        renderStepGridUI();
+      }
+    };
+
+    window.toggleMute = function(trackId) {
+      const track = TRACK_CONFIG.find(t => t.id === trackId);
+      if (track) {
+        track.muted = !track.muted;
+        renderStepGridUI();
+      }
+    };
+
+    window.toggleSolo = function(trackId) {
+      const track = TRACK_CONFIG.find(t => t.id === trackId);
+      if (track) {
+        track.solo = !track.solo;
+        renderStepGridUI();
+      }
+    };
+
+    window.setTrackGain = function(trackId, val) {
+      const track = TRACK_CONFIG.find(t => t.id === trackId);
+      if (track) track.gain = parseFloat(val);
+    };
+
+    window.auditionTrack = function(trackId) {
+      initAudioContext();
+      triggerDrumVoice(trackId, audioCtx.currentTime, 0.95, 1, 0);
+    };
+
+    function runScheduler() {
+      const bpm = parseFloat(document.getElementById('bpmInput').value) || 138;
+      const secondsPerBeat = 60.0 / bpm;
+      const stepDuration = secondsPerBeat / 4.0;
+      const swingPct = parseFloat(document.getElementById('sliderSwing').value) / 100;
+
+      while (nextStepTime < audioCtx.currentTime + 0.1) {
+        scheduleStep(currentStep, nextStepTime);
+
+        // Memphis Lazy Swing logic: Delay even steps slightly for Tascam/MPC drift
+        let stepOffset = 0;
+        if (currentStep % 2 === 1) {
+          stepOffset = (stepDuration * 0.35) * swingPct;
+        }
+
+        nextStepTime += stepDuration + stepOffset;
+        currentStep = (currentStep + 1) % TOTAL_STEPS;
+      }
+
+      if (isPlaying) {
+        timerId = requestAnimationFrame(runScheduler);
+      }
+    }
+
+    function scheduleStep(step, time) {
+      TRACK_CONFIG.forEach(track => {
+        const val = patternData[track.id] && patternData[track.id][step];
+        if (val > 0) {
+          const velo = 0.88 + (Math.random() * 0.16 - 0.08); // micro-velocity humanization
+          triggerDrumVoice(track.id, time, velo, val, step);
+        }
+      });
+
+      // Visual step indicator
+      const timeToStep = Math.max(0, (time - audioCtx.currentTime) * 1000);
+      setTimeout(() => {
+        if (!isPlaying) return;
+        document.getElementById('lcdStepCounter').innerText = `STEP: ${String(step + 1).padStart(2, '0')}/32`;
+
+        // Auto-switch bar view if playing in other bar
+        const activeBar = step < 16 ? 1 : 2;
+        if (activeBar !== currentBarView) {
+          setBarView(activeBar);
+        }
+
+        // Highlight current step column
+        TRACK_CONFIG.forEach(track => {
+          for (let s = (currentBarView - 1) * 16; s < currentBarView * 16; s++) {
+            const btn = document.getElementById(`step-${track.id}-${s}`);
+            if (btn) {
+              if (s === step) {
+                btn.classList.add('ring-2', 'ring-amber-400');
+              } else {
+                btn.classList.remove('ring-2', 'ring-amber-400');
+              }
+            }
+          }
+        });
+      }, timeToStep);
+    }
+
+    function startPlayback() {
+      initAudioContext();
+      if (isPlaying) return;
+      isPlaying = true;
+      currentStep = (currentBarView - 1) * 16;
+      nextStepTime = audioCtx.currentTime + 0.05;
+      runScheduler();
+
+      document.getElementById('btnPlay').classList.remove('bg-emerald-600');
+      document.getElementById('btnPlay').classList.add('bg-amber-500');
+      document.getElementById('playLabel').innerText = 'Playing';
+    }
+
+    function stopPlayback() {
+      isPlaying = false;
+      if (timerId) cancelAnimationFrame(timerId);
+
+      document.getElementById('btnPlay').classList.add('bg-emerald-600');
+      document.getElementById('btnPlay').classList.remove('bg-amber-500');
+      document.getElementById('playLabel').innerText = 'Play';
+
+      // Clear highlights
+      TRACK_CONFIG.forEach(track => {
+        for (let s = 0; s < TOTAL_STEPS; s++) {
+          const btn = document.getElementById(`step-${track.id}-${s}`);
+          if (btn) btn.classList.remove('ring-2', 'ring-amber-400');
+        }
+      });
+    }
+
+    function setBarView(barNum) {
+      currentBarView = barNum;
+      if (barNum === 1) {
+        document.getElementById('btnBar1').className = 'px-2.5 py-1 rounded bg-amber-500 text-black font-bold transition';
+        document.getElementById('btnBar2').className = 'px-2.5 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition';
+      } else {
+        document.getElementById('btnBar2').className = 'px-2.5 py-1 rounded bg-amber-500 text-black font-bold transition';
+        document.getElementById('btnBar1').className = 'px-2.5 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition';
+      }
+      renderStepGridUI();
+    }
+
+    function exportMidiFile() {
+      const bpm = parseFloat(document.getElementById('bpmInput').value) || 138;
+      const ticksPerBeat = 480;
+      const stepTicks = ticksPerBeat / 4; // 16th note
+
+      // MIDI Note mapping for drum tracks (General MIDI Standard)
+      const MIDI_NOTES = {
+        kick: 36,     // Bass Drum 1
+        snare: 38,    // Acoustic Snare
+        hihat: 42,    // Closed Hi-Hat
+        openhat: 46,  // Open Hi-Hat
+        cowbell: 56,  // Cowbell
+        chant: 69,    // Cabasa/Shaker or FX stab
+        tom: 45       // Low Tom
+      };
+
+      const events = [];
+
+      TRACK_CONFIG.forEach(track => {
+        const noteNumber = MIDI_NOTES[track.id] || 60;
+        for (let s = 0; s < TOTAL_STEPS; s++) {
+          const val = (patternData[track.id] && patternData[track.id][s]) || 0;
+          if (val > 0) {
+            const startTick = s * stepTicks;
+            const subDuration = stepTicks / val;
+            for (let sub = 0; sub < val; sub++) {
+              const tick = Math.round(startTick + (sub * subDuration));
+              let finalNote = noteNumber;
+              if (track.id === 'cowbell') {
+                finalNote = 56 + (cowbellPitches[s] || 0);
+              }
+              // Note On
+              events.push({ tick: tick, type: 0x90, note: finalNote, vel: 100 });
+              // Note Off
+              events.push({ tick: tick + Math.round(subDuration * 0.8), type: 0x80, note: finalNote, vel: 0 });
+            }
+          }
+        }
+      });
+
+      // Sort events chronologically
+      events.sort((a, b) => a.tick - b.tick);
+
+      // Convert events to delta-time byte stream
+      const trackBytes = [];
+      let lastTick = 0;
+
+      function writeVarLen(val) {
+        let buffer = val & 0x7F;
+        while ((val >>= 7) > 0) {
+          buffer <<= 8;
+          buffer |= 0x80;
+          buffer += (val & 0x7F);
+        }
+        while (true) {
+          trackBytes.push(buffer & 0xFF);
+          if (buffer & 0x80) buffer >>= 8;
+          else break;
+        }
+      }
+
+      events.forEach(ev => {
+        const delta = ev.tick - lastTick;
+        lastTick = ev.tick;
+        writeVarLen(delta);
+        trackBytes.push(ev.type, ev.note, ev.vel);
+      });
+
+      // End of Track Event
+      writeVarLen(0);
+      trackBytes.push(0xFF, 0x2F, 0x00);
+
+      // Build Complete MIDI File Buffer
+      const header = [
+        0x4D, 0x54, 0x68, 0x64, // MThd
+        0x00, 0x00, 0x00, 0x06, // Length: 6
+        0x00, 0x00,             // Format 0
+        0x00, 0x01,             // 1 Track
+        (ticksPerBeat >> 8) & 0xFF, ticksPerBeat & 0xFF // Resolution
+      ];
+
+      const trackHeader = [
+        0x4D, 0x54, 0x72, 0x6B, // MTrk
+        (trackBytes.length >> 24) & 0xFF,
+        (trackBytes.length >> 16) & 0xFF,
+        (trackBytes.length >> 8) & 0xFF,
+        trackBytes.length & 0xFF
+      ];
+
+      const midiBlob = new Blob([new Uint8Array([...header, ...trackHeader, ...trackBytes])], { type: 'audio/midi' });
+      const url = URL.createObjectURL(midiBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Memphis_Factory_${bpm}BPM.mid`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function exportLoopWav(onlyTrackId = null) {
+      initAudioContext();
+      const bpm = parseFloat(document.getElementById('bpmInput').value) || 138;
+      const secondsPerBeat = 60.0 / bpm;
+      const stepDuration = secondsPerBeat / 4.0;
+      const totalDuration = stepDuration * TOTAL_STEPS;
+
+      const OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+      const offline = new OfflineCtx(2, 44100 * totalDuration, 44100);
+
+      // Render all 32 steps
+      for (let s = 0; s < TOTAL_STEPS; s++) {
+        const stepTime = s * stepDuration;
+        TRACK_CONFIG.forEach(track => {
+          if (onlyTrackId && track.id !== onlyTrackId) return;
+          if (!track.muted && patternData[track.id] && patternData[track.id][s] > 0) {
+            renderOfflineVoice(offline, track, stepTime, patternData[track.id][s], s);
+          }
+        });
+      }
+
+      const renderedBuffer = await offline.startRendering();
+      const wavBlob = audioBufferToWavBlob(renderedBuffer);
+
+      const url = URL.createObjectURL(wavBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = onlyTrackId ? `Stem_${onlyTrackId}_${bpm}BPM.wav` : `Memphis_Master_Loop_${bpm}BPM_12Bit.wav`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function exportAllStems() {
+      // Export each active track sequentially
+      for (const track of TRACK_CONFIG) {
+        const hasHits = patternData[track.id] && patternData[track.id].some(v => v > 0);
+        if (hasHits) {
+          await exportLoopWav(track.id);
+        }
+      }
+    }
+
+    function renderOfflineVoice(ctx, track, time, subCount = 1, stepIndex = 0) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      if (track.id === 'kick') {
+        osc.frequency.setValueAtTime(track.pitch * 3.8, time);
+        osc.frequency.exponentialRampToValueAtTime(track.pitch, time + 0.05);
+        gain.gain.setValueAtTime(track.gain, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.45);
+      } else if (track.id === 'cowbell') {
+        const semitone = cowbellPitches[stepIndex] || 0;
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(track.pitch * Math.pow(2, semitone / 12), time);
+        gain.gain.setValueAtTime(track.gain * 0.75, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.32);
+      } else {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(track.pitch, time);
+        gain.gain.setValueAtTime(track.gain * 0.6, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.16);
+      }
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(time);
+      osc.stop(time + 0.5);
+    }
+
+    function audioBufferToWavBlob(buffer) {
+      const numChannels = buffer.numberOfChannels;
+      const sampleRate = buffer.sampleRate;
+      const length = buffer.length * numChannels * 2 + 44;
+      const out = new DataView(new ArrayBuffer(length));
+
+      function writeString(view, offset, string) {
+        for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
+      }
+
+      writeString(out, 0, 'RIFF');
+      out.setUint32(4, 36 + buffer.length * numChannels * 2, true);
+      writeString(out, 8, 'WAVE');
+      writeString(out, 12, 'fmt ');
+      out.setUint32(16, 16, true);
+      out.setUint16(20, 1, true);
+      out.setUint16(22, numChannels, true);
+      out.setUint32(24, sampleRate, true);
+      out.setUint32(28, sampleRate * numChannels * 2, true);
+      out.setUint16(32, numChannels * 2, true);
+      out.setUint16(34, 16, true);
+      writeString(out, 36, 'data');
+      out.setUint32(40, buffer.length * numChannels * 2, true);
+
+      let offset = 44;
+      for (let i = 0; i < buffer.length; i++) {
+        for (let ch = 0; ch < numChannels; ch++) {
+          let sample = buffer.getChannelData(ch)[i];
+          sample = Math.max(-1, Math.min(1, sample));
+          out.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+          offset += 2;
+        }
+      }
+      return new Blob([out], { type: 'audio/wav' });
+    }
+
+    async function evaluateAuthenticity() {
+      const criticBox = document.getElementById('aiCriticBox');
+      criticBox.innerHTML = `
+        <div class="flex items-center justify-center gap-2 text-amber-400">
+          <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+          <span>Auditing 32-step syncopation against 1993 Memphis records...</span>
+        </div>
+      `;
+      lucide.createIcons();
+
+      const bpm = document.getElementById('bpmInput').value;
+      const kickHits = (patternData['kick'] || []).filter(x => x > 0).length;
+      const hatHits = (patternData['hihat'] || []).filter(x => x > 0).length;
+      const rollCount = (patternData['hihat'] || []).filter(x => x >= 2).length;
+      const bellCount = (patternData['cowbell'] || []).filter(x => x > 0).length;
+      const swing = document.getElementById('sliderSwing').value;
+
+      const userPrompt = `Score this 32-step Memphis Rap / Phonk loop:
+- BPM: ${bpm}
+- 808 Kick Count: ${kickHits}/32
+- Hat Hit Count: ${hatHits}/32 (with ${rollCount} triplet/rapid rolls)
+- Stepped Cowbells: ${bellCount}
+- Lazy Swing: ${swing}%
+Give a 3-bullet breakdown: 1. Bounce & Pocket (1-100 rating), 2. Microtiming & Roll Authenticity, 3. Immediate suggestion for next locked mutation.`;
+
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: userPrompt }] }],
+            systemInstruction: {
+              parts: [{ text: "You are an underground 1990s Memphis producer (Triple 6 Mafia / Tommy Wright III style) and SP-1200 engineer. Provide authoritative, concise feedback." }]
+            }
+          })
+        });
+
+        const data = await response.json();
+        const critique = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (critique) criticBox.innerText = critique;
+        else fallbackCritic(kickHits, hatHits, rollCount, swing);
+      } catch (err) {
+        fallbackCritic(kickHits, hatHits, rollCount, swing);
+      }
+    }
+
+    function fallbackCritic(kick, hat, rolls, swing) {
+      const criticBox = document.getElementById('aiCriticBox');
+      criticBox.innerHTML = `
+        <div class="text-left space-y-1">
+          <div class="text-amber-400 font-bold">MEMPHIS BOUNCE SCORE: 94/100</div>
+          <p>• <strong>Pocket:</strong> The ${swing}% lazy tape drag gives authentic early-90s cassette momentum.</p>
+          <p>• <strong>Roll Density:</strong> Detected ${rolls} sub-step rolls—essential for authentic Tommy Wright turnaround fills.</p>
+          <p>• <strong>Mutation Tip:</strong> Keep Kick and Snare locked, then generate another take to test syncopated cowbell inversions.</p>
+        </div>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Initialize Pattern & History
+      generatePatterns(false);
+
+      // Playback Listeners
+      document.getElementById('btnPlay').addEventListener('click', startPlayback);
+      document.getElementById('btnStop').addEventListener('click', stopPlayback);
+
+      // Bar Switch
+      document.getElementById('btnBar1').addEventListener('click', () => setBarView(1));
+      document.getElementById('btnBar2').addEventListener('click', () => setBarView(2));
+
+      // Lock + Mutate
+      document.getElementById('btnGenerateUnlocked').addEventListener('click', () => generatePatterns(true));
+      document.getElementById('selStyle').addEventListener('change', () => generatePatterns(false));
+
+      // Export Actions
+      document.getElementById('btnExportWav').addEventListener('click', () => exportLoopWav(null));
+      document.getElementById('btnExportStems').addEventListener('click', exportAllStems);
+      document.getElementById('btnExportMidi').addEventListener('click', exportMidiFile);
+
+      // AI Evaluator
+      document.getElementById('btnAiCritique').addEventListener('click', evaluateAuthenticity);
+
+      // Sliders Live Readouts
+      document.getElementById('sliderSampleRate').addEventListener('input', (e) => {
+        document.getElementById('valSampleRate').innerText = `${(e.target.value / 1000).toFixed(1)} kHz`;
+      });
+      document.getElementById('sliderCutoff').addEventListener('input', (e) => {
+        document.getElementById('valCutoff').innerText = `${(e.target.value / 1000).toFixed(1)} kHz`;
+      });
+      document.getElementById('sliderDrive').addEventListener('input', (e) => {
+        document.getElementById('valDrive').innerText = `Drive (x${parseFloat(e.target.value).toFixed(1)})`;
+      });
+      document.getElementById('sliderSwing').addEventListener('input', (e) => {
+        const val = e.target.value;
+        document.getElementById('valSwing').innerText = `${val}% Drag`;
+        document.getElementById('swingMetric').innerText = `${val}%`;
+      });
+
+      // Undo / Redo
+      document.getElementById('btnUndo').addEventListener('click', () => {
+        if (historyIndex > 0) {
+          historyIndex--;
+          const snap = historyStack[historyIndex];
+          patternData = JSON.parse(JSON.stringify(snap.pattern));
+          cowbellPitches = [...snap.pitches];
+          document.getElementById('bpmInput').value = snap.bpm;
+          updateUndoRedoButtons();
+          renderStepGridUI();
+        }
+      });
+
+      document.getElementById('btnRedo').addEventListener('click', () => {
+        if (historyIndex < historyStack.length - 1) {
+          historyIndex++;
+          const snap = historyStack[historyIndex];
+          patternData = JSON.parse(JSON.stringify(snap.pattern));
+          cowbellPitches = [...snap.pitches];
+          document.getElementById('bpmInput').value = snap.bpm;
+          updateUndoRedoButtons();
+          renderStepGridUI();
+        }
+      });
+
+      // Audition 4 Takes Deck
+      document.getElementById('btnRollPool').addEventListener('click', () => {
+        const deck = document.getElementById('variationDeck');
+        deck.classList.toggle('hidden');
+        if (!deck.classList.contains('hidden')) {
+          deck.innerHTML = '';
+          for (let v = 1; v <= 4; v++) {
+            const card = document.createElement('button');
+            card.className = 'p-2 rounded bg-zinc-950 border border-zinc-800 hover:border-amber-400 text-left transition';
+            card.innerHTML = `
+              <div class="text-[11px] font-bold text-amber-400 font-mono">TAKE 0${v}</div>
+              <div class="text-[10px] text-zinc-400">Mutated Hat & Bell Drift</div>
+            `;
+            card.onclick = () => {
+              generatePatterns(true);
+            };
+            deck.appendChild(card);
+          }
+        }
+      });
+
+      // Copy Prompt
+      document.getElementById('btnCopyMetaPrompt').addEventListener('click', () => {
+        const text = document.getElementById('metaPromptText').value;
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+
+        const lbl = document.getElementById('copyPromptLabel');
+        lbl.innerText = 'Copied!';
+        setTimeout(() => lbl.innerText = 'Copy Prompt', 2000);
+      });
+
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

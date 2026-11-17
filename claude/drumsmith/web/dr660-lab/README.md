@@ -10,3 +10,7 @@ node --test tests/*.test.mjs
 ```
 
 See `ARCHITECTURE.md`. Continuity: Gemini handoff → sequencer → FX bus → bitcrush + tape delay.
+
+**Lock + Mutate:** lock kick/snare (default), then **MUTATE UNLOCKED** for new hat/perc/cowbell variations.
+
+Factory OS monolith + Claude/Antigravity plan: [`../memphis-loop-factory/`](../memphis-loop-factory/).

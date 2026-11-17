@@ -113,6 +113,18 @@ export class DR660Sequencer {
     /** @type {number[]} */
     this.cowbellPitch = Array(16).fill(1);
 
+    /** Lock + Mutate — locked tracks keep their rows when mutating */
+    this.locked = {
+      kick: true,
+      snare: true,
+      rim: false,
+      chh: false,
+      ohh: false,
+      cowbell: false,
+      perc1: false,
+      perc2: false,
+    };
+
     /** @type {Record<string, number[]>} */
     this.pattern = {
       kick: [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0],
@@ -241,6 +253,71 @@ export class DR660Sequencer {
     this.hiHatRatchets = flat.hiHatRatchets;
     this.cowbellPitch = flat.cowbellPitch;
     this.currentStep = 0;
+  }
+
+  /** @param {string} track */
+  toggleLock(track) {
+    if (!(track in this.locked)) return false;
+    this.locked[track] = !this.locked[track];
+    return this.locked[track];
+  }
+
+  /**
+   * Regenerate unlocked tracks (hats, perc, cowbell melody) — kick/snare stay if locked.
+   * @param {() => number} [rng=Math.random]
+   */
+  mutateUnlocked(rng = Math.random) {
+    const n = this.totalSteps;
+    const pitchChoices = [1, 0.891, 1.059, 1.189, 0.794, 1.335];
+
+    if (!this.locked.chh) {
+      this.pattern.chh = Array.from({ length: n }, (_, i) => {
+        if (i % 2 === 0) return 0.55 + rng() * 0.45;
+        return rng() < 0.35 ? 0.45 : 0;
+      });
+      this.hiHatRatchets = Array.from({ length: n }, () => {
+        const r = rng();
+        if (r < 0.08) return 4;
+        if (r < 0.18) return 3;
+        return 1;
+      });
+    }
+    if (!this.locked.ohh) {
+      this.pattern.ohh = Array.from({ length: n }, (_, i) =>
+        i % 8 === 7 && rng() < 0.55 ? 0.75 : 0,
+      );
+    }
+    if (!this.locked.rim) {
+      this.pattern.rim = Array.from({ length: n }, () => (rng() < 0.12 ? 0.5 + rng() * 0.3 : 0));
+    }
+    if (!this.locked.cowbell) {
+      this.pattern.cowbell = Array.from({ length: n }, (_, i) => {
+        if (i % 4 === 0) return 0.85 + rng() * 0.15;
+        if (i % 4 === 3 && rng() < 0.5) return 0.7;
+        return rng() < 0.08 ? 0.6 : 0;
+      });
+      this.cowbellPitch = Array.from({ length: n }, () => pitchChoices[Math.floor(rng() * pitchChoices.length)]);
+    }
+    if (!this.locked.perc1) {
+      this.pattern.perc1 = Array.from({ length: n }, () => (rng() < 0.1 ? 0.5 : 0));
+    }
+    if (!this.locked.perc2) {
+      this.pattern.perc2 = Array.from({ length: n }, () => (rng() < 0.08 ? 0.5 : 0));
+    }
+    // Ghost snare fills only when snare unlocked
+    if (!this.locked.snare) {
+      this.pattern.snare = Array.from({ length: n }, (_, i) => {
+        if (i % 16 === 4 || i % 16 === 12) return 1;
+        return rng() < 0.06 ? 0.45 : 0;
+      });
+    }
+    if (!this.locked.kick) {
+      this.pattern.kick = Array.from({ length: n }, (_, i) => {
+        if (i % 8 === 0) return 1;
+        if (i % 8 === 6 && rng() < 0.6) return 0.7;
+        return rng() < 0.05 ? 0.6 : 0;
+      });
+    }
   }
 
   /** @param {string} name */

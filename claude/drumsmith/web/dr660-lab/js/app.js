@@ -201,7 +201,19 @@ function renderGrid() {
     row.dataset.track = track;
     const label = document.createElement('span');
     label.className = 'track-label';
-    label.textContent = track;
+    const lock = document.createElement('button');
+    lock.type = 'button';
+    lock.className = 'lock-btn' + (seq.locked[track] ? ' is-locked' : '');
+    lock.textContent = seq.locked[track] ? 'LOCK' : 'OPEN';
+    lock.title = 'Toggle Lock + Mutate';
+    lock.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const locked = seq.toggleLock(track);
+      lock.textContent = locked ? 'LOCK' : 'OPEN';
+      lock.classList.toggle('is-locked', locked);
+    });
+    label.appendChild(lock);
+    label.appendChild(document.createTextNode(track));
     row.appendChild(label);
     const patternRow = seq.pattern[track] || Array(steps).fill(0);
     for (let s = 0; s < steps; s += 1) {
@@ -258,6 +270,10 @@ function bind() {
     await seq.start();
   });
   document.getElementById('btn-stop').addEventListener('click', () => seq.stop());
+  document.getElementById('btn-mutate').addEventListener('click', () => {
+    seq.mutateUnlocked();
+    renderGrid();
+  });
 
   document.getElementById('bpm').addEventListener('input', (e) => {
     seq.setBpm(/** @type {HTMLInputElement} */ (e.target).value);

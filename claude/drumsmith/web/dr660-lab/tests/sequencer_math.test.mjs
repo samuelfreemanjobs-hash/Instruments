@@ -87,3 +87,25 @@ describe('flattenMemphisPattern', () => {
     assert.ok(Math.abs(flat.cowbellPitch[6] - 1.059) < 1e-12);
   });
 });
+
+describe('mutateUnlocked lock invariant', () => {
+  it('keeps locked kick/snare rows identical', async () => {
+    const { DR660Sequencer } = await import('../js/Sequencer.js');
+    const seq = new DR660Sequencer(
+      { currentTime: 0, state: 'running', resume: async () => {} },
+      () => {},
+    );
+    seq.loadPreset('crawl');
+    const kick = [...seq.pattern.kick];
+    const snare = [...seq.pattern.snare];
+    let i = 0;
+    const rng = () => {
+      i += 1;
+      return (i % 10) / 10;
+    };
+    seq.mutateUnlocked(rng);
+    assert.deepEqual(seq.pattern.kick, kick);
+    assert.deepEqual(seq.pattern.snare, snare);
+    assert.ok(seq.pattern.chh.some((v, idx) => v !== 0.6 || idx % 2 !== 0) || seq.hiHatRatchets.some((r) => r > 1));
+  });
+});
