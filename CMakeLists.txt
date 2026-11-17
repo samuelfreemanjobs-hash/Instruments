@@ -20,13 +20,14 @@ FetchContent_MakeAvailable(JUCE)
 option(INSTRUMENTS_ENABLE_CLAP "Fetch CLAP extensions and build JDUpgraded CLAP target" ON)
 
 # Track clap-juce-extensions main (pinned SHA); repin when CI fetch fails.
+# Use a full (non-shallow) fetch for commit SHAs — shallow+orphan SHA fails checkout.
 if(INSTRUMENTS_ENABLE_CLAP)
-    set(JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG 6bde108329ff9fc24404b79b8b397261a75cf6a8)
+    set(JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG 3837f4a6ed2ab0ba46aba69ae5b7041c7c64ce74)
     FetchContent_Declare(
         clap_juce_extensions
         GIT_REPOSITORY https://github.com/free-audio/clap-juce-extensions.git
         GIT_TAG ${JDUPGRADED_CLAP_JUCE_EXTENSIONS_GIT_TAG}
-        GIT_SHALLOW TRUE
+        GIT_SHALLOW FALSE
         GIT_SUBMODULES_RECURSE TRUE
     )
     FetchContent_MakeAvailable(clap_juce_extensions)
