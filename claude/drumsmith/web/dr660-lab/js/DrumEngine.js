@@ -3,6 +3,7 @@
  * Velocities use squared gain (DR-660 accent feel). CHH chokes ringing OHH.
  * Tracks active sources so Stop can cancel queued / ringing voices.
  */
+import { Cowbell808Synth } from './CowbellSynth.js';
 
 export class DrumEngine {
   /** @param {AudioContext} ctx @param {AudioNode} destination */
@@ -13,6 +14,7 @@ export class DrumEngine {
     this._openHat = null;
     /** @type {Set<AudioScheduledSourceNode>} */
     this._active = new Set();
+    this.cowbell = new Cowbell808Synth(ctx, destination, (src, end) => this.#track(src, 0, end));
   }
 
   /**
@@ -55,8 +57,9 @@ export class DrumEngine {
    * @param {string} track
    * @param {number} time
    * @param {number} velocity 0..1
+   * @param {{ pitch?: number }} [opts]
    */
-  trigger(track, time, velocity) {
+  trigger(track, time, velocity, opts = {}) {
     const v = Math.max(0.05, Math.min(1, velocity));
     const g = v * v; // logarithmic-ish accent curve
     switch (track) {
@@ -78,7 +81,7 @@ export class DrumEngine {
         this._openHat = this.#noiseBurst(time, g * 0.28, 0.22, 7000);
         break;
       case 'cowbell':
-        this.#cowbell(time, g);
+        this.cowbell.trigger(time, v, opts.pitch ?? 1);
         break;
       case 'perc1':
         this.#tone(time, g * 0.4, 440, 0.08);
@@ -125,24 +128,6 @@ export class DrumEngine {
   #snare(time, v) {
     this.#tone(time, v * 0.35, 180, 0.08);
     this.#noiseBurst(time, v * 0.55, 0.12, 3500);
-  }
-
-  /** @param {number} time @param {number} v */
-  #cowbell(time, v) {
-    const g = this.ctx.createGain();
-    g.gain.setValueAtTime(0.0001, time);
-    g.gain.exponentialRampToValueAtTime(0.35 * v, time + 0.002);
-    g.gain.exponentialRampToValueAtTime(0.0001, time + 0.55);
-    g.connect(this.destination);
-    for (const f of [560, 845]) {
-      const o = this.ctx.createOscillator();
-      o.type = 'square';
-      o.frequency.value = f;
-      o.connect(g);
-      o.start(time);
-      o.stop(time + 0.55);
-      this.#track(o, time, time + 0.55);
-    }
   }
 
   /**

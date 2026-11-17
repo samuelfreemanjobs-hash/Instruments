@@ -4,7 +4,12 @@ import {
   sixteenthDurationSec,
   swingOffsetSec,
   catchUpExpiredSteps,
+  ratchetVelocity,
+  flattenMemphisPattern,
 } from '../js/Sequencer.js';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 describe('sixteenthDurationSec', () => {
   it('matches 60/bpm/4 at 94 BPM', () => {
@@ -56,5 +61,29 @@ describe('catchUpExpiredSteps', () => {
     };
     assert.equal(catchUpExpiredSteps(state, 0.5, 0.01), 0);
     assert.equal(state.currentStep, 3);
+  });
+});
+
+describe('ratchetVelocity', () => {
+  it('ramps from 0.65× to 1.0× across subdivisions', () => {
+    assert.ok(Math.abs(ratchetVelocity(1, 4, 0) - 0.65) < 1e-12);
+    assert.ok(Math.abs(ratchetVelocity(1, 4, 3) - 1) < 1e-12);
+  });
+});
+
+describe('flattenMemphisPattern', () => {
+  it('loads 4-bar JSON to 64 steps with ratchets and pitch', () => {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const raw = JSON.parse(
+      readFileSync(join(here, '../data/memphis_4bar_pattern.json'), 'utf8'),
+    );
+    const flat = flattenMemphisPattern(raw);
+    assert.equal(flat.totalSteps, 64);
+    assert.equal(flat.pattern.kick.length, 64);
+    assert.equal(flat.hiHatRatchets.length, 64);
+    assert.equal(flat.cowbellPitch.length, 64);
+    assert.equal(flat.bpm, 91);
+    assert.equal(flat.hiHatRatchets[10], 3); // bar1 step 11
+    assert.ok(Math.abs(flat.cowbellPitch[6] - 1.059) < 1e-12);
   });
 });

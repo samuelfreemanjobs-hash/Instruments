@@ -28,7 +28,8 @@ node --test tests/*.test.mjs
 3. Lagged ticks call `catchUpExpiredSteps` so past slots are skipped (no burst of late hits)
 4. Per step: swing offset on odd 0-based 16ths → `triggerSound(track, time, velocity)`
 5. `DrumEngine` plays short synthesized one-shots into `MemphisFXBus.input` (velocity² gain; CHH chokes OHH; `stopAll` on transport Stop)
-6. Master FX bus: HPF pre-emphasis → 12-bit bitcrush worklet → dark LPF → cassette WaveShaper → lo-fi tape delay → destination
+6. Master FX bus: HPF → bitcrush → dark LPF → cassette WaveShaper → wow/flutter → lo-fi tape delay → destination
+7. Optional 4-bar groove (`data/memphis_4bar_pattern.json`) with CHH ratchets + melodic cowbell pitch
 
 ## Threading / realtime
 
@@ -40,9 +41,12 @@ Browser audio thread is owned by Web Audio. UI never calls `setTimeout` for *aud
 |------|------|
 | `index.html` | Single-rack UI: transport, 16-step grid, FX mixer |
 | `js/Sequencer.js` | Lookahead clock, swing, catch-up, pattern, velocity |
-| `js/DrumEngine.js` | Lightweight synth one-shots + stopAll |
-| `js/MasterChain.js` | `MemphisFXBus` — HPF → bitcrush → LPF → cassette → tape delay |
+| `js/DrumEngine.js` | Synth one-shots + stopAll |
+| `js/CowbellSynth.js` | Dual-square 808 cowbell + pitch |
+| `js/MasterChain.js` | HPF → bitcrush → LPF → cassette → wow → tape delay |
+| `js/TapeFlutter.js` | Wow/flutter LFO delay modulation |
 | `js/TapeDelay.js` | Dry/wet delay with filtered feedback |
+| `data/memphis_4bar_pattern.json` | 4-bar groove + ratchets + cowbell pitch |
 | `js/cassetteCurve.js` | Soft-clip tape WaveShaper curves |
 | `js/bitcrush-processor.js` | AudioWorklet 12-bit + downsample |
 | `js/app.js` | Wire UI ↔ audio |

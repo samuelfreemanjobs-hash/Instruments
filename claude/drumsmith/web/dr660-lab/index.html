@@ -33,6 +33,7 @@
         <select id="preset">
           <option value="crawl">Converter crawl (94)</option>
           <option value="bounce">Club bounce (134)</option>
+          <option value="memphis4">Memphis 4-bar (91)</option>
         </select>
       </div>
 
@@ -59,6 +60,10 @@
           <div class="knob-control">
             <label for="cassette">Cassette Drive</label>
             <input id="cassette" type="range" min="0" max="1" step="0.01" value="0.45" />
+          </div>
+          <div class="knob-control">
+            <label for="tape-wear">Tape Wear <span id="tape-wear-val">0.45</span></label>
+            <input id="tape-wear" type="range" min="0" max="1" step="0.01" value="0.45" />
           </div>
           <div class="knob-control">
             <label for="cutoff">Filter Cutoff <span id="cutoff-val">9500 Hz</span></label>
@@ -99,7 +104,7 @@
             </label>
           </div>
         </div>
-        <p class="note">Voices → HPF → bitcrush → LPF → cassette → tape delay → out</p>
+        <p class="note">Voices → HPF → bitcrush → LPF → cassette → wow/flutter → tape delay → out. CHH steps with ratchets marked.</p>
       </div>
     </section>
   </div>

@@ -1,6 +1,7 @@
 /**
- * DR-660–style 16-step sequencer using Web Audio lookahead scheduling.
+ * DR-660–style step sequencer using Web Audio lookahead scheduling.
  * Swing delays odd 0-based 16th indices (even 1-based steps), Roland-style.
+ * Supports CHH ratchets and melodic cowbell pitch multipliers.
  */
 
 /** @param {number} bpm */
@@ -18,16 +19,57 @@ export function sixteenthDurationSec(bpm) {
 export function swingOffsetSec(stepNumber, swingPercent, sixteenthSec) {
   const swing = Math.max(50, Math.min(75, swingPercent));
   if (stepNumber % 2 !== 1 || swing <= 50) return 0;
-  const swingFactor = (swing - 50) / 50; // 50→0 … 75→0.5
+  const swingFactor = (swing - 50) / 50;
   return swingFactor * sixteenthSec;
 }
 
 /**
- * Advance pattern clock past expired times without scheduling.
+ * @param {number} velocity
+ * @param {number} subdivisions
+ * @param {number} index
+ */
+export function ratchetVelocity(velocity, subdivisions, index) {
+  if (subdivisions <= 1) return velocity;
+  return velocity * (0.65 + 0.35 * (index / (subdivisions - 1)));
+}
+
+/**
+ * Flatten multi-bar Gemini pattern JSON into sequencer rows.
+ * @param {{ bpm?: number, swing?: number, bars: Array<{ tracks: Record<string, number[]>, hiHatRatchets?: number[], cowbellPitch?: number[] }> }} doc
+ */
+export function flattenMemphisPattern(doc) {
+  const tracks = {};
+  const hiHatRatchets = [];
+  const cowbellPitch = [];
+  const trackNames = new Set();
+  for (const bar of doc.bars) {
+    for (const name of Object.keys(bar.tracks)) trackNames.add(name);
+  }
+  for (const name of trackNames) tracks[name] = [];
+
+  for (const bar of doc.bars) {
+    for (const name of trackNames) {
+      const row = bar.tracks[name] || Array(16).fill(0);
+      tracks[name].push(...row);
+    }
+    hiHatRatchets.push(...(bar.hiHatRatchets || Array(16).fill(1)));
+    cowbellPitch.push(...(bar.cowbellPitch || Array(16).fill(1)));
+  }
+
+  return {
+    bpm: doc.bpm ?? 91,
+    swing: doc.swing ?? 57,
+    totalSteps: doc.bars.length * 16,
+    pattern: tracks,
+    hiHatRatchets,
+    cowbellPitch,
+  };
+}
+
+/**
  * @param {{ nextNoteTime: number, currentStep: number, totalSteps: number, getSixteenthDuration: () => number }} state
  * @param {number} now
  * @param {number} [graceSec=0.01]
- * @returns {number} steps skipped
  */
 export function catchUpExpiredSteps(state, now, graceSec = 0.01) {
   let skipped = 0;
@@ -36,7 +78,7 @@ export function catchUpExpiredSteps(state, now, graceSec = 0.01) {
     state.nextNoteTime += state.getSixteenthDuration();
     state.currentStep = (state.currentStep + 1) % state.totalSteps;
     skipped += 1;
-    if (skipped > 10000) break; // safety
+    if (skipped > 10000) break;
   }
   return skipped;
 }
@@ -44,9 +86,9 @@ export function catchUpExpiredSteps(state, now, graceSec = 0.01) {
 export class DR660Sequencer {
   /**
    * @param {AudioContext} audioCtx
-   * @param {(trackId: string, time: number, velocity: number) => void} triggerSound
+   * @param {(trackId: string, time: number, velocity: number, opts?: { pitch?: number }) => void} triggerSound
    * @param {(stepIndex: number) => void} [onStepVisual]
-   * @param {() => void} [onStopAudio] cancel pending scheduled voices
+   * @param {() => void} [onStopAudio]
    */
   constructor(audioCtx, triggerSound, onStepVisual, onStopAudio) {
     this.audioCtx = audioCtx;
@@ -65,6 +107,11 @@ export class DR660Sequencer {
     this.scheduleAheadTime = 0.1;
     this.nextNoteTime = 0.0;
     this.timerID = null;
+
+    /** @type {number[]} */
+    this.hiHatRatchets = Array(16).fill(1);
+    /** @type {number[]} */
+    this.cowbellPitch = Array(16).fill(1);
 
     /** @type {Record<string, number[]>} */
     this.pattern = {
@@ -98,12 +145,29 @@ export class DR660Sequencer {
     const sixteenth = this.getSixteenthDuration();
     const triggerTime = baseTime + swingOffsetSec(stepNumber, this.swing, sixteenth);
 
-    // Do not start audio for notes already in the past
     if (triggerTime < this.audioCtx.currentTime - 0.002) return;
 
     for (const track of Object.keys(this.pattern)) {
-      const velocity = this.pattern[track][stepNumber];
-      if (velocity > 0) this.triggerSound(track, triggerTime, velocity);
+      const row = this.pattern[track];
+      if (!row || stepNumber >= row.length) continue;
+      const velocity = row[stepNumber];
+      if (!(velocity > 0)) continue;
+
+      if (track === 'chh') {
+        const subdivisions = Math.max(1, this.hiHatRatchets[stepNumber] || 1);
+        if (subdivisions > 1) {
+          const subStep = sixteenth / subdivisions;
+          for (let i = 0; i < subdivisions; i += 1) {
+            const subTime = triggerTime + i * subStep;
+            if (subTime < this.audioCtx.currentTime - 0.002) continue;
+            this.triggerSound(track, subTime, ratchetVelocity(velocity, subdivisions, i));
+          }
+          continue;
+        }
+      }
+
+      const pitch = track === 'cowbell' ? this.cowbellPitch[stepNumber] || 1 : 1;
+      this.triggerSound(track, triggerTime, velocity, { pitch });
     }
 
     const timeUntilTriggerMs = Math.max(0, (triggerTime - this.audioCtx.currentTime) * 1000);
@@ -139,7 +203,7 @@ export class DR660Sequencer {
 
   stop() {
     this.isPlaying = false;
-    this.transportGen += 1; // invalidate pending visual + gate late audio via engine stop
+    this.transportGen += 1;
     if (this.timerID != null) clearInterval(this.timerID);
     this.timerID = null;
     if (this.onStopAudio) this.onStopAudio();
@@ -168,24 +232,48 @@ export class DR660Sequencer {
     return row[stepIndex];
   }
 
+  /** @param {ReturnType<typeof flattenMemphisPattern>} flat */
+  applyFlattenedPattern(flat) {
+    this.bpm = flat.bpm;
+    this.swing = flat.swing;
+    this.totalSteps = flat.totalSteps;
+    this.pattern = flat.pattern;
+    this.hiHatRatchets = flat.hiHatRatchets;
+    this.cowbellPitch = flat.cowbellPitch;
+    this.currentStep = 0;
+  }
+
   /** @param {string} name */
   loadPreset(name) {
     if (name === 'crawl') {
+      this.totalSteps = 16;
+      this.hiHatRatchets = Array(16).fill(1);
+      this.cowbellPitch = Array(16).fill(1);
       this.bpm = 94;
       this.swing = 54;
       this.pattern.kick = [1, 0, 0, 0, 0, 0, 0.6, 0, 1, 0, 0, 0, 0, 0, 0, 0];
       this.pattern.snare = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0];
+      this.pattern.rim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       this.pattern.chh = [0.6, 0, 0.6, 0, 0.6, 0, 0.6, 0, 0.6, 0, 0.6, 0, 0.6, 0, 0.6, 0];
       this.pattern.cowbell = [1, 0, 0, 0.6, 0, 0, 1, 0, 0, 0.6, 0, 0, 1, 0, 0.6, 0];
       this.pattern.ohh = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      this.pattern.perc1 = Array(16).fill(0);
+      this.pattern.perc2 = Array(16).fill(0);
+      this.hiHatRatchets = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 4];
     } else if (name === 'bounce') {
+      this.totalSteps = 16;
       this.bpm = 134;
       this.swing = 58;
       this.pattern.kick = [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0.6, 0];
       this.pattern.snare = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0.5];
+      this.pattern.rim = Array(16).fill(0);
       this.pattern.chh = [1, 0.5, 1, 0.5, 1, 0.5, 1, 0.5, 1, 0.5, 1, 0.5, 1, 0.5, 1, 0.5];
       this.pattern.cowbell = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0];
       this.pattern.ohh = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0];
+      this.pattern.perc1 = Array(16).fill(0);
+      this.pattern.perc2 = Array(16).fill(0);
+      this.hiHatRatchets = Array(16).fill(1);
+      this.cowbellPitch = Array(16).fill(1);
     }
   }
 }

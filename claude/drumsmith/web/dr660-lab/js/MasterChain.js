@@ -1,18 +1,20 @@
 /**
  * Memphis master FX bus:
- * voices → HPF → bitcrush → dark LPF → cassette shaper → lo-fi tape delay → out
+ * voices → HPF → bitcrush → dark LPF → cassette → wow/flutter → lo-fi tape delay → out
  */
 import { createCassetteCurve, driveToCurveAmount } from './cassetteCurve.js';
 import { LoFiTapeDelay } from './TapeDelay.js';
+import { TapeWowAndFlutter } from './TapeFlutter.js';
 
 export class MemphisFXBus {
   /** @param {AudioContext} ctx */
   constructor(ctx) {
     this.ctx = ctx;
-    this.input = ctx.createGain(); // entry for all drum voices
+    this.input = ctx.createGain();
     this.preEmphasis = ctx.createBiquadFilter();
     this.filter = ctx.createBiquadFilter();
     this.saturation = ctx.createWaveShaper();
+    this.wowFlutter = new TapeWowAndFlutter(ctx);
     this.tapeDelay = new LoFiTapeDelay(ctx);
     this.outputGain = ctx.createGain();
     /** @type {AudioWorkletNode | null} */
@@ -29,18 +31,18 @@ export class MemphisFXBus {
 
     this.outputGain.gain.value = 0.8;
     this.setDrive(0.45);
+    this.setTapeWear(0.45);
 
-    // Temporary dry path until worklet loads
-    // input → HPF → LPF → shaper → tape delay → out → destination
+    // input → HPF → LPF → shaper → wow → delay → out
     this.input.connect(this.preEmphasis);
     this.preEmphasis.connect(this.filter);
     this.filter.connect(this.saturation);
-    this.saturation.connect(this.tapeDelay.inputNode);
+    this.saturation.connect(this.wowFlutter.inputNode);
+    this.wowFlutter.outputNode.connect(this.tapeDelay.inputNode);
     this.tapeDelay.outputNode.connect(this.outputGain);
     this.outputGain.connect(ctx.destination);
   }
 
-  /** Load AudioWorklet bitcrusher and insert into chain. */
   async initBitcrush() {
     if (this._bitcrushReady) return;
     const url = new URL('./bitcrush-processor.js', import.meta.url);
@@ -52,7 +54,6 @@ export class MemphisFXBus {
       parameterData: { bits: 12, downsample: 4, mix: 0.85 },
     });
 
-    // Rebuild: input → HPF → bitcrush → LPF → shaper → tape → out
     this.preEmphasis.disconnect();
     this.preEmphasis.connect(this.bitcrush);
     this.bitcrush.connect(this.filter);
@@ -97,6 +98,11 @@ export class MemphisFXBus {
     this.bitcrush.parameters.get('mix').setValueAtTime(mix, t);
   }
 
+  /** @param {number} amount 0..1 */
+  setTapeWear(amount) {
+    this.wowFlutter.setWearAmount(amount);
+  }
+
   /** @param {number} timeInSeconds */
   setDelayTime(timeInSeconds) {
     this.tapeDelay.setDelayTime(timeInSeconds);
@@ -112,11 +118,9 @@ export class MemphisFXBus {
     this.tapeDelay.setWet(wet);
   }
 
-  /** Sync dotted-8th delay to BPM. */
   syncDelayToBpm(bpm) {
     this.tapeDelay.setDelayFromBpm(bpm);
   }
 }
 
-/** Back-compat alias */
 export class MasterChain extends MemphisFXBus {}
