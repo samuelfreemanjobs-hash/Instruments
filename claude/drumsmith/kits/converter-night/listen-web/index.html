@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Converter Night — listen only</title>
+  <style>
+    :root {
+      --bg: #12100e;
+      --panel: #1c1814;
+      --ink: #f2ebe3;
+      --muted: #9a9086;
+      --line: #3a342c;
+      --accent: #c45c26;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font: 15px/1.45 "IBM Plex Sans", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 500px at 10% -10%, #2a2218 0%, transparent 55%),
+        radial-gradient(900px 400px at 100% 0%, #1a2420 0%, transparent 50%),
+        var(--bg);
+      padding: 28px 18px 64px;
+    }
+    main { max-width: 720px; margin: 0 auto; }
+    h1 {
+      font: 700 2rem/1.1 "IBM Plex Serif", Georgia, serif;
+      letter-spacing: -0.02em;
+      margin: 0 0 6px;
+    }
+    .sub { color: var(--muted); margin: 0 0 28px; max-width: 38rem; }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+      padding: 4px 8px;
+      margin-bottom: 14px;
+    }
+    section { margin-bottom: 28px; }
+    h2 {
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 10px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .label { min-width: 9rem; font-weight: 600; }
+    audio { width: min(100%, 360px); height: 36px; }
+    footer { margin-top: 36px; color: var(--muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="badge">Draft · not release-approved</div>
+    <h1>Converter Night</h1>
+    <p class="sub">Listen-only preview — rate-drop subs, kicks/snares, EDGE hats, and two true 2-bar loops. Full 88-hit pack stays offline until HITL.</p>
+
+    <section>
+      <h2>Rate-drop subs</h2>
+      <div class="row"><span class="label">Sub 01</span><audio controls preload="metadata" src="audio/subs/CNV_808_ORIGINAL_NA_001.wav"></audio></div>
+      <div class="row"><span class="label">Sub 02</span><audio controls preload="metadata" src="audio/subs/CNV_808_ORIGINAL_NA_002.wav"></audio></div>
+      <div class="row"><span class="label">Sub 03</span><audio controls preload="metadata" src="audio/subs/CNV_808_ORIGINAL_NA_003.wav"></audio></div>
+    </section>
+
+    <section>
+      <h2>Kicks</h2>
+      <div class="row"><span class="label">Kick 13</span><audio controls preload="metadata" src="audio/kicks/CNV_KICK_ORIGINAL_NA_013.wav"></audio></div>
+      <div class="row"><span class="label">Kick 14</span><audio controls preload="metadata" src="audio/kicks/CNV_KICK_ORIGINAL_NA_014.wav"></audio></div>
+      <div class="row"><span class="label">Kick 15</span><audio controls preload="metadata" src="audio/kicks/CNV_KICK_ORIGINAL_NA_015.wav"></audio></div>
+    </section>
+
+    <section>
+      <h2>Snares</h2>
+      <div class="row"><span class="label">Snare 25</span><audio controls preload="metadata" src="audio/snares/CNV_SNARE_ORIGINAL_NA_025.wav"></audio></div>
+      <div class="row"><span class="label">Snare 26</span><audio controls preload="metadata" src="audio/snares/CNV_SNARE_ORIGINAL_NA_026.wav"></audio></div>
+      <div class="row"><span class="label">Snare 27</span><audio controls preload="metadata" src="audio/snares/CNV_SNARE_ORIGINAL_NA_027.wav"></audio></div>
+    </section>
+
+    <section>
+      <h2>Hats</h2>
+      <div class="row"><span class="label">Hat 41</span><audio controls preload="metadata" src="audio/hats/CNV_HAT_ORIGINAL_NA_041.wav"></audio></div>
+      <div class="row"><span class="label">Hat 42</span><audio controls preload="metadata" src="audio/hats/CNV_HAT_ORIGINAL_NA_042.wav"></audio></div>
+      <div class="row"><span class="label">Hat 43</span><audio controls preload="metadata" src="audio/hats/CNV_HAT_ORIGINAL_NA_043.wav"></audio></div>
+    </section>
+
+    <section>
+      <h2>Loops</h2>
+      <div class="row"><span class="label">Rhythm 94 · 2 bar</span><audio controls preload="metadata" src="audio/loops/CNV_03_LOOP_Rhythm_94_01.wav"></audio></div>
+      <div class="row"><span class="label">Tops 134 · 2 bar</span><audio controls preload="metadata" src="audio/loops/CNV_03_TOP_Hats_134_01.wav"></audio></div>
+    </section>
+
+    <footer>DiskLordz · CNV listen-only · technical PASS ≠ commercial ready</footer>
+  </main>
+</body>
+</html>
