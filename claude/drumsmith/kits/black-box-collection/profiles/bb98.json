@@ -24,7 +24,9 @@
     "amp_decay_kick": 0.22,
     "root_bias_st": -2,
     "cow_f1": 540,
-    "cow_f2": 800
+    "cow_f2": 800,
+    "808_duration": 1.2,
+    "amp_decay_808": 0.66
   },
   "inventory": {
     "KICK": 56,
@@ -84,7 +86,9 @@
     "loop_bpm_alt": [
       134,
       94
-    ]
+    ],
+    "808_click": 0.45,
+    "kick_click": 0.25
   },
   "seed_base": null
 }

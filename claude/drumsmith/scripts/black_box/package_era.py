@@ -33,6 +33,32 @@ def _sorted_wavs(folder: Path) -> list[Path]:
     return sorted(folder.glob("*.wav")) if folder.is_dir() else []
 
 
+def _recipe_tag(path: Path) -> str:
+    """BB96_808_Thick_F0_01.wav → Thick; falls back to stem."""
+    parts = path.stem.split("_")
+    return parts[2] if len(parts) >= 3 else path.stem
+
+
+def _sample_wavs(folder: Path, limit: int) -> list[Path]:
+    """Prefer one file per recipe tag so diversify kits are not alphabet-biased to Crawl."""
+    wavs = _sorted_wavs(folder)
+    if limit <= 0 or len(wavs) <= limit:
+        return wavs[:limit]
+    by_tag: dict[str, list[Path]] = {}
+    for path in wavs:
+        by_tag.setdefault(_recipe_tag(path), []).append(path)
+    picked: list[Path] = []
+    # Round-robin first of each tag (already sorted → lowest index / F0_01 first)
+    tags = sorted(by_tag.keys())
+    while len(picked) < limit and any(by_tag[t] for t in tags):
+        for tag in tags:
+            if len(picked) >= limit:
+                break
+            if by_tag[tag]:
+                picked.append(by_tag[tag].pop(0))
+    return picked
+
+
 def _core_folders(masters: Path) -> list[Path]:
     return sorted(p for p in masters.iterdir() if p.is_dir() and p.name != "_DOCS")
 
@@ -129,7 +155,7 @@ def _build_pitched(pack: Path, masters: Path, profile: dict) -> int:
     rate = dest / "RateDropped_808s"
     rate.mkdir(parents=True)
     for folder in sources[:2]:
-        for path in _sorted_wavs(folder)[:8]:
+        for path in _sample_wavs(folder, 8):
             buf = read_wav_mono(path)
             for st in (-12, -24):
                 write_wav_mono(rate / f"{path.stem}_pitch{st}st.wav", pitch_shift(buf, st))
@@ -139,7 +165,7 @@ def _build_pitched(pack: Path, masters: Path, profile: dict) -> int:
     pitched.mkdir(parents=True)
     tops = _folders_for_kinds(masters, profile, ("SNR", "COW", "CLAP", "CH", "OH"))
     if tops:
-        for path in _sorted_wavs(tops[0])[:4]:
+        for path in _sample_wavs(tops[0], 4):
             buf = read_wav_mono(path)
             for st in (-7, 5):
                 write_wav_mono(pitched / f"{path.stem}_pitch{st}st.wav", pitch_shift(buf, st))
@@ -148,7 +174,7 @@ def _build_pitched(pack: Path, masters: Path, profile: dict) -> int:
     aliased = dest / "Aliased_One_Shots"
     aliased.mkdir(parents=True)
     for folder in _oneshot_folders(masters, profile)[:3]:
-        for path in _sorted_wavs(folder)[:3]:
+        for path in _sample_wavs(folder, 3):
             buf = read_wav_mono(path)
             write_wav_mono(aliased / f"{path.stem}_alias.wav", bitcrush(buf, bit_depth=9, hold_sr=18000.0))
             n += 1
@@ -161,7 +187,7 @@ def _build_cassette(pack: Path, masters: Path, profile: dict) -> int:
     for folder in _oneshot_folders(masters, profile):
         out = dest / folder.name
         out.mkdir(parents=True)
-        for i, path in enumerate(_sorted_wavs(folder)[:4]):
+        for i, path in enumerate(_sample_wavs(folder, 4)):
             write_wav_mono(out / f"{path.stem}_cassette.wav", cassette_fx(read_wav_mono(path), seed=100 + i))
             n += 1
     return n
@@ -177,7 +203,7 @@ def _build_parallel(pack: Path, masters: Path, profile: dict) -> int:
             role = folder.name.split("_", 1)[-1] if "_" in folder.name else folder.name
             out = dest / lane / role
             out.mkdir(parents=True)
-            for i, path in enumerate(_sorted_wavs(folder)[:3]):
+            for i, path in enumerate(_sample_wavs(folder, 3)):
                 processed = process_lane(read_wav_mono(path), lane, seed=i)
                 write_wav_mono(out / f"{prefix}_{lane}_{role}_{i+1:02d}.wav", processed)
                 n += 1

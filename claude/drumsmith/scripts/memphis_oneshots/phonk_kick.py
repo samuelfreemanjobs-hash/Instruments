@@ -31,25 +31,46 @@ def generate_memphis_phonk_kick(
     duration: float = 0.25,
     pitch_mod_depth: float = 48.0,
     pitch_decay: float = 0.022,
+    amp_decay: float = 0.140,
+    click_amount: float = 0.0,
     lofi_sr: float = 26040.0,
     bit_depth: int = 12,
     clip_drive_db: float = 4.0,
     tape_lpf_hz: float = 12000.0,
+    seed: int | None = None,
 ) -> np.ndarray:
-    """Return float32 mono buffer in [-1, 1], normalized to about -0.3 dBFS."""
-    total_samples = int(sample_rate * duration)
+    """Return float32 mono buffer in [-1, 1], normalized to about -0.3 dBFS.
+
+    ``amp_decay`` is the amp envelope time-constant (seconds). Classic long 808
+    subs need ~0.5–0.9 with ``duration`` ≥ 1.0 so the tail actually plays out.
+    ``click_amount`` (0–1) adds a hard beater transient for phonk punch.
+    """
+    total_samples = max(1, int(round(sample_rate * duration)))
     t = np.linspace(0.0, duration, total_samples, endpoint=False)
 
-    pitch_env = np.exp(-t / pitch_decay)
+    # Fast pitch spike into sustained root (Memphis/phonk 808 body)
+    pitch_env = np.exp(-t / max(1e-4, pitch_decay))
     inst_freq = root_freq * (2.0 ** (pitch_mod_depth * pitch_env / 12.0))
     phase = 2.0 * math.pi * np.cumsum(inst_freq) / sample_rate
-    sine_wave = np.sin(phase)
+    # Slight odd harmonic for trunk weight without leaving sine territory
+    sine_wave = np.sin(phase) + 0.12 * np.sin(2.0 * phase)
 
-    amp_decay = 0.140
+    # Amp: hold a few ms then exponential decay — MUST use amp_decay, not a fixed 0.14
     amp_env = np.ones_like(t)
-    decay_mask = t > 0.005
-    amp_env[decay_mask] = np.exp(-(t[decay_mask] - 0.005) / amp_decay)
+    hold = 0.004
+    decay_mask = t > hold
+    amp_env[decay_mask] = np.exp(-(t[decay_mask] - hold) / max(1e-4, amp_decay))
     signal = sine_wave * amp_env
+
+    # Hard beater / stick click so the hit reads on small speakers
+    if click_amount > 0.0:
+        rng = np.random.default_rng(0 if seed is None else seed)
+        click_n = min(total_samples, int(0.012 * sample_rate))
+        click_t = t[:click_n]
+        noise = rng.uniform(-1.0, 1.0, click_n) * np.exp(-click_t / 0.0018)
+        tick = np.sin(2.0 * math.pi * 1800.0 * click_t) * np.exp(-click_t / 0.0035)
+        click = (0.65 * noise + 0.35 * tick) * float(click_amount)
+        signal[:click_n] += click
 
     step = sample_rate / lofi_sr
     indices = (np.floor(np.arange(total_samples) / step) * step).astype(int)
@@ -65,12 +86,13 @@ def generate_memphis_phonk_kick(
         filtered[i] = (1 - alpha) * quantized[i] + alpha * filtered[i - 1]
 
     drive_linear = 10.0 ** (clip_drive_db / 20.0)
-    clipped = np.tanh(filtered * drive_linear)
+    # Soft clip with a touch of harder knee so the front stays aggressive
+    driven = filtered * drive_linear
+    clipped = np.tanh(driven) + 0.08 * np.tanh(driven * 2.5)
 
     peak = float(np.max(np.abs(clipped))) or 1.0
     out = (clipped / peak) * (10.0 ** (-0.3 / 20.0))
     return out.astype(np.float32)
-
 
 def write_wav_24bit_mono(path: Path, samples: np.ndarray, sample_rate: int = 44100) -> None:
     int24 = (samples * 8388607.0).astype(np.int32)

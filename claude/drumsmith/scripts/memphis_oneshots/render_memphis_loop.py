@@ -42,12 +42,31 @@ def _cowbell(sample_rate: int = 44100, duration: float = 0.18, pitch: float = 1.
 
 
 def _voice_buffers(seed: int = 0) -> dict[str, np.ndarray]:
+    # Vary body per seed so looping the same blueprint does not clone the same kit
+    kick_root = 43.65 * (2.0 ** (((seed % 7) - 3) / 12.0))
+    snare_root = 200.0 + (seed % 9) * 6.0
+    hat_hz = 8600.0 + (seed % 11) * 180.0
     return {
-        "KICK": generate_memphis_phonk_kick(root_freq=43.65, clip_drive_db=4.0),
-        "SNARE": generate_memphis_phonk_snare(membrane_root=220.0, seed=660 + seed),
-        "HAT": generate_memphis_phonk_hat(center_hz=9000.0, seed=808 + seed),
-        "COWBELL": _cowbell(pitch=1.0),
-        "808": generate_memphis_phonk_kick(root_freq=43.65, duration=0.45, pitch_mod_depth=36.0),
+        "KICK": generate_memphis_phonk_kick(
+            root_freq=kick_root,
+            duration=0.22,
+            amp_decay=0.11,
+            click_amount=0.35,
+            clip_drive_db=4.5 + (seed % 4) * 0.3,
+            seed=1000 + seed,
+        ),
+        "SNARE": generate_memphis_phonk_snare(membrane_root=snare_root, seed=660 + seed),
+        "HAT": generate_memphis_phonk_hat(center_hz=hat_hz, seed=808 + seed),
+        "COWBELL": _cowbell(pitch=0.9 + (seed % 5) * 0.05),
+        "808": generate_memphis_phonk_kick(
+            root_freq=kick_root,
+            duration=1.4,
+            pitch_mod_depth=42.0 + (seed % 8),
+            amp_decay=0.65,
+            click_amount=0.45,
+            clip_drive_db=5.0,
+            seed=2000 + seed,
+        ),
     }
 
 

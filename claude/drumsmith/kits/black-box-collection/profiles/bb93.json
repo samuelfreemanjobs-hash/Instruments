@@ -25,7 +25,9 @@
     "cow_f1": 510,
     "cow_f2": 760,
     "cow_mute": 0.7,
-    "snare_noise_long": true
+    "snare_noise_long": true,
+    "808_duration": 1.33,
+    "amp_decay_808": 0.54
   },
   "inventory": {
     "808": 64,
@@ -79,7 +81,9 @@
     "perc_grimy": true,
     "perc_synth": false,
     "perc_rim_every": 0,
-    "loop_bpm_alt": null
+    "loop_bpm_alt": null,
+    "808_click": 0.3,
+    "kick_click": 0.25
   },
   "seed_base": null
 }

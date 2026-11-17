@@ -17,11 +17,13 @@
     "lofi_sr": 26040,
     "tape_lpf_hz": 11800,
     "kick_pitch_st": 48,
-    "kick_clip_db": 4.5,
+    "kick_clip_db": 5.5,
     "snare_clip_db": 5.5,
     "hat_center_hz": 9200,
-    "kick_duration": 0.35,
-    "amp_decay_kick": 0.14,
+    "kick_duration": 0.24,
+    "amp_decay_kick": 0.12,
+    "808_duration": 1.65,
+    "amp_decay_808": 0.72,
     "cow_f1": 540,
     "cow_f2": 800
   },
@@ -61,13 +63,16 @@
     "PERC": "Rim",
     "LOOP": "Groove"
   },
-  "notes": " Inventory doubled per operator request 2026-11-17.",
+  "notes": "Inventory doubled 2026-11-17. 808s use long amp_decay + beater click; diversify rotates recipe tags.",
   "voice": {
-    "kick_pitch_decay": 0.022,
+    "diversify": true,
+    "kick_pitch_decay": 0.018,
     "kick_duration_min": null,
     "kick_extra_bias_st": 0.0,
     "kick_pitch_cap": null,
     "808_tuning": "key",
+    "808_click": 0.55,
+    "kick_click": 0.35,
     "snare_pitch_base": 22,
     "snare_pitch_mod": 10,
     "snare_flam_base_ms": 4.0,
@@ -83,7 +88,8 @@
     "perc_grimy": false,
     "perc_synth": false,
     "perc_rim_every": 0,
-    "loop_bpm_alt": null
+    "loop_bpm_alt": null,
+    "loop_discover_all": true
   },
   "seed_base": null
 }

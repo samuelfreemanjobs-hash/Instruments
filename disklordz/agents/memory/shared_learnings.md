@@ -201,3 +201,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** 9/9 unittest OK; Splice audit A- PASS_TECHNICAL with PCM16 warn on BB93/96/98/00
 - **confidence:** executed
 - **status:** active
+
+### L-0021 · BB96 808 amp_decay must be wired through generate_era
+- **date:** 2026-11-17
+- **area:** claude/drumsmith/black-box
+- **when:** 808s sounded soft and gated despite profile amp_decay_kick
+- **lesson:** phonk_kick uses amp_decay for the envelope; generate_era previously omitted it (default 0.14) and used short kick_duration for 808s
+- **do:** Set engine.808_duration + amp_decay_808 + voice.808_click; pass amp_decay/click/seed; use voices.py diversify recipes; filter loop JSONs that lack bpm/lanes
+- **evidence:** tests.test_black_box_96.test_808_hard_hit_and_long_decay; Thick 1.65s Crawl 2.39s tail_rms>0.13
+- **confidence:** executed
+- **status:** active

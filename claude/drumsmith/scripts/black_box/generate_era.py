@@ -19,6 +19,7 @@ for p in (str(ROOT), str(ROOT / "scripts")):
 
 from dsp_math import loop_samples  # noqa: E402
 from scripts.black_box.seeds import sku_seed  # noqa: E402
+from scripts.black_box import voices as bb_voices  # noqa: E402
 from scripts.memphis_oneshots.phonk_hat import generate_memphis_phonk_hat  # noqa: E402
 from scripts.memphis_oneshots.phonk_kick import (  # noqa: E402
     generate_memphis_phonk_kick,
@@ -31,6 +32,7 @@ PROFILES = ROOT / "kits/black-box-collection/profiles"
 KICK_KEYS = [32.70, 36.71, 41.20, 43.65, 46.25, 49.00, 55.00, 38.89]
 SNR_HZ = [180, 196, 208, 220, 233, 247, 262, 185, 200, 215]
 
+# Fallback when loop discovery finds nothing
 BLUEPRINTS = [
     (ROOT / "kits/converter-night/loops/cnv-dr660-94-a.json", 94),
     (ROOT / "kits/converter-night/loops/cnv-arch-horror.json", 94),
@@ -153,11 +155,14 @@ def kit_masters_dir(profile: dict) -> Path:
 def _voice(profile: dict) -> dict:
     """Era personality lives in profile['voice'] — no char== branches in the loop."""
     defaults = {
+        "diversify": False,
         "kick_pitch_decay": 0.022,
         "kick_duration_min": None,
         "kick_extra_bias_st": 0.0,
         "kick_pitch_cap": None,
         "808_tuning": "key",
+        "808_click": 0.4,
+        "kick_click": 0.25,
         "snare_pitch_base": 22,
         "snare_pitch_mod": 10,
         "snare_flam_base_ms": 4.0,
@@ -174,10 +179,22 @@ def _voice(profile: dict) -> dict:
         "perc_synth": False,
         "perc_rim_every": 0,
         "loop_bpm_alt": None,
+        "loop_discover_all": False,
     }
     merged = dict(defaults)
     merged.update(profile.get("voice") or {})
     return merged
+
+
+def _808_duration(eng: dict, voice: dict) -> float:
+    dur = float(eng.get("808_duration", eng.get("kick_duration", 1.2)))
+    if voice["kick_duration_min"] is not None:
+        dur = max(dur, float(voice["kick_duration_min"]))
+    return dur
+
+
+def _808_amp_decay(eng: dict) -> float:
+    return float(eng.get("amp_decay_808", eng.get("amp_decay_kick", 0.55)))
 
 
 def generate_all(out_dir: Path, profile: dict) -> list[dict]:
@@ -190,6 +207,7 @@ def generate_all(out_dir: Path, profile: dict) -> list[dict]:
     prefix = profile["prefix"]
     char = profile.get("character", "signature")
     voice = _voice(profile)
+    diversify = bool(voice.get("diversify"))
     bias = float(eng.get("root_bias_st", 0.0))
     base = sku_seed(profile["sku"])
     rows: list[dict] = []
@@ -200,11 +218,11 @@ def generate_all(out_dir: Path, profile: dict) -> list[dict]:
         write_wav_16bit_mono(path, buf)
         rows.append({"kind": kind, "path": str(path.relative_to(out_dir)), "name": name})
 
-    def fname(kind: str, i: int, note: str = "NA") -> str:
-        tag = tags.get(kind, kind)
-        return f"{prefix}_{kind}_{tag}_{note}_{i+1:02d}.wav".replace("__", "_")
+    def fname(kind: str, i: int, note: str = "NA", tag: str | None = None) -> str:
+        use_tag = tag if tag is not None else tags.get(kind, kind)
+        return f"{prefix}_{kind}_{use_tag}_{note}_{i+1:02d}.wav".replace("__", "_")
 
-    # 808s
+    # 808s — amp_decay MUST drive the tail; click for hard hit
     for i in range(inv.get("808", 0)):
         if voice["808_tuning"] == "chromatic":
             freq = _bias_hz(32.70 * (2.0 ** ((i % 12) / 12.0)), 0)
@@ -212,20 +230,25 @@ def generate_all(out_dir: Path, profile: dict) -> list[dict]:
         else:
             freq = _bias_hz(KICK_KEYS[i % len(KICK_KEYS)], bias)
             note = f"F{i % 7}"
-        dur = float(eng.get("kick_duration", 0.35))
-        if voice["kick_duration_min"] is not None:
-            dur = max(dur, float(voice["kick_duration_min"]))
-        buf = generate_memphis_phonk_kick(
-            root_freq=freq,
-            duration=dur,
-            pitch_mod_depth=float(eng["kick_pitch_st"]),
-            pitch_decay=float(voice["kick_pitch_decay"]),
-            clip_drive_db=float(eng["kick_clip_db"]) + (i % 5) * 0.15,
-            lofi_sr=float(eng["lofi_sr"]),
-            bit_depth=int(eng["bit_depth"]),
-            tape_lpf_hz=float(eng["tape_lpf_hz"]),
-        )
-        save("808", fname("808", i, note), buf)
+        seed = sku_seed(profile["sku"], 8000 + i)
+        if diversify:
+            buf, recipe = bb_voices.render_808(i, freq=freq, eng=eng, voice=voice, seed=seed)
+            save("808", fname("808", i, note, tag=recipe), buf)
+        else:
+            buf = generate_memphis_phonk_kick(
+                root_freq=freq,
+                duration=_808_duration(eng, voice),
+                pitch_mod_depth=float(eng["kick_pitch_st"]),
+                pitch_decay=float(voice["kick_pitch_decay"]),
+                amp_decay=_808_amp_decay(eng),
+                click_amount=float(voice["808_click"]),
+                clip_drive_db=float(eng["kick_clip_db"]) + (i % 5) * 0.15,
+                lofi_sr=float(eng["lofi_sr"]),
+                bit_depth=int(eng["bit_depth"]),
+                tape_lpf_hz=float(eng["tape_lpf_hz"]),
+                seed=seed,
+            )
+            save("808", fname("808", i, note), buf)
 
     # Kicks (non-808)
     for i in range(inv.get("KICK", 0)):
@@ -233,104 +256,166 @@ def generate_all(out_dir: Path, profile: dict) -> list[dict]:
         pitch = float(eng["kick_pitch_st"])
         if voice["kick_pitch_cap"] is not None:
             pitch = min(pitch, float(voice["kick_pitch_cap"]))
-        buf = generate_memphis_phonk_kick(
-            root_freq=freq,
-            duration=float(eng.get("kick_duration", 0.22)),
-            pitch_mod_depth=pitch + (i % 6),
-            clip_drive_db=float(eng["kick_clip_db"]) + (i % 4) * 0.25,
-            lofi_sr=float(eng["lofi_sr"]),
-            bit_depth=int(eng["bit_depth"]),
-            tape_lpf_hz=float(eng["tape_lpf_hz"]),
-        )
-        save("KICK", fname("KICK", i), buf)
+        seed = sku_seed(profile["sku"], 8100 + i)
+        if diversify:
+            buf, recipe = bb_voices.render_kick(i, freq=freq, eng=eng, voice=voice, seed=seed)
+            save("KICK", fname("KICK", i, tag=recipe), buf)
+        else:
+            buf = generate_memphis_phonk_kick(
+                root_freq=freq,
+                duration=float(eng.get("kick_duration", 0.22)),
+                pitch_mod_depth=pitch + (i % 6),
+                pitch_decay=float(voice["kick_pitch_decay"]),
+                amp_decay=float(eng.get("amp_decay_kick", 0.12)),
+                click_amount=float(voice["kick_click"]),
+                clip_drive_db=float(eng["kick_clip_db"]) + (i % 4) * 0.25,
+                lofi_sr=float(eng["lofi_sr"]),
+                bit_depth=int(eng["bit_depth"]),
+                tape_lpf_hz=float(eng["tape_lpf_hz"]),
+                seed=seed,
+            )
+            save("KICK", fname("KICK", i), buf)
 
     # Snares
     for i in range(inv.get("SNR", 0)):
         mem = SNR_HZ[i % len(SNR_HZ)]
-        mod = max(1, int(voice["snare_pitch_mod"]))
-        pitch_st = int(voice["snare_pitch_base"]) + (i % mod)
-        flam = float(voice["snare_flam_base_ms"]) + (i % 5) * float(voice["snare_flam_step_ms"])
-        buf = generate_memphis_phonk_snare(
-            membrane_root=mem,
-            pitch_mod_st=pitch_st,
-            flam_delay_ms=flam,
-            clip_drive_db=float(eng["snare_clip_db"]) + (i % 4) * 0.2,
-            seed=sku_seed(profile["sku"], 9300 + i),
-        )
-        save("SNR", fname("SNR", i), buf)
+        seed = sku_seed(profile["sku"], 9300 + i)
+        if diversify:
+            buf, recipe = bb_voices.render_snare(i, membrane=mem, eng=eng, voice=voice, seed=seed)
+            save("SNR", fname("SNR", i, tag=recipe), buf)
+        else:
+            mod = max(1, int(voice["snare_pitch_mod"]))
+            pitch_st = int(voice["snare_pitch_base"]) + (i % mod)
+            flam = float(voice["snare_flam_base_ms"]) + (i % 5) * float(voice["snare_flam_step_ms"])
+            buf = generate_memphis_phonk_snare(
+                membrane_root=mem,
+                pitch_mod_st=pitch_st,
+                flam_delay_ms=flam,
+                clip_drive_db=float(eng["snare_clip_db"]) + (i % 4) * 0.2,
+                seed=seed,
+            )
+            save("SNR", fname("SNR", i), buf)
 
     # Claps
     for i in range(inv.get("CLAP", 0)):
-        buf = _clap(
-            9400 + i,
-            layered=bool(voice["clap_layered"]),
-            bright=bool(voice["clap_bright"]),
-        )
-        save("CLAP", fname("CLAP", i), buf)
+        seed = sku_seed(profile["sku"], 9400 + i)
+        if diversify:
+            buf, recipe = bb_voices.render_clap(
+                i,
+                layered_default=bool(voice["clap_layered"]),
+                bright_default=bool(voice["clap_bright"]),
+                seed=seed,
+            )
+            save("CLAP", fname("CLAP", i, tag=recipe), buf)
+        else:
+            buf = _clap(
+                seed,
+                layered=bool(voice["clap_layered"]),
+                bright=bool(voice["clap_bright"]),
+            )
+            save("CLAP", fname("CLAP", i), buf)
 
     # Hats
     for i in range(inv.get("CH", 0)):
-        hz = float(eng.get("hat_center_hz", 9000)) + (i % 10) * 150 - 300
-        lofi = float(eng["lofi_sr"]) if voice["hat_use_lofi"] else 44100.0
-        buf = generate_memphis_phonk_hat(
-            center_hz=hz,
-            seed=9600 + i,
-            noise_decay=float(voice["hat_noise_decay"]) + (i % 4) * 0.002,
-            clip_drive_db=float(voice["hat_clip_db"]),
-            bit_depth=int(eng["bit_depth"]),
-            lofi_sr=lofi,
-        )
-        save("CH", fname("CH", i), buf)
+        seed = sku_seed(profile["sku"], 9600 + i)
+        if diversify:
+            buf, recipe = bb_voices.render_hat(i, open_hat=False, eng=eng, voice=voice, seed=seed)
+            save("CH", fname("CH", i, tag=recipe), buf)
+        else:
+            hz = float(eng.get("hat_center_hz", 9000)) + (i % 10) * 150 - 300
+            lofi = float(eng["lofi_sr"]) if voice["hat_use_lofi"] else 44100.0
+            buf = generate_memphis_phonk_hat(
+                center_hz=hz,
+                seed=seed,
+                noise_decay=float(voice["hat_noise_decay"]) + (i % 4) * 0.002,
+                clip_drive_db=float(voice["hat_clip_db"]),
+                bit_depth=int(eng["bit_depth"]),
+                lofi_sr=lofi,
+            )
+            save("CH", fname("CH", i), buf)
 
     for i in range(inv.get("OH", 0)):
-        hz = float(eng.get("hat_center_hz", 9000)) + (i % 6) * 180
-        buf = generate_memphis_phonk_hat(
-            duration=float(voice["oh_duration"]),
-            center_hz=hz,
-            noise_decay=float(voice["oh_noise_decay"]),
-            seed=9700 + i,
-            clip_drive_db=2.5,
-            bit_depth=int(eng["bit_depth"]),
-            lofi_sr=float(eng["lofi_sr"]),
-        )
-        save("OH", fname("OH", i), buf)
+        seed = sku_seed(profile["sku"], 9700 + i)
+        if diversify:
+            buf, recipe = bb_voices.render_hat(i, open_hat=True, eng=eng, voice=voice, seed=seed)
+            save("OH", fname("OH", i, tag=recipe), buf)
+        else:
+            hz = float(eng.get("hat_center_hz", 9000)) + (i % 6) * 180
+            buf = generate_memphis_phonk_hat(
+                duration=float(voice["oh_duration"]),
+                center_hz=hz,
+                noise_decay=float(voice["oh_noise_decay"]),
+                seed=seed,
+                clip_drive_db=2.5,
+                bit_depth=int(eng["bit_depth"]),
+                lofi_sr=float(eng["lofi_sr"]),
+            )
+            save("OH", fname("OH", i), buf)
 
     # Cowbells
     for i in range(inv.get("COW", 0)):
-        pitch = 0.8 + (i % 12) * 0.035
-        if voice["cow_metallic_fixed"] is not None:
-            metallic = float(voice["cow_metallic_fixed"])
+        if diversify:
+            buf, recipe = bb_voices.render_cow(i, eng, voice)
+            save("COW", fname("COW", i, tag=recipe), buf)
         else:
-            metallic = 1.0 + (i % 3) * 0.05
-        save("COW", fname("COW", i), _cowbell(pitch, eng, metallic=metallic))
+            pitch = 0.8 + (i % 12) * 0.035
+            if voice["cow_metallic_fixed"] is not None:
+                metallic = float(voice["cow_metallic_fixed"])
+            else:
+                metallic = 1.0 + (i % 3) * 0.05
+            save("COW", fname("COW", i), _cowbell(pitch, eng, metallic=metallic))
 
     # Toms
     tom_roots = [90, 110, 130, 150, 170, 95, 120, 140, 160, 180]
     for i in range(inv.get("TOM", 0)):
-        save("TOM", fname("TOM", i), _tom(tom_roots[i % len(tom_roots)]))
+        if diversify:
+            buf, recipe = bb_voices.render_tom(i)
+            save("TOM", fname("TOM", i, tag=recipe), buf)
+        else:
+            save("TOM", fname("TOM", i), _tom(tom_roots[i % len(tom_roots)]))
 
     # Rimshots
     for i in range(inv.get("RIM", 0)):
-        save("RIM", fname("RIM", i), _perc(9800 + i, rim=True))
+        save("RIM", fname("RIM", i), _perc(sku_seed(profile["sku"], 9800 + i), rim=True))
 
     # Perc
     rim_every = int(voice["perc_rim_every"] or 0)
     for i in range(inv.get("PERC", 0)):
-        buf = _perc(
-            9900 + i,
-            grimy=bool(voice["perc_grimy"]),
-            synth=bool(voice["perc_synth"]),
-            rim=(rim_every > 0 and i % rim_every == 0),
-        )
-        save("PERC", fname("PERC", i), buf)
+        seed = sku_seed(profile["sku"], 9900 + i)
+        if diversify:
+            buf, recipe = bb_voices.render_perc(i, seed=seed, voice=voice)
+            save("PERC", fname("PERC", i, tag=recipe), buf)
+        else:
+            buf = _perc(
+                seed,
+                grimy=bool(voice["perc_grimy"]),
+                synth=bool(voice["perc_synth"]),
+                rim=(rim_every > 0 and i % rim_every == 0),
+            )
+            save("PERC", fname("PERC", i), buf)
 
-    # Loops
+    # Loops — discover full blueprint set when asked
+    if voice.get("loop_discover_all") or diversify:
+        blueprints = bb_voices.discover_loop_blueprints(ROOT) or BLUEPRINTS
+    else:
+        blueprints = BLUEPRINTS
+
     for i in range(inv.get("LOOP", 0)):
-        bp_path, bpm = BLUEPRINTS[i % len(BLUEPRINTS)]
+        bp_path, bpm = blueprints[i % len(blueprints)]
         alt = voice.get("loop_bpm_alt")
         if alt:
             bpm = int(alt[i % len(alt)])
         bp = json.loads(bp_path.read_text(encoding="utf-8"))
+        # Light mutation so reused blueprints still feel different
+        if diversify and i >= len(blueprints):
+            bp = dict(bp)
+            # Shift hat lane velocities slightly without rewriting the grid
+            lanes = {k: [dict(ev) for ev in (v or [])] for k, v in (bp.get("lanes") or {}).items()}
+            for kind, events in lanes.items():
+                for j, ev in enumerate(events):
+                    vel = int(ev.get("vel", 100))
+                    ev["vel"] = int(max(40, min(127, vel + ((i + j) % 7) - 3)))
+            bp["lanes"] = lanes
         use_bpm = float(bp.get("bpm", bpm))
         audio = render_memphis_loop(bp, seed=sku_seed(profile["sku"], 800 + i))
         want = loop_samples(int(bp["bars"]), use_bpm, 44100)
@@ -338,7 +423,8 @@ def generate_all(out_dir: Path, profile: dict) -> list[dict]:
             audio = audio[:want]
         elif len(audio) < want:
             audio = np.pad(audio, (0, want - len(audio)))
-        name = f"{prefix}_LOOP_{int(use_bpm)}bpm_{i+1:02d}.wav"
+        stem = bp_path.stem.replace("cnv-", "")[:18]
+        name = f"{prefix}_LOOP_{int(use_bpm)}bpm_{stem}_{i+1:02d}.wav"
         save("LOOP", name, audio)
 
     total = len(rows)
@@ -353,6 +439,7 @@ def generate_all(out_dir: Path, profile: dict) -> list[dict]:
         "target_samples": [lo, hi],
         "in_band": lo <= total <= hi,
         "seed_base": base,
+        "diversify": diversify,
         "delivery": {"sample_rate": 44100, "bit_depth": 16, "channels": 1},
         "samples": rows,
     }
