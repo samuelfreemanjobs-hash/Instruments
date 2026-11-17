@@ -1,6 +1,6 @@
 # project.md — DRUMSMITH (Drum Sample & Kit Product Designer + DSP Audio Engineer Agent)
 
-**Updated:** 2026-11-17 · **Completion:** Agent package 100% (in-repo) · Workbench UI artifact 100% (v1, Claude artifact) · First live kit run **started** (Tail Light Static W1 + INTAKE; no renders yet)
+**Updated:** 2026-11-17 · **Completion:** Agent package 100% (in-repo) · **Workbench v1 published** (private page + docked agent) · Cross-check JS↔Python on 8 WAVs · UI/layout **not browser-smoke-tested** · First live kit run **started** (Tail Light Static W1 + INTAKE; no real renders verified yet)
 
 ## Scope
 
@@ -25,13 +25,29 @@ Sam. Faster, verifiable drum kit production: every kit ships with a passing chec
 - [x] Tail Light Static: **INTAKE filled** + **W1** `kits/tail-light-static/kit-spec.md` (ship status NOT READY)
 - [x] Provenance stub: `docs/provenance/tail-light-static.md`
 - [x] Workbench artifact (UI + AI agent) published, 2026-11-17: Kit spec builder (W1, open-question gate, folder tree, device status), Voice recipes (W2, parameter tables with S/C/A tokens, Web Audio preview for cowbell/808/kick), DSP calculators (6 cards, dsp_math port), Verify WAVs (W3, in-browser, files never uploaded), docked DRUMSMITH chat with 5 calculator tools, HITL Confirm/Abort buttons, spec save/copy
-- [x] Verified: in-browser checker vs scripts/verify_kit.py on 8 WAVs — 0 per-check differences, same summary (7 fail, 4 warn); loop and glide values match hand-derived numbers
+- [x] Verified: in-browser checker vs scripts/verify_kit.py on 8 WAVs — 0 per-check differences, same summary (7 fail, 4 warn); loop and glide values match hand-derived numbers (test harness `eval` name clash fixed before publish)
+
+### Workbench v1 (published page)
+
+**Link:** [DRUMSMITH Workbench](https://claude.ai/artifact/FwE8VaPi2a5vXRMPoX19zH) (private to Sam) · capabilities: **ask Claude** (page tools), **save/download**
+
+| Tab | What it does |
+|-----|----------------|
+| **Kit spec** | Name, BPM range, hit counts, loops, devices → BLOCKED/READY banner, open questions, folder tree, promise-to-check table. Preload: Tail Light Static example (BPM/hit counts partly placeholder). |
+| **Voice recipes** | Cowbell, 808, kick, drums, bus — S/C/A parameter tables; **Preview** (Web Audio sketch) on cowbell/808/kick — not the render core. |
+| **DSP calculators** | Six cards — same formulas as `dsp_math.py` (loop length, glide sixteenths, cents error, …). |
+| **Verify WAVs** | Local drop — **never uploaded**; thresholds match `verify_kit.py`. Three synthetic demos on open (PASS/FAIL examples). |
+| **Agent** | Same rules as package; reads live spec + verify; calculator tools; **Confirm / Abort** on ship-level HITL. |
+
+**First use:** Claude access prompt on first agent message; runs on viewer’s Claude usage. **Spec and verify state do not persist** between visits.
+
+**Tested vs not tested (publish pass):** WAV checker parity with Python (**tested**, 8 files). Layout, audio preview, and chat panel (**not opened in browser** before publish).
 
 ## To do
 
 - [x] Sam: copy agent folder to a repo root so CLAUDE.md and .claude/ auto-load (done via `claude/drumsmith/` + symlinks)
 - [ ] First live run: **W3 verify on real renders** for Tail Light Static (INTAKE + W1 done in repo)
-- [ ] Sam: open the artifact, allow Claude access on first agent message, try the quick prompts
+- [ ] Sam: **open workbench**, allow Claude access on first agent message, try quick prompts; **drop real Tail Light Static render** in Verify tab and report drift vs Python CLI
 - [ ] Confirm device profiles (MPC 500, MPC Sample, Maschine+, MV-1, Lofi12, FL Studio) from sources or disklordz_slicer.py; all UNVERIFIED now
 - [ ] Decide when to turn on evaluator_pass_enabled (CALIPER) in core-config.xml
 - [ ] Add FFT/YIN pitch cross-check (numpy) for 808/cowbell key checks; add pitch check to the workbench Verify tab
