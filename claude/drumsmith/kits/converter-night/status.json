@@ -71,10 +71,18 @@
     "loops": ["cnv-dr660-94-a", "cnv-dr660-94-clave", "cnv-dr660-94-thick", "cnv-dr660-134-ht", "cnv-dr660-134-bell", "cnv-dr660-134-crawl"],
     "note": "Boss_DR-660 zip not in agent uploads — re-attach to stage"
   },
+  "competitor_loaded_samples": {
+    "analysis": "docs/COMPETITOR_LOADED_SAMPLES.md",
+    "wav_staged": false,
+    "public_price_v1_usd": 24.99,
+    "public_price_v2_usd": 29.99,
+    "top_gaps": ["parallel_raw_tape_lofi_banks", "instrument_oneshots_optional", "bpm_in_loop_filenames", "sp1200_refs"]
+  },
   "gaps": [
     "HITL ear/legal/price/cover open",
     "DR-660 WAV missing from uploads — RATE uses TR-808 808-character proxies + technique; upload Boss_DR-660 zip to lock",
-    "SP-1200/Drumulator WAV missing — deeper BIT12 calibration still technique-led"
+    "SP-1200/Drumulator WAV missing — deeper BIT12 calibration still technique-led",
+    "Loaded Samples WAVs not attached — public-page gap analysis only; attach MU V1/V2 for ear meters"
   ],
   "updated": "2026-11-17"
 }

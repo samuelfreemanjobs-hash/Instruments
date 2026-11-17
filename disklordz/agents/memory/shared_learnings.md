@@ -141,3 +141,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** uploads listing 2026-11-17: Boss_DR-5*, Boss_DR-55 only; find *660* empty of zips
 - **confidence:** executed
 - **status:** active
+
+### L-0015 · CNV competitor: Loaded Samples MU V1=DR5 parallel banks; V2=SP1200+BPM loops
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** gap-fill research without competitor WAVs
+- **lesson:** MU V1 sells DR5 story + original/tape/lofi parallel banks + instrument oneshots; V2 sells SP1200 + 23 BPM loops. Biggest CNV product gap is parallel process banks and optional instruments, not FX count.
+- **do:** Write public-page analysis under kits/converter-night/docs/COMPETITOR_LOADED_SAMPLES.md; do not ship their PCM; prioritize RAW/TAPE/LOFI lanes and BPM filenames.
+- **evidence:** loadedsamples.com product scrapes 2026-11-17: V1 220+86+39+82; V2 357+156+141+34+23
+- **confidence:** inspected
+- **status:** active
