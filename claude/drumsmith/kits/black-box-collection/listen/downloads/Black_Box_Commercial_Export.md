@@ -40,3 +40,9 @@ BB96DC adds CLEAN↔DIRTY pairs, RUINED exclusives, cassette desk.
 
 Listen booth: https://black-box-collection.apps.grok.bot
 
+## 2026-11-17 — BB96 808 punch + decay + diversify
+
+- 808s: `amp_decay_808=0.72`, `808_duration=1.65`, beater click 0.55
+- Recipes: Thick / Punch / Crawl / Dirty (18 each)
+- Loops: full converter-night blueprint set (22+) with seed-varied voices
+- `release_ready` still false (HITL)

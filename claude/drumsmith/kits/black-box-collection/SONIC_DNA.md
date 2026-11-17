@@ -41,19 +41,16 @@
 
 | Voice | Count | DNA notes | Naming |
 |-------|------:|-----------|--------|
-| Thick 808 | 36 | Deep F1-ish, +48 st spike, drive 4–5.5 dB | `BB96_808_*` |
-| Punch kick | 24 | Shorter body knock 65–110 Hz region | `BB96_KICK_*` |
-| Aggressive snare | 40 | Membrane 180–280 Hz, flam 3–6 ms, clip 5–6.5 | `BB96_SNR_*` |
-| Dry clap | 24 | Tight layered snaps | `BB96_CLAP_*` |
-| Crunchy CH | 32 | BP 8–11 kHz, 12-bit grit | `BB96_CH_*` |
-| Open hat | 16 | Longer decay, same grit family | `BB96_OH_*` |
-| Metallic cowbell | 24 | Dual-square 540/800 × pitch, bright | `BB96_COW_*` |
-| Analog tom | 20 | Sine+triangle pitch drop, mid decay | `BB96_TOM_*` |
-| Perc / rim | 12 | Short woody ticks | `BB96_PERC_*` |
-| 2-bar loops | 12 | 94 / 134 BPM labeled | `BB96_LOOP_*bpm_*` |
-| **Total** | **480** | Doubled flagship | |
+| 808 recipes | 72 | Thick / Punch / Crawl / Dirty (18 each). Long body: `808_duration≈1.65s`, `amp_decay_808≈0.72`, beater `808_click≈0.55` | `BB96_808_{Thick,Punch,Crawl,Dirty}_*` |
+| Kick recipes | 48 | Punch / Knock / Thump | `BB96_KICK_*` |
+| Snare recipes | 80 | Aggro / Paper / Crack / Flam | `BB96_SNR_*` |
+| Clap recipes | 48 | Dry / Layer / Gate | `BB96_CLAP_*` |
+| Hat recipes | 96 | Crunch / Dust / Thin / Metal (CH+OH) | `BB96_CH_*` / `BB96_OH_*` |
+| Cow / tom / perc | 112 | Metal/Mute/Clang · Low/Mid/High/Floor · Rim/Clave/Scrap/Tick | `BB96_COW_*` / `TOM_*` / `PERC_*` |
+| 2-bar loops | 24 | All converter-night blueprints (22+) · seed-varied voices | `BB96_LOOP_*bpm_*_*` |
+| **Total** | **480** | Doubled flagship + recipe diversification | |
 
-**Profile knobs:** `bit_depth=12`, `lofi_sr=26040`, `tape_lpf=11–12.5k`, `clip_db=4–6`, `pitch_st_kick=44–52`
+**Profile knobs:** `bit_depth=12`, `lofi_sr=26040`, `tape_lpf=11–12.5k`, `clip_db=5.5`, `pitch_st_kick=48`, `voice.diversify=true`, `amp_decay_808=0.72`
 
 ---
 

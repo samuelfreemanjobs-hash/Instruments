@@ -85,5 +85,34 @@
     }
   ],
   "total_mb": 109.58,
-  "total_wavs": 4502
+  "total_wavs": 4502,
+  "updated": "2026-11-17",
+  "bb96_808_fix": {
+    "amp_decay_808": 0.72,
+    "808_duration": 1.65,
+    "click": 0.55,
+    "recipes": [
+      "Thick",
+      "Punch",
+      "Crawl",
+      "Dirty"
+    ]
+  },
+  "artifacts": [
+    {
+      "file": "Black_Box_96.zip",
+      "bytes": 36492021,
+      "sha256_16": "9bb5685e92e85887"
+    },
+    {
+      "file": "Black_Box_96_Dirty_Circuits.zip",
+      "bytes": 71032548,
+      "sha256_16": "431dae1bf745529f"
+    },
+    {
+      "file": "Dirty_Circuits.zip",
+      "bytes": 13347341,
+      "sha256_16": "882a70dfcf9582c2"
+    }
+  ]
 }
