@@ -2,11 +2,11 @@
 
 Canonical long form: `docs/provenance/converter-night.md`.
 
-- **Masters:** original DRUMSMITH synthesis (not yet rendered — W2 pending).  
+- **Masters:** original DRUMSMITH native synthesis (`memphis-tape`, plan `converter-night`) — **384** hits, SHA diversity PASS.  
 - **References:** 26 unique archives in `references/` — **analysis-only**.  
 - **Duplicate skipped:** `Boss_DR-5_9f45.zip`.  
 - **`release_ready`:** **false**  
-- **Devices:** UNVERIFIED except future generic PCM16 internal QA.
+- **Devices:** UNVERIFIED except generic PCM16 internal QA.
 
 ## HITL checklist
 

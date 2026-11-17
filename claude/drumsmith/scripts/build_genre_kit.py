@@ -8,7 +8,7 @@ from recipe_engine import recipe_hash
 
 def build(out, genre, sku='DKL', count=64, plan=None):
     if genre not in PROFILES: raise ValueError('unknown genre')
-    if count not in range(1,129): raise ValueError('count must be 1..128')
+    if count not in range(1, 513): raise ValueError('count must be 1..512')
     if plan not in (None, 'tail-light-static', 'converter-night'): raise ValueError('unknown plan')
     manifest = scaffold(out, sku, count, plan)
     variants = {}

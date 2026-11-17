@@ -121,3 +121,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** native_factory log technical_qa PASS diversity PASS samples 88; CALIPER_NOTES BLOCKED/UNVERIFIED
 - **confidence:** executed
 - **status:** active
+
+### L-0013 · DRUMSMITH factory ceiling raised to 512 for 384-hit SKUs
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** Operator chose 384 Converter Night after 128 max
+- **lesson:** scaffold_kit/build_genre_kit count ceiling is 512; CNV plan sums must equal SKU; recipe variant+cycle salt needed for SHA uniqueness past 16
+- **do:** Update CONVERTER_NIGHT_PLAN + recipe_engine salts; native_factory out must be empty; verify masters-only tree (listen-web/refs fail inventory)
+- **evidence:** native_factory /tmp/CNV_W2_384 technical_qa PASS diversity PASS samples 384
+- **confidence:** executed
+- **status:** active

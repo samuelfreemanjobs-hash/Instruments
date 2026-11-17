@@ -44,7 +44,9 @@ def peak_normalize(buf: list[float], ceiling: float = 10 ** (-0.1 / 20.0)) -> li
     return [x * g for x in buf]
 
 
-def pick_masters(kit: Path, kinds: list[str]) -> dict[str, Path]:
+def pick_masters(kit: Path, kinds: list[str], variant: int = 0) -> dict[str, Path]:
+    if not isinstance(variant, int) or variant < 0:
+        raise ValueError('variant must be a non-negative int')
     manifest = json.loads((kit / 'manifest.json').read_text(encoding='utf8'))
     by_kind: dict[str, list[Path]] = {}
     for e in manifest['samples']:
@@ -54,11 +56,13 @@ def pick_masters(kit: Path, kinds: list[str]) -> dict[str, Path]:
         paths = by_kind.get(kind) or []
         if not paths:
             raise FileNotFoundError(f'no masters for kind {kind} in {kit}')
-        chosen[kind] = paths[0]
+        chosen[kind] = paths[variant % len(paths)]
     return chosen
 
 
-def render_loop(blueprint: dict, kit: Path, out: Path, ceiling_dbfs: float = -0.1) -> dict:
+def render_loop(
+    blueprint: dict, kit: Path, out: Path, ceiling_dbfs: float = -0.1, variant: int = 0
+) -> dict:
     bpm = float(blueprint['bpm'])
     bars = int(blueprint['bars'])
     sr = int(blueprint['sample_rate'])
@@ -74,7 +78,7 @@ def render_loop(blueprint: dict, kit: Path, out: Path, ceiling_dbfs: float = -0.
     file_len = loop_samples(bars, bpm, sr)
     step_len = samples_bar / float(grid)
     lanes = blueprint['lanes']
-    masters = pick_masters(kit, [k for k in lanes if lanes[k]])
+    masters = pick_masters(kit, [k for k in lanes if lanes[k]], variant=variant)
     audio = {k: read_pcm16_mono(p)[0] for k, p in masters.items()}
     mix_len = max(grid_total, file_len)
     buf = [0.0] * mix_len
@@ -128,9 +132,11 @@ def main() -> int:
     ap.add_argument('--kit', required=True, type=Path)
     ap.add_argument('--out', required=True, type=Path)
     ap.add_argument('--ceiling-dbfs', type=float, default=-0.1)
+    ap.add_argument('--variant', type=int, default=0, help='master index offset per lane')
     args = ap.parse_args()
     bp = json.loads(args.blueprint.read_text(encoding='utf8'))
-    meta = render_loop(bp, args.kit, args.out, args.ceiling_dbfs)
+    meta = render_loop(bp, args.kit, args.out, args.ceiling_dbfs, variant=args.variant)
+    meta['variant'] = args.variant
     print(json.dumps(meta, indent=2))
     return 0
 

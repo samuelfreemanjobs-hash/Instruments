@@ -10,19 +10,22 @@ def recipe_for(kind, variant=0):
     if kind not in KINDS or not isinstance(variant, int) or variant < 0:
         raise ValueError('unsupported kind/variant')
     # Every variant changes at least two audible parameters; deterministic by index.
-    # cycle salts params so variants >=16 stay unique (native 808/kick ignore seed).
+    # cycle + variant salts keep large kits unique (native 808/kick ignore seed).
     n = variant % 16
     cycle = variant // 16
-    dur_808 = 0.76 + (n % 4) * 0.09 + cycle * 0.05
-    decay_808 = 0.31 + (n % 5) * 0.045 + cycle * 0.04
-    pitch_808 = 52.0 - cycle * 3.0 - (n % 5) * 0.7
+    dur_808 = 0.70 + (n % 4) * 0.09 + cycle * 0.045 + (variant % 3) * 0.02
+    decay_808 = 0.28 + (n % 5) * 0.045 + cycle * 0.035 + (variant % 4) * 0.01
+    # Spread 808 fundamentals across ~36–58 Hz for RATE-style beds
+    pitch_808 = 58.0 - (variant % 22) * 1.0 - cycle * 0.35
+    kick_pitch = 55.0 + (variant % 18) * 2.5 + cycle * 1.5
+    cow_pitch = 480.0 + (variant % 12) * 14.0 + cycle * 8.0
     return {'engine':'parametric-v2', 'kind':kind, 'variant':variant,
-            'duration_sec': round(min(2.8, dur_808) if kind=='808' else (0.28+(n%4)*0.045+cycle*0.02) if kind=='COWBELL' else (0.42+(n%5)*0.075+cycle*0.03) if kind=='FX' else (0.22+(n%5)*0.065+cycle*0.02), 4),
-            'decay_sec': round(min(1.9, decay_808) if kind=='808' else (0.065+(n%6)*0.016+cycle*0.008),4),
-            'drive': round(min(7.5, 1.1+(n%6)*0.19+cycle*0.12),4),
-            'tone': round(min(1.0, 0.17+(n%7)*0.08+cycle*0.05),4),
-            'pitch_hz': (max(28.0, pitch_808) if kind=='808' else 62.0+(n%5)*9+cycle*4 if kind=='KICK' else 540.0+cycle*12+(n%3)*5 if kind=='COWBELL' else None),
-            'noise_color':round(min(1.0, 0.25+(n%7)*0.095+cycle*0.04),4)}
+            'duration_sec': round(min(2.8, dur_808) if kind=='808' else (0.28+(n%4)*0.045+cycle*0.02+(variant%5)*0.01) if kind=='COWBELL' else (0.42+(n%5)*0.075+cycle*0.03+(variant%7)*0.01) if kind=='FX' else (0.22+(n%5)*0.065+cycle*0.02+(variant%5)*0.008), 4),
+            'decay_sec': round(min(1.9, decay_808) if kind=='808' else (0.065+(n%6)*0.016+cycle*0.008+(variant%8)*0.002),4),
+            'drive': round(min(7.5, 1.05+(n%6)*0.19+cycle*0.11+(variant%5)*0.03),4),
+            'tone': round(min(1.0, max(0.0, 0.12+(n%7)*0.08+cycle*0.04+(variant%9)*0.015)),4),
+            'pitch_hz': (max(32.0, min(70.0, pitch_808)) if kind=='808' else max(40.0, min(120.0, kick_pitch)) if kind=='KICK' else max(350.0, min(900.0, cow_pitch)) if kind=='COWBELL' else None),
+            'noise_color':round(min(1.0, max(0.0, 0.2+(n%7)*0.095+cycle*0.035+(variant%6)*0.02)),4)}
 
 def validate_recipe(r):
     if not isinstance(r,dict) or r.get('engine')!='parametric-v2' or r.get('kind') not in KINDS: raise ValueError('invalid engine/kind')
