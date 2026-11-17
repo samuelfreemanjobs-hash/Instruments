@@ -5,6 +5,7 @@
 #include "../DSP/MultiGenreDrumEngine.h"
 #include "../Factory/KitFactory.h"
 #include "../Factory/SoundEditBridge.h"
+#include "../Sequencer/LoopSequencer.h"
 #include "../Sequencer/RhythmicOddity.h"
 
 class DrumDesignLabAudioProcessor : public juce::AudioProcessor
@@ -68,6 +69,13 @@ public:
     WorkspaceMode getWorkspaceMode() const;
     juce::String getStatusLine() const;
     int getGrooveStep() const noexcept { return grooveStep_; }
+    bool isSequencerPlaying() const noexcept
+    {
+        return apvts.getRawParameterValue("ddl_seq_enabled")->load() > 0.5f;
+    }
+    void setSequencerPlaying(bool on);
+    void generateLoop();
+    const disklordz::loop_seq::LoopPattern& loopPattern() const noexcept { return loop_; }
 
     juce::AudioProcessorValueTreeState apvts;
 
@@ -87,6 +95,8 @@ private:
     bool hasLastApplied_ = false;
 
     disklordz::bang::OddityPattern groove_ {};
+    disklordz::loop_seq::LoopPattern loop_ {};
+    bool useGeneratedLoop_ = false;
     double sampleRate_ = 48000.0;
     double samplesPerStep_ = 1.0;
     double groovePhase_ = 0.0;

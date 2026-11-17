@@ -1,14 +1,43 @@
-import { AuthNav } from "@/components/AuthNav";
-import { KitGenerator } from "@/components/KitGenerator";
+import Link from "next/link";
+
+import { KitFactoryLab } from "@/components/KitFactoryLab";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-zinc-950 px-4 py-12 text-zinc-100">
-      <AuthNav />
-      <KitGenerator />
-      <footer className="mx-auto mt-16 max-w-3xl border-t border-zinc-800 pt-6 text-center text-xs text-zinc-600">
-        v0 MVP · parametric factory · deploy via DEPLOY.md
+    <>
+      <section className="hero" aria-label="DiskLordz Drum Kit Factory">
+        <div className="hero-inner">
+          <p className="hero-brand">DiskLordz</p>
+          <h1 className="hero-line">Drum Kit Factory</h1>
+          <p className="hero-sub">
+            Pick a DNA formula, audition all 16 pads, export a sellable WAV pack. Original synthesis —
+            no third-party sample libraries.
+          </p>
+          <div className="hero-cta">
+            <a className="btn-primary" href="#factory">
+              Open factory
+            </a>
+            <Link className="btn-secondary" href="/studio">
+              Prompt studio
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section id="factory" className="factory-section">
+        <h2 className="section-title">Build pack</h2>
+        <p className="section-sub">
+          Kit Formula is the primary control. Producer engines stay optional in Prompt studio.
+        </p>
+        <KitFactoryLab />
+      </section>
+
+      <footer className="page-footer">
+        DiskLordz Supply · formula → pads → export ·{" "}
+        <Link href="/daw-inbox" className="text-[var(--dl-amber)] hover:underline">
+          DAW inbox
+        </Link>
       </footer>
-    </div>
+    </>
   );
 }
