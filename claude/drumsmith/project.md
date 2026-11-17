@@ -1,6 +1,6 @@
 # project.md — DRUMSMITH (Drum Sample & Kit Product Designer + DSP Audio Engineer Agent)
 
-**Updated:** 2026-11-17 · **Completion:** Agent package 100% (in-repo) · **Workbench v1 published** (private page + docked agent) · Cross-check JS↔Python on 8 WAVs · UI/layout **not browser-smoke-tested** · First live kit run **started** (Tail Light Static W1 + INTAKE; no real renders verified yet)
+**Updated:** 2026-11-17 · **In-repo:** agent package (v1.0 tarball) + workbench HTML · **Announced (packages not yet on Cloud VM):** v1.1 → v1.2 → v1.3 · First live kit W1 done; commercial release still blocked
 
 ## Scope
 
@@ -43,19 +43,36 @@ Sam. Faster, verifiable drum kit production: every kit ships with a passing chec
 
 **Tested vs not tested (publish pass):** WAV checker parity with Python (**tested**, 8 files). Layout, audio preview, and chat panel (**not opened in browser** before publish).
 
+## Announced upgrades (packages pending upload)
+
+Cloud uploads today: `drumsmith.tar.gz` (v1.0) + `DRUMSMITH_Workbench.html` only. **v1.1 / v1.2 / v1.3 ZIP or TAR.GZ are not on this VM** — attach the latest package (prefer **v1.3**) to merge into `claude/drumsmith/` the same way as the v1.0 tarball.
+
+| Version | Claimed (external build) | Expected entrypoints |
+|---------|--------------------------|----------------------|
+| **v1.1** | 28 tests · 64 WAVs · 8/8 808 pitch · scaffold/render/verify pipeline · release-gate SOP | `scaffold_kit.py`, `render_reference.py`, `verify_kit.py --manifest` |
+| **v1.2** | 38 tests · recipe engine · SHA-256 fingerprints · diversity audit · FORGE JSON handoff · 64/64 tech PASS · 13 envelope-similar pairs (ear) | `build_recipe_kit.py`, `render_recipes.py`, `diversity_audit.py`, `export_forge.py`, `test_upgrade.py` |
+| **v1.3** | 44 tests · 5 genre profiles · `factory.py` · `kit_browser.py` @ `:8765` · Drift Phonk TLS 64/64 | `factory.py --genre drift-phonk`, `kit_browser.py`, `test_v13.py` |
+
+**Ship gates (unchanged):** technical PASS ≠ commercial release. Named ear approval + device profiles tested still required. Pitch methods are dependency-free approximations (not certified FFT/YIN). v1.2/v1.3 Python engines are **offline reference** — FORGE handoff is JSON, not a compiled VST3.
+
+**v2.0 (roadmap only):** DiskLordz Drum Manufacturing System — genre engines in JUCE 8/C++20, variation, desktop UI, MPC export verification. Not started in this repo.
+
 ## To do
 
+- [ ] **BLOCKER:** Upload `drumsmith-v1.3.zip` (or v1.2 if v1.3 unavailable) to Cloud so it can replace/merge under `claude/drumsmith/`
 - [x] Sam: copy agent folder to a repo root so CLAUDE.md and .claude/ auto-load (done via `claude/drumsmith/` + symlinks)
-- [ ] First live run: **W3 verify on real renders** for Tail Light Static (INTAKE + W1 done in repo)
-- [ ] Sam: **open workbench**, allow Claude access on first agent message, try quick prompts; **drop real Tail Light Static render** in Verify tab and report drift vs Python CLI
-- [ ] Confirm device profiles (MPC 500, MPC Sample, Maschine+, MV-1, Lofi12, FL Studio) from sources or disklordz_slicer.py; all UNVERIFIED now
-- [ ] Decide when to turn on evaluator_pass_enabled (CALIPER) in core-config.xml
-- [ ] Add FFT/YIN pitch cross-check (numpy) for 808/cowbell key checks; add pitch check to the workbench Verify tab
-- [ ] Add LUFS / certified true-peak metering (ffmpeg ebur128) to replace the approximate meter
-- [ ] Expand provenance on first render batch (`docs/provenance/<kit>.md`)
-- [ ] Workbench v2 ideas: persist spec between visits (db capability), share with collaborators, export per-device package list
-- [ ] Optional: run verify_kit.py and the workbench through full DPCS phases if wanted
 - [x] Workbench template in repo: `workbench/DRUMSMITH_Workbench.html`
+- [ ] Merge latest package; run advertised tests (`self_test` + `test_upgrade` / `test_v13`); store Tail Light Static kit under `kits/` or package `TLS_*`
+- [ ] First live run: **W3 verify on real renders** for Tail Light Static
+- [ ] Sam: **open workbench**, allow Claude access; drop TLS renders in Verify tab
+- [ ] Ear review of envelope-similar pairs (v1.2 noted 13); named release authorization
+- [ ] Confirm device profiles (MPC 500, MPC Sample, Maschine+, MV-1, Lofi12, FL Studio); all UNVERIFIED now
+- [ ] Decide when to turn on evaluator_pass_enabled (CALIPER) in core-config.xml
+- [ ] Add LUFS / certified true-peak metering (ffmpeg ebur128) for release-critical claims
+- [ ] Expand provenance on first render batch (`docs/provenance/<kit>.md`)
+- [ ] Workbench v2: persist spec, share, per-device export list
+- [ ] Optional: full DPCS phases for verify/render scripts
+- [ ] Optional: start v2.0 FORGE/JUCE drum factory (separate product lane)
 
 ## AI agents created
 
