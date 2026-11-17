@@ -23,7 +23,7 @@
 
 - **Sample peak ≠ true peak** — verifier reports `sample_peak_dbfs` only.
 - **Pitch check is approximate** — autocorrelation/spectral screen; not certified tuning.
-- **Storefront “loops”** are FX one-shot stubs (`W2_RENDER.md`) — do not claim finished groove WAVs.
+- **Loops upgraded** to true 2-bar PCM via `render_loop_from_blueprint.py` (`W2B_TRUE_LOOPS.md`) — still need human ear; file length = `loop_samples(bars)` not `bars * samples_per_bar`.
 - **Devices UNVERIFIED** — do not market MPC/Maschine+/SP-404 compatibility.
 - **No FORGE/VST claim** from this kit.
 

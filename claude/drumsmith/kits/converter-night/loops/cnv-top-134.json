@@ -9,28 +9,8 @@
   "samples_per_bar": 78985,
   "samples_per_bar_tag": "C",
   "feel": "loose tape",
-  "promise": "Original memphis-tape drum loop sketch \u2014 not a recreation of any artist or brand kit",
+  "promise": "Original top-percussion loop sketch \u2014 hats/perc only",
   "lanes": {
-    "KICK": [
-      {
-        "step": 0,
-        "vel": 100
-      },
-      {
-        "step": 16,
-        "vel": 100
-      }
-    ],
-    "SNARE": [
-      {
-        "step": 8,
-        "vel": 110
-      },
-      {
-        "step": 24,
-        "vel": 110
-      }
-    ],
     "HAT": [
       {
         "step": 0,
@@ -113,11 +93,22 @@
         "vel": 90
       }
     ],
-    "808": [
+    "PERC": [
       {
-        "step": 0,
-        "vel": 100,
-        "note": "set key in product spec"
+        "step": 4,
+        "vel": 90
+      },
+      {
+        "step": 12,
+        "vel": 90
+      },
+      {
+        "step": 20,
+        "vel": 90
+      },
+      {
+        "step": 28,
+        "vel": 90
       }
     ]
   },

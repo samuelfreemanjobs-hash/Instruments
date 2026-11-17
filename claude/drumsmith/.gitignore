@@ -17,3 +17,7 @@ kits/converter-night/**/diversity-report.json
 # Native C++ build tree
 native/build/
 
+kits/converter-night/loops/wav/
+kits/converter-night/listen/**/*.wav
+kits/converter-night/listen/**/*.zip
+kits/converter-night/*.zip

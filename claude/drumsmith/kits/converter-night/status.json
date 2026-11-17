@@ -2,7 +2,7 @@
   "sku": "CNV",
   "title": "Converter Night",
   "path": "claude/drumsmith/kits/converter-night",
-  "phase": "W3_verify",
+  "phase": "W3_verify_loops",
   "status": "draft",
   "release_ready": false,
   "technical_status": "PASS",
@@ -38,11 +38,15 @@
     "channels": 1
   },
   "gaps": [
-    "DR-660 WAV missing — RATE technique-led",
-    "SP-1200/Drumulator WAV missing — BIT12 technique-led",
-    "Storefront loops/textures are FX one-shot stubs, not true 2-bar loops",
     "HITL ear/legal/price/cover open",
-    "CALIPER notes draft — not a human release gate"
+    "DR-660 WAV missing \u2014 RATE technique-led",
+    "SP-1200/Drumulator WAV missing \u2014 BIT12 technique-led",
+    "CALIPER notes draft \u2014 not a human release gate"
   ],
-  "updated": "2026-11-17"
+  "updated": "2026-11-17",
+  "true_loops": {
+    "status": "rendered",
+    "script": "scripts/render_loop_from_blueprint.py",
+    "count": 8
+  }
 }
