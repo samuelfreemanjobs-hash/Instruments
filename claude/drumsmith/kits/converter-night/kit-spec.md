@@ -18,7 +18,7 @@ Original DiskLordz **Memphis converter phonk** drums: rate-dropped subs, 12-bit 
 | Half-time loop BPM | 134 | A |
 | SR / bit / ch | 44.1 kHz · PCM16 · mono | S (verify_kit) |
 | Samples/bar @ 94 | `loop_samples(1, 94, 44100)` = **112596** | C |
-| Samples/bar @ 134 | `loop_samples(1, 134, 44100)` = **78940** | C |
+| Samples/bar @ 134 | `loop_samples(1, 134, 44100)` = **78985** | C |
 | Peak ceiling | −0.1 dBFS sample peak | S |
 | Key anchor | F minor for pitched subs/cowbell | A |
 
