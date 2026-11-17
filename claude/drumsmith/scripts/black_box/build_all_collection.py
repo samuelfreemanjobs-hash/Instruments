@@ -26,7 +26,6 @@ def main() -> None:
         summary[era] = "ok"
     run([sys.executable, str(SCRIPTS / "package_dirty_circuits.py")])
     summary["dirty_circuits"] = "ok"
-    # keep legacy bb96 entrypoints in sync by re-pointing generate_bb96 if present
     out = Path("/opt/cursor/artifacts/black_box_collection_build.json")
     out.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2))

@@ -7,17 +7,13 @@ import argparse
 import json
 import shutil
 import sys
-import zipfile
 from pathlib import Path
-
-import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 for p in (str(ROOT), str(ROOT / "scripts")):
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from dsp_math import loop_samples  # noqa: E402
 from scripts.black_box.generate_era import (  # noqa: E402
     kit_masters_dir,
     load_profile,
@@ -29,11 +25,8 @@ from scripts.black_box.process_fx import (  # noqa: E402
     process_lane,
     read_wav_mono,
     write_wav_mono,
+    zip_tree,
 )
-from scripts.memphis_oneshots.phonk_hat import generate_memphis_phonk_hat  # noqa: E402
-from scripts.memphis_oneshots.phonk_kick import generate_memphis_phonk_kick  # noqa: E402
-from scripts.memphis_oneshots.phonk_snare import generate_memphis_phonk_snare  # noqa: E402
-from scripts.memphis_oneshots.render_memphis_loop import render_memphis_loop  # noqa: E402
 
 
 def _sorted_wavs(folder: Path) -> list[Path]:
@@ -44,16 +37,43 @@ def _core_folders(masters: Path) -> list[Path]:
     return sorted(p for p in masters.iterdir() if p.is_dir() and p.name != "_DOCS")
 
 
-def _loop_folder(masters: Path) -> Path | None:
+def _folder_for_kind(masters: Path, profile: dict, kind: str) -> Path | None:
+    name = (profile.get("folder_map") or {}).get(kind)
+    if not name:
+        return None
+    path = masters / name
+    return path if path.is_dir() else None
+
+
+def _loop_folder(masters: Path, profile: dict | None = None) -> Path | None:
+    if profile:
+        mapped = _folder_for_kind(masters, profile, "LOOP")
+        if mapped:
+            return mapped
     for p in _core_folders(masters):
         if "loop" in p.name.lower():
             return p
     return None
 
 
-def _oneshot_folders(masters: Path) -> list[Path]:
-    loops = _loop_folder(masters)
+def _oneshot_folders(masters: Path, profile: dict | None = None) -> list[Path]:
+    loops = _loop_folder(masters, profile)
     return [p for p in _core_folders(masters) if p != loops]
+
+
+def _folders_for_kinds(masters: Path, profile: dict, kinds: tuple[str, ...]) -> list[Path]:
+    out: list[Path] = []
+    for kind in kinds:
+        folder = _folder_for_kind(masters, profile, kind)
+        if folder:
+            out.append(folder)
+    return out
+
+
+def _identity_slug(profile: dict) -> str:
+    identity = profile.get("identity", "Kit")
+    cleaned = identity.replace("The ", "").replace("the ", "")
+    return "".join(c for c in cleaned.title() if c.isalnum()) or "Kit"
 
 
 def _guide_text(profile: dict) -> str:
@@ -100,17 +120,12 @@ PCM16 mono @ 44.1 kHz. Device paths UNVERIFIED until logged.
 """
 
 
-def _build_pitched(pack: Path, masters: Path) -> int:
+def _build_pitched(pack: Path, masters: Path, profile: dict) -> int:
     dest = pack / "02_BITCRUSHED_AND_PITCHED"
     n = 0
-    # Prefer 808 / kick folders for rate-drop
-    sources = []
-    for folder in _oneshot_folders(masters):
-        low = folder.name.lower()
-        if "808" in low or "sub" in low or "kick" in low or "bass" in low:
-            sources.append(folder)
+    sources = _folders_for_kinds(masters, profile, ("808", "KICK"))
     if not sources:
-        sources = _oneshot_folders(masters)[:1]
+        sources = _oneshot_folders(masters, profile)[:1]
     rate = dest / "RateDropped_808s"
     rate.mkdir(parents=True)
     for folder in sources[:2]:
@@ -122,19 +137,17 @@ def _build_pitched(pack: Path, masters: Path) -> int:
 
     pitched = dest / "Pitched_Tops"
     pitched.mkdir(parents=True)
-    for folder in _oneshot_folders(masters):
-        low = folder.name.lower()
-        if any(x in low for x in ("snare", "cow", "clap", "hat")):
-            for path in _sorted_wavs(folder)[:4]:
-                buf = read_wav_mono(path)
-                for st in (-7, 5):
-                    write_wav_mono(pitched / f"{path.stem}_pitch{st}st.wav", pitch_shift(buf, st))
-                    n += 1
-            break
+    tops = _folders_for_kinds(masters, profile, ("SNR", "COW", "CLAP", "CH", "OH"))
+    if tops:
+        for path in _sorted_wavs(tops[0])[:4]:
+            buf = read_wav_mono(path)
+            for st in (-7, 5):
+                write_wav_mono(pitched / f"{path.stem}_pitch{st}st.wav", pitch_shift(buf, st))
+                n += 1
 
     aliased = dest / "Aliased_One_Shots"
     aliased.mkdir(parents=True)
-    for folder in _oneshot_folders(masters)[:3]:
+    for folder in _oneshot_folders(masters, profile)[:3]:
         for path in _sorted_wavs(folder)[:3]:
             buf = read_wav_mono(path)
             write_wav_mono(aliased / f"{path.stem}_alias.wav", bitcrush(buf, bit_depth=9, hold_sr=18000.0))
@@ -142,10 +155,10 @@ def _build_pitched(pack: Path, masters: Path) -> int:
     return n
 
 
-def _build_cassette(pack: Path, masters: Path) -> int:
+def _build_cassette(pack: Path, masters: Path, profile: dict) -> int:
     dest = pack / "03_CASSETTE_AND_TAPE"
     n = 0
-    for folder in _oneshot_folders(masters):
+    for folder in _oneshot_folders(masters, profile):
         out = dest / folder.name
         out.mkdir(parents=True)
         for i, path in enumerate(_sorted_wavs(folder)[:4]):
@@ -154,10 +167,11 @@ def _build_cassette(pack: Path, masters: Path) -> int:
     return n
 
 
-def _build_parallel(pack: Path, masters: Path) -> int:
+def _build_parallel(pack: Path, masters: Path, profile: dict) -> int:
     dest = pack / "04_PARALLEL_PROCESS_BANKS"
     n = 0
-    roles = _oneshot_folders(masters)[:6]
+    prefix = profile["prefix"]
+    roles = _oneshot_folders(masters, profile)[:6]
     for lane in ("RAW", "TAPE", "LOFI", "CASSETTE"):
         for folder in roles:
             role = folder.name.split("_", 1)[-1] if "_" in folder.name else folder.name
@@ -165,58 +179,72 @@ def _build_parallel(pack: Path, masters: Path) -> int:
             out.mkdir(parents=True)
             for i, path in enumerate(_sorted_wavs(folder)[:3]):
                 processed = process_lane(read_wav_mono(path), lane, seed=i)
-                write_wav_mono(out / f"{lane}_{role}_{i+1:02d}.wav", processed)
+                write_wav_mono(out / f"{prefix}_{lane}_{role}_{i+1:02d}.wav", processed)
                 n += 1
     return n
 
 
-def _build_mini_kits(pack: Path, profile: dict) -> int:
-    from scripts.black_box.generate_era import _clap, _cowbell
+def _pick_wav(folder: Path | None, index: int = 0) -> Path | None:
+    if not folder:
+        return None
+    wavs = _sorted_wavs(folder)
+    return wavs[index] if index < len(wavs) else None
 
+
+def _build_mini_kits(pack: Path, masters: Path, profile: dict) -> int:
+    """Matched mini-kits = select-from-masters + cassette A/B (no re-synthesis)."""
     root = pack / "06_MATCHED_MINI_KITS"
-    eng = profile["engine"]
+    slug = _identity_slug(profile)
+    prefix = profile["prefix"]
     n = 0
-    kits = [
-        ("01_KitA", 94, 43.65, 220.0, 9000.0, "cnv-dr660-94-a.json"),
-        ("02_KitB", 94, 36.71, 196.0, 8200.0, "cnv-arch-horror.json"),
-        ("03_KitC", 134, 46.25, 233.0, 10000.0, "cnv-arch-bounce.json"),
-    ]
-    for kid, bpm, khz, shz, hhz, bp_name in kits:
+    loop_folder = _loop_folder(masters, profile)
+    loop_wavs = _sorted_wavs(loop_folder) if loop_folder else []
+    role_kinds = (
+        ("Kick", ("808", "KICK")),
+        ("Snare", ("SNR",)),
+        ("HatClosed", ("CH",)),
+        ("Clap", ("CLAP",)),
+        ("Cowbell", ("COW",)),
+    )
+    kit_ids = (f"01_{slug}", "02_KitB", "03_KitC")
+    for kit_i, kid in enumerate(kit_ids):
         kdir = root / kid
         oneshots = kdir / "OneShots"
         oneshots.mkdir(parents=True)
-        kick = generate_memphis_phonk_kick(
-            root_freq=khz,
-            clip_drive_db=float(eng.get("kick_clip_db", 4.0)),
-            bit_depth=int(eng.get("bit_depth", 12)),
-            lofi_sr=float(eng.get("lofi_sr", 26040)),
-            tape_lpf_hz=float(eng.get("tape_lpf_hz", 12000)),
-        )
-        snare = generate_memphis_phonk_snare(membrane_root=shz, seed=700 + bpm)
-        hat = generate_memphis_phonk_hat(center_hz=hhz, seed=800 + bpm)
-        for role, buf in (
-            ("Kick", kick),
-            ("Snare", snare),
-            ("HatClosed", hat),
-            ("Clap", _clap(bpm)),
-            ("Cowbell", _cowbell(1.0, eng)),
-        ):
-            write_wav_mono(oneshots / f"{profile['prefix']}_{kid}_{role}.wav", buf)
+        kick_path = None
+        for role, kinds in role_kinds:
+            path = None
+            for kind in kinds:
+                folder = _folder_for_kind(masters, profile, kind)
+                path = _pick_wav(folder, kit_i)
+                if path:
+                    break
+            if not path:
+                continue
+            dest = oneshots / f"{prefix}_{kid}_{role}.wav"
+            shutil.copy2(path, dest)
             n += 1
-        write_wav_mono(oneshots / f"{profile['prefix']}_{kid}_Kick_Cassette.wav", cassette_fx(kick, seed=bpm))
-        n += 1
-        bp_path = ROOT / "kits/converter-night/loops" / bp_name
-        bp = json.loads(bp_path.read_text(encoding="utf-8"))
-        loop = render_memphis_loop(bp, seed=bpm)
-        want = loop_samples(int(bp["bars"]), float(bp["bpm"]), 44100)
-        if len(loop) > want:
-            loop = loop[:want]
-        elif len(loop) < want:
-            loop = np.pad(loop, (0, want - len(loop)))
-        write_wav_mono(kdir / f"{profile['prefix']}_{kid}_LOOP_{bpm}bpm.wav", loop)
-        n += 1
+            if role == "Kick":
+                kick_path = path
+        if kick_path:
+            write_wav_mono(
+                oneshots / f"{prefix}_{kid}_Kick_Cassette.wav",
+                cassette_fx(read_wav_mono(kick_path), seed=100 + kit_i),
+            )
+            n += 1
+        if kit_i < len(loop_wavs):
+            loop_src = loop_wavs[kit_i]
+            # Preserve BPM token from filename when present
+            bpm_token = "94"
+            for part in loop_src.stem.split("_"):
+                if part.endswith("bpm"):
+                    bpm_token = part.replace("bpm", "")
+                    break
+            shutil.copy2(loop_src, kdir / f"{prefix}_{kid}_LOOP_{bpm_token}bpm.wav")
+            n += 1
         (kdir / "README.txt").write_text(
-            f"Mini-kit {kid} @ {bpm} BPM\nLoad OneShots. Compare Kick vs Kick_Cassette.\nSee _DOCS/Hardware_Processing_Guide.md\n",
+            f"Mini-kit {kid}\nSelected from masters — Kick vs Kick_Cassette A/B.\n"
+            "See _DOCS/Hardware_Processing_Guide.md\n",
             encoding="utf-8",
         )
     return n
@@ -233,8 +261,8 @@ def package(out_dir: Path, masters: Path, profile: dict) -> dict:
     core.mkdir(parents=True)
 
     core_count = 0
-    loops = _loop_folder(masters)
-    for folder in _oneshot_folders(masters):
+    loops = _loop_folder(masters, profile)
+    for folder in _oneshot_folders(masters, profile):
         shutil.copytree(folder, core / folder.name)
         core_count += len(_sorted_wavs(folder))
 
@@ -243,11 +271,10 @@ def package(out_dir: Path, masters: Path, profile: dict) -> dict:
         shutil.copytree(loops, pack / "05_LOOPS")
         loop_count = len(_sorted_wavs(pack / "05_LOOPS"))
 
-    pitched_n = _build_pitched(pack, masters)
-    cassette_n = _build_cassette(pack, masters)
-    parallel_n = _build_parallel(pack, masters)
-    mini_n = _build_mini_kits(pack, profile)
-
+    pitched_n = _build_pitched(pack, masters, profile)
+    cassette_n = _build_cassette(pack, masters, profile)
+    parallel_n = _build_parallel(pack, masters, profile)
+    mini_n = _build_mini_kits(pack, masters, profile)
     docs = pack / "_DOCS"
     docs.mkdir(exist_ok=True)
     if (masters / "manifest.json").exists():
@@ -307,11 +334,7 @@ def package(out_dir: Path, masters: Path, profile: dict) -> dict:
 
 
 def zip_pack(pack_root: Path, zip_path: Path, pack_name: str) -> None:
-    zip_path.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        for path in sorted(pack_root.rglob("*")):
-            if path.is_file():
-                zf.write(path, arcname=str(Path(pack_name) / path.relative_to(pack_root)))
+    zip_tree(pack_root, zip_path, pack_name)
 
 
 def main() -> None:

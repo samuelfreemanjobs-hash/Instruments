@@ -59,5 +59,32 @@
     "OH": "Tight",
     "LOOP": "Bounce"
   },
-  "notes": " Inventory doubled per operator request 2026-11-17."
+  "notes": " Inventory doubled per operator request 2026-11-17.",
+  "voice": {
+    "kick_pitch_decay": 0.022,
+    "kick_duration_min": 0.4,
+    "kick_extra_bias_st": -1.0,
+    "kick_pitch_cap": null,
+    "808_tuning": "key",
+    "snare_pitch_base": 26,
+    "snare_pitch_mod": 8,
+    "snare_flam_base_ms": 4.0,
+    "snare_flam_step_ms": 0.5,
+    "clap_layered": true,
+    "clap_bright": false,
+    "hat_noise_decay": 0.022,
+    "hat_clip_db": 3.0,
+    "hat_use_lofi": true,
+    "oh_duration": 0.2,
+    "oh_noise_decay": 0.07,
+    "cow_metallic_fixed": null,
+    "perc_grimy": false,
+    "perc_synth": false,
+    "perc_rim_every": 3,
+    "loop_bpm_alt": [
+      134,
+      94
+    ]
+  },
+  "seed_base": null
 }

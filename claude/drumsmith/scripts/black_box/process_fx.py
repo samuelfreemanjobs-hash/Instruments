@@ -8,10 +8,19 @@ RAW cores stay clean and process siblings are honest derivatives.
 from __future__ import annotations
 
 import math
+import sys
 import wave
+import zipfile
 from pathlib import Path
 
 import numpy as np
+
+ROOT = Path(__file__).resolve().parents[2]
+for p in (str(ROOT), str(ROOT / "scripts")):
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+from scripts.memphis_oneshots.phonk_kick import write_wav_16bit_mono  # noqa: E402
 
 SR = 44100
 
@@ -22,13 +31,20 @@ def read_wav_mono(path: Path) -> np.ndarray:
         assert w.getsampwidth() == 2
         assert w.getframerate() == SR
         raw = w.readframes(w.getnframes())
-    return (np.frombuffer(raw, dtype=np.int16).astype(np.float64) / 32767.0)
+    return np.frombuffer(raw, dtype=np.int16).astype(np.float64) / 32767.0
 
 
 def write_wav_mono(path: Path, samples: np.ndarray) -> None:
-    from scripts.memphis_oneshots.phonk_kick import write_wav_16bit_mono
-
     write_wav_16bit_mono(path, normalize(samples))
+
+
+def zip_tree(src: Path, zip_path: Path, arc_root: str) -> None:
+    """Shared zip helper for era + Dirty Circuits packs."""
+    zip_path.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        for path in sorted(src.rglob("*")):
+            if path.is_file():
+                zf.write(path, arcname=str(Path(arc_root) / path.relative_to(src)))
 
 
 def normalize(x: np.ndarray, ceiling_db: float = -0.1) -> np.ndarray:

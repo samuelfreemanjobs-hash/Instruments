@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT))
 from scripts.black_box.generate_era import generate_all, load_profile  # noqa: E402
 from scripts.black_box.package_era import package  # noqa: E402
 from scripts.black_box.package_dirty_circuits import build_bb96dc, build_dirty_circuits  # noqa: E402
+from scripts.black_box.seeds import sku_seed  # noqa: E402
 
 
 class CollectionEraTests(unittest.TestCase):
@@ -46,6 +47,18 @@ class CollectionEraTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             rows = generate_all(Path(td), profile)
             self.assertEqual(len(rows), 480)
+
+    def test_sku_seed_stable(self) -> None:
+        a = sku_seed("BB96", 9300)
+        b = sku_seed("BB96", 9300)
+        self.assertEqual(a, b)
+        self.assertNotEqual(sku_seed("BB96"), sku_seed("BB93"))
+
+    def test_profiles_carry_voice(self) -> None:
+        for key in ("bb93", "bb96", "bb98", "bb2000"):
+            voice = load_profile(key).get("voice") or {}
+            self.assertIn("808_tuning", voice)
+            self.assertIn("snare_pitch_base", voice)
 
     def test_dirty_circuits_and_bb96dc(self) -> None:
         profile = load_profile("bb96")

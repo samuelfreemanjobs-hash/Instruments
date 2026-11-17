@@ -191,3 +191,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** build_all_collection.py artifacts; test_black_box_collection.py 2026-11-17
 - **confidence:** executed
 - **status:** active
+
+### L-0020 · Black Box: voice profiles + crc32 seeds + Splice 16-bit gap
+- **date:** 2026-11-17
+- **area:** black-box
+- **when:** thermo-nuclear refactor + Splice audit
+- **lesson:** Era personality belongs in profile voice JSON; use zlib.crc32 sku seeds; mini-kits copy masters; Dirty Circuits mode_fx is data. Splice prefers 24-bit — BB PCM16 is intentional aesthetic gap, not a silent pass.
+- **do:** Keep generate_era free of char==; run splice_grade_audit.py before HITL; never set release_ready without human listen.
+- **evidence:** 9/9 unittest OK; Splice audit A- PASS_TECHNICAL with PCM16 warn on BB93/96/98/00
+- **confidence:** executed
+- **status:** active

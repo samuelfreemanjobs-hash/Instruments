@@ -22,5 +22,35 @@
     "prefix": "BB96DC",
     "target_pairs": "all_oneshots_clean_dirty"
   },
-  "notes": "BB96DC: CLEAN+DIRTY for every BB96 oneshot + RUINED exclusives. BBDC bus doubled coverage."
+  "notes": "BB96DC: CLEAN+DIRTY for every BB96 oneshot + RUINED exclusives. BBDC bus doubled coverage.",
+  "mode_fx": {
+    "CLEAN": {
+      "lane": "RAW"
+    },
+    "DIRTY": {
+      "bit_depth": 8,
+      "hold_sr": 16000.0,
+      "drive_db": 7.0,
+      "tape_lpf_hz": 9000.0,
+      "hiss_db": -36.0
+    },
+    "RUINED": {
+      "bit_depth": 6,
+      "hold_sr": 11025.0,
+      "drive_db": 10.0,
+      "tape_lpf_hz": 7000.0,
+      "wow_depth_ms": 0.8,
+      "hiss_db": -30.0,
+      "seed_offset": 7
+    }
+  },
+  "bbdc_per_folder": 10,
+  "exclusive_roles": [
+    "snare",
+    "hat",
+    "808",
+    "kick",
+    "clap",
+    "cow"
+  ]
 }

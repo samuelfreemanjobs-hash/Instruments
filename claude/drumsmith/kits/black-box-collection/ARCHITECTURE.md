@@ -20,9 +20,9 @@ Commercial **drum sample kit** franchise: era-specific underground Southern / Me
 
 ## Shared engine
 
-**Python (shipping kits now):** `scripts/black_box/generate_era.py` reads era profile JSON and renders distinct personalities via character flags (`hollow_tape` / `signature` / `trunk_bass` / `digital_south`).
+**Python (shipping kits now):** `scripts/black_box/generate_era.py` reads era profile JSON. Personality is data-driven via each profile’s `voice` block (no `char ==` switches in the render loop). `character` remains a label for docs/HITL.
 
-**Post FX (every zip):** `process_fx.py` + `package_era.py` → pitched / cassette / RAW·TAPE·LOFI·CASSETTE / mini-kits / `Hardware_Processing_Guide.md`.
+**Post FX (every zip):** `process_fx.py` + `package_era.py` → pitched / cassette / RAW·TAPE·LOFI·CASSETTE / mini-kits (select-from-masters) / `Hardware_Processing_Guide.md`. Dirty Circuits modes come from `profiles/dirty_circuits.json`.
 
 **C++ (planned JUCE):** `native/include/BlackBoxEraProfile.h` mirrors profile knobs for a future shared drum engine — not four separate synths.
 

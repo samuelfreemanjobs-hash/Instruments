@@ -55,5 +55,32 @@
     "808": "Tuned",
     "LOOP": "Circuit"
   },
-  "notes": " Inventory doubled per operator request 2026-11-17."
+  "notes": " Inventory doubled per operator request 2026-11-17.",
+  "voice": {
+    "kick_pitch_decay": 0.022,
+    "kick_duration_min": null,
+    "kick_extra_bias_st": 0.0,
+    "kick_pitch_cap": 30.0,
+    "808_tuning": "chromatic",
+    "snare_pitch_base": 16,
+    "snare_pitch_mod": 6,
+    "snare_flam_base_ms": 2.5,
+    "snare_flam_step_ms": 0.0,
+    "clap_layered": false,
+    "clap_bright": true,
+    "hat_noise_decay": 0.016,
+    "hat_clip_db": 3.0,
+    "hat_use_lofi": false,
+    "oh_duration": 0.2,
+    "oh_noise_decay": 0.07,
+    "cow_metallic_fixed": null,
+    "perc_grimy": false,
+    "perc_synth": true,
+    "perc_rim_every": 0,
+    "loop_bpm_alt": [
+      100,
+      140
+    ]
+  },
+  "seed_base": null
 }
