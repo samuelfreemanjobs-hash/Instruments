@@ -4,7 +4,7 @@ Template: `../../INTAKE.md` · Spec: `kit-spec.md` · R2P: `R2P.md`
 
 ## Minimum (required)
 
-1. **Style target:** Memphis / converter phonk (underground hip-hop); hero wedge RATE + ROMP + EDGE
+1. **Style target:** **90s Memphis rap / phonk** (underground tapes — converter crawl, 12-bit grit, horror space, club bounce); hero wedge RATE + ROMP + EDGE; see `recipes/MEMPHIS_ARCHETYPES.md`
 2. **BPM range:** **94** tape-creep master; **134** half-time alternate for loops
 3. **Sample rate and bit depth:** **44.1 kHz / PCM16 / mono** (matches `verify_kit`; do not claim 24-bit until factory emits it)
 4. **Target devices:** FL Studio, MPC 500, MPC Sample, Maschine+, MV-1, Liven Lofi12, SP-404 — all **UNVERIFIED**

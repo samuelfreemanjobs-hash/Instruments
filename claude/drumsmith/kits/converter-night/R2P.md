@@ -11,7 +11,9 @@
 
 ## Hero wedge (store copy)
 
-Memphis **converter phonk drums**: (1) rate-dropped subs, (2) 12-bit / rompler snap, (3) cutting EDGE hats. Internal banks stay off the product title.
+**90s Memphis rap / phonk drums**: (1) rate-dropped subs, (2) 12-bit / rompler snap, (3) cutting EDGE hats. Internal banks stay off the product title.
+
+Producer-archetype ear lanes (no artist names on SKUs): Converter Crawl · Bitcrush Bed · Horror Snap · Club Bounce — `recipes/MEMPHIS_ARCHETYPES.md`.
 
 ## Decisions
 

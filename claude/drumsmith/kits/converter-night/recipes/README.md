@@ -15,4 +15,6 @@ Genre factory: start from `memphis-tape` in `scripts/genre_profiles.py`; retune 
 | CAVE | `CAVE.md` |
 | EDGE | `EDGE.md` |
 | SIMM | `SIMM.md` |
+| DR-660 loops | `DR660_LOOPS.md` |
+| Memphis archetypes | `MEMPHIS_ARCHETYPES.md` |
 | RE priority | `RE-PRIORITY.md` |

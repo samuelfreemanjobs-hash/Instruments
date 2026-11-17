@@ -1,0 +1,102 @@
+{
+  "schema": "drumsmith-loop-blueprint-v1",
+  "name": "cnv-arch-horror",
+  "genre_profile": "memphis-tape",
+  "style_tag": "horror-snap",
+  "bpm": 94.0,
+  "bars": 2,
+  "sample_rate": 44100,
+  "grid_subdivisions_per_bar": 16,
+  "samples_per_bar": 112596,
+  "samples_per_bar_tag": "C",
+  "feel": "cavern sparse menace",
+  "promise": "Original memphis-tape archetype sketch \u2014 not a recreation of any artist tape",
+  "research_notes": "Room clap + space + FX stabs \u2014 Paul-lane arrangement language [inspected]",
+  "lanes": {
+    "KICK": [
+      {
+        "step": 0,
+        "vel": 100
+      },
+      {
+        "step": 16,
+        "vel": 95
+      }
+    ],
+    "SNARE": [
+      {
+        "step": 8,
+        "vel": 108
+      },
+      {
+        "step": 24,
+        "vel": 105
+      }
+    ],
+    "CLAP": [
+      {
+        "step": 8,
+        "vel": 70
+      },
+      {
+        "step": 24,
+        "vel": 65
+      }
+    ],
+    "HAT": [
+      {
+        "step": 4,
+        "vel": 35
+      },
+      {
+        "step": 12,
+        "vel": 30
+      },
+      {
+        "step": 20,
+        "vel": 35
+      },
+      {
+        "step": 28,
+        "vel": 30
+      }
+    ],
+    "808": [
+      {
+        "step": 0,
+        "vel": 95
+      },
+      {
+        "step": 16,
+        "vel": 85
+      }
+    ],
+    "FX": [
+      {
+        "step": 0,
+        "vel": 40
+      },
+      {
+        "step": 15,
+        "vel": 55
+      },
+      {
+        "step": 31,
+        "vel": 60
+      }
+    ]
+  },
+  "808": {
+    "key": "F",
+    "glide": "A",
+    "length_bars": 2
+  },
+  "variants": [
+    {
+      "id": "full",
+      "bars": 2
+    }
+  ],
+  "status": "agent-demo",
+  "device_exports": "UNVERIFIED"
+}

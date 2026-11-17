@@ -1,0 +1,148 @@
+{
+  "schema": "drumsmith-loop-blueprint-v1",
+  "name": "cnv-arch-bounce",
+  "genre_profile": "memphis-tape",
+  "style_tag": "club-bounce",
+  "bpm": 134.0,
+  "bars": 2,
+  "sample_rate": 44100,
+  "grid_subdivisions_per_bar": 16,
+  "samples_per_bar": 78985,
+  "samples_per_bar_tag": "C",
+  "feel": "half-time club bounce",
+  "promise": "Original memphis-tape archetype sketch \u2014 not a recreation of any artist tape",
+  "research_notes": "Thicker bounce under Memphis half-time \u2014 Juicy-lane party menace [inspected]",
+  "lanes": {
+    "KICK": [
+      {
+        "step": 0,
+        "vel": 115
+      },
+      {
+        "step": 6,
+        "vel": 75
+      },
+      {
+        "step": 16,
+        "vel": 115
+      },
+      {
+        "step": 22,
+        "vel": 70
+      }
+    ],
+    "SNARE": [
+      {
+        "step": 8,
+        "vel": 118
+      },
+      {
+        "step": 24,
+        "vel": 112
+      },
+      {
+        "step": 26,
+        "vel": 55
+      }
+    ],
+    "HAT": [
+      {
+        "step": 0,
+        "vel": 75
+      },
+      {
+        "step": 2,
+        "vel": 50
+      },
+      {
+        "step": 4,
+        "vel": 70
+      },
+      {
+        "step": 6,
+        "vel": 50
+      },
+      {
+        "step": 8,
+        "vel": 75
+      },
+      {
+        "step": 10,
+        "vel": 50
+      },
+      {
+        "step": 12,
+        "vel": 70
+      },
+      {
+        "step": 14,
+        "vel": 50
+      },
+      {
+        "step": 16,
+        "vel": 75
+      },
+      {
+        "step": 18,
+        "vel": 50
+      },
+      {
+        "step": 20,
+        "vel": 70
+      },
+      {
+        "step": 22,
+        "vel": 50
+      },
+      {
+        "step": 24,
+        "vel": 75
+      },
+      {
+        "step": 26,
+        "vel": 50
+      },
+      {
+        "step": 28,
+        "vel": 70
+      },
+      {
+        "step": 30,
+        "vel": 50
+      }
+    ],
+    "808": [
+      {
+        "step": 0,
+        "vel": 110
+      },
+      {
+        "step": 16,
+        "vel": 100
+      }
+    ],
+    "CLAP": [
+      {
+        "step": 8,
+        "vel": 60
+      },
+      {
+        "step": 24,
+        "vel": 55
+      }
+    ]
+  },
+  "808": {
+    "key": "F",
+    "glide": "A",
+    "length_bars": 2
+  },
+  "variants": [
+    {
+      "id": "full",
+      "bars": 2
+    }
+  ],
+  "status": "agent-demo",
+  "device_exports": "UNVERIFIED"
+}

@@ -31,6 +31,8 @@
   "references_unique": 26,
   "references_role": "analysis_only",
   "genre_profile": "memphis-tape",
+  "product_lane": "90s_memphis_rap_phonk",
+  "archetype_lanes": ["converter-crawl", "bitcrush-bed", "horror-snap", "club-bounce"],
   "plan": "converter-night",
   "generator": "drumsmith-cxx-v2-native",
   "delivery": {

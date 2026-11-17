@@ -6,9 +6,11 @@
 
 ## Promise
 
-Original DiskLordz **Memphis converter phonk** drums: rate-dropped subs, 12-bit / rompler snap, cutting EDGE hats, cavern claps, cassette dust. Not a brand-machine ROM dump.
+Original DiskLordz **90s Memphis rap / phonk** drums — converter crawl, 12-bit grit, horror space, club half-time bounce. Rate-dropped subs, aliased snap, cutting EDGE hats, cavern claps, cassette dust. Not a brand-machine ROM dump and not a recreation of any artist tape.
 
 **Store wedge (3 promises only):** rate-drop subs · converter snap · tape-cutting hats.
+
+**Producer-archetype lanes (internal ear targets only — no artist names on storefront):** Converter Crawl · Bitcrush Bed · Horror Snap · Club Bounce — see `recipes/MEMPHIS_ARCHETYPES.md`.
 
 ## Grid
 
