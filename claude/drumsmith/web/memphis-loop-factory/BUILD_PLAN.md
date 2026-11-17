@@ -56,6 +56,8 @@ Still open: port richer Factory OS mutate heuristics from `index.html` `generate
 2. Python Engine B: `scripts/memphis_oneshots/phonk_snare.py` (membrane + BP wires + flam → 12-bit/26.04 kHz → tape → soft clip → 24-bit WAV)
 3. Lab `DrumEngine` snare upgraded to acoustic triad
 
+**Product framing:** outputs feed an **original drum sample kit** SKU (oneshots + loops). Artist names stay internal research-only; `release_ready` stays false until HITL.
+
 ### P2 — Cursor + Claude Code: Offline loop render
 
 1. `OfflineAudioContext` 2-bar render with master FX chain
