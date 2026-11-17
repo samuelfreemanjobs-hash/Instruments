@@ -49,17 +49,22 @@
 
     <section class="panel" data-section="cassette" aria-label="Cassette">
       <div class="row">
-        <label>Drive <input id="cassette" type="range" min="0" max="1" step="0.01" value="0.35" /></label>
+        <label>Tape drive <input id="cassette" type="range" min="0" max="1" step="0.01" value="0.45" /></label>
       </div>
-      <p class="note">WaveShaper stub for 4-track compression/harmonics. Next: pre-emphasis HPF before shaper + gentle HF rolloff after.</p>
+      <p class="note">Master FX bus: voices → HPF pre-emphasis → 12-bit bitcrush → dark LPF → cassette WaveShaper → out. Curve from soft-clip tape formula (Portastudio-style overload).</p>
     </section>
 
     <section class="panel" data-section="filter" aria-label="Filter">
       <div class="row">
-        <label>Cutoff <input id="cutoff" type="range" min="400" max="16000" step="10" value="9200" /> <span id="cutoff-val">9200 Hz</span></label>
-        <label>Resonance <input id="reso" type="range" min="0.1" max="12" step="0.1" value="0.7" /></label>
+        <label>Cutoff <input id="cutoff" type="range" min="400" max="16000" step="10" value="9500" /> <span id="cutoff-val">9500 Hz</span></label>
+        <label>Resonance <input id="reso" type="range" min="0.1" max="12" step="0.1" value="1.2" /></label>
       </div>
-      <p class="note">Low-pass grit stand-in for dark sampler response. Tune against SP-1200 / DR-660 refs when WAVs are staged.</p>
+      <div class="row">
+        <label>Bits <input id="bits" type="range" min="4" max="16" step="1" value="12" /> <span id="bits-val">12</span></label>
+        <label>Downsample <input id="downsample" type="range" min="1" max="16" step="1" value="4" /> <span id="down-val">4×</span></label>
+        <label>Crush mix <input id="crush-mix" type="range" min="0" max="1" step="0.01" value="0.85" /></label>
+      </div>
+      <p class="note">12-bit + rate-reduce AudioWorklet (Memphis sampler grit). CHH chokes OHH; soft CHH slightly detunes.</p>
     </section>
   </main>
 

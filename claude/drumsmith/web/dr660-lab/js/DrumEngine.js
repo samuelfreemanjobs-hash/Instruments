@@ -1,5 +1,6 @@
 /**
  * Lightweight Web Audio one-shots for lab preview (not native drumsmith-render).
+ * Velocities use squared gain (DR-660 accent feel). CHH chokes ringing OHH.
  */
 
 export class DrumEngine {
@@ -7,6 +8,8 @@ export class DrumEngine {
   constructor(ctx, destination) {
     this.ctx = ctx;
     this.destination = destination;
+    /** @type {{ stop: (t: number) => void } | null} */
+    this._openHat = null;
   }
 
   /**
@@ -16,33 +19,48 @@ export class DrumEngine {
    */
   trigger(track, time, velocity) {
     const v = Math.max(0.05, Math.min(1, velocity));
+    const g = v * v; // logarithmic-ish accent curve
     switch (track) {
       case 'kick':
-        this.#kick(time, v);
+        this.#kick(time, g);
         break;
       case 'snare':
-        this.#snare(time, v);
+        this.#snare(time, g);
         break;
       case 'rim':
-        this.#noiseBurst(time, v * 0.35, 0.04, 1800);
+        this.#noiseBurst(time, g * 0.35, 0.04, 1800);
         break;
       case 'chh':
-        this.#noiseBurst(time, v * 0.22, 0.035, 9000);
+        this.#chokeOpenHat(time);
+        this.#noiseBurst(time, g * 0.22, 0.035, 9000, v < 1.0 ? 0.96 : 1);
         break;
       case 'ohh':
-        this.#noiseBurst(time, v * 0.28, 0.22, 7000);
+        this.#chokeOpenHat(time);
+        this._openHat = this.#noiseBurst(time, g * 0.28, 0.22, 7000);
         break;
       case 'cowbell':
-        this.#cowbell(time, v);
+        this.#cowbell(time, g);
         break;
       case 'perc1':
-        this.#tone(time, v * 0.4, 440, 0.08);
+        this.#tone(time, g * 0.4, 440, 0.08);
         break;
       case 'perc2':
-        this.#tone(time, v * 0.4, 660, 0.06);
+        this.#tone(time, g * 0.4, 660, 0.06);
         break;
       default:
         break;
+    }
+  }
+
+  /** @param {number} time */
+  #chokeOpenHat(time) {
+    if (this._openHat) {
+      try {
+        this._openHat.stop(time);
+      } catch {
+        /* already stopped */
+      }
+      this._openHat = null;
     }
   }
 
@@ -97,7 +115,7 @@ export class DrumEngine {
     osc.type = 'triangle';
     osc.frequency.value = freq;
     gain.gain.setValueAtTime(0.0001, time);
-    gain.gain.exponentialRampToValueAtTime(v, time + 0.003);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, v), time + 0.003);
     gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
     osc.connect(gain);
     gain.connect(this.destination);
@@ -110,25 +128,29 @@ export class DrumEngine {
    * @param {number} v
    * @param {number} dur
    * @param {number} hpHz
+   * @param {number} [playbackRate=1]
+   * @returns {{ stop: (t: number) => void }}
    */
-  #noiseBurst(time, v, dur, hpHz) {
+  #noiseBurst(time, v, dur, hpHz, playbackRate = 1) {
     const frames = Math.max(1, Math.floor(this.ctx.sampleRate * dur));
     const buffer = this.ctx.createBuffer(1, frames, this.ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < frames; i += 1) data[i] = Math.random() * 2 - 1;
     const src = this.ctx.createBufferSource();
     src.buffer = buffer;
+    src.playbackRate.setValueAtTime(playbackRate, time);
     const hp = this.ctx.createBiquadFilter();
     hp.type = 'highpass';
     hp.frequency.value = hpHz;
     const gain = this.ctx.createGain();
     gain.gain.setValueAtTime(0.0001, time);
-    gain.gain.exponentialRampToValueAtTime(v, time + 0.002);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, v), time + 0.002);
     gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
     src.connect(hp);
     hp.connect(gain);
     gain.connect(this.destination);
     src.start(time);
     src.stop(time + dur + 0.02);
+    return src;
   }
 }

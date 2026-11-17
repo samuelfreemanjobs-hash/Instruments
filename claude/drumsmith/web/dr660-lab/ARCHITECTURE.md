@@ -26,8 +26,8 @@ node --test tests/sequencer_math.test.mjs
 1. UI transport → `DR660Sequencer.start/stop`
 2. Lookahead `setInterval` (~25 ms) schedules note events on `AudioContext` clock
 3. Per step: swing offset on odd 0-based 16ths → `triggerSound(track, time, velocity)`
-4. `DrumEngine` plays short synthesized one-shots (kick/snare/hat/cowbell/…) into master chain
-5. Master chain stubs: filter → cassette waveshaper → destination
+4. `DrumEngine` plays short synthesized one-shots into `MemphisFXBus.input` (velocity² gain; CHH chokes OHH)
+5. Master FX bus: HPF pre-emphasis → 12-bit bitcrush worklet → dark LPF → cassette WaveShaper → destination
 
 ## Threading / realtime
 
@@ -40,7 +40,9 @@ Browser audio thread is owned by Web Audio. UI never calls `setTimeout` for *aud
 | `index.html` | 4-section workspace shell |
 | `js/Sequencer.js` | Lookahead clock, swing, pattern, velocity |
 | `js/DrumEngine.js` | Lightweight synth one-shots |
-| `js/MasterChain.js` | Filter + cassette stub nodes |
+| `js/MasterChain.js` | `MemphisFXBus` — HPF → bitcrush → LPF → cassette |
+| `js/cassetteCurve.js` | Soft-clip tape WaveShaper curves |
+| `js/bitcrush-processor.js` | AudioWorklet 12-bit + downsample |
 | `js/app.js` | Wire UI ↔ audio |
 | `css/lab.css` | Console layout |
 | `tests/sequencer_math.test.mjs` | Swing / 16th duration |

@@ -31,6 +31,11 @@ async function ensureAudio() {
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   master = new MasterChain(audioCtx);
   drums = new DrumEngine(audioCtx, master.input);
+  try {
+    await master.initBitcrush();
+  } catch (err) {
+    console.warn('Bitcrush worklet unavailable; cassette+LPF only', err);
+  }
 
   const saved = {
     bpm: seq.bpm,
@@ -47,9 +52,20 @@ async function ensureAudio() {
   seq.swing = saved.swing;
   seq.pattern = saved.pattern;
 
-  master.setCassetteDrive(Number(/** @type {HTMLInputElement} */ (document.getElementById('cassette')).value));
+  applyFxFromUi();
+}
+
+function applyFxFromUi() {
+  if (!master) return;
+  master.setDrive(Number(/** @type {HTMLInputElement} */ (document.getElementById('cassette')).value));
   master.setFilterCutoff(Number(/** @type {HTMLInputElement} */ (document.getElementById('cutoff')).value));
   master.setFilterQ(Number(/** @type {HTMLInputElement} */ (document.getElementById('reso')).value));
+  const bits = Number(/** @type {HTMLInputElement} */ (document.getElementById('bits')).value);
+  const down = Number(/** @type {HTMLInputElement} */ (document.getElementById('downsample')).value);
+  const mix = Number(/** @type {HTMLInputElement} */ (document.getElementById('crush-mix')).value);
+  master.setBitcrush(bits, down, mix);
+  document.getElementById('bits-val').textContent = String(bits);
+  document.getElementById('down-val').textContent = `${down}×`;
 }
 
 function paintPlayhead(step) {
@@ -119,20 +135,14 @@ function bind() {
     syncControlsFromSeq();
     renderGrid();
   });
-  document.getElementById('cassette').addEventListener('input', async (e) => {
-    await ensureAudio();
-    master.setCassetteDrive(Number(/** @type {HTMLInputElement} */ (e.target).value));
-  });
-  document.getElementById('cutoff').addEventListener('input', async (e) => {
-    await ensureAudio();
-    const hz = Number(/** @type {HTMLInputElement} */ (e.target).value);
-    master.setFilterCutoff(hz);
-    document.getElementById('cutoff-val').textContent = `${hz} Hz`;
-  });
-  document.getElementById('reso').addEventListener('input', async (e) => {
-    await ensureAudio();
-    master.setFilterQ(Number(/** @type {HTMLInputElement} */ (e.target).value));
-  });
+  for (const id of ['cassette', 'cutoff', 'reso', 'bits', 'downsample', 'crush-mix']) {
+    document.getElementById(id).addEventListener('input', async () => {
+      await ensureAudio();
+      applyFxFromUi();
+      const hz = /** @type {HTMLInputElement} */ (document.getElementById('cutoff')).value;
+      document.getElementById('cutoff-val').textContent = `${hz} Hz`;
+    });
+  }
 
   document.querySelectorAll('[data-section-btn]').forEach((btn) => {
     btn.addEventListener('click', () => {
