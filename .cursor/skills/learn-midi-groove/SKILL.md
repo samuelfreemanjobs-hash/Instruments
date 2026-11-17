@@ -38,9 +38,18 @@ description: Extracts groove models from MIDI or timed hit lists — swing, micr
 4. Ghost notes and flams are first-class (velocity + offset), not noise.
 5. Do not overwrite kit masters with imported MIDI audio renders unless asked.
 
+## Script (preferred)
+
+```bash
+cd claude/drumsmith
+python3 scripts/learn_midi_groove.py --midi path.mid --out groove.json
+# or: --json-notes notes.json   # {ppq,bpm,notes:[{tick,pitch,velocity}]}
+python3 scripts/test_groove_loop.py
+```
+
 ## Method
 
-1. **Load** — Note list: tick, pitch, velocity, duration; tempo/PPQ/time sig from header or user.
+1. **Load** — Prefer the script above; else note list: tick, pitch, velocity; tempo/PPQ from header or user.
 2. **Normalize** — Quantize grid (e.g. 1/16) as reference; measure signed error per hit (**C**).
 3. **Swing** — Even vs odd subdivision delay; report as % or tick offset (**C**), not “groovy.”
 4. **Velocity** — Histogram + accent pattern per bar (kick/snare/hat lanes).

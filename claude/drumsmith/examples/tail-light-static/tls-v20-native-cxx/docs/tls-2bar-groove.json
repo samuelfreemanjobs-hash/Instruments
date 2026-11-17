@@ -1,0 +1,224 @@
+{
+  "schema": "drumsmith-groove-card-v1",
+  "source": "examples/tail-light-static/tls-v20-native-cxx/docs/tls-2bar-loop.mid",
+  "bpm": 74.0,
+  "ppq": 480,
+  "grid_subdivisions_per_bar": 16,
+  "grid_ticks": 120,
+  "swing_mean_odd_delta_ticks": 0.0,
+  "swing_pct_of_grid": 0.0,
+  "swing_tag": "C",
+  "note_count": 24,
+  "velocity_by_lane": {
+    "KICK": {
+      "min": 100,
+      "max": 100,
+      "mean": 100.0
+    },
+    "HAT": {
+      "min": 60,
+      "max": 90,
+      "mean": 79.0
+    },
+    "SNARE": {
+      "min": 110,
+      "max": 110,
+      "mean": 110.0
+    }
+  },
+  "hits": [
+    {
+      "tick": 0,
+      "pitch": 36,
+      "lane": "KICK",
+      "velocity": 100,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 0,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 90,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 240,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 70,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 480,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 90,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 720,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 70,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 960,
+      "pitch": 38,
+      "lane": "SNARE",
+      "velocity": 110,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 960,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 90,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 1200,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 70,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 1440,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 90,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 1680,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 70,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 1920,
+      "pitch": 36,
+      "lane": "KICK",
+      "velocity": 100,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 1920,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 90,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 2160,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 70,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 2400,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 90,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 2640,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 70,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 2880,
+      "pitch": 38,
+      "lane": "SNARE",
+      "velocity": 110,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 2880,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 90,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 3120,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 70,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 3360,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 60,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 3360,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 90,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 3480,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 70,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 3600,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 70,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 3600,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 80,
+      "delta_ticks": 0,
+      "tag": "C"
+    },
+    {
+      "tick": 3720,
+      "pitch": 42,
+      "lane": "HAT",
+      "velocity": 90,
+      "delta_ticks": 0,
+      "tag": "C"
+    }
+  ],
+  "rights": "analysis-only-unless-cleared"
+}

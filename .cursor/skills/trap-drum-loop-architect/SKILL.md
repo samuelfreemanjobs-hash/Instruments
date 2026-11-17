@@ -49,6 +49,15 @@ description: Designs trap and adjacent drum loop blueprints — bar counts, kick
 | Hats | 1/8–1/32 + rolls; velocity cascades |
 | Perc/FX | Sparse ear candy; avoid masking kick |
 
+## Script (preferred)
+
+```bash
+cd claude/drumsmith
+python3 scripts/trap_loop_architect.py --name tls-groove --genre drift-phonk --bpm 74 --bars 2 \
+  --out /tmp/tls-loop.json --midi-out /tmp/tls-loop.mid
+# samples/bar via dsp_math.loop_samples (C)
+```
+
 ## Workflow
 
 1. **Lane + BPM** — Pick genre profile + BPM (e.g. TLS 74; trap often 130–150 half-time feel — label which).

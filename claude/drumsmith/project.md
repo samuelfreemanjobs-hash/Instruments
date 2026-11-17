@@ -32,9 +32,18 @@ Four-layer agent + CALIPER + Python factory + **native C++20 renderer** + option
 - `native_factory.py` batch + QA + diversity
 - JUCE VST3/standalone **source** under `native/juce/` — **not compiled** on Cloud (needs JUCE + typically Windows VS)
 
+## Agent ops (v2.1)
+
+- [x] Cursor skill router `.cursor/skills/drumsmith/SKILL.md` + `agent.yaml` 2.1 skill list
+- [x] CALIPER Cursor path `docs/CALIPER_CURSOR.md`
+- [x] Workbench loop `docs/WORKBENCH_LOOP.md`
+- [x] Scripts: `learn_midi_groove.py`, `trap_loop_architect.py` + `test_groove_loop.py`
+- [x] Agent memory id `drumsmith` (L-0001/L-0002, I-0001)
+- [x] W1–W5 exercise log `docs/W1_W5_TLS_EXERCISE.md` (W4 blocked on HITL; listening stub)
+
 ## To do (agent build)
 
-- [ ] Exercise W1–W5 / workbench against TLS native example
+- [ ] Human listening notes + optional W5 recipe tweak
 - [ ] Optional Windows: `-DDRUMSMITH_BUILD_JUCE=ON` + DAW smoke (separate machine)
 - [ ] Optional waveform editor / kit manager (announced not implemented)
 - [ ] Deferred commercial: ear review, device profiles, release gate

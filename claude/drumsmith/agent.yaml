@@ -1,5 +1,5 @@
 name: DRUMSMITH
-version: 1.1.0
+version: 2.1.0
 description: DiskLordz drum kit product designer and audio DSP engineering orchestrator
 entrypoint: CLAUDE.md
 layers:
@@ -9,8 +9,29 @@ layers:
   configuration: config/core-config.yaml
 subagents:
   - .claude/agents/CALIPER.md
+  # Cursor: follow docs/CALIPER_CURSOR.md (Task subagent; read-only)
 skills:
+  # Package-local
   - .claude/skills/drum-voice-recipes/SKILL.md
   - .claude/skills/kit-product-spec/SKILL.md
   - .claude/skills/sample-delivery-qa/SKILL.md
+  # Cursor monorepo skills (router first)
+  - ../../.cursor/skills/drumsmith/SKILL.md
+  - ../../.cursor/skills/product-design/SKILL.md
+  - ../../.cursor/skills/research-to-product/SKILL.md
+  - ../../.cursor/skills/deep-research/SKILL.md
+  - ../../.cursor/skills/customer-and-competition-intel/SKILL.md
+  - ../../.cursor/skills/audio-dsp-engineering/SKILL.md
+  - ../../.cursor/skills/audio-analysis/SKILL.md
+  - ../../.cursor/skills/drum-sample-reverse-engineering/SKILL.md
+  - ../../.cursor/skills/learn-midi-groove/SKILL.md
+  - ../../.cursor/skills/trap-drum-loop-architect/SKILL.md
 workflows: [W1_SPEC, W2_BUILD, W3_VERIFY, W4_PACKAGE, W5_IMPROVE]
+memory_agent_id: drumsmith
+scripts:
+  groove: scripts/learn_midi_groove.py
+  loop_architect: scripts/trap_loop_architect.py
+  verify: scripts/verify_kit.py
+docs:
+  caliper_cursor: docs/CALIPER_CURSOR.md
+  workbench_loop: docs/WORKBENCH_LOOP.md

@@ -35,12 +35,20 @@ cmake -S native -B native/build-juce -DDRUMSMITH_BUILD_JUCE=ON ...
 
 Not compiled/verified on this Cloud Linux agent by default.
 
+## Agent ops (Cursor)
+
+- Router skill: `.cursor/skills/drumsmith/SKILL.md` · `agent.yaml` v2.1+
+- CALIPER: `docs/CALIPER_CURSOR.md` · Workbench: `docs/WORKBENCH_LOOP.md`
+- Memory: `python3 scripts/agent_memory.py recall --agent drumsmith …`
+- Groove/loop: `scripts/learn_midi_groove.py`, `scripts/trap_loop_architect.py`
+
 ## Data flow
 
 ```text
 INTAKE / factory genre recipes
   → Python render OR native drumsmith-render
-  → verify_kit + pitch_check + diversity_audit
+  → verify_kit + pitch_check + diversity_audit → CALIPER
+  → workbench / kit_browser (human notes) → W5
   → export_forge.json / (optional) JUCE plugin source
 ```
 

@@ -60,3 +60,11 @@ def estimate_fundamental_autocorrelation(samples, sample_rate, min_hz=30, max_hz
         if score > best_score:
             best_lag, best_score = lag, score
     return {'hz': sample_rate / best_lag, 'confidence': round(best_score, 5)} if best_lag else None
+
+
+def loop_samples(bars, bpm, sample_rate, beats_per_bar=4):
+    """Samples for an integer number of bars at constant BPM (4/4 default). Computed grid math only."""
+    if bars <= 0 or bpm <= 0 or sample_rate <= 0 or beats_per_bar <= 0:
+        raise ValueError('bars, bpm, sample_rate, beats_per_bar must be positive')
+    seconds = bars * beats_per_bar * 60.0 / bpm
+    return int(round(seconds * sample_rate))

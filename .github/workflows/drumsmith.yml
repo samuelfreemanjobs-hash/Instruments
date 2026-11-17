@@ -34,6 +34,8 @@ jobs:
         run: python3 scripts/test_v20.py
         env:
           CXX: g++-12
+      - name: Python test_groove_loop
+        run: python3 scripts/test_groove_loop.py
       - name: Native cmake + ctest
         run: |
           cmake -S native -B native/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12
