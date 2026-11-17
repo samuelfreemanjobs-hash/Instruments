@@ -5,7 +5,8 @@
 #include "dsp_utils.h"
 #include "delfx.h"
 
-#define DELFX_BUF_LEN 12000U
+/* Fits NTS-1 / XD / Prologue SRAM; ~50 ms @ 48 kHz at max tap (2400). */
+#define DELFX_BUF_LEN 2560U
 
 static float s_buf[DELFX_BUF_LEN];
 static uint32_t s_write_pos;

@@ -1,0 +1,22 @@
+{
+  "handoff_id": "HO-20261108-6D91",
+  "direction": "cursor_to_antigravity",
+  "from_agent": "cursor-cloud",
+  "to_agent": "antigravity-hise",
+  "created_at": "2026-11-08T06:26:28Z",
+  "work_order": {
+    "id": "WO-2026-LOGUE-GHA-001",
+    "title": "[Ops] Trigger logue NTS-1 units GitHub Actions + download artifacts",
+    "acceptance_criteria": "Run workflow (UI or run-logue-units-ci.ps1); confirm green run; download logue-custom-units and logue-nts1-mkii-only; publish outbox handoff with run URL.",
+    "branch": "cursor/logue-osc-build-windows-13db"
+  },
+  "context_paths": [
+    "docs/HISE_ANTIGRAVITY_LANE.md",
+    "disklordz/antigravity/AGENT_INSTRUCTIONS.md",
+    "disklordz/antigravity/runbooks/TRIGGER_LOGUE_UNITS_CI.md",
+    "docs/BUILD_WINDOWS_LOGUE.md"
+  ],
+  "artifacts": [],
+  "status": "open",
+  "notes": "Sam request: Antigravity clicks Run workflow. PR #113 may still be open \u2014 use branch cursor/logue-osc-build-windows-13db until merged."
+}

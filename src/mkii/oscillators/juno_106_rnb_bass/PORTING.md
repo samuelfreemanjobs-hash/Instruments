@@ -2,16 +2,11 @@
 
 ## Status
 
-Scaffold only — `osc.h` plays a placeholder tone until you port DSP.
+**Port complete** — `osc.h` contains full DSP (`PORT_COMPLETE`). Rebuild with `./tools/build-mkii.sh juno_106_rnb_bass`; load `*.nts1mkiiunit` on NTS-1 mkII.
 
-## Finish the port
+## v1 reference
 
-1. Open v1 source: `src/oscillators/juno-rnb/*.cc`
-2. Copy float math from `OSC_CYCLE` into `Osc::process()` in `osc.h` (mkII uses **float** mono out, stereo `in`).
-3. Map `OSC_PARAM` cases to `setParameter()` (0–100 v1 → use `param_10bit_to_f32` for 0–1023).
-4. Map `OSC_NOTEON` / `OSC_NOTEOFF` to `noteOn` / `noteOff` overrides if needed.
-5. Pitch: use `w0_` from `setPitch()` instead of `osc_w0(params->pitch)`.
-6. Build: `../../tools/build-mkii.sh juno_106_rnb_bass`
-7. Load `*.nts1mkiiunit` on NTS-1 mkII (Kontrol Editor / loguecli).
+- Source: `src/oscillators/juno-rnb/*.cpp`
+- Re-port only if v1 DSP changes; then re-run `tools/mkii/port_bass_osc.py` or edit `osc.h` by hand.
 
 See [docs/nts1-mkii-porting.md](../../../docs/nts1-mkii-porting.md).

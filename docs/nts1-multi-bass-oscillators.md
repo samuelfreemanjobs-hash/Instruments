@@ -42,10 +42,12 @@ Supporting folders: `template`, `wavetable` (learning / starters).
 ```bash
 ./tools/mkii-automate.sh bootstrap   # clones .deps/logue-sdk once
 export LOGUE_SDK="$(pwd)/.deps/logue-sdk"
-./tools/build-all-bass.sh nutekt-digital
-./tools/build-all-bass-mkii.sh       # NTS-1 mkII
-./tools/package-nts1.sh              # release/nts1-custom-oscillators/
+./tools/build-all-units.sh --all-platforms --mkii --package
 ```
+
+Windows one-liner: `.\tools\windows\build-all-logue.ps1` — see [BUILD_WINDOWS_LOGUE.md](BUILD_WINDOWS_LOGUE.md).
+
+Status table: [LOGUE_UNIT_STATUS.md](LOGUE_UNIT_STATUS.md).
 
 Same-day install steps: [NTS1_INSTALL_TODAY.md](NTS1_INSTALL_TODAY.md).
 

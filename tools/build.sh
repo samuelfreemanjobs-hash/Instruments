@@ -41,14 +41,23 @@ fi
 
 export PLATFORMDIR="${PLAT_PATH}"
 
-# SDK dummy-osc template (tpl/_unit.c) is required per unit directory.
-if [[ "${PLATFORM}" == "nutekt-digital" ]]; then
-  TPL_SRC="${PLAT_PATH}/dummy-osc/tpl"
-  if [[ -d "${TPL_SRC}" && ! -e "${UNIT_DIR}/tpl" ]]; then
-    ln -sfn "${TPL_SRC}" "${UNIT_DIR}/tpl"
-  fi
+# Dummy unit types use different tpl subdirs (dummy-osc, dummy-modfx, etc.).
+UNIT_KIND="${UNIT_KIND:-osc}"
+case "${UNIT_REL}" in
+  effects/modfx) UNIT_KIND="modfx" ;;
+  effects/delfx) UNIT_KIND="delfx" ;;
+  effects/revfx) UNIT_KIND="revfx" ;;
+esac
+
+TPL_SRC="${PLAT_PATH}/dummy-${UNIT_KIND}/tpl"
+if [[ -d "${TPL_SRC}" ]]; then
+  ln -sfn "${TPL_SRC}" "${UNIT_DIR}/tpl"
+elif [[ -L "${UNIT_DIR}/tpl" ]] || [[ -d "${UNIT_DIR}/tpl" ]]; then
+  echo "Warning: tpl not found at ${TPL_SRC}" >&2
 fi
 
 cd "${UNIT_DIR}"
+export PLATFORMDIR
+export LOGUE_UNIT_KIND="${UNIT_KIND}"
 make -j"$(nproc 2>/dev/null || echo 2)"
 make install
