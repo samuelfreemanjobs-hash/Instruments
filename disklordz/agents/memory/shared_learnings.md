@@ -181,3 +181,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** Hardware_Processing_Guide.md; package_bb96.py counts; user 2026-11-17
 - **confidence:** executed
 - **status:** active
+
+### L-0019 · Black Box Collection needs all era kits not just flagship
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** User asked review everything do not skip
+- **lesson:** Franchise delivery is incomplete if only BB96 ships; BB93/98/2000 + Dirty Circuits need generate+package+guide in the same change.
+- **do:** Run scripts/black_box/build_all_collection.py; keep profiles locked to SONIC_DNA counts.
+- **evidence:** build_all_collection.py artifacts; test_black_box_collection.py 2026-11-17
+- **confidence:** executed
+- **status:** active
