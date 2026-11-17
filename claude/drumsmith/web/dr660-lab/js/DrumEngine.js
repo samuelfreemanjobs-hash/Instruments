@@ -107,21 +107,64 @@ export class DrumEngine {
     }
   }
 
-  /** @param {number} time @param {number} v */
+  /**
+   * MEMPHIS-660 kick stack: click (1–2.8 kHz) + body knock + sub foundation.
+   * @param {number} time
+   * @param {number} v
+   */
   #kick(time, v) {
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(140, time);
-    osc.frequency.exponentialRampToValueAtTime(42, time + 0.12);
-    gain.gain.setValueAtTime(0.0001, time);
-    gain.gain.exponentialRampToValueAtTime(0.9 * v, time + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.45);
-    osc.connect(gain);
-    gain.connect(this.destination);
-    osc.start(time);
-    osc.stop(time + 0.5);
-    this.#track(osc, time, time + 0.5);
+    const end = time + 0.28;
+    // Sub foundation ~43 Hz with +48 st pitch spike (~22 ms)
+    const sub = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(43.65 * Math.pow(2, 48 / 12), time);
+    sub.frequency.exponentialRampToValueAtTime(43.65, time + 0.022);
+    subGain.gain.setValueAtTime(0.0001, time);
+    subGain.gain.linearRampToValueAtTime(0.95 * v, time + 0.005);
+    subGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.18);
+    sub.connect(subGain);
+    subGain.connect(this.destination);
+    sub.start(time);
+    sub.stop(end);
+    this.#track(sub, time, end);
+
+    // Body knock 65–120 Hz region
+    const body = this.ctx.createOscillator();
+    const bodyGain = this.ctx.createGain();
+    body.type = 'sine';
+    body.frequency.setValueAtTime(110, time);
+    body.frequency.exponentialRampToValueAtTime(72, time + 0.05);
+    bodyGain.gain.setValueAtTime(0.0001, time);
+    bodyGain.gain.linearRampToValueAtTime(0.45 * v, time + 0.003);
+    bodyGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.09);
+    body.connect(bodyGain);
+    bodyGain.connect(this.destination);
+    body.start(time);
+    body.stop(end);
+    this.#track(body, time, end);
+
+    // Woody click 1–2.8 kHz (short noise through bandpass)
+    const frames = Math.max(1, Math.floor(this.ctx.sampleRate * 0.012));
+    const buffer = this.ctx.createBuffer(1, frames, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < frames; i += 1) data[i] = Math.random() * 2 - 1;
+    const click = this.ctx.createBufferSource();
+    click.buffer = buffer;
+    const bp = this.ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 1800;
+    bp.Q.value = 1.4;
+    const clickGain = this.ctx.createGain();
+    clickGain.gain.setValueAtTime(0.0001, time);
+    clickGain.gain.linearRampToValueAtTime(0.28 * v, time + 0.001);
+    clickGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.014);
+    click.connect(bp);
+    bp.connect(clickGain);
+    clickGain.connect(this.destination);
+    click.start(time);
+    click.stop(time + 0.02);
+    this.#track(click, time, time + 0.02);
   }
 
   /** @param {number} time @param {number} v */
