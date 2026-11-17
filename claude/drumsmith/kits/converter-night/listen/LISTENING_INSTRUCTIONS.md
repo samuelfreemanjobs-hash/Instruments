@@ -21,7 +21,7 @@
 
 ## Optional RE upgrade
 
-- [ ] Upload DR-660 refs → re-meter RATE
+- [ ] Upload Boss DR-660 WAV archive (missing from prior uploads) → re-meter RATE; proxies = tr808 808_CHARACTER
 - [ ] Upload SP-1200 / Drumulator → re-meter BIT12
 
 ## Agent cannot

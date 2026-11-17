@@ -30,3 +30,13 @@
 | xe8 | Akai_XE8_4732.zip | 32 |
 
 Skipped duplicate: Boss_DR-5_9f45.zip
+
+## Missing (requested)
+
+| Ref id | Expected | Status |
+|--------|----------|--------|
+| dr660 | Boss DR-660 sample archive | **Not in uploads** — see `dr660/STAGED.md`. RATE/loops use TR-808 808-character proxies + technique research. |
+
+## 808-character proxy cluster (for RATE / DR-660 language)
+
+See `tr808/808_CHARACTER.md` — Soft_Bd, Dist_Bd1, Hard_Bd, Dark_Bd, 808cowbl, Dirtclap, Hollowsd, Clhh, Ophh.

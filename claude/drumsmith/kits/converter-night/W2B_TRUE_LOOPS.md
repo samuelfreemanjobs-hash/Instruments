@@ -13,4 +13,9 @@
 | `CNV_03_TOP_Hats_134_{10..18}.wav` | 134 | 157970 |
 
 **36** loops installed into storefront `03_…` for the 384-hit SKU.  
+
+**DR-660 technique set** (original blueprints `loops/cnv-dr660-*.json`) replaces rhythm slots  
+`94_01..03` and `134_10..12` — pitched-sub/cowbell language per `recipes/DR660_LOOPS.md`.  
+True Boss DR-660 WAV still **not** in uploads (`references/dr660/STAGED.md`).
+
 Still `release_ready=false` until HITL.

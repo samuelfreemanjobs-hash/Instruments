@@ -1,7 +1,7 @@
 # Bank RATE — rate-drop subs
 
 **Maps to:** `02/Pitched_Sub_Basses`, some cowbell slides  
-**RE refs:** `tr808` lofi set `[executed]`; DR-660 technique text only `[inspected]` — **partial RE / technique-led** until DR-660 WAV
+**RE refs:** `tr808` 808-character hits `[executed]` (see `references/tr808/808_CHARACTER.md`); DR-5 comparative kicks `[executed]`; **DR-660 WAV still missing** (`references/dr660/STAGED.md`) — technique-led with 808 proxies until upload
 
 ## Synthesis hypothesis
 

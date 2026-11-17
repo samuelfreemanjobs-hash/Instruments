@@ -56,8 +56,13 @@
   },
   "gaps": [
     "HITL ear/legal/price/cover open",
-    "DR-660 WAV missing — RATE technique-led",
+    "DR-660 WAV missing from uploads — RATE uses TR-808 808-character proxies + technique; upload Boss_DR-660 zip to lock",
     "SP-1200/Drumulator WAV missing — BIT12 technique-led"
   ],
+  "dr660_proxy": {
+    "wav_staged": false,
+    "proxy_refs": ["tr808/808_CHARACTER.md", "dr5 kicks/hats"],
+    "loops": ["cnv-dr660-94-a", "cnv-dr660-94-clave", "cnv-dr660-94-thick", "cnv-dr660-134-ht", "cnv-dr660-134-bell", "cnv-dr660-134-crawl"]
+  },
   "updated": "2026-11-17"
 }

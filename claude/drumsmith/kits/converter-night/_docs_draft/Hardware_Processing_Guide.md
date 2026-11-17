@@ -20,9 +20,11 @@ Techniques for producers. Not clone recipes for any trademarked machine.
 - Use `02/Aliased_One_Shots` as color, not the whole groove.
 - Re-pitch in your sampler; watch for digital trash that fights the kick.
 
-## Loops
+## Loops (DR-660–style language)
 
 - Rhythm loops at **94** BPM (tape creep) or **134** half-time feel.
+- Prefer **pitched long subs as bassline**, **cowbell/clave-bell motifs**, sparse kick, half-time snare, thin hats — drums-first, no piano bed.
+- Pack includes original `cnv-dr660-*` blueprints (`recipes/DR660_LOOPS.md`); not Boss ROM patterns.
 - Top loops: hat/perc 16ths — mute or filter for arrangement, don’t brick-wall.
 
 ## Device notes
@@ -31,4 +33,4 @@ Import as generic PCM16 WAV. MPC / Maschine+ / SP-404 / Lofi-12 / MV-1 paths are
 
 ## Honest gaps
 
-RATE/BIT12 banks are technique-led until DR-660 and SP-1200/Drumulator reference WAVs exist for RE meters. Do not market those banks as “authentic [machine] dumps.”
+RATE uses TR-808 lofi 808-character hits as meters until a **DR-660** WAV archive is uploaded (`references/dr660/STAGED.md`). BIT12 waits on SP-1200/Drumulator. Do not market those banks as “authentic [machine] dumps.”

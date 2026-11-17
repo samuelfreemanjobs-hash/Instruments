@@ -17,7 +17,7 @@ Memphis **converter phonk drums**: (1) rate-dropped subs, (2) 12-bit / rompler s
 
 | Finding (tag) | Action | Product field | Notes |
 |---------------|--------|---------------|-------|
-| DR-660 rate-drop −12…−24, choke, velocity grit `[inspected]` | use | Bank RATE → `02/Pitched_Sub_Basses` | Technique-led; **no DR-660 WAV yet** — partial RE |
+| DR-660 rate-drop −12…−24, choke, pitched 808/cowbell language `[inspected]` | use | Bank RATE + `loops/cnv-dr660-*.json` | **No DR-660 WAV in uploads** — TR-808 Soft/Dist BD + 808cowbl as proxies `[executed]`; see `references/dr660/STAGED.md` |
 | SP-1200 / Drumulator 12-bit `[inspected]` | use | Bank BIT12 | Text-only until WAV; honest label |
 | HR-16 A/B uploads `[executed]` | use | Bank ROMP | Primary RE |
 | TR-808 lofi set `[executed]` | use | RATE + dirt cowbell/hats | Not an “808 pack” |
