@@ -1,0 +1,43 @@
+{
+  "sku": "CNV",
+  "title": "Converter Night",
+  "path": "claude/drumsmith/kits/converter-night",
+  "phase": "W1_design",
+  "status": "draft",
+  "release_ready": false,
+  "technical_status": "NOT_RUN",
+  "human_listening_approved": false,
+  "release_approved": false,
+  "approvals": {
+    "listening": null,
+    "release": null,
+    "legal": null,
+    "price": null,
+    "cover": null
+  },
+  "device_profiles": {
+    "generic_wav_pcm16": "INTERNAL",
+    "fl_studio": "UNVERIFIED",
+    "mpc": "UNVERIFIED",
+    "maschine_plus": "UNVERIFIED",
+    "mv1": "UNVERIFIED",
+    "lofi12": "UNVERIFIED",
+    "sp404": "UNVERIFIED"
+  },
+  "hit_count_designed": 88,
+  "references_unique": 26,
+  "references_role": "analysis_only",
+  "genre_profile": "memphis-tape",
+  "delivery": {
+    "sample_rate": 44100,
+    "bit_depth": 16,
+    "channels": 1
+  },
+  "gaps": [
+    "DR-660 WAV missing — RATE technique-led",
+    "SP-1200/Drumulator WAV missing — BIT12 technique-led",
+    "W2 render not started",
+    "HITL ear/legal/price/cover open"
+  ],
+  "updated": "2026-11-17"
+}

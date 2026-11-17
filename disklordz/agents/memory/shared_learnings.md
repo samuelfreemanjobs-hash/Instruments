@@ -101,3 +101,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** cursor/drumsmith-tail-light-static-58c6 self_test 19/19
 - **confidence:** executed
 - **status:** active
+
+### L-0011 · CNV kit hit tables: re-sum role counts to locked SKU size
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** Implementing Converter Night W1 from a plan whose role rows summed to 98 while Total said 88
+- **lesson:** Always re-sum commercial kit hit-mix tables before locking kit-spec; trim secondary roles to honor the SKU total.
+- **do:** Verify sum(counts)==SKU_total in kit-spec; document any trim vs plan draft.
+- **evidence:** kit-spec.md count check 12+12+4+10+6+8+6+12+6+4+4+4=88; references/INVENTORY.md 26 unique refs staged
+- **confidence:** inspected
+- **status:** active

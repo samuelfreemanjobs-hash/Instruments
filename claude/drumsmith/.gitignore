@@ -1,1 +1,14 @@
 native/build/
+
+# Converter Night analysis refs (PCM + archives — analysis-only)
+kits/converter-night/references/**/*.wav
+kits/converter-night/references/**/*.WAV
+kits/converter-night/references/**/*.aif
+kits/converter-night/references/**/*.aiff
+kits/converter-night/references/**/*.zip
+kits/converter-night/references/**/samples/
+kits/converter-night/masters/
+kits/converter-night/**/manifest.json
+kits/converter-night/**/qa-report.json
+kits/converter-night/**/diversity-report.json
+
