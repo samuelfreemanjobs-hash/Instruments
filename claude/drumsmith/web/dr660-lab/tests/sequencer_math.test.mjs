@@ -1,6 +1,10 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { sixteenthDurationSec, swingOffsetSec } from '../js/Sequencer.js';
+import {
+  sixteenthDurationSec,
+  swingOffsetSec,
+  catchUpExpiredSteps,
+} from '../js/Sequencer.js';
 
 describe('sixteenthDurationSec', () => {
   it('matches 60/bpm/4 at 94 BPM', () => {
@@ -25,5 +29,32 @@ describe('swingOffsetSec', () => {
   it('scales linearly between 50 and 75', () => {
     const mid = swingOffsetSec(3, 62.5, six);
     assert.ok(Math.abs(mid - 0.25 * six) < 1e-12);
+  });
+});
+
+describe('catchUpExpiredSteps', () => {
+  it('skips past notes and advances step clock', () => {
+    const six = 0.1;
+    const state = {
+      nextNoteTime: 0,
+      currentStep: 0,
+      totalSteps: 16,
+      getSixteenthDuration: () => six,
+    };
+    const skipped = catchUpExpiredSteps(state, 0.35, 0.01);
+    assert.equal(skipped, 4); // 0, 0.1, 0.2, 0.3 are past 0.34 limit
+    assert.ok(Math.abs(state.nextNoteTime - 0.4) < 1e-12);
+    assert.equal(state.currentStep, 4);
+  });
+
+  it('does nothing when next note is still ahead', () => {
+    const state = {
+      nextNoteTime: 1.0,
+      currentStep: 3,
+      totalSteps: 16,
+      getSixteenthDuration: () => 0.1,
+    };
+    assert.equal(catchUpExpiredSteps(state, 0.5, 0.01), 0);
+    assert.equal(state.currentStep, 3);
   });
 });

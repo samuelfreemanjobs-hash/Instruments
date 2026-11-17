@@ -22,29 +22,51 @@ export function swingOffsetSec(stepNumber, swingPercent, sixteenthSec) {
   return swingFactor * sixteenthSec;
 }
 
+/**
+ * Advance pattern clock past expired times without scheduling.
+ * @param {{ nextNoteTime: number, currentStep: number, totalSteps: number, getSixteenthDuration: () => number }} state
+ * @param {number} now
+ * @param {number} [graceSec=0.01]
+ * @returns {number} steps skipped
+ */
+export function catchUpExpiredSteps(state, now, graceSec = 0.01) {
+  let skipped = 0;
+  const limit = now - graceSec;
+  while (state.nextNoteTime < limit) {
+    state.nextNoteTime += state.getSixteenthDuration();
+    state.currentStep = (state.currentStep + 1) % state.totalSteps;
+    skipped += 1;
+    if (skipped > 10000) break; // safety
+  }
+  return skipped;
+}
+
 export class DR660Sequencer {
   /**
    * @param {AudioContext} audioCtx
    * @param {(trackId: string, time: number, velocity: number) => void} triggerSound
    * @param {(stepIndex: number) => void} [onStepVisual]
+   * @param {() => void} [onStopAudio] cancel pending scheduled voices
    */
-  constructor(audioCtx, triggerSound, onStepVisual) {
+  constructor(audioCtx, triggerSound, onStepVisual, onStopAudio) {
     this.audioCtx = audioCtx;
     this.triggerSound = triggerSound;
     this.onStepVisual = onStepVisual || null;
+    this.onStopAudio = onStopAudio || null;
 
     this.isPlaying = false;
-    this.bpm = 94; // Memphis crawl default (CNV lane)
+    this.bpm = 94;
     this.swing = 56;
     this.currentStep = 0;
     this.totalSteps = 16;
+    this.transportGen = 0;
 
     this.lookahead = 25.0;
     this.scheduleAheadTime = 0.1;
     this.nextNoteTime = 0.0;
     this.timerID = null;
 
-    /** @type {Record<string, number[]>} 0 off · ~0.5–0.6 ghost · 1.0 accent */
+    /** @type {Record<string, number[]>} */
     this.pattern = {
       kick: [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0],
       snare: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
@@ -70,10 +92,14 @@ export class DR660Sequencer {
   /**
    * @param {number} stepNumber
    * @param {number} baseTime
+   * @param {number} gen
    */
-  scheduleNote(stepNumber, baseTime) {
+  scheduleNote(stepNumber, baseTime, gen) {
     const sixteenth = this.getSixteenthDuration();
     const triggerTime = baseTime + swingOffsetSec(stepNumber, this.swing, sixteenth);
+
+    // Do not start audio for notes already in the past
+    if (triggerTime < this.audioCtx.currentTime - 0.002) return;
 
     for (const track of Object.keys(this.pattern)) {
       const velocity = this.pattern[track][stepNumber];
@@ -83,13 +109,19 @@ export class DR660Sequencer {
     const timeUntilTriggerMs = Math.max(0, (triggerTime - this.audioCtx.currentTime) * 1000);
     const step = stepNumber;
     setTimeout(() => {
-      if (this.isPlaying && this.onStepVisual) this.onStepVisual(step);
+      if (this.isPlaying && this.transportGen === gen && this.onStepVisual) {
+        this.onStepVisual(step);
+      }
     }, timeUntilTriggerMs);
   }
 
   scheduler() {
-    while (this.nextNoteTime < this.audioCtx.currentTime + this.scheduleAheadTime) {
-      this.scheduleNote(this.currentStep, this.nextNoteTime);
+    if (!this.isPlaying) return;
+    const now = this.audioCtx.currentTime;
+    catchUpExpiredSteps(this, now, 0.01);
+    const gen = this.transportGen;
+    while (this.nextNoteTime < now + this.scheduleAheadTime) {
+      this.scheduleNote(this.currentStep, this.nextNoteTime, gen);
       this.nextNote();
     }
   }
@@ -98,6 +130,7 @@ export class DR660Sequencer {
     if (this.isPlaying) return;
     if (this.audioCtx.state === 'suspended') await this.audioCtx.resume();
 
+    this.transportGen += 1;
     this.isPlaying = true;
     this.currentStep = 0;
     this.nextNoteTime = this.audioCtx.currentTime + 0.05;
@@ -106,8 +139,10 @@ export class DR660Sequencer {
 
   stop() {
     this.isPlaying = false;
+    this.transportGen += 1; // invalidate pending visual + gate late audio via engine stop
     if (this.timerID != null) clearInterval(this.timerID);
     this.timerID = null;
+    if (this.onStopAudio) this.onStopAudio();
     if (this.onStepVisual) this.onStepVisual(-1);
   }
 
@@ -120,7 +155,6 @@ export class DR660Sequencer {
   }
 
   /**
-   * Cycle: Off → Normal → Accent → Off
    * @param {string} track
    * @param {number} stepIndex
    */

@@ -51,7 +51,13 @@
       <div class="row">
         <label>Tape drive <input id="cassette" type="range" min="0" max="1" step="0.01" value="0.45" /></label>
       </div>
-      <p class="note">Master FX bus: voices → HPF pre-emphasis → 12-bit bitcrush → dark LPF → cassette WaveShaper → out. Curve from soft-clip tape formula (Portastudio-style overload).</p>
+      <div class="row">
+        <label>Delay <input id="delay-ms" type="range" min="20" max="1000" step="5" value="375" /> <span id="delay-ms-val">375 ms</span></label>
+        <label>Feedback <input id="delay-fb" type="range" min="0" max="0.85" step="0.01" value="0.45" /> <span id="delay-fb-val">0.45</span></label>
+        <label>Wet <input id="delay-wet" type="range" min="0" max="1" step="0.01" value="0.35" /> <span id="delay-wet-val">0.35</span></label>
+        <label class="check"><input id="delay-sync" type="checkbox" checked /> Sync dotted-8th to BPM</label>
+      </div>
+      <p class="note">Master FX bus: voices → HPF → 12-bit bitcrush → dark LPF → cassette WaveShaper → lo-fi tape delay (filtered feedback) → out.</p>
     </section>
 
     <section class="panel" data-section="filter" aria-label="Filter">

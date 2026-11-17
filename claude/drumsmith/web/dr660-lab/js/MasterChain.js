@@ -1,8 +1,9 @@
 /**
  * Memphis master FX bus:
- * voices → pre-emphasis HPF → bitcrush (12-bit / rate reduce) → dark LPF → cassette shaper → out
+ * voices → HPF → bitcrush → dark LPF → cassette shaper → lo-fi tape delay → out
  */
 import { createCassetteCurve, driveToCurveAmount } from './cassetteCurve.js';
+import { LoFiTapeDelay } from './TapeDelay.js';
 
 export class MemphisFXBus {
   /** @param {AudioContext} ctx */
@@ -12,6 +13,7 @@ export class MemphisFXBus {
     this.preEmphasis = ctx.createBiquadFilter();
     this.filter = ctx.createBiquadFilter();
     this.saturation = ctx.createWaveShaper();
+    this.tapeDelay = new LoFiTapeDelay(ctx);
     this.outputGain = ctx.createGain();
     /** @type {AudioWorkletNode | null} */
     this.bitcrush = null;
@@ -29,10 +31,12 @@ export class MemphisFXBus {
     this.setDrive(0.45);
 
     // Temporary dry path until worklet loads
+    // input → HPF → LPF → shaper → tape delay → out → destination
     this.input.connect(this.preEmphasis);
     this.preEmphasis.connect(this.filter);
     this.filter.connect(this.saturation);
-    this.saturation.connect(this.outputGain);
+    this.saturation.connect(this.tapeDelay.inputNode);
+    this.tapeDelay.outputNode.connect(this.outputGain);
     this.outputGain.connect(ctx.destination);
   }
 
@@ -48,7 +52,7 @@ export class MemphisFXBus {
       parameterData: { bits: 12, downsample: 4, mix: 0.85 },
     });
 
-    // Rebuild: input → HPF → bitcrush → LPF → shaper → out
+    // Rebuild: input → HPF → bitcrush → LPF → shaper → tape → out
     this.preEmphasis.disconnect();
     this.preEmphasis.connect(this.bitcrush);
     this.bitcrush.connect(this.filter);
@@ -91,6 +95,26 @@ export class MemphisFXBus {
     this.bitcrush.parameters.get('bits').setValueAtTime(bits, t);
     this.bitcrush.parameters.get('downsample').setValueAtTime(downsample, t);
     this.bitcrush.parameters.get('mix').setValueAtTime(mix, t);
+  }
+
+  /** @param {number} timeInSeconds */
+  setDelayTime(timeInSeconds) {
+    this.tapeDelay.setDelayTime(timeInSeconds);
+  }
+
+  /** @param {number} amount */
+  setDelayFeedback(amount) {
+    this.tapeDelay.setFeedback(amount);
+  }
+
+  /** @param {number} wet */
+  setDelayWet(wet) {
+    this.tapeDelay.setWet(wet);
+  }
+
+  /** Sync dotted-8th delay to BPM. */
+  syncDelayToBpm(bpm) {
+    this.tapeDelay.setDelayFromBpm(bpm);
   }
 }
 

@@ -1,6 +1,7 @@
 /**
  * Lightweight Web Audio one-shots for lab preview (not native drumsmith-render).
  * Velocities use squared gain (DR-660 accent feel). CHH chokes ringing OHH.
+ * Tracks active sources so Stop can cancel queued / ringing voices.
  */
 
 export class DrumEngine {
@@ -10,6 +11,44 @@ export class DrumEngine {
     this.destination = destination;
     /** @type {{ stop: (t: number) => void } | null} */
     this._openHat = null;
+    /** @type {Set<AudioScheduledSourceNode>} */
+    this._active = new Set();
+  }
+
+  /**
+   * Immediately stop all scheduled/ringing voices (transport Stop).
+   * @param {number} [when]
+   */
+  stopAll(when) {
+    const t = when ?? this.ctx.currentTime;
+    this.#chokeOpenHat(t);
+    for (const src of [...this._active]) {
+      try {
+        src.stop(t);
+      } catch {
+        /* already stopped */
+      }
+    }
+    this._active.clear();
+  }
+
+  /**
+   * @param {AudioScheduledSourceNode} src
+   * @param {number} time
+   * @param {number} endTime
+   */
+  #track(src, time, endTime) {
+    this._active.add(src);
+    src.addEventListener(
+      'ended',
+      () => {
+        this._active.delete(src);
+      },
+      { once: true },
+    );
+    // Safety cleanup if ended never fires after stop
+    const ttlMs = Math.max(50, (endTime - this.ctx.currentTime + 0.5) * 1000);
+    setTimeout(() => this._active.delete(src), ttlMs);
   }
 
   /**
@@ -60,6 +99,7 @@ export class DrumEngine {
       } catch {
         /* already stopped */
       }
+      this._active.delete(/** @type {AudioScheduledSourceNode} */ (this._openHat));
       this._openHat = null;
     }
   }
@@ -78,6 +118,7 @@ export class DrumEngine {
     gain.connect(this.destination);
     osc.start(time);
     osc.stop(time + 0.5);
+    this.#track(osc, time, time + 0.5);
   }
 
   /** @param {number} time @param {number} v */
@@ -100,6 +141,7 @@ export class DrumEngine {
       o.connect(g);
       o.start(time);
       o.stop(time + 0.55);
+      this.#track(o, time, time + 0.55);
     }
   }
 
@@ -121,6 +163,7 @@ export class DrumEngine {
     gain.connect(this.destination);
     osc.start(time);
     osc.stop(time + dur + 0.02);
+    this.#track(osc, time, time + dur + 0.02);
   }
 
   /**
@@ -129,7 +172,7 @@ export class DrumEngine {
    * @param {number} dur
    * @param {number} hpHz
    * @param {number} [playbackRate=1]
-   * @returns {{ stop: (t: number) => void }}
+   * @returns {AudioBufferSourceNode}
    */
   #noiseBurst(time, v, dur, hpHz, playbackRate = 1) {
     const frames = Math.max(1, Math.floor(this.ctx.sampleRate * dur));
@@ -151,6 +194,7 @@ export class DrumEngine {
     gain.connect(this.destination);
     src.start(time);
     src.stop(time + dur + 0.02);
+    this.#track(src, time, time + dur + 0.02);
     return src;
   }
 }
