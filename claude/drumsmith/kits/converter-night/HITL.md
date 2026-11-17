@@ -4,9 +4,9 @@
 
 ## Required (RELEASE_GATE)
 
-- [ ] W2 originals rendered (synthesis — no ref dumps in ship tree)
-- [ ] W3 `verify_kit.py` technical PASS + diversity
-- [ ] CALIPER read-only audit
+- [x] W2 originals rendered (synthesis — no ref dumps in ship tree) — `W2_RENDER.md`
+- [x] W3 `verify_kit.py` technical PASS + diversity — local `qa-report.json` / `diversity-report.json`
+- [x] CALIPER read-only audit draft — `CALIPER_NOTES.md` (verdict BLOCKED/UNVERIFIED for ship)
 - [ ] Listening log: reviewer + YYYY-MM-DD + path
 - [ ] Release approval: owner + YYYY-MM-DD
 - [ ] Provenance + license + store copy reviewed

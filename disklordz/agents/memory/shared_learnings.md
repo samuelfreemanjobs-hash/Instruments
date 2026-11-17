@@ -111,3 +111,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** kit-spec.md count check 12+12+4+10+6+8+6+12+6+4+4+4=88; references/INVENTORY.md 26 unique refs staged
 - **confidence:** inspected
 - **status:** active
+
+### L-0012 · CNV W2: converter-night scaffold plan + native_factory memphis-tape
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** W2 render after W1 design
+- **lesson:** Add a named PLANS entry in scaffold_kit for SKU hit mixes; native_factory out path must be empty; keep release_ready false after technical PASS.
+- **do:** Use --plan converter-night --genre memphis-tape --sku CNV; pack storefront from kinds; commit notes not WAVs.
+- **evidence:** native_factory log technical_qa PASS diversity PASS samples 88; CALIPER_NOTES BLOCKED/UNVERIFIED
+- **confidence:** executed
+- **status:** active

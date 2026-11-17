@@ -49,6 +49,6 @@ def native_run(out, renderer, genre='drift-phonk', count=64, sku='DKL', plan=Non
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--out',required=True);p.add_argument('--renderer',required=True)
     p.add_argument('--genre',required=True);p.add_argument('--count',type=int,default=64)
-    p.add_argument('--sku',default='DKL');p.add_argument('--plan',choices=['tail-light-static'])
+    p.add_argument('--sku',default='DKL');p.add_argument('--plan',choices=['tail-light-static','converter-night'])
     a=p.parse_args();result=native_run(a.out,a.renderer,a.genre,a.count,a.sku,a.plan)
     print(json.dumps(result,indent=2));sys.exit(0 if result['technical_qa']=='PASS' and result['diversity']=='PASS' else 1)

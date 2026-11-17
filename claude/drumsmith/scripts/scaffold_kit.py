@@ -7,11 +7,31 @@ from pathlib import Path
 TAIL_LIGHT_STATIC_PLAN = [("808",8),("KICK",8),("SNARE",8),("CLAP",6),
                           ("HAT",12),("COWBELL",8),("PERC",8),("FX",6)]
 
+# Converter Night (CNV) — maps kit-spec 88 roles onto native kinds (loops/textures as FX stubs).
+CONVERTER_NIGHT_PLAN = [
+    ("808", 12),   # pitched subs (RATE)
+    ("KICK", 12),
+    ("SNARE", 12),
+    ("CLAP", 4),
+    ("HAT", 16),   # 10 closed + 6 open
+    ("COWBELL", 4),
+    ("PERC", 4),
+    ("FX", 24),    # crashes 6 + aliased 6 + rhythm loops 4 + top loops 4 + textures 4
+]
+
+PLANS = {
+    'tail-light-static': TAIL_LIGHT_STATIC_PLAN,
+    'converter-night': CONVERTER_NIGHT_PLAN,
+}
+
+
 def scaffold(out, sku, count, plan=None):
     if not sku.isascii() or not sku.isalnum() or not 2 <= len(sku) <= 16:
         raise ValueError('sku must be 2-16 ASCII alphanumerics')
-    if plan == 'tail-light-static':
-        count = sum(n for _,n in TAIL_LIGHT_STATIC_PLAN)
+    if plan is not None and plan not in PLANS:
+        raise ValueError('unknown plan')
+    if plan is not None:
+        count = sum(n for _, n in PLANS[plan])
     if not 1 <= count <= 128:
         raise ValueError('count must be 1-128')
     out = Path(out)
@@ -21,8 +41,12 @@ def scaffold(out, sku, count, plan=None):
         raise FileExistsError('manifest already exists; refusing overwrite')
     types = ['808', 'KICK', 'SNARE', 'CLAP', 'HAT', 'COWBELL', 'PERC', 'FX']
     entries = []
-    planned_types = [kind for kind,n in TAIL_LIGHT_STATIC_PLAN for _ in range(n)] if plan == 'tail-light-static' else [types[i % len(types)] for i in range(count)]
-    for i,kind in enumerate(planned_types):
+    planned_types = (
+        [kind for kind, n in PLANS[plan] for _ in range(n)]
+        if plan is not None
+        else [types[i % len(types)] for i in range(count)]
+    )
+    for i, kind in enumerate(planned_types):
         filename = f'{sku}_{kind}_ORIGINAL_NA_{i+1:03d}.wav'
         entries.append({'id': f'{sku}-{i+1:03d}', 'path': f'masters/{filename}',
                         'kind': kind, 'recipe': 'reference-v1', 'seed': 1000+i,
@@ -44,6 +68,6 @@ if __name__ == '__main__':
     p.add_argument('--out', required=True)
     p.add_argument('--sku', default='TLS')
     p.add_argument('--count', type=int, default=3)
-    p.add_argument('--plan', choices=['tail-light-static'])
+    p.add_argument('--plan', choices=sorted(PLANS))
     args = p.parse_args()
     print(f"Scaffolded {len(scaffold(args.out, args.sku, args.count, args.plan)['samples'])} expected files; audio not rendered")

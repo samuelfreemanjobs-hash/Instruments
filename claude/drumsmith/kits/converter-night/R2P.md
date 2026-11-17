@@ -56,8 +56,8 @@ See `intake-answers.md` (commercial intent; devices UNVERIFIED; price HITL).
 
 - [x] product-design (kit-spec)
 - [ ] audio-dsp-engineering / RE meters on staged refs
-- [ ] native_factory / memphis-tape render
-- [ ] audio-analysis + CALIPER
+- [x] native_factory / memphis-tape render (W2 — see `W2_RENDER.md`)
+- [x] audio-analysis + CALIPER draft (`CALIPER_NOTES.md`) — HITL still open
 - [ ] customer-and-competition-intel (price)
 - [ ] Sam: ear · legal · price · cover
 
