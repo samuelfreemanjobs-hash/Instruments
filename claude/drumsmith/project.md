@@ -1,61 +1,50 @@
 # project.md — DRUMSMITH (Drum Sample & Kit Product Designer + DSP Audio Engineer Agent)
 
-**Updated:** 2026-11-17 · **Phase:** **agent build** (not a commercial kit release) · **In-repo:** **v1.3** · **Announced:** v2.0 Native Synthesis Edition (**ZIP not yet on Cloud VM**)
+**Updated:** 2026-11-17 · **Phase:** **agent build** (not a commercial kit release) · **In-repo:** **v2.0** (merged from `drumsmith-v2.0.zip`)
 
 ## Scope
 
-Four-layer agent + CALIPER for Disklordz: design kits, synthesize reference sounds, run technical QA, hand specs to FORGE. **Current goal = ship a working agent package in the monorepo**, with CI-green scripts and a Tail Light Static example path. Storefront / commercial masters / device-certified packs are **later** — release-gate machinery stays in-tree so we do not invent a fake “ready” claim, but it is not the active milestone.
+Four-layer agent + CALIPER + Python factory + **native C++20 renderer** + optional JUCE 8 plugin/standalone **source**. Current goal: working agent package in the monorepo with green CI. Storefront / commercial masters deferred.
 
 **Monorepo path:** `claude/drumsmith/`
 
 ## Done
 
-- [x] v1.0 agent package + workbench template landed earlier on this PR
-- [x] **Merge drumsmith-v1.3.zip** into `claude/drumsmith/` (supersedes v1.0/v1.1 scripts; includes v1.2 recipe stack)
-- [x] Automated tests on Cloud: `self_test` 28 OK · `test_upgrade` 10 OK · `test_v13` 6 OK (**44/44**)
-- [x] `verify_kit.py` on `examples/tail-light-static/tls-v13-drift` — **64/64**, exit 0, `technical_status=PASS`, `release_ready=false` (human gates + devices unverified)
-- [x] CI workflow runs all three test suites + TLS drift verify
-- [x] Preserve `workbench/`, `kits/tail-light-static/` intake/spec, monorepo `ARCHITECTURE.md`
+- [x] Landed v1.0 → v1.3 lineage; workbench HTML; Tail Light Static W1 notes
+- [x] **Merge drumsmith-v2.0.zip** (native engine, juce sources, `native_factory.py`, `test_v20.py`, `tls-v20-native-cxx` example)
+- [x] Cloud verify: Python **46/46** (28+10+6+2) with `CXX=g++-12`
+- [x] Native `cmake` + `ctest` (`native_dsp` PASS); `drumsmith-render` builds
+- [x] `native_factory.py` smoke → technical PASS, `release_ready=false`
+- [x] Packaged `examples/tail-light-static/tls-v20-native-cxx` verify **64/64** PASS
+- [x] CI: Python suites + native build/ctest + factory smoke; `test_v20` prefers `g++-12` (default `c++` lacks libstdc++ on this image)
 
-## Announced lineage (packages)
+## Lineage
 
-| Version | Status in repo |
-|---------|----------------|
-| v1.0 tarball | Superseded by v1.3 tree |
-| v1.2 zip | Uploaded; capabilities covered by v1.3 merge |
-| **v1.3 zip** | **Canonical tree (current)** |
-| **v2.0 zip** | **Announced; attach `drumsmith-v2.0.zip` to merge** — C++20 `native/` renderer, 8 voice types, 32-voice poly, `native_factory.py`, JUCE 8 VST3/standalone **source** (not compiled here), 46 Python tests claimed |
+| Version | Status |
+|---------|--------|
+| v1.3 | Superseded tree (capabilities retained) |
+| **v2.0** | **Canonical** |
 
-### v1.3 surface (in-repo now)
+### v2.0 surface
 
-- Genres: drift-phonk, memphis-tape, detroit-trap, southern-trap, cloud-rap (`genre_profiles.py`)
-- `factory.py` → render → `verify_kit.py` → `diversity_audit.py` → `export_forge.py`
-- `kit_browser.py` @ `http://127.0.0.1:8765`
-- Example kits under `examples/tail-light-static/` (`tls-64-recipes`, `tls-v13-drift`, small `reference-demo`)
-
-### Later (not this phase)
-
-`docs/RELEASE_GATE.md` exists for when Sam wants a commercial pack. Until then: technical PASS on examples is enough for agent development; do not chase ear-signoff or device TESTED flags for this PR.
+- Eight C++ voice types; 32-voice poly engine; headless WAV renderer
+- Five genre profiles (Python) preserved
+- `native_factory.py` batch + QA + diversity
+- JUCE VST3/standalone **source** under `native/juce/` — **not compiled** on Cloud (needs JUCE + typically Windows VS)
 
 ## To do (agent build)
 
-- [ ] **BLOCKER for v2.0:** Upload `drumsmith-v2.0.zip` / `.tar.gz` (same as v1.2/v1.3) so Cloud can merge `native/` + `native_factory.py` and run cmake/ctest + Python 46-test suite
-- [ ] After merge: `cmake -S native -B native/build && cmake --build … && ctest`; `python scripts/native_factory.py …` smoke
-- [ ] JUCE VST3/standalone: Windows build when toolchain available (`-DDRUMSMITH_BUILD_JUCE=ON`) — integration test, not this Linux agent milestone
-- [ ] Exercise W1–W5 end-to-end from Claude Code / workbench on Tail Light Static (agent UX)
-- [ ] Keep CI green on script changes
-- [ ] Deferred commercial: ear review, release authorization, device profiles, waveform editor GUI
+- [ ] Exercise W1–W5 / workbench against TLS native example
+- [ ] Optional Windows: `-DDRUMSMITH_BUILD_JUCE=ON` + DAW smoke (separate machine)
+- [ ] Optional waveform editor / kit manager (announced not implemented)
+- [ ] Deferred commercial: ear review, device profiles, release gate
 
 ## Quick verify
 
 ```bash
 cd claude/drumsmith
 python3 scripts/self_test.py && python3 scripts/test_upgrade.py && python3 scripts/test_v13.py
-python3 scripts/verify_kit.py --kit examples/tail-light-static/tls-v13-drift \
-  --manifest examples/tail-light-static/tls-v13-drift/manifest.json
+CXX=g++-12 python3 scripts/test_v20.py
+cmake -S native -B native/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12
+cmake --build native/build -j && ctest --test-dir native/build --output-on-failure
 ```
-
-## Artifact links
-
-- Workbench (hosted): https://claude.ai/artifact/FwE8VaPi2a5vXRMPoX19zH
-- Workbench (git): `workbench/DRUMSMITH_Workbench.html`

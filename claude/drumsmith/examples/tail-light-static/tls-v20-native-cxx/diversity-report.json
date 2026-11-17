@@ -1,0 +1,83 @@
+{
+  "status": "PASS",
+  "exact_duplicate_groups": [],
+  "similar_envelope_pairs_advisory": [
+    {
+      "a": "DKL-019",
+      "b": "DKL-020",
+      "shape_mse": 0.0003265
+    },
+    {
+      "a": "DKL-019",
+      "b": "DKL-021",
+      "shape_mse": 0.0002767
+    },
+    {
+      "a": "DKL-020",
+      "b": "DKL-021",
+      "shape_mse": 5.87e-05
+    },
+    {
+      "a": "DKL-033",
+      "b": "DKL-034",
+      "shape_mse": 0.0001775
+    },
+    {
+      "a": "DKL-033",
+      "b": "DKL-035",
+      "shape_mse": 0.0002346
+    },
+    {
+      "a": "DKL-034",
+      "b": "DKL-035",
+      "shape_mse": 7.41e-05
+    },
+    {
+      "a": "DKL-038",
+      "b": "DKL-039",
+      "shape_mse": 0.0002085
+    },
+    {
+      "a": "DKL-038",
+      "b": "DKL-040",
+      "shape_mse": 0.0001425
+    },
+    {
+      "a": "DKL-039",
+      "b": "DKL-040",
+      "shape_mse": 2.97e-05
+    },
+    {
+      "a": "DKL-051",
+      "b": "DKL-052",
+      "shape_mse": 0.0002907
+    },
+    {
+      "a": "DKL-052",
+      "b": "DKL-053",
+      "shape_mse": 0.000205
+    },
+    {
+      "a": "DKL-052",
+      "b": "DKL-054",
+      "shape_mse": 0.0003121
+    },
+    {
+      "a": "DKL-053",
+      "b": "DKL-054",
+      "shape_mse": 8.93e-05
+    },
+    {
+      "a": "DKL-053",
+      "b": "DKL-055",
+      "shape_mse": 0.0001508
+    },
+    {
+      "a": "DKL-054",
+      "b": "DKL-055",
+      "shape_mse": 0.0001425
+    }
+  ],
+  "files_checked": 64,
+  "limitations": "Envelope similarity cannot replace listening, spectral analysis or content review"
+}

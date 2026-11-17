@@ -1,18 +1,22 @@
-# DRUMSMITH v1.3 — DiskLordz Drum Product + DSP Agent
+# DRUMSMITH v2.0 — Native Synthesis Edition (agent build)
 
-**Monorepo:** this tree lives at `claude/drumsmith/` in Instruments (PR branch). Status: `project.md`. Workbench UI: `workbench/DRUMSMITH_Workbench.html`.
+**Monorepo:** `claude/drumsmith/` · Status: `project.md` · Workbench: `workbench/DRUMSMITH_Workbench.html`  
+**Phase:** agent package + native renderer CI — **not** a commercial kit release.
 
 ```bash
 cd claude/drumsmith
 python3 scripts/self_test.py && python3 scripts/test_upgrade.py && python3 scripts/test_v13.py
-python3 scripts/factory.py --out /tmp/my_phonk_kit --genre drift-phonk --sku DKL --count 64
-python3 scripts/kit_browser.py --kit /tmp/my_phonk_kit   # http://127.0.0.1:8765
+CXX=g++-12 python3 scripts/test_v20.py
+cmake -S native -B native/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12
+cmake --build native/build -j && ctest --test-dir native/build --output-on-failure
+python3 scripts/native_factory.py --out /tmp/Native_TLS --renderer native/build/drumsmith-render \
+  --genre drift-phonk --count 64 --sku TLS --plan tail-light-static
 ```
 
-A Claude Code repo-local 4-layer agent configuration with one read-only CALIPER QA subagent, three skills and portable Python 3 WAV tools. No API key is needed for scripts; using Claude Code requires access to a compatible model/service and is **not** necessarily free. Scripts use Python stdlib; optional `ffmpeg` enables R128 checks.
+A Claude Code repo-local 4-layer agent configuration with one read-only CALIPER QA subagent, three skills, portable Python 3 WAV tools, and a native C++20 renderer. No API key is needed for scripts; using Claude Code requires access to a compatible model/service and is **not** necessarily free. Scripts use Python stdlib; optional `ffmpeg` enables R128 checks.
 
 ## Install
-1. In this monorepo, use `claude/drumsmith/` as the package root (`.claude/` + `CLAUDE.md` already present here; repo-root `.claude` symlinks agents/skills).
+1. In this monorepo, use `claude/drumsmith/` as the package root (repo-root `.claude` symlinks agents/skills).
 2. Open a terminal in that directory. Run `python3 scripts/self_test.py` (or `py -3 scripts/self_test.py` on Windows).
 3. Optionally install ffmpeg and add it to PATH. Confirm `ffmpeg -version`.
 4. In Claude Code started from repository root, ask **“DRUMSMITH: W1 SPEC for Tail Light Static using INTAKE.md. Do not imply files have been rendered.”** Agent/project instructions will auto-load in compatible Claude Code setups. To invoke CALIPER, ask it to audit a pre-generated report, or delegate to CALIPER using the Agent tool if available.
@@ -100,3 +104,7 @@ python scripts/test_v13.py
 ```
 
 Details: `docs/WORKFLOW_V13.md`.
+
+
+## v2.0 native synthesis implementation
+See [README_V2.md](README_V2.md) and [docs/V2_NATIVE.md](docs/V2_NATIVE.md) for the C++20 renderer, tests, and JUCE VST3/standalone source build. JUCE build is not verified here.

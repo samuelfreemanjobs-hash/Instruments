@@ -24,3 +24,7 @@ For a new 64-hit reference kit, use `scripts/build_recipe_kit.py`, `render_recip
 ## v1.3 Genre Factory command policy
 
 Use `python scripts/factory.py --out <new-folder> --genre <drift-phonk|memphis-tape|detroit-trap|southern-trap|cloud-rap> --sku DKL --count 64` for deterministic full-kit generation. On successful technical QA, start `python scripts/kit_browser.py --kit <folder>` for a human listening session, not automatic endorsement. Never edit manifest hashes to hide a failure. When integration is requested, pass `forge-handoff.json` to FORGE with explicit `SPECIFICATION_ONLY_NOT_COMPILED` status. Read `docs/WORKFLOW_V13.md`.
+
+
+## v2.0 routing
+Use `native/` for C++ realtime DSP, VST3/standalone, and CLI reference renders. Use legacy `scripts/` for kit factory, technical QA, provenance and CALIPER. Never claim a JUCE binary has been built without executing its build and host tests. Follow docs/V2_NATIVE.md. Keep synthesis pure (no sampling/Keygroup).

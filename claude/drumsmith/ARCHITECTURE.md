@@ -1,47 +1,63 @@
-# DRUMSMITH architecture (v1.3 in-repo)
+# DRUMSMITH architecture (v2.0 in-repo)
 
 ## Purpose
 
-Verifiable drum kit production for Disklordz: kit spec → genre/recipe synthesis → render → `verify_kit.py` → diversity audit → FORGE JSON handoff. CALIPER is read-only QA. Commercial release requires human listening + named approval.
+Agent package for Disklordz drum kit design + offline/native synthesis + technical QA. **Phase = agent build**, not commercial release. CALIPER is read-only QA. FORGE receives JSON (and later JUCE) handoffs.
 
 ## Build & run
 
-From `claude/drumsmith/`:
+```bash
+cd claude/drumsmith
+
+# Python (46 tests: 28 + 10 + 6 + 2)
+python3 scripts/self_test.py
+python3 scripts/test_upgrade.py
+python3 scripts/test_v13.py
+CXX=g++-12 python3 scripts/test_v20.py
+
+# Native C++20 renderer (no JUCE required)
+cmake -S native -B native/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12
+cmake --build native/build -j
+ctest --test-dir native/build --output-on-failure
+
+# Native 64-hit kit (uses plan inventory)
+python3 scripts/native_factory.py \
+  --out /tmp/Native_TLS \
+  --renderer native/build/drumsmith-render \
+  --genre drift-phonk --count 64 --sku TLS --plan tail-light-static
+```
+
+JUCE VST3/standalone (optional, needs JUCE 8):
 
 ```bash
-python3 scripts/self_test.py      # 28
-python3 scripts/test_upgrade.py   # v1.2 recipe engine
-python3 scripts/test_v13.py       # genre factory
-
-python3 scripts/factory.py --out /tmp/my_phonk_kit --genre drift-phonk --sku DKL --count 64
-python3 scripts/kit_browser.py --kit /tmp/my_phonk_kit   # http://127.0.0.1:8765
-python3 scripts/verify_kit.py --kit examples/tail-light-static/tls-v13-drift \
-  --manifest examples/tail-light-static/tls-v13-drift/manifest.json
+cmake -S native -B native/build-juce -DDRUMSMITH_BUILD_JUCE=ON ...
 ```
+
+Not compiled/verified on this Cloud Linux agent by default.
 
 ## Data flow
 
 ```text
-INTAKE / PRODUCT_SPEC → factory/genre recipes → render WAVs → verify_kit + pitch_check
-  → diversity_audit → export_forge.json → (FORGE / JUCE later)
+INTAKE / factory genre recipes
+  → Python render OR native drumsmith-render
+  → verify_kit + pitch_check + diversity_audit
+  → export_forge.json / (optional) JUCE plugin source
 ```
 
 ## Key modules
 
 | Path | Role |
 |------|------|
-| `scripts/factory.py` / `genre_profiles.py` | v1.3 genre kit build |
-| `scripts/recipe_engine.py` / `build_recipe_kit.py` | v1.2 parametric recipes + fingerprints |
-| `scripts/render_*.py` | Offline reference synthesis (not commercial masters) |
-| `scripts/verify_kit.py` / `pitch_check.py` / `diversity_audit.py` | Technical QA |
-| `scripts/kit_browser.py` | Local audition UI |
-| `scripts/export_forge.py` | JSON voice specs for FORGE |
-| `examples/tail-light-static/` | TLS demos (v1.1 reference, v1.2 recipes, v1.3 drift) |
-| `workbench/` | Single-file UI template (artifact parity) |
-| `kits/tail-light-static/` | Monorepo W1 intake/spec notes |
+| `native/include/` | C++20 drum engine + WAV writer |
+| `native/tools/render_cli.cpp` | Headless renderer |
+| `native/juce/` | VST3 + standalone source (unverified build) |
+| `scripts/native_factory.py` | Batch native kit + QA |
+| `scripts/factory.py` / `genre_profiles.py` | v1.3 genre recipes |
+| `scripts/recipe_engine.py` | v1.2 parametric recipes |
+| `examples/tail-light-static/tls-v20-native-cxx` | Packaged native 64-hit example |
+| `workbench/` | Single-file UI template |
 
-## Related docs
+## Related
 
 - `project.md` — Rule #1 status
-- `docs/WORKFLOW_V13.md`, `docs/RELEASE_GATE.md`
-- Root `ARCHITECTURE.md` index
+- `docs/WORKFLOW_V13.md`, release gate docs (deferred commercial)
