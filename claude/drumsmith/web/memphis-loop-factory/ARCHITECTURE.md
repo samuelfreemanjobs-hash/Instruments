@@ -2,9 +2,9 @@
 
 ## Purpose
 
-Interactive **hybrid loop generator** for SP-1200–era Memphis / Southern / phonk grammar: procedural patterns, Lock+Mutate, synthesized voices, vintage DSP, WAV/MIDI export, and an agent meta-prompt for Claude Code / Antigravity. **Original synthesis only** — not a sample dump of copyrighted recordings.
+Interactive **kit-factory workbench** for SP-1200–era Memphis / Southern / phonk grammar: procedural patterns, Lock+Mutate, synthesized voices, vintage DSP, WAV/MIDI export, and an agent meta-prompt for Claude Code / Antigravity. **Commercial SKU = original drum sample kits** (oneshots + loops). Lab/OS are generators that feed that kit — not a DAW/VST product. **Original synthesis only** — not a sample dump of copyrighted recordings.
 
-Who uses it: DiskLordz / DRUMSMITH product design; Sam iterating Factory OS UX before modularizing into the DR-660 lab and native/CLI pipelines.
+Who uses it: DiskLordz / DRUMSMITH kit design; Sam iterating Factory OS UX before modularizing into the DR-660 lab and oneshot/loop packaging pipelines.
 
 ## Build & run
 
@@ -53,7 +53,7 @@ Web Audio owns the audio thread. Scheduler uses `currentTime` + lookahead. Offli
 - Split `index.html` into ES modules aligned with `dr660-lab/js/*`
 - Native/CLI renderer: `claude/drumsmith/native` + Converter Night kits
 - Antigravity: MIDI fixtures, packaging scripts, pytest on pattern JSON
-- Claude Code: headless groove mutate CLI, OfflineAudio tests, optional VST surface later
+- Claude Code: headless groove mutate CLI, OfflineAudio tests; optional DAW surface only if kit SKU already shipping
 
 ## Related docs
 

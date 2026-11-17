@@ -76,10 +76,11 @@ Still open: port richer Factory OS mutate heuristics from `index.html` `generate
 1. Deterministic bounce score (kick density, hat roll rate, swing, ghost snares)
 2. Optional Gemini/HTTP critic behind a feature flag (no secrets in repo)
 
-### P5 — Native / VST (later)
+### P5 — Kit bank batch + optional DAW surface (later)
 
-1. Only after browser Lock+Mutate + offline export are green
-2. Claude Code DPF/JUCE if product chooses DAW surface; otherwise stay web + CLI
+1. Batch kick/snare/hat oneshots + loop WAVs into Converter Night zip layout
+2. Only after Lock+Mutate + offline export are green
+3. Optional Claude Code DPF/JUCE DAW surface is **not** the SKU — stay web + CLI + kit packages unless ordered
 
 ## Antigravity work order (suggested)
 

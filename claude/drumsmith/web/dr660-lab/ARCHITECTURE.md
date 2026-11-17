@@ -2,9 +2,9 @@
 
 ## Purpose
 
-Local **Web Audio** workbench for 90s Memphis-style drum workflow: DR-660–inspired **16-step sequencer** (lookahead + swing), live voice triggers, cassette saturation, 12-bit bitcrush, and lo-fi tape delay. Analysis and prototyping only — not a Boss ROM dump and not a commercial kit.
+Local **Web Audio** workbench for 90s Memphis-style drum workflow: DR-660–inspired **16-step sequencer** (lookahead + swing), live voice triggers, cassette saturation, 12-bit bitcrush, and lo-fi tape delay. Prototypes voices/grooves that feed the **original drum sample kit** SKU — not a Boss ROM dump and not the storefront product itself.
 
-Who uses it: DiskLordz / DRUMSMITH agents and Sam, iterating groove feel before native kit renders.
+Who uses it: DiskLordz / DRUMSMITH agents and Sam, iterating groove feel before kit oneshot/loop packaging.
 
 ## Build & run
 

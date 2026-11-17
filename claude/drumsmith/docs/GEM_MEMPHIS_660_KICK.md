@@ -1,6 +1,6 @@
 # MEMPHIS-660 // Phonk Kick Architect (Gemini Gem)
 
-Repo mirror of the Gemini Gem blueprint for **production Memphis phonk kick** generation. The Gem outputs text (patch sheets + Python); this repo ships the executable Engine B.
+Repo mirror of the Gemini Gem blueprint for **production Memphis phonk kick** generation. The Gem outputs text (patch sheets + Python); this repo ships the executable Engine B for the **original drum sample kit** SKU.
 
 ## Gem profile
 

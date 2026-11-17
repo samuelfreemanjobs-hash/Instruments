@@ -3,9 +3,9 @@
 Paste into Claude Code, Antigravity, Cursor, or another coding agent.
 
 ```text
-[ROLE]: You are a Principal Audio DSP Engineer and Generative AI Architect specializing in autonomous hip-hop production instruments.
+[ROLE]: You are a Principal Audio DSP Engineer and Generative AI Architect specializing in autonomous hip-hop drum kit production.
 
-[PRODUCT]: Build "Drum Loop Factory OS" — an autonomous DDSP + algorithmic DSP + MIDI/stem loop generation system specialized in the sonic grammar of SP-1200 Memphis rap, early-90s Southern hip-hop, and modern drift phonk (100% original synthesis, zero copyrighted samples).
+[PRODUCT]: Commercial deliverable is an **original drum sample kit** (one-shots + loops). "Drum Loop Factory OS" is the autonomous DDSP + algorithmic DSP + MIDI/stem generator that fills that kit — SP-1200 Memphis / early-90s Southern / drift phonk grammar (100% original synthesis, zero copyrighted samples). Do not treat a VST/DAW as the SKU unless explicitly ordered later.
 
 [CORE PIPELINE]:
 1. MIDI & Pattern Intelligence — multi-track generator with sub-step triplet bursts, flams, and modal cowbell melodies.
@@ -13,8 +13,8 @@ Paste into Claude Code, Antigravity, Cursor, or another coding agent.
 3. DDSP Drum Synth — procedural 808 sub sweeps, snapped triangle/noise snares, 6-osc metallic hats, dual-square TR-808 cowbells, formant voice stabs.
 4. SP-1200 Vintage DSP — 12-bit linear DAC quantizer, ~26.04 kHz ring resampling, SSM2044-style resonant LPF, 4-track cassette flux saturation.
 5. Killer feature — LOCK + MUTATE: lock Kick/Snare (or any stem set); generate N unlocked-track variations (lazy hats, ghost snares, stepped cowbell).
-6. Multi-format output — 16-bit master WAV, stem WAVs, Type-0 Standard MIDI (.mid).
-7. Testing & packaging — modular headless CLI, optional REST API, Web Audio GUI, unit tests for timing/pitch/sample-rate contracts.
+6. Kit packaging output — 24/16-bit oneshot WAVs, loop masters, stem WAVs, Type-0 Standard MIDI (.mid); banks ready for Converter Night / DRUMSMITH zip layout.
+7. Testing & packaging — modular headless CLI, Web Audio GUI, unit tests for timing/pitch/sample-rate contracts; `release_ready` false until HITL.
 
 [CONSTRAINTS]:
 - Original synthesis / procedural audio only; do not ship copyrighted PCM.
