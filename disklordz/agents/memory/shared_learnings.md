@@ -91,3 +91,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** PR #130 run 42580463051 (9 steps, 22 s)
 - **confidence:** executed
 - **status:** active
+
+### L-0010 · DRUMSMITH lives under claude/drumsmith
+- **date:** 2026-11-17
+- **area:** drumsmith,agents
+- **when:** Landing drum kit agent in Instruments monorepo
+- **lesson:** Package path is claude/drumsmith with self_test gate; Tail Light Static intake at INTAKE.md + kits/tail-light-static/kit-spec.md
+- **do:** cd claude/drumsmith && python3 scripts/self_test.py
+- **evidence:** cursor/drumsmith-tail-light-static-58c6 self_test 19/19
+- **confidence:** executed
+- **status:** active
