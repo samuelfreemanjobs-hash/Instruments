@@ -58,12 +58,13 @@ Still open: port richer Factory OS mutate heuristics from `index.html` `generate
 
 **Product framing:** outputs feed an **original drum sample kit** SKU (oneshots + loops). Artist names stay internal research-only; `release_ready` stays false until HITL.
 
-### P2 — Cursor + Claude Code: Offline loop render
+### P2 — Kit bank batch + headless loop render ✅ (CLI)
 
-1. `OfflineAudioContext` 2-bar render with master FX chain
-2. Download 16-bit PCM WAV (+ optional stems)
-3. Headless Node/CLI twin for CI (`render_loop.py` or worklet-free offline path)
-4. Batch kick/snare oneshots into Converter Night RAW banks via Antigravity
+1. ~~`OfflineAudioContext` 2-bar render~~ → headless Python twin first (browser Offline still open)
+2. Batch oneshots: `scripts/memphis_oneshots/batch_memphis_bank.py` → `kits/converter-night/banks/memphis660/` (PCM16; WAV gitignored)
+3. Closed hat Engine B: `phonk_hat.py`
+4. Headless 2-bar loop: `scripts/memphis_oneshots/render_memphis_loop.py` (blueprint JSON → PCM16)
+5. Still open: browser `OfflineAudioContext` download button in `dr660-lab`
 
 ### P3 — Antigravity: fixtures & packaging
 
@@ -105,12 +106,14 @@ Claude Code support (when OfflineAudio CLI exists):
 
 ## Definition of done (MVP Factory OS)
 
-- [ ] Lock+Mutate in modular lab with tests
+- [x] Lock+Mutate in modular lab with tests
+- [x] Headless 2-bar WAV export (Python kit twin)
 - [ ] Offline 2-bar WAV export (browser)
 - [ ] MIDI Type-0 export of active pattern
 - [ ] Antigravity fixture pack + pytest green
-- [ ] Meta-prompt stays in sync with shipped pipeline
-- [ ] No copyrighted sample banks shipped
+- [x] Meta-prompt stays in sync with shipped pipeline (kit SKU framing)
+- [x] No copyrighted sample banks shipped
+- [x] MEMPHIS kick/snare/hat oneshot bank recipe + batch CLI
 
 ## Related
 

@@ -1,0 +1,32 @@
+{
+  "title": "MEMPHIS-660 Engine B oneshot bank",
+  "notes": "Original synthesis for Converter Night kit. Artist names internal only. release_ready false until HITL.",
+  "kicks": [
+    {"key": "C1", "drive_db": 3.5, "pitch_st": 48},
+    {"key": "D1", "drive_db": 4.0, "pitch_st": 48},
+    {"key": "E1", "drive_db": 4.0, "pitch_st": 46},
+    {"key": "F1", "drive_db": 4.0, "pitch_st": 48},
+    {"key": "F#1", "drive_db": 4.5, "pitch_st": 48},
+    {"key": "G1", "drive_db": 4.0, "pitch_st": 44},
+    {"key": "A1", "drive_db": 5.0, "pitch_st": 48},
+    {"key": "F1", "drive_db": 5.5, "pitch_st": 52}
+  ],
+  "snares": [
+    {"key": "D3", "drive_db": 5.0, "flam_ms": 3.5, "seed": 661},
+    {"key": "E3", "drive_db": 5.5, "flam_ms": 4.0, "seed": 662},
+    {"key": "F3", "drive_db": 5.5, "flam_ms": 4.0, "seed": 663},
+    {"key": "F#3", "drive_db": 6.0, "flam_ms": 5.0, "seed": 664},
+    {"key": "G3", "drive_db": 5.5, "flam_ms": 4.0, "seed": 665},
+    {"key": "A3", "drive_db": 5.5, "flam_ms": 4.0, "seed": 666},
+    {"key": "A3", "drive_db": 6.5, "flam_ms": 6.0, "seed": 667},
+    {"key": "F#3", "drive_db": 6.0, "flam_ms": 3.0, "seed": 668}
+  ],
+  "hats": [
+    {"center_hz": 7800, "decay": 0.024, "seed": 809},
+    {"center_hz": 8600, "decay": 0.026, "seed": 810},
+    {"center_hz": 9000, "decay": 0.028, "seed": 811},
+    {"center_hz": 9800, "decay": 0.022, "seed": 812},
+    {"center_hz": 10500, "decay": 0.030, "seed": 813},
+    {"center_hz": 9200, "decay": 0.018, "seed": 814}
+  ]
+}

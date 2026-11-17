@@ -21,3 +21,7 @@ kits/converter-night/loops/wav/
 kits/converter-night/listen/**/*.wav
 kits/converter-night/listen/**/*.zip
 kits/converter-night/*.zip
+# MEMPHIS-660 staged kit banks (PCM local; recipe/README committed)
+kits/converter-night/banks/**/*.wav
+kits/converter-night/banks/**/*.WAV
+kits/converter-night/banks/**/manifest.json

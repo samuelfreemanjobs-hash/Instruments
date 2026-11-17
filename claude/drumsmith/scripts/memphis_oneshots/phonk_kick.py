@@ -85,6 +85,18 @@ def write_wav_24bit_mono(path: Path, samples: np.ndarray, sample_rate: int = 441
         wav_file.writeframes(bytes(raw))
 
 
+def write_wav_16bit_mono(path: Path, samples: np.ndarray, sample_rate: int = 44100) -> None:
+    """Kit delivery format (Converter Night PCM16 mono @ 44.1 kHz)."""
+    clipped = np.clip(samples.astype(np.float64), -1.0, 1.0)
+    int16 = (clipped * 32767.0).astype(np.int16)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with wave.open(str(path), "wb") as wav_file:
+        wav_file.setnchannels(1)
+        wav_file.setsampwidth(2)
+        wav_file.setframerate(sample_rate)
+        wav_file.writeframes(int16.tobytes())
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate a Memphis phonk kick oneshot")
     parser.add_argument("--key", default="F1", help="Note name (F1, D1, …) or omit and use --freq")
