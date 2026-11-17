@@ -27,8 +27,8 @@ class BlackBox96PackageTests(unittest.TestCase):
             manifest = package(staging, masters, PROFILE)
             pack = staging / "Black_Box_96"
 
-            self.assertGreaterEqual(manifest["counts"]["core_oneshots"], 228)
-            self.assertEqual(manifest["counts"]["loops"], 12)
+            self.assertGreaterEqual(manifest["counts"]["core_oneshots"], 456)
+            self.assertEqual(manifest["counts"]["loops"], 24)
             self.assertGreater(manifest["counts"]["bitcrushed_pitched"], 0)
             self.assertGreater(manifest["counts"]["cassette_tape"], 0)
             self.assertGreater(manifest["counts"]["parallel_banks"], 0)

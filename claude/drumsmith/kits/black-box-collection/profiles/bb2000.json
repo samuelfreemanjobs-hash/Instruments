@@ -5,7 +5,10 @@
   "era": "Digital Transition",
   "pack_dir": "Black_Box_2000",
   "prefix": "BB00",
-  "target_samples": [200, 250],
+  "target_samples": [
+    400,
+    500
+  ],
   "sample_rate": 44100,
   "bit_depth_out": 16,
   "character": "digital_south",
@@ -23,14 +26,14 @@
     "cow_f2": 820
   },
   "inventory": {
-    "KICK": 32,
-    "SNR": 36,
-    "CLAP": 24,
-    "CH": 28,
-    "OH": 12,
-    "PERC": 24,
-    "808": 40,
-    "LOOP": 12
+    "KICK": 64,
+    "SNR": 72,
+    "CLAP": 48,
+    "CH": 56,
+    "OH": 24,
+    "PERC": 48,
+    "808": 80,
+    "LOOP": 24
   },
   "folder_map": {
     "KICK": "01_Digital_Kicks",
@@ -51,5 +54,6 @@
     "PERC": "Synth",
     "808": "Tuned",
     "LOOP": "Circuit"
-  }
+  },
+  "notes": " Inventory doubled per operator request 2026-11-17."
 }

@@ -11,12 +11,12 @@ Commercial **drum sample kit** franchise: era-specific underground Southern / Me
 
 | Release | Identity | Era | Target | Status |
 |---------|----------|-----|-------:|--------|
-| **BLACK BOX 93** | Memphis Archives | Underground | 175–225 | Generate+package |
-| **BLACK BOX 96** | The Original Machine | Signature ★ | 200–250 | Generate+package |
-| **BLACK BOX 98** | Trunk Pressure | Bass | 175–225 | Generate+package |
-| **BLACK BOX 2000** | Southern Circuitry | Digital | 200–250 | Generate+package |
-| **DIRTY CIRCUITS** | Corrupted Machine | Bus | 120–200 | Package from BB96 |
-| **BB96 Dirty Circuits Edition** | Expanded Flagship | Clean→dirty | — | Package from BB96 |
+| **BLACK BOX 93** | Memphis Archives | Underground | **360** (doubled) | Generate+package |
+| **BLACK BOX 96** | The Original Machine | Signature ★ | **480** (doubled) | Generate+package |
+| **BLACK BOX 98** | Trunk Pressure | Bass | **388** (doubled) | Generate+package |
+| **BLACK BOX 2000** | Southern Circuitry | Digital | **416** (doubled) | Generate+package |
+| **DIRTY CIRCUITS** | Corrupted Machine | Bus | **340** | Package from BB96 |
+| **BB96 Dirty Circuits Edition** | Expanded Flagship | Clean→dirty | **1848** | Full pairs + ruined + cassette |
 
 ## Shared engine
 

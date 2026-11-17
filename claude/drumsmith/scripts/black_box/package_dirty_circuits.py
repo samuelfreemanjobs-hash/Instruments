@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""DIRTY CIRCUITS + BB96 Dirty Circuits Edition from BB96 masters."""
+"""DIRTY CIRCUITS + BB96 Dirty Circuits Edition from BB96 masters.
+
+BB96DC is the expanded flagship: CLEAN↔DIRTY for every oneshot + RUINED exclusives.
+"""
 
 from __future__ import annotations
 
@@ -24,7 +27,6 @@ from scripts.black_box.process_fx import (  # noqa: E402
 )
 
 BB96_MASTERS = ROOT / "kits/black-box-96/masters"
-DC_PROFILE = ROOT / "kits/black-box-collection/profiles/dirty_circuits.json"
 
 
 def _dirty(buf, mode: str, seed: int = 0):
@@ -35,11 +37,20 @@ def _dirty(buf, mode: str, seed: int = 0):
         return cassette_fx(x, drive_db=7.0, tape_lpf_hz=9000.0, hiss_db=-36.0, seed=seed)
     if mode == "RUINED":
         x = bitcrush(buf, bit_depth=6, hold_sr=11025.0)
-        return cassette_fx(x, drive_db=10.0, tape_lpf_hz=7000.0, wow_depth_ms=0.8, hiss_db=-30.0, seed=seed + 7)
+        return cassette_fx(
+            x, drive_db=10.0, tape_lpf_hz=7000.0, wow_depth_ms=0.8, hiss_db=-30.0, seed=seed + 7
+        )
     raise ValueError(mode)
 
 
-def _pick_cores(masters: Path, per_folder: int = 6) -> list[Path]:
+def _all_oneshots(masters: Path) -> list[Path]:
+    out: list[Path] = []
+    for folder in sorted(p for p in masters.iterdir() if p.is_dir() and "loop" not in p.name.lower()):
+        out.extend(sorted(folder.glob("*.wav")))
+    return out
+
+
+def _pick_cores(masters: Path, per_folder: int) -> list[Path]:
     picks: list[Path] = []
     for folder in sorted(p for p in masters.iterdir() if p.is_dir() and "loop" not in p.name.lower()):
         picks.extend(sorted(folder.glob("*.wav"))[:per_folder])
@@ -47,13 +58,15 @@ def _pick_cores(masters: Path, per_folder: int = 6) -> list[Path]:
 
 
 def build_dirty_circuits(out_dir: Path, masters: Path) -> dict:
+    """Standalone Dirty Circuits bus pack (doubled coverage)."""
     if out_dir.exists():
         shutil.rmtree(out_dir)
     pack = out_dir / "Dirty_Circuits"
     docs = pack / "_DOCS"
     docs.mkdir(parents=True)
     files = 0
-    cores = _pick_cores(masters, per_folder=5)
+    # doubled: 10 per folder (was 5)
+    cores = _pick_cores(masters, per_folder=10)
     for mode in ("CLEAN", "DIRTY", "RUINED"):
         mode_dir = pack / "01_PROCESS_MODES" / mode
         mode_dir.mkdir(parents=True)
@@ -64,11 +77,10 @@ def build_dirty_circuits(out_dir: Path, masters: Path) -> dict:
             write_wav_mono(out / f"BBDC_{mode}_{path.stem}.wav", _dirty(read_wav_mono(path), mode, seed=i))
             files += 1
 
-    # exclusives: ruined aliases of snares/hats
     excl = pack / "02_EXCLUSIVES_RUINED"
     excl.mkdir(parents=True)
     for path in cores:
-        if any(x in path.parent.name.lower() for x in ("snare", "hat", "808", "kick")):
+        if any(x in path.parent.name.lower() for x in ("snare", "hat", "808", "kick", "clap", "cow")):
             write_wav_mono(
                 excl / f"BBDC_EX_{path.stem}_ruined.wav",
                 _dirty(read_wav_mono(path), "RUINED", seed=99),
@@ -108,54 +120,109 @@ A/B CLEAN → DIRTY → RUINED of the same stem. Not a ROM dump.
 
 
 def build_bb96dc(out_dir: Path, masters: Path) -> dict:
+    """BLACK BOX 96: Dirty Circuits Edition — full clean-to-dirty expansion."""
     if out_dir.exists():
         shutil.rmtree(out_dir)
     pack = out_dir / "Black_Box_96_Dirty_Circuits"
     docs = pack / "_DOCS"
     docs.mkdir(parents=True)
     files = 0
-    cores = _pick_cores(masters, per_folder=8)
+    oneshots = _all_oneshots(masters)
+    if not oneshots:
+        raise FileNotFoundError(f"no oneshots in {masters}")
+
     pairs = pack / "01_CLEAN_TO_DIRTY_PAIRS"
-    for path in cores:
+    for i, path in enumerate(oneshots):
         role = path.parent.name
         stem = path.stem
+        buf = read_wav_mono(path)
         for mode in ("CLEAN", "DIRTY"):
             out = pairs / role / mode
             out.mkdir(parents=True, exist_ok=True)
-            write_wav_mono(out / f"BB96DC_{mode}_{stem}.wav", _dirty(read_wav_mono(path), mode))
+            write_wav_mono(out / f"BB96DC_{mode}_{stem}.wav", _dirty(buf, mode, seed=i))
             files += 1
 
-    excl = pack / "02_EXCLUSIVES"
+    excl = pack / "02_EXCLUSIVES_RUINED"
     excl.mkdir(parents=True)
-    for path in cores[:24]:
+    for i, path in enumerate(oneshots):
         write_wav_mono(
             excl / f"BB96DC_EX_{path.stem}_ruined.wav",
-            _dirty(read_wav_mono(path), "RUINED"),
+            _dirty(read_wav_mono(path), "RUINED", seed=i + 3),
         )
         files += 1
+
+    # Bonus: cassette desk lane on every oneshot (expanded edition exclusive bank)
+    cass = pack / "03_CASSETTE_DESK"
+    for i, path in enumerate(oneshots):
+        role = path.parent.name
+        out = cass / role
+        out.mkdir(parents=True, exist_ok=True)
+        write_wav_mono(
+            out / f"BB96DC_CASS_{path.stem}.wav",
+            cassette_fx(read_wav_mono(path), drive_db=5.5, seed=200 + i),
+        )
+        files += 1
+
+    # Loops pass-through (doubled with BB96)
+    loops_src = next((p for p in masters.iterdir() if p.is_dir() and "loop" in p.name.lower()), None)
+    loop_n = 0
+    if loops_src:
+        shutil.copytree(loops_src, pack / "04_LOOPS")
+        loop_n = len(list((pack / "04_LOOPS").glob("*.wav")))
+        files += loop_n
 
     (docs / "Hardware_Processing_Guide.md").write_text(
         """# BLACK BOX 96: Dirty Circuits Edition
 
-Expanded flagship: clean-to-dirty pairs of BB96 cores + ruined exclusives.
+Expanded flagship — clean-to-dirty variations + exclusives of the full BB96 oneshot set.
 
-1. Load a CLEAN hit from `01_CLEAN_TO_DIRTY_PAIRS/.../CLEAN/`
-2. Layer or swap with matching DIRTY sibling
-3. Use `02_EXCLUSIVES` for ruined one-offs
+| Folder | What to do |
+|--------|------------|
+| `01_CLEAN_TO_DIRTY_PAIRS/<role>/CLEAN` | Map as your base pad |
+| `01_CLEAN_TO_DIRTY_PAIRS/<role>/DIRTY` | Same hit, crushed/cassette dirt — layer or swap |
+| `02_EXCLUSIVES_RUINED` | Extreme ruined one-offs |
+| `03_CASSETTE_DESK` | Desk-only cassette pass (no extra bitcrush) |
+| `04_LOOPS` | Construction loops from BB96 |
 
-See collection `SONIC_DNA.md` Dirty Circuits bus.
+Stem names match across CLEAN / DIRTY / RUINED / CASS for easy pairing.
 """,
         encoding="utf-8",
     )
     (docs / "PRODUCT.txt").write_text(
-        "BLACK BOX 96: Dirty Circuits Edition\nSKU: BB96DC\nExpanded Flagship\nrelease_ready: FALSE\n",
+        "\n".join(
+            [
+                "BLACK BOX 96: Dirty Circuits Edition",
+                "SKU: BB96DC",
+                "Identity: Expanded Flagship",
+                "Collection: DiskLordz Black Box",
+                f"Oneshot pairs: {len(oneshots)} CLEAN + {len(oneshots)} DIRTY",
+                f"Ruined exclusives: {len(oneshots)}",
+                f"Cassette desk: {len(oneshots)}",
+                f"Loops: {loop_n}",
+                "release_ready: FALSE until HITL",
+                "",
+            ]
+        ),
         encoding="utf-8",
     )
     shutil.copy(ROOT / "kits/black-box-collection/PRODUCT_LINEUP.md", docs / "COLLECTION.md")
+    kit_product = ROOT / "kits/black-box-96-dirty-circuits/PRODUCT.md"
+    if kit_product.exists():
+        shutil.copy(kit_product, docs / "PRODUCT.md")
+
     manifest = {
         "sku": "BB96DC",
         "title": "BLACK BOX 96: Dirty Circuits Edition",
+        "identity": "Expanded Flagship",
         "wav_count": files,
+        "oneshot_sources": len(oneshots),
+        "loops": loop_n,
+        "banks": {
+            "clean_dirty_pairs": len(oneshots) * 2,
+            "ruined_exclusives": len(oneshots),
+            "cassette_desk": len(oneshots),
+            "loops": loop_n,
+        },
         "release_ready": False,
     }
     (docs / "pack_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
@@ -173,7 +240,11 @@ def zip_dir(src: Path, zip_path: Path, arc_root: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--masters", type=Path, default=BB96_MASTERS)
-    parser.add_argument("--staging", type=Path, default=ROOT / "kits/black-box-dirty-circuits/pack_staging")
+    parser.add_argument(
+        "--staging",
+        type=Path,
+        default=ROOT / "kits/black-box-dirty-circuits/pack_staging",
+    )
     args = parser.parse_args()
     if not args.masters.is_dir():
         raise SystemExit("BB96 masters required — run generate_era.py bb96 first")
@@ -182,6 +253,12 @@ def main() -> None:
     bb96dc_stage = args.staging / "bb96dc"
     m1 = build_dirty_circuits(dc_stage, args.masters)
     m2 = build_bb96dc(bb96dc_stage, args.masters)
+    # also stage under dedicated kit folder
+    kit_stage = ROOT / "kits/black-box-96-dirty-circuits/pack_staging"
+    if kit_stage.exists():
+        shutil.rmtree(kit_stage)
+    shutil.copytree(bb96dc_stage, kit_stage)
+
     z1 = Path("/opt/cursor/artifacts/Dirty_Circuits.zip")
     z2 = Path("/opt/cursor/artifacts/Black_Box_96_Dirty_Circuits.zip")
     zip_dir(dc_stage / "Dirty_Circuits", z1, "Dirty_Circuits")

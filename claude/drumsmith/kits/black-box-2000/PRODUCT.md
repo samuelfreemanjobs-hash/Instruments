@@ -6,7 +6,7 @@
 | **Identity** | Southern Circuitry |
 | **Era** | Digital Transition |
 | **SKU** | BB00 |
-| **Target hits** | 200–250 (locked **208**) |
+| **Target hits** | 400–500 (locked **416**) |
 | **Format** | 44.1 kHz · PCM16 · mono |
 | **release_ready** | **false** until HITL |
 

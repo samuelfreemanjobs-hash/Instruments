@@ -41,24 +41,36 @@ class CollectionEraTests(unittest.TestCase):
     def test_bb2000(self) -> None:
         self._assert_era("bb2000")
 
-    def test_bb96_still_240(self) -> None:
+    def test_bb96_doubled_480(self) -> None:
         profile = load_profile("bb96")
         with tempfile.TemporaryDirectory() as td:
             rows = generate_all(Path(td), profile)
-            self.assertEqual(len(rows), 240)
+            self.assertEqual(len(rows), 480)
 
-    def test_dirty_circuits_modes(self) -> None:
+    def test_dirty_circuits_and_bb96dc(self) -> None:
         profile = load_profile("bb96")
         with tempfile.TemporaryDirectory() as td:
             masters = Path(td) / "masters"
             generate_all(masters, profile)
+            oneshots = sum(
+                1
+                for p in masters.rglob("*.wav")
+                if "loop" not in p.parent.name.lower()
+            )
             m1 = build_dirty_circuits(Path(td) / "dc", masters)
             m2 = build_bb96dc(Path(td) / "bb96dc", masters)
-            self.assertGreater(m1["wav_count"], 50)
-            self.assertGreater(m2["wav_count"], 50)
+            self.assertGreater(m1["wav_count"], 100)
+            # CLEAN+DIRTY+RUINED+CASS (+ loops) for every oneshot
+            self.assertGreaterEqual(m2["oneshot_sources"], oneshots)
+            self.assertEqual(m2["banks"]["clean_dirty_pairs"], oneshots * 2)
+            self.assertEqual(m2["banks"]["ruined_exclusives"], oneshots)
+            self.assertEqual(m2["banks"]["cassette_desk"], oneshots)
             self.assertTrue((Path(td) / "dc" / "Dirty_Circuits" / "01_PROCESS_MODES" / "DIRTY").is_dir())
             self.assertTrue(
                 (Path(td) / "bb96dc" / "Black_Box_96_Dirty_Circuits" / "01_CLEAN_TO_DIRTY_PAIRS").is_dir()
+            )
+            self.assertTrue(
+                (Path(td) / "bb96dc" / "Black_Box_96_Dirty_Circuits" / "03_CASSETTE_DESK").is_dir()
             )
 
 

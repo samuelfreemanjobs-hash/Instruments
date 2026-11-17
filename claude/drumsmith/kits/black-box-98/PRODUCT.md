@@ -6,7 +6,7 @@
 | **Identity** | Trunk Pressure |
 | **Era** | Bass Era |
 | **SKU** | BB98 |
-| **Target hits** | 175–225 (locked **194**) |
+| **Target hits** | 350–450 (locked **388**) |
 | **Format** | 44.1 kHz · PCM16 · mono |
 | **release_ready** | **false** until HITL |
 

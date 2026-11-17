@@ -6,7 +6,7 @@
 | **Identity** | Memphis Archives |
 | **Era** | Underground Era |
 | **SKU** | BB93 |
-| **Target hits** | 175–225 (locked **180**) |
+| **Target hits** | 350–450 (locked **360**) |
 | **Format** | 44.1 kHz · PCM16 · mono |
 | **release_ready** | **false** until HITL |
 

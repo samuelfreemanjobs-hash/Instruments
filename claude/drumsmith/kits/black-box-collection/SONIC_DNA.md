@@ -29,7 +29,7 @@
 | Tape hats CH/OH | 36 | Soft EDGE, heavy tape LPF, 12-bit @ ~22–26 kHz |
 | Grimy perc | 20 | Rim / clave / scrap metal |
 | Loops | 12 | Sparse 94 BPM crawl |
-| **Locked total** | **180** | Mid band 175–225 |
+| **Locked total** | **360** (doubled) | Mid band 175–225 |
 
 **Profile knobs:** `bit_depth=11–12`, `tape_lpf=9.5k`, `clip_db=2–3.5`, `pitch_st_kick=36–42`
 
@@ -51,7 +51,7 @@
 | Analog tom | 20 | Sine+triangle pitch drop, mid decay | `BB96_TOM_*` |
 | Perc / rim | 12 | Short woody ticks | `BB96_PERC_*` |
 | 2-bar loops | 12 | 94 / 134 BPM labeled | `BB96_LOOP_*bpm_*` |
-| **Total** | **240** | Within 200–250 | |
+| **Total** | **480** | Doubled flagship | |
 
 **Profile knobs:** `bit_depth=12`, `lofi_sr=26040`, `tape_lpf=11–12.5k`, `clip_db=4–6`, `pitch_st_kick=44–52`
 
@@ -71,7 +71,7 @@
 | Hard perc | 20 | Conga/tom hybrid |
 | Hats | 28 | Tighter than BB93, less tape |
 | Loops | 10 | 134 half-time bounce |
-| **Locked total** | **194** | 175–225 |
+| **Locked total** | **388** (doubled) | 175–225 |
 
 **Profile knobs:** `root_bias=-2st`, `amp_decay_kick=0.22`, `clip_db=5–7`, `hpf_snare=120`
 
@@ -90,7 +90,7 @@
 | Synced perc | 24 | Cleaner metallic |
 | Tuned 808 bass | 40 | Keyed chromatic set |
 | Loops | 12 | 95–100 / 140 feel |
-| **Locked total** | **208** | 200–250 |
+| **Locked total** | **416** (doubled) | 200–250 |
 
 **Profile knobs:** `bit_depth=14–16`, `lofi_sr=44100` (light or off), `tape_lpf=16k`, `clip_db=2–3.5`
 

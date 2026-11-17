@@ -5,7 +5,10 @@
   "era": "Bass Era",
   "pack_dir": "Black_Box_98",
   "prefix": "BB98",
-  "target_samples": [175, 225],
+  "target_samples": [
+    350,
+    450
+  ],
   "sample_rate": 44100,
   "bit_depth_out": 16,
   "character": "trunk_bass",
@@ -24,15 +27,15 @@
     "cow_f2": 800
   },
   "inventory": {
-    "KICK": 28,
-    "808": 32,
-    "SNR": 36,
-    "CLAP": 24,
-    "RIM": 16,
-    "PERC": 20,
-    "CH": 20,
-    "OH": 8,
-    "LOOP": 10
+    "KICK": 56,
+    "808": 64,
+    "SNR": 72,
+    "CLAP": 48,
+    "RIM": 32,
+    "PERC": 40,
+    "CH": 40,
+    "OH": 16,
+    "LOOP": 20
   },
   "folder_map": {
     "KICK": "01_Sub_Kicks",
@@ -55,5 +58,6 @@
     "CH": "Tight",
     "OH": "Tight",
     "LOOP": "Bounce"
-  }
+  },
+  "notes": " Inventory doubled per operator request 2026-11-17."
 }

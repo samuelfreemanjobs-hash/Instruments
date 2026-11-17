@@ -5,7 +5,10 @@
   "era": "Underground Era",
   "pack_dir": "Black_Box_93",
   "prefix": "BB93",
-  "target_samples": [175, 225],
+  "target_samples": [
+    350,
+    450
+  ],
   "sample_rate": 44100,
   "bit_depth_out": 16,
   "character": "hollow_tape",
@@ -25,14 +28,14 @@
     "snare_noise_long": true
   },
   "inventory": {
-    "808": 32,
-    "SNR": 36,
-    "CLAP": 22,
-    "COW": 20,
-    "CH": 24,
-    "OH": 12,
-    "PERC": 22,
-    "LOOP": 12
+    "808": 64,
+    "SNR": 72,
+    "CLAP": 44,
+    "COW": 40,
+    "CH": 48,
+    "OH": 24,
+    "PERC": 44,
+    "LOOP": 24
   },
   "folder_map": {
     "808": "01_808_Subs",
@@ -53,5 +56,6 @@
     "OH": "Tape",
     "PERC": "Grimy",
     "LOOP": "Crawl"
-  }
+  },
+  "notes": " Inventory doubled per operator request 2026-11-17."
 }

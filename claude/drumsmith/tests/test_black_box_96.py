@@ -20,9 +20,9 @@ class BlackBox96Tests(unittest.TestCase):
     def test_inventory_count_in_band(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             rows = generate_all(Path(td), PROFILE)
-            self.assertEqual(len(rows), 240)
-            self.assertGreaterEqual(len(rows), 200)
-            self.assertLessEqual(len(rows), 250)
+            self.assertEqual(len(rows), 480)
+            self.assertGreaterEqual(len(rows), 400)
+            self.assertLessEqual(len(rows), 500)
             kinds = {r["kind"] for r in rows}
             for need in ("808", "KICK", "SNR", "CLAP", "CH", "COW", "TOM", "LOOP"):
                 self.assertIn(need, kinds)

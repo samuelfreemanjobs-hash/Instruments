@@ -5,7 +5,10 @@
   "era": "Signature Era",
   "pack_dir": "Black_Box_96",
   "prefix": "BB96",
-  "target_samples": [200, 250],
+  "target_samples": [
+    400,
+    500
+  ],
   "sample_rate": 44100,
   "bit_depth_out": 16,
   "character": "signature",
@@ -23,16 +26,16 @@
     "cow_f2": 800
   },
   "inventory": {
-    "808": 36,
-    "KICK": 24,
-    "SNR": 40,
-    "CLAP": 24,
-    "CH": 32,
-    "OH": 16,
-    "COW": 24,
-    "TOM": 20,
-    "PERC": 12,
-    "LOOP": 12
+    "808": 72,
+    "KICK": 48,
+    "SNR": 80,
+    "CLAP": 48,
+    "CH": 64,
+    "OH": 32,
+    "COW": 48,
+    "TOM": 40,
+    "PERC": 24,
+    "LOOP": 24
   },
   "folder_map": {
     "808": "01_808_Subs",
@@ -57,5 +60,6 @@
     "TOM": "Analog",
     "PERC": "Rim",
     "LOOP": "Groove"
-  }
+  },
+  "notes": " Inventory doubled per operator request 2026-11-17."
 }

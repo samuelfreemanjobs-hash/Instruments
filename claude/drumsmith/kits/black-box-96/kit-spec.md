@@ -12,19 +12,19 @@ The Signature Era flagship: vintage Memphis drums, dirty hardware character, har
 
 | # | Voice | Count | Folder | Prefix |
 |---|-------|------:|--------|--------|
-| 1 | Thick 808 | 36 | `01_CORE_ONESHOTS/01_808_Subs/` | `BB96_808_` |
-| 2 | Punch kick | 24 | `01_CORE_ONESHOTS/02_Kicks/` | `BB96_KICK_` |
-| 3 | Aggressive snare | 40 | `01_CORE_ONESHOTS/03_Snares/` | `BB96_SNR_` |
-| 4 | Dry clap | 24 | `01_CORE_ONESHOTS/04_Claps/` | `BB96_CLAP_` |
-| 5 | Crunchy closed hat | 32 | `01_CORE_ONESHOTS/05_Hats_Closed/` | `BB96_CH_` |
-| 6 | Open hat | 16 | `01_CORE_ONESHOTS/06_Hats_Open/` | `BB96_OH_` |
-| 7 | Metallic cowbell | 24 | `01_CORE_ONESHOTS/07_Cowbells/` | `BB96_COW_` |
-| 8 | Analog tom | 20 | `01_CORE_ONESHOTS/08_Toms/` | `BB96_TOM_` |
-| 9 | Perc / rim | 12 | `01_CORE_ONESHOTS/09_Percussion/` | `BB96_PERC_` |
-| 10 | 2-bar loops | 12 | `05_LOOPS/` | `BB96_LOOP_` |
-| | **Core total** | **240** | | |
+| 1 | Thick 808 | 72 | `01_CORE_ONESHOTS/01_808_Subs/` | `BB96_808_` |
+| 2 | Punch kick | 48 | `01_CORE_ONESHOTS/02_Kicks/` | `BB96_KICK_` |
+| 3 | Aggressive snare | 80 | `01_CORE_ONESHOTS/03_Snares/` | `BB96_SNR_` |
+| 4 | Dry clap | 48 | `01_CORE_ONESHOTS/04_Claps/` | `BB96_CLAP_` |
+| 5 | Crunchy closed hat | 64 | `01_CORE_ONESHOTS/05_Hats_Closed/` | `BB96_CH_` |
+| 6 | Open hat | 32 | `01_CORE_ONESHOTS/06_Hats_Open/` | `BB96_OH_` |
+| 7 | Metallic cowbell | 48 | `01_CORE_ONESHOTS/07_Cowbells/` | `BB96_COW_` |
+| 8 | Analog tom | 40 | `01_CORE_ONESHOTS/08_Toms/` | `BB96_TOM_` |
+| 9 | Perc / rim | 24 | `01_CORE_ONESHOTS/09_Percussion/` | `BB96_PERC_` |
+| 10 | 2-bar loops | 24 | `05_LOOPS/` | `BB96_LOOP_` |
+| | **Core total** | **480** | | |
 
-Count check: 36+24+40+24+32+16+24+20+12+12 = **240** ✓ (within 200–250)
+Count check: 72+48+80+48+64+32+48+40+24+24 = **480** ✓ (doubled)
 
 ## Process / FX banks (packaged extras)
 

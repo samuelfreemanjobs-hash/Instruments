@@ -9,7 +9,7 @@
 | **SKU** | BB96 |
 | **Category** | Drum sample kit (oneshots + loops + process banks) |
 | **Promise** | Signature vintage drum-machine sound — thick 808s, aggressive snares, metallic cowbells, crunchy hats, analog toms, dry claps — plus pitched / cassette / RAW·TAPE·LOFI parallel banks |
-| **Target hits** | 200–250 core (locked **240**) + FX banks |
+| **Target hits** | 200–250 core (locked **480**) + FX banks |
 | **Format** | 44.1 kHz · PCM16 · mono |
 | **Street price** | HITL ($24–$34 band) |
 | **release_ready** | **false** until HITL |
