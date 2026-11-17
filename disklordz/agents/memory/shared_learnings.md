@@ -171,3 +171,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** RESEARCH_ELITE_PHONK_KIT.md; Firecrawl MU V1/Loopmasters Drift/LANDR 2026-11-17
 - **confidence:** inspected
 - **status:** active
+
+### L-0018 · Black Box kits must ship CNV-style process banks + guide
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** User feedback that BB96 example lacked FX/pitch/cassette and zip instructions
+- **lesson:** Commercial drumsmith zips need 01 cores + bitcrushed/pitched + cassette + parallel RAW/TAPE/LOFI + Hardware_Processing_Guide in _DOCS; synthesis-only grit is not enough.
+- **do:** Use scripts/black_box/process_fx.py + package_bb96.py process stages; keep release_ready false until HITL.
+- **evidence:** Hardware_Processing_Guide.md; package_bb96.py counts; user 2026-11-17
+- **confidence:** executed
+- **status:** active

@@ -3,14 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BLACK BOX 96 — Listen</title>
+  <title>BLACK BOX 96 — Listen (FX A/B)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg0: #0c0b0a;
-      --bg1: #161311;
       --panel: #1c1814;
       --line: #3a3028;
       --text: #e8dcc8;
@@ -18,9 +17,7 @@
       --accent: #d4782a;
       --accent-dim: #8a4a18;
       --ok: #c4a574;
-      --danger: #a84a3a;
     }
-
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
     body {
@@ -28,418 +25,153 @@
       color: var(--text);
       background:
         radial-gradient(1200px 600px at 10% -10%, #2a1a10 0%, transparent 55%),
-        radial-gradient(900px 500px at 100% 0%, #1a1210 0%, transparent 50%),
         linear-gradient(180deg, #100e0c 0%, var(--bg0) 40%, #090807 100%);
       background-attachment: fixed;
     }
-
-    .noise {
-      pointer-events: none;
-      position: fixed;
-      inset: 0;
-      opacity: 0.045;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      z-index: 0;
-    }
-
-    .wrap {
-      position: relative;
-      z-index: 1;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2.5rem 1.25rem 5rem;
-    }
-
-    header {
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 1.5rem;
-      margin-bottom: 1.75rem;
-      animation: rise 700ms ease-out both;
-    }
-
-    .eyebrow {
-      color: var(--accent);
-      letter-spacing: 0.22em;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      margin: 0 0 0.65rem;
-    }
-
-    h1 {
-      font-family: "Bebas Neue", Impact, sans-serif;
-      font-weight: 400;
-      font-size: clamp(3.2rem, 10vw, 5.6rem);
-      line-height: 0.9;
-      letter-spacing: 0.04em;
-      margin: 0;
-      color: #f3e7d4;
-    }
-
-    .tagline {
-      margin: 0.85rem 0 0;
-      color: var(--mute);
-      max-width: 36rem;
-      font-size: 0.92rem;
-      line-height: 1.5;
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem;
-      margin-top: 1.35rem;
-      align-items: center;
-    }
-
+    .wrap { max-width: 980px; margin: 0 auto; padding: 2.25rem 1.2rem 4rem; }
+    .eyebrow { color: var(--accent); letter-spacing: 0.2em; font-size: 0.72rem; text-transform: uppercase; margin: 0 0 0.55rem; }
+    h1 { font-family: "Bebas Neue", Impact, sans-serif; font-weight: 400; font-size: clamp(2.8rem, 9vw, 4.8rem); line-height: 0.92; margin: 0; letter-spacing: 0.04em; }
+    .tagline { color: var(--mute); max-width: 40rem; font-size: 0.9rem; line-height: 1.5; margin: 0.8rem 0 0; }
+    .controls { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.2rem; align-items: center; }
     button {
-      font: inherit;
-      cursor: pointer;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      color: var(--text);
-      padding: 0.55rem 0.9rem;
-      transition: border-color 160ms ease, background 160ms ease, transform 120ms ease;
+      font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--panel);
+      color: var(--text); padding: 0.5rem 0.85rem;
     }
-    button:hover { border-color: var(--accent-dim); background: #241c16; }
-    button:active { transform: translateY(1px); }
-    button.primary {
-      background: linear-gradient(180deg, #c86a22, #9a4514);
-      border-color: #e08a3a;
-      color: #1a0f08;
-      font-weight: 600;
-    }
+    button.primary { background: linear-gradient(180deg, #c86a22, #9a4514); border-color: #e08a3a; color: #1a0f08; font-weight: 600; }
     button.ghost { background: transparent; }
-    button:disabled { opacity: 0.45; cursor: not-allowed; }
-
-    .now {
-      margin-left: auto;
-      color: var(--mute);
-      font-size: 0.78rem;
-      min-height: 1.2em;
-    }
+    .now { margin-left: auto; color: var(--mute); font-size: 0.78rem; }
     .now strong { color: var(--ok); font-weight: 500; }
-
-    .transport {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 0.75rem;
-      align-items: center;
-      margin-top: 1rem;
-      padding: 0.85rem 1rem;
-      background: rgba(20, 16, 12, 0.75);
-      border: 1px solid var(--line);
-      animation: rise 850ms ease-out both;
-    }
-
-    .meter {
-      height: 6px;
-      background: #2a221c;
-      overflow: hidden;
-      position: relative;
-    }
-    .meter > span {
-      display: block;
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent-dim), var(--accent));
-      transition: width 80ms linear;
-    }
-
-    .cats {
-      display: grid;
-      gap: 1.1rem;
-      margin-top: 1.75rem;
-    }
-
-    section.cat {
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(28, 24, 20, 0.92), rgba(14, 12, 10, 0.88));
-      animation: rise 900ms ease-out both;
-    }
-
-    .cat-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 1rem;
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .cat-head h2 {
-      margin: 0;
-      font-family: "Bebas Neue", Impact, sans-serif;
-      font-size: 1.55rem;
-      letter-spacing: 0.06em;
-      font-weight: 400;
-    }
-
-    .cat-head span {
-      color: var(--mute);
-      font-size: 0.75rem;
-    }
-
-    .pads {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 0.55rem;
-      padding: 0.85rem;
-    }
-
-    .pad {
-      text-align: left;
-      padding: 0.7rem 0.75rem;
-      min-height: 3.4rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .pad .name {
-      display: block;
-      font-size: 0.72rem;
-      line-height: 1.35;
-      word-break: break-word;
-    }
-    .pad.playing {
-      border-color: var(--accent);
-      box-shadow: inset 0 0 0 1px var(--accent-dim);
-      background: #2a1c12;
-    }
-    .pad.playing::after {
-      content: "";
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      background: var(--accent);
-      animation: pulse 900ms ease-in-out infinite;
-    }
-
-    footer {
-      margin-top: 2rem;
-      color: var(--mute);
-      font-size: 0.75rem;
-      line-height: 1.5;
-      border-top: 1px solid var(--line);
-      padding-top: 1rem;
-    }
-
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: none; }
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 1; }
-    }
-
-    @media (max-width: 640px) {
-      .now { margin-left: 0; width: 100%; }
-      .transport { grid-template-columns: 1fr; }
-    }
+    .meter { height: 6px; background: #2a221c; margin-top: 0.9rem; overflow: hidden; }
+    .meter > span { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); }
+    section.cat { border: 1px solid var(--line); background: rgba(28,24,20,0.9); margin-top: 1rem; }
+    .cat-head { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0.95rem; border-bottom: 1px solid var(--line); }
+    .cat-head h2 { margin: 0; font-family: "Bebas Neue", Impact, sans-serif; font-size: 1.4rem; letter-spacing: 0.05em; font-weight: 400; }
+    .cat-head span { color: var(--mute); font-size: 0.72rem; }
+    .pads { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 0.5rem; padding: 0.8rem; }
+    .pad { text-align: left; min-height: 3.2rem; position: relative; }
+    .pad .name { display: block; font-size: 0.7rem; line-height: 1.35; word-break: break-word; }
+    .pad.playing { border-color: var(--accent); background: #2a1c12; }
+    .pad.playing::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
+    footer { margin-top: 1.6rem; color: var(--mute); font-size: 0.72rem; line-height: 1.5; border-top: 1px solid var(--line); padding-top: 0.9rem; }
   </style>
 </head>
 <body>
-  <div class="noise" aria-hidden="true"></div>
   <div class="wrap">
-    <header>
-      <p class="eyebrow">DiskLordz · The Lost Drum Machine Collection</p>
-      <h1>BLACK BOX 96</h1>
-      <p class="tagline">
-        The Original Machine — thick 808s, aggressive snares, metallic cowbells,
-        crunchy hats, analog toms, dry claps. Curated listen set from the 240-sample flagship pack.
-      </p>
-      <div class="controls">
-        <button class="primary" id="btnTour" type="button">Play signature tour</button>
-        <button class="ghost" id="btnStop" type="button">Stop</button>
-        <div class="now" id="nowPlaying">Ready.</div>
-      </div>
-      <div class="transport" aria-hidden="false">
-        <button id="btnPrev" type="button" title="Previous">◀</button>
-        <div class="meter"><span id="progress"></span></div>
-        <button id="btnNext" type="button" title="Next">▶</button>
-      </div>
-    </header>
-
-    <div class="cats" id="cats"></div>
-
+    <p class="eyebrow">DiskLordz · A/B cores vs pitched · cassette · parallel banks</p>
+    <h1>BLACK BOX 96</h1>
+    <p class="tagline">
+      Hear the pack the way the zip is built: RAW cores, rate-dropped / pitched variants,
+      cassette desk FX, and RAW→TAPE→LOFI→CASSETTE siblings of the same snare.
+    </p>
+    <div class="controls">
+      <button class="primary" id="btnTour" type="button">Play FX A/B tour</button>
+      <button class="ghost" id="btnStop" type="button">Stop</button>
+      <div class="now" id="nowPlaying">Ready.</div>
+    </div>
+    <div class="meter"><span id="progress"></span></div>
+    <div id="cats"></div>
     <footer>
-      Format: 44.1 kHz · PCM16 · mono · original synthesis (not a hardware ROM dump).<br />
-      Full pack: 240 samples · release_ready: false until HITL.
+      Full zip: 240 core + pitched + cassette + parallel banks + mini-kits · see <code>_DOCS/Hardware_Processing_Guide.md</code>
     </footer>
   </div>
-
   <script>
     const CATEGORIES = [
       {
-        id: "01_808_Subs",
-        title: "808 Subs",
-        blurb: "Thick tuned 808s",
+        id: "core",
+        title: "01 · Core (RAW)",
+        blurb: "Unprocessed siblings for A/B",
         files: [
           "BB96_808_Thick_F0_01.wav",
-          "BB96_808_Thick_F0_08.wav",
-          "BB96_808_Thick_F0_15.wav",
-          "BB96_808_Thick_F0_22.wav",
-          "BB96_808_Thick_F2_03.wav",
-          "BB96_808_Thick_F2_10.wav",
-          "BB96_808_Thick_F4_19.wav",
-          "BB96_808_Thick_F4_26.wav",
-          "BB96_808_Thick_F6_28.wav",
-        ],
-      },
-      {
-        id: "02_Kicks",
-        title: "Kicks",
-        blurb: "Punchy machine kicks",
-        files: [
-          "BB96_KICK_Punch_NA_01.wav",
-          "BB96_KICK_Punch_NA_02.wav",
-          "BB96_KICK_Punch_NA_03.wav",
-          "BB96_KICK_Punch_NA_04.wav",
-        ],
-      },
-      {
-        id: "03_Snares",
-        title: "Snares",
-        blurb: "Aggressive Southern snares",
-        files: [
           "BB96_SNR_Aggro_NA_01.wav",
-          "BB96_SNR_Aggro_NA_02.wav",
-          "BB96_SNR_Aggro_NA_03.wav",
-          "BB96_SNR_Aggro_NA_04.wav",
-          "BB96_SNR_Aggro_NA_10.wav",
-          "BB96_SNR_Aggro_NA_20.wav",
-          "BB96_SNR_Aggro_NA_30.wav",
-          "BB96_SNR_Aggro_NA_40.wav",
-        ],
-      },
-      {
-        id: "04_Claps",
-        title: "Claps",
-        blurb: "Dry layered claps",
-        files: [
-          "BB96_CLAP_Dry_NA_01.wav",
-          "BB96_CLAP_Dry_NA_02.wav",
-          "BB96_CLAP_Dry_NA_03.wav",
-          "BB96_CLAP_Dry_NA_04.wav",
-        ],
-      },
-      {
-        id: "05_Hats_Closed",
-        title: "Closed Hats",
-        blurb: "Crunchy closed hats",
-        files: [
           "BB96_CH_Crunch_NA_01.wav",
-          "BB96_CH_Crunch_NA_02.wav",
-          "BB96_CH_Crunch_NA_03.wav",
-          "BB96_CH_Crunch_NA_04.wav",
-        ],
-      },
-      {
-        id: "06_Hats_Open",
-        title: "Open Hats",
-        blurb: "Crunchy open hats",
-        files: [
-          "BB96_OH_Crunch_NA_01.wav",
-          "BB96_OH_Crunch_NA_02.wav",
-          "BB96_OH_Crunch_NA_03.wav",
-          "BB96_OH_Crunch_NA_04.wav",
-        ],
-      },
-      {
-        id: "07_Cowbells",
-        title: "Cowbells",
-        blurb: "Metallic cowbells",
-        files: [
           "BB96_COW_Metal_NA_01.wav",
-          "BB96_COW_Metal_NA_02.wav",
-          "BB96_COW_Metal_NA_03.wav",
-          "BB96_COW_Metal_NA_04.wav",
         ],
       },
       {
-        id: "08_Toms",
-        title: "Toms",
-        blurb: "Analog toms",
+        id: "pitched",
+        title: "02 · Bitcrushed & pitched",
+        blurb: "Rate-drop 808s · pitched snare",
         files: [
-          "BB96_TOM_Analog_NA_01.wav",
-          "BB96_TOM_Analog_NA_02.wav",
-          "BB96_TOM_Analog_NA_03.wav",
-          "BB96_TOM_Analog_NA_04.wav",
+          "BB96_808_Thick_F0_01_pitch-12st.wav",
+          "BB96_808_Thick_F0_01_pitch-24st.wav",
+          "BB96_SNR_Aggro_NA_01_pitch-7st.wav",
         ],
       },
       {
-        id: "09_Percussion",
-        title: "Percussion",
-        blurb: "Rims & hard perc",
+        id: "cassette",
+        title: "03 · Cassette & tape",
+        blurb: "Drive · LPF · wow/flutter · hiss",
         files: [
-          "BB96_PERC_Rim_NA_01.wav",
-          "BB96_PERC_Rim_NA_02.wav",
-          "BB96_PERC_Rim_NA_03.wav",
-          "BB96_PERC_Rim_NA_04.wav",
+          "BB96_808_Thick_F0_01_cassette.wav",
+          "BB96_SNR_Aggro_NA_01_cassette.wav",
+          "BB96_CH_Crunch_NA_01_cassette.wav",
         ],
       },
       {
-        id: "10_Loops",
-        title: "Loops",
-        blurb: "94 & 134 BPM",
+        id: "parallel",
+        title: "04 · Parallel banks (same snare)",
+        blurb: "RAW → TAPE → LOFI → CASSETTE",
         files: [
-          "BB96_LOOP_94bpm_01.wav",
-          "BB96_LOOP_94bpm_02.wav",
-          "BB96_LOOP_94bpm_03.wav",
-          "BB96_LOOP_134bpm_04.wav",
-          "BB96_LOOP_134bpm_05.wav",
-          "BB96_LOOP_134bpm_10.wav",
-          "BB96_LOOP_134bpm_11.wav",
+          "BB96_RAW_Snares_01.wav",
+          "BB96_TAPE_Snares_01.wav",
+          "BB96_LOFI_Snares_01.wav",
+          "BB96_CASSETTE_Snares_01.wav",
         ],
+      },
+      {
+        id: "mini",
+        title: "06 · Mini-kit kick A/B",
+        blurb: "Clean kick vs cassette kick",
+        files: [
+          "BB96_01_OriginalMachine_Kick.wav",
+          "BB96_01_OriginalMachine_Kick_Cassette.wav",
+        ],
+      },
+      {
+        id: "loops",
+        title: "05 · Loops",
+        blurb: "94 / 134 BPM",
+        files: ["BB96_LOOP_94bpm_01.wav", "BB96_LOOP_134bpm_04.wav"],
       },
     ];
 
     const TOUR = [
-      "01_808_Subs/BB96_808_Thick_F0_01.wav",
-      "02_Kicks/BB96_KICK_Punch_NA_01.wav",
-      "03_Snares/BB96_SNR_Aggro_NA_01.wav",
-      "04_Claps/BB96_CLAP_Dry_NA_01.wav",
-      "07_Cowbells/BB96_COW_Metal_NA_01.wav",
-      "05_Hats_Closed/BB96_CH_Crunch_NA_01.wav",
-      "08_Toms/BB96_TOM_Analog_NA_01.wav",
-      "10_Loops/BB96_LOOP_94bpm_01.wav",
-      "03_Snares/BB96_SNR_Aggro_NA_40.wav",
-      "01_808_Subs/BB96_808_Thick_F6_28.wav",
-      "10_Loops/BB96_LOOP_134bpm_11.wav",
+      "core/BB96_808_Thick_F0_01.wav",
+      "pitched/BB96_808_Thick_F0_01_pitch-24st.wav",
+      "cassette/BB96_808_Thick_F0_01_cassette.wav",
+      "core/BB96_SNR_Aggro_NA_01.wav",
+      "cassette/BB96_SNR_Aggro_NA_01_cassette.wav",
+      "parallel/BB96_RAW_Snares_01.wav",
+      "parallel/BB96_TAPE_Snares_01.wav",
+      "parallel/BB96_LOFI_Snares_01.wav",
+      "parallel/BB96_CASSETTE_Snares_01.wav",
+      "mini/BB96_01_OriginalMachine_Kick.wav",
+      "mini/BB96_01_OriginalMachine_Kick_Cassette.wav",
+      "loops/BB96_LOOP_94bpm_01.wav",
     ];
 
     const audio = new Audio();
     const catsEl = document.getElementById("cats");
     const nowEl = document.getElementById("nowPlaying");
     const progressEl = document.getElementById("progress");
-    let flat = [];
-    let index = -1;
     let tourMode = false;
     let tourPos = 0;
-
-    function srcFor(rel) {
-      return "samples/" + rel;
-    }
 
     function setNow(label) {
       nowEl.innerHTML = label ? "Now · <strong>" + label + "</strong>" : "Ready.";
     }
-
     function clearPlaying() {
       document.querySelectorAll(".pad.playing").forEach((el) => el.classList.remove("playing"));
     }
-
     function playRel(rel, opts = {}) {
-      const { fromTour = false } = opts;
-      tourMode = fromTour;
+      tourMode = !!opts.fromTour;
       clearPlaying();
       const pad = document.querySelector('[data-rel="' + CSS.escape(rel) + '"]');
       if (pad) pad.classList.add("playing");
-      index = flat.indexOf(rel);
-      audio.src = srcFor(rel);
+      audio.src = "samples/" + rel;
       audio.play().catch(() => setNow("Click a pad to unlock audio"));
       setNow(rel.split("/").pop().replace(".wav", ""));
     }
-
     function stopAll() {
       audio.pause();
       audio.currentTime = 0;
@@ -449,23 +181,19 @@
       setNow("");
     }
 
-    CATEGORIES.forEach((cat, i) => {
+    CATEGORIES.forEach((cat) => {
       const section = document.createElement("section");
       section.className = "cat";
-      section.style.animationDelay = (i * 40) + "ms";
       section.innerHTML =
         '<div class="cat-head"><h2>' +
         cat.title +
         "</h2><span>" +
         cat.blurb +
-        " · " +
-        cat.files.length +
         "</span></div>";
       const pads = document.createElement("div");
       pads.className = "pads";
       cat.files.forEach((file) => {
         const rel = cat.id + "/" + file;
-        flat.push(rel);
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "pad";
@@ -483,15 +211,6 @@
       tourPos = 0;
       playRel(TOUR[0], { fromTour: true });
     });
-    document.getElementById("btnPrev").addEventListener("click", () => {
-      if (index <= 0) return;
-      playRel(flat[index - 1]);
-    });
-    document.getElementById("btnNext").addEventListener("click", () => {
-      if (index < 0 || index >= flat.length - 1) return;
-      playRel(flat[index + 1]);
-    });
-
     audio.addEventListener("timeupdate", () => {
       if (!audio.duration) return;
       progressEl.style.width = ((audio.currentTime / audio.duration) * 100).toFixed(1) + "%";

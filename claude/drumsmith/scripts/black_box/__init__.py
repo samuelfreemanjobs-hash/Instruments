@@ -1,1 +1,1 @@
-"""DiskLordz BLACK BOX era-profile kit generators."""
+"""Black Box Collection generators and packagers."""
