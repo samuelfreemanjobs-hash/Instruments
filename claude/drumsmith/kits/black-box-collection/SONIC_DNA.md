@@ -1,6 +1,7 @@
 # BLACK BOX — Sonic DNA & drum voice inventory
 
 **Goal:** Four distinct machine personalities (plus Dirty Circuits), not the same hits with different FX.  
+**Quality pass:** era `recipe_set` + `layered` synthesis · loop-only voices + MIDI · desk presets · 24-bit Studio lane · stereo tops · velocity · construction kits · Starter Hero curation · reference calibration vs elite preview.  
 **Evidence:** Product plan (user) + Memphis research in `converter-night/docs/` · tags: `[assumed]` profile numbers until ear-locked.
 
 ## Shared engine axes

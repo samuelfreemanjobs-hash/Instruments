@@ -46,3 +46,9 @@ Listen booth: https://black-box-collection.apps.grok.bot
 - Recipes: Thick / Punch / Crawl / Dirty (18 each)
 - Loops: full converter-night blueprint set (22+) with seed-varied voices
 - `release_ready` still false (HITL)
+
+## 2026-11-18 — Quality pass (eras 2–7)
+- Era `recipe_set` diversify (hollow/signature/trunk/digital) + layered 808/snare/hat
+- Loop-only voices + MIDI · desk presets · 24-bit Studio · stereo tops · velocity · construction kits · Starter Hero
+- Reference calibration vs elite preview — all eras grade A
+- `release_ready` still false (HITL)

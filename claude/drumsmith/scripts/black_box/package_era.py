@@ -18,13 +18,19 @@ from scripts.black_box.generate_era import (  # noqa: E402
     kit_masters_dir,
     load_profile,
 )
+from scripts.black_box import layered as L  # noqa: E402
+from scripts.black_box.curate_hero import build_hero_manifest, select_heroes  # noqa: E402
 from scripts.black_box.process_fx import (  # noqa: E402
+    DESK_PRESETS,
     bitcrush,
     cassette_fx,
     pitch_shift,
+    process_desk,
     process_lane,
     read_wav_mono,
+    write_wav_24,
     write_wav_mono,
+    write_wav_stereo_16,
     zip_tree,
 )
 
@@ -121,7 +127,13 @@ Producer instructions for this zip. Original synthesis only — not a hardware R
 | `03_CASSETTE_AND_TAPE/` | Cassette desk FX (drive → tape LPF → wow/flutter → hiss) |
 | `04_PARALLEL_PROCESS_BANKS/` | RAW / TAPE / LOFI / CASSETTE siblings |
 | `05_LOOPS/` | Construction loops |
-| `06_MATCHED_MINI_KITS/` | Oneshots + BPM loop + cassette kick A/B |
+| `06_MATCHED_MINI_KITS/` | Oneshots + BPM loop + glued bus + cassette A/B |
+| `07_DESK_PRESETS/` | SP_HOLD / CASSETTE / CRUSHED / TRUNK |
+| `08_STUDIO_24BIT/` | 24-bit mono heroes (Splice-friendly lane) |
+| `09_STEREO_TOPS/` | Haas-widened snares/hats/claps |
+| `10_VELOCITY_LAYERS/` | Soft / Hard variants of hero hits |
+| `11_CONSTRUCTION_KITS/` | Oneshots + loop + MIDI + stems idea |
+| `12_STARTER_HERO/` | Curated deadly bank (not the whole archive) |
 | `_DOCS/` | This guide + product notes |
 
 ## Rate-drop / pitched
@@ -253,11 +265,16 @@ def _build_mini_kits(pack: Path, masters: Path, profile: dict) -> int:
             if role == "Kick":
                 kick_path = path
         if kick_path:
+            kick_buf = read_wav_mono(kick_path)
             write_wav_mono(
                 oneshots / f"{prefix}_{kid}_Kick_Cassette.wav",
-                cassette_fx(read_wav_mono(kick_path), seed=100 + kit_i),
+                cassette_fx(kick_buf, seed=100 + kit_i),
             )
-            n += 1
+            write_wav_mono(
+                oneshots / f"{prefix}_{kid}_Kick_Glued.wav",
+                L.bus_glue(kick_buf, drive_db=2.8, lpf_hz=13000.0),
+            )
+            n += 2
         if kit_i < len(loop_wavs):
             loop_src = loop_wavs[kit_i]
             # Preserve BPM token from filename when present
@@ -266,13 +283,127 @@ def _build_mini_kits(pack: Path, masters: Path, profile: dict) -> int:
                 if part.endswith("bpm"):
                     bpm_token = part.replace("bpm", "")
                     break
-            shutil.copy2(loop_src, kdir / f"{prefix}_{kid}_LOOP_{bpm_token}bpm.wav")
+            loop_buf = L.bus_glue(read_wav_mono(loop_src), drive_db=1.8, lpf_hz=15000.0)
+            write_wav_mono(kdir / f"{prefix}_{kid}_LOOP_{bpm_token}bpm.wav", loop_buf)
+            mid = loop_src.with_suffix(".mid")
+            if mid.exists():
+                shutil.copy2(mid, kdir / f"{prefix}_{kid}_LOOP_{bpm_token}bpm.mid")
             n += 1
         (kdir / "README.txt").write_text(
-            f"Mini-kit {kid}\nSelected from masters — Kick vs Kick_Cassette A/B.\n"
+            f"Mini-kit {kid}\nKick RAW / Glued / Cassette A/B + glued loop.\n"
             "See _DOCS/Hardware_Processing_Guide.md\n",
             encoding="utf-8",
         )
+    return n
+
+
+def _build_desk_presets(pack: Path, masters: Path, profile: dict) -> int:
+    dest = pack / "07_DESK_PRESETS"
+    n = 0
+    prefix = profile["prefix"]
+    roles = _oneshot_folders(masters, profile)[:5]
+    for preset in DESK_PRESETS:
+        for folder in roles:
+            role = folder.name.split("_", 1)[-1] if "_" in folder.name else folder.name
+            out = dest / preset / role
+            out.mkdir(parents=True)
+            for i, path in enumerate(_sample_wavs(folder, 2)):
+                write_wav_mono(
+                    out / f"{prefix}_{preset}_{role}_{i+1:02d}.wav",
+                    process_desk(read_wav_mono(path), preset, seed=i),
+                )
+                n += 1
+    return n
+
+
+def _build_studio_24(pack: Path, masters: Path, profile: dict, heroes: list[Path]) -> int:
+    dest = pack / "08_STUDIO_24BIT"
+    dest.mkdir(parents=True)
+    n = 0
+    for path in heroes[:48]:
+        write_wav_24(dest / f"{path.stem}_24bit.wav", read_wav_mono(path))
+        n += 1
+    return n
+
+
+def _build_stereo_tops(pack: Path, masters: Path, profile: dict) -> int:
+    dest = pack / "09_STEREO_TOPS"
+    n = 0
+    for kind in ("SNR", "CH", "OH", "CLAP"):
+        folder = _folder_for_kind(masters, profile, kind)
+        if not folder:
+            continue
+        out = dest / kind
+        out.mkdir(parents=True)
+        for path in _sample_wavs(folder, 6):
+            stereo = L.stereo_widen(read_wav_mono(path), width=0.32)
+            write_wav_stereo_16(out / f"{path.stem}_STEREO.wav", stereo)
+            n += 1
+    return n
+
+
+def _build_velocity(pack: Path, masters: Path, profile: dict, heroes: list[Path]) -> int:
+    dest = pack / "10_VELOCITY_LAYERS"
+    soft_d = dest / "Soft"
+    hard_d = dest / "Hard"
+    soft_d.mkdir(parents=True, exist_ok=True)
+    hard_d.mkdir(parents=True, exist_ok=True)
+    n = 0
+    for path in heroes[:36]:
+        buf = read_wav_mono(path)
+        write_wav_mono(soft_d / f"{path.stem}_Soft.wav", L.apply_velocity(buf, 0.58))
+        write_wav_mono(hard_d / f"{path.stem}_Hard.wav", L.apply_velocity(buf, 1.0))
+        n += 2
+    return n
+
+
+def _build_construction_kits(pack: Path, masters: Path, profile: dict) -> int:
+    """Construction kit = kick/snare/hat + matching loop + MIDI when present."""
+    root = pack / "11_CONSTRUCTION_KITS"
+    prefix = profile["prefix"]
+    loops = _sorted_wavs(_loop_folder(masters, profile))
+    n = 0
+    for i in range(min(4, len(loops))):
+        kdir = root / f"{i+1:02d}_Kit"
+        ones = kdir / "OneShots"
+        ones.mkdir(parents=True)
+        for role, kinds in (("Kick", ("808", "KICK")), ("Snare", ("SNR",)), ("Hat", ("CH",))):
+            path = None
+            for kind in kinds:
+                path = _pick_wav(_folder_for_kind(masters, profile, kind), i)
+                if path:
+                    break
+            if path:
+                write_wav_mono(ones / f"{prefix}_CK{i+1:02d}_{role}.wav", L.bus_glue(read_wav_mono(path)))
+                n += 1
+        loop = loops[i]
+        write_wav_mono(kdir / loop.name, L.bus_glue(read_wav_mono(loop), drive_db=1.5))
+        n += 1
+        mid = loop.with_suffix(".mid")
+        if mid.exists():
+            shutil.copy2(mid, kdir / mid.name)
+        (kdir / "README.txt").write_text(
+            "Construction kit: glued oneshots + loop (+ MIDI if present).\n",
+            encoding="utf-8",
+        )
+    return n
+
+
+def _build_starter_hero(pack: Path, heroes: list[Path], profile: dict) -> int:
+    dest = pack / "12_STARTER_HERO"
+    dest.mkdir(parents=True)
+    n = 0
+    for path in heroes:
+        # Use-case style name: keep recipe tag visible
+        shutil.copy2(path, dest / path.name)
+        n += 1
+    manifest = build_hero_manifest(heroes, profile)
+    (dest / "HERO_MANIFEST.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    (dest / "README.txt").write_text(
+        "Curated hero bank — fewer, deadlier hits than the full archive.\n"
+        "Prefer these for demos / store previews; full cores stay in 01_CORE_ONESHOTS.\n",
+        encoding="utf-8",
+    )
     return n
 
 
@@ -301,6 +432,17 @@ def package(out_dir: Path, masters: Path, profile: dict) -> dict:
     cassette_n = _build_cassette(pack, masters, profile)
     parallel_n = _build_parallel(pack, masters, profile)
     mini_n = _build_mini_kits(pack, masters, profile)
+    heroes = select_heroes(masters, per_kind=8, max_total=96)
+    desk_n = _build_desk_presets(pack, masters, profile)
+    studio_n = _build_studio_24(pack, masters, profile, heroes)
+    stereo_n = _build_stereo_tops(pack, masters, profile)
+    vel_n = _build_velocity(pack, masters, profile, heroes)
+    ck_n = _build_construction_kits(pack, masters, profile)
+    hero_n = _build_starter_hero(pack, heroes, profile)
+    # Copy loop MIDI alongside loops folder
+    if loops:
+        for mid in loops.glob("*.mid"):
+            shutil.copy2(mid, pack / "05_LOOPS" / mid.name)
     docs = pack / "_DOCS"
     docs.mkdir(exist_ok=True)
     if (masters / "manifest.json").exists():
@@ -312,8 +454,8 @@ def package(out_dir: Path, masters: Path, profile: dict) -> dict:
                 profile["title"],
                 f"{profile['identity']} — DiskLordz Black Box Collection",
                 f"SKU: {profile['sku']}",
-                "Format: 44.1 kHz · PCM16 · mono",
-                "Includes: cores + pitched + cassette + parallel banks + mini-kits",
+                "Format: 44.1 kHz · PCM16 mono cores · 24-bit Studio lane · stereo tops",
+                "Includes: cores + FX banks + desk presets + construction kits + Starter Hero",
                 "READ: Hardware_Processing_Guide.md",
                 "Original synthesis only — not a hardware ROM dump.",
                 "release_ready: FALSE until HITL",
@@ -344,6 +486,12 @@ def package(out_dir: Path, masters: Path, profile: dict) -> dict:
             "cassette_tape": cassette_n,
             "parallel_banks": parallel_n,
             "matched_mini_kits": mini_n,
+            "desk_presets": desk_n,
+            "studio_24bit": studio_n,
+            "stereo_tops": stereo_n,
+            "velocity_layers": vel_n,
+            "construction_kits": ck_n,
+            "starter_hero": hero_n,
         },
         "features": [
             "core_oneshots",
@@ -351,9 +499,15 @@ def package(out_dir: Path, masters: Path, profile: dict) -> dict:
             "cassette_fx",
             "parallel_RAW_TAPE_LOFI_CASSETTE",
             "matched_mini_kits",
+            "desk_presets",
+            "studio_24bit_lane",
+            "stereo_tops",
+            "velocity_layers",
+            "construction_kits",
+            "starter_hero_bank",
             "hardware_processing_guide",
         ],
-        "delivery": {"sample_rate": 44100, "bit_depth": 16, "channels": 1},
+        "delivery": {"sample_rate": 44100, "bit_depth": 16, "channels": 1, "studio_lane_bit_depth": 24},
     }
     (docs / "pack_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     return manifest

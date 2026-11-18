@@ -15,9 +15,9 @@
   "engine": {
     "bit_depth": 11,
     "lofi_sr": 22050,
-    "tape_lpf_hz": 9500,
+    "tape_lpf_hz": 8800,
     "kick_pitch_st": 38,
-    "kick_clip_db": 2.5,
+    "kick_clip_db": 2.2,
     "snare_clip_db": 3.5,
     "hat_center_hz": 7800,
     "kick_duration": 0.38,
@@ -26,8 +26,8 @@
     "cow_f2": 760,
     "cow_mute": 0.7,
     "snare_noise_long": true,
-    "808_duration": 1.33,
-    "amp_decay_808": 0.54
+    "808_duration": 1.45,
+    "amp_decay_808": 0.62
   },
   "inventory": {
     "808": 64,
@@ -82,8 +82,14 @@
     "perc_synth": false,
     "perc_rim_every": 0,
     "loop_bpm_alt": null,
-    "808_click": 0.3,
-    "kick_click": 0.25
+    "808_click": 0.32,
+    "kick_click": 0.25,
+    "recipe_set": "hollow",
+    "diversify": true,
+    "layered": true,
+    "loop_discover_all": true,
+    "loop_only_voices": true,
+    "export_loop_midi": true
   },
   "seed_base": null
 }

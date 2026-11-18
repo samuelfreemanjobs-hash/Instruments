@@ -89,7 +89,11 @@
     "perc_synth": false,
     "perc_rim_every": 0,
     "loop_bpm_alt": null,
-    "loop_discover_all": true
+    "loop_discover_all": true,
+    "recipe_set": "signature",
+    "layered": true,
+    "loop_only_voices": true,
+    "export_loop_midi": true
   },
   "seed_base": null
 }

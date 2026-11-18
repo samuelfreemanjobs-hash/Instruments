@@ -22,7 +22,9 @@ Commercial **drum sample kit** franchise: era-specific underground Southern / Me
 
 **Python (shipping kits now):** `scripts/black_box/generate_era.py` reads era profile JSON. Personality is data-driven via each profile’s `voice` block (no `char ==` switches in the render loop). `character` remains a label for docs/HITL.
 
-**Post FX (every zip):** `process_fx.py` + `package_era.py` → pitched / cassette / RAW·TAPE·LOFI·CASSETTE / mini-kits (select-from-masters) / `Hardware_Processing_Guide.md`. Dirty Circuits modes come from `profiles/dirty_circuits.json`.
+**Post FX (every zip):** `process_fx.py` + `package_era.py` → pitched / cassette / RAW·TAPE·LOFI·CASSETTE / desk presets / 24-bit Studio lane / stereo tops / velocity / construction kits / Starter Hero / mini-kits (select-from-masters + bus glue) / `Hardware_Processing_Guide.md`. Dirty Circuits modes come from `profiles/dirty_circuits.json`.
+
+**Quality modules:** `voices.py` (era `recipe_set`) · `layered.py` · `curate_hero.py` · `reference_calibrate.py` · loop-only voices + MIDI in `render_memphis_loop.py`.
 
 **C++ (planned JUCE):** `native/include/BlackBoxEraProfile.h` mirrors profile knobs for a future shared drum engine — not four separate synths.
 

@@ -17,16 +17,16 @@
     "lofi_sr": 26040,
     "tape_lpf_hz": 11000,
     "kick_pitch_st": 42,
-    "kick_clip_db": 6.0,
-    "snare_clip_db": 6.5,
+    "kick_clip_db": 6.5,
+    "snare_clip_db": 7.0,
     "hat_center_hz": 8800,
     "kick_duration": 0.28,
     "amp_decay_kick": 0.22,
     "root_bias_st": -2,
     "cow_f1": 540,
     "cow_f2": 800,
-    "808_duration": 1.2,
-    "amp_decay_808": 0.66
+    "808_duration": 1.55,
+    "amp_decay_808": 0.78
   },
   "inventory": {
     "KICK": 56,
@@ -87,8 +87,14 @@
       134,
       94
     ],
-    "808_click": 0.45,
-    "kick_click": 0.25
+    "808_click": 0.5,
+    "kick_click": 0.25,
+    "recipe_set": "trunk",
+    "diversify": true,
+    "layered": true,
+    "loop_discover_all": true,
+    "loop_only_voices": true,
+    "export_loop_midi": true
   },
   "seed_base": null
 }

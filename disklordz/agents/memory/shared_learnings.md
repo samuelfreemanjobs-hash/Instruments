@@ -211,3 +211,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** tests.test_black_box_96.test_808_hard_hit_and_long_decay; Thick 1.65s Crawl 2.39s tail_rms>0.13
 - **confidence:** executed
 - **status:** active
+
+### L-0022 · Black Box quality: era recipe_sets + layered + pack lanes
+- **date:** 2026-11-18
+- **area:** claude/drumsmith/black-box
+- **when:** Implementing diversify/layered/loops/desk/curation/calibration
+- **lesson:** Era distinctness needs recipe_set tables not only engine knobs; layered_snare must avoid stacking unstable BP renders; package hero curation + 24-bit studio lane closes Splice gap without abandoning PCM16 machine cores
+- **do:** Use voices.RECIPE_SETS + layered.py; package_era builds desk/studio/stereo/velocity/construction/starter; run reference_calibrate.py --all after regen
+- **evidence:** 15/15 unittest OK; calibrate bb93/96/98/00 all A after BB00 punch bump
+- **confidence:** executed
+- **status:** active

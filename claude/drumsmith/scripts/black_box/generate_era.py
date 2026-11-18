@@ -26,7 +26,10 @@ from scripts.memphis_oneshots.phonk_kick import (  # noqa: E402
     write_wav_16bit_mono,
 )
 from scripts.memphis_oneshots.phonk_snare import generate_memphis_phonk_snare  # noqa: E402
-from scripts.memphis_oneshots.render_memphis_loop import render_memphis_loop  # noqa: E402
+from scripts.memphis_oneshots.render_memphis_loop import (  # noqa: E402
+    render_memphis_loop,
+    write_blueprint_midi,
+)
 
 PROFILES = ROOT / "kits/black-box-collection/profiles"
 KICK_KEYS = [32.70, 36.71, 41.20, 43.65, 46.25, 49.00, 55.00, 38.89]
@@ -156,6 +159,8 @@ def _voice(profile: dict) -> dict:
     """Era personality lives in profile['voice'] — no char== branches in the loop."""
     defaults = {
         "diversify": False,
+        "layered": True,
+        "recipe_set": "signature",
         "kick_pitch_decay": 0.022,
         "kick_duration_min": None,
         "kick_extra_bias_st": 0.0,
@@ -180,6 +185,8 @@ def _voice(profile: dict) -> dict:
         "perc_rim_every": 0,
         "loop_bpm_alt": None,
         "loop_discover_all": False,
+        "loop_only_voices": True,
+        "export_loop_midi": True,
     }
     merged = dict(defaults)
     merged.update(profile.get("voice") or {})
@@ -305,6 +312,7 @@ def generate_all(out_dir: Path, profile: dict) -> list[dict]:
                 layered_default=bool(voice["clap_layered"]),
                 bright_default=bool(voice["clap_bright"]),
                 seed=seed,
+                voice=voice,
             )
             save("CLAP", fname("CLAP", i, tag=recipe), buf)
         else:
@@ -369,7 +377,7 @@ def generate_all(out_dir: Path, profile: dict) -> list[dict]:
     tom_roots = [90, 110, 130, 150, 170, 95, 120, 140, 160, 180]
     for i in range(inv.get("TOM", 0)):
         if diversify:
-            buf, recipe = bb_voices.render_tom(i)
+            buf, recipe = bb_voices.render_tom(i, voice)
             save("TOM", fname("TOM", i, tag=recipe), buf)
         else:
             save("TOM", fname("TOM", i), _tom(tom_roots[i % len(tom_roots)]))
@@ -417,7 +425,14 @@ def generate_all(out_dir: Path, profile: dict) -> list[dict]:
                     ev["vel"] = int(max(40, min(127, vel + ((i + j) % 7) - 3)))
             bp["lanes"] = lanes
         use_bpm = float(bp.get("bpm", bpm))
-        audio = render_memphis_loop(bp, seed=sku_seed(profile["sku"], 800 + i))
+        loop_seed = sku_seed(profile["sku"], 800 + i)
+        audio = render_memphis_loop(
+            bp,
+            seed=loop_seed,
+            loop_only=bool(voice.get("loop_only_voices", True)),
+            eng=eng,
+            voice=voice,
+        )
         want = loop_samples(int(bp["bars"]), use_bpm, 44100)
         if len(audio) > want:
             audio = audio[:want]
@@ -426,6 +441,9 @@ def generate_all(out_dir: Path, profile: dict) -> list[dict]:
         stem = bp_path.stem.replace("cnv-", "")[:18]
         name = f"{prefix}_LOOP_{int(use_bpm)}bpm_{stem}_{i+1:02d}.wav"
         save("LOOP", name, audio)
+        if voice.get("export_loop_midi", True):
+            midi_path = out_dir / folders["LOOP"] / name.replace(".wav", ".mid")
+            write_blueprint_midi(bp, midi_path)
 
     total = len(rows)
     lo, hi = profile.get("target_samples", [0, 10_000])
@@ -440,6 +458,8 @@ def generate_all(out_dir: Path, profile: dict) -> list[dict]:
         "in_band": lo <= total <= hi,
         "seed_base": base,
         "diversify": diversify,
+        "layered": bool(voice.get("layered")),
+        "recipe_set": voice.get("recipe_set"),
         "delivery": {"sample_rate": 44100, "bit_depth": 16, "channels": 1},
         "samples": rows,
     }

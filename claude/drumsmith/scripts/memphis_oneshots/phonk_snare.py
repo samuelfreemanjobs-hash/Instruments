@@ -45,10 +45,14 @@ def _rbj_bandpass(signal: np.ndarray, sample_rate: float, center_hz: float, q: f
     x1 = x2 = y1 = y2 = 0.0
     for i, x0 in enumerate(signal):
         yn = b0 * x0 + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2
+        # Clamp state to keep RBJ DF1 stable on hot noise inputs
+        if not math.isfinite(yn) or abs(yn) > 8.0:
+            yn = math.copysign(min(8.0, abs(yn) if math.isfinite(yn) else 0.0), yn if yn != 0 else 1.0)
+            y1 = y2 = 0.0
         y[i] = yn
         x2, x1 = x1, x0
         y2, y1 = y1, yn
-    return y
+    return np.nan_to_num(y, nan=0.0, posinf=0.0, neginf=0.0)
 
 
 def generate_memphis_phonk_snare(
