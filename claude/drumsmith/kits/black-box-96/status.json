@@ -1,0 +1,19 @@
+{
+  "sku": "BB96",
+  "title": "BLACK BOX 96",
+  "identity": "The Original Machine",
+  "collection": "DiskLordz Black Box Collection",
+  "path": "claude/drumsmith/kits/black-box-96",
+  "status": "draft",
+  "release_ready": false,
+  "hit_count_designed": 240,
+  "hit_count_rendered": 240,
+  "hit_count_target_min": 200,
+  "hit_count_target_max": 250,
+  "delivery": {
+    "sample_rate": 44100,
+    "bit_depth": 16,
+    "channels": 1
+  },
+  "former_working_titles": ["Converter Night", "Night Crawl"]
+}

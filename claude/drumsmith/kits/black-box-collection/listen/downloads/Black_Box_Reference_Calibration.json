@@ -1,0 +1,194 @@
+{
+  "bb93": {
+    "sku": "BB93",
+    "grade": "A",
+    "ours": {
+      "count": 120,
+      "front_peak_median": 0.9517197180089725,
+      "body_rms_median": 0.39961506383646983,
+      "duration_median": 1.3049886621315192,
+      "peak_consistency": 0.9450076434252558
+    },
+    "reference": {
+      "count": 39,
+      "front_peak_median": 0.9660328989532151,
+      "body_rms_median": 0.3279237060479404,
+      "duration_median": 0.2,
+      "peak_consistency": 0.6756199151405432
+    },
+    "gaps": {
+      "front_peak_median": {
+        "ours": 0.9517197180089725,
+        "ref": 0.9660328989532151,
+        "delta": -0.01431318094424261,
+        "ratio": 0.9851835471030518
+      },
+      "body_rms_median": {
+        "ours": 0.39961506383646983,
+        "ref": 0.3279237060479404,
+        "delta": 0.07169135778852942,
+        "ratio": 1.2186220650301158
+      },
+      "duration_median": {
+        "ours": 1.3049886621315192,
+        "ref": 0.2,
+        "delta": 1.1049886621315193,
+        "ratio": 6.524943310657596
+      },
+      "peak_consistency": {
+        "ours": 0.9450076434252558,
+        "ref": 0.6756199151405432,
+        "delta": 0.2693877282847126,
+        "ratio": 1.3987267430218873
+      }
+    },
+    "notes": [
+      "Within band of elite preview medians."
+    ],
+    "release_ready": false
+  },
+  "bb96": {
+    "sku": "BB96",
+    "grade": "A",
+    "ours": {
+      "count": 120,
+      "front_peak_median": 0.9660328989532151,
+      "body_rms_median": 0.3775842619667418,
+      "duration_median": 0.9075056689342403,
+      "peak_consistency": 0.9959857405500474
+    },
+    "reference": {
+      "count": 39,
+      "front_peak_median": 0.9660328989532151,
+      "body_rms_median": 0.3279237060479404,
+      "duration_median": 0.2,
+      "peak_consistency": 0.6756199151405432
+    },
+    "gaps": {
+      "front_peak_median": {
+        "ours": 0.9660328989532151,
+        "ref": 0.9660328989532151,
+        "delta": 0.0,
+        "ratio": 1.0
+      },
+      "body_rms_median": {
+        "ours": 0.3775842619667418,
+        "ref": 0.3279237060479404,
+        "delta": 0.04966055591880136,
+        "ratio": 1.1514393592256527
+      },
+      "duration_median": {
+        "ours": 0.9075056689342403,
+        "ref": 0.2,
+        "delta": 0.7075056689342403,
+        "ratio": 4.537528344671202
+      },
+      "peak_consistency": {
+        "ours": 0.9959857405500474,
+        "ref": 0.6756199151405432,
+        "delta": 0.3203658254095042,
+        "ratio": 1.474180553636968
+      }
+    },
+    "notes": [
+      "Within band of elite preview medians."
+    ],
+    "release_ready": false
+  },
+  "bb98": {
+    "sku": "BB98",
+    "grade": "A",
+    "ours": {
+      "count": 120,
+      "front_peak_median": 0.9660328989532151,
+      "body_rms_median": 0.42260169903849,
+      "duration_median": 1.3950113378684807,
+      "peak_consistency": 0.9936425321047151
+    },
+    "reference": {
+      "count": 39,
+      "front_peak_median": 0.9660328989532151,
+      "body_rms_median": 0.3279237060479404,
+      "duration_median": 0.2,
+      "peak_consistency": 0.6756199151405432
+    },
+    "gaps": {
+      "front_peak_median": {
+        "ours": 0.9660328989532151,
+        "ref": 0.9660328989532151,
+        "delta": 0.0,
+        "ratio": 1.0
+      },
+      "body_rms_median": {
+        "ours": 0.42260169903849,
+        "ref": 0.3279237060479404,
+        "delta": 0.09467799299054958,
+        "ratio": 1.2887195748413145
+      },
+      "duration_median": {
+        "ours": 1.3950113378684807,
+        "ref": 0.2,
+        "delta": 1.1950113378684808,
+        "ratio": 6.975056689342403
+      },
+      "peak_consistency": {
+        "ours": 0.9936425321047151,
+        "ref": 0.6756199151405432,
+        "delta": 0.3180226169641719,
+        "ratio": 1.470712318919753
+      }
+    },
+    "notes": [
+      "Within band of elite preview medians."
+    ],
+    "release_ready": false
+  },
+  "bb2000": {
+    "sku": "BB00",
+    "grade": "A",
+    "ours": {
+      "count": 120,
+      "front_peak_median": 0.9660328989532151,
+      "body_rms_median": 0.23856970869678232,
+      "duration_median": 0.22,
+      "peak_consistency": 0.9852066586071079
+    },
+    "reference": {
+      "count": 39,
+      "front_peak_median": 0.9660328989532151,
+      "body_rms_median": 0.3279237060479404,
+      "duration_median": 0.2,
+      "peak_consistency": 0.6756199151405432
+    },
+    "gaps": {
+      "front_peak_median": {
+        "ours": 0.9660328989532151,
+        "ref": 0.9660328989532151,
+        "delta": 0.0,
+        "ratio": 1.0
+      },
+      "body_rms_median": {
+        "ours": 0.23856970869678232,
+        "ref": 0.3279237060479404,
+        "delta": -0.0893539973511581,
+        "ratio": 0.7275158956086721
+      },
+      "duration_median": {
+        "ours": 0.22,
+        "ref": 0.2,
+        "delta": 0.01999999999999999,
+        "ratio": 1.0999999999999999
+      },
+      "peak_consistency": {
+        "ours": 0.9852066586071079,
+        "ref": 0.6756199151405432,
+        "delta": 0.3095867434665647,
+        "ratio": 1.4582261957185856
+      }
+    },
+    "notes": [
+      "Within band of elite preview medians."
+    ],
+    "release_ready": false
+  }
+}

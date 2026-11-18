@@ -101,3 +101,123 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** cursor/drumsmith-tail-light-static-58c6 self_test 19/19
 - **confidence:** executed
 - **status:** active
+
+### L-0011 · CNV kit hit tables: re-sum role counts to locked SKU size
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** Implementing Converter Night W1 from a plan whose role rows summed to 98 while Total said 88
+- **lesson:** Always re-sum commercial kit hit-mix tables before locking kit-spec; trim secondary roles to honor the SKU total.
+- **do:** Verify sum(counts)==SKU_total in kit-spec; document any trim vs plan draft.
+- **evidence:** kit-spec.md count check 12+12+4+10+6+8+6+12+6+4+4+4=88; references/INVENTORY.md 26 unique refs staged
+- **confidence:** inspected
+- **status:** active
+
+### L-0012 · CNV W2: converter-night scaffold plan + native_factory memphis-tape
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** W2 render after W1 design
+- **lesson:** Add a named PLANS entry in scaffold_kit for SKU hit mixes; native_factory out path must be empty; keep release_ready false after technical PASS.
+- **do:** Use --plan converter-night --genre memphis-tape --sku CNV; pack storefront from kinds; commit notes not WAVs.
+- **evidence:** native_factory log technical_qa PASS diversity PASS samples 88; CALIPER_NOTES BLOCKED/UNVERIFIED
+- **confidence:** executed
+- **status:** active
+
+### L-0013 · DRUMSMITH factory ceiling raised to 512 for 384-hit SKUs
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** Operator chose 384 Converter Night after 128 max
+- **lesson:** scaffold_kit/build_genre_kit count ceiling is 512; CNV plan sums must equal SKU; recipe variant+cycle salt needed for SHA uniqueness past 16
+- **do:** Update CONVERTER_NIGHT_PLAN + recipe_engine salts; native_factory out must be empty; verify masters-only tree (listen-web/refs fail inventory)
+- **evidence:** native_factory /tmp/CNV_W2_384 technical_qa PASS diversity PASS samples 384
+- **confidence:** executed
+- **status:** active
+
+### L-0014 · CNV: DR-660 zip must be re-attached; uploads had DR-5/55 only
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** user claims DR-660 zip but Cloud uploads lack Boss_DR-660*
+- **lesson:** Inventory /home/ubuntu/.cursor/projects/*/uploads for Boss_DR-660 before staging; DR-5/DR-55 are not substitutes. Document STAGED.md NOT STAGED and ask re-attach.
+- **do:** Refuse to mark dr660 staged; keep RATE technique-led with TR-808+DR-5 proxies; list exact upload filenames in IMPROVEMENTS.md.
+- **evidence:** uploads listing 2026-11-17: Boss_DR-5*, Boss_DR-55 only; find *660* empty of zips
+- **confidence:** executed
+- **status:** active
+
+### L-0015 · CNV competitor: Loaded Samples MU V1=DR5 parallel banks; V2=SP1200+BPM loops
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** gap-fill research without competitor WAVs
+- **lesson:** MU V1 sells DR5 story + original/tape/lofi parallel banks + instrument oneshots; V2 sells SP1200 + 23 BPM loops. Biggest CNV product gap is parallel process banks and optional instruments, not FX count.
+- **do:** Write public-page analysis under kits/converter-night/docs/COMPETITOR_LOADED_SAMPLES.md; do not ship their PCM; prioritize RAW/TAPE/LOFI lanes and BPM filenames.
+- **evidence:** loadedsamples.com product scrapes 2026-11-17: V1 220+86+39+82; V2 357+156+141+34+23
+- **confidence:** inspected
+- **status:** active
+
+### L-0016 · Web Audio lookahead Stop must cancel sources
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** DR-660 Web Audio lab transport Stop
+- **lesson:** Lookahead sequencers must skip expired nextNoteTime slots and stopAll tracked AudioScheduledSourceNodes on Stop; clearing setInterval alone leaves queued sources ringing.
+- **do:** Export catchUpExpiredSteps; pass onStopAudio into DR660Sequencer; track sources in DrumEngine._active.
+- **evidence:** PR #165 Codex P2 + commit 33e72745; node --test 10/10
+- **confidence:** executed
+- **status:** active
+
+### L-0017 · Elite phonk kit: parallel RAW/TAPE/LOFI + BPM mini-kits
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** Competitive deep-research for commercial phonk kit
+- **lesson:** Compete on parallel process banks and matched oneshot+BPM-loop mini-kits; own original converter-crawl wedge; never clone DR-5/SP authenticity claims.
+- **do:** Use build_elite_phonk_kit.py; keep release_ready false until HITL; price band $20-34 drums-only.
+- **evidence:** RESEARCH_ELITE_PHONK_KIT.md; Firecrawl MU V1/Loopmasters Drift/LANDR 2026-11-17
+- **confidence:** inspected
+- **status:** active
+
+### L-0018 · Black Box kits must ship CNV-style process banks + guide
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** User feedback that BB96 example lacked FX/pitch/cassette and zip instructions
+- **lesson:** Commercial drumsmith zips need 01 cores + bitcrushed/pitched + cassette + parallel RAW/TAPE/LOFI + Hardware_Processing_Guide in _DOCS; synthesis-only grit is not enough.
+- **do:** Use scripts/black_box/process_fx.py + package_bb96.py process stages; keep release_ready false until HITL.
+- **evidence:** Hardware_Processing_Guide.md; package_bb96.py counts; user 2026-11-17
+- **confidence:** executed
+- **status:** active
+
+### L-0019 · Black Box Collection needs all era kits not just flagship
+- **date:** 2026-11-17
+- **area:** drumsmith
+- **when:** User asked review everything do not skip
+- **lesson:** Franchise delivery is incomplete if only BB96 ships; BB93/98/2000 + Dirty Circuits need generate+package+guide in the same change.
+- **do:** Run scripts/black_box/build_all_collection.py; keep profiles locked to SONIC_DNA counts.
+- **evidence:** build_all_collection.py artifacts; test_black_box_collection.py 2026-11-17
+- **confidence:** executed
+- **status:** active
+
+### L-0020 · Black Box: voice profiles + crc32 seeds + Splice 16-bit gap
+- **date:** 2026-11-17
+- **area:** black-box
+- **when:** thermo-nuclear refactor + Splice audit
+- **lesson:** Era personality belongs in profile voice JSON; use zlib.crc32 sku seeds; mini-kits copy masters; Dirty Circuits mode_fx is data. Splice prefers 24-bit — BB PCM16 is intentional aesthetic gap, not a silent pass.
+- **do:** Keep generate_era free of char==; run splice_grade_audit.py before HITL; never set release_ready without human listen.
+- **evidence:** 9/9 unittest OK; Splice audit A- PASS_TECHNICAL with PCM16 warn on BB93/96/98/00
+- **confidence:** executed
+- **status:** active
+
+### L-0021 · BB96 808 amp_decay must be wired through generate_era
+- **date:** 2026-11-17
+- **area:** claude/drumsmith/black-box
+- **when:** 808s sounded soft and gated despite profile amp_decay_kick
+- **lesson:** phonk_kick uses amp_decay for the envelope; generate_era previously omitted it (default 0.14) and used short kick_duration for 808s
+- **do:** Set engine.808_duration + amp_decay_808 + voice.808_click; pass amp_decay/click/seed; use voices.py diversify recipes; filter loop JSONs that lack bpm/lanes
+- **evidence:** tests.test_black_box_96.test_808_hard_hit_and_long_decay; Thick 1.65s Crawl 2.39s tail_rms>0.13
+- **confidence:** executed
+- **status:** active
+
+### L-0022 · Black Box quality: era recipe_sets + layered + pack lanes
+- **date:** 2026-11-18
+- **area:** claude/drumsmith/black-box
+- **when:** Implementing diversify/layered/loops/desk/curation/calibration
+- **lesson:** Era distinctness needs recipe_set tables not only engine knobs; layered_snare must avoid stacking unstable BP renders; package hero curation + 24-bit studio lane closes Splice gap without abandoning PCM16 machine cores
+- **do:** Use voices.RECIPE_SETS + layered.py; package_era builds desk/studio/stereo/velocity/construction/starter; run reference_calibrate.py --all after regen
+- **evidence:** 15/15 unittest OK; calibrate bb93/96/98/00 all A after BB00 punch bump
+- **confidence:** executed
+- **status:** active

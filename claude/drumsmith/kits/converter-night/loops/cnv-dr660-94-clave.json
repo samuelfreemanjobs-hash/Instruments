@@ -1,0 +1,138 @@
+{
+  "schema": "drumsmith-loop-blueprint-v1",
+  "name": "cnv-dr660-94-clave",
+  "genre_profile": "memphis-tape",
+  "style_tag": "dr660-technique",
+  "bpm": 94.0,
+  "bars": 2,
+  "sample_rate": 44100,
+  "grid_subdivisions_per_bar": 16,
+  "samples_per_bar": 112596,
+  "samples_per_bar_tag": "C",
+  "feel": "clave bell bed",
+  "promise": "Original DR-660-technique memphis-tape sketch \u2014 pitched-sub/cowbell language; not a recreation of any artist tape or Boss ROM",
+  "research_notes": "Cowbell/perc as long-bell stand-in for max-decay clave language [inspected]",
+  "lanes": {
+    "KICK": [
+      {
+        "step": 0,
+        "vel": 100
+      },
+      {
+        "step": 14,
+        "vel": 80
+      },
+      {
+        "step": 16,
+        "vel": 100
+      }
+    ],
+    "SNARE": [
+      {
+        "step": 8,
+        "vel": 110
+      },
+      {
+        "step": 24,
+        "vel": 105
+      }
+    ],
+    "HAT": [
+      {
+        "step": 2,
+        "vel": 45
+      },
+      {
+        "step": 6,
+        "vel": 45
+      },
+      {
+        "step": 10,
+        "vel": 45
+      },
+      {
+        "step": 18,
+        "vel": 45
+      },
+      {
+        "step": 22,
+        "vel": 45
+      },
+      {
+        "step": 26,
+        "vel": 45
+      }
+    ],
+    "808": [
+      {
+        "step": 0,
+        "vel": 108
+      },
+      {
+        "step": 8,
+        "vel": 70
+      },
+      {
+        "step": 16,
+        "vel": 105
+      }
+    ],
+    "COWBELL": [
+      {
+        "step": 0,
+        "vel": 60
+      },
+      {
+        "step": 3,
+        "vel": 95
+      },
+      {
+        "step": 6,
+        "vel": 70
+      },
+      {
+        "step": 10,
+        "vel": 100
+      },
+      {
+        "step": 16,
+        "vel": 65
+      },
+      {
+        "step": 19,
+        "vel": 92
+      },
+      {
+        "step": 22,
+        "vel": 70
+      },
+      {
+        "step": 26,
+        "vel": 98
+      }
+    ],
+    "PERC": [
+      {
+        "step": 12,
+        "vel": 75
+      },
+      {
+        "step": 28,
+        "vel": 70
+      }
+    ]
+  },
+  "808": {
+    "key": "F",
+    "glide": "A",
+    "length_bars": 2
+  },
+  "variants": [
+    {
+      "id": "full",
+      "bars": 2
+    }
+  ],
+  "status": "agent-demo",
+  "device_exports": "UNVERIFIED"
+}

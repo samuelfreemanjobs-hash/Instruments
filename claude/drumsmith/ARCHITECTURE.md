@@ -64,8 +64,11 @@ INTAKE / factory genre recipes
 | `scripts/recipe_engine.py` | v1.2 parametric recipes |
 | `examples/tail-light-static/tls-v20-native-cxx` | Packaged native 64-hit example |
 | `workbench/` | Single-file UI template |
+| `web/dr660-lab/` | Browser DR-660 Memphis DSP lab (lookahead sequencer + Lock+Mutate) |
+| `web/memphis-loop-factory/` | Factory OS prototype + Claude/Antigravity build plan |
 
 ## Related
 
 - `project.md` — Rule #1 status
 - `docs/WORKFLOW_V13.md`, release gate docs (deferred commercial)
+- `web/dr660-lab/ARCHITECTURE.md` — Web Audio lab details

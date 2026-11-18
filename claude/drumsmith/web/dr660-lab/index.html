@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DR-660 // 90s Memphis DSP Workstation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/lab.css" />
+</head>
+<body>
+  <div class="dr660-app">
+    <header class="app-header">
+      <div class="brand-title">
+        <p class="badge">Draft lab · not a Boss ROM</p>
+        <h1>DR-660</h1>
+        <span class="subtitle">Memphis 90s Tape &amp; Sampler Emulator</span>
+      </div>
+      <div class="preset-bank" role="group" aria-label="FX rack presets">
+        <button type="button" class="btn-preset" data-fx-preset="stock12Bit">Stock 12-Bit</button>
+        <button type="button" class="btn-preset" data-fx-preset="classicSampler">SP-1200</button>
+        <button type="button" class="btn-preset" data-fx-preset="warmCassette">4-Track Tape</button>
+        <button type="button" class="btn-preset active" data-fx-preset="undergroundMemphis">Memphis Tape</button>
+      </div>
+    </header>
+
+    <section class="transport-bar" aria-label="Transport">
+      <button type="button" id="btn-start" class="btn-transport primary">PLAY</button>
+      <button type="button" id="btn-stop" class="btn-transport">STOP</button>
+
+      <div class="control-group">
+        <label for="preset">Groove</label>
+        <select id="preset">
+          <option value="crawl">Converter crawl (94)</option>
+          <option value="bounce">Club bounce (134)</option>
+          <option value="memphis4">Memphis 4-bar (91)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="bpm">BPM <span id="bpm-val">94</span></label>
+        <input id="bpm" type="range" min="50" max="200" value="94" />
+      </div>
+
+      <div class="control-group">
+        <label for="swing">Swing <span id="swing-val">56%</span></label>
+        <input id="swing" type="range" min="50" max="75" value="56" />
+      </div>
+
+      <button type="button" id="btn-mutate" class="btn-transport">MUTATE UNLOCKED</button>
+      <a class="factory-link" href="../memphis-loop-factory/" target="_blank" rel="noopener">Factory OS →</a>
+    </section>
+
+    <section class="sequencer-workspace" aria-label="16-step sequencer">
+      <p class="note">Click pads: off → ghost → accent. Lookahead clock + Roland-style swing on even 16ths.</p>
+      <div id="grid" class="track-rows"></div>
+    </section>
+
+    <section class="mixer-rack" aria-label="Master FX">
+      <div class="rack-panel">
+        <h3>DSP Master FX</h3>
+        <div class="knob-grid">
+          <div class="knob-control">
+            <label for="cassette">Cassette Drive</label>
+            <input id="cassette" type="range" min="0" max="1" step="0.01" value="0.45" />
+          </div>
+          <div class="knob-control">
+            <label for="tape-wear">Tape Wear <span id="tape-wear-val">0.45</span></label>
+            <input id="tape-wear" type="range" min="0" max="1" step="0.01" value="0.45" />
+          </div>
+          <div class="knob-control">
+            <label for="cutoff">Filter Cutoff <span id="cutoff-val">9500 Hz</span></label>
+            <input id="cutoff" type="range" min="400" max="16000" step="10" value="9500" />
+          </div>
+          <div class="knob-control">
+            <label for="reso">Resonance</label>
+            <input id="reso" type="range" min="0.1" max="12" step="0.1" value="1.2" />
+          </div>
+          <div class="knob-control">
+            <label for="bits">Bit Depth <span id="bits-val">12</span></label>
+            <input id="bits" type="range" min="4" max="16" step="1" value="12" />
+          </div>
+          <div class="knob-control">
+            <label for="downsample">Downsample <span id="down-val">4×</span></label>
+            <input id="downsample" type="range" min="1" max="16" step="1" value="4" />
+          </div>
+          <div class="knob-control">
+            <label for="crush-mix">Crush Mix</label>
+            <input id="crush-mix" type="range" min="0" max="1" step="0.01" value="0.85" />
+          </div>
+          <div class="knob-control">
+            <label for="delay-wet">Tape Delay Mix <span id="delay-wet-val">0.35</span></label>
+            <input id="delay-wet" type="range" min="0" max="1" step="0.01" value="0.35" />
+          </div>
+          <div class="knob-control">
+            <label for="delay-ms">Delay <span id="delay-ms-val">375 ms</span></label>
+            <input id="delay-ms" type="range" min="20" max="1000" step="5" value="375" />
+          </div>
+          <div class="knob-control">
+            <label for="delay-fb">Feedback <span id="delay-fb-val">0.45</span></label>
+            <input id="delay-fb" type="range" min="0" max="0.85" step="0.01" value="0.45" />
+          </div>
+          <div class="knob-control check-control">
+            <label class="check" for="delay-sync">
+              <input id="delay-sync" type="checkbox" checked />
+              Sync dotted-8th
+            </label>
+          </div>
+        </div>
+        <p class="note">Voices → HPF → bitcrush → LPF → cassette → wow/flutter → tape delay → out. CHH steps with ratchets marked.</p>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

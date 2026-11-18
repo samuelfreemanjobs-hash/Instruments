@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BLACK BOX 96 — Listen (FX A/B)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg0: #0c0b0a;
+      --panel: #1c1814;
+      --line: #3a3028;
+      --text: #e8dcc8;
+      --mute: #9a8b76;
+      --accent: #d4782a;
+      --accent-dim: #8a4a18;
+      --ok: #c4a574;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #2a1a10 0%, transparent 55%),
+        linear-gradient(180deg, #100e0c 0%, var(--bg0) 40%, #090807 100%);
+      background-attachment: fixed;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 2.25rem 1.2rem 4rem; }
+    .eyebrow { color: var(--accent); letter-spacing: 0.2em; font-size: 0.72rem; text-transform: uppercase; margin: 0 0 0.55rem; }
+    h1 { font-family: "Bebas Neue", Impact, sans-serif; font-weight: 400; font-size: clamp(2.8rem, 9vw, 4.8rem); line-height: 0.92; margin: 0; letter-spacing: 0.04em; }
+    .tagline { color: var(--mute); max-width: 40rem; font-size: 0.9rem; line-height: 1.5; margin: 0.8rem 0 0; }
+    .controls { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.2rem; align-items: center; }
+    button {
+      font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--panel);
+      color: var(--text); padding: 0.5rem 0.85rem;
+    }
+    button.primary { background: linear-gradient(180deg, #c86a22, #9a4514); border-color: #e08a3a; color: #1a0f08; font-weight: 600; }
+    button.ghost { background: transparent; }
+    .now { margin-left: auto; color: var(--mute); font-size: 0.78rem; }
+    .now strong { color: var(--ok); font-weight: 500; }
+    .meter { height: 6px; background: #2a221c; margin-top: 0.9rem; overflow: hidden; }
+    .meter > span { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); }
+    section.cat { border: 1px solid var(--line); background: rgba(28,24,20,0.9); margin-top: 1rem; }
+    .cat-head { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0.95rem; border-bottom: 1px solid var(--line); }
+    .cat-head h2 { margin: 0; font-family: "Bebas Neue", Impact, sans-serif; font-size: 1.4rem; letter-spacing: 0.05em; font-weight: 400; }
+    .cat-head span { color: var(--mute); font-size: 0.72rem; }
+    .pads { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 0.5rem; padding: 0.8rem; }
+    .pad { text-align: left; min-height: 3.2rem; position: relative; }
+    .pad .name { display: block; font-size: 0.7rem; line-height: 1.35; word-break: break-word; }
+    .pad.playing { border-color: var(--accent); background: #2a1c12; }
+    .pad.playing::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
+    footer { margin-top: 1.6rem; color: var(--mute); font-size: 0.72rem; line-height: 1.5; border-top: 1px solid var(--line); padding-top: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow">DiskLordz · A/B cores vs pitched · cassette · parallel banks</p>
+    <h1>BLACK BOX 96</h1>
+    <p class="tagline">
+      Hear the pack the way the zip is built: RAW cores, rate-dropped / pitched variants,
+      cassette desk FX, and RAW→TAPE→LOFI→CASSETTE siblings of the same snare.
+    </p>
+    <div class="controls">
+      <button class="primary" id="btnTour" type="button">Play FX A/B tour</button>
+      <button class="ghost" id="btnStop" type="button">Stop</button>
+      <div class="now" id="nowPlaying">Ready.</div>
+    </div>
+    <div class="meter"><span id="progress"></span></div>
+    <div id="cats"></div>
+    <footer>
+      Full zip: 480 core + pitched + cassette + parallel banks + mini-kits · see <code>_DOCS/Hardware_Processing_Guide.md</code>
+    </footer>
+  </div>
+  <script>
+    const CATEGORIES = [
+      {
+        id: "core",
+        title: "01 · Core (RAW)",
+        blurb: "Unprocessed siblings for A/B",
+        files: [
+          "BB96_808_Thick_F0_01.wav",
+          "BB96_SNR_Aggro_NA_01.wav",
+          "BB96_CH_Crunch_NA_01.wav",
+          "BB96_COW_Metal_NA_01.wav",
+        ],
+      },
+      {
+        id: "pitched",
+        title: "02 · Bitcrushed & pitched",
+        blurb: "Rate-drop 808s · pitched snare",
+        files: [
+          "BB96_808_Thick_F0_01_pitch-12st.wav",
+          "BB96_808_Thick_F0_01_pitch-24st.wav",
+          "BB96_SNR_Aggro_NA_01_pitch-7st.wav",
+        ],
+      },
+      {
+        id: "cassette",
+        title: "03 · Cassette & tape",
+        blurb: "Drive · LPF · wow/flutter · hiss",
+        files: [
+          "BB96_808_Thick_F0_01_cassette.wav",
+          "BB96_SNR_Aggro_NA_01_cassette.wav",
+          "BB96_CH_Crunch_NA_01_cassette.wav",
+        ],
+      },
+      {
+        id: "parallel",
+        title: "04 · Parallel banks (same snare)",
+        blurb: "RAW → TAPE → LOFI → CASSETTE",
+        files: [
+          "BB96_RAW_Snares_01.wav",
+          "BB96_TAPE_Snares_01.wav",
+          "BB96_LOFI_Snares_01.wav",
+          "BB96_CASSETTE_Snares_01.wav",
+        ],
+      },
+      {
+        id: "mini",
+        title: "06 · Mini-kit kick A/B",
+        blurb: "Clean kick vs cassette kick",
+        files: [
+          "BB96_01_OriginalMachine_Kick.wav",
+          "BB96_01_OriginalMachine_Kick_Cassette.wav",
+        ],
+      },
+      {
+        id: "loops",
+        title: "05 · Loops",
+        blurb: "94 / 134 BPM",
+        files: ["BB96_LOOP_94bpm_01.wav", "BB96_LOOP_134bpm_04.wav"],
+      },
+    ];
+
+    const TOUR = [
+      "core/BB96_808_Thick_F0_01.wav",
+      "pitched/BB96_808_Thick_F0_01_pitch-24st.wav",
+      "cassette/BB96_808_Thick_F0_01_cassette.wav",
+      "core/BB96_SNR_Aggro_NA_01.wav",
+      "cassette/BB96_SNR_Aggro_NA_01_cassette.wav",
+      "parallel/BB96_RAW_Snares_01.wav",
+      "parallel/BB96_TAPE_Snares_01.wav",
+      "parallel/BB96_LOFI_Snares_01.wav",
+      "parallel/BB96_CASSETTE_Snares_01.wav",
+      "mini/BB96_01_OriginalMachine_Kick.wav",
+      "mini/BB96_01_OriginalMachine_Kick_Cassette.wav",
+      "loops/BB96_LOOP_94bpm_01.wav",
+    ];
+
+    const audio = new Audio();
+    const catsEl = document.getElementById("cats");
+    const nowEl = document.getElementById("nowPlaying");
+    const progressEl = document.getElementById("progress");
+    let tourMode = false;
+    let tourPos = 0;
+
+    function setNow(label) {
+      nowEl.innerHTML = label ? "Now · <strong>" + label + "</strong>" : "Ready.";
+    }
+    function clearPlaying() {
+      document.querySelectorAll(".pad.playing").forEach((el) => el.classList.remove("playing"));
+    }
+    function playRel(rel, opts = {}) {
+      tourMode = !!opts.fromTour;
+      clearPlaying();
+      const pad = document.querySelector('[data-rel="' + CSS.escape(rel) + '"]');
+      if (pad) pad.classList.add("playing");
+      audio.src = "samples/" + rel;
+      audio.play().catch(() => setNow("Click a pad to unlock audio"));
+      setNow(rel.split("/").pop().replace(".wav", ""));
+    }
+    function stopAll() {
+      audio.pause();
+      audio.currentTime = 0;
+      tourMode = false;
+      clearPlaying();
+      progressEl.style.width = "0%";
+      setNow("");
+    }
+
+    CATEGORIES.forEach((cat) => {
+      const section = document.createElement("section");
+      section.className = "cat";
+      section.innerHTML =
+        '<div class="cat-head"><h2>' +
+        cat.title +
+        "</h2><span>" +
+        cat.blurb +
+        "</span></div>";
+      const pads = document.createElement("div");
+      pads.className = "pads";
+      cat.files.forEach((file) => {
+        const rel = cat.id + "/" + file;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "pad";
+        btn.dataset.rel = rel;
+        btn.innerHTML = '<span class="name">' + file.replace(".wav", "") + "</span>";
+        btn.addEventListener("click", () => playRel(rel));
+        pads.appendChild(btn);
+      });
+      section.appendChild(pads);
+      catsEl.appendChild(section);
+    });
+
+    document.getElementById("btnStop").addEventListener("click", stopAll);
+    document.getElementById("btnTour").addEventListener("click", () => {
+      tourPos = 0;
+      playRel(TOUR[0], { fromTour: true });
+    });
+    audio.addEventListener("timeupdate", () => {
+      if (!audio.duration) return;
+      progressEl.style.width = ((audio.currentTime / audio.duration) * 100).toFixed(1) + "%";
+    });
+    audio.addEventListener("ended", () => {
+      clearPlaying();
+      if (tourMode) {
+        tourPos += 1;
+        if (tourPos < TOUR.length) {
+          playRel(TOUR[tourPos], { fromTour: true });
+          return;
+        }
+        tourMode = false;
+      }
+      setNow("");
+      progressEl.style.width = "0%";
+    });
+  </script>
+</body>
+</html>

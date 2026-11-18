@@ -8,8 +8,8 @@ from recipe_engine import recipe_hash
 
 def build(out, genre, sku='DKL', count=64, plan=None):
     if genre not in PROFILES: raise ValueError('unknown genre')
-    if count not in range(1,129): raise ValueError('count must be 1..128')
-    if plan not in (None,'tail-light-static'): raise ValueError('unknown plan')
+    if count not in range(1, 513): raise ValueError('count must be 1..512')
+    if plan not in (None, 'tail-light-static', 'converter-night'): raise ValueError('unknown plan')
     manifest = scaffold(out, sku, count, plan)
     variants = {}
     for entry in manifest['samples']:
@@ -33,6 +33,6 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description='Create original genre recipe kit (no rendering)')
     p.add_argument('--out', required=True);p.add_argument('--genre', choices=sorted(PROFILES), required=True)
     p.add_argument('--sku',default='DKL');p.add_argument('--count',type=int,default=64)
-    p.add_argument('--plan',choices=['tail-light-static'])
+    p.add_argument('--plan', choices=['tail-light-static', 'converter-night'])
     a=p.parse_args();m=build(a.out,a.genre,a.sku,a.count,a.plan)
     print('Planned',len(m['samples']),'samples for',a.genre)

@@ -1,0 +1,91 @@
+{
+  "sku": "CNV",
+  "title": "Night Crawl",
+  "subtitle": "Memphis Phonk Drum Kit",
+  "former_working_title": "Converter Night",
+  "store_title_locked": true,
+  "path": "claude/drumsmith/kits/converter-night",
+  "phase": "W3_verify",
+  "status": "draft",
+  "release_ready": false,
+  "technical_status": "PASS",
+  "diversity_status": "PASS",
+  "human_listening_approved": false,
+  "release_approved": false,
+  "approvals": {
+    "listening": null,
+    "release": null,
+    "legal": null,
+    "price": null,
+    "cover": null
+  },
+  "device_profiles": {
+    "generic_wav_pcm16": "INTERNAL",
+    "fl_studio": "UNVERIFIED",
+    "mpc": "UNVERIFIED",
+    "maschine_plus": "UNVERIFIED",
+    "mv1": "UNVERIFIED",
+    "lofi12": "UNVERIFIED",
+    "sp404": "UNVERIFIED"
+  },
+  "hit_count_designed": 512,
+  "hit_count_rendered": 512,
+  "factory_ceiling": 512,
+  "references_unique": 26,
+  "references_role": "analysis_only",
+  "genre_profile": "memphis-tape",
+  "product_lane": "90s_memphis_rap_phonk",
+  "archetype_lanes": ["converter-crawl", "bitcrush-bed", "horror-snap", "club-bounce"],
+  "plan": "converter-night",
+  "generator": "drumsmith-cxx-v2-native",
+  "delivery": {
+    "sample_rate": 44100,
+    "bit_depth": 16,
+    "channels": 1
+  },
+  "true_loops": {
+    "status": "rendered",
+    "script": "scripts/render_loop_from_blueprint.py",
+    "count": 36,
+    "breakdown": "18 rhythm + 18 top"
+  },
+  "native_kind_mix": {
+    "808": 60,
+    "KICK": 48,
+    "SNARE": 54,
+    "CLAP": 24,
+    "HAT": 66,
+    "COWBELL": 15,
+    "PERC": 15,
+    "FX": 230
+  },
+  "fx_families": {
+    "crash_ride": 40,
+    "aliased": 48,
+    "reverse_sweep": 40,
+    "stab_impact": 40,
+    "texture": 26,
+    "loop_slots": 36,
+    "dsp": "native DrumEngine fxFamily 0-4 (distinct); fam1 BIT12 S&H+quantize"
+  },
+  "dr660_proxy": {
+    "wav_staged": false,
+    "proxy_refs": ["tr808/808_CHARACTER.md", "dr5 kicks/hats"],
+    "loops": ["cnv-dr660-94-a", "cnv-dr660-94-clave", "cnv-dr660-94-thick", "cnv-dr660-134-ht", "cnv-dr660-134-bell", "cnv-dr660-134-crawl"],
+    "note": "Boss_DR-660 zip not in agent uploads — re-attach to stage"
+  },
+  "competitor_loaded_samples": {
+    "analysis": "docs/COMPETITOR_LOADED_SAMPLES.md",
+    "wav_staged": false,
+    "public_price_v1_usd": 24.99,
+    "public_price_v2_usd": 29.99,
+    "top_gaps": ["parallel_raw_tape_lofi_banks", "instrument_oneshots_optional", "bpm_in_loop_filenames", "sp1200_refs"]
+  },
+  "gaps": [
+    "HITL ear/legal/price/cover open",
+    "DR-660 WAV missing from uploads — RATE uses TR-808 808-character proxies + technique; upload Boss_DR-660 zip to lock",
+    "SP-1200/Drumulator WAV missing — deeper BIT12 calibration still technique-led",
+    "Loaded Samples WAVs not attached — public-page gap analysis only; attach MU V1/V2 for ear meters"
+  ],
+  "updated": "2026-11-17"
+}

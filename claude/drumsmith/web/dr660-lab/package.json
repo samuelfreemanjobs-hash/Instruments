@@ -1,0 +1,6 @@
+{
+  "name": "dr660-memphis-dsp-lab",
+  "private": true,
+  "type": "module",
+  "description": "Browser Web Audio lab for DR-660–style Memphis sequencing"
+}

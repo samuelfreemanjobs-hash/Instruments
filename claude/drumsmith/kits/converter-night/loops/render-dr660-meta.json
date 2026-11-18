@@ -1,0 +1,80 @@
+[
+  {
+    "path": "kits/converter-night/storefront/CNV_Converter_Night/03_LOOP_BUILDERS_AND_GROOVES/Acoustic_Rhythm_Loops/CNV_03_LOOP_Rhythm_94_01.wav",
+    "frames": 225191,
+    "samples_per_bar": 112596,
+    "grid_total_frames": 225192,
+    "loop_samples_bars": 225191,
+    "hits_placed": 20,
+    "sample_peak_dbfs": -0.10000000000000081,
+    "bpm": 94.0,
+    "bars": 2,
+    "variant": 0,
+    "blueprint": "cnv-dr660-94-a.json"
+  },
+  {
+    "path": "kits/converter-night/storefront/CNV_Converter_Night/03_LOOP_BUILDERS_AND_GROOVES/Acoustic_Rhythm_Loops/CNV_03_LOOP_Rhythm_94_02.wav",
+    "frames": 225191,
+    "samples_per_bar": 112596,
+    "grid_total_frames": 225192,
+    "loop_samples_bars": 225191,
+    "hits_placed": 24,
+    "sample_peak_dbfs": -0.10000000000000081,
+    "bpm": 94.0,
+    "bars": 2,
+    "variant": 1,
+    "blueprint": "cnv-dr660-94-clave.json"
+  },
+  {
+    "path": "kits/converter-night/storefront/CNV_Converter_Night/03_LOOP_BUILDERS_AND_GROOVES/Acoustic_Rhythm_Loops/CNV_03_LOOP_Rhythm_94_03.wav",
+    "frames": 225191,
+    "samples_per_bar": 112596,
+    "grid_total_frames": 225192,
+    "loop_samples_bars": 225191,
+    "hits_placed": 21,
+    "sample_peak_dbfs": -0.09999999999999984,
+    "bpm": 94.0,
+    "bars": 2,
+    "variant": 2,
+    "blueprint": "cnv-dr660-94-thick.json"
+  },
+  {
+    "path": "kits/converter-night/storefront/CNV_Converter_Night/03_LOOP_BUILDERS_AND_GROOVES/Acoustic_Rhythm_Loops/CNV_03_LOOP_Rhythm_134_10.wav",
+    "frames": 157970,
+    "samples_per_bar": 78985,
+    "grid_total_frames": 157970,
+    "loop_samples_bars": 157970,
+    "hits_placed": 20,
+    "sample_peak_dbfs": -0.09999999999999984,
+    "bpm": 134.0,
+    "bars": 2,
+    "variant": 0,
+    "blueprint": "cnv-dr660-134-ht.json"
+  },
+  {
+    "path": "kits/converter-night/storefront/CNV_Converter_Night/03_LOOP_BUILDERS_AND_GROOVES/Acoustic_Rhythm_Loops/CNV_03_LOOP_Rhythm_134_11.wav",
+    "frames": 157970,
+    "samples_per_bar": 78985,
+    "grid_total_frames": 157970,
+    "loop_samples_bars": 157970,
+    "hits_placed": 19,
+    "sample_peak_dbfs": -0.10000000000000081,
+    "bpm": 134.0,
+    "bars": 2,
+    "variant": 2,
+    "blueprint": "cnv-dr660-134-bell.json"
+  },
+  {
+    "path": "kits/converter-night/storefront/CNV_Converter_Night/03_LOOP_BUILDERS_AND_GROOVES/Acoustic_Rhythm_Loops/CNV_03_LOOP_Rhythm_134_12.wav",
+    "frames": 157970,
+    "samples_per_bar": 78985,
+    "grid_total_frames": 157970,
+    "loop_samples_bars": 157970,
+    "hits_placed": 18,
+    "sample_peak_dbfs": -0.10000000000000081,
+    "bpm": 134.0,
+    "bars": 2,
+    "variant": 5,
+    "blueprint": "cnv-dr660-134-crawl.json"
+  }
+]

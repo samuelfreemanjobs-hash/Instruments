@@ -1,0 +1,108 @@
+{
+  "schema": "drumsmith-loop-blueprint-v1",
+  "name": "cnv-arch-bitcrush",
+  "genre_profile": "memphis-tape",
+  "style_tag": "bitcrush-bed",
+  "bpm": 94.0,
+  "bars": 2,
+  "sample_rate": 44100,
+  "grid_subdivisions_per_bar": 16,
+  "samples_per_bar": 112596,
+  "samples_per_bar_tag": "C",
+  "feel": "dirty 12-bit bed",
+  "promise": "Original memphis-tape archetype sketch \u2014 not a recreation of any artist tape",
+  "research_notes": "Aliased/grit energy \u2014 SP-1200-style dig into oneshots [inspected]",
+  "lanes": {
+    "KICK": [
+      {
+        "step": 0,
+        "vel": 118
+      },
+      {
+        "step": 16,
+        "vel": 110
+      },
+      {
+        "step": 22,
+        "vel": 70
+      }
+    ],
+    "SNARE": [
+      {
+        "step": 8,
+        "vel": 120
+      },
+      {
+        "step": 24,
+        "vel": 115
+      }
+    ],
+    "HAT": [
+      {
+        "step": 0,
+        "vel": 55
+      },
+      {
+        "step": 4,
+        "vel": 40
+      },
+      {
+        "step": 8,
+        "vel": 55
+      },
+      {
+        "step": 12,
+        "vel": 40
+      },
+      {
+        "step": 16,
+        "vel": 55
+      },
+      {
+        "step": 20,
+        "vel": 40
+      },
+      {
+        "step": 24,
+        "vel": 55
+      },
+      {
+        "step": 28,
+        "vel": 40
+      }
+    ],
+    "808": [
+      {
+        "step": 0,
+        "vel": 100
+      },
+      {
+        "step": 16,
+        "vel": 90
+      }
+    ],
+    "FX": [
+      {
+        "step": 8,
+        "vel": 50
+      },
+      {
+        "step": 24,
+        "vel": 45
+      }
+    ]
+  },
+  "808": {
+    "key": "F",
+    "glide": "A",
+    "length_bars": 2
+  },
+  "variants": [
+    {
+      "id": "full",
+      "bars": 2
+    }
+  ],
+  "status": "agent-demo",
+  "device_exports": "UNVERIFIED"
+}

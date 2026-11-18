@@ -35,6 +35,8 @@ def native_run(out, renderer, genre='drift-phonk', count=64, sku='DKL', plan=Non
         r=e['recipe_params'];dst=out/e['path'];dst.parent.mkdir(parents=True,exist_ok=True)
         cmd=[str(renderer),str(dst),str(KINDS[e['kind']]),str(r['pitch_hz'] or 52),str(e['seed']),
              str(r['decay_sec']),str(r['drive']),str(r['tone']),str(r['noise_color']),str(r['duration_sec']),str(e['sample_rate'])]
+        if e['kind']=='FX':
+            cmd.append(str(int(r.get('variant', 0)) % 5))
         subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=35)
         e['sha256']=hashlib.sha256(dst.read_bytes()).hexdigest()
     manifest['status']='NATIVE_RENDERED_NOT_RELEASED'
@@ -49,6 +51,6 @@ def native_run(out, renderer, genre='drift-phonk', count=64, sku='DKL', plan=Non
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--out',required=True);p.add_argument('--renderer',required=True)
     p.add_argument('--genre',required=True);p.add_argument('--count',type=int,default=64)
-    p.add_argument('--sku',default='DKL');p.add_argument('--plan',choices=['tail-light-static'])
+    p.add_argument('--sku',default='DKL');p.add_argument('--plan',choices=['tail-light-static','converter-night'])
     a=p.parse_args();result=native_run(a.out,a.renderer,a.genre,a.count,a.sku,a.plan)
     print(json.dumps(result,indent=2));sys.exit(0 if result['technical_qa']=='PASS' and result['diversity']=='PASS' else 1)
