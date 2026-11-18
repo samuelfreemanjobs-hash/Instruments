@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Headless 2-bar Memphis loop renderer — synthesizes oneshots onto a blueprint grid.
 
-P2 twin for OfflineAudio: no browser required. Mixes KICK/SNARE/HAT (and a simple
-cowbell) from MEMPHIS engines onto drumsmith-loop-blueprint-v1 JSON → PCM16 WAV.
+P2 twin for OfflineAudio: no browser required. Mixes KICK/SNARE/HAT/CLAP (and a
+simple cowbell) from MEMPHIS engines onto drumsmith-loop-blueprint-v1 JSON → PCM16 WAV.
 Supports loop-only voice banks so loops are not identical to oneshot kits.
 """
 
@@ -43,6 +43,22 @@ def _cowbell(sample_rate: int = 44100, duration: float = 0.18, pitch: float = 1.
     return (out / peak * 0.7).astype(np.float32)
 
 
+def _soft_clap(sample_rate: int = 44100, seed: int = 0, duration: float = 0.12) -> np.ndarray:
+    """Soft multi-hit clap for under-snare Horror Snap layers (not a hard oneshot clone)."""
+    rng = np.random.default_rng(900 + seed)
+    n = int(round(sample_rate * duration))
+    t = np.linspace(0.0, duration, n, endpoint=False)
+    noise = rng.uniform(-1.0, 1.0, n)
+    amp = np.zeros_like(t)
+    for off, g in ((0.0, 0.4), (0.009, 0.7), (0.018, 1.0), (0.03, 0.45)):
+        idx = int(off * sample_rate)
+        if idx < n:
+            amp[idx:] += g * np.exp(-(t[idx:] - t[idx]) / 0.03)
+    y = np.diff(noise * amp, prepend=0.0)
+    peak = float(np.max(np.abs(y))) or 1.0
+    return (y / peak * 0.55).astype(np.float32)
+
+
 def _voice_buffers(
     seed: int = 0,
     *,
@@ -54,12 +70,13 @@ def _voice_buffers(
     voice = voice or {}
     # Vary body per seed so looping the same blueprint does not clone the same kit
     kick_root = 43.65 * (2.0 ** (((seed % 7) - 3) / 12.0))
-    snare_root = 200.0 + (seed % 9) * 6.0
+    # Pitched-down Memphis snare bodies (~155–185 Hz) for Paul/Juicy snap ear
+    snare_root = 155.0 + (seed % 9) * 3.5
     hat_hz = 8600.0 + (seed % 11) * 180.0
     # Loop-only banks: different fundamentals / grit than oneshot defaults
     if loop_only:
         kick_root *= 0.94
-        snare_root += 18.0
+        snare_root += 8.0
         hat_hz -= 600.0
         kick_dur, kick_decay, kick_click = 0.28, 0.14, 0.28
         eight_dur, eight_decay = 1.1, 0.55
@@ -91,6 +108,7 @@ def _voice_buffers(
             bit_depth=bits,
             lofi_sr=lofi,
         ),
+        "CLAP": _soft_clap(seed=seed),
         "HAT": generate_memphis_phonk_hat(
             center_hz=hat_hz,
             seed=808 + seed,
@@ -156,7 +174,7 @@ def render_memphis_loop(
 
 def write_blueprint_midi(blueprint: dict, path: Path) -> None:
     """Write a minimal Type-0 SMF from blueprint lanes (GM drum map-ish)."""
-    note_map = {"KICK": 36, "808": 35, "SNARE": 38, "HAT": 42, "COWBELL": 56}
+    note_map = {"KICK": 36, "808": 35, "SNARE": 38, "CLAP": 39, "HAT": 42, "COWBELL": 56}
     bpm = float(blueprint["bpm"])
     bars = int(blueprint["bars"])
     grid = int(blueprint["grid_subdivisions_per_bar"])
