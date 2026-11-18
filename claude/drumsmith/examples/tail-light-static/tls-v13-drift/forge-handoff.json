@@ -1,0 +1,1234 @@
+{
+  "contract": "drumsmith-forge-v1",
+  "source_kit": "TLS",
+  "implementation": "JUCE 8 / C++20",
+  "status": "SPECIFICATION_ONLY_NOT_COMPILED",
+  "acceptance": [
+    "offline-vs-C++ output comparison",
+    "no heap allocation on audio callback",
+    "denormal protections",
+    "parameter bounds",
+    "sample-rate changes",
+    "CPU budget profiling",
+    "multivoice isolation",
+    "DAW scan tests"
+  ],
+  "voices": [
+    {
+      "id": "TLS-001",
+      "kind": "808",
+      "seed": 1000,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "808",
+        "variant": 0,
+        "duration_sec": 0.76,
+        "decay_sec": 0.2573,
+        "drive": 1.452,
+        "tone": 0.1972,
+        "pitch_hz": 52.0,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "41fe0c33fd8250362eccb20f16f72029a5a8aa241df9d08438421f6aa2752d8a"
+    },
+    {
+      "id": "TLS-002",
+      "kind": "808",
+      "seed": 1001,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "808",
+        "variant": 1,
+        "duration_sec": 0.85,
+        "decay_sec": 0.2946,
+        "drive": 1.7028,
+        "tone": 0.29,
+        "pitch_hz": 52.0,
+        "noise_color": 0.3657,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "ac686046bb478967fc11a05860f55275dbff15bd4453d4925a43471637ae1c82"
+    },
+    {
+      "id": "TLS-003",
+      "kind": "808",
+      "seed": 1002,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "808",
+        "variant": 2,
+        "duration_sec": 0.94,
+        "decay_sec": 0.332,
+        "drive": 1.9536,
+        "tone": 0.3828,
+        "pitch_hz": 52.0,
+        "noise_color": 0.4664,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "415bf307bba5b347113e3017f8de072cc07b32617124923a8c432b76051997dd"
+    },
+    {
+      "id": "TLS-004",
+      "kind": "808",
+      "seed": 1003,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "808",
+        "variant": 3,
+        "duration_sec": 1.03,
+        "decay_sec": 0.3694,
+        "drive": 2.2044,
+        "tone": 0.4756,
+        "pitch_hz": 52.0,
+        "noise_color": 0.5671,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "53527b878579d8fcdb4871c0d5f7920425f25143f23580f6f8649e292c63bede"
+    },
+    {
+      "id": "TLS-005",
+      "kind": "808",
+      "seed": 1004,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "808",
+        "variant": 4,
+        "duration_sec": 0.76,
+        "decay_sec": 0.4067,
+        "drive": 2.4552,
+        "tone": 0.5684,
+        "pitch_hz": 52.0,
+        "noise_color": 0.6678,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "d0a8366265e6cae0488f7b4bca781e5c980a2fc2ebb528b16785efc2c18ca73c"
+    },
+    {
+      "id": "TLS-006",
+      "kind": "808",
+      "seed": 1005,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "808",
+        "variant": 5,
+        "duration_sec": 0.85,
+        "decay_sec": 0.2573,
+        "drive": 2.706,
+        "tone": 0.6612,
+        "pitch_hz": 52.0,
+        "noise_color": 0.7685,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "00cb7042c5cbfa4a5b78d1b15381ccd9eeae626ee889113309837b68d094148e"
+    },
+    {
+      "id": "TLS-007",
+      "kind": "808",
+      "seed": 1006,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "808",
+        "variant": 6,
+        "duration_sec": 0.94,
+        "decay_sec": 0.2946,
+        "drive": 1.452,
+        "tone": 0.754,
+        "pitch_hz": 52.0,
+        "noise_color": 0.8692,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "505e5fc90c94d263ca29f26beeaa706d091754d9c6e30b506f5af4a734b0ae66"
+    },
+    {
+      "id": "TLS-008",
+      "kind": "808",
+      "seed": 1007,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "808",
+        "variant": 7,
+        "duration_sec": 1.03,
+        "decay_sec": 0.332,
+        "drive": 1.7028,
+        "tone": 0.1972,
+        "pitch_hz": 52.0,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "b80de7ac268b743543078d0813465cbf6b926aa50e4660b47a5026e94b5cd735"
+    },
+    {
+      "id": "TLS-009",
+      "kind": "KICK",
+      "seed": 1008,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "KICK",
+        "variant": 0,
+        "duration_sec": 0.22,
+        "decay_sec": 0.0539,
+        "drive": 1.452,
+        "tone": 0.1972,
+        "pitch_hz": 62.0,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "d7fa1b3300a53c9585114c4af2a844d1d1a3a2d2dcb0ab03a73fd7fd61dd85fd"
+    },
+    {
+      "id": "TLS-010",
+      "kind": "KICK",
+      "seed": 1009,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "KICK",
+        "variant": 1,
+        "duration_sec": 0.285,
+        "decay_sec": 0.0672,
+        "drive": 1.7028,
+        "tone": 0.29,
+        "pitch_hz": 71.0,
+        "noise_color": 0.3657,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "014eff1faf8605006ecb39e1cdf753d95cf7c7c70a256f5e2c3862a1b7848039"
+    },
+    {
+      "id": "TLS-011",
+      "kind": "KICK",
+      "seed": 1010,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "KICK",
+        "variant": 2,
+        "duration_sec": 0.35,
+        "decay_sec": 0.0805,
+        "drive": 1.9536,
+        "tone": 0.3828,
+        "pitch_hz": 80.0,
+        "noise_color": 0.4664,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "f58f5e669cad41d71bf62ed4934361eac9a302757839b7199dd6843e7c5cc67c"
+    },
+    {
+      "id": "TLS-012",
+      "kind": "KICK",
+      "seed": 1011,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "KICK",
+        "variant": 3,
+        "duration_sec": 0.415,
+        "decay_sec": 0.0938,
+        "drive": 2.2044,
+        "tone": 0.4756,
+        "pitch_hz": 89.0,
+        "noise_color": 0.5671,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "5c650c43f1e36ef3abd8895e3c67d5c4baa083e94de1b35594262c976632bfcb"
+    },
+    {
+      "id": "TLS-013",
+      "kind": "KICK",
+      "seed": 1012,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "KICK",
+        "variant": 4,
+        "duration_sec": 0.48,
+        "decay_sec": 0.1071,
+        "drive": 2.4552,
+        "tone": 0.5684,
+        "pitch_hz": 98.0,
+        "noise_color": 0.6678,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "4d8d2b324235faba82afca71c291131e43071bae281f37409a0a2fde42acf695"
+    },
+    {
+      "id": "TLS-014",
+      "kind": "KICK",
+      "seed": 1013,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "KICK",
+        "variant": 5,
+        "duration_sec": 0.22,
+        "decay_sec": 0.1203,
+        "drive": 2.706,
+        "tone": 0.6612,
+        "pitch_hz": 62.0,
+        "noise_color": 0.7685,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "1fd51168930cae03151941537f98a281b8f88e9417b3aa1864dd549c9f2f4d56"
+    },
+    {
+      "id": "TLS-015",
+      "kind": "KICK",
+      "seed": 1014,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "KICK",
+        "variant": 6,
+        "duration_sec": 0.285,
+        "decay_sec": 0.0539,
+        "drive": 1.452,
+        "tone": 0.754,
+        "pitch_hz": 71.0,
+        "noise_color": 0.8692,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "473dcc636d9fb3bb76cf20a5f07e73f6d79e36239e4214422fec41d3d07dc755"
+    },
+    {
+      "id": "TLS-016",
+      "kind": "KICK",
+      "seed": 1015,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "KICK",
+        "variant": 7,
+        "duration_sec": 0.35,
+        "decay_sec": 0.0672,
+        "drive": 1.7028,
+        "tone": 0.1972,
+        "pitch_hz": 80.0,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "6a70cb466ed1305937f22bdaa4c75edab5e077d093f7a42d571dd323cc78f42d"
+    },
+    {
+      "id": "TLS-017",
+      "kind": "SNARE",
+      "seed": 1016,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "SNARE",
+        "variant": 0,
+        "duration_sec": 0.22,
+        "decay_sec": 0.0539,
+        "drive": 1.452,
+        "tone": 0.1972,
+        "pitch_hz": null,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "3bbf7c921d9d18ef711c4569f68e5e1c753403324535f5f0e36f3aadc15b7cc4"
+    },
+    {
+      "id": "TLS-018",
+      "kind": "SNARE",
+      "seed": 1017,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "SNARE",
+        "variant": 1,
+        "duration_sec": 0.285,
+        "decay_sec": 0.0672,
+        "drive": 1.7028,
+        "tone": 0.29,
+        "pitch_hz": null,
+        "noise_color": 0.3657,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "9369708298c8008e90adc96b1b471d256bc3f7af606acc384840a59b9162dc46"
+    },
+    {
+      "id": "TLS-019",
+      "kind": "SNARE",
+      "seed": 1018,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "SNARE",
+        "variant": 2,
+        "duration_sec": 0.35,
+        "decay_sec": 0.0805,
+        "drive": 1.9536,
+        "tone": 0.3828,
+        "pitch_hz": null,
+        "noise_color": 0.4664,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "958e31c89390f142658de121293f9e537020a9b6bea47379c1870c1c36917a5a"
+    },
+    {
+      "id": "TLS-020",
+      "kind": "SNARE",
+      "seed": 1019,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "SNARE",
+        "variant": 3,
+        "duration_sec": 0.415,
+        "decay_sec": 0.0938,
+        "drive": 2.2044,
+        "tone": 0.4756,
+        "pitch_hz": null,
+        "noise_color": 0.5671,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "a54e0d19a68041dc259e20b91f73852aa4029d94533e54cfdbb12fa565797426"
+    },
+    {
+      "id": "TLS-021",
+      "kind": "SNARE",
+      "seed": 1020,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "SNARE",
+        "variant": 4,
+        "duration_sec": 0.48,
+        "decay_sec": 0.1071,
+        "drive": 2.4552,
+        "tone": 0.5684,
+        "pitch_hz": null,
+        "noise_color": 0.6678,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "c6cacfb641241c67dbc9332dc739c900d2c961e18d72e5f1878f15310d53a153"
+    },
+    {
+      "id": "TLS-022",
+      "kind": "SNARE",
+      "seed": 1021,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "SNARE",
+        "variant": 5,
+        "duration_sec": 0.22,
+        "decay_sec": 0.1203,
+        "drive": 2.706,
+        "tone": 0.6612,
+        "pitch_hz": null,
+        "noise_color": 0.7685,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "b34be412c90aada9605929f166960b5a86df430b24ac4a0d83ae586fb8e04ec2"
+    },
+    {
+      "id": "TLS-023",
+      "kind": "SNARE",
+      "seed": 1022,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "SNARE",
+        "variant": 6,
+        "duration_sec": 0.285,
+        "decay_sec": 0.0539,
+        "drive": 1.452,
+        "tone": 0.754,
+        "pitch_hz": null,
+        "noise_color": 0.8692,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "957dc8477d5cd7c6378d4d7bc0dee12be759d68333ca778d2a96a54b4e40e93d"
+    },
+    {
+      "id": "TLS-024",
+      "kind": "SNARE",
+      "seed": 1023,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "SNARE",
+        "variant": 7,
+        "duration_sec": 0.35,
+        "decay_sec": 0.0672,
+        "drive": 1.7028,
+        "tone": 0.1972,
+        "pitch_hz": null,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "d656539b27be0ab88a6e1f7ee761881c7457f65d52f2b11110b44dc9299a2f04"
+    },
+    {
+      "id": "TLS-025",
+      "kind": "CLAP",
+      "seed": 1024,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "CLAP",
+        "variant": 0,
+        "duration_sec": 0.22,
+        "decay_sec": 0.0539,
+        "drive": 1.452,
+        "tone": 0.1972,
+        "pitch_hz": null,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "9138ece8865abbe5ff7f37d5ab70066c3a6b5ace4ff78c6b601562f8cee47651"
+    },
+    {
+      "id": "TLS-026",
+      "kind": "CLAP",
+      "seed": 1025,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "CLAP",
+        "variant": 1,
+        "duration_sec": 0.285,
+        "decay_sec": 0.0672,
+        "drive": 1.7028,
+        "tone": 0.29,
+        "pitch_hz": null,
+        "noise_color": 0.3657,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "21d91f41f58e271884ebcf32370b4ce6736d6a571d6e94f66a7f78d4b7baccaa"
+    },
+    {
+      "id": "TLS-027",
+      "kind": "CLAP",
+      "seed": 1026,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "CLAP",
+        "variant": 2,
+        "duration_sec": 0.35,
+        "decay_sec": 0.0805,
+        "drive": 1.9536,
+        "tone": 0.3828,
+        "pitch_hz": null,
+        "noise_color": 0.4664,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "afeffcc6aefdd9ae49a153f0d243b4f3e5d7490654dbd3386bd2806fe2839e1c"
+    },
+    {
+      "id": "TLS-028",
+      "kind": "CLAP",
+      "seed": 1027,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "CLAP",
+        "variant": 3,
+        "duration_sec": 0.415,
+        "decay_sec": 0.0938,
+        "drive": 2.2044,
+        "tone": 0.4756,
+        "pitch_hz": null,
+        "noise_color": 0.5671,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "ae6791a41d910d6d62c3d78d5a3562f96a1997b92aaec5134535310d52de16a8"
+    },
+    {
+      "id": "TLS-029",
+      "kind": "CLAP",
+      "seed": 1028,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "CLAP",
+        "variant": 4,
+        "duration_sec": 0.48,
+        "decay_sec": 0.1071,
+        "drive": 2.4552,
+        "tone": 0.5684,
+        "pitch_hz": null,
+        "noise_color": 0.6678,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "643e09610b337d34e459836ee3bd2518253297c1e2fe8de71d7bc68dae0b8eca"
+    },
+    {
+      "id": "TLS-030",
+      "kind": "CLAP",
+      "seed": 1029,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "CLAP",
+        "variant": 5,
+        "duration_sec": 0.22,
+        "decay_sec": 0.1203,
+        "drive": 2.706,
+        "tone": 0.6612,
+        "pitch_hz": null,
+        "noise_color": 0.7685,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "6a16b52558f6b0dd891731cf801c7b60a13f6a6cccb3d270ef20b31dfe4f8c50"
+    },
+    {
+      "id": "TLS-031",
+      "kind": "HAT",
+      "seed": 1030,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "HAT",
+        "variant": 0,
+        "duration_sec": 0.22,
+        "decay_sec": 0.0539,
+        "drive": 1.452,
+        "tone": 0.1972,
+        "pitch_hz": null,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "c4f6ec714cb729beb997d8caf56cf614d29302c1e72de1c3569c8fd947fe4abd"
+    },
+    {
+      "id": "TLS-032",
+      "kind": "HAT",
+      "seed": 1031,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "HAT",
+        "variant": 1,
+        "duration_sec": 0.285,
+        "decay_sec": 0.0672,
+        "drive": 1.7028,
+        "tone": 0.29,
+        "pitch_hz": null,
+        "noise_color": 0.3657,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "7fd5c15e8c29e23a2ef9668691dacea924d59fbd4953a3d68115e51960dcf371"
+    },
+    {
+      "id": "TLS-033",
+      "kind": "HAT",
+      "seed": 1032,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "HAT",
+        "variant": 2,
+        "duration_sec": 0.35,
+        "decay_sec": 0.0805,
+        "drive": 1.9536,
+        "tone": 0.3828,
+        "pitch_hz": null,
+        "noise_color": 0.4664,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "18859d34b3ed3891106840a9487a5ab6182d9848e796270e58e9af475bc86f12"
+    },
+    {
+      "id": "TLS-034",
+      "kind": "HAT",
+      "seed": 1033,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "HAT",
+        "variant": 3,
+        "duration_sec": 0.415,
+        "decay_sec": 0.0938,
+        "drive": 2.2044,
+        "tone": 0.4756,
+        "pitch_hz": null,
+        "noise_color": 0.5671,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "5dba0ce3e87ab9ba998252c798f8eb54656b8fa1f7938f799cd52430768b3b4c"
+    },
+    {
+      "id": "TLS-035",
+      "kind": "HAT",
+      "seed": 1034,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "HAT",
+        "variant": 4,
+        "duration_sec": 0.48,
+        "decay_sec": 0.1071,
+        "drive": 2.4552,
+        "tone": 0.5684,
+        "pitch_hz": null,
+        "noise_color": 0.6678,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "224007cba07c0843561f1b8b90f2dd373408948b431d1ec20202a6dab8d652a2"
+    },
+    {
+      "id": "TLS-036",
+      "kind": "HAT",
+      "seed": 1035,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "HAT",
+        "variant": 5,
+        "duration_sec": 0.22,
+        "decay_sec": 0.1203,
+        "drive": 2.706,
+        "tone": 0.6612,
+        "pitch_hz": null,
+        "noise_color": 0.7685,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "dbf75bafd5ab1d982862e2e1fcecd822051bd048cf1d1a6afbc9dec70beac566"
+    },
+    {
+      "id": "TLS-037",
+      "kind": "HAT",
+      "seed": 1036,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "HAT",
+        "variant": 6,
+        "duration_sec": 0.285,
+        "decay_sec": 0.0539,
+        "drive": 1.452,
+        "tone": 0.754,
+        "pitch_hz": null,
+        "noise_color": 0.8692,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "130382db9359c3c83d5c19ec4fb4f536cfc15c2cc9e823966c250a6ce33c8fb9"
+    },
+    {
+      "id": "TLS-038",
+      "kind": "HAT",
+      "seed": 1037,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "HAT",
+        "variant": 7,
+        "duration_sec": 0.35,
+        "decay_sec": 0.0672,
+        "drive": 1.7028,
+        "tone": 0.1972,
+        "pitch_hz": null,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "1ebdf38594803e6c814889816c0c834d08d4c5540f4b9db3cc5f2df6cefb7eb4"
+    },
+    {
+      "id": "TLS-039",
+      "kind": "HAT",
+      "seed": 1038,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "HAT",
+        "variant": 8,
+        "duration_sec": 0.415,
+        "decay_sec": 0.0805,
+        "drive": 1.9536,
+        "tone": 0.29,
+        "pitch_hz": null,
+        "noise_color": 0.3657,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "72da51ef353fe9cd959cd7c113cd6124d4ab59dc7678e588422e81adb0f5292b"
+    },
+    {
+      "id": "TLS-040",
+      "kind": "HAT",
+      "seed": 1039,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "HAT",
+        "variant": 9,
+        "duration_sec": 0.48,
+        "decay_sec": 0.0938,
+        "drive": 2.2044,
+        "tone": 0.3828,
+        "pitch_hz": null,
+        "noise_color": 0.4664,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "92f7d0f1e6824305f62d0e5a5ee5d3f1979f56f643a1f66177e62ddf0e18a040"
+    },
+    {
+      "id": "TLS-041",
+      "kind": "HAT",
+      "seed": 1040,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "HAT",
+        "variant": 10,
+        "duration_sec": 0.22,
+        "decay_sec": 0.1071,
+        "drive": 2.4552,
+        "tone": 0.4756,
+        "pitch_hz": null,
+        "noise_color": 0.5671,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "3e5ae4ef18d4579919bee9c200f8f97f7d2e96b06432080072e837bf96bdbeda"
+    },
+    {
+      "id": "TLS-042",
+      "kind": "HAT",
+      "seed": 1041,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "HAT",
+        "variant": 11,
+        "duration_sec": 0.285,
+        "decay_sec": 0.1203,
+        "drive": 2.706,
+        "tone": 0.5684,
+        "pitch_hz": null,
+        "noise_color": 0.6678,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "dd3e734f4139537d0f2021f35df1cc69b8c99cbe35efe7b65444ff4cfc8b9086"
+    },
+    {
+      "id": "TLS-043",
+      "kind": "COWBELL",
+      "seed": 1042,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "COWBELL",
+        "variant": 0,
+        "duration_sec": 0.28,
+        "decay_sec": 0.0539,
+        "drive": 1.452,
+        "tone": 0.1972,
+        "pitch_hz": 540.0,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "10bbfaa6046a48d9d289778a9bbb252580d9b91a5d9d98705f982bc66299804a"
+    },
+    {
+      "id": "TLS-044",
+      "kind": "COWBELL",
+      "seed": 1043,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "COWBELL",
+        "variant": 1,
+        "duration_sec": 0.325,
+        "decay_sec": 0.0672,
+        "drive": 1.7028,
+        "tone": 0.29,
+        "pitch_hz": 540.0,
+        "noise_color": 0.3657,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "b43bf207cd68b02d5b17a13cdee9cd8cc5869b3f5a9db130d8d0c4251ff86b5e"
+    },
+    {
+      "id": "TLS-045",
+      "kind": "COWBELL",
+      "seed": 1044,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "COWBELL",
+        "variant": 2,
+        "duration_sec": 0.37,
+        "decay_sec": 0.0805,
+        "drive": 1.9536,
+        "tone": 0.3828,
+        "pitch_hz": 540.0,
+        "noise_color": 0.4664,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "2adf205529d818cce705606dc96909fa785faa80a99ebce1109d1e5d8e4cf1d9"
+    },
+    {
+      "id": "TLS-046",
+      "kind": "COWBELL",
+      "seed": 1045,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "COWBELL",
+        "variant": 3,
+        "duration_sec": 0.415,
+        "decay_sec": 0.0938,
+        "drive": 2.2044,
+        "tone": 0.4756,
+        "pitch_hz": 540.0,
+        "noise_color": 0.5671,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "ecaa7f81ae72701b02e46fe7d22f70a082d7b97c14622774ea5ac53a2a8a5cf1"
+    },
+    {
+      "id": "TLS-047",
+      "kind": "COWBELL",
+      "seed": 1046,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "COWBELL",
+        "variant": 4,
+        "duration_sec": 0.28,
+        "decay_sec": 0.1071,
+        "drive": 2.4552,
+        "tone": 0.5684,
+        "pitch_hz": 540.0,
+        "noise_color": 0.6678,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "82df825742e85aab123052d4e3595a8801f933ea9bef0fa1488d0c38ef7c5148"
+    },
+    {
+      "id": "TLS-048",
+      "kind": "COWBELL",
+      "seed": 1047,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "COWBELL",
+        "variant": 5,
+        "duration_sec": 0.325,
+        "decay_sec": 0.1203,
+        "drive": 2.706,
+        "tone": 0.6612,
+        "pitch_hz": 540.0,
+        "noise_color": 0.7685,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "eb6120c10b143e048a008033edf6f4e55ddb4f7c0601420f9eb68d5c3a687da8"
+    },
+    {
+      "id": "TLS-049",
+      "kind": "COWBELL",
+      "seed": 1048,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "COWBELL",
+        "variant": 6,
+        "duration_sec": 0.37,
+        "decay_sec": 0.0539,
+        "drive": 1.452,
+        "tone": 0.754,
+        "pitch_hz": 540.0,
+        "noise_color": 0.8692,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "042ea2e77741aeda5d3ee6b4f1faede186cb851691f24e2c2745bf2000c7f9d9"
+    },
+    {
+      "id": "TLS-050",
+      "kind": "COWBELL",
+      "seed": 1049,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "COWBELL",
+        "variant": 7,
+        "duration_sec": 0.415,
+        "decay_sec": 0.0672,
+        "drive": 1.7028,
+        "tone": 0.1972,
+        "pitch_hz": 540.0,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "1f4100d60bd968f971e4de5528f6cbf6e73d67d86528354c54edba7c725b726e"
+    },
+    {
+      "id": "TLS-051",
+      "kind": "PERC",
+      "seed": 1050,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "PERC",
+        "variant": 0,
+        "duration_sec": 0.22,
+        "decay_sec": 0.0539,
+        "drive": 1.452,
+        "tone": 0.1972,
+        "pitch_hz": null,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "1046a8654699032213bb3cac36c44cc286613500538085f39fabc27d16ec1ecb"
+    },
+    {
+      "id": "TLS-052",
+      "kind": "PERC",
+      "seed": 1051,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "PERC",
+        "variant": 1,
+        "duration_sec": 0.285,
+        "decay_sec": 0.0672,
+        "drive": 1.7028,
+        "tone": 0.29,
+        "pitch_hz": null,
+        "noise_color": 0.3657,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "cd2590d6794d4c8f2256322a7fc79ae5eb07b4da7beef5f5c3c923535e3148a5"
+    },
+    {
+      "id": "TLS-053",
+      "kind": "PERC",
+      "seed": 1052,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "PERC",
+        "variant": 2,
+        "duration_sec": 0.35,
+        "decay_sec": 0.0805,
+        "drive": 1.9536,
+        "tone": 0.3828,
+        "pitch_hz": null,
+        "noise_color": 0.4664,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "ca371ebb693df7893eb4902640438bbbb304017691afad3067124049592183d9"
+    },
+    {
+      "id": "TLS-054",
+      "kind": "PERC",
+      "seed": 1053,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "PERC",
+        "variant": 3,
+        "duration_sec": 0.415,
+        "decay_sec": 0.0938,
+        "drive": 2.2044,
+        "tone": 0.4756,
+        "pitch_hz": null,
+        "noise_color": 0.5671,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "929377b8d38f1a360be945b881d5946f1dc13ed8a2824d4a851c458595d7b2b2"
+    },
+    {
+      "id": "TLS-055",
+      "kind": "PERC",
+      "seed": 1054,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "PERC",
+        "variant": 4,
+        "duration_sec": 0.48,
+        "decay_sec": 0.1071,
+        "drive": 2.4552,
+        "tone": 0.5684,
+        "pitch_hz": null,
+        "noise_color": 0.6678,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "4ea129cd324325fd65ff7049be9c407b9952a984823a5e85da9284186c72401a"
+    },
+    {
+      "id": "TLS-056",
+      "kind": "PERC",
+      "seed": 1055,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "PERC",
+        "variant": 5,
+        "duration_sec": 0.22,
+        "decay_sec": 0.1203,
+        "drive": 2.706,
+        "tone": 0.6612,
+        "pitch_hz": null,
+        "noise_color": 0.7685,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "47cd77bfd0232ad597113017da71616b40b9ac42eff996c740569e17a88d070e"
+    },
+    {
+      "id": "TLS-057",
+      "kind": "PERC",
+      "seed": 1056,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "PERC",
+        "variant": 6,
+        "duration_sec": 0.285,
+        "decay_sec": 0.0539,
+        "drive": 1.452,
+        "tone": 0.754,
+        "pitch_hz": null,
+        "noise_color": 0.8692,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "a8f569c6fd8bab8dd5bbc294ec02f8483e583cb2e14465b7b038ee2578723bd4"
+    },
+    {
+      "id": "TLS-058",
+      "kind": "PERC",
+      "seed": 1057,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "PERC",
+        "variant": 7,
+        "duration_sec": 0.35,
+        "decay_sec": 0.0672,
+        "drive": 1.7028,
+        "tone": 0.1972,
+        "pitch_hz": null,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "8f58cebfee045bd056b7cbcf92d414f8d73dc1fe9e660894acdbde110b2399eb"
+    },
+    {
+      "id": "TLS-059",
+      "kind": "FX",
+      "seed": 1058,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "FX",
+        "variant": 0,
+        "duration_sec": 0.42,
+        "decay_sec": 0.0539,
+        "drive": 1.452,
+        "tone": 0.1972,
+        "pitch_hz": null,
+        "noise_color": 0.265,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "a11704e6a6dbd99788a71d6c3a0f7fe8b8a9c26d3034e16f414c31fd27c6bd3c"
+    },
+    {
+      "id": "TLS-060",
+      "kind": "FX",
+      "seed": 1059,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "FX",
+        "variant": 1,
+        "duration_sec": 0.495,
+        "decay_sec": 0.0672,
+        "drive": 1.7028,
+        "tone": 0.29,
+        "pitch_hz": null,
+        "noise_color": 0.3657,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "0d74312bbcae3dffc34e0b0d77c7c38352179b0e3c3c9a48b142d52ea120139f"
+    },
+    {
+      "id": "TLS-061",
+      "kind": "FX",
+      "seed": 1060,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "FX",
+        "variant": 2,
+        "duration_sec": 0.57,
+        "decay_sec": 0.0805,
+        "drive": 1.9536,
+        "tone": 0.3828,
+        "pitch_hz": null,
+        "noise_color": 0.4664,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "10531d5d6b6652df79d4b660260d05153e5edece5fe5d3f8fc2679630f068062"
+    },
+    {
+      "id": "TLS-062",
+      "kind": "FX",
+      "seed": 1061,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "FX",
+        "variant": 3,
+        "duration_sec": 0.645,
+        "decay_sec": 0.0938,
+        "drive": 2.2044,
+        "tone": 0.4756,
+        "pitch_hz": null,
+        "noise_color": 0.5671,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "5c98dd44d96f5f1e0ea3a7f444367ae9a5a705de5fc8898a7fc521aa50535f7b"
+    },
+    {
+      "id": "TLS-063",
+      "kind": "FX",
+      "seed": 1062,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "FX",
+        "variant": 4,
+        "duration_sec": 0.72,
+        "decay_sec": 0.1071,
+        "drive": 2.4552,
+        "tone": 0.5684,
+        "pitch_hz": null,
+        "noise_color": 0.6678,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "81474e4e5db5d8f3c31162d44e7eb06d6993afeb1e734fae3372df9c5eac625a"
+    },
+    {
+      "id": "TLS-064",
+      "kind": "FX",
+      "seed": 1063,
+      "sample_rate": 44100,
+      "parameters": {
+        "engine": "parametric-v2",
+        "kind": "FX",
+        "variant": 5,
+        "duration_sec": 0.42,
+        "decay_sec": 0.1203,
+        "drive": 2.706,
+        "tone": 0.6612,
+        "pitch_hz": null,
+        "noise_color": 0.7685,
+        "genre": "drift-phonk"
+      },
+      "reference_sha256": "2066a82bfe9900bd4d7fe11863fd38aa6baea774e77832a6a8f8294afe832084"
+    }
+  ]
+}

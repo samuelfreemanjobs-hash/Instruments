@@ -1,0 +1,34 @@
+native/build/
+
+# Converter Night analysis refs (PCM + archives — analysis-only)
+kits/converter-night/references/**/*.wav
+kits/converter-night/references/**/*.WAV
+kits/converter-night/references/**/*.aif
+kits/converter-night/references/**/*.aiff
+kits/converter-night/references/**/*.zip
+kits/converter-night/references/**/samples/
+# Rendered PCM (masters + storefront pack) — keep local; commit design/QA notes only
+kits/converter-night/masters/
+kits/converter-night/storefront/**/*.wav
+kits/converter-night/storefront/**/*.WAV
+kits/converter-night/**/manifest.json
+kits/converter-night/**/qa-report.json
+kits/converter-night/**/diversity-report.json
+# Native C++ build tree
+native/build/
+
+kits/converter-night/loops/wav/
+kits/converter-night/listen/**/*.wav
+kits/converter-night/listen/**/*.zip
+kits/converter-night/*.zip
+# MEMPHIS-660 staged kit banks (PCM local; recipe/README committed)
+kits/converter-night/banks/**/*.wav
+kits/converter-night/banks/**/*.WAV
+kits/converter-night/banks/**/manifest.json
+kits/converter-night/banks/elite_phonk_preview/
+kits/converter-night/banks/full_pack_staging/
+# BLACK BOX kit PCM
+kits/black-box-96/masters/
+kits/black-box-96/pack_staging/
+kits/black-box-*/masters/
+kits/black-box-*/pack_staging/

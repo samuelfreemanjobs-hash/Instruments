@@ -1,0 +1,12 @@
+# <SKU> provenance
+- Source: original oscillator/noise synthesis OR separately documented licensed source
+- Generation code commit / tool version:
+- Master sample IDs:
+- Recipes / parameter versions:
+- Random seed policy:
+- Third-party assets and commercial license (if any):
+- Date / operator:
+- Master -> export transformations:
+- Listening reviewer / date / observations:
+- Device test proof / date:
+- Release owner approval / date:

@@ -1,0 +1,124 @@
+{
+  "schema": "drumsmith-loop-blueprint-v1",
+  "name": "cnv-arch-crawl",
+  "genre_profile": "memphis-tape",
+  "style_tag": "converter-crawl",
+  "bpm": 94.0,
+  "bars": 2,
+  "sample_rate": 44100,
+  "grid_subdivisions_per_bar": 16,
+  "samples_per_bar": 112596,
+  "samples_per_bar_tag": "C",
+  "feel": "pure converter crawl",
+  "promise": "Original memphis-tape archetype sketch \u2014 not a recreation of any artist tape",
+  "research_notes": "808 bed + cowbell melody dominant \u2014 Zirk/Spanish Fly DR-machine language [inspected]",
+  "lanes": {
+    "KICK": [
+      {
+        "step": 0,
+        "vel": 90
+      },
+      {
+        "step": 16,
+        "vel": 85
+      }
+    ],
+    "SNARE": [
+      {
+        "step": 8,
+        "vel": 100
+      },
+      {
+        "step": 24,
+        "vel": 95
+      }
+    ],
+    "HAT": [
+      {
+        "step": 0,
+        "vel": 45
+      },
+      {
+        "step": 8,
+        "vel": 45
+      },
+      {
+        "step": 16,
+        "vel": 45
+      },
+      {
+        "step": 24,
+        "vel": 45
+      }
+    ],
+    "808": [
+      {
+        "step": 0,
+        "vel": 120
+      },
+      {
+        "step": 4,
+        "vel": 70
+      },
+      {
+        "step": 8,
+        "vel": 55
+      },
+      {
+        "step": 16,
+        "vel": 115
+      },
+      {
+        "step": 20,
+        "vel": 65
+      }
+    ],
+    "COWBELL": [
+      {
+        "step": 2,
+        "vel": 88
+      },
+      {
+        "step": 5,
+        "vel": 70
+      },
+      {
+        "step": 10,
+        "vel": 95
+      },
+      {
+        "step": 14,
+        "vel": 75
+      },
+      {
+        "step": 18,
+        "vel": 90
+      },
+      {
+        "step": 21,
+        "vel": 68
+      },
+      {
+        "step": 26,
+        "vel": 92
+      },
+      {
+        "step": 29,
+        "vel": 72
+      }
+    ]
+  },
+  "808": {
+    "key": "F",
+    "glide": "A",
+    "length_bars": 2
+  },
+  "variants": [
+    {
+      "id": "full",
+      "bars": 2
+    }
+  ],
+  "status": "agent-demo",
+  "device_exports": "UNVERIFIED"
+}

@@ -1,0 +1,55 @@
+name: drumsmith
+
+on:
+  push:
+    paths:
+      - "claude/drumsmith/**"
+      - ".github/workflows/drumsmith.yml"
+  pull_request:
+    paths:
+      - "claude/drumsmith/**"
+
+jobs:
+  self-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: claude/drumsmith
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install g++-12
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq g++-12 cmake
+      - name: Python self_test
+        run: python3 scripts/self_test.py
+      - name: Python test_upgrade
+        run: python3 scripts/test_upgrade.py
+      - name: Python test_v13
+        run: python3 scripts/test_v13.py
+      - name: Python test_v20
+        run: python3 scripts/test_v20.py
+        env:
+          CXX: g++-12
+      - name: Python test_groove_loop
+        run: python3 scripts/test_groove_loop.py
+      - name: Native cmake + ctest
+        run: |
+          cmake -S native -B native/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12
+          cmake --build native/build -j
+          ctest --test-dir native/build --output-on-failure
+      - name: Verify TLS drift example (if present)
+        run: |
+          if [ -f examples/tail-light-static/tls-v13-drift/manifest.json ]; then
+            python3 scripts/verify_kit.py --kit examples/tail-light-static/tls-v13-drift \
+              --manifest examples/tail-light-static/tls-v13-drift/manifest.json
+          fi
+      - name: Native factory smoke (8 hits)
+        run: |
+          python3 scripts/native_factory.py \
+            --out /tmp/drumsmith_native_smoke \
+            --renderer native/build/drumsmith-render \
+            --genre drift-phonk --count 8 --sku TLS --plan tail-light-static

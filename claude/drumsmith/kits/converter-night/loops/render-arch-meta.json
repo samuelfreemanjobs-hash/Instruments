@@ -1,0 +1,54 @@
+[
+  {
+    "path": "kits/converter-night/storefront/CNV_Converter_Night/03_LOOP_BUILDERS_AND_GROOVES/Acoustic_Rhythm_Loops/CNV_03_LOOP_Rhythm_94_04.wav",
+    "frames": 225191,
+    "samples_per_bar": 112596,
+    "grid_total_frames": 225192,
+    "loop_samples_bars": 225191,
+    "hits_placed": 21,
+    "sample_peak_dbfs": -0.09999999999999887,
+    "bpm": 94.0,
+    "bars": 2,
+    "variant": 0,
+    "blueprint": "cnv-arch-crawl.json"
+  },
+  {
+    "path": "kits/converter-night/storefront/CNV_Converter_Night/03_LOOP_BUILDERS_AND_GROOVES/Acoustic_Rhythm_Loops/CNV_03_LOOP_Rhythm_94_05.wav",
+    "frames": 225191,
+    "samples_per_bar": 112596,
+    "grid_total_frames": 225192,
+    "loop_samples_bars": 225191,
+    "hits_placed": 17,
+    "sample_peak_dbfs": -0.09999999999999984,
+    "bpm": 94.0,
+    "bars": 2,
+    "variant": 3,
+    "blueprint": "cnv-arch-bitcrush.json"
+  },
+  {
+    "path": "kits/converter-night/storefront/CNV_Converter_Night/03_LOOP_BUILDERS_AND_GROOVES/Acoustic_Rhythm_Loops/CNV_03_LOOP_Rhythm_94_06.wav",
+    "frames": 225191,
+    "samples_per_bar": 112596,
+    "grid_total_frames": 225192,
+    "loop_samples_bars": 225191,
+    "hits_placed": 15,
+    "sample_peak_dbfs": -0.10000000000000081,
+    "bpm": 94.0,
+    "bars": 2,
+    "variant": 1,
+    "blueprint": "cnv-arch-horror.json"
+  },
+  {
+    "path": "kits/converter-night/storefront/CNV_Converter_Night/03_LOOP_BUILDERS_AND_GROOVES/Acoustic_Rhythm_Loops/CNV_03_LOOP_Rhythm_134_13.wav",
+    "frames": 157970,
+    "samples_per_bar": 78985,
+    "grid_total_frames": 157970,
+    "loop_samples_bars": 157970,
+    "hits_placed": 27,
+    "sample_peak_dbfs": -0.09999999999999984,
+    "bpm": 134.0,
+    "bars": 2,
+    "variant": 2,
+    "blueprint": "cnv-arch-bounce.json"
+  }
+]

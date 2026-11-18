@@ -1,0 +1,116 @@
+{
+  "schema": "drumsmith-loop-blueprint-v1",
+  "name": "cnv-dr660-134-bell",
+  "genre_profile": "memphis-tape",
+  "style_tag": "dr660-technique",
+  "bpm": 134.0,
+  "bars": 2,
+  "sample_rate": 44100,
+  "grid_subdivisions_per_bar": 16,
+  "samples_per_bar": 78985,
+  "samples_per_bar_tag": "C",
+  "feel": "pitched cowbell lead",
+  "promise": "Original DR-660-technique memphis-tape sketch \u2014 pitched-sub/cowbell language; not a recreation of any artist tape or Boss ROM",
+  "research_notes": "Cowbell lead over thin hats \u2014 DR machine pitch-map language without shipping ROMs [inspected]",
+  "lanes": {
+    "KICK": [
+      {
+        "step": 0,
+        "vel": 100
+      },
+      {
+        "step": 10,
+        "vel": 70
+      },
+      {
+        "step": 16,
+        "vel": 100
+      }
+    ],
+    "SNARE": [
+      {
+        "step": 8,
+        "vel": 112
+      },
+      {
+        "step": 24,
+        "vel": 108
+      }
+    ],
+    "HAT": [
+      {
+        "step": 4,
+        "vel": 40
+      },
+      {
+        "step": 12,
+        "vel": 40
+      },
+      {
+        "step": 20,
+        "vel": 40
+      },
+      {
+        "step": 28,
+        "vel": 40
+      }
+    ],
+    "808": [
+      {
+        "step": 0,
+        "vel": 105
+      },
+      {
+        "step": 16,
+        "vel": 95
+      }
+    ],
+    "COWBELL": [
+      {
+        "step": 0,
+        "vel": 55
+      },
+      {
+        "step": 4,
+        "vel": 100
+      },
+      {
+        "step": 7,
+        "vel": 75
+      },
+      {
+        "step": 11,
+        "vel": 95
+      },
+      {
+        "step": 16,
+        "vel": 55
+      },
+      {
+        "step": 20,
+        "vel": 100
+      },
+      {
+        "step": 23,
+        "vel": 75
+      },
+      {
+        "step": 27,
+        "vel": 95
+      }
+    ]
+  },
+  "808": {
+    "key": "F",
+    "glide": "A",
+    "length_bars": 2
+  },
+  "variants": [
+    {
+      "id": "full",
+      "bars": 2
+    }
+  ],
+  "status": "agent-demo",
+  "device_exports": "UNVERIFIED"
+}

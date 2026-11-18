@@ -1,0 +1,113 @@
+{
+  "status": "PASS",
+  "exact_duplicate_groups": [],
+  "similar_envelope_pairs_advisory": [
+    {
+      "a": "TLS-019",
+      "b": "TLS-020",
+      "shape_mse": 0.0003586
+    },
+    {
+      "a": "TLS-019",
+      "b": "TLS-021",
+      "shape_mse": 0.0002126
+    },
+    {
+      "a": "TLS-020",
+      "b": "TLS-021",
+      "shape_mse": 0.0001044
+    },
+    {
+      "a": "TLS-032",
+      "b": "TLS-033",
+      "shape_mse": 0.000342
+    },
+    {
+      "a": "TLS-032",
+      "b": "TLS-034",
+      "shape_mse": 0.0003699
+    },
+    {
+      "a": "TLS-033",
+      "b": "TLS-034",
+      "shape_mse": 8.67e-05
+    },
+    {
+      "a": "TLS-033",
+      "b": "TLS-035",
+      "shape_mse": 0.0002305
+    },
+    {
+      "a": "TLS-034",
+      "b": "TLS-035",
+      "shape_mse": 0.0001558
+    },
+    {
+      "a": "TLS-038",
+      "b": "TLS-039",
+      "shape_mse": 0.0003162
+    },
+    {
+      "a": "TLS-038",
+      "b": "TLS-040",
+      "shape_mse": 0.000135
+    },
+    {
+      "a": "TLS-039",
+      "b": "TLS-040",
+      "shape_mse": 7.57e-05
+    },
+    {
+      "a": "TLS-051",
+      "b": "TLS-052",
+      "shape_mse": 0.0003327
+    },
+    {
+      "a": "TLS-051",
+      "b": "TLS-053",
+      "shape_mse": 0.0002917
+    },
+    {
+      "a": "TLS-051",
+      "b": "TLS-054",
+      "shape_mse": 0.0003516
+    },
+    {
+      "a": "TLS-051",
+      "b": "TLS-055",
+      "shape_mse": 0.00027
+    },
+    {
+      "a": "TLS-052",
+      "b": "TLS-053",
+      "shape_mse": 0.0002868
+    },
+    {
+      "a": "TLS-052",
+      "b": "TLS-054",
+      "shape_mse": 0.0003185
+    },
+    {
+      "a": "TLS-052",
+      "b": "TLS-055",
+      "shape_mse": 0.0003689
+    },
+    {
+      "a": "TLS-053",
+      "b": "TLS-054",
+      "shape_mse": 0.0001864
+    },
+    {
+      "a": "TLS-053",
+      "b": "TLS-055",
+      "shape_mse": 0.0001779
+    },
+    {
+      "a": "TLS-054",
+      "b": "TLS-055",
+      "shape_mse": 0.0002383
+    }
+  ],
+  "files_checked": 64,
+  "limitations": "Envelope similarity cannot replace listening, spectral analysis or content review"
+}

@@ -1,0 +1,124 @@
+{
+  "schema": "drumsmith-loop-blueprint-v1",
+  "name": "cnv-dr660-94-thick",
+  "genre_profile": "memphis-tape",
+  "style_tag": "dr660-technique",
+  "bpm": 94.0,
+  "bars": 2,
+  "sample_rate": 44100,
+  "grid_subdivisions_per_bar": 16,
+  "samples_per_bar": 112596,
+  "samples_per_bar_tag": "C",
+  "feel": "slow heavy 808 bed",
+  "promise": "Original DR-660-technique memphis-tape sketch \u2014 pitched-sub/cowbell language; not a recreation of any artist tape or Boss ROM",
+  "research_notes": "Bass-heavy sparse kit; cowbell accents only [inspected Spanish Fly / early 660 adopters technique summary]",
+  "lanes": {
+    "KICK": [
+      {
+        "step": 0,
+        "vel": 115
+      },
+      {
+        "step": 6,
+        "vel": 70
+      },
+      {
+        "step": 16,
+        "vel": 115
+      },
+      {
+        "step": 22,
+        "vel": 65
+      }
+    ],
+    "SNARE": [
+      {
+        "step": 8,
+        "vel": 118
+      },
+      {
+        "step": 24,
+        "vel": 115
+      },
+      {
+        "step": 26,
+        "vel": 60
+      }
+    ],
+    "HAT": [
+      {
+        "step": 0,
+        "vel": 80
+      },
+      {
+        "step": 4,
+        "vel": 60
+      },
+      {
+        "step": 8,
+        "vel": 80
+      },
+      {
+        "step": 12,
+        "vel": 55
+      },
+      {
+        "step": 16,
+        "vel": 80
+      },
+      {
+        "step": 20,
+        "vel": 60
+      },
+      {
+        "step": 24,
+        "vel": 80
+      },
+      {
+        "step": 28,
+        "vel": 55
+      }
+    ],
+    "808": [
+      {
+        "step": 0,
+        "vel": 120
+      },
+      {
+        "step": 16,
+        "vel": 110
+      }
+    ],
+    "COWBELL": [
+      {
+        "step": 4,
+        "vel": 78
+      },
+      {
+        "step": 12,
+        "vel": 86
+      },
+      {
+        "step": 20,
+        "vel": 78
+      },
+      {
+        "step": 28,
+        "vel": 90
+      }
+    ]
+  },
+  "808": {
+    "key": "F",
+    "glide": "A",
+    "length_bars": 2
+  },
+  "variants": [
+    {
+      "id": "full",
+      "bars": 2
+    }
+  ],
+  "status": "agent-demo",
+  "device_exports": "UNVERIFIED"
+}

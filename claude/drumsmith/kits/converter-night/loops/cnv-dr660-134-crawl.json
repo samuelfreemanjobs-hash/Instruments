@@ -1,0 +1,114 @@
+{
+  "schema": "drumsmith-loop-blueprint-v1",
+  "name": "cnv-dr660-134-crawl",
+  "genre_profile": "memphis-tape",
+  "style_tag": "dr660-technique",
+  "bpm": 134.0,
+  "bars": 2,
+  "sample_rate": 44100,
+  "grid_subdivisions_per_bar": 16,
+  "samples_per_bar": 78985,
+  "samples_per_bar_tag": "C",
+  "feel": "crawl / choke restart",
+  "promise": "Original DR-660-technique memphis-tape sketch \u2014 pitched-sub/cowbell language; not a recreation of any artist tape or Boss ROM",
+  "research_notes": "808 re-triggers mimic choke/restart rate-drop beds [inspected RATE + Hardware_Processing_Guide]",
+  "lanes": {
+    "KICK": [
+      {
+        "step": 0,
+        "vel": 110
+      },
+      {
+        "step": 18,
+        "vel": 85
+      }
+    ],
+    "SNARE": [
+      {
+        "step": 8,
+        "vel": 110
+      },
+      {
+        "step": 24,
+        "vel": 105
+      }
+    ],
+    "HAT": [
+      {
+        "step": 0,
+        "vel": 55
+      },
+      {
+        "step": 8,
+        "vel": 55
+      },
+      {
+        "step": 16,
+        "vel": 55
+      },
+      {
+        "step": 24,
+        "vel": 55
+      }
+    ],
+    "808": [
+      {
+        "step": 0,
+        "vel": 118
+      },
+      {
+        "step": 8,
+        "vel": 60
+      },
+      {
+        "step": 16,
+        "vel": 110
+      },
+      {
+        "step": 24,
+        "vel": 55
+      }
+    ],
+    "COWBELL": [
+      {
+        "step": 6,
+        "vel": 80
+      },
+      {
+        "step": 14,
+        "vel": 70
+      },
+      {
+        "step": 22,
+        "vel": 88
+      },
+      {
+        "step": 30,
+        "vel": 75
+      }
+    ],
+    "PERC": [
+      {
+        "step": 4,
+        "vel": 60
+      },
+      {
+        "step": 20,
+        "vel": 65
+      }
+    ]
+  },
+  "808": {
+    "key": "F",
+    "glide": "A",
+    "length_bars": 2
+  },
+  "variants": [
+    {
+      "id": "full",
+      "bars": 2
+    }
+  ],
+  "status": "agent-demo",
+  "device_exports": "UNVERIFIED"
+}

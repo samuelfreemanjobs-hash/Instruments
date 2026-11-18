@@ -1,0 +1,133 @@
+{
+  "schema": "drumsmith-loop-blueprint-v1",
+  "name": "cnv-top-134",
+  "genre_profile": "memphis-tape",
+  "bpm": 134.0,
+  "bars": 2,
+  "sample_rate": 44100,
+  "grid_subdivisions_per_bar": 16,
+  "samples_per_bar": 78985,
+  "samples_per_bar_tag": "C",
+  "feel": "loose tape",
+  "promise": "Original top-percussion loop sketch \u2014 hats/perc only",
+  "lanes": {
+    "HAT": [
+      {
+        "step": 0,
+        "vel": 90
+      },
+      {
+        "step": 2,
+        "vel": 70
+      },
+      {
+        "step": 4,
+        "vel": 90
+      },
+      {
+        "step": 6,
+        "vel": 70
+      },
+      {
+        "step": 8,
+        "vel": 90
+      },
+      {
+        "step": 10,
+        "vel": 70
+      },
+      {
+        "step": 12,
+        "vel": 90
+      },
+      {
+        "step": 14,
+        "vel": 70
+      },
+      {
+        "step": 16,
+        "vel": 90
+      },
+      {
+        "step": 18,
+        "vel": 70
+      },
+      {
+        "step": 20,
+        "vel": 90
+      },
+      {
+        "step": 22,
+        "vel": 70
+      },
+      {
+        "step": 24,
+        "vel": 90
+      },
+      {
+        "step": 26,
+        "vel": 70
+      },
+      {
+        "step": 28,
+        "vel": 90
+      },
+      {
+        "step": 30,
+        "vel": 70
+      },
+      {
+        "step": 28,
+        "vel": 60
+      },
+      {
+        "step": 29,
+        "vel": 70
+      },
+      {
+        "step": 30,
+        "vel": 80
+      },
+      {
+        "step": 31,
+        "vel": 90
+      }
+    ],
+    "PERC": [
+      {
+        "step": 4,
+        "vel": 90
+      },
+      {
+        "step": 12,
+        "vel": 90
+      },
+      {
+        "step": 20,
+        "vel": 90
+      },
+      {
+        "step": 28,
+        "vel": 90
+      }
+    ]
+  },
+  "808": {
+    "key": "TBD",
+    "glide": "A",
+    "length_bars": 2
+  },
+  "variants": [
+    {
+      "id": "full",
+      "bars": 2
+    },
+    {
+      "id": "sparse",
+      "bars": 2,
+      "notes": "drop hats / thin kicks \u2014 A"
+    }
+  ],
+  "status": "agent-demo",
+  "device_exports": "UNVERIFIED"
+}
