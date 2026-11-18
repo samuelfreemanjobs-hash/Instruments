@@ -1,6 +1,8 @@
 #pragma once
 
 #include "PluginProcessor.h"
+#include "UI/PresetBrowserComponent.h"
+#include "Presets/FactoryPresets.h"
 
 #include <JuceHeader.h>
 
@@ -37,7 +39,7 @@ private:
     Wave9090AudioProcessor& processor_;
     Wave9090LookAndFeel laf_;
 
-    juce::ComboBox presetBox_;
+    std::unique_ptr<PresetBrowserComponent> presetBrowser_;
     juce::Label titleLabel_ { {}, "WAVE-9090" };
     juce::Label subtitleLabel_ { {}, "Analog/Digital Hybrid Engine" };
 

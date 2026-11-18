@@ -8,6 +8,7 @@ Command-line binaries built from `tools/` and registered in the root `CMakeLists
 |--------|--------|------|
 | `GenerateCleanroomRom` | `GenerateCleanroomRom.cpp` | Synthesize `jdupg_cleanroom.rom` at build time (256 waves, multisample metadata). |
 | `OfflineRender` | `OfflineRender.cpp` | Instantiate `JDUpgradedAudioProcessor`, feed MIDI, write stereo 24-bit WAV. |
+| `Wave9090OfflineRender` | `Wave9090OfflineRender.cpp` | Same pipeline for **WAVE-9090** factory programs (trap preview packs). |
 | `SpectralDiff` | `SpectralDiff.cpp`, `WavCompare.h` | Peak-normalized mono comparison; RMS and mean spectral bin error. |
 | `ExportPreset` | `ExportPreset.cpp` | Write `.jdpreset` APVTS XML for a factory program index. |
 

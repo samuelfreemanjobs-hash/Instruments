@@ -24,7 +24,7 @@ Beat producers who want harmonic complexity and movement without a sample librar
 - Tape wobble macro (wow, flutter, noise floor, sub detune coupling).
 - Sub oscillator.
 - 16-voice polyphony with voice stealing.
-- Factory presets with categories.
+- **200** factory presets with TRAP / PHONK / DRILL categories and searchable sidebar UI.
 - Dark instrument UI.
 
 ## Non-goals (v0.1)

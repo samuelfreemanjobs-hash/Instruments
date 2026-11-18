@@ -1,16 +1,21 @@
-# Factory presets (128)
+# Factory presets (500)
 
-Programs are **four-tone stacks**. Use host program change or the plugin **&lt; / &gt;** buttons.
+Programs are **four-tone stacks**. Use the in-plugin **Preset Browser** (search + category), host program change, or prev/next inside the browser.
 
 | Index | Category |
 |-------|----------|
 | 1–24 | EP / Rhodes / JD-style keys |
 | 25–48 | Pads |
 | 49–64 | Bass |
-| 65–80 | Vaporwave |
+| 65–80 | Vaporwave (market names on programs 64–79, e.g. *Palm Mall Stack*, *Chrome Lobby EP*) |
 | 81–96 | 80s R&B |
 | 97–112 | 90s R&B |
 | 113–128 | Elite sound design |
+| 129–152 | Trap (MPC / 808 packs) |
+| 153–176 | Phonk |
+| 177–200 | Lo-Fi |
+
+See [PRESET_FACTORY_500.md](PRESET_FACTORY_500.md) and [STITCH_UI_BRIEF.md](STITCH_UI_BRIEF.md).
 
 ## Per-tone mute
 

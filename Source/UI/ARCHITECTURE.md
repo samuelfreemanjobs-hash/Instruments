@@ -7,6 +7,7 @@ Host-facing editor code lives in `PluginEditor.*` with reusable components under
 | File | Role |
 |------|------|
 | `WavePreviewComponent.h` | Decimates `PcmWaveform` from `RomBank` or `CleanroomWaveLibrary` into a painted path (ROM browser). |
+| `PresetBrowserComponent.*` | Category filter, search, and list for **200** factory programs (JD Upgraded + WAVE-9090). |
 
 ## Editor responsibilities
 
