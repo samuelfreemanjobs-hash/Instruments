@@ -72,23 +72,30 @@ def calibrate(era: str) -> dict:
             }
     grade = "A"
     notes = []
-    if refs_s.get("count", 0) == 0:
+    if ours_s.get("count", 0) == 0:
+        grade = "N/A"
+        notes.append("No master samples measured — generate era masters before calibrating.")
+    elif refs_s.get("count", 0) == 0:
         grade = "N/A"
         notes.append("No elite preview reference found — install/build elite_phonk_preview for delta.")
     else:
-        fp = gaps.get("front_peak_median", {}).get("ratio") or 1.0
-        br = gaps.get("body_rms_median", {}).get("ratio") or 1.0
-        if fp < 0.75:
-            grade = "C"
-            notes.append("Front punch below commercial reference — raise click/drive.")
-        elif fp < 0.9:
-            grade = "B"
-            notes.append("Front punch slightly soft vs reference.")
-        if br < 0.7:
-            grade = "C" if grade == "A" else grade
-            notes.append("Body energy thin — check layered mid bark / membrane gains.")
-        if not notes:
-            notes.append("Within band of elite preview medians.")
+        fp = gaps.get("front_peak_median", {}).get("ratio")
+        br = gaps.get("body_rms_median", {}).get("ratio")
+        if fp is None or br is None:
+            grade = "N/A"
+            notes.append("Incomplete gap metrics — cannot grade.")
+        else:
+            if fp < 0.75:
+                grade = "C"
+                notes.append("Front punch below commercial reference — raise click/drive.")
+            elif fp < 0.9:
+                grade = "B"
+                notes.append("Front punch slightly soft vs reference.")
+            if br < 0.7:
+                grade = "C" if grade == "A" else grade
+                notes.append("Body energy thin — check layered mid bark / membrane gains.")
+            if not notes:
+                notes.append("Within band of elite preview medians.")
     return {
         "sku": profile["sku"],
         "grade": grade,

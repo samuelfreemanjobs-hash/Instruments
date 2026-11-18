@@ -92,6 +92,50 @@ class QualityPassTests(unittest.TestCase):
         self.assertIn(report["grade"], {"A", "B", "C", "N/A"})
         self.assertFalse(report["release_ready"])
 
+    def test_velocity_soft_quieter_than_hard(self) -> None:
+        from scripts.black_box.layered import apply_velocity
+
+        rng = np.random.default_rng(3)
+        mono = rng.uniform(-0.8, 0.8, 8000).astype(np.float32)
+        soft = apply_velocity(mono, 0.58)
+        hard = apply_velocity(mono, 1.0)
+        self.assertLess(float(np.max(np.abs(soft))), float(np.max(np.abs(hard))) * 0.95)
+        self.assertLess(float(np.sqrt(np.mean(soft**2))), float(np.sqrt(np.mean(hard**2))))
+
+    def test_metallic_hat_centers_below_nyquist(self) -> None:
+        from scripts.black_box.layered import layered_hat
+
+        # BB00-like bright Metal hat that previously exceeded Nyquist
+        buf = layered_hat(
+            open_hat=False,
+            center_hz=10500 + 9 * 180 - 400,  # ~11720
+            noise_decay=0.022,
+            duration=0.07,
+            clip_drive_db=3.5,
+            bit_depth=15,
+            lofi_sr=44100,
+            seed=3,
+            metal=1.35,
+        )
+        self.assertTrue(np.isfinite(buf).all())
+        self.assertGreater(float(np.max(np.abs(buf))), 0.05)
+
+    def test_calibrate_empty_masters_is_na(self) -> None:
+        from scripts.black_box import reference_calibrate as rc
+
+        old = rc.kit_masters_dir
+
+        def _empty(_profile):
+            return Path("/tmp/bb_empty_masters_does_not_exist_xyz")
+
+        rc.kit_masters_dir = _empty  # type: ignore
+        try:
+            report = rc.calibrate("bb96")
+            self.assertEqual(report["grade"], "N/A")
+            self.assertEqual(report["ours"]["count"], 0)
+        finally:
+            rc.kit_masters_dir = old  # type: ignore
+
 
 if __name__ == "__main__":
     unittest.main()

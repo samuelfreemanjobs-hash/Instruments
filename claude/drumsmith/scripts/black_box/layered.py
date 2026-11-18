@@ -20,15 +20,22 @@ def _norm(x: np.ndarray, ceiling_db: float = -0.3) -> np.ndarray:
     return ((y / peak) * (10.0 ** (ceiling_db / 20.0))).astype(np.float32)
 
 
-def apply_velocity(buf: np.ndarray, velocity: float) -> np.ndarray:
-    """Soft/Med/Hard: velocity in 0.55–1.0 scales gain + softens click region."""
+def apply_velocity(buf: np.ndarray, velocity: float, *, ceiling_db: float = -0.3) -> np.ndarray:
+    """Soft/Med/Hard: preserve relative gain vs a hard reference peak.
+
+    Soft must stay quieter than Hard after export — do not re-peak-normalize
+    Soft to the same ceiling as Hard.
+    """
     v = float(np.clip(velocity, 0.35, 1.0))
-    out = buf.astype(np.float64) * (0.55 + 0.45 * v)
+    x = np.nan_to_num(buf.astype(np.float64), nan=0.0, posinf=0.0, neginf=0.0)
+    peak = float(np.max(np.abs(x))) or 1.0
+    # Map velocity → linear gain relative to hard (v=1.0 → full ceiling)
+    gain = 0.40 + 0.60 * v
+    out = x * (gain / peak) * (10.0 ** (ceiling_db / 20.0))
     if v < 0.85:
-        # Soften first 6 ms for soft hits
         n = min(len(out), int(0.006 * 44100))
-        out[:n] *= 0.55 + 0.45 * v
-    return _norm(out)
+        out[:n] *= 0.65 + 0.35 * v
+    return out.astype(np.float32)
 
 
 def stereo_widen(mono: np.ndarray, width: float = 0.35) -> np.ndarray:
@@ -192,12 +199,20 @@ def layered_hat(
     )
     if metal <= 1.0 and not open_hat:
         return base
+    sr = 44100.0
+    nyquist = sr * 0.5
+    # Keep RBJ bandpass centers strictly below Nyquist (Codex: BB00 Metal hats)
+    max_hz = nyquist * 0.92
+    f1 = min(center_hz * 1.55 * metal, max_hz)
+    f2 = min(center_hz * 2.1 * metal, max_hz)
+    if f2 <= 20.0:
+        return base
     rng = np.random.default_rng(seed + 7)
     n = len(base)
-    t = np.linspace(0.0, n / 44100.0, n, endpoint=False)
+    t = np.linspace(0.0, n / sr, n, endpoint=False)
     raw = rng.normal(0.0, 1.0, n)
-    p1 = _rbj_bandpass(raw, 44100.0, center_hz * 1.55 * metal, 2.2)
-    p2 = _rbj_bandpass(raw, 44100.0, center_hz * 2.1 * metal, 1.6)
+    p1 = _rbj_bandpass(raw, sr, f1, 2.2)
+    p2 = _rbj_bandpass(raw, sr, f2, 1.6)
     amp = np.exp(-t / max(0.008, noise_decay * 0.7))
     extras = (0.55 * p1 + 0.45 * p2) * amp * (0.25 + 0.2 * (metal - 1.0))
     return _norm(base.astype(np.float64) + extras)

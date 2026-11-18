@@ -33,6 +33,7 @@ from scripts.black_box.process_fx import (  # noqa: E402
     write_wav_stereo_16,
     zip_tree,
 )
+from scripts.memphis_oneshots.phonk_kick import write_wav_16bit_mono  # noqa: E402
 
 
 def _sorted_wavs(folder: Path) -> list[Path]:
@@ -351,8 +352,11 @@ def _build_velocity(pack: Path, masters: Path, profile: dict, heroes: list[Path]
     n = 0
     for path in heroes[:36]:
         buf = read_wav_mono(path)
-        write_wav_mono(soft_d / f"{path.stem}_Soft.wav", L.apply_velocity(buf, 0.58))
-        write_wav_mono(hard_d / f"{path.stem}_Hard.wav", L.apply_velocity(buf, 1.0))
+        # Bypass write_wav_mono normalize — Soft must stay quieter than Hard
+        soft = L.apply_velocity(buf, 0.58)
+        hard = L.apply_velocity(buf, 1.0)
+        write_wav_16bit_mono(soft_d / f"{path.stem}_Soft.wav", soft)
+        write_wav_16bit_mono(hard_d / f"{path.stem}_Hard.wav", hard)
         n += 2
     return n
 
