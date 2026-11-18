@@ -103,8 +103,10 @@
         tourBtn.disabled = false;
         document.getElementById('unlock').textContent = 'Audio unlocked';
         setNow('Ready — use tour player or pads');
+        return true;
       } catch (err) {
         setNow('Unlock failed — use the native tour player below');
+        return false;
       }
     }
 
@@ -120,7 +122,7 @@
 
     function play(rel, fromTour){
       if (!unlocked && !fromTour) {
-        unlock().then(() => play(rel, fromTour));
+        unlock().then((ok) => { if (ok) play(rel, fromTour); });
         return;
       }
       touring = !!fromTour;
