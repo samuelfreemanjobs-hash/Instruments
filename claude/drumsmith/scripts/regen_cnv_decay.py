@@ -9,10 +9,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from diversity_audit import audit
@@ -45,6 +47,30 @@ def _variant_index(samples: list[dict]) -> dict[str, int]:
     return out
 
 
+def _verify_masters_only(man_path: Path) -> dict:
+    """Run verify_kit against masters + manifest only.
+
+    The CNV kit tree also holds listen-web / banks / storefront WAVs that are
+    not in the 512-hit inventory; a recursive kit verify falsely marks them
+    unlisted. native_factory avoids this by writing a masters-only out dir.
+    Hardlink (or copy) into a temp tree so resolved paths stay inside the kit
+    root — verify_kit rejects symlink escapes after Path.resolve().
+    """
+    with tempfile.TemporaryDirectory(prefix="cnv-qa-") as tmp:
+        tmp_path = Path(tmp)
+        masters_dst = tmp_path / "masters"
+        masters_dst.mkdir()
+        for src in sorted((KIT / "masters").glob("*.wav")):
+            dst = masters_dst / src.name
+            try:
+                os.link(src, dst)
+            except OSError:
+                shutil.copy2(src, dst)
+        staged_manifest = tmp_path / "manifest.json"
+        shutil.copy2(man_path, staged_manifest)
+        return verify(tmp_path, staged_manifest)
+
+
 def regen(renderer: Path, listen_only: bool = False) -> dict:
     man_path = KIT / "manifest.json"
     manifest = json.loads(man_path.read_text(encoding="utf8"))
@@ -61,10 +87,12 @@ def regen(renderer: Path, listen_only: bool = False) -> dict:
     for e in samples:
         kind = e["kind"]
         variant = variants[e["id"]]
-        # Prefer stored variant if present and consistent with sequential index
-        stored = (e.get("recipe_params") or {}).get("variant")
-        if isinstance(stored, int) and stored == variant:
-            pass
+        name = Path(e["path"]).name
+        # Skip before mutating recipe metadata so --listen-only cannot desync
+        # non-preview masters from their persisted recipe/duration bounds.
+        if listen_only and name not in listen_names:
+            continue
+
         recipe = genre_recipe(kind, variant, genre)
         validate_recipe(recipe)
         e["recipe_params"] = recipe
@@ -75,10 +103,6 @@ def regen(renderer: Path, listen_only: bool = False) -> dict:
         if kind == "808":
             e["pitch_target_hz"] = recipe["pitch_hz"]
         updated += 1
-
-        name = Path(e["path"]).name
-        if listen_only and name not in listen_names:
-            continue
 
         dst = KIT / e["path"]
         dst.parent.mkdir(parents=True, exist_ok=True)
@@ -119,7 +143,7 @@ def regen(renderer: Path, listen_only: bool = False) -> dict:
     manifest["release_approved"] = False
     man_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf8")
 
-    qa = verify(KIT, man_path)
+    qa = _verify_masters_only(man_path)
     diversity = audit(KIT)
     (KIT / "qa-report.json").write_text(json.dumps(qa, indent=2) + "\n", encoding="utf8")
     (KIT / "diversity-report.json").write_text(json.dumps(diversity, indent=2) + "\n", encoding="utf8")
