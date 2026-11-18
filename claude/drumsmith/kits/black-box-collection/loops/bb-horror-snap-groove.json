@@ -1,0 +1,48 @@
+{
+  "schema": "drumsmith-loop-blueprint-v1",
+  "name": "bb-horror-snap-groove",
+  "genre_profile": "memphis-tape",
+  "style_tag": "horror-snap",
+  "bpm": 94.0,
+  "bars": 2,
+  "grid_subdivisions_per_bar": 16,
+  "feel": "pitched-down snare snap, sparse half-time",
+  "promise": "Original Black Box groove sketch from Paul/Juicy research — not a recreation of any tape or YouTube mix",
+  "research_notes": "See docs/RESEARCH_PAUL_JUICY_SNARE_GROOVE.md; ear refs Weedim dark mix + Smoked Out energy [inspected titles / assumed pocket]",
+  "lanes": {
+    "KICK": [
+      {"step": 0, "vel": 100},
+      {"step": 10, "vel": 55},
+      {"step": 16, "vel": 96},
+      {"step": 26, "vel": 50}
+    ],
+    "SNARE": [
+      {"step": 8, "vel": 112},
+      {"step": 24, "vel": 108}
+    ],
+    "CLAP": [
+      {"step": 8, "vel": 62},
+      {"step": 24, "vel": 58}
+    ],
+    "HAT": [
+      {"step": 0, "vel": 40},
+      {"step": 4, "vel": 28},
+      {"step": 8, "vel": 36},
+      {"step": 12, "vel": 26},
+      {"step": 16, "vel": 40},
+      {"step": 20, "vel": 28},
+      {"step": 24, "vel": 36},
+      {"step": 28, "vel": 30}
+    ],
+    "808": [
+      {"step": 0, "vel": 100},
+      {"step": 16, "vel": 88}
+    ],
+    "COWBELL": [
+      {"step": 0, "vel": 70},
+      {"step": 6, "vel": 55},
+      {"step": 16, "vel": 68},
+      {"step": 22, "vel": 50}
+    ]
+  }
+}

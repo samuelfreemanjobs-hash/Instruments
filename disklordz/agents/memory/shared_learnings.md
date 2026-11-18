@@ -221,3 +221,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** 15/15 unittest OK; calibrate bb93/96/98/00 all A after BB00 punch bump
 - **confidence:** executed
 - **status:** active
+
+### L-0023 · Memphis snare: pitch down membrane, snap from wires/flam
+- **date:** 2026-11-18
+- **area:** drumsmith
+- **when:** Paul/Juicy snare HITL request after Black Box quality pass
+- **lesson:** Pitched-down Memphis snap = lower membrane Hz (~145–196) + lower pitch_mod_st + hotter short wires and 5ms flam — not a brighter tiny body.
+- **do:** Tune SNR_HZ and snare_pitch_base down; keep Crack/Aggro snap via wires_gain/clip; never put artist names on WAV SKUs.
+- **evidence:** RESEARCH_PAUL_JUICY_SNARE_GROOVE.md; voices.render_snare; listen Aggro_Snap
+- **confidence:** inspected
+- **status:** active
