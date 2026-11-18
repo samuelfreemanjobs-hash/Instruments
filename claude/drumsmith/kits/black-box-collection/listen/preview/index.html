@@ -3,12 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Black Box Collection — Preview</title>
+  <title>Black Box Collection — Listen</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%23d4782a' width='32' height='32'/%3E%3C/svg%3E" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root { --bg:#0c0b0a; --line:#3a3028; --text:#e8dcc8; --mute:#9a8b76; --accent:#d4782a; --panel:#1c1814; }
     * { box-sizing: border-box; }
-    body { margin:0; font-family:"IBM Plex Mono",monospace; color:var(--text);
+    body { margin:0; font-family:"IBM Plex Mono",ui-monospace,monospace; color:var(--text);
       background:radial-gradient(900px 500px at 10% -10%,#2a1a10,transparent 55%), var(--bg); }
     .wrap { max-width:920px; margin:0 auto; padding:2rem 1.2rem 4rem; }
     h1 { font-family:"Bebas Neue",Impact,sans-serif; font-size:clamp(2.6rem,8vw,4.4rem); margin:0; letter-spacing:.04em; font-weight:400; }
@@ -16,11 +17,15 @@
     .tag { color:var(--mute); max-width:40rem; line-height:1.45; font-size:.9rem; }
     button { font:inherit; cursor:pointer; border:1px solid var(--line); background:var(--panel); color:var(--text); padding:.5rem .85rem; }
     button.primary { background:linear-gradient(180deg,#c86a22,#9a4514); border-color:#e08a3a; color:#1a0f08; font-weight:600; }
-    .controls { display:flex; flex-wrap:wrap; gap:.55rem; margin:1.1rem 0 .8rem; align-items:center; }
+    button:disabled { opacity:.45; cursor:not-allowed; }
+    .controls { display:flex; flex-wrap:wrap; gap:.55rem; margin:1.1rem 0 .55rem; align-items:center; }
     .now { margin-left:auto; color:var(--mute); font-size:.78rem; }
     .now strong { color:#c4a574; font-weight:500; }
-    .meter { height:6px; background:#2a221c; margin-bottom:1rem; }
+    .meter { height:6px; background:#2a221c; margin-bottom:.85rem; }
     .meter span { display:block; height:100%; width:0; background:linear-gradient(90deg,#8a4a18,var(--accent)); }
+    .tour-box { border:1px solid var(--line); background:rgba(28,24,20,.92); padding:.85rem .95rem; margin-bottom:.9rem; }
+    .tour-box label { display:block; color:var(--mute); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; margin-bottom:.45rem; }
+    .tour-box audio { width:100%; height:2.4rem; }
     section { border:1px solid var(--line); margin-top:.9rem; background:rgba(28,24,20,.92); }
     .head { display:flex; justify-content:space-between; gap:1rem; padding:.7rem .9rem; border-bottom:1px solid var(--line); }
     .head h2 { margin:0; font-family:"Bebas Neue",Impact,sans-serif; font-size:1.35rem; font-weight:400; letter-spacing:.05em; }
@@ -30,23 +35,31 @@
     .pad .name { font-size:.7rem; line-height:1.35; word-break:break-word; }
     .pad.playing { border-color:var(--accent); background:#2a1c12; }
     .pad.playing::after { content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent); }
+    .pad.err { border-color:#8a3030; }
     footer { margin-top:1.4rem; color:var(--mute); font-size:.72rem; border-top:1px solid var(--line); padding-top:.8rem; }
+    a { color:#d4782a; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <p class="eyebrow">DiskLordz · Lost Drum Machine Collection</p>
-    <h1>PREVIEW</h1>
-    <p class="tag">Cross-era A/B: BB93 hollow → BB96 thick/cassette → BB96DC clean/dirty/ruined → BB98 trunk → BB2000 digital.</p>
+    <h1>LISTEN</h1>
+    <p class="tag">Hit Unlock once, then use the tour player or any pad. Soft stays quieter than Hard on purpose.</p>
     <div class="controls">
-      <button class="primary" id="tour" type="button">Play collection tour</button>
+      <button class="primary" id="unlock" type="button">Unlock audio</button>
+      <button id="tour" type="button" disabled>Play pad tour</button>
       <button id="stop" type="button">Stop</button>
-      <a id="downloads" href="https://github.com/samuelfreemanjobs-hash/Instruments/tree/cursor/dr660-memphis-dsp-lab-58c6/claude/drumsmith/kits/black-box-collection/listen/downloads" style="font:inherit;color:#e8dcc8;border:1px solid #3a3028;background:#1c1814;padding:.5rem .85rem;text-decoration:none;">Downloads</a>
-      <div class="now" id="now">Ready.</div>
+      <div class="now" id="now">Locked — click Unlock audio</div>
     </div>
     <div class="meter"><span id="bar"></span></div>
+    <div class="tour-box">
+      <label for="tourFile">Collection tour (native player · Soft → Hard → Thick → Trunk)</label>
+      <audio id="tourFile" controls preload="metadata" src="tour.wav">
+        Your browser does not support audio.
+      </audio>
+    </div>
     <div id="cats"></div>
-    <footer>480 BB96 cores · BB96DC expanded flagship · <a href="../downloads/" style="color:#d4782a">Download commercial DRAFT zips</a> · release_ready false until HITL</footer>
+    <footer>Booth is self-contained · quality Soft/Hard/Hero/Trunk pads · release_ready false until HITL</footer>
   </div>
   <script>
     const CATS = [
@@ -61,46 +74,110 @@
       { id:'bb00', title:'BB2000 Southern Circuitry', blurb:'Digital snap', files:['BB00_KICK_Digital_NA_01.wav','BB00_SNR_Snappy_NA_01.wav'] },
     ];
     const TOUR = [
-      'bb93/BB93_808_Hollow_F0_01.wav','bb93/BB93_SNR_Paper_NA_01.wav',
-      'bb96_core/BB96_808_Thick_F0_01.wav','bb96_core/BB96_808_Punch_F0_22.wav','bb96_core/BB96_808_Crawl_F0_15.wav',
-      'quality/BB96_808_Soft.wav','quality/BB96_808_Hard.wav','quality/BB96_DESK_TRUNK_01.wav',
-      'bb96_cassette/BB96_808_Thick_F0_01_cassette.wav',
-      'bb96_core/BB96_SNR_Aggro_NA_01.wav',
-      'bb96dc_clean/BB96DC_CLEAN_BB96_SNR_Aggro_NA_01.wav','bb96dc_dirty/BB96DC_DIRTY_BB96_SNR_Aggro_NA_01.wav','bb96dc_ruined/BB96DC_EX_BB96_SNR_Aggro_NA_01_ruined.wav',
-      'bb98/BB98_KICK_Heavy_NA_01.wav','bb98/BB98_SNR_Crack_NA_01.wav',
-      'bb00/BB00_KICK_Digital_NA_01.wav','bb00/BB00_SNR_Snappy_NA_01.wav',
+      'quality/BB96_808_Soft.wav','quality/BB96_808_Hard.wav',
+      'bb96_core/BB96_808_Thick_F0_01.wav','quality/BB96_DESK_TRUNK_01.wav',
+      'bb93/BB93_808_Hollow_F0_01.wav','bb96_cassette/BB96_808_Thick_F0_01_cassette.wav',
+      'bb98/BB98_KICK_Heavy_NA_01.wav','bb00/BB00_KICK_Digital_NA_01.wav',
     ];
     const audio = new Audio();
+    audio.preload = 'auto';
     const cats = document.getElementById('cats');
     const now = document.getElementById('now');
     const bar = document.getElementById('bar');
-    let tour=false, pos=0;
-    function clear(){ document.querySelectorAll('.pad.playing').forEach(e=>e.classList.remove('playing')); }
-    function play(rel, fromTour=false){
-      tour=fromTour; clear();
-      const pad=document.querySelector('[data-rel="'+CSS.escape(rel)+'"]');
-      if(pad) pad.classList.add('playing');
-      audio.src='samples/'+rel;
-      audio.play().catch(()=>now.textContent='Click a pad to unlock audio');
-      now.innerHTML='Now · <strong>'+rel.split('/').pop().replace('.wav','')+'</strong>';
+    const tourBtn = document.getElementById('tour');
+    const tourFile = document.getElementById('tourFile');
+    let unlocked = false, touring = false, pos = 0;
+
+    function clearPads(){ document.querySelectorAll('.pad.playing').forEach(e=>e.classList.remove('playing')); }
+    function setNow(html){ now.innerHTML = html; }
+
+    async function unlock(){
+      try {
+        audio.src = 'tour.wav';
+        audio.muted = true;
+        await audio.play();
+        audio.pause();
+        audio.currentTime = 0;
+        audio.muted = false;
+        unlocked = true;
+        tourBtn.disabled = false;
+        document.getElementById('unlock').textContent = 'Audio unlocked';
+        setNow('Ready — use tour player or pads');
+      } catch (err) {
+        setNow('Unlock failed — use the native tour player below');
+      }
     }
-    CATS.forEach(cat=>{
-      const s=document.createElement('section');
-      s.innerHTML='<div class="head"><h2>'+cat.title+'</h2><span>'+cat.blurb+'</span></div>';
-      const pads=document.createElement('div'); pads.className='pads';
-      cat.files.forEach(f=>{
-        const rel=cat.id+'/'+f;
-        const b=document.createElement('button'); b.type='button'; b.className='pad'; b.dataset.rel=rel;
-        b.innerHTML='<span class="name">'+f.replace('.wav','')+'</span>';
-        b.onclick=()=>play(rel);
+
+    function stopAll(){
+      touring = false;
+      audio.pause();
+      audio.currentTime = 0;
+      try { tourFile.pause(); tourFile.currentTime = 0; } catch (_) {}
+      clearPads();
+      bar.style.width = '0';
+      setNow(unlocked ? 'Ready.' : 'Locked — click Unlock audio');
+    }
+
+    function play(rel, fromTour){
+      if (!unlocked && !fromTour) {
+        unlock().then(() => play(rel, fromTour));
+        return;
+      }
+      touring = !!fromTour;
+      clearPads();
+      try { tourFile.pause(); } catch (_) {}
+      const pad = document.querySelector('[data-rel="'+CSS.escape(rel)+'"]');
+      if (pad) pad.classList.add('playing');
+      audio.muted = false;
+      audio.src = 'samples/' + rel;
+      const p = audio.play();
+      if (p && p.catch) {
+        p.catch(() => {
+          if (pad) pad.classList.add('err');
+          setNow('Could not play <strong>'+rel.split('/').pop()+'</strong> — try Unlock or the tour player');
+        });
+      }
+      setNow('Now · <strong>'+rel.split('/').pop().replace('.wav','')+'</strong>');
+    }
+
+    CATS.forEach(cat => {
+      const s = document.createElement('section');
+      s.innerHTML = '<div class="head"><h2>'+cat.title+'</h2><span>'+cat.blurb+'</span></div>';
+      const pads = document.createElement('div'); pads.className = 'pads';
+      cat.files.forEach(f => {
+        const rel = cat.id + '/' + f;
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'pad'; b.dataset.rel = rel;
+        b.innerHTML = '<span class="name">'+f.replace('.wav','')+'</span>';
+        b.onclick = () => play(rel, false);
         pads.appendChild(b);
       });
       s.appendChild(pads); cats.appendChild(s);
     });
-    document.getElementById('tour').onclick=()=>{ pos=0; play(TOUR[0], true); };
-    document.getElementById('stop').onclick=()=>{ audio.pause(); audio.currentTime=0; tour=false; clear(); bar.style.width='0'; now.textContent='Ready.'; };
-    audio.ontimeupdate=()=>{ if(audio.duration) bar.style.width=((audio.currentTime/audio.duration)*100).toFixed(1)+'%'; };
-    audio.onended=()=>{ clear(); if(tour){ pos++; if(pos<TOUR.length){ play(TOUR[pos], true); return; } tour=false; } now.textContent='Ready.'; bar.style.width='0'; };
+
+    document.getElementById('unlock').onclick = () => unlock();
+    tourBtn.onclick = () => { pos = 0; play(TOUR[0], true); };
+    document.getElementById('stop').onclick = () => stopAll();
+    tourFile.addEventListener('play', () => {
+      unlocked = true;
+      tourBtn.disabled = false;
+      audio.pause();
+      clearPads();
+      setNow('Now · <strong>tour.wav</strong>');
+    });
+    audio.ontimeupdate = () => {
+      if (audio.duration) bar.style.width = ((audio.currentTime / audio.duration) * 100).toFixed(1) + '%';
+    };
+    audio.onended = () => {
+      clearPads();
+      if (touring) {
+        pos++;
+        if (pos < TOUR.length) { play(TOUR[pos], true); return; }
+        touring = false;
+      }
+      setNow('Ready.');
+      bar.style.width = '0';
+    };
+    audio.onerror = () => setNow('Audio error — check sample path');
   </script>
 </body>
 </html>
