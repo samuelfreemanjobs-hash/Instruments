@@ -33,3 +33,4 @@ Until then RATE stays **technique-led** with TR-808 lofi + DR-5 proxies.
 
 - 512-hit ceiling mix · five FX family DSP branches · BIT12 S&H on aliased FX · Memphis archetype loops · DR-660-technique blueprints · listen-web preview
 - Technical QA PASS on masters · diversity PASS · `release_ready` false until HITL
+- **RATE-style decay fix (HITL pending):** 808 beds ~1.45–2.2s (was ~0.7–0.9s); kick/snare/clap/hat oneshots lengthened; `memphis-tape` decay mult `1.12` (was `0.90`). Rebake: `PYTHONPATH=scripts python3 scripts/regen_cnv_decay.py`
