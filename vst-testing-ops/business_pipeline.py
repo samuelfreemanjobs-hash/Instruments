@@ -24,6 +24,9 @@ ORCHESTRATOR = REPO_ROOT / "scripts" / "vst" / "run_pluginval.py"
 WAVE9090_VST3_BUNDLE = (
     REPO_ROOT / "build/Wave9090/Wave9090_artefacts/Release/VST3/WAVE-9090.vst3"
 )
+SP1200_VST3_BUNDLE = (
+    REPO_ROOT / "build/SP1200/SP1200_artefacts/Release/VST3/SP-1200 Drumulator.vst3"
+)
 WAVE9090_VST3_DISCOVER = REPO_ROOT / "build/Wave9090/Wave9090_artefacts/Release/VST3"
 
 
@@ -334,6 +337,7 @@ def stage_pluginval() -> StageResult:
     bundles = [
         REPO_ROOT / "build/JDUpgraded_artefacts/Release/VST3/JD Upgraded.vst3",
         WAVE9090_VST3_BUNDLE,
+        SP1200_VST3_BUNDLE,
     ]
     chunks: list[str] = []
     for bundle in bundles:
