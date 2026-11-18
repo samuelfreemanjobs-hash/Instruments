@@ -7,7 +7,7 @@
 - [x] W2 originals rendered (synthesis — no ref dumps in ship tree) — `W2_RENDER.md`
 - [x] W3 `verify_kit.py` technical PASS + diversity — local `qa-report.json` / `diversity-report.json`
 - [x] CALIPER read-only audit draft — `CALIPER_NOTES.md` (verdict BLOCKED/UNVERIFIED for ship)
-- [ ] Listening log: reviewer + YYYY-MM-DD + path
+- [x] Listening log: reviewer + YYYY-MM-DD + path — Sam Freeman · 2026-11-18 · decay re-listen (`listen/LISTENING_LOG.md`, `converter-night-listen`)
 - [ ] Release approval: owner + YYYY-MM-DD
 - [ ] Provenance + license + store copy reviewed
 - [ ] No trademarked machine product title in storefront

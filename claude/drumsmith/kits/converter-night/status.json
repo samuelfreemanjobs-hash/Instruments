@@ -10,10 +10,14 @@
   "release_ready": false,
   "technical_status": "PASS",
   "diversity_status": "PASS",
-  "human_listening_approved": false,
+  "human_listening_approved": true,
   "release_approved": false,
   "approvals": {
-    "listening": null,
+    "listening": {
+      "reviewer": "Sam Freeman",
+      "date": "2026-11-18",
+      "evidence": "listen/LISTENING_LOG.md — decay re-listen on converter-night-listen (RATE 808 beds + drum tails); decision continue agent-demo"
+    },
     "release": null,
     "legal": null,
     "price": null,
@@ -102,11 +106,11 @@
     ]
   },
   "gaps": [
-    "HITL ear/legal/price/cover open",
+    "HITL release/legal/price/cover still open (listening signed for decay re-listen)",
     "DR-660 WAV missing from uploads \u2014 RATE uses TR-808 808-character proxies + technique; upload Boss_DR-660 zip to lock",
     "SP-1200/Drumulator WAV missing \u2014 deeper BIT12 calibration still technique-led",
     "Loaded Samples WAVs not attached \u2014 public-page gap analysis only; attach MU V1/V2 for ear meters"
   ],
-  "updated": "2026-11-17",
-  "decay_fix": "RATE-style longer duration/decay (memphis-tape \u00d71.12); HITL pending"
+  "updated": "2026-11-18",
+  "decay_fix": "RATE-style longer duration/decay (memphis-tape \u00d71.12); listening signed 2026-11-18; release_ready false"
 }

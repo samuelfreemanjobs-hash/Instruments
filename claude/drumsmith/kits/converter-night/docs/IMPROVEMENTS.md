@@ -26,7 +26,7 @@ Until then RATE stays **technique-led** with TR-808 lofi + DR-5 proxies.
 | 4 | **Competitor gap fill** | Loaded Samples MU V1/V2 → parallel tape/lofi banks, instruments, BPM names | **analysis + elite preview pack** — see `RESEARCH_ELITE_PHONK_KIT.md`; `build_elite_phonk_kit.py` ships RAW/TAPE/LOFI + matched mini-kits w/ BPM filenames — HITL before storefront merge |
 | 5 | **Archetype MIDI packs** | Ship groove MIDI next to loops for DAW users | research ready — `RESEARCH_MEMPHIS_TOP20.md`; impl queued |
 | 6 | **SP-1200 / Drumulator refs** | Lock BIT12 honesty | blocked — WAV missing |
-| 7 | **HITL listening pass** | Price/cover/ear — only path to `release_ready` | open |
+| 7 | **HITL listening pass** | Price/cover/ear — only path to `release_ready` | listening signed 2026-11-18 (decay re-listen); release owner still open |
 | 8 | **Product rename** | Lock commercial store title | **done** — **Night Crawl** (`PRODUCT.md`; was working title Converter Night) |
 
 ## Already shipped
