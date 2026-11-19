@@ -1,0 +1,15 @@
+{
+  "name": "MemphisGrit",
+  "product_name": "Memphis Grit",
+  "manufacturer": "DiskLordz",
+  "class": "effect",
+  "version": "1.0.0",
+  "parameters": [
+    { "id": "mg_drive", "name": "Drive", "default": 0.42, "min": 0.0, "max": 1.0 },
+    { "id": "mg_lofi", "name": "Lo-Fi", "default": 0.48, "min": 0.0, "max": 1.0 },
+    { "id": "mg_mid", "name": "Mid Grit", "default": 0.55, "min": 0.0, "max": 1.0 },
+    { "id": "mg_mix", "name": "Mix", "default": 1.0, "min": 0.0, "max": 1.0 },
+    { "id": "mg_output_db", "name": "Output", "default": 0.0, "min": -24.0, "max": 12.0, "unit": "dB" },
+    { "id": "mg_bypass", "name": "Bypass", "default": false, "type": "bool" }
+  ]
+}
