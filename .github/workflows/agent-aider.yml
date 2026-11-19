@@ -1,0 +1,125 @@
+# DiskLordz — easy-job agent via Aider + OpenRouter
+name: Agent — Aider
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number
+        required: true
+        type: string
+      task:
+        description: Task instructions
+        required: false
+        type: string
+  pull_request:
+    types: [labeled]
+    branches: ["**"]
+
+concurrency:
+  group: agent-aider-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  AIDER_MODEL: ${{ vars.AIDER_MODEL || 'openrouter/particle-ai/particle-1:free' }}
+
+jobs:
+  aider:
+    timeout-minutes: 45
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'pull_request' &&
+        github.event.label.name == 'agent:aider' &&
+        github.event.pull_request.head.repo.full_name == github.repository
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve PR number
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "pr=${{ inputs.pr_number }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "pr=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout PR branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr checkout "${{ steps.meta.outputs.pr }}"
+
+      - name: Build Aider prompt file
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RULES=$(cat disklordz/autonomous-coder/agent-rules.md)
+          CUSTOM='${{ inputs.task }}'
+          if [ -n "$CUSTOM" ]; then TASK="$CUSTOM"; else
+            TASK=$(gh pr view "${{ steps.meta.outputs.pr }}" --json body -q .body)
+          fi
+          {
+            echo "$RULES"
+            echo ""
+            echo "Fix only the task below on this PR branch. Keep CI green. Never merge."
+            echo ""
+            echo "$TASK"
+          } > /tmp/aider-task.txt
+
+      - name: Install Aider
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install aider-chat
+
+      - name: Run Aider (headless)
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          AIDER_MODEL: ${{ env.AIDER_MODEL }}
+        run: |
+          aider \
+            --model "$AIDER_MODEL" \
+            --message-file /tmp/aider-task.txt \
+            --yes \
+            --no-auto-commits \
+            --no-show-model-warnings
+
+      - name: Commit and push
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git add -A
+          git commit -m "chore(agent-aider): PR #${{ steps.meta.outputs.pr }} autonomous fix"
+          git push origin HEAD
+
+      - name: Comment on PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AIDER_MODEL: ${{ env.AIDER_MODEL }}
+        run: |
+          BODY_FILE=$(mktemp)
+          {
+            echo "### Aider agent run"
+            echo ""
+            echo "Model: \`$AIDER_MODEL\`"
+            echo ""
+            echo "Completed headless aider --message-file on this branch."
+            echo ""
+            echo "---"
+            echo "_Automated by agent-aider.yml — does not merge._"
+          } > "$BODY_FILE"
+          gh pr comment "${{ steps.meta.outputs.pr }}" --body-file "$BODY_FILE"

@@ -1,4 +1,4 @@
-# 24/7 tick: Antigravity dispatch + queue health (Cloud agent does code slices).
+# 24/7 tick: Antigravity dispatch + queue health + Cursor Cloud agent launch.
 name: Autonomous coding agent tick
 
 on:
@@ -8,6 +8,9 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
+  issues: write
+  actions: write
 
 jobs:
   tick:
@@ -20,9 +23,19 @@ jobs:
           python3 scripts/autonomous-coder/tick.py --check-progress
           python3 scripts/autonomous-coder/tick.py
       - name: Emit Cloud slice artifact
-        run: python3 scripts/autonomous-coder/tick.py --emit-slice
+        run: |
+          python3 scripts/autonomous-coder/tick.py --emit-slice
           mkdir -p /tmp/slice
           cp -f .cursor/autonomous-coder/NEXT_SLICE.md /tmp/slice/ 2>/dev/null || echo "no slice"
+      - name: Route job to agent (free tier or Cursor)
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/autonomous-coder/tick.py --launch-agent
       - name: Persist state
         run: |
           git config user.name "github-actions[bot]"

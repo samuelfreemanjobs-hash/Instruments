@@ -1,0 +1,101 @@
+# Optional — Cline CLI headless (BYOK). Primary use: Sam's VS Code + .clinerules (laptop).
+name: Agent — Cline CLI (optional)
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number
+        required: true
+        type: string
+      task:
+        description: Task instructions
+        required: false
+        type: string
+  pull_request:
+    types: [labeled]
+    branches: ["**"]
+
+concurrency:
+  group: agent-cline-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  CLINE_MODEL: ${{ vars.CLINE_MODEL || 'openrouter/particle-ai/particle-1:free' }}
+
+jobs:
+  cline:
+    timeout-minutes: 45
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'pull_request' &&
+        github.event.label.name == 'agent:cline' &&
+        github.event.pull_request.head.repo.full_name == github.repository
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve PR number
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "pr=${{ inputs.pr_number }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "pr=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout PR branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr checkout "${{ steps.meta.outputs.pr }}"
+
+      - name: Install Cline CLI
+        run: npm install -g cline@latest
+
+      - name: Run Cline headless
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CLINE_API_KEY: ${{ secrets.CLINE_API_KEY }}
+        run: |
+          RULES=$(cat disklordz/autonomous-coder/agent-rules.md)
+          CUSTOM='${{ inputs.task }}'
+          if [ -n "$CUSTOM" ]; then TASK="$CUSTOM"; else
+            TASK=$(gh pr view "${{ steps.meta.outputs.pr }}" --json body -q .body)
+          fi
+          cline --json --auto-approve true -P openrouter -m "${{ env.CLINE_MODEL }}" \
+            "${RULES} Fix only: ${TASK}" > /tmp/cline-output.ndjson || true
+
+      - name: Commit and push
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet && git diff --cached --quiet; then exit 0; fi
+          git add -A
+          git commit -m "chore(agent-cline): PR #${{ steps.meta.outputs.pr }} autonomous fix"
+          git push origin HEAD
+
+      - name: Comment on PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BODY_FILE=$(mktemp)
+          {
+            echo "### Cline CLI run (optional)"
+            echo ""
+            echo "See workflow logs. Laptop + VS Code Cline with .clinerules/ remains the supported path."
+            echo ""
+            echo "---"
+            echo "_Automated by agent-cline.yml — does not merge._"
+          } > "$BODY_FILE"
+          gh pr comment "${{ steps.meta.outputs.pr }}" --body-file "$BODY_FILE"
