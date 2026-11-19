@@ -15,4 +15,4 @@ def test_stub_container_headers():
     mf = MiniFreakAdapter().pack(params)
     assert mf[:4] == b"MNFK"
     z = ZenologyAdapter().pack(params)
-    assert z[:3] == b"SVE"
+    assert z[:4] == b"SVZ\x00"

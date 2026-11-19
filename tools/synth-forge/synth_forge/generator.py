@@ -7,6 +7,7 @@ import numpy as np
 
 from synth_forge.models import Preset, SynthParameters
 from synth_forge.safety import clamp_for_hardware
+from synth_forge.xd_profiles import apply_xd_profile, resolve_xd_profile
 
 ARCHETYPES: dict[str, dict[str, float]] = {
     "luxury_west_coast": {
@@ -77,7 +78,10 @@ def resolve_archetype(category: str) -> str:
     return "luxury_west_coast" if "pad" in key else "generic"
 
 
-def _base_from_archetype(category: str) -> SynthParameters:
+def _base_from_archetype(category: str, rng: random.Random | None = None) -> SynthParameters:
+    if resolve_xd_profile(category):
+        seed_rng = rng if rng is not None else random.Random()
+        return apply_xd_profile(SynthParameters(category=category), category, seed_rng)
     archetype = resolve_archetype(category)
     if archetype == "generic":
         return SynthParameters(category=category)
@@ -123,7 +127,7 @@ def generate_batch(
     parent: SynthParameters | None = None,
 ) -> list[Preset]:
     rng = random.Random(seed)
-    base = parent or _base_from_archetype(category)
+    base = parent or _base_from_archetype(category, rng)
     presets: list[Preset] = []
     chain = base
     for i in range(count):

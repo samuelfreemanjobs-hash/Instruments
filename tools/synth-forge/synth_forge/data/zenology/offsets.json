@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "container": "zen_core_tone",
+  "fields": [
+    {
+      "id": "params_block",
+      "offset": 96,
+      "scale": "params_block",
+      "length": 88,
+      "note": "Verify with ZENOLOGY diff inspector before hardware import"
+    },
+    {
+      "id": "patch_name",
+      "offset": 0,
+      "scale": "u8",
+      "note": "16-char tone name"
+    }
+  ]
+}

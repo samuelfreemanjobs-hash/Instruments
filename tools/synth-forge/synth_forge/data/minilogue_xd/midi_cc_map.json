@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "device": "Korg Minilogue XD",
+  "parameters": [
+    { "id": "filter_cutoff", "cc": 43, "range": [0, 127] },
+    { "id": "filter_resonance", "cc": 44, "range": [0, 127] },
+    { "id": "amp_attack", "cc": 73, "range": [0, 127] },
+    { "id": "amp_decay", "cc": 75, "range": [0, 127] },
+    { "id": "amp_sustain", "cc": 76, "range": [0, 127] },
+    { "id": "amp_release", "cc": 72, "range": [0, 127] },
+    { "id": "lfo_rate", "cc": 20, "range": [0, 127] },
+    { "id": "lfo_depth", "cc": 21, "range": [0, 127] },
+    { "id": "master_volume", "cc": 7, "range": [0, 127] }
+  ]
+}
