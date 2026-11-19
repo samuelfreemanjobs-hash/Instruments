@@ -53,6 +53,7 @@ ACTIVATION: dict[str, str] = {
     "audio-business-copilot": "ci_scheduled",
     "plugin-factory-liaison": "ci_scheduled",
     "autonomous-coding-agent": "ci_scheduled",
+    "vst-preset-agent": "ci_scheduled",
 }
 
 CI_WORKFLOWS = [
@@ -71,6 +72,8 @@ CI_WORKFLOWS = [
     (".github/workflows/audio-plugin-weekly.yml", "audio-business-copilot, plugin-factory-liaison"),
     (".github/workflows/autonomous-coding-agent.yml", "autonomous-coding-agent"),
     (".github/workflows/antigravity-product-prep-sync.yml", "audio-business-copilot"),
+    (".github/workflows/vst-preset-daily-batch.yml", "vst-preset-agent"),
+    (".github/workflows/vst-preset-factory.yml", "vst-preset-agent"),
 ]
 
 # First-person announcements + one-line help for Disklordz
@@ -214,6 +217,10 @@ ANNOUNCE: dict[str, str] = {
     "autonomous-coding-agent": (
         "I'm **Autonomous Coding Agent** — I drain the 24/7 coding queue on allowlisted paths "
         "and escalate plugin C++ to the factory."
+    ),
+    "vst-preset-agent": (
+        "I'm **VST Preset Agent** — I curate factory banks and daily batches for WAVE-9090 "
+        "and Plugg VA without crossing into hardware SysEx."
     ),
 }
 
@@ -443,6 +450,16 @@ WORKFLOWS: dict[str, dict] = {
         "trigger": "every 6h",
         "workflow_file": ".github/workflows/autonomous-coding-agent.yml",
         "steps": ["tick.py", "Cursor timer 4h cloud slices"],
+    },
+    "vst-preset-agent": {
+        "platform": "github",
+        "trigger": "schedule cron 0 14 * * * + pull_request preset paths",
+        "workflow_file": ".github/workflows/vst-preset-daily-batch.yml",
+        "steps": [
+            "python3 scripts/vst/ingest_vst_lineage.py",
+            "python3 scripts/vst/daily_preset_batch.py --batch-size 8",
+            "python3 scripts/vst/verify_factory_preset_counts.py",
+        ],
     },
 }
 

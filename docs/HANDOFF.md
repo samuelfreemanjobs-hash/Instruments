@@ -7,7 +7,7 @@ Branch: `cursor/jd-synth-phase1-3015` · PR **#6**
 - JUCE VST3/Standalone, 32 voices × 4 tones, zero-alloc audio path
 - ZDF TVF, coupling, Group A/B FX, AVX2/NEON tone sum
 - ROM v2: 256 waves, 24×8 multisample zones (`GenerateCleanroomRom`)
-- 128 factory programs, per-tone mute, program save/restore
+- 256 factory programs, per-tone mute, program save/restore
 - Global + per-tone ADSR, wave palette UI, ROM category metadata
 - SysEx: checksum + JD 384-byte patch → APVTS (partial)
 - `JDUPGRADED_ROM_PATH` with safe trial load ([USER_ROM.md](USER_ROM.md))

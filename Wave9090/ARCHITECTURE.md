@@ -14,7 +14,9 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release \
 cmake --build build -j --target Wave9090_VST3 Wave9090_Standalone Wave9090Tests
 ```
 
-Artifact: `build/Wave9090/Wave9090_artefacts/Release/VST3/WAVE-9090.vst3`
+Artifact (local): `build/Wave9090/Wave9090_artefacts/Release/VST3/WAVE-9090.vst3`
+
+**Windows CI:** [`.github/workflows/windows-vst3-monorepo.yml`](../.github/workflows/windows-vst3-monorepo.yml) (downloadable artifacts).
 
 ## Data flow
 

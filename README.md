@@ -6,7 +6,7 @@ This monorepo hosts **JD Upgraded** (Roland JD-style synth), **SP-1200 Drumulato
 
 # JD Upgraded
 
-Clean-room JUCE **VST3**, **CLAP**, and **standalone** synthesizer inspired by the Roland JD-800 / JD-990: four tones per voice, PCM ROM playback, ZDF TVF, tone coupling, Group A/B effects, and 128 factory programs.
+Clean-room JUCE **VST3**, **CLAP**, and **standalone** synthesizer inspired by the Roland JD-800 / JD-990: four tones per voice, PCM ROM playback, ZDF TVF, tone coupling, Group A/B effects, and 256 factory programs.
 
 **Legal:** Sound comes from **`jdupg_cleanroom.rom`** — 256 procedurally synthesized waves ([docs/ROM.md](docs/ROM.md)). No Roland ROM ships with the project. Optional dev override: [docs/USER_ROM.md](docs/USER_ROM.md).
 
@@ -34,7 +34,7 @@ AU (macOS): see [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
 - 32-voice pool, 4 tones per voice, zero heap allocation on the audio thread
 - 256-wave clean-room ROM with 24 multisample sets (8 zones each)
-- 128 factory patches (EP, pad, bass, vapor, R&B, elite categories)
+- 256 factory patches (EP, pad, bass, vapor, R&B, elite categories)
 - Global and per-tone Amp/Filter ADSR, wave palette by category
 - Roland JD patch SysEx import (partial APVTS mapping) — [docs/SYSEX.md](docs/SYSEX.md)
 - AVX2 SIMD tone sum (independent coupling path); NEON on ARM when AVX2 is unavailable

@@ -8,10 +8,12 @@
 namespace wave9090::dsp
 {
 
-constexpr std::size_t kWavetableCount = 64;
+constexpr std::size_t kClassicWavetableCount = 64;
+constexpr std::size_t kTrapWavetableCount = 50;
+constexpr std::size_t kWavetableCount = kClassicWavetableCount + kTrapWavetableCount;
 constexpr std::size_t kWavetableSize = 2048;
 
-/** Procedural 64-wave bank for trap/phonk morphs (sampleless). */
+/** 64 classic morph waves + 50 trap archetypes (VST Preset Agent). */
 class WavetableBank
 {
 public:
@@ -63,7 +65,15 @@ public:
 private:
     static void buildWave (std::size_t waveIndex, std::array<float, kWavetableSize>& out) noexcept
     {
-        const float t = static_cast<float> (waveIndex) / static_cast<float> (kWavetableCount - 1);
+        if (waveIndex < kClassicWavetableCount)
+            buildClassicWave (waveIndex, out);
+        else
+            buildTrapWave (waveIndex - kClassicWavetableCount, out);
+    }
+
+    static void buildClassicWave (std::size_t waveIndex, std::array<float, kWavetableSize>& out) noexcept
+    {
+        const float t = static_cast<float> (waveIndex) / static_cast<float> (kClassicWavetableCount - 1);
         const int maxHarm = static_cast<int> (2.0f + t * 46.0f);
 
         for (std::size_t i = 0; i < kWavetableSize; ++i)
@@ -80,6 +90,85 @@ private:
             const double fm = std::sin (juceTwoPi * phase * (3.0 + t * 7.0)) * (0.08 + t * 0.25);
             const double grit = (waveIndex % 7 == 0) ? std::sin (juceTwoPi * phase * 13.0) * 0.15 : 0.0;
             out[i] = static_cast<float> (sum * (0.35 + t * 0.15) + fm + grit);
+        }
+
+        normalize (out);
+    }
+
+    static void buildTrapWave (std::size_t trapIndex, std::array<float, kWavetableSize>& out) noexcept
+    {
+        const int archetype = static_cast<int> (trapIndex % 10);
+        const float variant = 0.08f + static_cast<float> (trapIndex / 10) * 0.15f;
+
+        for (std::size_t i = 0; i < kWavetableSize; ++i)
+        {
+            const double phase = static_cast<double> (i) / static_cast<double> (kWavetableSize);
+            double sample = 0.0;
+
+            switch (archetype)
+            {
+                case 0: // 808 sine stack
+                    sample = std::sin (juceTwoPi * phase);
+                    sample += (0.14 + variant) * std::sin (juceTwoPi * phase * 2.0);
+                    sample += 0.05 * std::sin (juceTwoPi * phase * 3.0);
+                    break;
+                case 1: // phonk saw bleed
+                {
+                    for (int h = 1; h <= 12; ++h)
+                        sample += std::sin (juceTwoPi * phase * h) / static_cast<double> (h);
+                    sample *= 0.45 + variant;
+                    sample += std::sin (juceTwoPi * phase * 13.0) * (0.08 + variant * 0.2);
+                    break;
+                }
+                case 2: // plugg square
+                    sample = (phase < 0.5) ? 1.0 : -1.0;
+                    sample += 0.35 * std::sin (juceTwoPi * phase * 3.0 + variant);
+                    break;
+                case 3: // reese detune (beating harmonics)
+                {
+                    const double det = 1.0 + variant * 0.02;
+                    sample = std::sin (juceTwoPi * phase) + std::sin (juceTwoPi * phase * det);
+                    sample += 0.25 * std::sin (juceTwoPi * phase * 2.0);
+                    break;
+                }
+                case 4: // cowbell FM
+                {
+                    const double mod = std::sin (juceTwoPi * phase * (5.0 + variant * 8.0));
+                    sample = std::sin (juceTwoPi * phase * 3.0 + mod * (1.5 + variant));
+                    sample += 0.3 * std::sin (juceTwoPi * phase * 7.0);
+                    break;
+                }
+                case 5: // Memphis grit fold
+                {
+                    sample = std::sin (juceTwoPi * phase * (2.0 + variant));
+                    sample = std::tanh (sample * (2.5 + variant * 3.0));
+                    sample += std::sin (juceTwoPi * phase * 11.0) * 0.12;
+                    break;
+                }
+                case 6: // pure sub
+                    sample = std::sin (juceTwoPi * phase);
+                    sample += 0.03 * std::sin (juceTwoPi * phase * 2.0);
+                    break;
+                case 7: // metallic bell
+                {
+                    sample = std::sin (juceTwoPi * phase * 5.3) + std::sin (juceTwoPi * phase * 7.7);
+                    sample += std::sin (juceTwoPi * phase * 11.1) * (0.4 + variant);
+                    break;
+                }
+                case 8: // drill stab bright
+                {
+                    for (int h = 1; h <= 20; ++h)
+                        sample += std::sin (juceTwoPi * phase * h + variant) / static_cast<double> (h * h);
+                    sample *= 1.2 + variant;
+                    break;
+                }
+                default: // lo-fi sine warp
+                    sample = std::sin (juceTwoPi * phase + variant * std::sin (juceTwoPi * phase * 2.0));
+                    sample += 0.08 * std::sin (juceTwoPi * phase * 4.0);
+                    break;
+            }
+
+            out[i] = static_cast<float> (sample);
         }
 
         normalize (out);

@@ -40,7 +40,7 @@ Control-rate envelopes advance every `kControlRateDivisor` (32) samples inside e
 ## Parameters & programs
 
 - **APVTS** created in `createParameterLayout()` — levels, waves, multisamples, mutes, global/per-tone ADSR, per-tone TVF, filter link, coupling choice, Group A/B macros.
-- **128 factory programs** — `FactoryPatchLibrary`; `currentProgram_` persisted in plugin state.
+- **256 factory programs** — `FactoryPatchLibrary`; `currentProgram_` persisted in plugin state.
 - **User ROM** — `RomLoader` + optional `JDUPGRADED_ROM_PATH` ([USER_ROM.md](USER_ROM.md)).
 
 ## Preset import

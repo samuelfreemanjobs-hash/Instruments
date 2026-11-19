@@ -41,5 +41,6 @@ public:
 
 private:
     sp1200::SamplerEngine engine_;
+    int currentProgram_ = 0;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SP1200AudioProcessor)
 };

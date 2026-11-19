@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "agent_count": 36,
+  "agent_count": 37,
   "agents": [
     {
       "id": "workflow-automation",
@@ -535,6 +535,22 @@
         ]
       },
       "automation_path": "disklordz/agents/workflows/agents/hardware-preset-designer/automation.yaml"
+    },
+    {
+      "id": "vst-preset-agent",
+      "title": "VST Preset Agent",
+      "announcement": "I'm **VST Preset Agent** \u2014 I curate factory banks and daily batches for WAVE-9090 and Plugg VA without crossing into hardware SysEx.",
+      "automation": {
+        "platform": "github",
+        "trigger": "schedule cron 0 14 * * * + pull_request preset paths",
+        "workflow_file": ".github/workflows/vst-preset-daily-batch.yml",
+        "steps": [
+          "python3 scripts/vst/ingest_vst_lineage.py",
+          "python3 scripts/vst/daily_preset_batch.py --batch-size 8",
+          "python3 scripts/vst/verify_factory_preset_counts.py"
+        ]
+      },
+      "automation_path": "disklordz/agents/workflows/agents/vst-preset-agent/automation.yaml"
     }
   ]
 }

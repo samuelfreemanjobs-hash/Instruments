@@ -187,6 +187,7 @@ target_compile_definitions(SpectralDiff
 )
 
 add_subdirectory(Wave9090)
+add_subdirectory(PluggVA)
 add_subdirectory(SP1200)
 add_subdirectory(AutoSampler)
 add_subdirectory(ProphetRev2Trap)

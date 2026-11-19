@@ -23,17 +23,17 @@ enum class PresetCategory : std::uint8_t
 
 PresetCategory categoryForIndex (std::size_t index) noexcept
 {
-    if (index < 24)
+    if (index < 73)
         return PresetCategory::epPiano;
-    if (index < 48)
+    if (index < 146)
         return PresetCategory::pad;
-    if (index < 64)
+    if (index < 219)
         return PresetCategory::bass;
-    if (index < 80)
+    if (index < 292)
         return PresetCategory::vaporwave;
-    if (index < 96)
+    if (index < 365)
         return PresetCategory::rnb80;
-    if (index < 112)
+    if (index < 438)
         return PresetCategory::rnb90;
     return PresetCategory::elite;
 }
@@ -118,11 +118,28 @@ FactoryPatch buildPatch (std::size_t index, std::string& nameStorage)
             break;
 
         case PresetCategory::bass:
-            t0 = layer (static_cast<std::uint16_t> (9 + variant % 4), 0, 1.0f, 0.0f, 0.42f, 0.3f);
-            t1 = layer (static_cast<std::uint16_t> (10 + variant % 3), 0, 0.4f, 0.0f, 0.55f, 0.28f);
-            t2 = layer (0, static_cast<std::uint16_t> (3 + variant % 6), 0.2f, 24.0f, 0.35f, 0.18f);
-            t3 = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.3f);
-            groupA = 0.12f + v * 0.01f;
+            if (variant % 11 == 0)
+            {
+                std::snprintf (nameBuf,
+                               sizeof (nameBuf),
+                               "Trap Bass %02zu",
+                               variant + 1);
+                nameStorage = nameBuf;
+                t0 = layer (2, 4, 1.0f, -12.0f, 0.36f, 0.32f);
+                t1 = layer (2, 12, 0.55f, -12.0f, 0.4f, 0.28f);
+                t2 = layer (0, static_cast<std::uint16_t> (3 + variant % 6), 0.28f, 12.0f, 0.32f, 0.22f);
+                t3 = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.25f);
+                groupA = 0.18f + v * 0.008f;
+                master = 0.8f;
+            }
+            else
+            {
+                t0 = layer (static_cast<std::uint16_t> (9 + variant % 4), 0, 1.0f, 0.0f, 0.42f, 0.3f);
+                t1 = layer (static_cast<std::uint16_t> (10 + variant % 3), 0, 0.4f, 0.0f, 0.55f, 0.28f);
+                t2 = layer (0, static_cast<std::uint16_t> (3 + variant % 6), 0.2f, 24.0f, 0.35f, 0.18f);
+                t3 = layer (0, 0, 0.0f, 0.0f, 1.0f, 0.3f);
+                groupA = 0.12f + v * 0.01f;
+            }
             break;
 
         case PresetCategory::vaporwave:

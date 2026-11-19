@@ -10,7 +10,7 @@
     "workflow-automation",
     "pm-agent"
   ],
-  "agent_count": 36,
+  "agent_count": 37,
   "agents": [
     {
       "id": "workflow-automation",
@@ -653,6 +653,25 @@
       "profit_entry": "disklordz/agents/profit/hardware-preset-designer/agent.md",
       "copilot_skill": ".github/skills/disklordz-hardware-preset-designer/SKILL.md",
       "automation_path": "disklordz/agents/workflows/agents/hardware-preset-designer/automation.yaml"
+    },
+    {
+      "id": "vst-preset-agent",
+      "title": "VST Preset Agent",
+      "activation": "ci_scheduled",
+      "announcement": "I'm **VST Preset Agent** \u2014 I curate factory banks and daily batches for WAVE-9090 and Plugg VA without crossing into hardware SysEx.",
+      "automation": {
+        "platform": "github",
+        "trigger": "schedule cron 0 14 * * * + pull_request preset paths",
+        "workflow_file": ".github/workflows/vst-preset-daily-batch.yml",
+        "steps": [
+          "python3 scripts/vst/ingest_vst_lineage.py",
+          "python3 scripts/vst/daily_preset_batch.py --batch-size 8",
+          "python3 scripts/vst/verify_factory_preset_counts.py"
+        ]
+      },
+      "profit_entry": "disklordz/agents/profit/vst-preset-agent/agent.md",
+      "copilot_skill": ".github/skills/disklordz-vst-preset-agent/SKILL.md",
+      "automation_path": "disklordz/agents/workflows/agents/vst-preset-agent/automation.yaml"
     }
   ],
   "ci_workflows": [
@@ -715,6 +734,14 @@
     {
       "path": ".github/workflows/antigravity-product-prep-sync.yml",
       "serves": "audio-business-copilot"
+    },
+    {
+      "path": ".github/workflows/vst-preset-daily-batch.yml",
+      "serves": "vst-preset-agent"
+    },
+    {
+      "path": ".github/workflows/vst-preset-factory.yml",
+      "serves": "vst-preset-agent"
     }
   ]
 }

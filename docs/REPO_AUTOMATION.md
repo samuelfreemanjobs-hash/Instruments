@@ -34,7 +34,24 @@ If the API returns 404, enable **Settings → Branches → Branch protection rul
 
 ## CI Slack notifications
 
-Workflow [`.github/workflows/ci-slack-notify.yml`](../.github/workflows/ci-slack-notify.yml) runs when **Build**, **Build MyFirstPlugin**, or **Nightly QA** completes.
+Workflow [`.github/workflows/ci-slack-notify.yml`](../.github/workflows/ci-slack-notify.yml) runs when **Build**, **Build MyFirstPlugin**, **Build Windows VST3**, or **Nightly QA** completes.
+
+## Windows VST3 artifacts
+
+Workflow [`.github/workflows/windows-vst3-monorepo.yml`](../.github/workflows/windows-vst3-monorepo.yml) builds on `windows-latest`:
+
+| Target | Typical bundle name |
+|--------|---------------------|
+| `PluggVA_VST3` | `Plugg VA.vst3` |
+| `Wave9090_VST3` | `WAVE-9090.vst3` |
+| `SP1200_VST3` | `SP-1200 Drumulator.vst3` |
+| `JDUpgraded_VST3` | `JD Upgraded.vst3` |
+
+Download from the GitHub Actions run → **Artifacts** → `windows-vst3-<sha>`. Copy each `.vst3` folder to `C:\Program Files\Common Files\VST3\` (or your DAW path).
+
+Windows CI configures with `-DJDUPGRADED_ENABLE_CLAP=OFF` so FetchContent does not pull `clap-juce-extensions` (shallow-clone fragility on GHA). Linux **Build** still builds CLAP by default.
+
+`Wave9090Wavetable` on Windows runs bank/preset checks only (voice render smoke runs on Linux **Build** / ctest).
 
 Configure the repo secret (admin):
 

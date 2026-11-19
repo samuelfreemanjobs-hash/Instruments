@@ -24,6 +24,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **META LLM charter** | [disklordz/agents/charter/ARCHITECTURE.md](disklordz/agents/charter/ARCHITECTURE.md) · [CLAUDE.md](CLAUDE.md) | `./scripts/sync-meta-llm-charter.sh` |
 | **Antigravity ↔ Cursor bridge** | [disklordz/antigravity/ARCHITECTURE.md](disklordz/antigravity/ARCHITECTURE.md) | `./scripts/antigravity-bridge/antigravity-bridge.sh` |
 | **WAVE-9090** (sampleless trap wavetable synth) | [Wave9090/ARCHITECTURE.md](Wave9090/ARCHITECTURE.md) | `Wave9090_VST3`, `Wave9090_Standalone`, `Wave9090Tests` |
+| **Plugg VA** (virtual-analog trap/plugg synth) | [PluggVA/ARCHITECTURE.md](PluggVA/ARCHITECTURE.md) | `PluggVA_VST3`, `PluggVA_Standalone`, `PluggVATests` |
 | **Prophet Rev2 Trap** (8-voice analog-style VST3) | [ProphetRev2Trap/ARCHITECTURE.md](ProphetRev2Trap/ARCHITECTURE.md) | `ProphetRev2Trap` |
 | **SP-1200 Drumulator** (standalone + VST3 sampler) | [SP1200/ARCHITECTURE.md](SP1200/ARCHITECTURE.md) · [docs/SP1200_HANDOFF.md](docs/SP1200_HANDOFF.md) | `SP1200_Standalone`, `SP1200_VST3`, `ctest -R SP1200` |
 | **Auto Sampler** (MPC-style multisample capture + export) | [AutoSampler/ARCHITECTURE.md](AutoSampler/ARCHITECTURE.md) | `AutoSampler_VST3`, `AutoSamplerBatchExport`, `ctest -R AutoSampler` |

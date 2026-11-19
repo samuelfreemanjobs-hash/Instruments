@@ -40,6 +40,7 @@ Repo-wide companion to [DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) and [PM ADD
 | `autonomous-coding-agent` | Autonomous Coding Agent (24/7) | `ci_scheduled` | `.github/workflows/autonomous-coding-agent.yml` | `.github/skills/disklordz-autonomous-coding-agent/SKILL.md` |
 | `vst-factory-director` | VST Factory Director | `manual` | `TBD` | `.github/skills/disklordz-vst-factory-director/SKILL.md` |
 | `hardware-preset-designer` | Hardware Preset Designer | `ci_on_pr` | `.github/workflows/synth-forge.yml` | `.github/skills/disklordz-hardware-preset-designer/SKILL.md` |
+| `vst-preset-agent` | VST Preset Agent | `ci_scheduled` | `.github/workflows/vst-preset-daily-batch.yml` | `.github/skills/disklordz-vst-preset-agent/SKILL.md` |
 
 ### Activation legend
 
