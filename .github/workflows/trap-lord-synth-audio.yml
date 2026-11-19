@@ -19,7 +19,13 @@ jobs:
       - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++-12 gcc-12
+          sudo apt-get install -y build-essential g++-12 gcc-12 libstdc++-12-dev \
+            libasound2-dev libjack-jackd2-dev ladspa-sdk \
+            libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libxext-dev \
+            libfreetype-dev libcurl4-openssl-dev libgtk-3-dev
+
+      - name: Python deps
+        run: python3 -m pip install --user numpy
 
       - name: Audio QA tests
         run: python3 disklordz/trap-lord-synth/tests/test_trap_lord_audio_qa.py

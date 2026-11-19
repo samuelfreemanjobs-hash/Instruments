@@ -14,6 +14,76 @@ import numpy as np
 
 SAMPLE_RATE_DEFAULT = 44100
 
+CROSS_CATEGORY_CORR_MAX = 0.96
+
+# Factory / audition audible gate: peak must exceed this linear level (~-30 dBFS).
+AUDITION_PEAK_MIN_DBFS = -30.0
+AUDITION_PEAK_MIN_LINEAR = 10.0 ** (AUDITION_PEAK_MIN_DBFS / 20.0)
+MIDI_C3 = 48
+MIDI_C4 = 60
+AUDIBLE_CHECK_NOTES_DEFAULT = (MIDI_C3, MIDI_C4)
+AUDIBLE_CHECK_NOTES_BY_CATEGORY: dict[str, tuple[int, ...]] = {
+    "Bass": (36, 48),
+    "Pads": (48, 60),
+    "Swells": (48, 60),
+}
+
+# Dominant FFT peak (full spectrum) must stay above this for listed categories (blocks subsonic "keys").
+SPECTRAL_PEAK_FLOOR_HZ = 80.0
+# Probe/gate analysis: ignore sub-audio bins; measure sub30 on HP path for LFO-heavy cats.
+SPECTRAL_ANALYSIS_HPF_HZ = 40.0
+HP_GATED_SUB30_CATEGORIES = frozenset({"Pads", "Synth Keys", "Swells", "Leads"})
+
+
+def highpass_dc_block(x: np.ndarray, sr: int, corner_hz: float = SPECTRAL_ANALYSIS_HPF_HZ) -> np.ndarray:
+    """Light DC blocker for spectral QA (matches post-LFO voice cleanup intent)."""
+    if len(x) < 4:
+        return x.astype(np.float64, copy=False)
+    r = float(np.exp(-2.0 * np.pi * corner_hz / sr))
+    y = np.zeros_like(x, dtype=np.float64)
+    z_in = 0.0
+    z_out = 0.0
+    for i, sample in enumerate(x.astype(np.float64)):
+        z_in_prev = z_in
+        z_in = float(sample)
+        z_out = z_in - z_in_prev + r * z_out
+        y[i] = z_out
+    return y
+
+CATEGORY_SPECTRAL_RULES: dict[str, dict[str, float]] = {
+    "Leads": {
+        "sub30_max": 0.12,
+        "fund_min": 120.0,
+        "fund_max": 5200.0,
+        "centroid_min": 220.0,
+        "spec_peak_min": SPECTRAL_PEAK_FLOOR_HZ,
+        "bright5k_max": 0.30,
+        "fund_ratio_min": 0.12,
+    },
+    "Synth Keys": {
+        "spec_peak_min": SPECTRAL_PEAK_FLOOR_HZ,
+        "fund_min": SPECTRAL_PEAK_FLOOR_HZ,
+        "centroid_min": 120.0,
+        "sub30_max": 0.20,
+        "bright5k_max": 0.42,
+    },
+    "Church Keys/EP": {"sub30_max": 0.09, "bright5k_max": 0.38, "centroid_min": 180.0},
+    "Bells": {"centroid_min": 650.0, "sub30_max": 0.12, "fund_min": 400.0},
+    "Hits/FX": {"centroid_min": 350.0, "sub30_max": 0.22},
+    "Bass": {"sub30_min": 0.04, "centroid_max": 2200.0},
+    "Pads": {
+        "sub30_max": 0.35,
+        "centroid_min": 80.0,
+        "spec_peak_min": SPECTRAL_PEAK_FLOOR_HZ,
+        "fund_min": SPECTRAL_PEAK_FLOOR_HZ,
+    },
+    "Swells": {"sub30_max": 0.35, "centroid_min": 80.0},
+}
+
+MPC_PROGRAM_PEAK_MIN = 0.84  # program loudest note ~ -1 dBFS after offline normalize
+MPC_PROGRAM_PEAK_MAX = 0.95
+MPC_NOTE_LEVEL_SPREAD_DB_MAX = 12.0
+
 
 def read_wav_stereo(path: Path) -> tuple[np.ndarray, np.ndarray, int]:
     path = Path(path)
@@ -105,7 +175,9 @@ class AudioMetrics:
     centroid_hz: float
     fundamental_hz: float
     fundamental_ratio: float
+    spectral_peak_hz: float = 0.0
     sub30_energy_ratio: float = 0.0
+    bright5k_energy_ratio: float = 0.0
     category: str = ""
 
 
@@ -127,7 +199,7 @@ def spectral_features(x: np.ndarray, sr: int) -> tuple[float, float, float]:
     if total <= 1e-20:
         return 0.0, 0.0, 0.0
     centroid = float(np.sum(freqs * power) / total)
-    band = (freqs >= 70.0) & (freqs <= 900.0)
+    band = (freqs >= 90.0) & (freqs <= 1200.0)
     if not np.any(band):
         band = freqs > 1.0
     band_spec = spec.copy()
@@ -136,6 +208,15 @@ def spectral_features(x: np.ndarray, sr: int) -> tuple[float, float, float]:
     fundamental = float(freqs[peak_bin]) if peak_bin < len(freqs) else 0.0
     fundamental_ratio = float(spec[peak_bin] / max(np.max(spec), 1e-12))
     return centroid, fundamental, fundamental_ratio
+
+
+def energy_ratio_above_hz(x: np.ndarray, sr: int, hz: float) -> float:
+    w = np.hanning(len(x))
+    spec = np.abs(np.fft.rfft(x * w))
+    freqs = np.fft.rfftfreq(len(x), 1.0 / sr)
+    power = spec * spec
+    total = float(np.sum(power)) + 1e-20
+    return float(np.sum(power[freqs >= hz])) / total
 
 
 def analyze_file(path: Path, category: str = "", tail_fraction: float = 0.12) -> AudioMetrics:
@@ -153,13 +234,22 @@ def analyze_file(path: Path, category: str = "", tail_fraction: float = 0.12) ->
 
     centroid, fundamental, fund_ratio = spectral_features(x, sr)
 
-    w = np.hanning(len(x))
-    spec = np.abs(np.fft.rfft(x * w))
-    freqs = np.fft.rfftfreq(len(x), 1.0 / sr)
+    gate_x = highpass_dc_block(x, sr) if category in HP_GATED_SUB30_CATEGORIES else x.astype(np.float64)
+
+    w = np.hanning(len(gate_x))
+    spec = np.abs(np.fft.rfft(gate_x * w))
+    freqs = np.fft.rfftfreq(len(gate_x), 1.0 / sr)
     power = spec * spec
     total_p = float(np.sum(power)) + 1e-20
     sub30 = float(np.sum(power[freqs < 30.0]))
     sub30_ratio = sub30 / total_p
+    bright5k = energy_ratio_above_hz(gate_x, sr, 5000.0)
+    tonal_bins = freqs >= 30.0
+    if np.any(tonal_bins):
+        peak_bin = int(np.where(tonal_bins)[0][int(np.argmax(spec[tonal_bins]))])
+    else:
+        peak_bin = int(np.argmax(spec))
+    spectral_peak = float(freqs[peak_bin]) if peak_bin < len(freqs) else 0.0
 
     return AudioMetrics(
         path=path.name,
@@ -170,9 +260,120 @@ def analyze_file(path: Path, category: str = "", tail_fraction: float = 0.12) ->
         centroid_hz=centroid,
         fundamental_hz=fundamental,
         fundamental_ratio=fund_ratio,
+        spectral_peak_hz=spectral_peak,
         sub30_energy_ratio=sub30_ratio,
+        bright5k_energy_ratio=bright5k,
         category=category,
     )
+
+
+def category_spectral_passes(
+    metrics: AudioMetrics, category: str, rules: dict[str, float] | None = None
+) -> tuple[bool, str]:
+    rules = rules or CATEGORY_SPECTRAL_RULES.get(category)
+    if not rules:
+        return True, ""
+    if "sub30_max" in rules and metrics.sub30_energy_ratio > rules["sub30_max"]:
+        return False, f"sub30 {metrics.sub30_energy_ratio:.3f} > {rules['sub30_max']}"
+    if "sub30_min" in rules and metrics.sub30_energy_ratio < rules["sub30_min"]:
+        return False, f"sub30 {metrics.sub30_energy_ratio:.3f} < {rules['sub30_min']}"
+    if "bright5k_max" in rules and metrics.bright5k_energy_ratio > rules["bright5k_max"]:
+        return False, f"bright5k {metrics.bright5k_energy_ratio:.3f} > {rules['bright5k_max']}"
+    if "spec_peak_min" in rules and 0 < metrics.spectral_peak_hz < rules["spec_peak_min"]:
+        return False, f"spectral peak {metrics.spectral_peak_hz:.1f} < {rules['spec_peak_min']}"
+    if "fund_ratio_min" in rules and metrics.fundamental_ratio < rules["fund_ratio_min"]:
+        return False, f"fund_ratio {metrics.fundamental_ratio:.3f} < {rules['fund_ratio_min']}"
+    if "fund_min" in rules and 0 < metrics.fundamental_hz < rules["fund_min"]:
+        return False, f"fundamental {metrics.fundamental_hz:.1f} < {rules['fund_min']}"
+    if "fund_max" in rules and metrics.fundamental_hz > rules["fund_max"]:
+        return False, f"fundamental {metrics.fundamental_hz:.1f} > {rules['fund_max']}"
+    if "centroid_min" in rules and metrics.centroid_hz < rules["centroid_min"]:
+        return False, f"centroid {metrics.centroid_hz:.1f} < {rules['centroid_min']}"
+    if "centroid_max" in rules and metrics.centroid_hz > rules["centroid_max"]:
+        return False, f"centroid {metrics.centroid_hz:.1f} > {rules['centroid_max']}"
+    return True, ""
+
+
+def category_spectral_passes_audition(metrics: AudioMetrics, category: str) -> tuple[bool, str]:
+    """Audition phrases: enforce tonal/hiss/subsonic guards, not probe-style sub30 floors."""
+    rules = CATEGORY_SPECTRAL_RULES.get(category)
+    if not rules:
+        return True, ""
+    audition_rules = {k: v for k, v in rules.items() if k not in ("sub30_min",)}
+    return category_spectral_passes(metrics, category, audition_rules)
+
+
+def mpc_note_peak_levels(program_folder: Path) -> dict[int, float]:
+    """Peak abs per MIDI note (max L/R) for MPC program WAVs."""
+    import re
+
+    note_re = re.compile(r"DL_N(\d{3})_L\d+\.WAV", re.I)
+    levels: dict[int, float] = {}
+    wavs = sorted(
+        {p for p in program_folder.rglob("*") if p.is_file() and p.suffix.lower() == ".wav"}
+    )
+    for wav in wavs:
+        m = note_re.match(wav.name)
+        if not m:
+            continue
+        note = int(m.group(1))
+        left, right, _ = read_wav_stereo(wav)
+        levels[note] = max(float(np.max(np.abs(left))), float(np.max(np.abs(right))))
+    return levels
+
+
+def mpc_program_level_spread_db(program_folder: Path) -> tuple[float, dict[int, float]]:
+    levels = mpc_note_peak_levels(program_folder)
+    if not levels:
+        return 999.0, levels
+    top = max(levels.values())
+    if top < 1e-6:
+        return 999.0, levels
+    worst_db = 0.0
+    for peak in levels.values():
+        if peak < 1e-8:
+            db = -120.0
+        else:
+            db = 20.0 * math.log10(peak / top)
+        worst_db = min(worst_db, db)
+    return float(-worst_db), levels
+
+
+def mpc_program_levels_ok(
+    program_folder: Path, max_spread_db: float = MPC_NOTE_LEVEL_SPREAD_DB_MAX
+) -> tuple[bool, float, str]:
+    spread, levels = mpc_program_level_spread_db(program_folder)
+    ok = spread <= max_spread_db
+    worst_note = -1
+    if levels:
+        top = max(levels.values())
+        for n, p in levels.items():
+            if p < 1e-8 or 20.0 * math.log10(p / top) < -max_spread_db:
+                worst_note = n
+                break
+    msg = f"spread {spread:.1f} dB worst_note={worst_note}"
+    return ok, spread, msg
+
+
+def mpc_program_peak_ok(program_folder: Path) -> tuple[bool, float, int]:
+    """Return (ok, worst_peak, bits) for MPC program WAVs (expect 24-bit, ~-1 dBFS peak)."""
+    wavs = sorted(
+        {p for p in program_folder.rglob("*") if p.is_file() and p.suffix.lower() == ".wav"}
+    )
+    if not wavs:
+        return False, 0.0, 0
+    worst = 0.0
+    bits = 0
+    for wav in wavs:
+        with wave.open(str(wav), "rb") as wf:
+            bits = wf.getsampwidth()
+            if wf.getsampwidth() != 3:
+                return False, 0.0, wf.getsampwidth()
+        left, right, _ = read_wav_stereo(wav)
+        peak = max(float(np.max(np.abs(left))), float(np.max(np.abs(right))))
+        worst = max(worst, peak)
+    ok = MPC_PROGRAM_PEAK_MIN <= worst <= MPC_PROGRAM_PEAK_MAX
+    return ok, worst, bits
 
 
 def assert_wav_format(path: Path, sample_rate: int = 44100, sample_width_bytes: int = 3) -> None:
@@ -261,6 +462,43 @@ def log_band_energies(x: np.ndarray, sr: int, bands: int = 32) -> np.ndarray:
         out[i] = float(np.sum(spec[mask] ** 2))
     out = np.log1p(out)
     return out / (np.linalg.norm(out) + 1e-12)
+
+
+def peak_passes_audible_gate(peak: float, min_linear: float = AUDITION_PEAK_MIN_LINEAR) -> bool:
+    return peak >= min_linear
+
+
+def audible_notes_for_category(category: str) -> tuple[int, ...]:
+    return AUDIBLE_CHECK_NOTES_BY_CATEGORY.get(category, AUDIBLE_CHECK_NOTES_DEFAULT)
+
+
+def preset_audible_at_notes(
+    cli: Path,
+    root: Path,
+    preset_index: int,
+    scratch_dir: Path,
+    notes: tuple[int, ...] | None = None,
+    category: str = "",
+) -> tuple[bool, float, str]:
+    """Render held notes (default C3/C4) and require peak above AUDITION_PEAK_MIN_LINEAR."""
+    import subprocess
+    import tempfile
+
+    scratch_dir.mkdir(parents=True, exist_ok=True)
+    note_list = notes or audible_notes_for_category(category)
+    best = 0.0
+    for note in note_list:
+        wav = scratch_dir / f"aud_{preset_index:04d}_n{note}.wav"
+        subprocess.check_call(
+            [str(cli), "test-note", str(note), str(wav), str(preset_index)],
+            cwd=root,
+        )
+        pk = analyze_file(wav).peak
+        best = max(best, pk)
+    if not peak_passes_audible_gate(best):
+        db = 20.0 * math.log10(max(best, 1e-12))
+        return False, best, f"note peak {db:.1f} dBFS < {AUDITION_PEAK_MIN_DBFS:.0f} dBFS"
+    return True, best, "ok"
 
 
 def category_feature_vector(path: Path) -> np.ndarray:
@@ -376,6 +614,7 @@ def write_metrics_csv(rows: list[AudioMetrics], out: Path) -> None:
                 "fundamental_hz",
                 "fundamental_ratio",
                 "sub30_energy_ratio",
+                "bright5k_energy_ratio",
             ]
         )
         for m in rows:
@@ -391,5 +630,6 @@ def write_metrics_csv(rows: list[AudioMetrics], out: Path) -> None:
                     f"{m.fundamental_hz:.1f}",
                     f"{m.fundamental_ratio:.4f}",
                     f"{m.sub30_energy_ratio:.4f}",
+                    f"{m.bright5k_energy_ratio:.4f}",
                 ]
             )

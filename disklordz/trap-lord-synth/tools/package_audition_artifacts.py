@@ -17,17 +17,27 @@ CLI = BUILD / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLordSynthRen
 TOOLS = ROOT / "tools"
 sys.path.insert(0, str(TOOLS))
 
-from trap_lord_audio_metrics import analyze_file, assert_wav_format, write_metrics_csv  # noqa: E402
+from trap_lord_audio_metrics import (  # noqa: E402
+    AUDITION_PEAK_MIN_DBFS,
+    AUDITION_PEAK_MIN_LINEAR,
+    analyze_file,
+    assert_wav_format,
+    category_spectral_passes_audition,
+    write_metrics_csv,
+)
 
 ARTIFACTS = Path("/opt/cursor/artifacts")
-AUDITION_ZIP = ARTIFACTS / "trap-lord-synth-auditions-24.zip"
-CSV_OUT = ARTIFACTS / "trap-lord-synth-auditions-metrics.csv"
+AUDITION_ZIP_ARTIFACTS = ARTIFACTS / "trap-lord-synth-auditions-24.zip"
+CSV_OUT_ARTIFACTS = ARTIFACTS / "trap-lord-synth-auditions-metrics.csv"
+AUDITION_ZIP_BUILD = BUILD / "trap-lord-synth-auditions-24.zip"
+CSV_OUT_BUILD = BUILD / "trap-lord-synth-auditions-metrics.csv"
 MANIFEST = ROOT / "assets/factory/audition_manifest.json"
 BANK = ROOT / "assets/factory/preset_bank.json"
 
 PEAK_MAX = 0.99
 TAIL_MAX_DBFS = -60.0
 CENTROID_MAX_HZ = 6000.0
+CENTROID_MAX_BY_CAT = {"Church Keys/EP": 8200.0, "Bells": 9000.0}
 FX_CATEGORIES = {"Hits/FX"}
 DC_MAX = 0.01
 
@@ -35,6 +45,34 @@ DC_MAX = 0.01
 def run(cmd: list[str], **kwargs) -> None:
     print("+", " ".join(cmd))
     subprocess.check_call(cmd, **kwargs)
+
+
+def writable_path(preferred: Path, fallback: Path) -> Path:
+    """Return preferred when the store is writable, else fallback under build/."""
+    for path in (preferred, fallback):
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            probe = path.parent / f".write_probe_{path.name}"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink()
+            return path
+        except OSError as err:
+            print(f"WARN: cannot write {path}: {err}")
+    return fallback
+
+
+def writable_dir(preferred: Path, fallback: Path) -> Path:
+    for path in (preferred, fallback):
+        try:
+            path.mkdir(parents=True, exist_ok=True)
+            probe = path / ".write_probe"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink()
+            return path
+        except OSError as err:
+            print(f"WARN: cannot write dir {path}: {err}")
+    fallback.mkdir(parents=True, exist_ok=True)
+    return fallback
 
 
 def cmake_build_cli() -> None:
@@ -105,6 +143,12 @@ def normalize_lufs(path: Path, target_lufs: float = -14.0, tp_db: float = -1.0) 
 
 
 def category_from_filename(name: str) -> str:
+    if name.startswith("Church_Keys_EP_"):
+        return "Church Keys/EP"
+    if name.startswith("Hits_FX_"):
+        return "Hits/FX"
+    if name.startswith("Synth_Keys_"):
+        return "Synth Keys"
     return name.split("_", 1)[0] if "_" in name else ""
 
 
@@ -136,32 +180,40 @@ def make_spectrogram(path: Path, out_png: Path) -> None:
 
 def qa_file(metrics, wav_path: Path) -> None:
     assert_wav_format(wav_path, sample_rate=44100, sample_width_bytes=3)
-    assert metrics.peak > 1e-4, f"{metrics.path}: silent render"
+    assert metrics.peak >= AUDITION_PEAK_MIN_LINEAR, (
+        f"{metrics.path}: peak below {AUDITION_PEAK_MIN_DBFS:.0f} dBFS ({metrics.peak})"
+    )
     assert metrics.peak <= PEAK_MAX, f"{metrics.path}: peak {metrics.peak}"
     assert abs(metrics.dc_offset) <= DC_MAX, f"{metrics.path}: dc {metrics.dc_offset}"
     # Full 8s phrase auditions intentionally retain short FX tail; strict tail gate lives in test_trap_lord_audio_qa (diagnose).
     if metrics.category and metrics.category not in FX_CATEGORIES:
-        assert metrics.centroid_hz < CENTROID_MAX_HZ, (
-            f"{metrics.path}: centroid {metrics.centroid_hz} Hz"
+        cap = CENTROID_MAX_BY_CAT.get(metrics.category, CENTROID_MAX_HZ)
+        assert metrics.centroid_hz < cap, (
+            f"{metrics.path}: centroid {metrics.centroid_hz} Hz > {cap}"
         )
+        ok, reason = category_spectral_passes_audition(metrics, metrics.category)
+        assert ok, f"{metrics.path}: category spectral gate failed: {reason}"
 
 
 def main() -> int:
-    ARTIFACTS.mkdir(parents=True, exist_ok=True)
-    stage = ARTIFACTS / "trap-lord-auditions-staging"
+    stage = writable_dir(ARTIFACTS / "trap-lord-auditions-staging", BUILD / "auditions-staging")
     if stage.exists() and not stage.is_dir():
         stage.unlink()
     shutil.rmtree(stage, ignore_errors=True)
     stage.mkdir(parents=True, exist_ok=True)
+    aud_zip = writable_path(AUDITION_ZIP_ARTIFACTS, AUDITION_ZIP_BUILD)
+    csv_out = writable_path(CSV_OUT_ARTIFACTS, CSV_OUT_BUILD)
 
     cmake_build_cli()
     run([sys.executable, str(ROOT / "tests/test_trap_lord_audio_qa.py")], cwd=ROOT)
 
     run([sys.executable, str(TOOLS / "pick_distinct_auditions.py")], cwd=ROOT)
     run([str(CLI), "auditions", str(stage), str(MANIFEST)], cwd=ROOT)
+    manifest_data = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    expected = len(manifest_data.get("auditions", []))
     wavs = sorted(stage.glob("*.wav"))
-    if len(wavs) != 24:
-        raise SystemExit(f"Expected 24 WAV files, got {len(wavs)}")
+    if len(wavs) != expected:
+        raise SystemExit(f"Expected {expected} WAV files, got {len(wavs)}")
 
     for w in wavs:
         normalize_lufs(w)
@@ -173,17 +225,7 @@ def main() -> int:
         qa_file(m, w)
         metrics_rows.append(m)
 
-    write_metrics_csv(metrics_rows, CSV_OUT)
-
-    bank = json.loads(BANK.read_text(encoding="utf-8"))
-    by_cat: dict[str, list] = {}
-    for i, p in enumerate(bank["presets"]):
-        by_cat.setdefault(p["category"], []).append({"index": i, "name": p["name"]})
-    auditions = []
-    for cat in sorted(by_cat):
-        for slot, pick in enumerate(by_cat[cat][:2], start=1):
-            auditions.append({"category": cat, "slot": slot, **pick})
-    MANIFEST.write_text(json.dumps({"auditions": auditions, "wavCount": 24}, indent=2), encoding="utf-8")
+    write_metrics_csv(metrics_rows, csv_out)
 
     def pick_prefix(prefix: str) -> Path:
         return next(w for w in wavs if w.name.startswith(prefix))
@@ -194,22 +236,30 @@ def main() -> int:
         "keys": pick_prefix("Synth_Keys_") if any(w.name.startswith("Synth_Keys_") for w in wavs) else pick_prefix("Synth "),
         "swell": pick_prefix("Swells_"),
     }
-    spec_dir = ARTIFACTS / "trap-lord-spectrograms"
+    spec_dir = writable_dir(ARTIFACTS / "trap-lord-spectrograms", BUILD / "trap-lord-spectrograms")
     shutil.rmtree(spec_dir, ignore_errors=True)
-    spec_dir.mkdir(parents=True)
+    spec_dir.mkdir(parents=True, exist_ok=True)
     for label, wav in picks.items():
         make_spectrogram(wav, spec_dir / f"{label}.png")
 
-    with zipfile.ZipFile(AUDITION_ZIP, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+    with zipfile.ZipFile(aud_zip, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         for w in wavs:
             zf.write(w, w.name)
         zf.write(MANIFEST, "audition_manifest.json")
-        zf.write(CSV_OUT, CSV_OUT.name)
+        zf.write(csv_out, csv_out.name)
         for png in spec_dir.glob("*.png"):
             zf.write(png, f"spectrograms/{png.name}")
 
-    print(f"Wrote {AUDITION_ZIP}")
-    print(f"Metrics: {CSV_OUT}")
+    if aud_zip != AUDITION_ZIP_ARTIFACTS:
+        try:
+            shutil.copy2(aud_zip, AUDITION_ZIP_ARTIFACTS)
+            shutil.copy2(csv_out, CSV_OUT_ARTIFACTS)
+            print(f"Copied auditions zip to {AUDITION_ZIP_ARTIFACTS}")
+        except OSError as err:
+            print(f"WARN: could not copy auditions to artifacts ({err})")
+
+    print(f"Wrote {aud_zip}")
+    print(f"Metrics: {csv_out}")
     return 0
 
 

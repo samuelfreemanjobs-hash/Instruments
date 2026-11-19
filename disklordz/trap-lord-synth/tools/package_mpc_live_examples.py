@@ -14,7 +14,21 @@ BUILD = ROOT / "build"
 CLI = BUILD / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLordSynthRenderCLI"
 ARTIFACTS = Path("/opt/cursor/artifacts")
 BUILD_OUT = ROOT / "build" / "mpc-live-release"
-STAGING = ARTIFACTS / "mpc-live-staging"
+STAGING = BUILD_OUT / "mpc-live-staging"
+
+
+def ensure_staging_root() -> Path:
+    preferred = ARTIFACTS / "mpc-live-staging"
+    try:
+        preferred.mkdir(parents=True, exist_ok=True)
+        probe = preferred / ".write_probe"
+        probe.write_text("ok", encoding="utf-8")
+        probe.unlink()
+        return preferred
+    except OSError as err:
+        print(f"WARN: MPC staging in artifacts not writable ({err}); using build/")
+        STAGING.mkdir(parents=True, exist_ok=True)
+        return STAGING
 
 README = """# TRAP LORD SYNTH — MPC Live keygroup (DiskLordz)
 
@@ -41,7 +55,7 @@ Optional Expansions-style layout is not used in these ZIPs; each ZIP is one self
 
 ## Technical notes
 
-- Sample rate **44.1 kHz**, **16-bit** stereo WAV (MPC-friendly size, under ~50 MB per program).
+- Sample rate **44.1 kHz**, **24-bit** stereo WAV; levels normalized per program (~-1 dBFS peak on the loudest sample).
 - **2 velocity layers** per note, **≤4 layers** per keygroup (MPC limit).
 - Filename pattern: `DL_N036_L1.WAV` (ASCII, short names).
 - Root note / key tracking enabled for chromatic playback.
@@ -67,7 +81,10 @@ def find_program_folder(parent: Path, prefix: str) -> Path:
 
 
 def export_preset(category: str, preset_index: int, zip_name: str) -> Path:
-    work = STAGING / zip_name.replace(".zip", "")
+    staging_root = ensure_staging_root()
+    work = staging_root / zip_name.replace(".zip", "")
+    if work.exists():
+        shutil.rmtree(work, ignore_errors=True)
     work.mkdir(parents=True, exist_ok=True)
     run([str(CLI), "mpc", str(preset_index), str(work)])
     folder = find_program_folder(work, "DL_")
@@ -95,8 +112,10 @@ def export_preset(category: str, preset_index: int, zip_name: str) -> Path:
         shutil.make_archive(str(tmp_base), "zip", work, folder.name)
         shutil.copyfile(tmp_base.with_suffix(".zip"), out_zip)
     try:
-        shutil.copyfile(out_zip, artifacts_copy)
-    except OSError as err:
+        if artifacts_copy.exists():
+            artifacts_copy.unlink()
+        subprocess.run(["cp", "-f", str(out_zip), str(artifacts_copy)], check=True)
+    except (OSError, subprocess.CalledProcessError) as err:
         print(f"WARN: could not copy {out_zip.name} to artifacts ({err}); kept under {out_zip}")
     else:
         print(f"Wrote {artifacts_copy} ({folder.name})")
@@ -109,7 +128,7 @@ def main() -> int:
     import shutil
 
     if STAGING.exists():
-        shutil.rmtree(STAGING)
+        shutil.rmtree(STAGING, ignore_errors=True)
     STAGING.mkdir(parents=True, exist_ok=True)
 
     if not BUILD.exists():
@@ -128,15 +147,39 @@ def main() -> int:
 
     bank = json.loads((ROOT / "assets/factory/preset_bank.json").read_text(encoding="utf-8"))
 
-    def first_idx(cat: str) -> int:
+    manifest = json.loads((ROOT / "assets/factory/audition_manifest.json").read_text(encoding="utf-8"))
+
+    def manifest_idx(cat: str, slot: int = 1) -> int:
+        for entry in manifest.get("auditions", []):
+            if entry.get("category") == cat and int(entry.get("slot", 1)) == slot:
+                return int(entry["index"])
         for i, p in enumerate(bank["presets"]):
             if p["category"] == cat:
                 return i
         raise SystemExit(f"No preset in category {cat}")
 
-    export_preset("Brass", first_idx("Brass"), "trap-lord-mpc-live-brass.zip")
-    export_preset("Pads", first_idx("Pads"), "trap-lord-mpc-live-pad.zip")
-    export_preset("Swells", first_idx("Swells"), "trap-lord-mpc-live-swell.zip")
+    export_preset("Brass", manifest_idx("Brass", 1), "trap-lord-mpc-live-brass.zip")
+    export_preset("Pads", manifest_idx("Pads", 1), "trap-lord-mpc-live-pad.zip")
+    export_preset("Swells", manifest_idx("Swells", 1), "trap-lord-mpc-live-swell.zip")
+
+    import zipfile
+
+    for name in ("trap-lord-mpc-live-pad", "trap-lord-mpc-live-swell"):
+        full = BUILD_OUT / f"{name}.zip"
+        artifact = ARTIFACTS / f"{name}.zip"
+        splits = sorted(ARTIFACTS.glob(f"{name}-c*.zip"))
+        artifact_bad = (
+            not artifact.exists() or artifact.stat().st_size < 1024
+        )
+        full_too_large = full.exists() and full.stat().st_size > 48 * 1024 * 1024
+        if len(splits) >= 3 and artifact_bad and (full_too_large or not full.exists()):
+            with zipfile.ZipFile(artifact, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
+                for part in splits:
+                    zf.write(part, part.name)
+            print(
+                f"Wrote bundled {artifact} ({artifact.stat().st_size} bytes) "
+                f"from {len(splits)} splits"
+            )
     return 0
 
 

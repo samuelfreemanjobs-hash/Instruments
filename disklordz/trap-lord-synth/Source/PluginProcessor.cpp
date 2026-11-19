@@ -3,11 +3,25 @@
 #include "PresetLibrary.h"
 #include "MpcXpmWriter.h"
 #include "BinaryData.h"
+#include <algorithm>
 #include <cmath>
+#include <map>
 
 namespace
 {
 using Layout = juce::AudioProcessorValueTreeState::ParameterLayout;
+
+float bufferPeakAbs (const juce::AudioBuffer<float>& buffer)
+{
+    float peak = 0.f;
+    for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+    {
+        const float* data = buffer.getReadPointer (ch);
+        for (int i = 0; i < buffer.getNumSamples(); ++i)
+            peak = juce::jmax (peak, std::abs (data[i]));
+    }
+    return peak;
+}
 
 bool writeKeygroupWav (const juce::File& file, const juce::AudioBuffer<float>& buffer, double sampleRate, int bits)
 {
@@ -130,10 +144,14 @@ TrapPatch TrapLordSynthAudioProcessor::buildPatch() const
     p.oscMorph = get (state, "pulseWidth");
     p.unisonVoices = juce::jlimit (1, 7, 1 + int (get (state, "detune") / 5.5f));
     p.noiseMix = juce::jlimit (0.f, 1.f, dirt * 0.55f + dark * 0.15f);
+    if (p.engine == 9 || p.engine == 21 || p.engine == 18 || p.engine == 17)
+        p.noiseMix = juce::jmin (p.noiseMix, 0.08f);
     p.ringModDepth = juce::jlimit (0.f, 1.f, move * 0.55f + dirt * 0.25f);
     p.fmIndex = juce::jlimit (0.2f, 9.f, 1.f + dirt * 6.f + get (state, "pitchEnvSemi") * 0.18f);
     p.fmRatio = juce::jlimit (0.5f, 8.f, 1.2f + get (state, "pulseWidth") * 3.8f);
-    p.keyTrack = juce::jlimit (0.55f, 2.2f, 0.9f + dark * 0.45f);
+    if (p.engine == 8 || p.engine == 17 || p.engine == 6)
+        p.fmRatio = juce::jmax (p.fmRatio, 1.85f);
+    p.keyTrack = juce::jlimit (0.55f, 1.f, 1.f - dark * 0.18f);
     p.engine = juce::jlimit (0, 23, int (get (state, "engine")));
     p.filterType = juce::jlimit (0, 5, int (get (state, "filterType")));
     return p;
@@ -460,6 +478,9 @@ void TrapLordSynthAudioProcessor::prepareOfflineRender (double sampleRate, bool 
     hostBpm = 140.;
     prepareToPlay (sampleRate, 512);
     synth.allNotesOff (0, true);
+    for (int vi = 0; vi < synth.getNumVoices(); ++vi)
+        if (auto* v = dynamic_cast<TrapVoice*> (synth.getVoice (vi)))
+            v->setModWheel01 (1.f);
     if (! preservePatchParams)
     {
         if (auto* arp = state.getParameter ("arp"))
@@ -541,6 +562,9 @@ bool TrapLordSynthAudioProcessor::renderNoteOffline (int midiNote,
     const float holdSec = noteHoldSeconds > 0.f ? noteHoldSeconds : 1.4f;
     const int noteOffSample = juce::jmin (total - 1, juce::jmax (1, int (std::round (holdSec * sampleRate))));
     prepareOfflineRender (sampleRate);
+    for (int vi = 0; vi < synth.getNumVoices(); ++vi)
+        if (auto* v = dynamic_cast<TrapVoice*> (synth.getVoice (vi)))
+            v->reset();
 
     for (int pos = 0; pos < total; pos += 512)
     {
@@ -549,7 +573,10 @@ bool TrapLordSynthAudioProcessor::renderNoteOffline (int midiNote,
         part.clear();
         juce::MidiBuffer blockMidi;
         if (pos == 0)
+        {
+            blockMidi.addEvent (juce::MidiMessage::controllerEvent (1, 1, 127), 0);
             blockMidi.addEvent (juce::MidiMessage::noteOn (1, midiNote, (juce::uint8) velocity), 0);
+        }
         if (pos <= noteOffSample && pos + len > noteOffSample)
             blockMidi.addEvent (juce::MidiMessage::noteOff (1, midiNote), noteOffSample - pos);
         processBlock (part, blockMidi);
@@ -644,21 +671,21 @@ bool TrapLordSynthAudioProcessor::exportMpcKeygroupOffline (const juce::File& pa
     const int totalOps = juce::jmax (1, keyCount * layers);
     int op = 0;
 
-    const float ampRelease = juce::jlimit (0.05f, 8.f, options.ampReleaseSeconds);
+    struct PendingMpcLayer
+    {
+        int note = 60;
+        juce::AudioBuffer<float> audio;
+        juce::String wavName;
+        MpcSampleLayer layer;
+    };
+
+    std::vector<PendingMpcLayer> pending;
+    pending.reserve (size_t (totalOps));
 
     for (int note = options.lowNote; note <= options.highNote; note += juce::jmax (1, options.semitoneStep))
     {
         if (abortFlag.load())
             return false;
-
-        MpcKeygroupZone kg;
-        kg.lowNote = note;
-        kg.highNote = note;
-        kg.rootNote = note;
-        kg.volumeAttack = patchEnvelope.attack;
-        kg.volumeDecay = patchEnvelope.decay;
-        kg.volumeSustain = patchEnvelope.sustain;
-        kg.volumeRelease = juce::jlimit (0.05f, 8.f, patchEnvelope.release);
 
         for (int layer = 0; layer < layers; ++layer)
         {
@@ -671,49 +698,76 @@ bool TrapLordSynthAudioProcessor::exportMpcKeygroupOffline (const juce::File& pa
             if (! renderNoteOffline (note, vel, audio, sr, bodySeconds))
                 return false;
 
-            float peak = 0.f;
-            for (int ch = 0; ch < audio.getNumChannels(); ++ch)
-                peak = juce::jmax (peak, audio.getMagnitude (ch, 0, audio.getNumSamples()));
+            const float peak = bufferPeakAbs (audio);
             if (peak < 1e-5f)
                 continue;
-            if (peak > 0.99f)
-                audio.applyGain (0.95f / peak);
 
             const auto wavName = MpcXpmWriter::makeSampleFilename (note, layer);
-            const auto wavFile = programFolder.getChildFile (wavName);
-            const int bits = options.use24Bit ? 24 : 16;
-            if (! writeKeygroupWav (wavFile, audio, sr, bits))
-                return false;
-
-            MpcSampleLayer sampleLayer;
-            sampleLayer.rootNote = note;
-            sampleLayer.velLow = velSplits[layers - 1][layer][0];
-            sampleLayer.velHigh = velSplits[layers - 1][layer][1];
-            sampleLayer.sampleName = wavName;
-            sampleLayer.sampleFrames = audio.getNumSamples();
-            if (sustainLoop && sampleLayer.sampleFrames > 8192)
+            PendingMpcLayer pl;
+            pl.note = note;
+            pl.audio = std::move (audio);
+            pl.wavName = wavName;
+            pl.layer.rootNote = note;
+            pl.layer.velLow = velSplits[layers - 1][layer][0];
+            pl.layer.velHigh = velSplits[layers - 1][layer][1];
+            pl.layer.sampleName = wavName;
+            pl.layer.sampleFrames = pl.audio.getNumSamples();
+            if (sustainLoop && pl.layer.sampleFrames > 8192)
             {
-                const int holdSamples = juce::jmin (sampleLayer.sampleFrames - 1,
+                const int holdSamples = juce::jmin (pl.layer.sampleFrames - 1,
                                                     int (std::round (bodySeconds * sr)));
                 const int loopStart = juce::jmin (holdSamples - 512,
                                                 int (std::round ((patchEnvelope.attack + patchEnvelope.decay) * sr)) + 512);
                 const int loopEnd = juce::jmax (loopStart + 4096, holdSamples - int (sr * 0.08));
-                if (loopEnd < sampleLayer.sampleFrames && loopEnd > loopStart + 2048)
+                if (loopEnd < pl.layer.sampleFrames && loopEnd > loopStart + 2048)
                 {
-                    sampleLayer.loopStart = loopStart;
-                    sampleLayer.loopEnd = juce::jmin (loopEnd, sampleLayer.sampleFrames - 1);
+                    pl.layer.loopStart = loopStart;
+                    pl.layer.loopEnd = juce::jmin (loopEnd, pl.layer.sampleFrames - 1);
                 }
             }
-            kg.layers.push_back (sampleLayer);
+            pending.push_back (std::move (pl));
 
             ++op;
             if (onProgress)
                 onProgress (float (op) / float (totalOps), "Rendering " + wavName);
         }
-
-        if (! kg.layers.empty())
-            keygroups.push_back (std::move (kg));
     }
+
+    const float targetPeak = 0.891250938f;
+    float programPeak = 0.f;
+    for (const auto& pl : pending)
+        programPeak = juce::jmax (programPeak, bufferPeakAbs (pl.audio));
+
+    const float programGain = programPeak > 1e-6f ? (targetPeak / programPeak) : 1.f;
+
+    std::map<int, MpcKeygroupZone> noteToKg;
+    const int bits = options.use24Bit ? 24 : 16;
+
+    for (auto& pl : pending)
+    {
+        pl.audio.applyGain (programGain);
+        const auto wavFile = programFolder.getChildFile (pl.wavName);
+        if (! writeKeygroupWav (wavFile, pl.audio, sr, bits))
+            return false;
+
+        auto& kg = noteToKg[pl.note];
+        if (kg.layers.empty())
+        {
+            kg.lowNote = pl.note;
+            kg.highNote = pl.note;
+            kg.rootNote = pl.note;
+            kg.volumeAttack = patchEnvelope.attack;
+            kg.volumeDecay = patchEnvelope.decay;
+            kg.volumeSustain = patchEnvelope.sustain;
+            kg.volumeRelease = juce::jlimit (0.05f, 8.f, patchEnvelope.release);
+        }
+        kg.layers.push_back (pl.layer);
+    }
+
+    for (auto& entry : noteToKg)
+        keygroups.push_back (std::move (entry.second));
+    std::sort (keygroups.begin(), keygroups.end(),
+               [] (const MpcKeygroupZone& a, const MpcKeygroupZone& b) { return a.lowNote < b.lowNote; });
 
     if (keygroups.empty() || abortFlag.load())
         return false;

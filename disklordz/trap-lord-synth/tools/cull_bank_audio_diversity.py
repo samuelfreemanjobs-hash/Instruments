@@ -3,8 +3,10 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -17,10 +19,19 @@ CLI = ROOT / "build" / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLor
 BANK = ROOT / "assets/factory/preset_bank.json"
 PROBE_DIR = ROOT / "build" / "audio-cull-probes"
 CORR_MAX = 0.92
-
+CROSS_CATEGORY_EXEMPT = frozenset({"Pads", "Synth Keys", "Leads", "Swells"})
 sys.path.insert(0, str(ROOT / "tools"))
 from generate_preset_bank import select_diverse_presets  # noqa: E402
-from trap_lord_audio_metrics import category_feature_vector  # noqa: E402
+from trap_lord_audio_metrics import (  # noqa: E402
+    CROSS_CATEGORY_CORR_MAX,
+    analyze_file,
+    category_feature_vector,
+    category_spectral_passes,
+    peak_passes_audible_gate,
+    preset_audible_at_notes,
+)
+
+AUDIBLE_DIR = ROOT / "build" / "audio-cull-audible"
 
 
 def main() -> int:
@@ -31,9 +42,20 @@ def main() -> int:
     for i, p in enumerate(presets):
         by_cat.setdefault(p["category"], []).append(i)
 
+    bank_fp = hashlib.sha256(BANK.read_bytes()).hexdigest()
+    fp_meta = PROBE_DIR / ".bank_fingerprint"
+    if not fp_meta.exists() or fp_meta.read_text(encoding="utf-8").strip() != bank_fp:
+        shutil.rmtree(PROBE_DIR, ignore_errors=True)
+        fp_meta.parent.mkdir(parents=True, exist_ok=True)
+        fp_meta.write_text(bank_fp, encoding="utf-8")
     PROBE_DIR.mkdir(parents=True, exist_ok=True)
     achieved: dict[str, int] = {}
     keep_indices: list[int] = []
+    global_kept: list[tuple[str, np.ndarray]] = []
+    spectral_rejects = 0
+    cross_rejects = 0
+    audible_rejects = 0
+    priority_removals: list[dict[str, str]] = []
 
     def probe_index(i: int, preset: dict) -> tuple[int, np.ndarray]:
         wav = PROBE_DIR / f"p_{i:04d}.wav"
@@ -57,16 +79,69 @@ def main() -> int:
                     i, v = fut.result()
                     vec_map[i] = v
         vecs = []
+        filtered_idxs: list[int] = []
+        aud_cache: dict[int, bool] = {}
+
+        def aud_ok_index(i: int) -> bool:
+            if i in aud_cache:
+                return aud_cache[i]
+            ok, _pk, _reason = preset_audible_at_notes(CLI, ROOT, i, AUDIBLE_DIR, category=cat)
+            aud_cache[i] = ok
+            return ok
+
         for i in idxs:
             wav = PROBE_DIR / f"p_{i:04d}.wav"
             if i not in vec_map:
                 vec_map[i] = category_feature_vector(wav)
-            vecs.append(vec_map[i])
-        print(f"{cat}: probing {len(idxs)} presets…", flush=True)
+            metrics = analyze_file(wav, category=cat)
+            preset_name = presets[i].get("name", f"index_{i}")
+            if not peak_passes_audible_gate(metrics.peak):
+                audible_rejects += 1
+                if cat in CROSS_CATEGORY_EXEMPT:
+                    priority_removals.append(
+                        {"category": cat, "name": preset_name, "reason": f"audible: probe peak {metrics.peak:.4f}"}
+                    )
+                continue
+            if not aud_ok_index(i):
+                audible_rejects += 1
+                if cat in CROSS_CATEGORY_EXEMPT:
+                    priority_removals.append(
+                        {"category": cat, "name": preset_name, "reason": "audible: failed multi-note check"}
+                    )
+                continue
+            ok, reason = category_spectral_passes(metrics, cat)
+            if not ok:
+                spectral_rejects += 1
+                if cat in CROSS_CATEGORY_EXEMPT:
+                    priority_removals.append({"category": cat, "name": preset_name, "reason": f"spectral: {reason}"})
+                continue
+            v = vec_map[i]
+            too_close = False
+            if cat not in CROSS_CATEGORY_EXEMPT:
+                for other_cat, ov in global_kept:
+                    if other_cat == cat:
+                        continue
+                    if float(np.dot(v, ov)) > CROSS_CATEGORY_CORR_MAX:
+                        too_close = True
+                        break
+            if too_close:
+                cross_rejects += 1
+                continue
+            filtered_idxs.append(i)
+            vecs.append(v)
+        print(f"{cat}: probing {len(idxs)} presets, eligible {len(filtered_idxs)}…", flush=True)
         quota = int(target.get(cat, len(idxs)))
-        fake = [{"bankIndex": i} for i in idxs]
-        picked, _ = select_diverse_presets(fake, vecs, min(quota, len(idxs)), CORR_MAX, None)
-        cat_keep = [p["bankIndex"] for p in picked]
+        if cat in CROSS_CATEGORY_EXEMPT:
+            # Sam's lanes: keep every gate-passing preset (audible + spectral only), cap at quota.
+            cat_keep = filtered_idxs[:quota]
+        else:
+            fake = [{"bankIndex": i} for i in filtered_idxs]
+            picked, _ = select_diverse_presets(
+                fake, vecs, min(quota, len(filtered_idxs)), CORR_MAX, None
+            )
+            cat_keep = [p["bankIndex"] for p in picked]
+        for bi in cat_keep:
+            global_kept.append((cat, vec_map[bi]))
         achieved[cat] = len(cat_keep)
         keep_indices.extend(cat_keep)
 
@@ -79,15 +154,30 @@ def main() -> int:
         "achievedQuotas": achieved,
         "diversityGate": {
             "audioCorrMax": CORR_MAX,
+            "crossCategoryCorrMax": CROSS_CATEGORY_CORR_MAX,
             "mode": "post_cull_category_probe_json",
             "feature": "category_probe_audio",
+            "spectralRejects": spectral_rejects,
+            "audibleRejects": audible_rejects,
+            "audiblePeakMinDbfs": -30.0,
+            "crossCategoryRejects": cross_rejects,
         },
         "categoryQuotas": achieved,
         "presets": new_presets,
     }
     BANK.write_text(json.dumps(out, indent=2), encoding="utf-8")
-    report = Path("/opt/cursor/artifacts/factory-audio-cull-report.json")
+    report = ROOT / "build" / "factory-audio-cull-report.json"
+    report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(json.dumps({"achievedQuotas": achieved, "total": len(new_presets)}, indent=2), encoding="utf-8")
+    (ROOT / "build" / "priority-cull-removals.json").write_text(
+        json.dumps(priority_removals, indent=2), encoding="utf-8"
+    )
+    artifacts_report = Path("/opt/cursor/artifacts/factory-audio-cull-report.json")
+    try:
+        artifacts_report.parent.mkdir(parents=True, exist_ok=True)
+        artifacts_report.write_text(report.read_text(encoding="utf-8"), encoding="utf-8")
+    except OSError as err:
+        print(f"WARN: could not write {artifacts_report}: {err}")
     print(f"Culled bank: {len(new_presets)} presets (was {len(presets)})")
     for cat, n in sorted(achieved.items()):
         print(f"  {cat}: {n} audio-distinct (target {target.get(cat)})")

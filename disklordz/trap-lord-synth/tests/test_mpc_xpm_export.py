@@ -10,6 +10,14 @@ import wave
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+from trap_lord_audio_metrics import (  # noqa: E402
+    MPC_NOTE_LEVEL_SPREAD_DB_MAX,
+    mpc_program_level_spread_db,
+    mpc_program_levels_ok,
+)
+
 ASCII_WAV = re.compile(r"^DL_N\d{3}_L[1-4]\.WAV$")
 MAX_PROGRAM_BYTES = 125 * 1024 * 1024
 EXPECTED_FILE_VERSION = "5000"
@@ -77,6 +85,9 @@ def validate_folder(folder: Path, *, chromatic_lo: int = 36, chromatic_hi: int =
         bytes_total += w.stat().st_size
 
     assert bytes_total <= MAX_PROGRAM_BYTES, f"Program size {bytes_total} exceeds budget"
+
+    ok, spread, msg = mpc_program_levels_ok(folder, MPC_NOTE_LEVEL_SPREAD_DB_MAX)
+    assert ok, f"Note level spread {spread:.1f} dB exceeds {MPC_NOTE_LEVEL_SPREAD_DB_MAX} dB ({msg})"
 
     print(
         f"OK {folder.name} ({len(instruments_list)} keygroups, {len(wavs)} WAV, "

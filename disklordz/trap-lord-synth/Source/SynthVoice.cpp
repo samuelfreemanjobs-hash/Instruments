@@ -60,6 +60,17 @@ void TrapVoice::reset()
         f.reset();
 }
 
+float TrapVoice::pitchTrackedCutoff (float baseHz) const
+{
+    const float semitones = float (midiNote - 60);
+    const bool bassEngine = patch.engine == 4 || patch.engine == 22;
+    const float amount = bassEngine ? juce::jlimit (0.2f, 0.55f, patch.keyTrack * 0.45f) : 1.f;
+    const float fromPatch = baseHz * std::pow (2.f, semitones * amount / 12.f);
+    const float fundHz = float (juce::MidiMessage::getMidiNoteInHertz (midiNote));
+    const float minBrightHz = fundHz * (bassEngine ? 1.6f : 4.2f);
+    return juce::jlimit (20.f, float (sampleRate * .45f), juce::jmax (fromPatch, minBrightHz));
+}
+
 void TrapVoice::seedPhases()
 {
     phase2 = wrap (phase + 0.37);
@@ -72,9 +83,19 @@ void TrapVoice::seedPhases()
     voiceDrift = float ((midiNote % 7) * 0.0013 - 0.003);
 }
 
+float TrapVoice::dcBlockSample (float x, float& zIn, float& zOut)
+{
+    constexpr float kR = 0.9958f;
+    const float y = x - zIn + kR * zOut;
+    zIn = x;
+    zOut = y;
+    return y;
+}
+
 void TrapVoice::setPatch (const TrapPatch& p)
 {
     patch = p;
+    applyPostLfoHpf = p.swellDepth > 0.06f;
     juce::ADSR::Parameters e;
     e.attack = p.attack;
     e.decay = p.decay;
@@ -116,6 +137,7 @@ void TrapVoice::startNote (int note, float vel, juce::SynthesiserSound*, int whe
     glideFreq = newFreq;
     seedPhases();
     fastReleaseGain = 1.f;
+    dcBlockIn = dcBlockOut = 0.f;
     pitchEnv = patch.pitchEnvSemi > 0.01f ? 1.f : 0.f;
     activeSample.reset();
     noiseSeed = note * 13.17 + vel * 991.0;
@@ -250,7 +272,10 @@ float TrapVoice::synthesizeEngine (int engine, double basePhase, double step, fl
         case 7: // wavetable morph (synth only)
             return wavetableMorph (ph, morph);
         case 8:
-            return blepPulse (ph, step, morph);
+        {
+            const float pw = juce::jlimit (0.12f, 0.88f, morph);
+            return blepPulse (ph, step, pw);
+        }
         case 9: // EP tine
             return 0.45f * std::sin (tau * ph + 2.2f * std::sin (tau * ph * 3.2)) + 0.35f * std::sin (tau * ph * 2.)
                  + 0.12f * blepSaw (wrap (ph + 0.5), step * 2.);
@@ -300,7 +325,7 @@ float TrapVoice::synthesizeEngine (int engine, double basePhase, double step, fl
 float TrapVoice::applyFilter (float x, float cutoffHz, float res)
 {
     const float sr = float (sampleRate);
-    cutoffHz = juce::jlimit (20.f, sr * 0.45f, cutoffHz * patch.keyTrack);
+    cutoffHz = juce::jlimit (20.f, sr * 0.45f, cutoffHz);
     const float q = juce::jlimit (0.5f, 1.4f, 0.5f + res * 0.95f);
 
     switch (filterTypeApplied)
@@ -318,12 +343,13 @@ float TrapVoice::applyFilter (float x, float cutoffHz, float res)
         }
         case 4: // comb
         {
-            const int delay = juce::jlimit (8, 4000, int (sr / juce::jmax (40.f, cutoffHz)));
+            const float minCut = (patch.engine == 4 || patch.engine == 22) ? 40.f : 140.f;
+            const int delay = juce::jlimit (8, 4000, int (sr / juce::jmax (minCut, cutoffHz)));
             int idx = combWrite - delay;
             if (idx < 0)
                 idx += int (std::size (combBuf));
             const float delayed = combBuf[size_t (idx)];
-            const float fb = juce::jlimit (0.1f, 0.88f, res);
+            const float fb = juce::jlimit (0.1f, 0.72f, res);
             const float y = x + delayed * fb;
             combBuf[size_t (combWrite)] = y;
             combWrite = (combWrite + 1) % int (std::size (combBuf));
@@ -353,7 +379,7 @@ void TrapVoice::renderNextBlock (juce::AudioBuffer<float>& out, int start, int n
     if (! isVoiceActive())
         return;
 
-    const float baseCutoff = juce::jlimit (20.f, float (sampleRate * .45f), patch.cutoff);
+    const float baseCutoff = pitchTrackedCutoff (patch.cutoff);
     if (! std::isfinite (baseCutoff))
         return;
 
@@ -407,6 +433,9 @@ void TrapVoice::renderNextBlock (juce::AudioBuffer<float>& out, int start, int n
         float y = (std::tanh (filtered * patch.drive) / normDrive) * envAmp * velocity * patch.gain * swellGain;
         if (! std::isfinite (y))
             y = 0.f;
+
+        if (applyPostLfoHpf)
+            y = dcBlockSample (y, dcBlockIn, dcBlockOut);
 
         if (fastReleaseGain < 1.f)
         {

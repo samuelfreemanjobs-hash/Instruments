@@ -11,9 +11,37 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CLI = ROOT / "build" / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLordSynthRenderCLI"
+BUILD = ROOT / "build"
+CLI = BUILD / "TrapLordSynthRenderCLI_artefacts" / "Release" / "TrapLordSynthRenderCLI"
 ARTIFACTS = Path("/opt/cursor/artifacts")
 MAX_BYTES = 24 * 1024 * 1024
+
+
+def writable_dir(preferred: Path, fallback: Path) -> Path:
+    for path in (preferred, fallback):
+        try:
+            path.mkdir(parents=True, exist_ok=True)
+            probe = path / ".write_probe"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink()
+            return path
+        except OSError as err:
+            print(f"WARN: cannot write dir {path}: {err}")
+    fallback.mkdir(parents=True, exist_ok=True)
+    return fallback
+
+
+def writable_zip_path(preferred: Path, fallback: Path) -> Path:
+    for path in (preferred, fallback):
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            probe = path.parent / f".write_probe_{path.name}"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink()
+            return path
+        except OSError as err:
+            print(f"WARN: cannot write {path}: {err}")
+    return fallback
 
 
 def build_cli() -> None:
@@ -72,14 +100,9 @@ def filter_program(src: Path, dst: Path, lo: int, hi: int) -> None:
 
 
 def export_and_split(preset_index: int, label: str) -> list[Path]:
-    staging = ARTIFACTS / f"mpc-split-staging-{label}"
-    try:
-        if staging.is_dir():
-            shutil.rmtree(staging)
-        elif staging.exists():
-            staging.unlink()
-    except OSError:
-        pass
+    staging_root = writable_dir(ARTIFACTS, BUILD / "mpc-split-artifacts")
+    staging = staging_root / f"mpc-split-staging-{label}"
+    shutil.rmtree(staging, ignore_errors=True)
     staging.mkdir(parents=True, exist_ok=True)
     subprocess.check_call([str(CLI), "mpc", str(preset_index), str(staging), "1"], cwd=ROOT)
     prog_dirs = [p for p in staging.iterdir() if p.is_dir()]
@@ -92,8 +115,14 @@ def export_and_split(preset_index: int, label: str) -> list[Path]:
     for lo, hi, tag in ranges:
         part = staging / f"{src.name}_{tag}"
         filter_program(src, part, lo, hi)
-        out = ARTIFACTS / f"trap-lord-mpc-live-{label}-{tag.lower()}.zip"
+        out_pref = ARTIFACTS / f"trap-lord-mpc-live-{label}-{tag.lower()}.zip"
+        out = writable_zip_path(out_pref, BUILD / f"trap-lord-mpc-live-{label}-{tag.lower()}.zip")
         size = zip_folder(part, out)
+        if out != out_pref:
+            try:
+                shutil.copy2(out, out_pref)
+            except OSError as err:
+                print(f"WARN: could not copy {out.name} to artifacts ({err})")
         if size <= MAX_BYTES:
             outputs.append(out)
             print(f"Wrote {out} ({size / 1e6:.1f} MB)")
