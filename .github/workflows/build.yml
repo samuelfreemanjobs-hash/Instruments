@@ -33,6 +33,9 @@ jobs:
       - name: AutoSampler unit tests
         run: ctest --test-dir build -R AutoSampler --output-on-failure
 
+      - name: Huckaby Pattern Engine unit tests
+        run: ctest --test-dir build -R HuckabyPatternEngine --output-on-failure
+
       - name: Cache pluginval binary
         run: python3 scripts/vst/run_pluginval.py --install-only
 
