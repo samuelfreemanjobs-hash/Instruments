@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "repo_url": "https://github.com/samuelfreemanjobs-hash/Instruments",
+  "default_ref": "main",
+  "items": [
+    {
+      "id": "plugin-pr-146-trap-lord",
+      "pr": 146,
+      "title": "Trap Lord Synth",
+      "priority": 1,
+      "context_paths": [
+        "disklordz/trap-lord-synth/",
+        ".github/workflows/trap-lord-synth-windows.yml"
+      ]
+    },
+    {
+      "id": "plugin-pr-106-plugg-va",
+      "pr": 106,
+      "title": "Plugg VA",
+      "priority": 2,
+      "context_paths": ["plugins/", "vst/"]
+    },
+    {
+      "id": "plugin-pr-101-auto-sampler",
+      "pr": 101,
+      "title": "Auto Sampler",
+      "priority": 3,
+      "context_paths": ["plugins/", "vst/"]
+    },
+    {
+      "id": "plugin-pr-139-grim-midi",
+      "pr": 139,
+      "title": "Grim-MIDI",
+      "priority": 4,
+      "context_paths": ["plugins/", "vst/"]
+    },
+    {
+      "id": "plugin-pr-151-chord-engine",
+      "pr": 151,
+      "title": "CHORD ENGINE",
+      "priority": 5,
+      "context_paths": [
+        "DiskLordz-Audio/",
+        ".github/workflows/disklordz-audio-windows.yml",
+        "docs/CHORD_ENGINE_PRD.md"
+      ]
+    },
+    {
+      "id": "plugin-pr-70-junova-x",
+      "pr": 70,
+      "title": "Junova-X",
+      "priority": 6,
+      "context_paths": ["plugins/", "vst/", "docs/DISKLORDZ_PLUGIN_TRACKS.md"]
+    },
+    {
+      "id": "plugin-lordz-clang",
+      "pr": null,
+      "title": "Lordz Clang",
+      "priority": 7,
+      "title_match": ["Lordz Clang", "lordz-clang", "clangd"],
+      "context_paths": ["vst/", "plugins/", ".clangd"]
+    },
+    {
+      "id": "plugin-pr-147-memphis-grit",
+      "pr": 147,
+      "title": "Memphis Grit",
+      "priority": 8,
+      "context_paths": ["plugins/", "vst/"]
+    },
+    {
+      "id": "plugin-pr-143-synthforge",
+      "pr": 143,
+      "title": "SynthForge",
+      "priority": 9,
+      "context_paths": ["tools/synth-forge/", "plugins/"]
+    },
+    {
+      "id": "plugin-pr-134-drum-factory",
+      "pr": 134,
+      "title": "Drum Factory",
+      "priority": 10,
+      "context_paths": ["plugins/", "vst/"]
+    },
+    {
+      "id": "plugin-pr-103-huckaby",
+      "pr": 103,
+      "title": "Huckaby Pattern Engine",
+      "priority": 11,
+      "context_paths": ["plugins/", "vst/"]
+    }
+  ]
+}
