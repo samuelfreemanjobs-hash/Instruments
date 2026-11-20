@@ -58,17 +58,21 @@ def _rbj_bandpass(signal: np.ndarray, sample_rate: float, center_hz: float, q: f
 def generate_memphis_phonk_snare(
     sample_rate: int = 44100,
     duration: float = 0.35,
-    membrane_root: float = 220.0,
-    pitch_mod_st: float = 24.0,
-    pitch_decay: float = 0.018,
-    noise_decay: float = 0.190,
-    flam_delay_ms: float = 4.0,
+    membrane_root: float = 185.0,
+    pitch_mod_st: float = 18.0,
+    pitch_decay: float = 0.016,
+    noise_decay: float = 0.140,
+    flam_delay_ms: float = 5.0,
     lofi_sr: float = 26040.0,
     bit_depth: int = 12,
     clip_drive_db: float = 5.5,
     seed: int | None = 660,
+    wire_bp_hz: float = 2050.0,
 ) -> np.ndarray:
-    """Return float32 mono buffer normalized near -0.3 dBFS."""
+    """Return float32 mono buffer normalized near -0.3 dBFS.
+
+    Defaults lean pitched-down membrane + snappy wires (Memphis Horror Snap ear).
+    """
     rng = np.random.default_rng(seed)
     total_samples = int(round(sample_rate * duration))
     t = np.linspace(0.0, duration, total_samples, endpoint=False)
@@ -84,9 +88,9 @@ def generate_memphis_phonk_snare(
     body_amp[~hold] = np.exp(-(t[~hold] - 0.003) / 0.085)
     membrane_layer = membrane_osc * body_amp * 0.75
 
-    # 2) Noise wires (BP ~2.4 kHz)
+    # 2) Noise wires (BP ~2.0–2.1 kHz — snap without thin treble chirp)
     raw_noise = rng.normal(0.0, 1.0, total_samples)
-    noise_bp = _rbj_bandpass(raw_noise.astype(np.float64), sample_rate, 2400.0, 1.2)
+    noise_bp = _rbj_bandpass(raw_noise.astype(np.float64), sample_rate, float(wire_bp_hz), 1.35)
     noise_amp = np.zeros_like(t)
     att_time = 0.0025
     att = t < att_time
@@ -142,7 +146,7 @@ def main() -> None:
     parser.add_argument("--freq", type=float, default=None, help="Override membrane Hz")
     parser.add_argument("--out", type=Path, default=Path("memphis_phonk_snare.wav"))
     parser.add_argument("--drive-db", type=float, default=5.5)
-    parser.add_argument("--flam-ms", type=float, default=4.0)
+    parser.add_argument("--flam-ms", type=float, default=5.0)
     parser.add_argument("--seed", type=int, default=660)
     args = parser.parse_args()
 

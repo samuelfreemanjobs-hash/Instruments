@@ -181,24 +181,32 @@ def render_kick(i: int, *, freq: float, eng: dict, voice: dict, seed: int) -> tu
 def render_snare(i: int, *, membrane: float, eng: dict, voice: dict, seed: int) -> tuple[np.ndarray, str]:
     recipes = recipes_for("SNR", voice)
     tag = recipes[i % len(recipes)]
-    base = int(voice.get("snare_pitch_base", 22))
-    mod = max(1, int(voice.get("snare_pitch_mod", 10)))
+    base = int(voice.get("snare_pitch_base", 14))
+    mod = max(1, int(voice.get("snare_pitch_mod", 8)))
     pitch = base + (i % mod)
-    flam = float(voice.get("snare_flam_base_ms", 4.0)) + (i % 5) * float(voice.get("snare_flam_step_ms", 0.5))
+    flam = float(voice.get("snare_flam_base_ms", 5.0)) + (i % 5) * float(voice.get("snare_flam_step_ms", 0.45))
     clip = float(eng.get("snare_clip_db", 5.5))
-    mem_g, wire_g, body_g, noise = 0.75, 0.55, 0.35, 0.19
+    # Default: pitched-down body + wire snap (Paul/Juicy ear)
+    mem_g, wire_g, body_g, noise = 0.78, 0.68, 0.38, 0.14
 
     if tag in ("Paper", "Whisper", "Dust", "Thin"):
-        pitch, flam, noise, mem_g, wire_g = 16 + (i % 5), 6.0, 0.28, 0.45, 0.75
-        clip = clip - 1.5
+        pitch, flam, noise, mem_g, wire_g = 10 + (i % 4), 6.5, 0.24, 0.42, 0.8
+        clip = clip - 1.2
     elif tag in ("Crack", "Slap", "Snappy", "Bright"):
-        pitch, flam, noise, body_g = 28 + (i % 6), 2.2, 0.09, 0.55
-        clip = clip + 2.0
+        # Snap from wires/clip — keep membrane low (not chirpy high pitch env)
+        pitch, flam, noise, body_g, wire_g = 16 + (i % 5), 3.0, 0.08, 0.42, 0.85
+        clip = clip + 2.2
     elif tag in ("Flam", "Rattle", "Stack"):
-        flam, noise = 8.0 + (i % 4), 0.16
+        flam, noise, wire_g = 7.5 + (i % 4), 0.15, 0.72
     elif tag in ("Aggro", "Hard"):
-        clip = clip + 1.0
-        wire_g, body_g = 0.65, 0.4
+        # Hollow low body + hard snap
+        pitch = max(12, pitch - 4)
+        flam = min(flam, 5.5)
+        clip = clip + 1.4
+        wire_g, body_g, noise = 0.82, 0.36, 0.11
+    elif tag in ("Cave", "Hollow", "Room"):
+        pitch, flam, noise, mem_g = 12 + (i % 4), 6.0, 0.18, 0.85
+        wire_g = 0.5
 
     if _use_layered(voice):
         buf = L.layered_snare(
