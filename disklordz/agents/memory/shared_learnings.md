@@ -231,3 +231,13 @@ Format and rules: [MEMORY.md](MEMORY.md).
 - **evidence:** RESEARCH_PAUL_JUICY_SNARE_GROOVE.md; voices.render_snare; listen Aggro_Snap
 - **confidence:** inspected
 - **status:** active
+
+### L-0024 · drumsmith-render refuses overwrite
+- **date:** 2026-11-18
+- **area:** drumsmith
+- **when:** Rebaking Converter Night masters in place for longer decays
+- **lesson:** native drumsmith-render exits 1 with 'Refusing to overwrite existing WAV'; stage to .wav.tmp then Path.replace()
+- **do:** Always render to a temp path beside the destination, then atomically replace; never pass an existing WAV path to drumsmith-render.
+- **evidence:** regen_cnv_decay.py tmp.replace(dst); stderr Refusing to overwrite existing WAV
+- **confidence:** executed
+- **status:** active

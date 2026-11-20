@@ -13,12 +13,22 @@ def recipe_for(kind, variant=0):
     # cycle + variant salts keep large kits unique (native 808/kick ignore seed).
     n = variant % 16
     cycle = variant // 16
-    dur_808 = 0.70 + (n % 4) * 0.09 + cycle * 0.045 + (variant % 3) * 0.02
-    decay_808 = 0.28 + (n % 5) * 0.045 + cycle * 0.035 + (variant % 4) * 0.01
+    # RATE-style 808 beds: long buffer + long amp decay (Memphis crawl / phonk)
+    dur_808 = 1.45 + (n % 5) * 0.16 + cycle * 0.08 + (variant % 3) * 0.04
+    decay_808 = 0.95 + (n % 5) * 0.14 + cycle * 0.08 + (variant % 4) * 0.03
     # Spread 808 fundamentals across ~36–58 Hz for RATE-style beds
     pitch_808 = 58.0 - (variant % 22) * 1.0 - cycle * 0.35
     kick_pitch = 55.0 + (variant % 18) * 2.5 + cycle * 1.5
     cow_pitch = 480.0 + (variant % 12) * 14.0 + cycle * 8.0
+    # Drum oneshots: longer than truncated ~0.22s clips so decay can finish
+    dur_kick = 0.42 + (n % 5) * 0.07 + cycle * 0.03 + (variant % 5) * 0.012
+    decay_kick = 0.16 + (n % 6) * 0.035 + cycle * 0.015 + (variant % 8) * 0.004
+    dur_snare = 0.40 + (n % 5) * 0.055 + cycle * 0.025 + (variant % 5) * 0.01
+    decay_snare = 0.14 + (n % 6) * 0.028 + cycle * 0.012 + (variant % 8) * 0.003
+    dur_clap = 0.32 + (n % 4) * 0.05 + cycle * 0.02 + (variant % 5) * 0.01
+    decay_clap = 0.10 + (n % 5) * 0.022 + cycle * 0.01 + (variant % 7) * 0.003
+    dur_hat = 0.28 + (n % 5) * 0.05 + cycle * 0.02 + (variant % 5) * 0.008
+    decay_hat = 0.08 + (n % 6) * 0.02 + cycle * 0.01 + (variant % 8) * 0.002
     # FX families widen duration/tone/noise so large kits stay SHA-unique and usefully distinct.
     fx_family = variant % 5  # 0 crash · 1 alias · 2 reverse/sweep · 3 stab · 4 texture
     fx_dur = (0.55 + (n % 5) * 0.11 + cycle * 0.04 + (variant % 11) * 0.012
@@ -37,9 +47,28 @@ def recipe_for(kind, variant=0):
                 0.22 + (n % 6) * 0.04 + cycle * 0.02 + (variant % 8) * 0.005)
     fx_noise = min(1.0, max(0.0, 0.15 + fx_family * 0.12 + (n % 7) * 0.08 + cycle * 0.03 + (variant % 6) * 0.015))
     fx_tone = min(1.0, max(0.0, 0.08 + fx_family * 0.1 + (n % 7) * 0.07 + cycle * 0.035 + (variant % 9) * 0.012))
+    if kind == '808':
+        duration_sec = min(2.8, dur_808)
+        decay_sec = min(1.9, decay_808)
+    elif kind == 'KICK':
+        duration_sec, decay_sec = min(1.2, dur_kick), min(0.55, decay_kick)
+    elif kind == 'SNARE':
+        duration_sec, decay_sec = min(1.0, dur_snare), min(0.45, decay_snare)
+    elif kind == 'CLAP':
+        duration_sec, decay_sec = min(0.85, dur_clap), min(0.35, decay_clap)
+    elif kind == 'HAT':
+        duration_sec, decay_sec = min(0.75, dur_hat), min(0.28, decay_hat)
+    elif kind == 'COWBELL':
+        duration_sec = 0.28 + (n % 4) * 0.045 + cycle * 0.02 + (variant % 5) * 0.01
+        decay_sec = 0.065 + (n % 6) * 0.016 + cycle * 0.008 + (variant % 8) * 0.002
+    elif kind == 'FX':
+        duration_sec, decay_sec = min(2.9, fx_dur), min(1.6, fx_decay)
+    else:  # PERC
+        duration_sec = 0.28 + (n % 5) * 0.05 + cycle * 0.02 + (variant % 5) * 0.008
+        decay_sec = 0.08 + (n % 6) * 0.02 + cycle * 0.01 + (variant % 8) * 0.002
     return {'engine':'parametric-v2', 'kind':kind, 'variant':variant,
-            'duration_sec': round(min(2.8, dur_808) if kind=='808' else (0.28+(n%4)*0.045+cycle*0.02+(variant%5)*0.01) if kind=='COWBELL' else (min(2.9, fx_dur) if kind=='FX' else (0.22+(n%5)*0.065+cycle*0.02+(variant%5)*0.008)), 4),
-            'decay_sec': round(min(1.9, decay_808) if kind=='808' else (min(1.6, fx_decay) if kind=='FX' else (0.065+(n%6)*0.016+cycle*0.008+(variant%8)*0.002)),4),
+            'duration_sec': round(duration_sec, 4),
+            'decay_sec': round(decay_sec, 4),
             'drive': round(min(7.5, 1.05+(n%6)*0.19+cycle*0.11+(variant%5)*0.03 + (fx_family*0.08 if kind=='FX' else 0)),4),
             'tone': round(fx_tone if kind=='FX' else min(1.0, max(0.0, 0.12+(n%7)*0.08+cycle*0.04+(variant%9)*0.015)),4),
             'pitch_hz': (max(32.0, min(70.0, pitch_808)) if kind=='808' else max(40.0, min(120.0, kick_pitch)) if kind=='KICK' else max(350.0, min(900.0, cow_pitch)) if kind=='COWBELL' else None),
