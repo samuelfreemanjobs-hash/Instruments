@@ -8,7 +8,7 @@
 #   bash scripts/repo_health.sh --list
 #
 # Check ids: tokens | gen-tokens | ds-unit | apc-templates | doc-links |
-#            factory | memory | fleet | apc-gates
+#            factory | phonk-factory | memory | fleet | apc-gates
 
 set -uo pipefail
 
@@ -68,6 +68,11 @@ check_doc_links() {
   echo "markdown relative-link check (default set + all SOPs)"
   "$PY" tools/check_doc_links.py || return $?
   "$PY" tools/check_doc_links.py 'docs/disklordz/sops/*.md'
+}
+
+check_phonk_factory() {
+  echo "disklordz/lofi12-phonk-factory unittest (includes neutral naming policy)"
+  "$PY" -m unittest discover -s disklordz/lofi12-phonk-factory/tests -q
 }
 
 check_factory() {
@@ -196,6 +201,7 @@ CHECKS=(
   "apc-templates|check_apc_templates|4. APC templates unittest"
   "doc-links|check_doc_links|5. doc links (default + SOPs)"
   "factory|check_factory|6. vst-factory import + pytest"
+  "phonk-factory|check_phonk_factory|6b. lofi12 phonk factory unittest + neutral naming"
   "memory|check_memory|7. agent memory (optional)"
   "fleet|check_fleet|8. agent fleet scaffold --check"
   "apc-gates|check_apc_gates|9. APC gates (derived phase)"

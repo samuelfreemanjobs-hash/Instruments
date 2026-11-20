@@ -59,6 +59,11 @@ jobs:
         continue-on-error: true
         run: bash scripts/repo_health.sh --only factory
 
+      - name: "6b. lofi12 phonk factory (neutral naming)"
+        id: phonk_factory
+        continue-on-error: true
+        run: bash scripts/repo_health.sh --only phonk-factory
+
       - name: "7. agent memory (optional)"
         id: memory
         continue-on-error: true
@@ -83,6 +88,7 @@ jobs:
           O_APC_TEMPLATES: ${{ steps.apc_templates.outcome }}
           O_DOC_LINKS: ${{ steps.doc_links.outcome }}
           O_FACTORY: ${{ steps.factory.outcome }}
+          O_PHONK_FACTORY: ${{ steps.phonk_factory.outcome }}
           O_MEMORY: ${{ steps.memory.outcome }}
           O_FLEET: ${{ steps.fleet.outcome }}
           O_APC_GATES: ${{ steps.apc_gates.outcome }}
@@ -99,6 +105,7 @@ jobs:
             echo "| 4 | APC templates unittest | ${O_APC_TEMPLATES} |"
             echo "| 5 | doc links (default + SOPs) | ${O_DOC_LINKS} |"
             echo "| 6 | vst-factory import + pytest | ${O_FACTORY} |"
+            echo "| 6b | lofi12 phonk factory neutral naming | ${O_PHONK_FACTORY} |"
             echo "| 7 | agent memory (optional) | ${O_MEMORY} |"
             echo "| 8 | agent fleet scaffold --check | ${O_FLEET} |"
             echo "| 9 | APC gates (derived phase) | ${O_APC_GATES} |"
@@ -108,7 +115,7 @@ jobs:
 
           failed=0
           for o in "$O_TOKENS" "$O_GEN_TOKENS" "$O_DS_UNIT" "$O_APC_TEMPLATES" \
-                   "$O_DOC_LINKS" "$O_FACTORY" "$O_MEMORY" "$O_FLEET" "$O_APC_GATES"; do
+                   "$O_DOC_LINKS" "$O_FACTORY" "$O_PHONK_FACTORY" "$O_MEMORY" "$O_FLEET" "$O_APC_GATES"; do
             # success and skipped are ok; failure / cancelled fail the job
             case "$o" in
               success|skipped) ;;

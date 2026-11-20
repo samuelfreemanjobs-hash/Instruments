@@ -1,0 +1,3 @@
+# Optional — Python MIDI playback (midi_play.py)
+mido>=1.3,<2
+python-rtmidi>=1.5,<2

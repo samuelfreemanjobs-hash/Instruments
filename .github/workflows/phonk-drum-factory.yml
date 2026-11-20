@@ -1,0 +1,57 @@
+name: Phonk Drum Factory
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "disklordz/lofi12-phonk-factory/**"
+      - "tools/build-phonk-kit-products.sh"
+      - ".github/workflows/phonk-drum-factory.yml"
+  push:
+    branches:
+      - "cursor/phonk-kit-factory-products-0ecc"
+    paths:
+      - "disklordz/lofi12-phonk-factory/**"
+      - "tools/build-phonk-kit-products.sh"
+      - ".github/workflows/phonk-drum-factory.yml"
+
+concurrency:
+  group: phonk-drum-factory-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-qa:
+    name: unittest + sample QA
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: disklordz/lofi12-phonk-factory
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Unit tests (incl. neutral naming)
+        run: |
+          python3 -m unittest discover -s tests -q
+
+      - name: Sample QA pass (demo kit scan)
+        env:
+          PYTHONPATH: scripts
+        run: |
+          python3 scripts/kit_output_qa.py --generate-demo --mode occult_tape
+
+      - name: Summary
+        if: success()
+        run: |
+          {
+            echo "## Phonk Drum Factory"
+            echo ""
+            echo "This PR ships **procedural drum kits only** — no VST3 target in \`disklordz/lofi12-phonk-factory\`."
+            echo "- Unit tests: \`unittest discover -s tests\`"
+            echo "- Sample QA: \`kit_output_qa.py\` (peaks ≤ -0.3 dBFS, no zero-byte WAVs)"
+            echo "- Source log: \`products/SOURCE_LICENSE_LOG.md\`"
+          } >> "$GITHUB_STEP_SUMMARY"
