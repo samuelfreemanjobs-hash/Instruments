@@ -2,13 +2,13 @@
 
 Manual pass against [SP1200_STANDALONE_SPEC.md](SP1200_STANDALONE_SPEC.md).
 
-**Automated (CI + local):** `ctest --test-dir build -R SP1200` — memory pool, sequencer (96 PPQN swing, song END, MIDI clock), `.sp12p` project file.
+**Automated (CI + local):** `ctest --test-dir build -R SP1200` — memory pool, sequencer (96 PPQN swing, song END, MIDI clock), `.sp12p` project file, **WAV import + `.sp12p` disk round-trip** (`SP1200ProjectFileTests`).
 
 **Implementation complete for P0–P3;** P4 = run this checklist once before calling v1 shipped. See [SP1200_HANDOFF.md](SP1200_HANDOFF.md).
 
 ## Audio & memory
 
-- [ ] Import WAV/AIF/FLAC → mono sum, **26.040 kHz**, 12-bit; memory label stays **/ 7:00 TOTAL**
+- [x] Import WAV/AIF/FLAC → mono sum, **26.040 kHz**, 12-bit; memory label stays **/ 7:00 TOTAL** *(engine path in CI; confirm memory label in UI manually)*
 - [ ] Input record ARM → commit creates segment; cap enforced at 7:00
 - [ ] **VINYL 33→45 import** toggle: brighter import + pad tune ~−5 st on assign
 - [ ] 16 voices; same-pad retrigger; choke group cuts siblings
@@ -37,7 +37,7 @@ Manual pass against [SP1200_STANDALONE_SPEC.md](SP1200_STANDALONE_SPEC.md).
 
 ## Project
 
-- [ ] Save/load `.sp12p` round-trip (samples, patterns, song, MIDI maps, setup)
+- [x] Save/load `.sp12p` round-trip (samples, patterns, song, MIDI maps, setup) *(CI disk round-trip after import; full UI save/load still manual)*
 
 ## UI modules
 
