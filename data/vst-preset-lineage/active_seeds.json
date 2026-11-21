@@ -237,6 +237,125 @@
         "drive": 0.43484333135479,
         "filtEnvAmt": 0.7228607622455366
       }
+    },
+    {
+      "name": "Southside Sub (1121)",
+      "category": "TRAP",
+      "params": {
+        "wtPosition": 0.5794495726048285,
+        "filterCutoff": 0.2796380066566027,
+        "filterRes": 0.12199182494269861,
+        "subLevel": 0.9896380066566026,
+        "drive": 0.43122315017283647,
+        "crush": 0.18248978117837328,
+        "ampAttack": 0.002,
+        "ampDecay": 0.4819918249426986,
+        "ampSustain": 0.9592884741127146,
+        "ampRelease": 0.3277104053252821,
+        "glideMs": 95.20201670311106
+      }
+    },
+    {
+      "name": "Metro Sub (1121)",
+      "category": "TRAP",
+      "params": {
+        "wtPosition": 0.5798946701870401,
+        "filterCutoff": 0.27909092078360714,
+        "filterRes": 0.12267146117230286,
+        "subLevel": 0.9890909207836072,
+        "drive": 0.4315030484915414,
+        "crush": 0.18333932646537857,
+        "ampAttack": 0.002,
+        "ampDecay": 0.48267146117230286,
+        "ampSustain": 0.9599886210537404,
+        "ampRelease": 0.3272727366268857,
+        "glideMs": 95.20705487284775
+      }
+    },
+    {
+      "name": "Carti Bell Pluck (1121)",
+      "category": "TRAP",
+      "params": {
+        "wtPosition": 0.7206436094006069,
+        "filterCutoff": 0.6782024017928108,
+        "filterRes": 0.3836409278347833,
+        "filtEnvAmt": 0.8465619214342485,
+        "ampAttack": 0.001,
+        "ampDecay": 0.08864092783478333,
+        "ampSustain": 0.0010139264631220583,
+        "ampRelease": 0.26656192143424856,
+        "glideMs": 34.21244043016285,
+        "stereoWidth": 0.22
+      }
+    },
+    {
+      "name": "Nardo Bell Pluck (1121)",
+      "category": "TRAP",
+      "params": {
+        "wtPosition": 0.7212165525085615,
+        "filterCutoff": 0.677541714764841,
+        "filterRes": 0.3842790974995512,
+        "filtEnvAmt": 0.8460333718118728,
+        "ampAttack": 0.001,
+        "ampDecay": 0.08927909749955121,
+        "ampSustain": 0.0017074875930448705,
+        "ampRelease": 0.26603337181187275,
+        "glideMs": 34.214722903258966,
+        "stereoWidth": 0.22
+      }
+    },
+    {
+      "name": "Slime Slide (1121)",
+      "category": "TRAP",
+      "params": {
+        "wtPosition": 0.7618362818256853,
+        "detuneCents": -11.212610482283019,
+        "filterCutoff": 0.4168408557833388,
+        "filterRes": 0.3548944739785155,
+        "drive": 0.4919923125588564,
+        "subLevel": 0.5568408557833389,
+        "ampDecay": 0.4248944739785155,
+        "ampSustain": 0.7223919535616703
+      }
+    },
+    {
+      "name": "Travis Hook (1121)",
+      "category": "TRAP",
+      "params": {
+        "wtPosition": 0.7023413471549386,
+        "wtScan": 0.18,
+        "filterCutoff": 0.586278308665907,
+        "glideMs": 105.21595591715115,
+        "tapeWobble": 0.12,
+        "stereoWidth": 0.38,
+        "ampSustain": 0.6829085769756655
+      }
+    },
+    {
+      "name": "Phonk Haze (1121)",
+      "category": "TRAP",
+      "params": {
+        "wtPosition": 0.6532026631732711,
+        "filterCutoff": 0.38533374893237543,
+        "crush": 0.4575548433865337,
+        "drive": 0.6519272046213093,
+        "filterDestructive": true,
+        "tapeWobble": 0.22,
+        "subLevel": 0.6253337489323754
+      }
+    },
+    {
+      "name": "Drill Cut (1121)",
+      "category": "TRAP",
+      "params": {
+        "wtPosition": 0.8348433313547899,
+        "filterCutoff": 0.5435759528069208,
+        "filterRes": 0.5271421627353734,
+        "ampDecay": 0.13714216273537344,
+        "ampSustain": 0.005065301117192738,
+        "drive": 0.45157098173590726,
+        "filtEnvAmt": 0.7228607622455366
+      }
     }
   ],
   "pluggva": [
@@ -448,6 +567,111 @@
         "filterCutoff": 0.5922932093586026,
         "chorus": 0.36,
         "ampSustain": 0.6228607622455367
+      }
+    },
+    {
+      "name": "Southside Sub (1121)",
+      "category": "TRAP",
+      "params": {
+        "osc1Wave": "saw",
+        "osc2Wave": "saw",
+        "subLevel": 0.9296380066566027,
+        "filterCutoff": 0.3396380066566027,
+        "drive": 0.4112231501728365,
+        "ampDecay": 0.5019918249426987,
+        "ampSustain": 0.8792884741127146,
+        "glideMs": 120.20201670311106
+      }
+    },
+    {
+      "name": "Memphis Undertow (1121)",
+      "category": "TRAP",
+      "params": {
+        "osc1Wave": "saw",
+        "osc2Wave": "saw",
+        "unisonAmount": 0.8803937056476605,
+        "osc2DetuneCents": -16.17783092151995,
+        "unisonSpreadCents": 27.82216907848005,
+        "subLevel": 0.6888193976293274,
+        "filterCutoff": 0.3888193976293274,
+        "drive": 0.3616125758149807
+      }
+    },
+    {
+      "name": "Carti Bell Pluck (1121)",
+      "category": "TRAP",
+      "params": {
+        "osc2Octave": 1,
+        "osc2DetuneCents": 9.831584969210924,
+        "filtEnvAmt": 0.8265619214342484,
+        "ampDecay": 0.08164092783478333,
+        "ampSustain": 0.0010139264631220583,
+        "ampRelease": 0.30656192143424854,
+        "glideMs": 32.21244043016285,
+        "chorus": 0.28
+      }
+    },
+    {
+      "name": "Nardo Bell Pluck (1121)",
+      "category": "TRAP",
+      "params": {
+        "osc2Octave": 1,
+        "osc2DetuneCents": 9.841897945154109,
+        "filtEnvAmt": 0.8260333718118728,
+        "ampDecay": 0.0822790974995512,
+        "ampSustain": 0.0017074875930448705,
+        "ampRelease": 0.30603337181187273,
+        "glideMs": 32.214722903258966,
+        "chorus": 0.28
+      }
+    },
+    {
+      "name": "Brick Wall (1121)",
+      "category": "TRAP",
+      "params": {
+        "osc1Wave": "saw",
+        "osc2Wave": "saw",
+        "unisonAmount": 0.9235784961348774,
+        "unisonSpreadCents": 29.861314534049647,
+        "chorus": 0.48,
+        "filterCutoff": 0.5563293628501527,
+        "drive": 0.2919986131166418,
+        "glideMs": 75.21597503609955
+      }
+    },
+    {
+      "name": "Travis Hook (1121)",
+      "category": "TRAP",
+      "params": {
+        "unisonAmount": 0.5536357212195819,
+        "chorus": 0.52,
+        "stereoWidth": 0.42,
+        "glideMs": 115.21595591715115,
+        "drift": 0.2,
+        "filterCutoff": 0.726278308665907
+      }
+    },
+    {
+      "name": "Trap Knife (1121)",
+      "category": "TRAP",
+      "params": {
+        "drive": 0.5319479161722129,
+        "filterRes": 0.4859162103124279,
+        "ampDecay": 0.14591621031242788,
+        "ampSustain": 0.04356809845740151,
+        "filtEnvAmt": 0.8644125683406375,
+        "crush": 0.15739526289053485
+      }
+    },
+    {
+      "name": "Whole Drift (1121)",
+      "category": "TRAP",
+      "params": {
+        "unisonAmount": 0.4863316263964909,
+        "glideMs": 145.20827767124632,
+        "filterCutoff": 0.6035759528069208,
+        "chorus": 0.36,
+        "ampSustain": 0.6250653011171927
       }
     }
   ],
