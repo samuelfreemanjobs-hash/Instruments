@@ -24,7 +24,7 @@ export default function LoginPage() {
           </p>
         )}
         <Link href="/" className="text-sm text-emerald-400 hover:text-emerald-300">
-          ← Back to generator
+          ← Back to Factory
         </Link>
       </div>
     </div>

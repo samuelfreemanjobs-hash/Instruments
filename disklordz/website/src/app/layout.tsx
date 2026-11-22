@@ -1,21 +1,26 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono, Syne } from "next/font/google";
+
+import { SiteChrome } from "@/components/SiteChrome";
 
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const syne = Syne({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
-  title: "Disklordz Drum Kits",
-  description: "Prompt-driven drum sample kits — preview and download MPC-ready WAV packs.",
+  title: "DiskLordz Drum Kit Factory",
+  description:
+    "Formula → audition → export. Original drum kit packs from 32 DNA formulas — preview pads and download MPC-ready WAVs.",
 };
 
 export default function RootLayout({
@@ -25,8 +30,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
+      <body className={`${syne.variable} ${plexMono.variable} antialiased`}>
+        <div className="page-atmosphere">
+          <SiteChrome />
+          {children}
+        </div>
       </body>
     </html>
   );

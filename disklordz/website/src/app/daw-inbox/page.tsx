@@ -16,7 +16,8 @@ export default function DawInboxPage() {
         <h2 className="text-lg font-semibold">In the browser</h2>
         <p className="text-sm text-zinc-400">
           After you generate a kit on the{" "}
-          <Link href="/" className="text-emerald-400 hover:underline">home page</Link>, use{" "}
+          <Link href="/" className="text-emerald-400 hover:underline">Factory</Link> or{" "}
+          <Link href="/studio" className="text-emerald-400 hover:underline">Prompt studio</Link>, use{" "}
           <strong className="font-medium text-zinc-200">Save WAVs to folder</strong> (Chrome or Edge).
           Files land in a subfolder you choose — drag into your DAW.
         </p>
