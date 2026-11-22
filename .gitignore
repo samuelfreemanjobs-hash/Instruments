@@ -30,3 +30,4 @@ __pycache__/
 .gemini/
 gha-creds-*.json
 vst/JUCE
+.playwright-mcp/

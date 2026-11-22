@@ -68,6 +68,33 @@ class MemphisLoopTests(unittest.TestCase):
         self.assertEqual(len(audio), loop_samples(2, 94.0, 44100))
         self.assertGreater(float(np.max(np.abs(audio))), 0.5)
 
+    def test_clap_lane_audible_and_in_midi(self) -> None:
+        from scripts.memphis_oneshots.render_memphis_loop import write_blueprint_midi
+
+        bp = {
+            "bpm": 94.0,
+            "bars": 2,
+            "sample_rate": 44100,
+            "grid_subdivisions_per_bar": 16,
+            "samples_per_bar": loop_samples(1, 94.0, 44100),
+            "lanes": {
+                "SNARE": [{"step": 8, "vel": 100}],
+                "CLAP": [{"step": 8, "vel": 70}, {"step": 24, "vel": 65}],
+            },
+        }
+        snare_only = render_memphis_loop(
+            {**bp, "lanes": {"SNARE": bp["lanes"]["SNARE"]}}, seed=5
+        )
+        with_clap = render_memphis_loop(bp, seed=5)
+        self.assertGreater(float(np.max(np.abs(with_clap))), float(np.max(np.abs(snare_only))) * 0.9)
+        self.assertFalse(np.allclose(snare_only, with_clap))
+        with tempfile.TemporaryDirectory() as td:
+            mid = Path(td) / "clap.mid"
+            write_blueprint_midi(bp, mid)
+            raw = mid.read_bytes()
+            # Note-on channel 10 (0x99) for GM clap note 39
+            self.assertIn(bytes([0x99, 39]), raw)
+
 
 if __name__ == "__main__":
     unittest.main()

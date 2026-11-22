@@ -33,7 +33,8 @@ from scripts.memphis_oneshots.render_memphis_loop import (  # noqa: E402
 
 PROFILES = ROOT / "kits/black-box-collection/profiles"
 KICK_KEYS = [32.70, 36.71, 41.20, 43.65, 46.25, 49.00, 55.00, 38.89]
-SNR_HZ = [180, 196, 208, 220, 233, 247, 262, 185, 200, 215]
+# Pitched-down Memphis bodies (Paul/Juicy snap ear) — was ~180–262 Hz
+SNR_HZ = [145, 155, 165, 174, 185, 196, 150, 160, 170, 180]
 
 # Fallback when loop discovery finds nothing
 BLUEPRINTS = [
@@ -168,10 +169,10 @@ def _voice(profile: dict) -> dict:
         "808_tuning": "key",
         "808_click": 0.4,
         "kick_click": 0.25,
-        "snare_pitch_base": 22,
-        "snare_pitch_mod": 10,
-        "snare_flam_base_ms": 4.0,
-        "snare_flam_step_ms": 0.5,
+        "snare_pitch_base": 14,
+        "snare_pitch_mod": 8,
+        "snare_flam_base_ms": 5.0,
+        "snare_flam_step_ms": 0.45,
         "clap_layered": False,
         "clap_bright": False,
         "hat_noise_decay": 0.022,
