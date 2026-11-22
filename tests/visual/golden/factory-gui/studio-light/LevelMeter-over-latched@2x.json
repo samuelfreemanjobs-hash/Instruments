@@ -1,0 +1,10 @@
+{
+  "component": "LevelMeter",
+  "state": "over-latched",
+  "scale": 2.0,
+  "theme": "studio-light",
+  "width": 48,
+  "height": 200,
+  "texts": [
+  ]
+}

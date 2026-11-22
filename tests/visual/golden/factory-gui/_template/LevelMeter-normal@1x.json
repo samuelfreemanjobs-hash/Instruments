@@ -1,0 +1,10 @@
+{
+  "component": "LevelMeter",
+  "state": "normal",
+  "scale": 1.0,
+  "theme": "_template",
+  "width": 48,
+  "height": 200,
+  "texts": [
+  ]
+}

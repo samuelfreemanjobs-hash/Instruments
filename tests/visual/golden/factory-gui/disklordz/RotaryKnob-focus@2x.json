@@ -1,0 +1,12 @@
+{
+  "component": "RotaryKnob",
+  "state": "focus",
+  "scale": 2.0,
+  "theme": "disklordz",
+  "width": 96,
+  "height": 120,
+  "texts": [
+    {"string": "DRIVE", "bounds": {"x":0.000,"y":1.500,"w":34.491,"h":11.000}},
+    {"string": "70 %", "bounds": {"x":0.000,"y":106.000,"w":24.482,"h":12.000}}
+  ]
+}

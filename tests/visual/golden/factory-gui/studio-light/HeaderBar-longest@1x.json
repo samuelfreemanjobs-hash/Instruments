@@ -1,0 +1,13 @@
+{
+  "component": "HeaderBar",
+  "state": "longest",
+  "scale": 1.0,
+  "theme": "studio-light",
+  "width": 720,
+  "height": 40,
+  "texts": [
+    {"string": "CHORD ENGINE", "bounds": {"x":38.000,"y":4.000,"w":144.048,"h":20.000}},
+    {"string": "Example Co.", "bounds": {"x":38.000,"y":27.000,"w":57.841,"h":10.000}},
+    {"string": "0.2.0", "bounds": {"x":572.000,"y":15.000,"w":22.908,"h":10.000}}
+  ]
+}
