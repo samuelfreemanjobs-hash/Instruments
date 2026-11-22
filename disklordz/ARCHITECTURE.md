@@ -11,6 +11,7 @@
 | **Web SaaS** | [website/ARCHITECTURE.md](website/ARCHITECTURE.md) | `cd website && npm run build` |
 | **Sound factory** | [sound-factory/ARCHITECTURE.md](sound-factory/ARCHITECTURE.md) | `python3 sound-factory/scripts/generate_kit.py` |
 | **Memphis phonk architect** | [memphis-architect/ARCHITECTURE.md](memphis-architect/ARCHITECTURE.md) | `cd memphis-architect && python3 -m http.server 8765` |
+| **Retro Arranger** (1980s MIDI session band) | [retro-arranger/ARCHITECTURE.md](retro-arranger/ARCHITECTURE.md) | `cd retro-arranger && python app.py` |
 | **RAG** | [rag/ARCHITECTURE.md](rag/ARCHITECTURE.md) | `python3 rag/scripts/chunk_corpus.py` |
 | **Integrations (35 OSS)** | [integrations/ARCHITECTURE.md](integrations/ARCHITECTURE.md) | `./scripts/setup-open-source-integrations.sh` |
 | **Agent fleet (31)** | [agents/ARCHITECTURE.md](agents/ARCHITECTURE.md) · [../DISKLORDZ_AGENTS.md](../DISKLORDZ_AGENTS.md) | `./scripts/run-agent-fleet-now.sh` |
