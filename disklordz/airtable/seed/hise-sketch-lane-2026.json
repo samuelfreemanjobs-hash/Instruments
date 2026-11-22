@@ -28,6 +28,15 @@
   ],
   "work_orders": [
     {
+      "work_order_id": "WO-2026-HISE-PM-001",
+      "project_id": "PRJ-2026-HISE-SKETCH",
+      "title": "[PM][HISE] Antigravity setup — lane docs, system prompt, env checklist",
+      "status": "Ready",
+      "priority": "P3",
+      "owner_agent": "business-planner",
+      "acceptance_criteria": "On Windows Antigravity project: (1) Workspace includes or syncs github.com/samuelfreemanjobs-hash/Instruments main. (2) Project instructions/rules pin docs/HISE_ANTIGRAVITY_LANE.md and docs/HISE_SKETCH_LANE.md. (3) System prompt matches HISE_ANTIGRAVITY_LANE.md § How to give this to Antigravity. (4) Local env documented (not in git): HISE_EXE, HISE_SRC, PROJECT_DIR. (5) Python tools registered: write_hisescript, compile_hise_vst (export_ci + batchCompile.bat). (6) Airtable WO-2026-HISE-001 queued for antigravity-hise after this WO is Done. Mark Done in Disklordz OS."
+    },
+    {
       "work_order_id": "WO-2026-HISE-001",
       "project_id": "PRJ-2026-HISE-SKETCH",
       "title": "[Plugin][HISE] Lane bootstrap — Antigravity tools + one demo VST3",
@@ -35,6 +44,50 @@
       "priority": "P3",
       "owner_agent": "antigravity-hise",
       "acceptance_criteria": "Windows: HISE_EXE + HISE_SRC + PROJECT_DIR documented in Antigravity config (not in git). Tools write_hisescript + compile_hise_vst run export_ci with relative XmlPresetBackups path and batchCompile.bat; demo Interface.js (Attack 0–2000 ms, Master Volume -100–0 dB) produces loadable .vst3 in Reaper. Attach log tail + path to artifact. Business Planner: no new customer-facing SKU until Marketing brief exists. Does not consume Cursor Cloud WIP."
+    }
+  ],
+  "pm_tasks": [
+    {
+      "task_id": "TASK-PM-HISE-01",
+      "work_order_id": "WO-2026-HISE-PM-001",
+      "title": "Pull Instruments main; open Antigravity workspace on that repo (or submodule path)",
+      "status": "Todo",
+      "owner": "business-planner"
+    },
+    {
+      "task_id": "TASK-PM-HISE-02",
+      "work_order_id": "WO-2026-HISE-PM-001",
+      "title": "Pin docs/HISE_ANTIGRAVITY_LANE.md + docs/HISE_SKETCH_LANE.md in Antigravity project instructions",
+      "status": "Todo",
+      "owner": "business-planner"
+    },
+    {
+      "task_id": "TASK-PM-HISE-03",
+      "work_order_id": "WO-2026-HISE-PM-001",
+      "title": "Paste system prompt from HISE_ANTIGRAVITY_LANE.md (Disklordz HISE sketch implementer; [Plugin][HISE] only)",
+      "status": "Todo",
+      "owner": "business-planner"
+    },
+    {
+      "task_id": "TASK-PM-HISE-04",
+      "work_order_id": "WO-2026-HISE-PM-001",
+      "title": "Document local env vars HISE_EXE, HISE_SRC, PROJECT_DIR in Antigravity secrets/config (not git)",
+      "status": "Todo",
+      "owner": "business-planner"
+    },
+    {
+      "task_id": "TASK-PM-HISE-05",
+      "work_order_id": "WO-2026-HISE-PM-001",
+      "title": "Register Antigravity tools: write_hisescript, compile_hise_vst (+ optional compile_script, clean)",
+      "status": "Todo",
+      "owner": "business-planner"
+    },
+    {
+      "task_id": "TASK-PM-HISE-06",
+      "work_order_id": "WO-2026-HISE-PM-001",
+      "title": "Set WO-2026-HISE-001 to Ready and assign antigravity-hise; close WO-2026-HISE-PM-001 when verified",
+      "status": "Todo",
+      "owner": "business-planner"
     }
   ],
   "marketing_planner_checklist": [

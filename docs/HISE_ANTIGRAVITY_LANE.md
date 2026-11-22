@@ -65,7 +65,9 @@ Port WO acceptance should name: behavior parity checklist, preset/sample migrati
 
 ## How to give this to Antigravity
 
-1. **Clone or pull** `Instruments` (branch `main` after PR #21).
+**PM track this in Airtable:** work order **`WO-2026-HISE-PM-001`** and tasks **`TASK-PM-HISE-01` … `06`** in [`hise-sketch-lane-2026.json`](../disklordz/airtable/seed/hise-sketch-lane-2026.json). Complete PM-001 before **`WO-2026-HISE-001`**.
+
+1. **Clone or pull** `Instruments` (`main`).
 2. **Pin this file** in the Antigravity project:
    - Paste path or contents into **project instructions** / **rules**, or
    - Add to the workspace Antigravity opens (same folder as your HISE projects).
