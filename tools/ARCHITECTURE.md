@@ -71,3 +71,7 @@ Local **command center** (drop-in folder + AI-friendly `error_log.txt`): [vst-te
 ## SynthForge (Python)
 
 Preset batching, cloning, and hardware export staging: [synth-forge/ARCHITECTURE.md](synth-forge/ARCHITECTURE.md). Not part of CMake; CI via [`.github/workflows/synth-forge.yml`](../.github/workflows/synth-forge.yml).
+
+## ArchitectAI (Python CLI)
+
+COSI-grounded architecture mentor (Gemini/OpenAI): [architect-ai/ARCHITECTURE.md](architect-ai/ARCHITECTURE.md). Run `python3 tools/architect-ai/scripts/smoke.py` in CI-safe mode (no API key).
