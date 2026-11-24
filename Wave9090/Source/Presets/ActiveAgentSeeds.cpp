@@ -428,6 +428,109 @@ std::vector<FactoryPreset> getActiveAgentSeeds()
               p.wtPosition = 0.8515709817359073f;
               return p;
           }() },
+        { "Southside Sub (1124)", "TRAP", [] {
+              auto p = baseParams();
+              p.ampAttack = 0.002f;
+              p.ampDecay = 0.4792884741127146f;
+              p.ampRelease = 0.3277104053252821f;
+              p.ampSustain = 0.9515908534880766f;
+              p.crush = 0.1791917242682333f;
+              p.drive = 0.42248978117837327f;
+              p.filterCutoff = 0.25948856686009575f;
+              p.filterRes = 0.12199182494269861f;
+              p.glideMs = 94.98399066753608f;
+              p.subLevel = 0.9896380066566026f;
+              p.wtPosition = 0.5891917242682333f;
+              return p;
+          }() },
+        { "Metro Sub (1124)", "TRAP", [] {
+              auto p = baseParams();
+              p.ampAttack = 0.002f;
+              p.ampDecay = 0.47998862105374046f;
+              p.ampRelease = 0.3272727366268857f;
+              p.ampSustain = 0.951275486147059f;
+              p.crush = 0.17832064243215362f;
+              p.drive = 0.4233393264653786f;
+              p.filterCutoff = 0.2590943576838239f;
+              p.filterRes = 0.12267146117230286f;
+              p.glideMs = 94.99974397370916f;
+              p.subLevel = 0.9890909207836072f;
+              p.wtPosition = 0.5883206424321537f;
+              return p;
+          }() },
+        { "Carti Bell Pluck (1124)", "TRAP", [] {
+              auto p = baseParams();
+              p.ampAttack = 0.001f;
+              p.ampDecay = 0.08601392646312206f;
+              p.ampRelease = 0.26656192143424856f;
+              p.ampSustain = 0.0f;
+              p.filtEnvAmt = 0.8465619214342485f;
+              p.filterCutoff = 0.6586220330901873f;
+              p.filterRes = 0.3836409278347833f;
+              p.glideMs = 34.022813345420246f;
+              p.stereoWidth = 0.22f;
+              p.wtPosition = 0.7270613070844667f;
+              return p;
+          }() },
+        { "Nardo Bell Pluck (1124)", "TRAP", [] {
+              auto p = baseParams();
+              p.ampAttack = 0.001f;
+              p.ampDecay = 0.08670748759304488f;
+              p.ampRelease = 0.26603337181187275f;
+              p.ampSustain = 0.0f;
+              p.filtEnvAmt = 0.8460333718118728f;
+              p.filterCutoff = 0.6583742066425021f;
+              p.filterRes = 0.3842790974995512f;
+              p.glideMs = 34.03841847084351f;
+              p.stereoWidth = 0.22f;
+              p.wtPosition = 0.7262205615742332f;
+              return p;
+          }() },
+        { "Slime Slide (1124)", "TRAP", [] {
+              auto p = baseParams();
+              p.ampDecay = 0.4223919535616703f;
+              p.ampSustain = 0.7105506452318658f;
+              p.detuneCents = -11.212610482283019f;
+              p.drive = 0.48611809247314436f;
+              p.filterCutoff = 0.3981883065398323f;
+              p.filterRes = 0.3548944739785155f;
+              p.subLevel = 0.5568408557833389f;
+              p.wtPosition = 0.7653999477488423f;
+              return p;
+          }() },
+        { "Travis Hook (1124)", "TRAP", [] {
+              auto p = baseParams();
+              p.ampSustain = 0.6704706425570862f;
+              p.filterCutoff = 0.5680883031963576f;
+              p.glideMs = 105.06544298195247f;
+              p.stereoWidth = 0.38f;
+              p.tapeWobble = 0.12f;
+              p.wtPosition = 0.7047868183454411f;
+              p.wtScan = 0.18f;
+              return p;
+          }() },
+        { "Phonk Haze (1124)", "TRAP", [] {
+              auto p = baseParams();
+              p.crush = 0.44383646907285906f;
+              p.drive = 0.6475548433865337f;
+              p.filterCutoff = 0.3680059111231769f;
+              p.filterDestructive = true;
+              p.subLevel = 0.6253337489323754f;
+              p.tapeWobble = 0.22f;
+              p.wtPosition = 0.6538364690728591f;
+              return p;
+          }() },
+        { "Drill Cut (1124)", "TRAP", [] {
+              auto p = baseParams();
+              p.ampDecay = 0.13506530111719275f;
+              p.ampSustain = 0.0f;
+              p.drive = 0.4489277034192168f;
+              p.filtEnvAmt = 0.7228607622455366f;
+              p.filterCutoff = 0.5280960536842992f;
+              p.filterRes = 0.5271421627353734f;
+              p.wtPosition = 0.8322932093586026f;
+              return p;
+          }() },
     };
 }
 
