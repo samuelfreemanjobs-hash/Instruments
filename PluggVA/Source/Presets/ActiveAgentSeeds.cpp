@@ -461,6 +461,95 @@ std::vector<FactoryPreset> getActiveAgentSeeds()
               p.unisonAmount = 0.4723f;
               return p;
           }() },
+        { "Southside Sub (1125)", "TRAP", [] {
+              auto p = base();
+              p.ampDecay = 0.4916f;
+              p.ampSustain = 0.8820f;
+              p.drive = 0.4025f;
+              p.filterCutoff = 0.3194f;
+              p.glideMs = 119.8101f;
+              p.osc1Wave = Waveform::saw;
+              p.osc2Wave = Waveform::saw;
+              p.subLevel = 0.9225f;
+              return p;
+          }() },
+        { "Memphis Undertow (1125)", "TRAP", [] {
+              auto p = base();
+              p.drive = 0.3537f;
+              p.filterCutoff = 0.3701f;
+              p.osc1Wave = Waveform::saw;
+              p.osc2DetuneCents = -16.1778f;
+              p.osc2Wave = Waveform::saw;
+              p.subLevel = 0.6837f;
+              p.unisonAmount = 0.8779f;
+              p.unisonSpreadCents = 28.0071f;
+              return p;
+          }() },
+        { "Carti Bell Pluck (1125)", "TRAP", [] {
+              auto p = base();
+              p.ampDecay = 0.0689f;
+              p.ampRelease = 0.3094f;
+              p.ampSustain = 0.0036f;
+              p.chorus = 0.2800f;
+              p.filtEnvAmt = 0.8210f;
+              p.glideMs = 31.8316f;
+              p.osc2DetuneCents = 9.8316f;
+              p.osc2Octave = 1;
+              return p;
+          }() },
+        { "Nardo Bell Pluck (1125)", "TRAP", [] {
+              auto p = base();
+              p.ampDecay = 0.0687f;
+              p.ampRelease = 0.3095f;
+              p.ampSustain = 0.0043f;
+              p.chorus = 0.2800f;
+              p.filtEnvAmt = 0.8217f;
+              p.glideMs = 31.8419f;
+              p.osc2DetuneCents = 9.8419f;
+              p.osc2Octave = 1;
+              return p;
+          }() },
+        { "Brick Wall (1125)", "TRAP", [] {
+              auto p = base();
+              p.chorus = 0.4800f;
+              p.drive = 0.2866f;
+              p.filterCutoff = 0.5423f;
+              p.glideMs = 74.8613f;
+              p.osc1Wave = Waveform::saw;
+              p.osc2Wave = Waveform::saw;
+              p.unisonAmount = 0.9148f;
+              p.unisonSpreadCents = 30.0644f;
+              return p;
+          }() },
+        { "Travis Hook (1125)", "TRAP", [] {
+              auto p = base();
+              p.chorus = 0.5200f;
+              p.drift = 0.2000f;
+              p.filterCutoff = 0.7123f;
+              p.glideMs = 114.8621f;
+              p.stereoWidth = 0.4200f;
+              p.unisonAmount = 0.5448f;
+              return p;
+          }() },
+        { "Trap Knife (1125)", "TRAP", [] {
+              auto p = base();
+              p.ampDecay = 0.1304f;
+              p.ampSustain = 0.0459f;
+              p.crush = 0.1545f;
+              p.drive = 0.5274f;
+              p.filtEnvAmt = 0.8636f;
+              p.filterRes = 0.4752f;
+              return p;
+          }() },
+        { "Whole Drift (1125)", "TRAP", [] {
+              auto p = base();
+              p.ampSustain = 0.6271f;
+              p.chorus = 0.3600f;
+              p.filterCutoff = 0.5948f;
+              p.glideMs = 144.9072f;
+              p.unisonAmount = 0.4723f;
+              return p;
+          }() },
     };
 }
 
