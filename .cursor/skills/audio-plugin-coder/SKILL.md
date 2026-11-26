@@ -9,6 +9,7 @@ description: Orchestrates VST/VSTi and cross-target DSP work using the DSP archi
 
 ## Authority
 
+- **Day-to-day JUCE engineering:** `.cursor/skills/vst-engineering/SKILL.md` (lifecycle, build, RT, QA)
 - **Architecture:** `docs/dsp-architecture-specification.md`
 - **VST template:** `vst/template/`, rule `06-vst-vsti-template.mdc`
 - **logue units:** `src/oscillators/`, mkII `src/mkii/oscillators/`
