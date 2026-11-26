@@ -11,6 +11,7 @@
 #include <array>
 #include <cstdint>
 #include <optional>
+#include <string>
 #include <vector>
 
 namespace sp1200
@@ -30,6 +31,7 @@ public:
     [[nodiscard]] const PatternSequencer& sequencer() const noexcept { return sequencer_; }
 
     std::optional<std::size_t> importFile (const juce::File& file, int bankIndex, juce::String name);
+    [[nodiscard]] const std::string& lastImportError() const noexcept { return lastImportError_; }
     void assignSegmentToPad (int padIndex, int segmentIndex);
     void setPadAssignment (int padIndex, PadAssignment assignment);
     void applyDefaultPadChokeGroups();
@@ -129,6 +131,7 @@ private:
     double masterClockPhase_ = 0.0;
     int currentBank_ = 0;
     int selectedPad_ = 0;
+    std::string lastImportError_;
 };
 
 } // namespace sp1200

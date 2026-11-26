@@ -5,14 +5,19 @@
 #include "SP1200Constants.h"
 
 #include <cmath>
+#include <cstdlib>
 
 namespace
 {
 juce::String formatMemoryTime (std::int64_t samples)
 {
-    const auto seconds = samples / static_cast<std::int64_t> (sp1200::kSampleRateHz);
-    const int mm = static_cast<int> (seconds / 60);
-    const int ss = static_cast<int> (seconds % 60);
+    if (samples <= 0)
+        return "0:00";
+
+    const double seconds = static_cast<double> (samples) / sp1200::kSampleRateHz;
+    const int totalSec = static_cast<int> (std::ceil (seconds));
+    const int mm = totalSec / 60;
+    const int ss = totalSec % 60;
     return juce::String::formatted ("%d:%02d", mm, ss);
 }
 
@@ -20,6 +25,27 @@ void setVisibleArray (bool on, auto& arr)
 {
     for (auto& c : arr)
         c.setVisible (on);
+}
+
+juce::File fileFromChooserResult (const juce::FileChooser& fc)
+{
+    if (fc.getResult() != juce::File())
+        return fc.getResult();
+
+    const auto files = fc.getResults();
+    if (! files.isEmpty())
+        return files.getReference (0);
+
+    const auto& urls = fc.getURLResults();
+    if (! urls.isEmpty())
+        return urls.getReference (0).getLocalFile();
+
+    return {};
+}
+
+bool isAudioImportExtension (const juce::File& f)
+{
+    return f.hasFileExtension (".wav;.aif;.aiff;.flac");
 }
 } // namespace
 
@@ -490,6 +516,12 @@ SP1200AudioProcessorEditor::SP1200AudioProcessorEditor (SP1200AudioProcessor& p)
     refreshLcd();
     updatePadHighlight();
     setView (ViewMode::console);
+
+    if (const char* autoPath = std::getenv ("SP1200_AUTO_IMPORT"))
+    {
+        const juce::String path (autoPath);
+        juce::MessageManager::callAsync ([this, path] { importSampleFromFile (juce::File (path)); });
+    }
 }
 
 SP1200AudioProcessorEditor::~SP1200AudioProcessorEditor()
@@ -1225,35 +1257,92 @@ void SP1200AudioProcessorEditor::triggerPad (int padIndex)
         processor_.triggerPad (padIndex, 0.9f);
 }
 
+void SP1200AudioProcessorEditor::applyImportedSegment (std::size_t segmentIndex)
+{
+    cancelKeypadEntry();
+    lastSegmentForChop_ = static_cast<int> (segmentIndex);
+    for (int p = 0; p < sp1200::kNumPads; ++p)
+    {
+        if (processor_.engine().getPad (p).segmentIndex < 0)
+        {
+            processor_.engine().assignSegmentToPad (p, static_cast<int> (segmentIndex));
+            applyVinylTuneIfNeeded (p);
+            processor_.engine().setSelectedPad (p);
+            break;
+        }
+    }
+    updatePadHighlight();
+    refreshMemoryLabel();
+    refreshLcd();
+    repaint();
+}
+
+void SP1200AudioProcessorEditor::importSampleFromFile (const juce::File& file)
+{
+    if (! juce::MessageManager::getInstance()->isThisTheMessageThread())
+    {
+        juce::MessageManager::callAsync ([this, file] { importSampleFromFile (file); });
+        return;
+    }
+
+    if (! isAudioImportExtension (file))
+    {
+        juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
+                                                "Import failed",
+                                                "Unsupported file type (use WAV, AIFF, or FLAC).");
+        return;
+    }
+
+    const int bank = processor_.engine().currentBank();
+    const auto idx = processor_.engine().importFile (file, bank, file.getFileNameWithoutExtension());
+    if (! idx.has_value())
+    {
+        const auto& err = processor_.engine().lastImportError();
+        juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
+                                                "Import failed",
+                                                err.empty() ? juce::String ("Could not import file.")
+                                                            : juce::String (err));
+        return;
+    }
+
+    applyImportedSegment (*idx);
+}
+
+bool SP1200AudioProcessorEditor::isInterestedInFileDrag (const juce::StringArray& files)
+{
+    for (const auto& path : files)
+        if (isAudioImportExtension (juce::File (path)))
+            return true;
+    return false;
+}
+
+void SP1200AudioProcessorEditor::filesDropped (const juce::StringArray& files, int, int)
+{
+    for (const auto& path : files)
+    {
+        const juce::File f (path);
+        if (isAudioImportExtension (f))
+        {
+            importSampleFromFile (f);
+            return;
+        }
+    }
+}
+
 void SP1200AudioProcessorEditor::importSample()
 {
-    auto chooser = std::make_shared<juce::FileChooser> ("Import WAV", juce::File(), "*.wav;*.aif;*.aiff;*.flac");
+    auto chooser = std::make_shared<juce::FileChooser> ("Import WAV",
+                                                        juce::File::getSpecialLocation (juce::File::userHomeDirectory),
+                                                        "*.wav;*.aif;*.aiff;*.flac",
+                                                        true,
+                                                        this);
     chooser->launchAsync (juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
                           [this, chooser] (const juce::FileChooser& fc)
                           {
-                              const auto f = fc.getResult();
+                              const auto f = fileFromChooserResult (fc);
                               if (f == juce::File())
                                   return;
-                              const int bank = processor_.engine().currentBank();
-                              auto idx = processor_.engine().importFile (f, bank, f.getFileNameWithoutExtension());
-                              if (! idx.has_value())
-                              {
-                                  juce::AlertWindow::showMessageBoxAsync (juce::MessageBoxIconType::WarningIcon,
-                                                                          "Import failed",
-                                                                          "Could not import (memory cap or format).");
-                                  return;
-                              }
-                              lastSegmentForChop_ = static_cast<int> (*idx);
-                              for (int p = 0; p < sp1200::kNumPads; ++p)
-                              {
-                                  if (processor_.engine().getPad (p).segmentIndex < 0)
-                                  {
-                                      processor_.engine().assignSegmentToPad (p, static_cast<int> (*idx));
-                                      applyVinylTuneIfNeeded (p);
-                                      break;
-                                  }
-                              }
-                              refreshMemoryLabel();
+                              importSampleFromFile (f);
                           });
 }
 
@@ -1423,12 +1512,14 @@ void SP1200AudioProcessorEditor::closeChopModal()
 void SP1200AudioProcessorEditor::saveProject()
 {
     auto chooser = std::make_shared<juce::FileChooser> ("Save project",
-                                                        juce::File(),
-                                                        "*" + juce::String (sp1200::ProjectFile::kExtension));
+                                                        juce::File::getSpecialLocation (juce::File::userDocumentsDirectory),
+                                                        "*" + juce::String (sp1200::ProjectFile::kExtension),
+                                                        false,
+                                                        this);
     chooser->launchAsync (juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles,
                           [this, chooser] (const juce::FileChooser& fc)
                           {
-                              auto f = fc.getResult();
+                              auto f = fileFromChooserResult (fc);
                               if (f == juce::File())
                                   return;
                               if (! f.hasFileExtension (sp1200::ProjectFile::kExtension))
@@ -1445,12 +1536,14 @@ void SP1200AudioProcessorEditor::saveProject()
 void SP1200AudioProcessorEditor::loadProject()
 {
     auto chooser = std::make_shared<juce::FileChooser> ("Load project",
-                                                        juce::File(),
-                                                        "*" + juce::String (sp1200::ProjectFile::kExtension));
+                                                        juce::File::getSpecialLocation (juce::File::userDocumentsDirectory),
+                                                        "*" + juce::String (sp1200::ProjectFile::kExtension),
+                                                        false,
+                                                        this);
     chooser->launchAsync (juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
                           [this, chooser] (const juce::FileChooser& fc)
                           {
-                              const auto f = fc.getResult();
+                              const auto f = fileFromChooserResult (fc);
                               if (f == juce::File())
                                   return;
                               if (! sp1200::ProjectFile::loadFromFile (processor_.engine(), f))
