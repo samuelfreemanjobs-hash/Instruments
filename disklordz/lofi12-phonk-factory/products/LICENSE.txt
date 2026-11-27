@@ -1,0 +1,16 @@
+DiskLordz Audio — Phonk Kit License (v1)
+
+Copyright (c) DiskLordz. All rights reserved.
+
+GRANT: Purchaser may use the enclosed audio (WAV files) in unlimited personal
+and commercial music productions, including beats sold or licensed to artists,
+sync in video/podcasts, and live performance.
+
+RESTRICTIONS: You may not redistribute, resell, or sublicense the raw audio
+files as a sample pack, loop pack, or kit (including “royalty-free” repacks),
+nor claim authorship of the factory synthesis engine.
+
+DISCLAIMER: Audio is algorithmically generated. No third-party recordings were
+intentionally sampled. Provided “as is” without warranty.
+
+Questions: support@disklordz.com (replace with live WooCommerce support email).

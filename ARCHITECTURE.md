@@ -15,6 +15,7 @@ This monorepo hosts **JD Upgraded** and supporting **offline tools**. Agents sho
 | **Disklordz** (package index) | [disklordz/ARCHITECTURE.md](disklordz/ARCHITECTURE.md) · [docs/ROADMAP.md](docs/ROADMAP.md) | `./scripts/run-agent-fleet-now.sh` |
 | **Disklordz Drum SaaS** (web) | [disklordz/website/ARCHITECTURE.md](disklordz/website/ARCHITECTURE.md) · [docs/DISKLORDZ_SAAS_V0.md](docs/DISKLORDZ_SAAS_V0.md) · [docs/DISKLORDZ_GO_LIVE.md](docs/DISKLORDZ_GO_LIVE.md) | `npm run build` in `disklordz/website/` |
 | **Disklordz sound factory** | [disklordz/sound-factory/ARCHITECTURE.md](disklordz/sound-factory/ARCHITECTURE.md) | `python3 disklordz/sound-factory/scripts/generate_kit.py` |
+| **Lofi-12 phonk drum factory** | [disklordz/lofi12-phonk-factory/ARCHITECTURE.md](disklordz/lofi12-phonk-factory/ARCHITECTURE.md) | `./tools/build-phonk-kit-products.sh` → `release/phonk-kits/*.zip` |
 | **Disklordz DAW inbox** (WO-016) | [disklordz/daw-inbox/ARCHITECTURE.md](disklordz/daw-inbox/ARCHITECTURE.md) | `npm start` in `disklordz/daw-inbox/` |
 | **DiskLordz Audio Command** (business PWA) | [disklordz/audio-command/ARCHITECTURE.md](disklordz/audio-command/ARCHITECTURE.md) · [docs/DISKLORDZ_MASTER_PLAN.md](docs/DISKLORDZ_MASTER_PLAN.md) | `audio-business-copilot` agent + PWA |
 | **DiskLordz Audio** (CHORD ENGINE / DPF) | [DiskLordz-Audio/ARCHITECTURE.md](DiskLordz-Audio/ARCHITECTURE.md) · [MILESTONE_001_FACTORY.md](DiskLordz-Audio/MILESTONE_001_FACTORY.md) | Factory implements VST3 in `DiskLordz-Audio/Products/ChordEngine/` |
